@@ -455,7 +455,7 @@ async def redeem(ctx,* , code=''):
 @commands.command()
 async def users(ctx):
     userStr = ""
-    for user in global_vars.users:
+    for user in account.users:
         userStr = userStr+f"{user.username} - {user.uid}\n"
     embed = global_vars.defaultEmbed("所有帳號",userStr)
     global_vars.setFooter(embed)
