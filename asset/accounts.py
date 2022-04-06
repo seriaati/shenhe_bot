@@ -5,7 +5,7 @@ def account():
 	users.append(User(410036441129943050, 901211014, 7368957, "X5VJAbNxdKpMp96s7VGpyIBhSnEJr556d5fFMcT5", "小雪", True, 0))
 	users.append(User(507536968121319424, 901445842, 131056669, "7Bzu3KHdYeCDUgWkq1B6YGBcTcV4LXduDFrAL5xn", "eve", True, 0))
 	users.append(User(272394461646946304, 901971416, 152761310, "9k3VzBSlHcVfrwrTmGRvmen6PoYAXEDMzBJmKZxS", "tedd", True, 0))
-	users.append(User(427346531260301312, 900625278, 82289934, "2TsjIflHb4HIjQMhgby8m4PCLj0Ao7cezEK3CSkC", "ceye", False, 0))
+	users.append(User(427346531260301312, 900625278, 82289934, "2TsjIflHb4HIjQMhgby8m4PCLj0Ao7cezEK3CSkC", "ceye", True, 0))
 	users.append(User(795329121018183731, 900236198, 27426924, "aD7G6wZx0xOzdMHFFe3on5nD0zNic2DWa8SE9yId", "末野小朋友", True, 0))
 	users.append(User(685130936723308624, 900074976, 14609636, "OXR68dPwh0kmIAomgmYMfULeRWvnZK8Ko4FrYYzC", "吐司", True, 0))
 	users.append(User(713302663340621924, 902315596, 163977582, "Xg8x05mtLx8m8EouzkKFfuzyYiRpAvsFIpA6Fhrs", "飛機仔", True, 0))

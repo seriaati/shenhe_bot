@@ -48,7 +48,7 @@ async def checkLoop():
             notes = await client.get_notes(uid)
             resin = notes.current_resin
 
-            if resin >= 140 and user.dm == True and user.count <= 3:
+            if resin >= 140 and user.dm == True and user.count <= 2:
                 print("已私訊 "+str(userid))
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
