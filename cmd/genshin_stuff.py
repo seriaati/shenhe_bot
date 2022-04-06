@@ -452,6 +452,15 @@ async def redeem(ctx,* , code=''):
                     await client.close()
                     await ctx.send(embed=embedResult)
 
+@commands.command()
+async def users(ctx):
+    userStr = ""
+    for user in global_vars.users:
+        userStr = userStr+f"{user.username} - {user.uid}\n"
+    embed = global_vars.defaultEmbed("所有帳號",userStr)
+    global_vars.setFooter(embed)
+    await ctx.send(embed)
+
 def setup(bot):
     bot.add_command(check)
     bot.add_command(stats)
