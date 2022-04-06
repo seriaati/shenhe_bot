@@ -470,3 +470,4 @@ def setup(bot):
     bot.add_command(log)
     bot.add_command(char)
     bot.add_command(redeem)
+    bot.add_command(users)
