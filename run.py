@@ -37,7 +37,7 @@ bot.load_extension("cmd.cmd")
 # 私訊提醒功能
 @tasks.loop(seconds=3600) # 1 hour
 async def checkLoop():
-    for user in global_vars.users:
+    for user in accounts.users:
         try:
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
             uid = user.uid
