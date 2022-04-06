@@ -24,7 +24,7 @@ async def farm(ctx):
         weekday = "禮拜六"
     elif weekdayGet == 6:
         weekday = "禮拜日"
-    embedFarm=defaultEmbed(f"今天({weekday})可以刷的副本材料"," ")
+    embedFarm=global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料"," ")
     if weekdayGet == 0 or weekdayGet == 3:
         # monday or thursday
         embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
@@ -36,7 +36,7 @@ async def farm(ctx):
         embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
     elif weekdayGet == 6:
         embedFarm=defaultEmbed(f"今天({weekday})可以刷的副本材料","禮拜日可以刷所有素材 (❁´◡`❁)")
-    setFooter(embedFarm)
+    global_vars.setFooter(embedFarm)
     await ctx.send(embed=embedFarm)
 
 def setup(bot):
