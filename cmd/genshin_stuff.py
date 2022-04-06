@@ -24,7 +24,7 @@ async def check(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -77,7 +77,7 @@ async def stats(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -143,7 +143,7 @@ async def claim(ctx, *, name):
                     uid = user.uid
                     username = user.username
             if found == False:
-                embed = embedNoAccount
+                embed = global_vars.embedNoAccount
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
         # !claim blank
@@ -156,7 +156,7 @@ async def claim(ctx, *, name):
                     uid = user.uid
                     username = user.username
             if found == False:
-                embed = embedNoAccount
+                embed = global_vars.embedNoAccount
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
         # 取得資料
@@ -188,7 +188,7 @@ async def abyss(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -234,7 +234,7 @@ async def diary(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -265,7 +265,7 @@ async def log(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -305,7 +305,7 @@ async def char(ctx, *, name: discord.Member = None):
             uid = user.uid
             username = user.username
     if found == False:
-        embed = embedNoAccount
+        embed = global_vars.embedNoAccount
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
@@ -333,7 +333,7 @@ async def char(ctx, *, name: discord.Member = None):
     #                 cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
     #                 uid = user.uid
     #         if found == False:
-    #             embed = embedNoAccount
+    #             embed = global_vars.embedNoAccount
     #             global_vars.setFooter(embed)
     #             await ctx.send(embed=embed)
     #             return
@@ -347,7 +347,7 @@ async def char(ctx, *, name: discord.Member = None):
     #             uid = user.uid
     #             username = user.username
     #     if found == False:
-    #         embed = embedNoAccount
+    #         embed = global_vars.embedNoAccount
     #         global_vars.setFooter(embed)
     #         await ctx.send(embed=embed)
     #         return
@@ -399,7 +399,7 @@ async def redeem(ctx,* , code=''):
                 uid = user.uid
                 username = user.username
         if found == False:
-            embed = embedNoAccount
+            embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return

@@ -111,7 +111,7 @@ async def vote(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         question = message.content
@@ -126,7 +126,7 @@ async def vote(ctx):
             try:
                 message = await bot.wait_for('message', timeout= 30.0, check= check)
             except asyncio.TimeoutError:
-                await ctx.send(timeOutErrorMsg)
+                await ctx.send(global_vars.timeOutErrorMsg)
                 return
             else:
                 option = message.content
@@ -144,7 +144,7 @@ async def vote(ctx):
                     try:
                         message = await bot.wait_for('message', timeout= 30.0, check= check)
                     except asyncio.TimeoutError:
-                        await ctx.send(timeOutErrorMsg)
+                        await ctx.send(global_vars.timeOutErrorMsg)
                         return
                     else:
                         emoji = message.content
@@ -190,7 +190,7 @@ async def group(ctx):
         try:
             message = await bot.wait_for('message', timeout= 30.0, check= check)
         except asyncio.TimeoutError:
-            await ctx.send(timeOutErrorMsg)
+            await ctx.send(global_vars.timeOutErrorMsg)
             return
         else:
             answer = message.content
@@ -203,20 +203,20 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
-                    groups.append(Group(answer))
+                    global_vars.groups.append(Group(answer))
                     embed = discord.Embed(title = "✅ 小組創建成功",
                             description=f"小組名稱: {answer}", color=purpleColor)
                     global_vars.setFooter(embed)
                     await ctx.send(embed=embed)
             if answer == "delete":
-                groupStr = ""
-                for group in groups:
-                    groupStr = groupStr + "• " + group.name + "\n"
-                embed = discord.Embed(title = "打算刪除的小組名稱?",description=f"目前存在的小組: \n{groupStr}",color=purpleColor)
+                global_vars.groupStr = ""
+                for group in global_vars.groups:
+                    global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+                embed = discord.Embed(title = "打算刪除的小組名稱?",description=f"目前存在的小組: \n{global_vars.groupStr}",color=purpleColor)
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 def check(m):
@@ -224,25 +224,25 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
                     found = False
-                    for group in groups:
+                    for group in global_vars.groups:
                         if answer == group.name:
                             found = True
-                            groups.remove(group)
+                            global_vars.groups.remove(group)
                     if found == True:
                         embed = global_vars.defaultEmbed("🗑️ 小組刪除成功",f"小組名稱: {answer}")
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
                     elif found == False:
-                        embed = embedNoGroup
+                        embed = global_vars.embedNoGroup
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
             if answer == "list":
-                for group in groups:
+                for group in global_vars.groups:
                     memberStr = ""
                     for member in group.members:
                         memberStr = memberStr + "• " + member + "\n"
@@ -250,10 +250,10 @@ async def group(ctx):
                     global_vars.setFooter(embed)
                     await ctx.send(embed=embed)
             if answer == "add":
-                groupStr = ""
-                for group in groups:
-                    groupStr = groupStr + "• " + group.name + "\n"
-                embed = discord.Embed(title = f"要在哪個小組新增成員?", description=f"目前存在的小組: \n{groupStr}", color=purpleColor)
+                global_vars.groupStr = ""
+                for group in global_vars.groups:
+                    global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+                embed = discord.Embed(title = f"要在哪個小組新增成員?", description=f"目前存在的小組: \n{global_vars.groupStr}", color=purpleColor)
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 def check(m):
@@ -261,12 +261,12 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
                     found = False
-                    for group in groups:
+                    for group in global_vars.groups:
                         if answer==group.name:
                             found = True
                             embed = discord.Embed(title = f"要新增哪些成員?", description=f"如果有多個成員, 請以逗號分割\n例如: @小雪, @Sueno", color=purpleColor)
@@ -277,7 +277,7 @@ async def group(ctx):
                             try:
                                 message = await bot.wait_for('message', timeout= 30.0, check= check)
                             except asyncio.TimeoutError:
-                                await ctx.send(timeOutErrorMsg)
+                                await ctx.send(global_vars.timeOutErrorMsg)
                                 return
                             else:
                                 answer = message.content
@@ -291,14 +291,14 @@ async def group(ctx):
                                 global_vars.setFooter(embed)
                                 await ctx.send(embed=embed)
                     if found == False:
-                        embed = embedNoGroup
+                        embed = global_vars.embedNoGroup
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
             if answer == "remove":
-                groupStr = ""
-                for group in groups:
-                    groupStr = groupStr + "• " + group.name + "\n"
-                embed = discord.Embed(title = f"要從哪個小組中移除成員?", description=f"目前存在的小組: \n{groupStr}", color = purpleColor)
+                global_vars.groupStr = ""
+                for group in global_vars.groups:
+                    global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+                embed = discord.Embed(title = f"要從哪個小組中移除成員?", description=f"目前存在的小組: \n{global_vars.groupStr}", color = purpleColor)
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 def check(m):
@@ -306,12 +306,12 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
                     found = False
-                    for group in groups:
+                    for group in global_vars.groups:
                         if answer==group.name:
                             found = True
                             embed = discord.Embed(title = f"要移除哪些成員?", description=f"如果有多個成員, 請以逗號分割\n例如: @小雪, @Sueno", color=purpleColor)
@@ -322,7 +322,7 @@ async def group(ctx):
                             try:
                                 message = await bot.wait_for('message', timeout= 30.0, check= check)
                             except asyncio.TimeoutError:
-                                await ctx.send(timeOutErrorMsg)
+                                await ctx.send(global_vars.timeOutErrorMsg)
                                 return
                             else:
                                 answer = message.content
@@ -337,14 +337,14 @@ async def group(ctx):
                                 global_vars.setFooter(embed)
                                 await ctx.send(embed=embed)
                     if found == False:
-                        embed = embedNoGroup
+                        embed = global_vars.embedNoGroup
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
             if answer == "join":
-                groupStr = ""
-                for group in groups:
-                    groupStr = groupStr + "• " + group.name + "\n"
-                embed = discord.Embed(title = f"要加入哪個小組?", description=f"目前存在的小組: \n{groupStr}", color=purpleColor)
+                global_vars.groupStr = ""
+                for group in global_vars.groups:
+                    global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+                embed = discord.Embed(title = f"要加入哪個小組?", description=f"目前存在的小組: \n{global_vars.groupStr}", color=purpleColor)
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 def check(m):
@@ -352,12 +352,12 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
                     found = False
-                    for group in groups:
+                    for group in global_vars.groups:
                         if answer == group.name:
                             found = True
                             group.members.append("<@!"+str(ctx.author.id)+">")
@@ -365,16 +365,16 @@ async def group(ctx):
                             global_vars.setFooter(embed)
                             await ctx.send(embed=embed)
                     if found == False:
-                        embed = embedNoGroup
+                        embed = global_vars.embedNoGroup
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
             if answer == "leave":
-                groupStr = ""
-                for group in groups:
+                global_vars.groupStr = ""
+                for group in global_vars.groups:
                     authorMention = "<@!"+str(ctx.author.id)+">"
                     if authorMention in group.members:
-                        groupStr = groupStr + "• " + group.name + "\n"
-                embed = discord.Embed(title = f"要退出哪個小組?", description=f"你目前在的小組有: \n{groupStr}", color=purpleColor)
+                        global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+                embed = discord.Embed(title = f"要退出哪個小組?", description=f"你目前在的小組有: \n{global_vars.groupStr}", color=purpleColor)
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 def check(m):
@@ -382,12 +382,12 @@ async def group(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
                     found = False
-                    for group in groups:
+                    for group in global_vars.groups:
                         if answer == group.name:
                             found = True
                             group.members.remove("<@!"+str(ctx.author.id)+">")
@@ -395,7 +395,7 @@ async def group(ctx):
                             global_vars.setFooter(embed)
                             await ctx.send(embed=embed)
                     if found == False:
-                        embed = embedNoGroup
+                        embed = global_vars.embedNoGroup
                         global_vars.setFooter(embed)
                         await ctx.send(embed=embed)
 
@@ -409,22 +409,22 @@ async def create(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
-        groups.append(Group(answer))
+        global_vars.groups.append(Group(answer))
         embed = global_vars.defaultEmbed("✅ 小組創建成功",f"小組名稱: {answer}")
         global_vars.setFooter(embed)
         await embedAsk.edit(embed=embed)
 
 @group.command()
 async def delete(ctx):
-    groupStr = ""
-    for group in groups:
-        groupStr = groupStr + "• " + group.name + "\n"
-    embedAsk = global_vars.defaultEmbed("打算刪除的小組名稱?",f"目前存在的小組: \n{groupStr}")
+    global_vars.groupStr = ""
+    for group in global_vars.groups:
+        global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+    embedAsk = global_vars.defaultEmbed("打算刪除的小組名稱?",f"目前存在的小組: \n{global_vars.groupStr}")
     global_vars.setFooter(embedAsk)
     embedAsk = await ctx.send(embed=embedAsk)
     def check(m):
@@ -432,28 +432,28 @@ async def delete(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
         found = False
-        for group in groups:
+        for group in global_vars.groups:
             if answer == group.name:
                 found = True
-                groups.remove(group)
+                global_vars.groups.remove(group)
         if found == True:
             embed = global_vars.defaultEmbed("🗑️ 小組刪除成功",f"小組名稱: {answer}")
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
         elif found == False:
-            embed = embedNoGroup
+            embed = global_vars.embedNoGroup
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
 @group.command()
 async def list(ctx):
-    for group in groups:
+    for group in global_vars.groups:
         memberStr = ""
         for member in group.members:
             memberStr = memberStr + "• " + member + "\n"
@@ -463,10 +463,10 @@ async def list(ctx):
 
 @group.command()
 async def add(ctx):
-    groupStr = ""
-    for group in groups:
-        groupStr = groupStr + "• " + group.name + "\n"
-    embedAsk = global_vars.defaultEmbed(f"要在哪個小組新增成員?",f"目前存在的小組: \n{groupStr}")
+    global_vars.groupStr = ""
+    for group in global_vars.groups:
+        global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+    embedAsk = global_vars.defaultEmbed(f"要在哪個小組新增成員?",f"目前存在的小組: \n{global_vars.groupStr}")
     global_vars.setFooter(embedAsk)
     embedAsk = await ctx.send(embed=embedAsk)
     def check(m):
@@ -474,13 +474,13 @@ async def add(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
         found = False
-        for group in groups:
+        for group in global_vars.groups:
             if answer==group.name:
                 found = True
                 embed = global_vars.defaultEmbed(f"要新增哪些成員?",f"如果有多個成員, 請以逗號分割\n例如: @小雪, @Sueno")
@@ -491,7 +491,7 @@ async def add(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
@@ -506,16 +506,16 @@ async def add(ctx):
                     global_vars.setFooter(embed)
                     await embedAsk.edit(embed=embed)
         if found == False:
-            embed = embedNoGroup
+            embed = global_vars.embedNoGroup
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
 @group.command()
 async def remove(ctx):
-    groupStr = ""
-    for group in groups:
-        groupStr = groupStr + "• " + group.name + "\n"
-    embedAsk = global_vars.defaultEmbed(f"要從哪個小組中移除成員?",f"目前存在的小組: \n{groupStr}")
+    global_vars.groupStr = ""
+    for group in global_vars.groups:
+        global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+    embedAsk = global_vars.defaultEmbed(f"要從哪個小組中移除成員?",f"目前存在的小組: \n{global_vars.groupStr}")
     global_vars.setFooter(embedAsk)
     embedAsk = await ctx.send(embed=embedAsk)
     def check(m):
@@ -523,13 +523,13 @@ async def remove(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
         found = False
-        for group in groups:
+        for group in global_vars.groups:
             if answer==group.name:
                 found = True
                 embed = global_vars.defaultEmbed(f"要移除哪些成員?",f"如果有多個成員, 請以逗號分割\n例如: @小雪, @Sueno")
@@ -540,7 +540,7 @@ async def remove(ctx):
                 try:
                     message = await bot.wait_for('message', timeout= 30.0, check= check)
                 except asyncio.TimeoutError:
-                    await ctx.send(timeOutErrorMsg)
+                    await ctx.send(global_vars.timeOutErrorMsg)
                     return
                 else:
                     answer = message.content
@@ -555,16 +555,16 @@ async def remove(ctx):
                     global_vars.setFooter(embed)
                     await message.delete()
         if found == False:
-            embed = embedNoGroup
+            embed = global_vars.embedNoGroup
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
 @group.command()
 async def join(ctx):
-    groupStr = ""
-    for group in groups:
-        groupStr = groupStr + "• " + group.name + "\n"
-    embedAsk = global_vars.defaultEmbed(f"要加入哪個小組?",f"目前存在的小組: \n{groupStr}")
+    global_vars.groupStr = ""
+    for group in global_vars.groups:
+        global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+    embedAsk = global_vars.defaultEmbed(f"要加入哪個小組?",f"目前存在的小組: \n{global_vars.groupStr}")
     global_vars.setFooter(embedAsk)
     embedAsk = await ctx.send(embed=embedAsk)
     def check(m):
@@ -572,13 +572,13 @@ async def join(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
         found = False
-        for group in groups:
+        for group in global_vars.groups:
             if answer == group.name:
                 found = True
                 group.members.append("<@!"+str(ctx.author.id)+">")
@@ -586,18 +586,18 @@ async def join(ctx):
                 global_vars.setFooter(embed)
                 await embedAsk.edit(embed=embed)
         if found == False:
-            embed = embedNoGroup
+            embed = global_vars.embedNoGroup
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
 @group.command()
 async def leave(ctx):
-    groupStr = ""
-    for group in groups:
+    global_vars.groupStr = ""
+    for group in global_vars.groups:
         authorMention = "<@!"+str(ctx.author.id)+">"
         if authorMention in group.members:
-            groupStr = groupStr + "• " + group.name + "\n"
-    embedAsk = discord.Embed(title = f"要退出哪個小組?", description=f"你目前在的小組有: \n{groupStr}", color=purpleColor)
+            global_vars.groupStr = global_vars.groupStr + "• " + group.name + "\n"
+    embedAsk = discord.Embed(title = f"要退出哪個小組?", description=f"你目前在的小組有: \n{global_vars.groupStr}", color=purpleColor)
     global_vars.setFooter(embedAsk)
     embedAsk = await ctx.send(embed=embedAsk)
     def check(m):
@@ -605,13 +605,13 @@ async def leave(ctx):
     try:
         message = await bot.wait_for('message', timeout= 30.0, check= check)
     except asyncio.TimeoutError:
-        await ctx.send(timeOutErrorMsg)
+        await ctx.send(global_vars.timeOutErrorMsg)
         return
     else:
         answer = message.content
         await message.delete()
         found = False
-        for group in groups:
+        for group in global_vars.groups:
             if answer == group.name:
                 found = True
                 group.members.remove("<@!"+str(ctx.author.id)+">")
@@ -619,7 +619,7 @@ async def leave(ctx):
                 global_vars.setFooter(embed)
                 await embedAsk.edit(embed=embed)
         if found == False:
-            embed = embedNoGroup
+            embed = global_vars.embedNoGroup
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
