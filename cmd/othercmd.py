@@ -17,11 +17,8 @@ async def flash(ctx):
 
 @commands.command()
 async def test(ctx, arg1, arg2):
-    value = randint(1,100)
-    if value <=50:
-        await ctx.send(arg1)
-    else:
-        await ctx.send(arg2)
+    value = randint(arg1, arg2)
+    await ctx.send(value)
 
 def setup(bot):
     bot.add_command(cute)
