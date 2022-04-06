@@ -16,7 +16,7 @@ async def flash(ctx):
     await ctx.send("https://media.discordapp.net/attachments/823440627127287839/960177992942891038/IMG_9555.jpg")
 
 @commands.command()
-async def flash(ctx, arg1, arg2):
+async def test(ctx, arg1, arg2):
     value = randint(1,100)
     if value <=50:
         await ctx.send(arg)
@@ -27,3 +27,4 @@ def setup(bot):
     bot.add_command(cute)
     bot.add_command(say)
     bot.add_command(flash)
+    bot.add_command(test)
