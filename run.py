@@ -169,9 +169,14 @@ async def loop_start(ctx):
 
 @bot.command()
 @commands.is_owner()
-async def reload_ext(ctx, arg):
+async def reload(ctx, arg):
     bot.reload_extension(f"cmd.{arg}")
     await ctx.send(f"reloded {arg}")
+
+@bot.command()
+@commands.is_owner()
+async def reload_user(ctx):
+    importlib.reload(global_vars)
 
 @bot.group()
 async def group(ctx):

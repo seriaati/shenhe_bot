@@ -12,11 +12,6 @@ from discord.ext import commands
 global_vars.Global()
 
 @commands.command()
-@commands.is_owner()
-async def reload_user(ctx):
-    importlib.reload(global_vars)
-
-@commands.command()
 async def check(ctx, *, name: discord.Member = None):
     name = name or ctx.author
     found = False
