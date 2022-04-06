@@ -1,7 +1,6 @@
 #shenhe-bot by seria
 #genshin verion = 2.6
 
-import importlib
 import genshin
 import getpass
 owner = getpass.getuser()
@@ -12,12 +11,14 @@ import discord
 import asyncio
 import DiscordUtils
 import global_vars
+global_vars.Global()
 import config
+config.Token()
+import accounts
+accounts.account()
 from discord.ext import commands
 from discord.ext import tasks
 from random import randint
-global_vars.Global()
-config.Token()
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -26,6 +27,7 @@ intents.reactions = True
 bot = commands.Bot(command_prefix="!", help_command=None, intents=intents, case_insensitive=True)
 token = config.bot_token
 
+# 指令包
 bot.load_extension("cmd.genshin_stuff")
 bot.load_extension("cmd.call")
 bot.load_extension("cmd.register")
