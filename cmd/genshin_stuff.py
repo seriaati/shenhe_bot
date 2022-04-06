@@ -106,7 +106,7 @@ async def stats(ctx, *, name: discord.Member = None):
     await client.close()
 
 @commands.command()
-async def claim(ctx, *, name):
+async def claim(ctx, *, name=''):
     # 有無輸入參數?
     # !claim all
     if name=='all':
