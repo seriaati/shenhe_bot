@@ -1,6 +1,7 @@
 #shenhe-bot by seria
 #genshin verion = 2.6
 
+import importlib
 import genshin
 import getpass
 owner = getpass.getuser()
