@@ -6,16 +6,18 @@ sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import genshin
 import discord
 import global_vars
+import accounts
 from classes import User 
 from classes import Character
 from discord.ext import commands
 global_vars.Global()
+accounts.addUser()
 
 @commands.command()
 async def check(ctx, *, name: discord.Member = None):
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -68,7 +70,7 @@ async def check(ctx, *, name: discord.Member = None):
 async def stats(ctx, *, name: discord.Member = None):
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -109,7 +111,7 @@ async def claim(ctx, *, name):
     # !claim all
     if name=='all':
         author = ctx.author.id
-        for user in global_vars.users:
+        for user in account.users:
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
             username = user.username
 
@@ -134,7 +136,7 @@ async def claim(ctx, *, name):
         # !claim name
         if name != "":
             found = False
-            for user in global_vars.users:
+            for user in account.users:
                 if name == "<@!"+str(user.discordID)+">":
                     found = True
                     cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -147,7 +149,7 @@ async def claim(ctx, *, name):
         # !claim blank
         elif name == "":
             found = False
-            for user in global_vars.users:
+            for user in account.users:
                 if ctx.author.id==user.discordID:
                     found = True
                     cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -179,7 +181,7 @@ async def claim(ctx, *, name):
 async def abyss(ctx, *, name: discord.Member = None):
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -225,7 +227,7 @@ async def abyss(ctx, *, name: discord.Member = None):
 async def diary(ctx, *, name: discord.Member = None): 
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -256,7 +258,7 @@ async def diary(ctx, *, name: discord.Member = None):
 async def log(ctx, *, name: discord.Member = None): 
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -296,7 +298,7 @@ async def log(ctx, *, name: discord.Member = None):
 async def char(ctx, *, name: discord.Member = None):
     name = name or ctx.author
     found = False
-    for user in global_vars.users:
+    for user in account.users:
         if name.id==user.discordID:
             found = True
             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -310,7 +312,7 @@ async def char(ctx, *, name: discord.Member = None):
 
     # elif name == "list":
     #     userStr = ""
-    #     for user in global_vars.users:
+    #     for user in account.users:
     #         userStr = userStr + "• " + user.username + "\n"
     #     embedUser = discord.Embed(title = f"你想偷看誰的角色?", description=f"{userStr}", color=purpleColor)
     #     global_vars.setFooter(embedUser)
@@ -325,7 +327,7 @@ async def char(ctx, *, name: discord.Member = None):
     #     else:
     #         userCheck = message.content
     #         found = False
-    #         for user in global_vars.users:
+    #         for user in account.users:
     #             if userCheck==user.username:
     #                 found = True
     #                 cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -338,7 +340,7 @@ async def char(ctx, *, name: discord.Member = None):
 
     # elif name != "" and name != "list":
     #     found = False
-    #     for user in global_vars.users:
+    #     for user in account.users:
     #         if name == "<@!"+str(user.discordID)+">":
     #             found = True
     #             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -390,7 +392,7 @@ async def redeem(ctx,* , code=''):
             global_vars.setFooter(embedError)
             await ctx.send(embed=embedError)
             return
-        for user in global_vars.users:
+        for user in account.users:
             if ctx.author.id==user.discordID:
                 found = True
                 cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
@@ -431,7 +433,7 @@ async def redeem(ctx,* , code=''):
             return
         else:
             code = message.content
-            for user in global_vars.users:
+            for user in account.users:
                 cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
                 username = user.username
 
