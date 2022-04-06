@@ -19,7 +19,7 @@ async def flash(ctx):
 async def test(ctx, arg1, arg2):
     value = randint(1,100)
     if value <=50:
-        await ctx.send(arg)
+        await ctx.send(arg1)
     else:
         await ctx.send(arg2)
 
