@@ -23,7 +23,7 @@ config.Token()
 intents = discord.Intents.default()
 intents.members = True
 intents.reactions = True
-bot = commands.Bot(command_prefix="!", help_command=None, intents=intents)
+bot = commands.Bot(command_prefix="!", help_command=None, intents=intents, case_insensitive=True)
 token = config.bot_token
 
 bot.load_extension("cmd.genshin_stuff")
