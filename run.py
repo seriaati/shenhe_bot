@@ -96,7 +96,7 @@ async def on_member_join(member):
 # ping
 @bot.command()
 async def ping(ctx):
-    await ctx.send('Pong! {0}ms'.format(round(bot.latency, 1)))
+    await ctx.send('🏓 Pong! {0}ms'.format(round(bot.latency, 1)))
 
 @bot.command()
 async def vote(ctx):
