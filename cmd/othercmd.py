@@ -18,7 +18,7 @@ async def flash(ctx):
 @commands.command()
 async def test(ctx, arg1, arg2):
     value = randint(arg1, arg2)
-    await ctx.send(value)
+    await ctx.send(str(value))
 
 def setup(bot):
     bot.add_command(cute)
