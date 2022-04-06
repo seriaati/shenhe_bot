@@ -459,7 +459,7 @@ async def users(ctx):
         userStr = userStr+f"{user.username} - {user.uid}\n"
     embed = global_vars.defaultEmbed("所有帳號",userStr)
     global_vars.setFooter(embed)
-    await ctx.send(embed)
+    await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_command(check)
