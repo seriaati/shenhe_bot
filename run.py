@@ -166,18 +166,13 @@ async def vote(ctx):
 @commands.is_owner()
 async def loop_start(ctx):
     checkLoop.start()
-    await ctx.send("loop_start")
+    await ctx.send("私訊功能啟動")
 
 @bot.command()
 @commands.is_owner()
 async def reload(ctx, arg):
     bot.reload_extension(f"cmd.{arg}")
-    await ctx.send(f"reloded {arg}")
-
-@bot.command()
-@commands.is_owner()
-async def reload_user(ctx):
-    importlib.reload(global_vars)
+    await ctx.send(f"已重整 {arg} 封包")
 
 @bot.group()
 async def group(ctx):
