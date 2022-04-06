@@ -11,7 +11,7 @@ from classes import User
 from classes import Character
 from discord.ext import commands
 global_vars.Global()
-accounts.addUser()
+accounts.account()
 
 @commands.command()
 async def check(ctx, *, name: discord.Member = None):
