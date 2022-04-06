@@ -11,19 +11,19 @@ import discord
 import asyncio
 import DiscordUtils
 import global_vars
-import token
+import config
 from discord.ext import commands
 from discord.ext import tasks
 from random import randint
 global_vars.Global()
-token.token()
+config.Token()
 
 # 前綴, token, intents
 intents = discord.Intents.default()
 intents.members = True
 intents.reactions = True
 bot = commands.Bot(command_prefix="!", help_command=None, intents=intents)
-token = token.token
+token = config.bot_token
 
 bot.load_extension("cmd.genshin_stuff")
 bot.load_extension("cmd.call")
