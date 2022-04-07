@@ -88,7 +88,6 @@ class GenshinCog(commands.Cog):
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
-        # hoyoAccount = await client.genshin_accounts(uid)
 
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
@@ -101,7 +100,6 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        # adventureLevel = hoyoAccount.level
 
         #送出結果embed
         embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
@@ -338,7 +336,7 @@ class GenshinCog(commands.Cog):
             embedChar.set_thumbnail(url=f"{character.iconUrl}")
             global_vars.setFooter(embedChar)
             charEmbeds.append(embedChar)
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(self, ctx, remove_reactions=True)
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
         paginator.add_reaction('⏮️', "first")
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
