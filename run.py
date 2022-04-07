@@ -4,8 +4,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os
-import discord, asyncio, traceback
+import os, discord, asyncio, traceback, genshin
 import global_vars
 global_vars.Global()
 import config
