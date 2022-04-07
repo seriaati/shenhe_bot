@@ -1,3 +1,7 @@
+import getpass
+owner = getpass.getuser()
+import sys 
+sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -6,6 +10,9 @@ from random import randint
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send('🏓 Pong! {0}ms'.format(round(self.bot.latency, 1)))
 
     @commands.command()
     async def cute(self, ctx, arg):
