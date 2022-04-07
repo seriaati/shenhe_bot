@@ -7,6 +7,7 @@ import genshin
 import discord
 import global_vars
 import accounts
+import DiscordUtils
 from classes import User 
 from classes import Character
 from discord.ext import commands
@@ -108,7 +109,7 @@ async def stats(ctx, *, name: discord.Member = None):
 @commands.command()
 async def claim(ctx, *, name=''):
     # 有無輸入參數?
-    # !claim all
+    # claim all
     if name=='all':
         author = ctx.author.id
         for user in accounts.users:
@@ -309,48 +310,6 @@ async def char(ctx, *, name: discord.Member = None):
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
         return
-
-    # elif name == "list":
-    #     userStr = ""
-    #     for user in accounts.users:
-    #         userStr = userStr + "• " + user.username + "\n"
-    #     embedUser = discord.Embed(title = f"你想偷看誰的角色?", description=f"{userStr}", color=purpleColor)
-    #     global_vars.setFooter(embedUser)
-    #     await ctx.send(embed=embedUser)
-    #     def check(m):
-    #         return m.author == ctx.author and m.channel == ctx.channel
-    #     try:
-    #         message = await bot.wait_for('message', timeout= 30.0, check= check)
-    #     except asyncio.TimeoutError:
-    #         await ctx.send(timeOutErrorMsg)
-    #         return
-    #     else:
-    #         userCheck = message.content
-    #         found = False
-    #         for user in accounts.users:
-    #             if userCheck==user.username:
-    #                 found = True
-    #                 cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-    #                 uid = user.uid
-    #         if found == False:
-    #             embed = global_vars.embedNoAccount
-    #             global_vars.setFooter(embed)
-    #             await ctx.send(embed=embed)
-    #             return
-
-    # elif name != "" and name != "list":
-    #     found = False
-    #     for user in accounts.users:
-    #         if name == "<@!"+str(user.discordID)+">":
-    #             found = True
-    #             cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-    #             uid = user.uid
-    #             username = user.username
-    #     if found == False:
-    #         embed = global_vars.embedNoAccount
-    #         global_vars.setFooter(embed)
-    #         await ctx.send(embed=embed)
-    #         return
 
     # 取得資料
     client = genshin.GenshinClient(cookies)

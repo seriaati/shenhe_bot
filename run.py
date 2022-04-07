@@ -9,7 +9,6 @@ sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import os
 import discord
 import asyncio
-import DiscordUtils
 import global_vars
 global_vars.Global()
 import config
@@ -50,7 +49,7 @@ async def checkLoop():
             notes = await client.get_notes(uid)
             resin = notes.current_resin
 
-            if resin >= 140 and user.dm == True and user.count <= 2:
+            if resin >= 140 and user.dm == True and user.count <= 3:
                 print("已私訊 "+str(userid))
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
