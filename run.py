@@ -6,14 +6,14 @@ import sys
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import os, discord, asyncio, traceback, genshin
 import global_vars
-global_vars.Global()
 import config
-config.Token()
 import accounts
-accounts.account()
 from discord.ext import commands
 from discord.ext import tasks
 from random import randint
+global_vars.Global()
+config.Token()
+accounts.account()
 
 # 前綴, token, intents
 intents = discord.Intents.default()
