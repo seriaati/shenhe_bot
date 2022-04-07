@@ -349,7 +349,8 @@ class GenshinCog(commands.Cog):
         if code != "all":
             found = False
             if code == "":
-                embedError = discord.Embed(title = "請輸入兌換碼", description="不然要換什麼www", color=warningColor)
+                embedError = global_vars.defaultEmbed("請輸入兌換碼", 
+                    "不然要換什麼www")
                 global_vars.setFooter(embedError)
                 await ctx.send(embed=embedError)
                 return
@@ -372,17 +373,20 @@ class GenshinCog(commands.Cog):
             # 兌換
             try:
                 await client.redeem_code(code)
-                embedResult = discord.Embed(title = f"✅ 兌換成功: {username}", description=f"🎉 恭喜你!\n已幫你兌換:\n{code}", color = purpleColor)
+                embedResult = global_vars.defaultEmbed(f"✅ 兌換成功: {username}", 
+                    f"🎉 恭喜你!\n已幫你兌換:\n{code}")
                 global_vars.setFooter(embedResult)
                 await client.close()
                 await ctx.send(embed=embedResult)
             except Exception as e:
-                embedResult = discord.Embed(title = f"❌ 兌換失敗: {username}", description=f" ", color = purpleColor)
+                embedResult = global_vars.defaultEmbed(f"✅ 兌換成功: {username}", 
+                    f"🎉 恭喜你!\n已幫你兌換:\n{code}")
                 global_vars.setFooter(embedResult)
                 await client.close()
                 await ctx.send(embed=embedResult)
         else:
-            embedAsk = discord.Embed(title = f"👋 你好，大好人", description=f"請輸入要幫大家兌換的兌換碼", color=purpleColor)
+            embedAsk = global_vars.defaultEmbed(f"👋 你好，大好人", 
+                f"請輸入要幫大家兌換的兌換碼")
             global_vars.setFooter(embedAsk)
             await ctx.send(embed=embedAsk)
             def check(m):
@@ -403,12 +407,12 @@ class GenshinCog(commands.Cog):
 
                     try:
                         await client.redeem_code(code)
-                        embedResult = discord.Embed(title = f"✅ 兌換成功: {username}", description=f"🎉 恭喜你!\n已幫你兌換:\n{code}", color = purpleColor)
+                        embedResult = global_vars.defaultEmbed(f"✅ 兌換成功: {username}",f"🎉 恭喜你!\n已幫你兌換:\n{code}")
                         global_vars.setFooter(embedResult)
                         await client.close()
                         await ctx.send(embed=embedResult)
                     except Exception as e:
-                        embedResult = discord.Embed(title = f"❌ 兌換失敗: {username}", description=f" ", color = purpleColor)
+                        embedResult = global_vars.defaultEmbed(f"❌ 兌換失敗: {username}",f"\u200b")
                         global_vars.setFooter(embedResult)
                         await client.close()
                         await ctx.send(embed=embedResult)
