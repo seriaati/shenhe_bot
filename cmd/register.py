@@ -9,7 +9,7 @@ global_vars.Global()
 
 @commands.command()
 async def register(ctx):
-    embedRegister = global_vars.defaultEmbed("註冊教學","1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('无效的Cookie,请重新登录!');c&&confirm('将Cookie复制到剪贴板?')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給小雪\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
+    embedRegister = global_vars.defaultEmbed("註冊教學","1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('無效的cookie,請重新登錄!');c&&confirm('將cookie複製到剪貼版？')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給小雪\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
     global_vars.setFooter(embedRegister)
     embed = global_vars.defaultEmbed("註冊帳號有什麼好處?","• 能使用所有原神資料的指令(詳情打`!help`)\n• 私訊提醒功能(詳情請打`!dm`)")
     global_vars.setFooter(embed)
