@@ -1,14 +1,11 @@
 #shenhe-bot by seria
-#genshin verion = 2.6
 
-import genshin
 import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import os
-import discord
-import asyncio
+import discord, asyncio, traceback
 import global_vars
 global_vars.Global()
 import config
@@ -27,13 +24,26 @@ bot = commands.Bot(command_prefix="!", help_command=None, intents=intents, case_
 token = config.bot_token
 
 # 指令包
-bot.load_extension("cmd.genshin_stuff")
-bot.load_extension("cmd.call")
-bot.load_extension("cmd.register")
-bot.load_extension("cmd.othercmd")
-bot.load_extension("cmd.farm")
-bot.load_extension("cmd.help")
-bot.load_extension("cmd.cmd")
+initial_extensions = [
+"cmd.genshin_stuff",
+"cmd.call", 
+"cmd.register", 
+"cmd.othercmd", 
+"cmd.farm", 
+"cmd.help",
+]
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        bot.load_extension(extension)
+
+# 開機時
+@bot.event
+async def on_ready():
+    await bot.change_presence(
+        status=discord.Status.online,activity = discord.Game(name=f'輸入!help來查看幫助'))
+    print("Shenhe has logged in.")
+    print("---------------------")
 
 # 私訊提醒功能
 @tasks.loop(seconds=3600) # 1 hour
@@ -71,13 +81,6 @@ async def checkLoop():
 async def beforeLoop():
     print('waiting...')
     await bot.wait_until_ready()
-
-# 開機時
-@bot.event
-async def on_ready():
-    await bot.change_presence(status=discord.Status.online,activity = discord.Game(name=f'輸入!help來查看幫助'))
-    print("Shenhe has logged in.")
-    print("---------------------")
 
 # 偵測機率字串
 @bot.event
@@ -191,25 +194,23 @@ async def group(ctx):
         else:
             answer = message.content
             if answer == "create":
-                def create():
-                    embed = discord.Embed(title = "打算創建的小組名稱?",description="例如: 可莉炸魚團",color=purpleColor)
+                embed = discord.Embed(title = "打算創建的小組名稱?",description="例如: 可莉炸魚團",color=purpleColor)
+                global_vars.setFooter(embed)
+                await ctx.send(embed=embed)
+                def check(m):
+                    return m.author == ctx.author and m.channel == ctx.channel
+                try:
+                    message = await bot.wait_for('message', timeout= 30.0, check= check)
+                except asyncio.TimeoutError:
+                    await ctx.send(global_vars.timeOutErrorMsg)
+                    return
+                else:
+                    answer = message.content
+                    global_vars.groups.append(Group(answer))
+                    embed = discord.Embed(title = "✅ 小組創建成功",
+                            description=f"小組名稱: {answer}", color=purpleColor)
                     global_vars.setFooter(embed)
                     await ctx.send(embed=embed)
-                    def check(m):
-                        return m.author == ctx.author and m.channel == ctx.channel
-                    try:
-                        message = await bot.wait_for('message', timeout= 30.0, check= check)
-                    except asyncio.TimeoutError:
-                        await ctx.send(global_vars.timeOutErrorMsg)
-                        return
-                    else:
-                        answer = message.content
-                        global_vars.groups.append(Group(answer))
-                        embed = discord.Embed(title = "✅ 小組創建成功",
-                                description=f"小組名稱: {answer}", color=purpleColor)
-                        global_vars.setFooter(embed)
-                        await ctx.send(embed=embed)
-                create()
             if answer == "delete":
                 global_vars.groupStr = ""
                 for group in global_vars.groups:
@@ -621,5 +622,4 @@ async def leave(ctx):
             global_vars.setFooter(embed)
             await embedAsk.edit(embed=embed)
 
-if __name__ == "__main__":
-    bot.run(token)
+bot.run(token, bot=True, reconnect=True)
