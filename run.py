@@ -191,23 +191,25 @@ async def group(ctx):
         else:
             answer = message.content
             if answer == "create":
-                embed = discord.Embed(title = "打算創建的小組名稱?",description="例如: 可莉炸魚團",color=purpleColor)
-                global_vars.setFooter(embed)
-                await ctx.send(embed=embed)
-                def check(m):
-                    return m.author == ctx.author and m.channel == ctx.channel
-                try:
-                    message = await bot.wait_for('message', timeout= 30.0, check= check)
-                except asyncio.TimeoutError:
-                    await ctx.send(global_vars.timeOutErrorMsg)
-                    return
-                else:
-                    answer = message.content
-                    global_vars.groups.append(Group(answer))
-                    embed = discord.Embed(title = "✅ 小組創建成功",
-                            description=f"小組名稱: {answer}", color=purpleColor)
+                def create():
+                    embed = discord.Embed(title = "打算創建的小組名稱?",description="例如: 可莉炸魚團",color=purpleColor)
                     global_vars.setFooter(embed)
                     await ctx.send(embed=embed)
+                    def check(m):
+                        return m.author == ctx.author and m.channel == ctx.channel
+                    try:
+                        message = await bot.wait_for('message', timeout= 30.0, check= check)
+                    except asyncio.TimeoutError:
+                        await ctx.send(global_vars.timeOutErrorMsg)
+                        return
+                    else:
+                        answer = message.content
+                        global_vars.groups.append(Group(answer))
+                        embed = discord.Embed(title = "✅ 小組創建成功",
+                                description=f"小組名稱: {answer}", color=purpleColor)
+                        global_vars.setFooter(embed)
+                        await ctx.send(embed=embed)
+                create()
             if answer == "delete":
                 global_vars.groupStr = ""
                 for group in global_vars.groups:
