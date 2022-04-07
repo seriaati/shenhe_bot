@@ -88,6 +88,7 @@ class GenshinCog(commands.Cog):
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
+        accounts = await client.genshin_accounts(uid)
 
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
@@ -100,9 +101,11 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
+        adventureLevel = account.level
         
         #送出結果embed
-        embedStats=global_vars.defaultEmbed(f"使用者: {username}",f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
+        embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
+            f":calendar: 活躍天數: {days}\n🔼 冒險等階: {adventureLevel}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
         await client.close()
