@@ -20,6 +20,8 @@ async def help(ctx):
 @commands.command()
 async def adminhelp(ctx):
     embedHelp = global_vars.defaultEmbed("管理員指令", "`!adminhelp`呼叫此界面\n`!dm`私訊提醒功能\n`!stuck`hoyo資料沒打開\n`!reload`更新封包\n`!check_loop`打開私訊功能")
+    global_vars.setFooter(embedHelp)
+    await ctx.send(embedHelp)
 
 def setup(bot):
     bot.add_command(help)
