@@ -33,6 +33,7 @@ initial_extensions = [
 "cmd.vote",
 "cmd.group",
 "cmd.redeem",
+"cmd.ownercmd",
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -49,7 +50,6 @@ async def on_ready():
 # 私訊提醒功能
 @tasks.loop(seconds=600) # 10 min
 async def checkLoop():
-
     for user in users:
         try:
             cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
@@ -80,9 +80,8 @@ async def checkLoop():
                 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                     yaml.dump(users, file)
             await client.close()
-
         except genshin.errors.InvalidCookies:
-            print ("吐司帳號壞掉了")
+            print (f"{user['name']}帳號壞掉了")
             await client.close()
         
 # 等待申鶴準備
@@ -107,11 +106,5 @@ async def on_message(message):
 async def on_member_join(member):
     public = bot.get_channel(916951131022843964)
     await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
-
-@bot.command()
-@commands.is_owner()
-async def reload(ctx, arg):
-    bot.reload_extension(f"cmd.{arg}")
-    await ctx.send(f"已重整 {arg} 指令包")
 
 bot.run(token, bot=True, reconnect=True)
