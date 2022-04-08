@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import genshin, discord
+import genshin, discord, yaml
 import global_vars
 global_vars.Global()
 from classes import User 

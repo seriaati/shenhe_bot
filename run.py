@@ -1,19 +1,19 @@
 #shenhe-bot by seria
-
 import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin
+import os, discord, asyncio, genshin, yaml, datetime
 import global_vars
+global_vars.Global()
 import config
-import accounts
+config.Token()
 from discord.ext import commands
 from discord.ext import tasks
 from random import randint
-global_vars.Global()
-config.Token()
-accounts.account()
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -34,7 +34,6 @@ initial_extensions = [
 "cmd.group",
 "cmd.redeem",
 ]
-
 if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
@@ -48,42 +47,51 @@ async def on_ready():
     print("---------------------")
 
 # 私訊提醒功能
-@tasks.loop(seconds=3600) # 1 hour
+@tasks.loop(seconds=600) # 10 min
 async def checkLoop():
-    for user in accounts.users:
+
+    for user in users:
         try:
-            cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-            uid = user.uid
-            username = user.username
-            userid = bot.get_user(user.discordID)
+            cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+            uid = user['uid']
+            username = user['name']
+            userid = bot.get_user(user['discordID'])
             client = genshin.GenshinClient(cookies)
             client.lang = "zh-tw"
             notes = await client.get_notes(uid)
             resin = notes.current_resin
-
-            if resin >= 140 and user.dm == True and user.count <= 3:
+            dateNow = datetime.datetime.now()
+            diff = dateNow - user['dmDate']
+            diffHour = diff.total_seconds() / 3600
+            if resin >= 140 and user['dm'] == True and user['dmCount'] <= 3 and diffHour >= 1:
                 print("已私訊 "+str(userid))
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
                 embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 如果你不想要收到這則通知, 請私訊或tag小雪\n註: 所有指令在私訊都能正常運作, 例如`!check`")
                 global_vars.setFooter(embed)
                 await userid.send(embed=embed)
-                user.count = user.count+1
+                user['dmCount'] += 1
+                user['dmDate'] = dateNow
+                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                    yaml.dump(users, file)
                 await client.close()
             elif resin < 140:
-                user.count = 0
+                user['dmCount'] = 0
+                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                    yaml.dump(users, file)
             await client.close()
 
         except genshin.errors.InvalidCookies:
             print ("吐司帳號壞掉了")
             await client.close()
-
+        
 # 等待申鶴準備
 @checkLoop.before_loop
 async def beforeLoop():
     print('waiting...')
     await bot.wait_until_ready()
 
+checkLoop.start()
 # 偵測機率字串
 @bot.event
 async def on_message(message):
@@ -99,12 +107,6 @@ async def on_message(message):
 async def on_member_join(member):
     public = bot.get_channel(916951131022843964)
     await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
-
-@bot.command()
-@commands.is_owner()
-async def loop_start(ctx):
-    checkLoop.start()
-    await ctx.send("私訊功能啟動")
 
 @bot.command()
 @commands.is_owner()

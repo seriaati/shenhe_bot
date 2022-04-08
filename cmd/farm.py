@@ -1,6 +1,6 @@
 import getpass
 owner = getpass.getuser()
-import sys 
+import sys
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
 global_vars.Global()
