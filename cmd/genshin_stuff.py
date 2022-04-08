@@ -2,14 +2,14 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import genshin, discord, DiscordUtils
+import genshin, discord, DiscordUtils, yaml
 import global_vars
-import accounts
-from classes import User 
+global_vars.Global()
 from classes import Character
 from discord.ext import commands
-global_vars.Global()
-accounts.account()
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
@@ -19,23 +19,21 @@ class GenshinCog(commands.Cog):
     async def check(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-
         # 從cookie取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         notes = await client.get_notes(uid)
-
         # 有沒有做派遣?
         # 無
         if not notes.expeditions:
@@ -57,38 +55,33 @@ class GenshinCog(commands.Cog):
             else:
                 exTime = min(unfinExp, default="EMPTY")
                 hr, mn = divmod(exTime // 60,60)
-
         # 計算樹脂填滿剩餘時間
         time = notes.until_resin_recovery
         hours, minutes = divmod(time // 60, 60)
-
         # 送出結果embed
         embedCheck=global_vars.defaultEmbed(f"使用者: {username}",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_comissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
         await client.close()
-
     @commands.command()
     async def stats(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-
         #取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
-
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
         achieve = genshinUser.stats.achievements
@@ -100,28 +93,24 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-
         #送出結果embed
         embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
             f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
         await client.close()
-
     @commands.command()
     async def claim(self, ctx, *, name=''):
         # 有無輸入參數?
         # claim all
         if name=='all':
             author = ctx.author.id
-            for user in accounts.users:
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                username = user.username
-
+            for user in users:
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                username = user['name']
                 client = genshin.GenshinClient(cookies)
                 client.lang = "zh-tw"
                 signed_in, claimed_rewards = await client.get_reward_info()
-
                 # 領獎勵
                 try:
                     reward = await client.claim_daily_reward()
@@ -139,12 +128,12 @@ class GenshinCog(commands.Cog):
             # !claim name
             if name != "":
                 found = False
-                for user in accounts.users:
-                    if name == "<@!"+str(user.discordID)+">":
+                for user in users:
+                    if name == "<@!"+str(user['discordID'])+">":
                         found = True
-                        cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                        uid = user.uid
-                        username = user.username
+                        cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                        uid = user['uid']
+                        username = user['name']
                 if found == False:
                     embed = global_vars.embedNoAccount
                     global_vars.setFooter(embed)
@@ -152,12 +141,12 @@ class GenshinCog(commands.Cog):
             # !claim blank
             elif name == "":
                 found = False
-                for user in accounts.users:
-                    if ctx.author.id==user.discordID:
+                for user in users:
+                    if ctx.author.id==user['discordID']:
                         found = True
-                        cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                        uid = user.uid
-                        username = user.username
+                        cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                        uid = user['uid']
+                        username = user['name']
                 if found == False:
                     embed = global_vars.embedNoAccount
                     global_vars.setFooter(embed)
@@ -166,7 +155,6 @@ class GenshinCog(commands.Cog):
             client = genshin.GenshinClient(cookies)
             client.lang = "zh-tw"
             signed_in, claimed_rewards = await client.get_reward_info()
-
             # 領取每日獎勵
             try:
                 reward = await client.claim_daily_reward()
@@ -179,17 +167,16 @@ class GenshinCog(commands.Cog):
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
         await client.close()
-
     @commands.command()
     async def abyss(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -220,71 +207,62 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             await client.close()
-
         embedAbyss=global_vars.defaultEmbed(f"深境螺旋: {username}",f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
         global_vars.setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
         await client.close()
-
     @commands.command()
     async def diary(self, ctx, *, name: discord.Member = None): 
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-
         # 取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
-
         primoCategoryStr = ""
         for category in diary.data.categories:
             primoCategoryStr = primoCategoryStr + f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
-
         embedDiary = global_vars.defaultEmbed(f"原石與摩拉收入: {username}",f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
         embedDiary.add_field(name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
         global_vars.setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
         await client.close()
-
     @commands.command()
     async def log(self, ctx, *, name: discord.Member = None): 
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-
         # 取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
-
         primoLog = ""
         moraLog = ""
         async for action in client.diary_log(limit=25):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
         async for action in client.diary_log(mora=True, limit=25):
             moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
-
         embedPrimo = global_vars.defaultEmbed(f"<:primo:958555698596290570> 最近25筆原石紀錄",f"{primoLog}")
         global_vars.setFooter(embedPrimo)
         embedMora = global_vars.defaultEmbed(f"<:mora:958577933650362468> 最近25筆摩拉紀錄",f"{moraLog}")
@@ -296,23 +274,21 @@ class GenshinCog(commands.Cog):
         embeds = [embedPrimo, embedMora]
         await paginator.run(embeds)
         await client.close()
-
     @commands.command()
     async def char(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
-        for user in accounts.users:
-            if name.id==user.discordID:
+        for user in users:
+            if name.id==user['discordID']:
                 found = True
-                cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                uid = user.uid
-                username = user.username
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-
         # 取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
@@ -343,12 +319,11 @@ class GenshinCog(commands.Cog):
         paginator.add_reaction('⏭️', "last")
         await paginator.run(charEmbeds)
         await client.close()
-
     @commands.command()
     async def users(self, ctx):
         userStr = ""
-        for user in accounts.users:
-            userStr = userStr+f"{user.username} - {user.uid}\n"
+        for user in users:
+            userStr = userStr+f"{user['name']} - {user['uid']}\n"
         embed = global_vars.defaultEmbed("所有帳號",userStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)

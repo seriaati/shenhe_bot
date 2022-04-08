@@ -4,16 +4,16 @@ import sys
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import genshin, discord
 import global_vars
-import accounts
+global_vars.Global()
 from classes import User 
 from discord.ext import commands
-global_vars.Global()
-accounts.account()
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
 
 class RedeemCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
     @commands.command()
     async def redeem(self, ctx,* , code=''):
         if code != "all":
@@ -24,22 +24,20 @@ class RedeemCog(commands.Cog):
                 global_vars.setFooter(embedError)
                 await ctx.send(embed=embedError)
                 return
-            for user in accounts.users:
-                if ctx.author.id==user.discordID:
+            for user in users:
+                if ctx.author.id==user['discordID']:
                     found = True
-                    cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                    uid = user.uid
-                    username = user.username
+                    cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                    uid = user['uid']
+                    username = user['name']
             if found == False:
                 embed = global_vars.embedNoAccount
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
                 return
-
             # 取得資料
             client = genshin.GenshinClient(cookies)
             client.lang = "zh-tw"
-
             # 兌換
             try:
                 await client.redeem_code(code)
@@ -68,13 +66,11 @@ class RedeemCog(commands.Cog):
                 return
             else:
                 code = message.content
-                for user in accounts.users:
-                    cookies = {"ltuid": user.ltuid, "ltoken": user.ltoken}
-                    username = user.username
-
+                for user in users:
+                    cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                    username = user['name']
                     client = genshin.GenshinClient(cookies)
                     client.lang = "zh-tw"
-
                     try:
                         await client.redeem_code(code)
                         embedResult = global_vars.defaultEmbed(f"✅ 兌換成功: {username}", 
