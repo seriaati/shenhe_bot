@@ -290,7 +290,7 @@ class GenshinCog(commands.Cog):
         embedMora = global_vars.defaultEmbed(f"<:mora:958577933650362468> 最近25筆摩拉紀錄",f"{moraLog}")
         global_vars.setFooter(embedMora)
         await client.close()
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(self, ctx, remove_reactions=True)
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
         embeds = [embedPrimo, embedMora]
