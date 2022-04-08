@@ -7,6 +7,9 @@ import global_vars
 global_vars.Global()
 from discord.ext import commands
 
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
+
 class OwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -97,11 +100,9 @@ class OwnerCog(commands.Cog):
                                 answer = message.content
                                 await message.delete()
                                 if answer == "yes":
-                                    with open('data.yaml', encoding = 'utf-8') as file:
-                                        users = yaml.full_load(file)
                                     newUser = {'name': name, 'discordID': discordID, 'ltoken': ltoken, 'ltuid': ltuid, 'dm': True, 'dmCount': 0}
                                     users.append(newUser)
-                                    with open('data.yaml', 'w', encoding = 'utf-8') as file:
+                                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                                         yaml.dump(users, file)
                                     await ctx.send("已新增")
                                 else:

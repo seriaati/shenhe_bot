@@ -21,7 +21,7 @@ class HelpCog(commands.Cog):
         embed.add_field(name = "➜ 趣味", 
             value = "`!cute <人物>`可愛~\n`!say`讓申鶴說話\n`!flash`防放閃指令\n`!vote`發起投票")
         embed.add_field(name = "➜ 其他功能", 
-            value = "`!group`小組指令組界面\n`$help`音樂功能\n注意:音樂功能的前綴為`$`")
+            value = "`!group`小組指令組界面\n`!flow`flow功能界面")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
