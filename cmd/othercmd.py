@@ -4,8 +4,12 @@ import sys
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
 global_vars.Global()
+import yaml
 from discord.ext import commands
 from random import randint
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
 
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
@@ -34,10 +38,23 @@ class OtherCMDCog(commands.Cog):
         await ctx.send(str(value))
 
     @commands.command()
-    async def dm(self, ctx):
-        embed = global_vars.defaultEmbed("什麼是私訊提醒功能？","申鶴每一小時會檢測一次你的樹脂數量，當超過140的時候，\n申鶴會私訊提醒你，最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
-        global_vars.setFooter(embed)
-        await ctx.send(embed=embed)
+    async def dm(self, ctx, *, arg=''):
+        if arg == "":
+            embed = global_vars.defaultEmbed("什麼是私訊提醒功能？","申鶴每一小時會檢測一次你的樹脂數量，當超過140的時候，\n申鶴會私訊提醒你，最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
+            global_vars.setFooter(embed)
+            await ctx.send(embed=embed)
+        elif arg == "on":
+            for user in users:
+                if user['discordID']==ctx.author.id:
+                    user['dm'] = True
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
+        elif arg == "off":
+            for user in users:
+                if user['discordID']==ctx.author.id:
+                    user['dm'] = False
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
 
     @commands.command()
     async def marry(self, ctx, arg1, arg2):
