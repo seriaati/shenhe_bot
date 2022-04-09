@@ -81,7 +81,7 @@ class VoteCog(commands.Cog):
             global_vars.setFooter(embedPoll)
             await ctx.send(embed=embedPoll) #投票!
             for emoji in emojis:
-                await embedAsk.add_reaction(emoji) #附加表情符號
+                await embedPoll.add_reaction(emoji) #附加表情符號
 
 def setup(bot):
     bot.add_cog(VoteCog(bot))
