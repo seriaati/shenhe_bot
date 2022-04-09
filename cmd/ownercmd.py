@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, asyncio, yaml
+import discord, asyncio, yaml, datetime
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -102,7 +102,7 @@ class OwnerCog(commands.Cog):
                         else:
                             discordID = message.content
                             await message.delete()
-                            await ctx.send(f"正確?\nuid: {uid}\nltuid: {ltuid}\nltoken: {ltoken}\nusername: {name}\ndiscordID: {discordID}")
+                            await ctx.send(f"正確打yes\n\nuid: {uid}\nltuid: {ltuid}\nltoken: {ltoken}\nusername: {name}\ndiscordID: {discordID}")
                             try:
                                 message = await self.bot.wait_for('message', 
                                     timeout= 30.0, 
@@ -114,11 +114,12 @@ class OwnerCog(commands.Cog):
                                 answer = message.content
                                 await message.delete()
                                 if answer == "yes":
-                                    newUser = {'name': name, 'discordID': discordID, 'ltoken': ltoken, 'ltuid': ltuid, 'dm': True, 'dmCount': 0}
+                                    dateNow = datetime.datetime.now()
+                                    newUser = {'name': name, 'uid': uid, 'discordID': int(discordID), 'ltoken': ltoken, 'ltuid': ltuid, 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
                                     users.append(newUser)
                                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                                         yaml.dump(users, file)
-                                    await ctx.send("已新增")
+                                    await ctx.send(f"已新增{name}")
                                 else:
                                     await ctx.send("已退出")
                                     return
