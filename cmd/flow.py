@@ -51,10 +51,10 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	async def testform(self, ctx):
 		embed1=discord.Embed(description="This is embed1")
-	    embed2=discord.Embed(description="This is embed2")
-	    embed3=discord.Embed(description="This is embed3")
-	    rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
-	    await rmenu.start()
+		embed2=discord.Embed(description="This is embed2")
+		embed3=discord.Embed(description="This is embed3")
+		rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
+		await rmenu.start()
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
