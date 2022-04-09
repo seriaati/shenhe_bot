@@ -124,7 +124,7 @@ async def reload(ctx, *, arg=''):
                 await ctx.send(f"已重整 {extension} 指令包")
 
 @bot.event
-async def on_reaction_add(reaction, user):
+async def on_raw_reaction_add(reaction, user):
     if reaction.message.id == 962344110319091783:
         if reaction.emoji == "1️⃣":
           role = discord.utils.get(user.server.roles, name="W1")
