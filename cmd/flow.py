@@ -25,6 +25,6 @@ class FlowCog(commands.Cog):
     		newUser = {'name': ctx.author, 'discordID': ctx.author.id, 'flow': 0}
     		users.append(newUser)
     		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(users, file)
+            	yaml.dump(users, file)
 def setup(bot):
     bot.add_cog(FlowCog(bot))
