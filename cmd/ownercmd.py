@@ -75,7 +75,7 @@ class OwnerCog(commands.Cog):
                     return
                 else:
                     ltoken = message.content
-                    await messaage.delete()
+                    await message.delete()
                     await ctx.send("用戶名?")
                     def check(m):
                         return m.author == ctx.author and m.channel == ctx.channel

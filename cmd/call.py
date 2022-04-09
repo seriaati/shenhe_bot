@@ -25,9 +25,9 @@ class CallCog(commands.Cog):
     async def maple(self, ctx):
         await ctx.send("中學生楓")
 
-    @commands.command()
-    async def flow(self, ctx):
-        await ctx.send("樂心助人又帥氣的flow哥哥")
+    # @commands.command()
+    # async def flow(self, ctx):
+    #     await ctx.send("樂心助人又帥氣的flow哥哥")
 
     @commands.command()
     async def tedd(self, ctx):
