@@ -49,12 +49,15 @@ class FlowCog(commands.Cog):
 		await message.add_reaction('8️⃣')
 
 	@commands.command()
-	async def testform(self, ctx):
-		embed1=discord.Embed(description="This is embed1")
-		embed2=discord.Embed(description="This is embed2")
-		embed3=discord.Embed(description="This is embed3")
-		rmenu = ReactionMenu(ctx,[embed1,embed2,embed3])
-		await rmenu.start()
+	async def find(self, ctx):
+		embed=global_vars.defaultEmbed("Test","yes no")
+		message = await ctx.send(embed=embed)
+		form = ReactionForm(message,bot,ctx.author)
+		form.add_reaction("✅",True)
+		form.add_reaction("❌",False)
+		choice = await form.start()
+		if choice:
+			await ctx.send("✅")
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
