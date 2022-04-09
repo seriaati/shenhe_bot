@@ -119,17 +119,17 @@ class GenshinCog(commands.Cog):
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
         explorations = genshinUser.explorations
-        offerings = exploration.offerings
         exploreStr = ""
         offeringStr = ""
         for exploration in explorations:
             name = exploration.name 
             percentage = exploration.percentage
+            offerings = exploration.offerings
             exploreStr += f"{name}: {percentage}%"
-        for offering in offerings:
-            offeringName = offering.name 
-            offeringLevel = offering.level
-            offeringStr += f"{offeringName}: lvl{offeringLevel}"
+            for offering in offerings:
+                offeringName = offering.name 
+                offeringLevel = offering.level
+                offeringStr += f"{offeringName}: lvl{offeringLevel}"
         embed = global_vars.defaultEmbed(f"區域探索度: {username}",f"{exploreStr}\n{offeringStr}")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
