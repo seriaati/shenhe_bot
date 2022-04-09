@@ -156,7 +156,7 @@ async def on_raw_reaction_add(reaction, user):
 async def on_raw_reaction_add(payload):
     if payload.message_id == 962344110319091783:
         if payload.emoji.name == '1️⃣':
-            guild = await bot.get_guild(payload.guild_id)
+            guild = bot.get_guild(payload.guild_id)
             if guild is not None:
                 member = guild.get_member(payload.user_id)
                 guild_member = discord.utils.get(guild.roles, name="W1")
