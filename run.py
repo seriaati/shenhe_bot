@@ -152,5 +152,14 @@ async def on_raw_reaction_add(reaction, user):
           role = discord.utils.get(user.server.roles, name="W8")
           await user.add_roles(role)
 
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.message_id == 962344110319091783:
+        if payload.emoji.name == '1️⃣':
+            guild = await bot.fetch_guild(payload.guild_id)
+            if guild is not None:
+                member = guild.get_member(payload.user_id)
+                guild_member = discord.utils.get(guild.roles, name="W1")
+                await member.add_roles(guild_member)
 
 bot.run(token, bot=True, reconnect=True)
