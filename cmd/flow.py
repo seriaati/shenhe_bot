@@ -50,7 +50,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		form = forms.Form(ctx, '請求幫助設定流程')
+		form = Form(ctx, '請求幫助設定流程')
 		form.add_question('需要什麼幫助?', 'title')
 		form.add_question('世界等級?', 'level')
 		form.add_question('這個幫助值多少flow幣?', 'flow')
