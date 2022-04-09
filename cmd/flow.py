@@ -27,4 +27,4 @@ class FlowCog(commands.Cog):
     		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
                 yaml.dump(users, file)
 def setup(bot):
-    bot.add_cog(HelpCog(bot))
+    bot.add_cog(FlowCog(bot))

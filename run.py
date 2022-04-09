@@ -34,6 +34,7 @@ initial_extensions = [
 "cmd.group",
 "cmd.redeem",
 "cmd.ownercmd",
+"cmd.flow"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -106,5 +107,12 @@ async def on_message(message):
 async def on_member_join(member):
     public = bot.get_channel(916951131022843964)
     await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
+
+@bot.command()
+@commands.is_owner()
+async def reload(self, ctx):
+    for extension in initial_extensions:
+        self.bot.reload_extension(extension)
+        await ctx.send(f"已重整 {extension} 指令包")
 
 bot.run(token, bot=True, reconnect=True)
