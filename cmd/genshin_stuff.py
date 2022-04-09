@@ -93,9 +93,8 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        explorations = genshinuser.explorations
+        explorations = genshinUser.explorations
         print(explorations)
-        #送出結果embed
         embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
             f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
