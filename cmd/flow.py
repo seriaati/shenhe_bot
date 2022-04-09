@@ -6,6 +6,7 @@ import os, discord, asyncio, genshin, yaml, datetime
 import global_vars
 global_vars.Global()
 from discord.ext import commands
+from discord.ext.forms import Form
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
@@ -49,7 +50,18 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		await ctx.send("要幫忙什麼?")
+		
+from discord.ext import commands
+bot = commands.Bot(command_prefix="!")
+
+@bot.command()
+async def testform(ctx):
+    form = Form(ctx,'Title')
+    form.add_question('Question 1','first')
+    form.add_question('Question 2','second')
+    form.add_question('Question 3','third')
+    result = await form.start()
+    return result
 
 
 def setup(bot):
