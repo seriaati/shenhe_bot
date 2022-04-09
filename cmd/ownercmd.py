@@ -7,6 +7,19 @@ import global_vars
 global_vars.Global()
 from discord.ext import commands
 
+extensions = [
+"cmd.genshin_stuff",
+"cmd.call", 
+"cmd.register", 
+"cmd.othercmd", 
+"cmd.farm", 
+"cmd.help",
+"cmd.vote",
+"cmd.group",
+"cmd.redeem",
+"cmd.ownercmd",
+]
+
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
 
@@ -17,8 +30,9 @@ class OwnerCog(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def reload(self, ctx, arg):
-        self.bot.reload_extension(f"cmd.{arg}")
-        await ctx.send(f"已重整 {arg} 指令包")
+        for extension in extensions:
+            self.bot.reload_extension(extension)
+        await ctx.send(f"已重整 {extension} 指令包")
 
     @commands.command()
     @commands.is_owner()

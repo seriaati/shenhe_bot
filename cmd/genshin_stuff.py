@@ -129,10 +129,11 @@ class GenshinCog(commands.Cog):
             for offering in offerings:
                 offeringName = offering.name 
                 offeringLevel = offering.level
-                offeringStr += f"{offeringName}: lvl{offeringLevel}\n"
+                offeringStr += f"{offeringName}: Lvl {offeringLevel}\n"
         embed = global_vars.defaultEmbed(f"區域探索度: {username}",f"{exploreStr}\n{offeringStr}")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
+        await client.close()
 
     @commands.command()
     async def claim(self, ctx, *, name=''):
