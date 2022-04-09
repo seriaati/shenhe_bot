@@ -39,7 +39,7 @@ class FarmCog(commands.Cog):
             # wednesday or saturday
             embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
         elif weekdayGet == 6:
-            embedFarm=defaultEmbed(f"今天({weekday})可以刷的副本材料","禮拜日可以刷所有素材 (❁´◡`❁)")
+            embedFarm=global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料","禮拜日可以刷所有素材 (❁´◡`❁)")
         global_vars.setFooter(embedFarm)
         await ctx.send(embed=embedFarm)
 
