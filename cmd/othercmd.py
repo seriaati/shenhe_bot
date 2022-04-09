@@ -49,12 +49,14 @@ class OtherCMDCog(commands.Cog):
                     user['dm'] = True
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
+                    await ctx.send(f"已開啟 {user['name']} 的私訊功能")
         elif arg == "off":
             for user in users:
                 if user['discordID']==ctx.author.id:
                     user['dm'] = False
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
+                    await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
     @commands.command()
     async def marry(self, ctx, arg1, arg2):
