@@ -81,7 +81,7 @@ async def checkLoop():
                     yaml.dump(users, file)
             await client.close()
         except genshin.errors.InvalidCookies:
-            print (f"{user['name']}帳號壞掉了")
+            # print (f"{user['name']}帳號壞掉了")
             await client.close()
         
 # 等待申鶴準備
