@@ -95,7 +95,7 @@ class OwnerCog(commands.Cog):
                                 await message.delete()
                                 if answer == "yes":
                                     dateNow = datetime.datetime.now()
-                                    newUser = {'name': name, 'uid': uid, 'discordID': int(discordID), 'ltoken': ltoken, 'ltuid': ltuid, 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
+                                    newUser = {'name': str(name), 'uid': int(uid), 'discordID': int(discordID), 'ltoken': str(ltoken), 'ltuid': int(ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
                                     users.append(newUser)
                                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                                         yaml.dump(users, file)

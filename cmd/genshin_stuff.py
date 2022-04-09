@@ -355,6 +355,7 @@ class GenshinCog(commands.Cog):
         paginator.add_reaction('⏭️', "last")
         await paginator.run(charEmbeds)
         await client.close()
+
     @commands.command()
     async def users(self, ctx):
         userStr = ""
@@ -363,6 +364,28 @@ class GenshinCog(commands.Cog):
         embed = global_vars.defaultEmbed("所有帳號",userStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def today(self, ctx, *, name: discord.Member = None): 
+        name = name or ctx.author
+        found = False
+        for user in users:
+            if name.id==user['discordID']:
+                found = True
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
+        if found == False:
+            embed = global_vars.embedNoAccount
+            global_vars.setFooter(embed)
+            await ctx.send(embed=embed)
+            return
+        # 取得資料
+        client = genshin.GenshinClient(cookies)
+        client.lang = "zh-tw"
+        diary = await client.get_diary()
+        print(diary)
+
 
 def setup(bot):
     bot.add_cog(GenshinCog(bot))

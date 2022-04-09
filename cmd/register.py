@@ -25,7 +25,7 @@ class RegisterCog(commands.Cog):
     @commands.command()
     async def stuck(self, ctx):
         embed = global_vars.defaultEmbed("已經註冊,但有些資料找不到?", 
-            "1. 至hoyolab網頁中\n2.點擊頭像\n3. personal homepage\n4. 右邊會看到genshin impact\n5. 點擊之後看到設定按鈕\n6. 打開 Do you want to enable real time-notes")
+            "1. 至hoyolab網頁中\n2. 點擊頭像\n3. personal homepage\n4. 右邊會看到genshin impact\n5. 點擊之後看到設定按鈕\n6. 打開 Do you want to enable real time-notes")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
