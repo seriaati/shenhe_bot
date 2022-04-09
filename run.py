@@ -120,7 +120,7 @@ async def reload(ctx, *, arg=''):
         for extension in initial_extensions:
             extStr = f"cmd.{arg}"
             if extStr == exnteion:
-                bot.reload_exnteion(extension)
+                bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
 
 @bot.event
