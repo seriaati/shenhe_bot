@@ -93,17 +93,41 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        explorations = genshinUser.explorations
-        print(explorations)
-        for exploration in explorations:
-            name = exploration.name 
-            percentage = exploration.percentage
-            print(f"name: {name}\npercentage: {percentage}")
         embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
             f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
         await client.close()
+    @commands.command()
+    async def area(self, ctx, *, name: discord.Member = None):
+        name = name or ctx.author
+        name = name or ctx.author
+        found = False
+        for user in users:
+            if name.id==user['discordID']:
+                found = True
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
+        if found == False:
+            embed = global_vars.embedNoAccount
+            global_vars.setFooter(embed)
+            await ctx.send(embed=embed)
+            return
+        #取得資料
+        client = genshin.GenshinClient(cookies)
+        client.lang = "zh-tw"
+        genshinUser = await client.get_partial_user(uid)
+        explorations = genshinUser.explorations
+        exploreStr = ""
+        for exploration in explorations:
+            name = exploration.name 
+            percentage = exploration.percentage
+            exploreStr += f"{name}: {percentage}\n"
+        embed = global_vars.defaultEmbed(f"區域探索度: {username}",exploreStr)
+        global_vars.setFooter(embed)
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def claim(self, ctx, *, name=''):
         # 有無輸入參數?
