@@ -110,7 +110,7 @@ async def on_member_join(member):
 
 @bot.command()
 @commands.is_owner()
-async def reload(self, ctx):
+async def reload(ctx):
     for extension in initial_extensions:
         self.bot.reload_extension(extension)
         await ctx.send(f"已重整 {extension} 指令包")
