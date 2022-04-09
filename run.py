@@ -125,7 +125,7 @@ async def reload(ctx, *, arg=''):
 
 @bot.event
 async def on_reaction_add(reaction, user):
-    channel = client.get_channel(962311051683192842)
+    channel = bot.get_channel(962311051683192842)
     if reaction.message.id != channel.id:
         return
     if reaction.emoji == "1️⃣":
