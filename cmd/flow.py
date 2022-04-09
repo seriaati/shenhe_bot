@@ -8,14 +8,14 @@ global_vars.Global()
 from discord.ext import commands
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
-    users = yaml.full_load(file)
+	users = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+	def __init__(self, bot):
+		self.bot = bot
 
-    @commands.command()
-    async def flow(self, ctx):
+	@commands.command()
+	async def flow(self, ctx):
     	found = False
     	for user in users:
     		if user['discordID']==ctx.author.id:
@@ -27,4 +27,4 @@ class FlowCog(commands.Cog):
     		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
             	yaml.dump(users, file)
 def setup(bot):
-    bot.add_cog(FlowCog(bot))
+	bot.add_cog(FlowCog(bot))
