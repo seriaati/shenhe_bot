@@ -123,8 +123,8 @@ class GenshinCog(commands.Cog):
         for exploration in explorations:
             name = exploration.name 
             percentage = exploration.percentage
-            exploreStr += f"{name}: {percentage}%\n"
-            print(exploration.offerings)
+            offering = exploration.offerings
+            exploreStr += f"{name}: {percentage}%\n{offering.name}: Lvl{offering.level}"
         embed = global_vars.defaultEmbed(f"區域探索度: {username}",exploreStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
