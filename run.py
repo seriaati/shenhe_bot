@@ -123,4 +123,35 @@ async def reload(ctx, *, arg=''):
                 bot.reload_exnteion(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
 
+@bot.event
+async def on_reaction_add(reaction, user):
+    channel = client.get_channel(962311051683192842)
+    if reaction.message.id != channel.id:
+        return
+    if reaction.emoji == "1️⃣":
+      role = discord.utils.get(user.server.roles, name="W1")
+      await user.add_roles(role)
+    elif reaction.emoji == "2️⃣":
+      role = discord.utils.get(user.server.roles, name="W2")
+      await user.add_roles(role)
+    elif reaction.emoji == "3️⃣":
+      role = discord.utils.get(user.server.roles, name="W3")
+      await user.add_roles(role)
+    elif reaction.emoji == "4️⃣":
+      role = discord.utils.get(user.server.roles, name="W4")
+      await user.add_roles(role)
+    elif reaction.emoji == "5️⃣":
+      role = discord.utils.get(user.server.roles, name="W5")
+      await user.add_roles(role)
+    elif reaction.emoji == "6️⃣":
+      role = discord.utils.get(user.server.roles, name="W6")
+      await user.add_roles(role)
+    elif reaction.emoji == "7️⃣":
+      role = discord.utils.get(user.server.roles, name="W7")
+      await user.add_roles(role)
+    elif reaction.emoji == "8️⃣":
+      role = discord.utils.get(user.server.roles, name="W8")
+      await user.add_roles(role)
+
+
 bot.run(token, bot=True, reconnect=True)

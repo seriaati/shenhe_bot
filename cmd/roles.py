@@ -14,9 +14,17 @@ class RolesCog(commands.Cog):
     @commands.command()
     async def roles(self, ctx):
         channel = self.bot.get_channel(962311051683192842)
-        text = "test"
-        message = await channel.send(text)
-        await message.add_reaction('🍞')
+        embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
+        global_vars.setFooter(embed)
+        message = await channel.send(embed=embed)
+        await message.add_reaction('1️⃣')
+        await message.add_reaction('2️⃣')
+        await message.add_reaction('3️⃣')
+        await message.add_reaction('4️⃣')
+        await message.add_reaction('5️⃣')
+        await message.add_reaction('6️⃣')
+        await message.add_reaction('7️⃣')
+        await message.add_reaction('8️⃣')
 
 def setup(bot):
     bot.add_cog(RolesCog(bot))
