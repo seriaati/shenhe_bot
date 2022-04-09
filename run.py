@@ -34,7 +34,8 @@ initial_extensions = [
 "cmd.group",
 "cmd.redeem",
 "cmd.ownercmd",
-"cmd.flow"
+"cmd.flow",
+"cmd.roles"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
