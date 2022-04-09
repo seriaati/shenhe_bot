@@ -50,14 +50,18 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		embed=global_vars.defaultEmbed("Test","yes no")
-		message = await ctx.send(embed=embed)
-		form = ReactionForm(message,bot,ctx.author)
-		form.add_reaction("✅",True)
-		form.add_reaction("❌",False)
-		choice = await form.start()
-		if choice:
-			await ctx.send("✅")
+		form = forms.Form(ctx, '請求幫助設定流程')
+		form.add_question('需要什麼幫助?', 'title')
+		form.add_question('世界等級?', 'level')
+		form.add_question('這個幫助值多少flow幣?', 'flow')
+
+		form.edit_and_delete(True)
+		form.set_timeout(60)
+		await form.set_color(global_vars.purpleColor)
+		result = await form.start()
+		embed = global_vars.defaultEmbed("結果",f"{result.title}\n{result.level}\n{result.flow}")
+		global_vars.setFooter(embed)
+		await ctx.send(embed=embed)
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
