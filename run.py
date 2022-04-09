@@ -110,9 +110,16 @@ async def on_member_join(member):
 
 @bot.command()
 @commands.is_owner()
-async def reload(ctx):
-    for extension in initial_extensions:
-        bot.reload_extension(extension)
-        await ctx.send(f"已重整 {extension} 指令包")
+async def reload(ctx, *, arg=''):
+    if arg == '':
+        for extension in initial_extensions:
+            bot.reload_extension(extension)
+            await ctx.send(f"已重整 {extension} 指令包")
+    else:
+        for extension in initial_extensions:
+            extStr = f"cmd.{arg}"
+            if extStr == exnteion:
+                bot.reload_exnteion(extension)
+                await ctx.send(f"已重整 {extension} 指令包")
 
 bot.run(token, bot=True, reconnect=True)

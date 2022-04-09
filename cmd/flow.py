@@ -21,10 +21,10 @@ class FlowCog(commands.Cog):
 			if user['discordID']==ctx.author.id:
 				found = True
 				await ctx.send(f"使用者: {user['name']}\nflow幣: {user['flow']}")
-		discordID = ctx.author.id 
-		name = ctx.author
 		if found == False:
-			newUser = {'name': name, 'discordID': discordID, 'flow': 0}
+			discordID = ctx.author.id 
+			name = ctx.author
+			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 0}
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
