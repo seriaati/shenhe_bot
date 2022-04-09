@@ -29,10 +29,10 @@ class OwnerCog(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def reload(self, ctx, arg):
+    async def reload(self, ctx):
         for extension in extensions:
             self.bot.reload_extension(extension)
-        await ctx.send(f"已重整 {extension} 指令包")
+            await ctx.send(f"已重整 {extension} 指令包")
 
     @commands.command()
     @commands.is_owner()
