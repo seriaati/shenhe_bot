@@ -119,7 +119,7 @@ class GenshinCog(commands.Cog):
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
         explorations = genshinUser.explorations
-        offerings = genshinUser.explorations.offerings
+        offerings = genshinUser.offerings
         for offering in offerings:
             print(offering.name)
             print(offering.level)
