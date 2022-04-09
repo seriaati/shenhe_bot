@@ -157,9 +157,87 @@ async def on_raw_reaction_add(payload):
     if payload.message_id == 962344110319091783:
         if payload.emoji.name == '1️⃣':
             guild = bot.get_guild(payload.guild_id)
-            if guild is not None:
-                member = guild.get_member(payload.user_id)
-                guild_member = discord.utils.get(guild.roles, name="W1")
-                await member.add_roles(guild_member)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W1")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '2️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W2")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '3️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W3")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '4️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W4")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '5️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W5")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '6️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W6")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '7️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W7")
+            await member.add_roles(guild_member)
+        elif payload.emoji.name == '8️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W8")
+            await member.add_roles(guild_member)
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    if payload.message_id == 962344110319091783:
+        if payload.emoji.name == '1️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W1")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '2️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W2")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '3️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W3")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '4️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W4")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '5️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W5")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '6️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W6")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '7️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W7")
+            await member.remove_roles(guild_member)
+        elif payload.emoji.name == '8️⃣':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            guild_member = discord.utils.get(guild.roles, name="W8")
+            await member.remove_roles(guild_member)
 
 bot.run(token, bot=True, reconnect=True)
