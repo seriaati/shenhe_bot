@@ -384,7 +384,7 @@ class GenshinCog(commands.Cog):
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
-        print(diary)
+        print(diary.day_data)
 
 
 def setup(bot):
