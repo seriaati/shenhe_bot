@@ -32,25 +32,25 @@ class FlowCog(commands.Cog):
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!flow`一次試試看")
 
 	@commands.command()
-    @commands.is_owner()
-    async def roles(self, ctx):
-        channel = self.bot.get_channel(962311051683192842)
-        embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
-        global_vars.setFooter(embed)
-        message = await channel.send(embed=embed)
-        await message.add_reaction('1️⃣')
-        await message.add_reaction('2️⃣')
-        await message.add_reaction('3️⃣')
-        await message.add_reaction('4️⃣')
-        await message.add_reaction('5️⃣')
-        await message.add_reaction('6️⃣')
-        await message.add_reaction('7️⃣')
-        await message.add_reaction('8️⃣')
+	@commands.is_owner()
+	async def roles(self, ctx):
+		channel = self.bot.get_channel(962311051683192842)
+		embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
+		global_vars.setFooter(embed)
+		message = await channel.send(embed=embed)
+		await message.add_reaction('1️⃣')
+		await message.add_reaction('2️⃣')
+		await message.add_reaction('3️⃣')
+		await message.add_reaction('4️⃣')
+		await message.add_reaction('5️⃣')
+		await message.add_reaction('6️⃣')
+		await message.add_reaction('7️⃣')
+		await message.add_reaction('8️⃣')
 
-    @commands.command()
-    async def find(self, ctx):
-    	await ctx.send("要幫忙什麼?")
-    	
+	@commands.command()
+	async def find(self, ctx):
+		await ctx.send("要幫忙什麼?")
+
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
