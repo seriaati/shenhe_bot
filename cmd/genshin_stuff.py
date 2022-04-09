@@ -390,6 +390,7 @@ class GenshinCog(commands.Cog):
         embed = global_vars.defaultEmbed("今日收入",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
+        await client.close()
 
 def setup(bot):
     bot.add_cog(GenshinCog(bot))
