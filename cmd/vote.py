@@ -79,6 +79,7 @@ class VoteCog(commands.Cog):
                 count = count + 1
             embedPoll = global_vars.defaultEmbed(question,optionStr)
             global_vars.setFooter(embedPoll)
+            await embedAsk.delete()
             await ctx.send(embed=embedPoll) #投票!
             for emoji in emojis:
                 await embedPoll.add_reaction(emoji) #附加表情符號
