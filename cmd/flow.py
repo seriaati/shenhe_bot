@@ -21,10 +21,13 @@ class FlowCog(commands.Cog):
 			if user['discordID']==ctx.author.id:
 				found = True
 				await ctx.send(f"使用者: {user['name']}\nflow幣: {user['flow']}")
+		discordID = ctx.author.id 
+		name = ctx.author
 		if found == False:
-			newUser = {'name': ctx.author, 'discordID': ctx.author.id, 'flow': 0}
+			newUser = {'name': name, 'discordID': discordID, 'flow': 0}
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
+			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!flow`一次試試看")
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
