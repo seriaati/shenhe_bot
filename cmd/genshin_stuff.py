@@ -384,7 +384,7 @@ class GenshinCog(commands.Cog):
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
-        print(diary.day_data.)
+        # print(diary.day_data.)
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
         embed = global_vars.defaultEmbed("今日收入",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉")
