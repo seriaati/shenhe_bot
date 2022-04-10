@@ -62,12 +62,12 @@ class FlowCog(commands.Cog):
 
 		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?","✅: 幫打素材\n❌: 拿其他世界的素材")
 		message = await ctx.send(embed=embed)
-		form = ReactionForm(message,self.bot,ctx.author)
+		form = ReactionForm(message,self.bot,ctx.author, cleanup=True)
 		form.add_reaction("✅", True)
 		form.add_reaction("❌", False)
 		choice = await form.start()
 		if choice == True:
-			formTrue = Form(ctx, '請求幫助設定流程')
+			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
 			formTrue.edit_and_delete(True)
@@ -76,24 +76,23 @@ class FlowCog(commands.Cog):
 			result = await formTrue.start()
 			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 			global_vars.setFooter(embedResult)
-			print(ctx.author.roles)
 			await ctx.send(embed=embedResult)
-			if w8 in ctx.author.roles:
-				await ctx.send(w8.mention)
-			elif w7 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention}")
-			elif w6 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
-			elif w5 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
-			elif w4 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
-			elif w3 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
-			elif w2 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
-			elif w1 in ctx.author.roles:
-				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
+			# if w8 in ctx.author.roles:
+			# 	await ctx.send(w8.mention)
+			# elif w7 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention}")
+			# elif w6 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
+			# elif w5 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
+			# elif w4 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
+			# elif w3 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
+			# elif w2 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
+			# elif w1 in ctx.author.roles:
+			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
 		elif choice == False:
 			await ctx.send("施工中…")
 
