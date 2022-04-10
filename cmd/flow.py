@@ -66,12 +66,15 @@ class FlowCog(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command()
-	async def menu(self, ctx):
-	    embed1=discord.Embed(description="This is embed1")
-	    embed2=discord.Embed(description="This is embed2")
-	    embed3=discord.Embed(description="This is embed3")
-	    rmenu = ReactionMenu(ctx,[embed1,embed2,embed3])
-	    await rmenu.start()
+	async def reactionform(self, ctx):
+		embed=discord.Embed(title="Reaction Menu Test",description="Delete 20 messages?") # Let's make our embed here...
+		message = await ctx.send(embed=embed) # And send it! But we want to capture it as a variable!
+		form = ReactionForm(message,bot,ctx.author) # Initialize the reaction form...
+		form.add_reaction("✅",True) # Add the ✅ reaction which will return True.
+		form.add_reaction("❌",False) # Add the ❌ reaction which will return False.
+		choice = await form.start() # Start the form! Choice will be True or False based on the input.
+		if choice: # If choice is true:
+			await ctx.send("true")
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
