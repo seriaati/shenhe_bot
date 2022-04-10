@@ -39,7 +39,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def marry(self, ctx, arg1, arg2):
-        embed = global_vars.defaultEmbed(f"{arg1}❤{arg2}","")
+        embed = global_vars.defaultEmbed(f"{arg1} ❤ {arg2}","")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
