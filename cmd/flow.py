@@ -62,7 +62,7 @@ class FlowCog(commands.Cog):
 
 		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?","✅: 幫打素材\n❌: 拿其他世界的素材")
 		message = await ctx.send(embed=embed)
-		form = ReactionForm(message,self.bot,ctx.author, cleanup=True)
+		form = ReactionForm(message,self.bot,ctx.author)
 		form.add_reaction("✅", True)
 		form.add_reaction("❌", False)
 		choice = await form.start()
