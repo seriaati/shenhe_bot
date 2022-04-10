@@ -51,30 +51,51 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		form = Form(ctx, '請求幫助設定流程')
-		form.add_question('需要什麼幫助?', 'title')
-		form.add_question('世界等級?', 'level')
-		form.add_question('這個幫助值多少flow幣?', 'flow')
+		w1 = discord.utils.get(guild.roles,name="W1")
+		w2 = discord.utils.get(guild.roles,name="W2")
+		w3 = discord.utils.get(guild.roles,name="W3")
+		w4 = discord.utils.get(guild.roles,name="W4")
+		w5 = discord.utils.get(guild.roles,name="W5")
+		w6 = discord.utils.get(guild.roles,name="W6")
+		w7 = discord.utils.get(guild.roles,name="W7")
+		w8 = discord.utils.get(guild.roles,name="W8")
 
-		form.edit_and_delete(True)
-		form.set_timeout(60)
-		await form.set_color("0xa68bd3")
-		result = await form.start()
-
-		embed = global_vars.defaultEmbed("結果",f"{result.title}\n{result.level}\n{result.flow}")
-		global_vars.setFooter(embed)
-		await ctx.send(embed=embed)
-
-	@commands.command()
-	async def reactionform(self, ctx):
-		embed=discord.Embed(title="Reaction Menu Test",description="Delete 20 messages?") # Let's make our embed here...
-		message = await ctx.send(embed=embed) # And send it! But we want to capture it as a variable!
-		form = ReactionForm(message,self.bot,ctx.author) # Initialize the reaction form...
-		form.add_reaction("✅",True) # Add the ✅ reaction which will return True.
-		form.add_reaction("❌",False) # Add the ❌ reaction which will return False.
-		choice = await form.start() # Start the form! Choice will be True or False based on the input.
-		if choice: # If choice is true:
-			await ctx.send("true")
+		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?","✅: 幫打素材\n❌: 拿其他世界的素材")
+		message = await ctx.send(embed=embed)
+		form = ReactionForm(message,self.bot,ctx.author)
+		form.add_reaction("✅", True)
+		form.add_reaction("❌", False)
+		choice = await form.start()
+		if choice == True:
+			formTrue = Form(ctx, '請求幫助設定流程')
+			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
+			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
+			formTrue.edit_and_delete(True)
+			formTrue.set_timeout(60)
+			await formTrue.set_color(str(global_vars.purpleColor))
+			result = await formTrue.start()
+			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {flow}")
+			global_vars.setFooter(embedResult)
+			await ctx.send(embed=embedResult)
+			if 'W8' in ctx.author.roles:
+				await ctx.send(w8.mention)
+			elif 'W7' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention}")
+			elif 'W6' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
+			elif 'W5' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
+			elif 'W4' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
+			elif 'W3' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
+			elif 'W2' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
+			elif 'W1' in ctx.author.roles:
+				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
+			embed = global_vars.defaultEmbed("")
+		elif choice == False:
+			await ctx.send("施工中…")
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
