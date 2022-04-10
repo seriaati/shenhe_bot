@@ -68,7 +68,7 @@ async def checkLoop():
                 print(diffHour)
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
-                embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 如果你不想要收到這則通知, 請私訊或tag小雪\n註: 部份指令, 例如`!check`可以在私訊運作")
+                embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
                 global_vars.setFooter(embed)
                 await userid.send(embed=embed)
                 user['dmCount'] += 1

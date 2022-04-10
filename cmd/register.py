@@ -60,6 +60,7 @@ class RegisterCog(commands.Cog):
             notes = await client.get_notes(uid)
         except genshin.errors.InvalidCookies:
             failed = True
+            await client.close()
         if failed == True:
             await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
         elif failed == False:
@@ -69,5 +70,25 @@ class RegisterCog(commands.Cog):
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
 
+    @commands.command()
+    async def dm(self, ctx, *, arg=''):
+        if arg == "":
+            embed = global_vars.defaultEmbed("什麼是私訊提醒功能？","申鶴每一小時會檢測一次你的樹脂數量，當超過140的時候，\n申鶴會私訊提醒你，最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
+            global_vars.setFooter(embed)
+            await ctx.send(embed=embed)
+        elif arg == "on":
+            for user in users:
+                if user['discordID']==ctx.author.id:
+                    user['dm'] = True
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
+                    await ctx.send(f"已開啟 {user['name']} 的私訊功能")
+        elif arg == "off":
+            for user in users:
+                if user['discordID']==ctx.author.id:
+                    user['dm'] = False
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
+                    await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 def setup(bot):
     bot.add_cog(RegisterCog(bot))

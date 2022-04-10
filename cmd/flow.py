@@ -59,6 +59,7 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
+		
 		embed = global_vars.defaultEmbed("結果",f"{result.title}\n{result.level}\n{result.flow}")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
