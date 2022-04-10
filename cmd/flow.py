@@ -51,14 +51,14 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		w1 = discord.utils.get(guild.roles,name="W1")
-		w2 = discord.utils.get(guild.roles,name="W2")
-		w3 = discord.utils.get(guild.roles,name="W3")
-		w4 = discord.utils.get(guild.roles,name="W4")
-		w5 = discord.utils.get(guild.roles,name="W5")
-		w6 = discord.utils.get(guild.roles,name="W6")
-		w7 = discord.utils.get(guild.roles,name="W7")
-		w8 = discord.utils.get(guild.roles,name="W8")
+		w1 = discord.utils.get(ctx.guild.roles,name="W1")
+		w2 = discord.utils.get(ctx.guild.roles,name="W2")
+		w3 = discord.utils.get(ctx.guild.roles,name="W3")
+		w4 = discord.utils.get(ctx.guild.roles,name="W4")
+		w5 = discord.utils.get(ctx.guild.roles,name="W5")
+		w6 = discord.utils.get(ctx.guild.roles,name="W6")
+		w7 = discord.utils.get(ctx.guild.roles,name="W7")
+		w8 = discord.utils.get(ctx.guild.roles,name="W8")
 
 		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?","✅: 幫打素材\n❌: 拿其他世界的素材")
 		message = await ctx.send(embed=embed)
