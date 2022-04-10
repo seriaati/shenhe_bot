@@ -72,7 +72,7 @@ class FlowCog(commands.Cog):
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
-			await formTrue.set_color(str(global_vars.purpleColor))
+			await formTrue.set_color("0xa68bd3")
 			result = await formTrue.start()
 			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {flow}")
 			global_vars.setFooter(embedResult)
