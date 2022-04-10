@@ -93,7 +93,6 @@ class FlowCog(commands.Cog):
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
 			elif 'W1' in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
-			embed = global_vars.defaultEmbed("")
 		elif choice == False:
 			await ctx.send("施工中…")
 
