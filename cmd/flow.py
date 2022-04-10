@@ -94,7 +94,7 @@ class FlowCog(commands.Cog):
 				msgID = int(message.id)
 				flow = int(result.flow)
 				maxPerson = int(result.max)
-				author = int(ctx.author)
+				author = ctx.author
 				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'maxPerson': maxPerson, 'author': author}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
