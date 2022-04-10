@@ -7,7 +7,7 @@ import global_vars
 global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
-from discord.ext.forms import ReactionMenu
+from discord.ext.forms import ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
