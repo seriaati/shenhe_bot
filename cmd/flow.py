@@ -97,8 +97,8 @@ class FlowCog(commands.Cog):
 				author = ctx.author
 				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author)}
 				finds.append(newFind)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
-					yaml.dump(finds, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as findfile:
+					yaml.dump(finds, findfile)
 				# if w8 in ctx.author.roles:
 				# 	await ctx.send(w8.mention)
 				# elif w7 in ctx.author.roles:
