@@ -11,6 +11,8 @@ from discord.ext.forms import ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
+	finds = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -62,13 +64,13 @@ class FlowCog(commands.Cog):
 		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
 
 		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?",
-			"✅: 需要幫打素材\n❌: 需要拿其他世界的素材")
+			"1️⃣: 需要幫打素材\n2️⃣: 需要拿其他世界的素材")
 		message = await ctx.send(embed=embed)
 		form = ReactionForm(message,self.bot,ctx.author)
-		form.add_reaction("✅", True)
-		form.add_reaction("❌", False)
+		form.add_reaction("1️⃣", True)
+		form.add_reaction("2️⃣", False)
 		choice = await form.start()
-		if choice == True:
+		if choice == True: 
 			def is_me(m):
 			    return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
@@ -82,27 +84,32 @@ class FlowCog(commands.Cog):
 			result = await formTrue.start()
 			if int(result.flow) < 0:
 				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
 			else:
-				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
-			global_vars.setFooter(embedResult)
-			message = await ctx.send(embed=embedResult)
-			# if w8 in ctx.author.roles:
-			# 	await ctx.send(w8.mention)
-			# elif w7 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention}")
-			# elif w6 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
-			# elif w5 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
-			# elif w4 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
-			# elif w3 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
-			# elif w2 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
-			# elif w1 in ctx.author.roles:
-			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
-			
+				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n最多: {result.max}人")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
+				newFind = {'title': result.title, 'msgID': message.id, 'flow': int(result.flow), 'max': int(result.max), 'author': ctx.author}
+				finds.append(newFind)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
+					yaml.dump(finds, file)
+				# if w8 in ctx.author.roles:
+				# 	await ctx.send(w8.mention)
+				# elif w7 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention}")
+				# elif w6 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
+				# elif w5 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
+				# elif w4 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
+				# elif w3 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
+				# elif w2 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
+				# elif w1 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")	
 		elif choice == False:
 			await ctx.send("施工中…")
 
