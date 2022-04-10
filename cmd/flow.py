@@ -36,6 +36,7 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	@commands.is_owner()
 	async def roles(self, ctx):
+		channel = self.bot.get_channel(962311051683192842)
 		embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
 		global_vars.setFooter(embed)
 		message = await channel.send(embed=embed)
@@ -50,7 +51,6 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		channel = discord.get_channel(957268464928718918)
 		w1 = discord.utils.get(ctx.guild.roles,name="W1")
 		w2 = discord.utils.get(ctx.guild.roles,name="W2")
 		w3 = discord.utils.get(ctx.guild.roles,name="W3")
