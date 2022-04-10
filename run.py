@@ -64,7 +64,7 @@ async def checkLoop():
             dateNow = datetime.datetime.now()
             diff = dateNow - user['dmDate']
             diffHour = diff.total_seconds() / 3600
-            if resin >= 140 and user['dm'] == True and user['dmCount'] <= 3 and diffHour >= 1:
+            if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
                 print("已私訊 "+str(userid))
                 print(diffHour)
                 time = notes.until_resin_recovery
@@ -122,35 +122,6 @@ async def reload(ctx, *, arg=''):
             if extStr == extension:
                 bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
-
-@bot.event
-async def on_raw_reaction_add(reaction, user):
-    if reaction.message.id == 962344110319091783:
-        if reaction.emoji == "1️⃣":
-          role = discord.utils.get(user.server.roles, name="W1")
-          await user.add_roles(role)
-        elif reaction.emoji == "2️⃣":
-          role = discord.utils.get(user.server.roles, name="W2")
-          await user.add_roles(role)
-        elif reaction.emoji == "3️⃣":
-          role = discord.utils.get(user.server.roles, name="W3")
-          await user.add_roles(role)
-        elif reaction.emoji == "4️⃣":
-          role = discord.utils.get(user.server.roles, name="W4")
-          await user.add_roles(role)
-        elif reaction.emoji == "5️⃣":
-          role = discord.utils.get(user.server.roles, name="W5")
-          await user.add_roles(role)
-        elif reaction.emoji == "6️⃣":
-          role = discord.utils.get(user.server.roles, name="W6")
-          await user.add_roles(role)
-        elif reaction.emoji == "7️⃣":
-          role = discord.utils.get(user.server.roles, name="W7")
-          print(role)
-          await user.add_roles(role)
-        elif reaction.emoji == "8️⃣":
-          role = discord.utils.get(user.server.roles, name="W8")
-          await user.add_roles(role)
 
 @bot.event
 async def on_raw_reaction_add(payload):
