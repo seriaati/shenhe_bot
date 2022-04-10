@@ -1,7 +1,7 @@
 import discord
 from classes import User
 def Global():
-    global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups
+    global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
     warningColor = 0xfc5165
     purpleColor = 0xa68bd3
     footerAuthor = "所有指令打!help, 有錯誤請告知小雪"
