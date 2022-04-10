@@ -392,12 +392,5 @@ class GenshinCog(commands.Cog):
         await ctx.send(embed=embed)
         await client.close()
 
-    @commands.command()
-    @commands.has_role("小雪團隊")
-    async def reloaduser(self, ctx):
-        with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
-            users = yaml.full_load(file)
-        await ctx.send("已更新使用者資料庫")
-
 def setup(bot):
     bot.add_cog(GenshinCog(bot))
