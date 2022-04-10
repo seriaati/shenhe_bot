@@ -80,7 +80,7 @@ class FlowCog(commands.Cog):
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
 			result = await formTrue.start()
-			if result.flow < 0:
+			if int(result.flow) < 0:
 				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
 			else:
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
