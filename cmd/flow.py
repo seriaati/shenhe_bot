@@ -69,9 +69,13 @@ class FlowCog(commands.Cog):
 		form.add_reaction("❌", False)
 		choice = await form.start()
 		if choice == True:
+			def is_me(m):
+			    return m.author == bot.user
+			await channel.purge(limit=1, check=is_me)
 			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
+			formTrue.add_question('想要最多幾人幫忙?最多3人', 'max')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
@@ -82,9 +86,6 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 			global_vars.setFooter(embedResult)
 			message = await ctx.send(embed=embedResult)
-			# for role in roles:
-			# 	if role in ctx.author.roles:
-			# 		await ctx.send(role.mention)
 			# if w8 in ctx.author.roles:
 			# 	await ctx.send(w8.mention)
 			# elif w7 in ctx.author.roles:
