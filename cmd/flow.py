@@ -11,8 +11,8 @@ from discord.ext.forms import ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
-	finds = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as findFile:
+	finds = yaml.full_load(findFile)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -90,11 +90,11 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n最多: {result.max}人")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
-				title = result.title
-				msgID = message.id 
+				title = str(result.title)
+				msgID = int(message.id)
 				flow = int(result.flow)
 				maxPerson = int(result.max)
-				author = ctx.author
+				author = int(ctx.author)
 				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'maxPerson': maxPerson, 'author': author}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
