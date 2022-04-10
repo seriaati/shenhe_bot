@@ -19,7 +19,7 @@ class HelpCog(commands.Cog):
         embed.add_field(name = "➜ 呼叫!", 
             value = "`!airplane`呼叫飛機仔!\n`!rabbit`呼叫兔兔!\n`!snow`小雪國萬歲!\n`!小雪`呼叫小雪!\n`!turtle`呼叫律律龜!\n`!flow`呼叫flow!\n`!tedd`呼叫tedd!\n`!ttos`呼叫土司!\n`!maple`呼叫楓!")
         embed.add_field(name = "➜ 趣味", 
-            value = "`!cute <人物>`可愛~\n`!say`讓申鶴說話\n`!flash`防放閃指令\n`!vote`發起投票")
+            value = "`!cute <人物>`可愛~\n`!say`讓申鶴說話\n`!flash`防放閃指令\n`!vote`發起投票\n`!marry`結婚owo")
         embed.add_field(name = "➜ 其他功能", 
             value = "`!group`小組指令組界面\n`!flow`flow功能界面\n`!farm`原神今日可刷素材")
         global_vars.setFooter(embed)
