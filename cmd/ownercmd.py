@@ -34,7 +34,6 @@ class OwnerCog(commands.Cog):
         users.append(newUser)
         with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
             yaml.dump(users, file)
-        await form.delete()
         await ctx.send(f"已新增該帳號")
 
 def setup(bot):
