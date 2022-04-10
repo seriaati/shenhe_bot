@@ -93,9 +93,9 @@ class FlowCog(commands.Cog):
 				title = result.title
 				msgID = message.id 
 				flow = int(result.flow)
-				max = int(result.max)
+				maxPerson = int(result.max)
 				author = ctx.author
-				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'max': max, 'author': author}
+				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'maxPerson': maxPerson, 'author': author}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
