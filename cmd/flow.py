@@ -7,6 +7,7 @@ import global_vars
 global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
+from discord.ext.forms import ReactionMenu
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
@@ -59,10 +60,18 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		
+
 		embed = global_vars.defaultEmbed("結果",f"{result.title}\n{result.level}\n{result.flow}")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
+
+	@commands.command()
+	async def menu(self, ctx):
+	    embed1=discord.Embed(description="This is embed1")
+	    embed2=discord.Embed(description="This is embed2")
+	    embed3=discord.Embed(description="This is embed3")
+	    rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
+	    await rmenu.start()
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
