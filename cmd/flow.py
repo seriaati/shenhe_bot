@@ -72,7 +72,7 @@ class FlowCog(commands.Cog):
 		if choice == True:
 			def is_me(m):
 			    return m.author == bot.user
-			await channel.purge(limit=1, check=is_me)
+			await ctx.channel.purge(limit=1, check=is_me)
 			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
