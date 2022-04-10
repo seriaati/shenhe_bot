@@ -90,7 +90,12 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n最多: {result.max}人")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
-				newFind = {'title': result.title, 'msgID': message.id, 'flow': int(result.flow), 'max': int(result.max), 'author': ctx.author}
+				title = result.title
+				msgID = mesasge.id 
+				flow = int(result.flow)
+				max = int(result.max)
+				author = ctx.author
+				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'max': max, 'author': author}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
