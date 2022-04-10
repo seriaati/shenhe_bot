@@ -91,7 +91,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				title = result.title
-				msgID = mesasge.id 
+				msgID = message.id 
 				flow = int(result.flow)
 				max = int(result.max)
 				author = ctx.author
