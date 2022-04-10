@@ -393,7 +393,7 @@ class GenshinCog(commands.Cog):
         await client.close()
 
     @commands.command()
-    @commands.is_owner()
+    @commands.has_role("小雪團隊")
     async def reloaduser(self, ctx):
         with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
             users = yaml.full_load(file)
