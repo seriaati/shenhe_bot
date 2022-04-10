@@ -76,22 +76,23 @@ class FlowCog(commands.Cog):
 			result = await formTrue.start()
 			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 			global_vars.setFooter(embedResult)
+			print(ctx.author.roles)
 			await ctx.send(embed=embedResult)
-			if 'W8' in ctx.author.roles:
+			if w8 in ctx.author.roles:
 				await ctx.send(w8.mention)
-			elif 'W7' in ctx.author.roles:
+			elif w7 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention}")
-			elif 'W6' in ctx.author.roles:
+			elif w6 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
-			elif 'W5' in ctx.author.roles:
+			elif w5 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
-			elif 'W4' in ctx.author.roles:
+			elif w4 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
-			elif 'W3' in ctx.author.roles:
+			elif w3 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
-			elif 'W2' in ctx.author.roles:
+			elif w2 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
-			elif 'W1' in ctx.author.roles:
+			elif w1 in ctx.author.roles:
 				await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
 		elif choice == False:
 			await ctx.send("施工中…")
