@@ -33,7 +33,6 @@ initial_extensions = [
 "cmd.vote",
 "cmd.group",
 "cmd.redeem",
-"cmd.ownercmd",
 "cmd.flow",
 ]
 if __name__ == '__main__':
