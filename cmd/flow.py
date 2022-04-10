@@ -74,7 +74,7 @@ class FlowCog(commands.Cog):
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
 			result = await formTrue.start()
-			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {flow}")
+			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 			global_vars.setFooter(embedResult)
 			await ctx.send(embed=embedResult)
 			if 'W8' in ctx.author.roles:
