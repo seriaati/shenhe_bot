@@ -77,7 +77,7 @@ class FlowCog(commands.Cog):
 			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
-			formTrue.add_question('想要最多幾人幫忙?最多3人', 'max')
+			formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
@@ -87,15 +87,15 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 			else:
-				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n最多: {result.max}人")
+				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n最多: {result.maxPerson}人")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
-				title = str(result.title)
-				msgID = int(message.id)
-				flow = int(result.flow)
-				maxPerson = int(result.max)
+				title = result.title
+				msgID = message.id
+				flow = result.flow
+				maxPerson = result.maxPerson
 				author = ctx.author
-				newFind = {'title': title, 'msgID': msgID, 'flow': flow, 'maxPerson': maxPerson, 'author': str(author)}
+				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author)}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
