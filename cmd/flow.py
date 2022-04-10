@@ -59,8 +59,10 @@ class FlowCog(commands.Cog):
 		w6 = discord.utils.get(ctx.guild.roles,name="W6")
 		w7 = discord.utils.get(ctx.guild.roles,name="W7")
 		w8 = discord.utils.get(ctx.guild.roles,name="W8")
+		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
 
-		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?","✅: 幫打素材\n❌: 拿其他世界的素材")
+		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?",
+			"✅: 需要幫打素材\n❌: 需要拿其他世界的素材")
 		message = await ctx.send(embed=embed)
 		form = ReactionForm(message,self.bot,ctx.author)
 		form.add_reaction("✅", True)
@@ -74,9 +76,15 @@ class FlowCog(commands.Cog):
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
 			result = await formTrue.start()
-			embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
+			if result.flow < 0:
+				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
+			else:
+				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 			global_vars.setFooter(embedResult)
-			await ctx.send(embed=embedResult)
+			message = await ctx.send(embed=embedResult)
+			# for role in roles:
+			# 	if role in ctx.author.roles:
+			# 		await ctx.send(role.mention)
 			# if w8 in ctx.author.roles:
 			# 	await ctx.send(w8.mention)
 			# elif w7 in ctx.author.roles:
@@ -93,6 +101,7 @@ class FlowCog(commands.Cog):
 			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
 			# elif w1 in ctx.author.roles:
 			# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")
+			
 		elif choice == False:
 			await ctx.send("施工中…")
 

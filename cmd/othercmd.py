@@ -38,8 +38,15 @@ class OtherCMDCog(commands.Cog):
         await ctx.send(str(value))
 
     @commands.command()
-    async def marry(self, ctx, arg1: discord.Member, arg2: discord.Member):
-        embed = global_vars.defaultEmbed(f"{arg1} ❤ {arg2}","")
+    async def marry(self, ctx, arg1, arg2):
+        if type(arg1) == discord.Member and type(arg2) != discord.Member:
+            mention = arg1.mention
+            embed = global_vars.defaultEmbed(f"{mention} ❤ {arg2}","")
+        elif type(arg2) == discord.Member and type(arg1) != discord.Member:
+            mention = arg2.mention
+            embed = global_vars.defaultEmbed(f"{arg1} ❤ {mention}","")
+        else:
+            embed = global_vars.defaultEmbed(f"{arg1} ❤ {arg2}","")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 

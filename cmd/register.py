@@ -8,6 +8,9 @@ from discord.ext import commands
 from discord.ext.forms import Form
 global_vars.Global()
 
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+    users = yaml.full_load(file)
+
 class RegisterCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -40,7 +43,7 @@ class RegisterCog(commands.Cog):
     @commands.command()
     @commands.has_role("小雪團隊")
     async def newuser(self, ctx):
-        form = Form(ctx, '新增帳號設定流程')
+        form = Form(ctx, '新增帳號設定流程', cleanup=True)
         form.add_question('原神UID?', 'uid')
         form.add_question('用戶名?', 'name')
         form.add_question('discord ID?', 'discordID')
