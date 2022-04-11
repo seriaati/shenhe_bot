@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime
+import os, discord, asyncio, genshin, yaml, datetime, time
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -20,6 +20,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
+		time.sleep(0.5)
 		channel = self.bot.get_channel(payload.channel_id)
 		message = await channel.fetch_message(payload.message_id)
 		reaction = discord.utils.get(message.reactions, emoji='✅')
