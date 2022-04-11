@@ -37,6 +37,8 @@ class FlowCog(commands.Cog):
 						finds.remove(find)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 							yaml.dump(finds, file)
+						with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+							yaml.dump(users, file)
 
 	@commands.command()
 	async def flow(self, ctx, *, name: discord.Member = None):
