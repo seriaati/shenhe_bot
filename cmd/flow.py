@@ -297,7 +297,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def flow(slef, ctx):
-		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託")
+		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 
@@ -311,5 +311,12 @@ class FlowCog(commands.Cog):
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(users, file)
 		await ctx.send(embed=embed)
+
+	@commands.command()
+	async def shop(self, ctx):
+		embed = global_vars.defaultEmbed("🛒 flow商店","這裡還空空如也…\n過一段時間再回來看看吧")
+		global_vars.setFooter(embed)
+		await ctx.send(embed=embed)
+		
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
