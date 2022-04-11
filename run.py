@@ -181,9 +181,9 @@ async def on_raw_reaction_add(payload):
                         if user['discordID'] == finds['authorID']:
                             print("money go")
                             user['flow'] -= finds['flow']
-        finds.remove(find)
-        with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-            yaml.dump(finds, file)
+                    finds.remove(find)
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(finds, file)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
