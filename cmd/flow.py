@@ -99,6 +99,7 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	async def find(self, ctx):
 		if ctx.channel.id != 960861105503232030:
+			print("not in channel")
 			channel = self.bot.get_channel(960861105503232030)
 			await ctx.send(f"請在{channel.mention}裡使用此指令")
 			return
