@@ -14,10 +14,10 @@ from random import randint
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
-    finds = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
-    flows = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as findFile:
+    finds = yaml.full_load(findFile)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as flowFile:
+    flows = yaml.full_load(flowFile)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -173,17 +173,17 @@ async def on_raw_reaction_add(payload):
         for find in finds:
             if payload.message_id == find['msgID']:
                 print("found message")
-                if payload.emoji.name == '✅':
-                    for user in flows:
-                        if user['discordID'] == payload.user_id:
-                            print("money in")
-                            user['flow'] += finds['flow']
-                        if user['discordID'] == finds['authorID']:
-                            print("money go")
-                            user['flow'] -= finds['flow']
-                    finds.remove(find)
-                    with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-                        yaml.dump(finds, file)
+                # if payload.emoji.name == '✅':
+                #     for user in flows:
+                #         if user['discordID'] == payload.user_id:
+                #             print("money in")
+                #             user['flow'] += find['flow']
+                #         if user['discordID'] == finds['authorID']:
+                #             print("money go")
+                #             user['flow'] -= finds['flow']
+                #     finds.remove(find)
+                #     with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+                #         yaml.dump(finds, file)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
