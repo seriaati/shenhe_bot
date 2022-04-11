@@ -39,7 +39,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def marry(self, ctx, arg1, arg2):
-        await ctx.send(f"{arg1} 💘 {arg2}")
+        await ctx.send(f"{arg1} ❤ {arg2}")
 
 def setup(bot):
     bot.add_cog(OtherCMDCog(bot))
