@@ -95,6 +95,7 @@ class FlowCog(commands.Cog):
 				flow = result.flow
 				maxPerson = 1
 				author = ctx.author
+				await message.add_reaction('✅')
 				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
