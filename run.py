@@ -57,7 +57,7 @@ async def checkLoop():
             print(user['uid'])
             username = user['name']
             print(user['discordID'])
-            userid = bot.get_member(user['discordID'])
+            userObj = bot.get_user(user['discordID'])
             client = genshin.GenshinClient(cookies)
             client.lang = "zh-tw"
             notes = await client.get_notes(uid)
@@ -66,13 +66,13 @@ async def checkLoop():
             diff = dateNow - user['dmDate']
             diffHour = diff.total_seconds() / 3600
             if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
-                print("已私訊 "+str(userid))
+                print("已私訊 "+str(userObj))
                 print(diffHour)
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
                 embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
                 global_vars.setFooter(embed)
-                await userid.send(embed=embed)
+                await userObj.send(embed=embed)
                 user['dmCount'] += 1
                 user['dmDate'] = dateNow
                 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
