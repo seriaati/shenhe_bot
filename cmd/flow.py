@@ -270,7 +270,7 @@ class FlowCog(commands.Cog):
 			if user['discordID'] == member.id:
 				user['flow'] -= int(argFlow)
 				acceptor = self.bot.get_user(member.id)
-				embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空升出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
+				embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
 				break
