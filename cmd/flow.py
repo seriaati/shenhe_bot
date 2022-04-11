@@ -23,6 +23,17 @@ class FlowCog(commands.Cog):
 		channel = self.bot.get_channel(payload.channel_id)
 		message = await channel.fetch_message(payload.message_id)
 		reaction = discord.utils.get(message.reactions, emoji='✅')
+		found = False
+		for user in users:
+			if user['discordID']==payload.user_id:
+				found = True
+		if found == False:
+			discordID = payload.user_id
+			user = self.bot.get_user(payload.user_id)
+			newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
+			users.append(newUser)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(users, file)
 		for find in finds:
 			if payload.user_id != self.bot.user.id:
 				if payload.message_id == find['msgID']:
@@ -66,7 +77,7 @@ class FlowCog(commands.Cog):
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
-			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!flow`一次試試看")
+			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 
 	@commands.command()
 	@commands.is_owner()
