@@ -46,7 +46,7 @@ class OtherCMDCog(commands.Cog):
             mention = arg2.mention
             embed = global_vars.defaultEmbed(f"{arg1} ❤ {mention}","")
         else:
-            embed = global_vars.defaultEmbed(f"{arg1} ❤ {arg2}","")
+            embed = global_vars.defaultEmbed(f"{arg1.mention} ❤ {arg2.mention}","")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
