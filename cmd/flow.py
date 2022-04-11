@@ -28,7 +28,8 @@ class FlowCog(commands.Cog):
 					if payload.emoji.name == '✅':
 						for user in users:
 							if payload.user_id == find['authorID']:
-								await channel.send(f"不可以自己接自己的委託啦")
+								userObj = self.bot.get_user(find['authorID'])
+								await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
 								return
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
@@ -157,13 +158,15 @@ class FlowCog(commands.Cog):
 					embed = global_vars.defaultEmbed("❌交易失敗", "自己都不夠了還想給人ww")
 				else:
 					user['flow'] -= int(argFlow)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
 			if user['discordID'] == member.id:
 				user['flow'] += int(argFlow)
 				acceptor = self.bot.get_user(member.id)
 				embed = global_vars.defaultEmbed("✅ 交易成功", f"{ctx.author.mention}給了{acceptor.mention} {str(argFlow)}枚flow幣")
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(users, file)
 		global_vars.setFooter(embed)
-		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-			yaml.dump(users, file)
 		await ctx.send(embed=embed)
 def setup(bot):
 	bot.add_cog(FlowCog(bot))

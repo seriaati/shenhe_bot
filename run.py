@@ -56,7 +56,7 @@ async def checkLoop():
             uid = user['uid']
             username = user['name']
             userObj = bot.get_user(user['discordID'])
-            print(userObj)
+            # print(userObj)
             client = genshin.GenshinClient(cookies)
             client.lang = "zh-tw"
             notes = await client.get_notes(uid)
