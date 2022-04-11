@@ -33,9 +33,9 @@ class FlowCog(commands.Cog):
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
 								acceptUser = self.bot.get_user(user['discordID'])
-								if one==True:
+								if find['one']==True:
 									await channel.send(f"[接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
-								elif one==False:
+								elif find['one']==False:
 									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
 							if user['discordID'] == find['authorID']:
@@ -90,8 +90,8 @@ class FlowCog(commands.Cog):
 		w8 = discord.utils.get(ctx.guild.roles,name="W8")
 		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
 
-		embed = global_vars.defaultEmbed("你是需要幫打素材還是需要別人世界的素材?",
-			"1️⃣: 需要幫打素材\n2️⃣: 需要拿其他世界的素材")
+		embed = global_vars.defaultEmbed("請選擇委託類別",
+			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)")
 		message = await ctx.send(embed=embed)
 		form = ReactionForm(message,self.bot,ctx.author)
 		form.add_reaction("1️⃣", True)
