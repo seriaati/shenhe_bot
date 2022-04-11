@@ -27,11 +27,11 @@ class FlowCog(commands.Cog):
 					if payload.emoji.name == '✅':
 						for user in users:
 							if user['discordID'] == payload.user_id:
-								print("money in")
+								await ctx.send(f"{user['name']}收錢")
 								user['flow'] += find['flow']
-							if user['discordID'] == finds['authorID']:
-								print("money go")
-								user['flow'] -= finds['flow']
+							if user['discordID'] == find['authorID']:
+								await ctx.send(f"{user['name']}給錢")
+								user['flow'] -= find['flow']
 						finds.remove(find)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 							yaml.dump(finds, file)
