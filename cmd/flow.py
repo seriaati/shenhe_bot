@@ -55,7 +55,9 @@ class FlowCog(commands.Cog):
 		for user in users:
 			if user['discordID']==name.id:
 				found = True
-				await ctx.send(f"使用者: {user['name']}\nflow幣: {user['flow']}")
+				embed = global_vars.defaultEmbed(f"使用者: {user['name']}",f"flow幣: {user['flow']}")
+				global_vars.setFooter(embed)
+				await ctx.send(embed=embed)
 		if found == False:
 			discordID = name.id
 			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
