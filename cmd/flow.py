@@ -11,8 +11,8 @@ from discord.ext.forms import ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as findFile:
-	finds = yaml.full_load(findFile)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
+	finds = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -77,7 +77,7 @@ class FlowCog(commands.Cog):
 			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
-			formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
+			# formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
@@ -93,9 +93,9 @@ class FlowCog(commands.Cog):
 				title = result.title
 				msgID = message.id
 				flow = result.flow
-				maxPerson = result.maxPerson
+				maxPerson = 1
 				author = ctx.author
-				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author)}
+				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)

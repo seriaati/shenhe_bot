@@ -14,6 +14,10 @@ from random import randint
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
+    finds = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+    flows = yaml.full_load(file)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -165,6 +169,18 @@ async def on_raw_reaction_add(payload):
             member = guild.get_member(payload.user_id)
             guild_member = discord.utils.get(guild.roles, name="W8")
             await member.add_roles(guild_member)
+    for find in finds:
+        if payload.message_id == find['msgID']:
+            if payload.emoji.name == '✅':
+                guild = bot.get_guild(payload.guild_id)
+                member = guild.get_member(payload.user_id)
+                maxPerson = find['maxPerson']
+                count = 0
+                for user in flows:
+                    if user['discordID'] == payload.user_id:
+                        user['flow'] += find['flow']
+                    if user['name'] == find['author']:
+                        user['flow'] -= find['flow']
 
 @bot.event
 async def on_raw_reaction_remove(payload):
