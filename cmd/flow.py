@@ -18,6 +18,23 @@ class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	@commands.Cog.listener()
+	async def on_raw_reaction_add(self, payload):
+		for find in finds:
+            if payload.message_id == find['msgID']:
+                print("found message")
+                # if payload.emoji.name == '✅':
+                #     for user in flows:
+                #         if user['discordID'] == payload.user_id:
+                #             print("money in")
+                #             user['flow'] += find['flow']
+                #         if user['discordID'] == finds['authorID']:
+                #             print("money go")
+                #             user['flow'] -= finds['flow']
+                #     finds.remove(find)
+                #     with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+                #         yaml.dump(finds, file)
+
 	@commands.command()
 	async def flow(self, ctx, *, name: discord.Member = None):
 		name = name or ctx.author

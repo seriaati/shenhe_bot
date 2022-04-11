@@ -169,21 +169,6 @@ async def on_raw_reaction_add(payload):
             member = guild.get_member(payload.user_id)
             guild_member = discord.utils.get(guild.roles, name="W8")
             await member.add_roles(guild_member)
-    else:
-        for find in finds:
-            if payload.message_id == find['msgID']:
-                print("found message")
-                # if payload.emoji.name == '✅':
-                #     for user in flows:
-                #         if user['discordID'] == payload.user_id:
-                #             print("money in")
-                #             user['flow'] += find['flow']
-                #         if user['discordID'] == finds['authorID']:
-                #             print("money go")
-                #             user['flow'] -= finds['flow']
-                #     finds.remove(find)
-                #     with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-                #         yaml.dump(finds, file)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
