@@ -24,7 +24,6 @@ class FlowCog(commands.Cog):
 		for find in finds:
 			if payload.user_id != self.bot.user.id:
 				if payload.message_id == find['msgID']:
-					print("found message")
 					if payload.emoji.name == '✅':
 						for user in users:
 							if payload.user_id == find['authorID']:
@@ -34,7 +33,10 @@ class FlowCog(commands.Cog):
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
 								acceptUser = self.bot.get_user(user['discordID'])
-								await channel.send(f"[接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
+								if one==True:
+									await channel.send(f"[接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
+								elif one==False:
+									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
 							if user['discordID'] == find['authorID']:
 								user['flow'] -= find['flow']
@@ -101,7 +103,7 @@ class FlowCog(commands.Cog):
 			await ctx.channel.purge(limit=1, check=is_me)
 			formTrue = Form(ctx, '請求幫打設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
-			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
+			formTrue.add_question('你要付多少flow幣給幫你的人?', 'flow')
 			# formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
@@ -114,7 +116,7 @@ class FlowCog(commands.Cog):
 			for user in users:
 				if ctx.author.id == user['discordID']:
 					if int(result.flow) > user['flow']:
-						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有的flow幣數量的flow幣"," ")
+						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有數量的flow幣"," ")
 						global_vars.setFooter(embedResult)
 						message = await ctx.send(embed=embedResult)
 			else:
@@ -127,28 +129,77 @@ class FlowCog(commands.Cog):
 				maxPerson = 1
 				author = ctx.author
 				await message.add_reaction('✅')
-				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id}
+				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id, 'one': True}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
-				# if w8 in ctx.author.roles:
-				# 	await ctx.send(w8.mention)
-				# elif w7 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention}")
-				# elif w6 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
-				# elif w5 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
-				# elif w4 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
-				# elif w3 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
-				# elif w2 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
-				# elif w1 in ctx.author.roles:
-				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")	
+				if w8 in ctx.author.roles:
+					await ctx.send(w8.mention)
+				elif w7 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention}")
+				elif w6 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
+				elif w5 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
+				elif w4 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
+				elif w3 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
+				elif w2 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
+				elif w1 in ctx.author.roles:
+					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")	
 		elif choice == False:
-			await ctx.send("施工中…")
+			def is_me(m):
+				return m.author == self.bot.user
+			await ctx.channel.purge(limit=1, check=is_me)
+			formFalse = Form(ctx, '拿取其他世界素材設定流程', cleanup=True)
+			formFalse.add_question('需要什麼素材?(例如: 緋櫻繡球)', 'title')
+			formFalse.add_question('你要付多少flow幣給讓你拿素材的人?', 'flow')
+			formTrue.edit_and_delete(True)
+			formTrue.set_timeout(60)
+			await formTrue.set_color("0xa68bd3")
+			result = await formTrue.start()
+			if int(result.flow) < 0:
+				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
+			for user in users:
+				if ctx.author.id == user['discordID']:
+					if int(result.flow) > user['flow']:
+						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有數量的flow幣"," ")
+						global_vars.setFooter(embedResult)
+						message = await ctx.send(embed=embedResult)
+			else:
+				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
+				title = result.title
+				msgID = message.id
+				flow = result.flow
+				maxPerson = 1
+				author = ctx.author
+				await message.add_reaction('✅')
+				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id, 'one': False}
+				finds.append(newFind)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(finds, file)
+				if w1 in ctx.author.roles:
+					await ctx.send(w1.mention)
+				elif w2 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention}")
+				elif w3 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention}")
+				elif w4 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention}")
+				elif w5 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention}")
+				elif w6 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention}")
+				elif w7 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention}")
+				elif w8 in ctx.author.roles:
+					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention} {w8.mention}")	
 
 	@commands.command()
 	async def give(self, ctx, member: discord.Member, argFlow: int):
