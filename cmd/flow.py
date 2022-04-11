@@ -203,6 +203,9 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def give(self, ctx, member: discord.Member, argFlow: int):
+		if member.id == ctx.author.id:
+			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!")
+			return
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
