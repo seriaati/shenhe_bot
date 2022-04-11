@@ -150,13 +150,13 @@ class FlowCog(commands.Cog):
 	async def give(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == ctx.author.id:
-				if user['flow'] < argFlow:
+				if user['flow'] < int(argFlow):
 					embed = global_vars.defaultEmbed("交易失敗", "自己都不夠了還想給人ww")
 				else:
-					user['flow'] -= argFlow
+					user['flow'] -= int(argFlow)
 					embed = global_vars.defaultEmbed("交易成功")
 			if user['discordID'] == member.id:
-				user['flow'] += argFlow
+				user['flow'] += int(argFlow)
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 def setup(bot):
