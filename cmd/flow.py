@@ -21,19 +21,19 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		for find in finds:
-            if payload.message_id == find['msgID']:
-                print("found message")
-                # if payload.emoji.name == '✅':
-                #     for user in flows:
-                #         if user['discordID'] == payload.user_id:
-                #             print("money in")
-                #             user['flow'] += find['flow']
-                #         if user['discordID'] == finds['authorID']:
-                #             print("money go")
-                #             user['flow'] -= finds['flow']
-                #     finds.remove(find)
-                #     with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-                #         yaml.dump(finds, file)
+			if payload.message_id == find['msgID']:
+				print("found message")
+				# if payload.emoji.name == '✅':
+				#     for user in flows:
+				#         if user['discordID'] == payload.user_id:
+				#             print("money in")
+				#             user['flow'] += find['flow']
+				#         if user['discordID'] == finds['authorID']:
+				#             print("money go")
+				#             user['flow'] -= finds['flow']
+				#     finds.remove(find)
+				#     with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+				#         yaml.dump(finds, file)
 
 	@commands.command()
 	async def flow(self, ctx, *, name: discord.Member = None):
@@ -88,7 +88,7 @@ class FlowCog(commands.Cog):
 		choice = await form.start()
 		if choice == True: 
 			def is_me(m):
-			    return m.author == self.bot.user
+				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
 			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
