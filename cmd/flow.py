@@ -28,10 +28,11 @@ class FlowCog(commands.Cog):
 					if payload.emoji.name == '✅':
 						for user in users:
 							if user['discordID'] == payload.user_id:
-								await channel.send(f"{user['name']}收錢{find['flow']}")
+								author = self.bot.get_user(find['authorID'])
+								user = self.bot.get_user(user['discordID'])
+								await channel.send(f"[接受委託] {user.mention} 接受 {author.mention} 的 {find['title']}委託, 獲得了 {find['flow']} flow幣")
 								user['flow'] += find['flow']
 							if user['discordID'] == find['authorID']:
-								await channel.send(f"{user['name']}給錢{find['flow']}")
 								user['flow'] -= find['flow']
 						finds.remove(find)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -92,7 +93,7 @@ class FlowCog(commands.Cog):
 			def is_me(m):
 				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
-			formTrue = Form(ctx, '請求幫助設定流程', cleanup=True)
+			formTrue = Form(ctx, '請求幫打設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('這個幫助值多少flow幣?', 'flow')
 			# formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
