@@ -219,5 +219,19 @@ class FlowCog(commands.Cog):
 					yaml.dump(users, file)
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
+
+	@commands.command()
+	@commands.is_owner()
+	async def take(self, ctx, member: discord.Member, argFLow: int):
+		for user in users:
+			if user['discordID'] == member.id:
+				user['flow'] -= int(argFlow)
+				acceptor = self.bot.get_user(member.id)
+				embed = global_vars.defaultEmbed("✅ 沒收成功", f"{ctx.author.mention}沒收了{acceptor.mention} {str(argFlow)}枚flow幣")
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(users, file)
+				break
+		global_vars.setFooter(embed)
+		await ctx.send(embed=embed)
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
