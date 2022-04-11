@@ -147,7 +147,7 @@ class FlowCog(commands.Cog):
 			await ctx.send("施工中…")
 
 	@commands.command()
-	async def give(self, ctx, member: discord.Member, argFlow):
+	async def give(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < argFlow:
