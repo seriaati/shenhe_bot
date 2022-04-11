@@ -98,7 +98,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
-		if ctx.channel.id is not 960861105503232030:
+		if ctx.channel.id != 960861105503232030:
 			return
 		await ctx.message.delete()
 		found = False
