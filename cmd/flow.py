@@ -134,6 +134,7 @@ class FlowCog(commands.Cog):
 						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有數量的flow幣"," ")
 						global_vars.setFooter(embedResult)
 						message = await ctx.send(embed=embedResult)
+						return
 			else:
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
@@ -185,6 +186,7 @@ class FlowCog(commands.Cog):
 						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有數量的flow幣"," ")
 						global_vars.setFooter(embedResult)
 						message = await ctx.send(embed=embedResult)
+						return
 			else:
 				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
@@ -281,7 +283,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def flow(slef, ctx):
-		embed = global_vars.defaultEmbed("flow系統","`!acc`帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託")
+		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 def setup(bot):
