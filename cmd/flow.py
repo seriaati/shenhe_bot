@@ -98,6 +98,9 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
+		if ctx.channel.id is not 960861105503232030:
+        	return
+		await ctx.message.delete()
 		found = False
 		for user in users:
 			if user['discordID']==ctx.author.id:
@@ -162,22 +165,22 @@ class FlowCog(commands.Cog):
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
-				if w8 in ctx.author.roles:
-					await ctx.send(w8.mention)
-				elif w7 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention}")
-				elif w6 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
-				elif w5 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
-				elif w4 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
-				elif w3 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
-				elif w2 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
-				elif w1 in ctx.author.roles:
-					await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")	
+				# if w8 in ctx.author.roles:
+				# 	await ctx.send(w8.mention)
+				# elif w7 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention}")
+				# elif w6 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention}")
+				# elif w5 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention}")
+				# elif w4 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention}")
+				# elif w3 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention}")
+				# elif w2 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention}")
+				# elif w1 in ctx.author.roles:
+				# 	await ctx.send(f"{w8.mention} {w7.mention} {w6.mention} {w5.mention} {w4.mention} {w3.mention} {w2.mention} {w1.mention}")	
 		elif choice == False:
 			def is_me(m):
 				return m.author == self.bot.user
@@ -215,22 +218,22 @@ class FlowCog(commands.Cog):
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
-				if w1 in ctx.author.roles:
-					await ctx.send(w1.mention)
-				elif w2 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention}")
-				elif w3 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention}")
-				elif w4 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention}")
-				elif w5 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention}")
-				elif w6 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention}")
-				elif w7 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention}")
-				elif w8 in ctx.author.roles:
-					await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention} {w8.mention}")	
+				# if w1 in ctx.author.roles:
+				# 	await ctx.send(w1.mention)
+				# elif w2 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention}")
+				# elif w3 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention}")
+				# elif w4 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention}")
+				# elif w5 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention}")
+				# elif w6 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention}")
+				# elif w7 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention}")
+				# elif w8 in ctx.author.roles:
+				# 	await ctx.send(f"{w1.mention} {w2.mention} {w3.mention} {w4.mention} {w5.mention} {w6.mention} {w7.mention} {w8.mention}")	
 
 	@commands.command()
 	async def give(self, ctx, member: discord.Member, argFlow: int):
@@ -317,6 +320,6 @@ class FlowCog(commands.Cog):
 		embed = global_vars.defaultEmbed("🛒 flow商店","這裡還空空如也…\n過一段時間再回來看看吧")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
-		
+
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
