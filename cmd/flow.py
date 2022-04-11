@@ -52,7 +52,7 @@ class FlowCog(commands.Cog):
 								elif find['one']==False:
 									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
-								await message.clear_reaction()
+								await message.clear_reaction('✅')
 							if user['discordID'] == find['authorID']:
 								user['flow'] -= find['flow']
 						finds.remove(find)
