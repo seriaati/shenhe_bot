@@ -151,14 +151,16 @@ class FlowCog(commands.Cog):
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
-					embed = global_vars.defaultEmbed("交易失敗", "自己都不夠了還想給人ww")
+					embed = global_vars.defaultEmbed("❌交易失敗", "自己都不夠了還想給人ww")
 				else:
 					user['flow'] -= int(argFlow)
 			if user['discordID'] == member.id:
 				user['flow'] += int(argFlow)
 				acceptor = self.bot.get_user(member.id)
-				embed = global_vars.defaultEmbed("交易成功", f"{ctx.author.mention} 給了 {acceptor.mention} {str(argFlow)}枚flow幣")
+				embed = global_vars.defaultEmbed("✅ 交易成功", f"{ctx.author.mention}給了{acceptor.mention} {str(argFlow)}枚flow幣")
 		global_vars.setFooter(embed)
+		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+			yaml.dump(users, file)
 		await ctx.send(embed=embed)
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
