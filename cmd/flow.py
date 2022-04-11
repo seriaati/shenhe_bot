@@ -299,5 +299,16 @@ class FlowCog(commands.Cog):
 		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
+
+	@commands.command()
+	@commands.is_owner()
+	async def reset(self, ctx):
+		for user in users:
+			user['flow'] = 100
+		embed = global_vars.defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
+		global_vars.setFooter(embed)
+		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+			yaml.dump(users, file)
+		await ctx.send(embed=embed)
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
