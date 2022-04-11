@@ -20,7 +20,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
-		channel = bot.get_channel(payload.channel_id)
+		channel = self.bot.get_channel(payload.channel_id)
 		for find in finds:
 			if payload.user_id != self.bot.user.id:
 				if payload.message_id == find['msgID']:
