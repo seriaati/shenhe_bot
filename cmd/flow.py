@@ -28,6 +28,7 @@ class FlowCog(commands.Cog):
 		for user in users:
 			if user['discordID']==payload.user_id:
 				found = True
+				break
 		if found == False:
 			discordID = payload.user_id
 			user = self.bot.get_user(payload.user_id)
@@ -54,6 +55,7 @@ class FlowCog(commands.Cog):
 									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
 								await message.clear_reaction('✅')
+								await author.send("test")
 							if user['discordID'] == find['authorID']:
 								user['flow'] -= find['flow']
 						finds.remove(find)
