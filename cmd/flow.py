@@ -50,7 +50,7 @@ class FlowCog(commands.Cog):
 				await ctx.send(f"使用者: {user['name']}\nflow幣: {user['flow']}")
 		if found == False:
 			discordID = name.id
-			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 0}
+			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
