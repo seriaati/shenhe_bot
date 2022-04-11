@@ -181,6 +181,9 @@ async def on_raw_reaction_add(payload):
                         user['flow'] += find['flow']
                     if user['name'] == find['author']:
                         user['flow'] -= find['flow']
+        finds.remove(find)
+        with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+            yaml.dump(finds, file)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
