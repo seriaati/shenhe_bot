@@ -29,6 +29,7 @@ class FlowCog(commands.Cog):
 							if payload.user_id == find['authorID']:
 								userObj = self.bot.get_user(find['authorID'])
 								await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
+								await reaction.remove(payload.member)
 								return
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
@@ -38,6 +39,7 @@ class FlowCog(commands.Cog):
 								elif find['one']==False:
 									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
+								await payload.message.clear_reaction()
 							if user['discordID'] == find['authorID']:
 								user['flow'] -= find['flow']
 						finds.remove(find)
@@ -47,7 +49,7 @@ class FlowCog(commands.Cog):
 							yaml.dump(users, file)
 
 	@commands.command()
-	async def flow(self, ctx, *, name: discord.Member = None):
+	async def acc(self, ctx, *, name: discord.Member = None):
 		name = name or ctx.author
 		found = False
 		for user in users:
@@ -80,6 +82,17 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def find(self, ctx):
+		found = False
+		for user in users:
+			if user['discordID']==ctx.author.id:
+				found = True
+		if found == False:
+			discordID = ctx.author.id
+			newUser = {'name': str(ctx.author), 'discordID': int(discordID), 'flow': 100}
+			users.append(newUser)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(users, file)
+
 		w1 = discord.utils.get(ctx.guild.roles,name="W1")
 		w2 = discord.utils.get(ctx.guild.roles,name="W2")
 		w3 = discord.utils.get(ctx.guild.roles,name="W3")
@@ -101,10 +114,9 @@ class FlowCog(commands.Cog):
 			def is_me(m):
 				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
-			formTrue = Form(ctx, '請求幫打設定流程', cleanup=True)
+			formTrue = Form(ctx, '設定流程', cleanup=True)
 			formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
 			formTrue.add_question('你要付多少flow幣給幫你的人?', 'flow')
-			# formTrue.add_question('想要最多幾人幫忙?最多3人', 'maxPerson')
 			formTrue.edit_and_delete(True)
 			formTrue.set_timeout(60)
 			await formTrue.set_color("0xa68bd3")
@@ -113,6 +125,7 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
+				return
 			for user in users:
 				if ctx.author.id == user['discordID']:
 					if int(result.flow) > user['flow']:
@@ -126,10 +139,9 @@ class FlowCog(commands.Cog):
 				title = result.title
 				msgID = message.id
 				flow = result.flow
-				maxPerson = 1
 				author = ctx.author
 				await message.add_reaction('✅')
-				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'maxPerson': int(maxPerson), 'author': str(author), 'authorID': ctx.author.id, 'one': True}
+				newFind = {'title': str(title), 'msgID': int(msgID), 'flow': int(flow), 'author': str(author), 'authorID': ctx.author.id, 'one': True}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
@@ -153,7 +165,7 @@ class FlowCog(commands.Cog):
 			def is_me(m):
 				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
-			formFalse = Form(ctx, '拿取其他世界素材設定流程', cleanup=True)
+			formFalse = Form(ctx, '設定流程', cleanup=True)
 			formFalse.add_question('需要什麼素材?(例如: 緋櫻繡球)', 'title')
 			formFalse.add_question('你要付多少flow幣給讓你拿素材的人?', 'flow')
 			formTrue.edit_and_delete(True)
@@ -164,6 +176,7 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
+				return
 			for user in users:
 				if ctx.author.id == user['discordID']:
 					if int(result.flow) > user['flow']:
@@ -206,6 +219,19 @@ class FlowCog(commands.Cog):
 		if member.id == ctx.author.id:
 			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!")
 			return
+		if argFlow < 0:
+			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!")
+			return
+		found = False
+		for user in users:
+			if user['discordID']==member.id:
+				found = True
+		if found == False:
+			discordID = member.id
+			newUser = {'name': str(member), 'discordID': int(discordID), 'flow': 100}
+			users.append(newUser)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(users, file)
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
@@ -239,7 +265,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.is_owner()
-	async def free(self, ctx, member: discord.Member, argFlow: int):
+	async def make(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == member.id:
 				user['flow'] -= int(argFlow)
@@ -248,6 +274,12 @@ class FlowCog(commands.Cog):
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
 				break
+		global_vars.setFooter(embed)
+		await ctx.send(embed=embed)
+
+	@commands.command()
+	async def flow(slef, ctx):
+		embed = global_vars.defaultEmbed("flow系統","`!acc`帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 def setup(bot):
