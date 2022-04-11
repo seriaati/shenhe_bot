@@ -13,6 +13,8 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as
 	users = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
 	finds = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8') as file:
+	confirms = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -37,32 +39,52 @@ class FlowCog(commands.Cog):
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
 		for find in finds:
-			if payload.user_id != self.bot.user.id:
-				if payload.message_id == find['msgID']:
-					if payload.emoji.name == '✅':
-						for user in users:
-							if payload.user_id == find['authorID']:
-								userObj = self.bot.get_user(find['authorID'])
-								await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
-								await reaction.remove(payload.member)
-								return
-							if user['discordID'] == payload.user_id:
-								author = self.bot.get_user(find['authorID'])
-								acceptUser = self.bot.get_user(user['discordID'])
-								if find['one']==True:
-									await channel.send(f"[接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
-								elif find['one']==False:
-									await channel.send(f"[接受素材委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 素材委託, 獲得了 **{find['flow']} flow幣**")
-								user['flow'] += find['flow']
-								await message.clear_reaction('✅')
-								await author.send("test")
-							if user['discordID'] == find['authorID']:
-								user['flow'] -= find['flow']
+			if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
+				for user in users:
+					if payload.user_id == find['authorID']:
+						userObj = self.bot.get_user(find['authorID'])
+						await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
+						await reaction.remove(payload.member)
+						return
+					elif user['discordID'] == payload.user_id:
+						await message.clear_reaction('✅')
+						author = self.bot.get_user(find['authorID'])
+						acceptUser = self.bot.get_user(user['discordID'])
+						if find['one']==True:
+							await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
+							await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
+						elif find['one']==False:
+							await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {find['title']} 素材委託")
+							await author.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")
+						# user['flow'] += find['flow']
+						embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
+						global_vars.setFooter(embedDM)
+						dm = await author.send(embed=embed)
+						dm.add_reaction('🆗')
+						newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
+							'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id}
+						confirms.append(newConfirm)
 						finds.remove(find)
+						with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
+							yaml.dump(confirms, file)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 							yaml.dump(finds, file)
-						with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-							yaml.dump(users, file)
+						return
+		for confirm in confirms:
+			if payload.message_id == confirm['msgID'] and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
+				for user in users:
+					if user['discordID'] == confirm['authorID']:
+						user['flow'] -= confirm['flow']
+					elif user['discordID'] == confirm['receiverID']:
+						user['flow'] += confirm['flow']
+				author = self.bot.get_user(confirm['authorID'])
+				receiver = self.bot.get_user(confirm['receiverID'])
+				embed = global_vars.defaultEmbed("🆗 結算成功", 
+					f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']}flow幣**\n接收人: {receiver.mention} **+{confirm['flow']}flow幣**")
+				global_vars.setFooter(embed)
+				await author.send(embed=embed)
+				await receiver.send(embed=embed)
+				break
 
 	@commands.command()
 	async def acc(self, ctx, *, name: discord.Member = None):
