@@ -25,7 +25,7 @@ class FlowCog(commands.Cog):
 				if payload.message_id == find['msgID']:
 					print("found message")
 					if payload.emoji.name == '✅':
-						for user in flows:
+						for user in users:
 							if user['discordID'] == payload.user_id:
 								print("money in")
 								user['flow'] += find['flow']
