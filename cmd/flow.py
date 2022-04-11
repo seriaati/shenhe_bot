@@ -120,7 +120,7 @@ class FlowCog(commands.Cog):
 						global_vars.setFooter(embedResult)
 						message = await ctx.send(embed=embedResult)
 			else:
-				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
+				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				title = result.title
@@ -171,7 +171,7 @@ class FlowCog(commands.Cog):
 						global_vars.setFooter(embedResult)
 						message = await ctx.send(embed=embedResult)
 			else:
-				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
+				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				title = result.title
