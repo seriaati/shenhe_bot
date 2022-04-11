@@ -108,10 +108,11 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 			for user in users:
-				if int(result.flow) > user['flow']:
-					embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有的flow幣數量的flow幣"," ")
-					global_vars.setFooter(embedResult)
-					message = await ctx.send(embed=embedResult)
+				if ctx.author.id == user['discordID']:
+					if int(result.flow) > user['flow']:
+						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有的flow幣數量的flow幣"," ")
+						global_vars.setFooter(embedResult)
+						message = await ctx.send(embed=embedResult)
 			else:
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 				global_vars.setFooter(embedResult)
@@ -145,5 +146,18 @@ class FlowCog(commands.Cog):
 		elif choice == False:
 			await ctx.send("施工中…")
 
+	@commands.command()
+	async def give(self, ctx, member: discord.Member, argFlow):
+		for user in users:
+			if user['discordID'] == ctx.author.id:
+				if user['flow'] < argFlow:
+					embed = global_vars.defaultEmbed("交易失敗", "自己都不夠了還想給人ww")
+				else:
+					user['flow'] -= argFlow
+					embed = global_vars.defaultEmbed("交易成功")
+			if user['discordID'] == member.id:
+				user['flow'] += argFlow
+		global_vars.setFooter(embed)
+		await ctx.send(embed=embed)
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
