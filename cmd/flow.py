@@ -20,6 +20,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
+		channel = bot.get_channel(payload.channel_id)
 		for find in finds:
 			if payload.user_id != self.bot.user.id:
 				if payload.message_id == find['msgID']:
@@ -27,10 +28,10 @@ class FlowCog(commands.Cog):
 					if payload.emoji.name == '✅':
 						for user in users:
 							if user['discordID'] == payload.user_id:
-								await ctx.send(f"{user['name']}收錢")
+								await channel.send(f"{user['name']}收錢{find['flow']}")
 								user['flow'] += find['flow']
 							if user['discordID'] == find['authorID']:
-								await ctx.send(f"{user['name']}給錢")
+								await channel.send(f"{user['name']}給錢{find['flow']}")
 								user['flow'] -= find['flow']
 						finds.remove(find)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
