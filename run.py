@@ -14,10 +14,6 @@ from random import randint
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as findFile:
-    finds = yaml.full_load(findFile)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as flowFile:
-    flows = yaml.full_load(flowFile)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
