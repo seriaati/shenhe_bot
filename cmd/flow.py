@@ -225,7 +225,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.is_owner()
-	async def take(self, ctx, member: discord.Member, argFLow: int):
+	async def take(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == member.id:
 				user['flow'] -= int(argFlow)
