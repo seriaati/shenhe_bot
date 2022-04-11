@@ -25,6 +25,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -73,6 +74,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -109,6 +111,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -170,6 +173,7 @@ class GenshinCog(commands.Cog):
                         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                         uid = user['uid']
                         username = user['name']
+                        break
                 if found == False:
                     embed = global_vars.embedNoAccount
                     global_vars.setFooter(embed)
@@ -183,6 +187,7 @@ class GenshinCog(commands.Cog):
                         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                         uid = user['uid']
                         username = user['name']
+                        break
                 if found == False:
                     embed = global_vars.embedNoAccount
                     global_vars.setFooter(embed)
@@ -213,6 +218,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -257,6 +263,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -284,6 +291,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -320,6 +328,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -375,6 +384,7 @@ class GenshinCog(commands.Cog):
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
                 username = user['name']
+                break
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)

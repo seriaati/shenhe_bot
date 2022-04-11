@@ -208,10 +208,10 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	async def give(self, ctx, member: discord.Member, argFlow: int):
 		if member.id == ctx.author.id:
-			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!")
+			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!(不可以自己給自己")
 			return
 		if argFlow < 0:
-			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!")
+			await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!(不可以給負數flow幣")
 			return
 		found = False
 		for user in users:
