@@ -7,8 +7,6 @@ import global_vars
 global_vars.Global()
 from classes import Character
 from discord.ext import commands
-import psyco
-psyco.full()
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
