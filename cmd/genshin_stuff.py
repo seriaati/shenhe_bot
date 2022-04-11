@@ -17,6 +17,7 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def check(self, ctx, *, name: discord.Member = None):
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -66,6 +67,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def stats(self, ctx, *, name: discord.Member = None):
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -102,6 +104,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def area(self, ctx, *, name: discord.Member = None):
+        global_vars.reloadUser()
         name = name or ctx.author
         name = name or ctx.author
         found = False
@@ -140,6 +143,7 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def claim(self, ctx, *, name=''):
+        global_vars.reloadUser()
         # 有無輸入參數?
         # claim all
         if name=='all':
@@ -210,6 +214,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def abyss(self, ctx, *, name: discord.Member = None):
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -255,6 +260,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def diary(self, ctx, *, name: discord.Member = None): 
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -283,6 +289,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def log(self, ctx, *, name: discord.Member = None): 
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -320,6 +327,7 @@ class GenshinCog(commands.Cog):
         await client.close()
     @commands.command()
     async def char(self, ctx, *, name: discord.Member = None):
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -367,6 +375,7 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def users(self, ctx):
+        global_vars.reloadUser()
         userStr = ""
         for user in users:
             userStr = userStr+f"{user['name']} - {user['uid']}\n"
@@ -376,6 +385,7 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def today(self, ctx, *, name: discord.Member = None): 
+        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:

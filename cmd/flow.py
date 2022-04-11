@@ -80,7 +80,7 @@ class FlowCog(commands.Cog):
 				author = self.bot.get_user(confirm['authorID'])
 				receiver = self.bot.get_user(confirm['receiverID'])
 				embed = global_vars.defaultEmbed("🆗 結算成功", 
-					f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']}flow幣**\n接收人: {receiver.mention} **+{confirm['flow']}flow幣**")
+					f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
 				global_vars.setFooter(embed)
 				await author.send(embed=embed)
 				await receiver.send(embed=embed)

@@ -1,4 +1,4 @@
-import discord
+import discord, yaml
 from classes import User
 def Global():
     global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
@@ -18,3 +18,7 @@ def setFooter(embed):
 def defaultEmbed(title, message):
     Global()
     return discord.Embed(title = title, description = message, color = purpleColor)
+
+def reloadUser():
+    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+        users = yaml.full_load(file)
