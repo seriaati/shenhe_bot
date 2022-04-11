@@ -59,7 +59,7 @@ class FlowCog(commands.Cog):
 						# user['flow'] += find['flow']
 						embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
 						global_vars.setFooter(embedDM)
-						dm = await author.send(embed=embed)
+						dm = await author.send(embed=embedDM)
 						dm.add_reaction('🆗')
 						newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
 							'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id}
