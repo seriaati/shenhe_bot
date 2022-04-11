@@ -27,6 +27,9 @@ class FlowCog(commands.Cog):
 					print("found message")
 					if payload.emoji.name == '✅':
 						for user in users:
+							if payload.user_id == find['authorID']:
+								await channel.send(f"不可以自己接自己的委託啦")
+								return
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
 								acceptUser = self.bot.get_user(user['discordID'])
