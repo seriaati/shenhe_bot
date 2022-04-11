@@ -84,6 +84,11 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embed)
 				await author.send(embed=embed)
 				await receiver.send(embed=embed)
+				confirms.remove(confirm)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(confirms, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(users, file)
 				break
 
 	@commands.command()

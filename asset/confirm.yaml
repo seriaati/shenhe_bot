@@ -1,5 +1,5 @@
-title: 'test'
-authorID: 123456
-receiverID: 654321
-flow: 100
-msgID: 123123
+- title: 'test'
+  authorID: 123456
+  receiverID: 654321
+  flow: 100
+  msgID: 123123
