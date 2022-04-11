@@ -30,7 +30,7 @@ class FlowCog(commands.Cog):
 							if user['discordID'] == payload.user_id:
 								author = self.bot.get_user(find['authorID'])
 								acceptUser = self.bot.get_user(user['discordID'])
-								await channel.send(f"[✅ 接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
+								await channel.send(f"[接受委託] {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 委託, 獲得了 **{find['flow']} flow幣**")
 								user['flow'] += find['flow']
 							if user['discordID'] == find['authorID']:
 								user['flow'] -= find['flow']
@@ -107,6 +107,11 @@ class FlowCog(commands.Cog):
 				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
+			for user in users:
+				if int(result.flow) > user['flow']:
+					embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有的flow幣數量的flow幣"," ")
+					global_vars.setFooter(embedResult)
+					message = await ctx.send(embed=embedResult)
 			else:
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}")
 				global_vars.setFooter(embedResult)
