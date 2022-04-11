@@ -154,9 +154,10 @@ class FlowCog(commands.Cog):
 					embed = global_vars.defaultEmbed("交易失敗", "自己都不夠了還想給人ww")
 				else:
 					user['flow'] -= int(argFlow)
-					embed = global_vars.defaultEmbed("交易成功")
 			if user['discordID'] == member.id:
 				user['flow'] += int(argFlow)
+				acceptor = self.bot.get_user(member.id)
+				embed = global_vars.defaultEmbed("交易成功", f"{ctx.author.mention} 給了 {acceptor.mention} {str(argFlow)}枚flow幣")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 def setup(bot):
