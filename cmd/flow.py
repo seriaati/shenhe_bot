@@ -25,7 +25,7 @@ class FlowCog(commands.Cog):
 		if "早安" in message.content:
 			for user in users:
 				if user['discordID'] == message.author.id:
-					if user.has_key('morning')==False:
+					if 'morning' not in user:
 						user['morning'] = datetime.today().date()
 						await message.add_reaction('☀️')
 						user['flow'] += 1
