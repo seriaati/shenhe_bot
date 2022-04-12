@@ -43,6 +43,8 @@ class FlowCog(commands.Cog):
 						bank['flow'] -= 1
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(users, file)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(bank, file)
 					break
 
 	@commands.Cog.listener()
