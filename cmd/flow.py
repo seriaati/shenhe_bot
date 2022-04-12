@@ -356,9 +356,11 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	async def total(self, ctx):
 		total = 0
+		count = 0
 		for user in users:
+			count += 1
 			total += user['flow']
-		await ctx.send(f"目前群組裡共有{total}枚flow幣")
+		await ctx.send(f"目前群組裡共有{count}個flow帳號\n{total}枚flow幣")
 
 
 def setup(bot):
