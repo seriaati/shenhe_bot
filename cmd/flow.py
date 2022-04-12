@@ -26,10 +26,14 @@ class FlowCog(commands.Cog):
         	for user in users:
         		if user['discordID'] == message.author.id:
         			if user['morning'] == None:
-        				user['monring'] = datetime.today().date()
+        				user['morning'] = datetime.today().date()
+        				await message.add_reaction('☀️')
+        				user['flow'] += 1
         			if user['morning'] != datetime.today().date():
 						await message.add_reaction('☀️')
         				user['flow'] += 1
+        			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
         			break
     	await self.bot.process_commands(message)
 
