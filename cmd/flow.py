@@ -64,6 +64,8 @@ class FlowCog(commands.Cog):
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
 		for find in finds:
 			if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
 				for user in users:
@@ -141,6 +143,8 @@ class FlowCog(commands.Cog):
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 
 	@commands.command()
@@ -177,6 +181,8 @@ class FlowCog(commands.Cog):
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
 
 		# w1 = discord.utils.get(ctx.guild.roles,name="W1")
 		# w2 = discord.utils.get(ctx.guild.roles,name="W2")
@@ -312,6 +318,8 @@ class FlowCog(commands.Cog):
 			users.append(newUser)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
