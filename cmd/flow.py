@@ -35,7 +35,7 @@ class FlowCog(commands.Cog):
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(users, file)
 					break
-		await self.bot.process_commands(message)
+		# await self.bot.process_commands(message)
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
