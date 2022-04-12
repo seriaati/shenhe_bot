@@ -1,4 +1,8 @@
 import discord, yaml
+import getpass
+owner = getpass.getuser()
+import sys 
+sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 from classes import User
 def Global():
     global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
