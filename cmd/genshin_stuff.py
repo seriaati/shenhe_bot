@@ -135,7 +135,7 @@ class GenshinCog(commands.Cog):
     @commands.command()
     async def claim(self, ctx, *, member: discord.Member = None):
         global_vars.reloadUser()
-        member = member of ctx.author
+        member = member or ctx.author
         for user in users:
             if member.id == user['discordID'] :
                 found = True
