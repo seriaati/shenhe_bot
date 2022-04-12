@@ -23,10 +23,13 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if "早安" in message.content:
-        	await message.add_reaction('☀️')
         	for user in users:
         		if user['discordID'] == message.author.id:
-        			user['flow'] += 1
+        			if user['morning'] == None:
+        				user['monring'] = datetime.today().date()
+        			if user['morning'] != datetime.today().date():
+						await message.add_reaction('☀️')
+        				user['flow'] += 1
         			break
     	await self.bot.process_commands(message)
 
