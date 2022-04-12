@@ -337,8 +337,16 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def shop(self, ctx):
+		shopEmbeds = []
 		embed = global_vars.defaultEmbed("🛒 flow商店","這裡還空空如也…\n過一段時間再回來看看吧")
 		global_vars.setFooter(embed)
+		shopEmbeds.append(embed)
+		paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
+        paginator.add_reaction('⏮️', "first")
+        paginator.add_reaction('◀', "back")
+        paginator.add_reaction('▶', "next")
+        paginator.add_reaction('⏭️', "last")
+        await paginator.run(shopEmbeds)
 		await ctx.send(embed=embed)
 
 def setup(bot):

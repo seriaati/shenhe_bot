@@ -25,7 +25,7 @@ class GenshinCog(commands.Cog):
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
-                username = user['member']
+                username = user['name']
                 break
         if found == False:
             embed = global_vars.embedNoAccount
