@@ -24,7 +24,7 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if message.author == self.bot.user:
-		    return
+			return
 		if "早安" in message.content:
 			for user in users:
 				if user['discordID'] == message.author.id:
@@ -343,20 +343,20 @@ class FlowCog(commands.Cog):
 		global_vars.setFooter(embed)
 		shopEmbeds.append(embed)
 		paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
-        paginator.add_reaction('⏮️', "first")
-        paginator.add_reaction('◀', "back")
-        paginator.add_reaction('▶', "next")
-        paginator.add_reaction('⏭️', "last")
-        await paginator.run(shopEmbeds)
+		paginator.add_reaction('⏮️', "first")
+		paginator.add_reaction('◀', "back")
+		paginator.add_reaction('▶', "next")
+		paginator.add_reaction('⏭️', "last")
+		await paginator.run(shopEmbeds)
 		await ctx.send(embed=embed)
 
 	@commands.command()
 	async def menu(ctx):
-	    embed1=discord.Embed(description="月卡")
-	    embed2=discord.Embed(description="結晶")
-	    embed3=discord.Embed(description="抽獎卷")
-	    rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
-	    await rmenu.start()
+		embed1=discord.Embed(description="月卡")
+		embed2=discord.Embed(description="結晶")
+		embed3=discord.Embed(description="抽獎卷")
+		rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
+		await rmenu.start()
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
