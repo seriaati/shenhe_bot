@@ -17,7 +17,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def check(self, ctx, *, member: discord.Member = None):
-        global_vars.reloadUser()
         member = member or ctx.author
         found = False
         for user in users:
@@ -59,7 +58,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
-        global_vars.reloadUser()
         member = member or ctx.author
         found = False
         for user in users:
@@ -96,7 +94,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def area(self, ctx, *, name: discord.Member = None):
-        global_vars.reloadUser()
         name = name or ctx.author
         name = name or ctx.author
         found = False
@@ -134,7 +131,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def claim(self, ctx, *, member: discord.Member = None):
-        global_vars.reloadUser()
         member = member or ctx.author
         for user in users:
             if member.id == user['discordID'] :
@@ -165,7 +161,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def abyss(self, ctx, *, name: discord.Member = None):
-        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -209,9 +204,9 @@ class GenshinCog(commands.Cog):
         global_vars.setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
         await client.close()
+
     @commands.command()
     async def diary(self, ctx, *, name: discord.Member = None): 
-        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -238,9 +233,9 @@ class GenshinCog(commands.Cog):
         global_vars.setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
         await client.close()
+
     @commands.command()
     async def log(self, ctx, *, name: discord.Member = None): 
-        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -255,7 +250,6 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        # 取得資料
         client = genshin.GenshinClient(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
@@ -276,9 +270,9 @@ class GenshinCog(commands.Cog):
         embeds = [embedPrimo, embedMora]
         await paginator.run(embeds)
         await client.close()
+
     @commands.command()
     async def char(self, ctx, *, name: discord.Member = None):
-        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:
@@ -326,7 +320,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def users(self, ctx):
-        global_vars.reloadUser()
         userStr = ""
         for user in users:
             userStr = userStr+f"{user['name']} - {user['uid']}\n"
@@ -336,7 +329,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def today(self, ctx, *, name: discord.Member = None): 
-        global_vars.reloadUser()
         name = name or ctx.author
         found = False
         for user in users:

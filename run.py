@@ -48,7 +48,7 @@ async def on_ready():
     print("---------------------")
 
 # 私訊提醒功能
-@tasks.loop(seconds=86400)
+@tasks.loop(seconds=43200)
 async def claimLoop():
     global_vars.reloadUser()
     for user in users:
@@ -60,12 +60,12 @@ async def claimLoop():
         try:
             reward = await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
-            print("")
+            print(f"{user['name']}already claimed")
         else:
-            print(" ")
+            print(f"claimed for {user['name']}")
         await client.close()
 
-@tasks.loop(seconds=600) # 10 min
+@tasks.loop(seconds=600)
 async def checkLoop():
     global_vars.reloadUser()
     for user in users:
