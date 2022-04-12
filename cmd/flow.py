@@ -73,11 +73,11 @@ class FlowCog(commands.Cog):
 						if find['one']==True:
 							await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
 							await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
+							await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
 						elif find['one']==False:
 							await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {find['title']} 素材委託")
-							await author.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")
-						# user['flow'] += find['flow']
-						embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
+							await author.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")						embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
+							await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 素材委託")
 						global_vars.setFooter(embedDM)
 						dm = await author.send(embed=embedDM)
 						await dm.add_reaction('🆗')
