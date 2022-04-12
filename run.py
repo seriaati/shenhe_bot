@@ -66,7 +66,6 @@ async def claimLoop():
 
 @tasks.loop(seconds=600)
 async def checkLoop():
-    global_vars.reloadUser()
     for user in users:
         try:
             cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
