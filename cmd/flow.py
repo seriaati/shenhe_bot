@@ -339,7 +339,10 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	async def shop(self, ctx):
 		shopEmbeds = []
-		embed = global_vars.defaultEmbed("🛒 flow商店","這裡還空空如也…\n過一段時間再回來看看吧")
+		embed = global_vars.defaultEmbed("🛒 flow商店","原神小月卡一個月 - 500flow幣")
+		global_vars.setFooter(embed)
+		shopEmbeds.append(embed)
+		embed = global_vars.defaultEmbed("🛒 flow商店","discord nitro一個月 - 500flow幣")
 		global_vars.setFooter(embed)
 		shopEmbeds.append(embed)
 		paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
@@ -351,12 +354,12 @@ class FlowCog(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command()
-	async def menu(self, ctx):
-		embed1=discord.Embed(description="月卡")
-		embed2=discord.Embed(description="結晶")
-		embed3=discord.Embed(description="抽獎卷")
-		rmenu = ReactionMenu(ctx,[embed1,embed2,embed3])
-		await rmenu.start()
+	async def total(self, ctx):
+		total = 0
+		for user in users:
+			total += user['flow']
+		await ctx.send(f"目前群組裡共有{total}枚flow幣")
+
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
