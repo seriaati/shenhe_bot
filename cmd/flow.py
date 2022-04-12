@@ -21,6 +21,16 @@ class FlowCog(commands.Cog):
 		self.bot = bot
 
 	@commands.Cog.listener()
+	async def on_message(self, message):
+		if "早安" in message.content:
+        	await message.add_reaction('☀️')
+        	for user in users:
+        		if user['discordID'] == message.author.id:
+        			user['flow'] += 1
+        			break
+    	await self.bot.process_commands(message)
+
+	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		time.sleep(0.5)
 		channel = self.bot.get_channel(payload.channel_id)
