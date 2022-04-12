@@ -117,6 +117,7 @@ async def wait_until_1am():
     await discord.utils.sleep_until(next_run)
 
 checkLoop.start()
+claimLoop.start()
 # 偵測機率字串
 @bot.event
 async def on_message(message):
