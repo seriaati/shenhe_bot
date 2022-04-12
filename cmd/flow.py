@@ -355,7 +355,7 @@ class FlowCog(commands.Cog):
 		embed1=discord.Embed(description="月卡")
 		embed2=discord.Embed(description="結晶")
 		embed3=discord.Embed(description="抽獎卷")
-		rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
+		rmenu = ReactionMenu(ctx,[embed1,embed2,embed3])
 		await rmenu.start()
 
 def setup(bot):
