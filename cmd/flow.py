@@ -18,6 +18,8 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8')
 	confirms = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as file:
 	bank = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', encoding = 'utf-8') as file:
+	shop = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -372,25 +374,49 @@ class FlowCog(commands.Cog):
 			yaml.dump(users, file)
 		await ctx.send(embed=embed)
 
-	@commands.command()
+	@commands.group()
 	async def shop(self, ctx):
-		shopEmbeds = []
-		embed = global_vars.defaultEmbed("🛒 flow商店","原神小月卡一個月 - 380flow幣")
-		global_vars.setFooter(embed)
-		shopEmbeds.append(embed)
-		embed = global_vars.defaultEmbed("🛒 flow商店","discord nitro一個月 - 780flow幣")
-		global_vars.setFooter(embed)
-		shopEmbeds.append(embed)
-		embed = global_vars.defaultEmbed("🛒 flow商店","discord nitro classic一個月 - 380flow幣")
-		global_vars.setFooter(embed)
-		shopEmbeds.append(embed)
-		paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
-		paginator.add_reaction('⏮️', "first")
-		paginator.add_reaction('◀', "back")
-		paginator.add_reaction('▶', "next")
-		paginator.add_reaction('⏭️', "last")
-		await paginator.run(shopEmbeds)
-		await ctx.send(embed=embed)
+		if ctx.invoked_subcommand is None:
+			shopEmbeds = []
+			for item in shop:
+				embed = global_vars.defaultEmbed("🛒 flow商店",f"{item['name']} - {item['flow']}\n已被購買次數: {item['current']}/{item['max']}")
+				global_vars.setFooter(embed)
+				shopEmbeds.append(embed)
+			paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
+			paginator.add_reaction('⏮️', "first")
+			paginator.add_reaction('◀', "back")
+			paginator.add_reaction('▶', "next")
+			paginator.add_reaction('⏭️', "last")
+			await paginator.run(shopEmbeds)
+			await ctx.send(embed=embed)
+
+	@shop.command()
+	@commands.is_owner()
+	async def newitem(self, ctx):
+		form = Form(ctx, '新增商品', cleanup=True)
+		form.add_question('商品名稱?', 'name')
+		form.add_question('flow幣價格?', 'flow')
+		form.add_question('最大購買次數?', 'max')
+		form.edit_and_delete(True)
+		form.set_timeout(60)
+		await form.set_color("0xa68bd3")
+		result = await form.start()
+		newItem = {'name': result.name, 'flow': result.flow, 'current': 0, 'max': result.max}
+		shop.append(newItem)
+		with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+			yaml.dump(shop, file)
+		await ctx.send(f"商品{result.name}新增成功")
+	
+	@shop.command()
+	@commands.is_owner()
+	async def removeitem(self, ctx, *, arg=''):
+		for item in shop:
+			if item['name'] == arg:
+				shop.remove(item)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(shop, file)
+				await ctx.send("商品刪除成功")
+				break
 
 	@commands.command()
 	async def total(self, ctx):

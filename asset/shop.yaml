@@ -1,0 +1,12 @@
+- name: "原神小月卡一個月 x1"
+  flow: 380
+  max: 5
+  current: 0
+- name: "discord大N x1"
+  flow: 780
+  max: 5
+  current: 0
+- name: "discord小N x1"
+  flow: 380
+  max: 10
+  current: 0
