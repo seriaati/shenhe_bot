@@ -48,7 +48,7 @@ async def on_ready():
     print("---------------------")
 
 # 私訊提醒功能
-@tasks.loop(seconds=43200)
+@tasks.loop(hours=24)
 async def claimLoop():
     global_vars.reloadUser()
     for user in users:
@@ -109,6 +109,14 @@ async def checkLoop():
 async def beforeLoop():
     print('waiting...')
     await bot.wait_until_ready()
+
+@claimLoop.before_loop
+async def wait_until_1am():
+    now = datetime.datetime.now().astimezone()
+    next_run = now.replace(hour=1, minute=0, second=0)
+    if next_run < now:
+        next_run += datetime.timedelta(days=1)
+    await discord.utils.sleep_until(next_run)
 
 checkLoop.start()
 # 偵測機率字串
