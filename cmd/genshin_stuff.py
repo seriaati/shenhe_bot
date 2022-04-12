@@ -134,26 +134,6 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def claim(self, ctx, *, name=''):
-        global_vars.reloadUser()
-        if name=='all':
-            author = ctx.author.id
-            for user in users:
-                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
-                username = user['name']
-                client = genshin.GenshinClient(cookies)
-                client.lang = "zh-tw"
-                signed_in, claimed_rewards = await client.get_reward_info()
-                try:
-                    reward = await client.claim_daily_reward()
-                except genshin.AlreadyClaimed:
-                    embed = global_vars.defaultEmbed(f"使用者: {username}",f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼<@{author}>\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-                    global_vars.setFooter(embed)
-                    await ctx.send(embed=embed)
-                else:
-                    embed = global_vars.defaultEmbed(f"使用者: {username}",f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-                    global_vars.setFooter(embed)
-                    await ctx.send(embed=embed)
-                await client.close()
         elif name != "all":
             if name != "":
                 found = False
@@ -195,7 +175,7 @@ class GenshinCog(commands.Cog):
                 global_vars.setFooter(embed)
                 await ctx.send(embed=embed)
         await client.close()
-        
+
     @commands.command()
     async def abyss(self, ctx, *, name: discord.Member = None):
         global_vars.reloadUser()

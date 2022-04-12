@@ -48,6 +48,22 @@ async def on_ready():
     print("---------------------")
 
 # 私訊提醒功能
+@tasks.loop(seconds=86400):
+async def claimLoop():
+    for user in users:
+        cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+        username = user['name']
+        client = genshin.GenshinClient(cookies)
+        client.lang = "zh-tw"
+        signed_in, claimed_rewards = await client.get_reward_info()
+        try:
+            reward = await client.claim_daily_reward()
+        except genshin.AlreadyClaimed:
+            print("")
+        else:
+            print(" ")
+        await client.close()
+
 @tasks.loop(seconds=600) # 10 min
 async def checkLoop():
     for user in users:
