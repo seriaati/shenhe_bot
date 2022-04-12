@@ -8,6 +8,7 @@ global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
 from discord.ext.forms import ReactionForm
+from discord.ext.forms import ReactionMenu
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
@@ -348,6 +349,14 @@ class FlowCog(commands.Cog):
         paginator.add_reaction('⏭️', "last")
         await paginator.run(shopEmbeds)
 		await ctx.send(embed=embed)
+
+	@commands.command()
+	async def menu(ctx):
+	    embed1=discord.Embed(description="月卡")
+	    embed2=discord.Embed(description="結晶")
+	    embed3=discord.Embed(description="抽獎卷")
+	    rmenu = forms.ReactionMenu(ctx,[embed1,embed2,embed3])
+	    await rmenu.start()
 
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
