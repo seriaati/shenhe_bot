@@ -39,7 +39,7 @@ class FlowCog(commands.Cog):
 					break
 		if message.channel.id == 960861105503232030:
 			if "find" not in message.content:
-				time.sleep(2)
+				time.sleep(5)
 				await message.delete()
 
 	@commands.Cog.listener()
