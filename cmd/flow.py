@@ -351,7 +351,7 @@ class FlowCog(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command()
-	async def menu(ctx):
+	async def menu(self, ctx):
 		embed1=discord.Embed(description="月卡")
 		embed2=discord.Embed(description="結晶")
 		embed3=discord.Embed(description="抽獎卷")
