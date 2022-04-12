@@ -30,8 +30,4 @@ def reloadUser():
 def reloadFlow():
     with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
         users = yaml.full_load(file)
-
-def dumpFlow():
-    reloadFlow()
-    with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-        yaml.dump(users, file)
+    

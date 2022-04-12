@@ -39,7 +39,8 @@ class FlowCog(commands.Cog):
 						await message.add_reaction('☀️')
 						user['flow'] += 1
 						bank['flow'] -= 1
-					global_vars.dumpFlow()
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+        				yaml.dump(users, file)
 					break
 
 	@commands.Cog.listener()
@@ -117,7 +118,8 @@ class FlowCog(commands.Cog):
 				confirms.remove(confirm)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(confirms, file)
-				global_vars.dumpFlow()
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+        			yaml.dump(users, file)
 				break
 
 	@commands.command()
@@ -135,7 +137,8 @@ class FlowCog(commands.Cog):
 			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
 			bank['flow'] -= 100
 			users.append(newUser)
-			global_vars.dumpFlow()
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+        		yaml.dump(users, file)
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 
 	@commands.command()
@@ -346,7 +349,8 @@ class FlowCog(commands.Cog):
 				user['flow'] += int(argFlow)
 				acceptor = self.bot.get_user(member.id)
 				embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
-				global_vars.dumpFlow()
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+        			yaml.dump(users, file)
 				break
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
@@ -364,7 +368,8 @@ class FlowCog(commands.Cog):
 			user['flow'] = 100
 		embed = global_vars.defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
 		global_vars.setFooter(embed)
-		global_vars.dumpFlow()
+		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+        	yaml.dump(users, file)
 		await ctx.send(embed=embed)
 
 	@commands.command()
