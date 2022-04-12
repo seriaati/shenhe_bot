@@ -48,7 +48,7 @@ async def on_ready():
     print("---------------------")
 
 # 私訊提醒功能
-@tasks.loop(seconds=86400):
+@tasks.loop(seconds=86400)
 async def claimLoop():
     global_vars.reloadUser()
     for user in users:
