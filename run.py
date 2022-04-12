@@ -50,7 +50,6 @@ async def on_ready():
 # 私訊提醒功能
 @tasks.loop(hours=24)
 async def claimLoop():
-    global_vars.reloadUser()
     for user in users:
         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
         username = user['name']
