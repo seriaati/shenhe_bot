@@ -22,6 +22,8 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
+		if message.author == bot.user:
+		    return
 		if "早安" in message.content:
 			for user in users:
 				if user['discordID'] == message.author.id:
@@ -35,7 +37,9 @@ class FlowCog(commands.Cog):
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(users, file)
 					break
-		# await self.bot.process_commands(message)
+		if message.channel.id == 960861105503232030:
+			if "find" not in message.content:
+				await message.delete()
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
@@ -60,8 +64,10 @@ class FlowCog(commands.Cog):
 				for user in users:
 					if payload.user_id == find['authorID']:
 						userObj = self.bot.get_user(find['authorID'])
-						await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
+						message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
 						await reaction.remove(payload.member)
+						time.sleep(2)
+						await message.delete()
 						return
 					elif user['discordID'] == payload.user_id:
 						await message.clear_reaction('✅')
