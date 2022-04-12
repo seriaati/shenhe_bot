@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, time
+import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -360,7 +360,7 @@ class FlowCog(commands.Cog):
 		for user in users:
 			count += 1
 			total += user['flow']
-		await ctx.send(f"目前群組裡共有{count}個flow帳號\n{total}枚flow幣")
+		await ctx.send(f"目前群組裡共有:\n{count}個flow帳號\n{total}枚flow幣")
 
 
 def setup(bot):

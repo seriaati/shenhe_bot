@@ -26,3 +26,7 @@ def defaultEmbed(title, message):
 def reloadUser():
     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
         users = yaml.full_load(file)
+
+def reloadFlow():
+    with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+        users = yaml.full_load(file)
