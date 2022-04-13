@@ -450,7 +450,7 @@ class FlowCog(commands.Cog):
 							global_vars.setFooter(embed)
 							await ctx.author.send(embed=embed)
 							break
-				if found = False:
+				if found == False:
 					discordID = ctx.author.id
 					newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
 					bank['flow'] -= 100
