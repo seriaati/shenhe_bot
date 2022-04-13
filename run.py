@@ -80,7 +80,7 @@ async def checkLoop():
             dateNow = datetime.datetime.now()
             diff = dateNow - user['dmDate']
             diffHour = diff.total_seconds() / 3600
-            if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
+            if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1 or user['discordID']==410036441129943050:
                 print("已私訊 "+str(userObj))
                 print(diffHour)
                 fullTime = datetime.datetime.now() + datetime.timedelta(hours=diffHour)
