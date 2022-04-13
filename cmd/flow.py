@@ -41,24 +41,22 @@ class FlowCog(commands.Cog):
 					bank['flow'] -= 100
 					users.append(newUser)
 					if 'morning' not in user:
+						print("morning not in user and not found")
 						user['morning'] = datetime.datetime.today().date()
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-						break
-					elif user['morning'] != datetime.datetime.today().date():
 						await message.add_reaction('☀️')
 						user['flow'] += 1
 						bank['flow'] -= 1
 						break
 				elif found == True:
 					if 'morning' not in user:
+						print("morning not in user")
 						user['morning'] = datetime.datetime.today().date()
 						await message.add_reaction('☀️')
 						user['flow'] += 1
 						bank['flow'] -= 1
 						break
 					elif user['morning'] != datetime.datetime.today().date():
+						print("morning in user")
 						await message.add_reaction('☀️')
 						user['flow'] += 1
 						bank['flow'] -= 1
