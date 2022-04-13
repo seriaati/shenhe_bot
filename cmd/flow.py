@@ -34,6 +34,7 @@ class FlowCog(commands.Cog):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:")
+				print(emojiStr)
 				if payload.emoji.name == str(emoji):
 					guild = bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
@@ -127,6 +128,7 @@ class FlowCog(commands.Cog):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:")
+				print(emojiStr)
 				if payload.emoji.name == str(emoji):
 					guild = bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
