@@ -83,7 +83,7 @@ async def checkLoop():
             if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
                 print("已私訊 "+str(userObj))
                 print(diffHour)
-                fullTime = datetime.datetime.now() + timedelta(hours=diffHour)
+                fullTime = datetime.datetime.now() + datetime.timedelta(hours=diffHour)
                 printTime = format(fullTime, '%H:%M:%S')
                 time = notes.until_resin_recovery
                 hours, minutes = divmod(time // 60, 60)
