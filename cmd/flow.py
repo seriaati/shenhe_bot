@@ -443,15 +443,15 @@ class FlowCog(commands.Cog):
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				found = True
-				itemPrice = int(items[pos]['flow'])
+				itemPrice = int(shop[pos]['flow'])
 				if user['flow'] < itemPrice:
 					await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
 					return
 				else:
-					item['current'] += 1
+					shop[pos]['current'] += 1
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(shop, file)
-					newLog = {'item': items[pos]['name'], 'flow': int(items[pos]['flow']), 'buyerID': ctx.author.id, 'itemUUID': item[pos]['uuid']}
+					newLog = {'item': shop[pos]['name'], 'flow': int(shop[pos]['flow']), 'buyerID': ctx.author.id, 'itemUUID': shop[pos]['uuid']}
 					logs.append(newLog)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(logs, file)
