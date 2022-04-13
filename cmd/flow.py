@@ -30,13 +30,12 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == 962344110319091783:
-			for i in range(9):
+			for i in range(1, 8):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
-				print(emojiStr)
 				if payload.emoji.name == str(emojiStr):
-					guild = bot.get_guild(payload.guild_id)
+					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					guild_member = discord.utils.get(guild.roles, name="W1")
 					await member.add_roles(guild_member)
@@ -124,13 +123,12 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == 962344110319091783:
-			for i in range(9):
+			for i in range(1, 8):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
-				print(emojiStr)
 				if payload.emoji.name == str(emojiStr):
-					guild = bot.get_guild(payload.guild_id)
+					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					guild_member = discord.utils.get(guild.roles, name=f"W{i}")
 					await member.remove_roles(guild_member)
@@ -164,14 +162,11 @@ class FlowCog(commands.Cog):
 		embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
 		global_vars.setFooter(embed)
 		message = await channel.send(embed=embed)
-		await message.add_reaction('1️⃣')
-		await message.add_reaction('2️⃣')
-		await message.add_reaction('3️⃣')
-		await message.add_reaction('4️⃣')
-		await message.add_reaction('5️⃣')
-		await message.add_reaction('6️⃣')
-		await message.add_reaction('7️⃣')
-		await message.add_reaction('8️⃣')
+		for i in range(1, 8):
+			p = inflect.engine()
+			word = p.number_to_words(i)
+			emojiStr = emoji.emojize(f":{word}:", language='alias')
+			await message.add_reaction(str(emojiStr))
 
 	@commands.command()
 	async def find(self, ctx):
