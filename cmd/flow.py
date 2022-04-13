@@ -30,12 +30,11 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == 962344110319091783:
-			for i in range(1, 8):
+			for i in range(1, 9):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
 				if payload.emoji.name == str(emojiStr):
-					print(payload.emoji.name)
 					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					role = discord.utils.get(guild.roles, name=f"W{i}")
@@ -124,12 +123,11 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == 962344110319091783:
-			for i in range(1, 8):
+			for i in range(1, 9):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
 				if payload.emoji.name == str(emojiStr):
-					print(payload.emoji.name)
 					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					role = discord.utils.get(guild.roles, name=f"W{i}")
