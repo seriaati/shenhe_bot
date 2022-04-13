@@ -34,11 +34,12 @@ class FlowCog(commands.Cog):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
+				print(payload.emoji.name)
 				if payload.emoji.name == str(emojiStr):
 					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
-					guild_member = discord.utils.get(guild.roles, name="W1")
-					await member.add_roles(guild_member)
+					role = discord.utils.get(guild.roles, name="W1")
+					await member.add_roles(role)
 					break
 		else:
 			time.sleep(0.5)
@@ -127,11 +128,12 @@ class FlowCog(commands.Cog):
 				p = inflect.engine()
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:", language='alias')
+				print(payload.emoji.name)
 				if payload.emoji.name == str(emojiStr):
 					guild = self.bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
-					guild_member = discord.utils.get(guild.roles, name=f"W{i}")
-					await member.remove_roles(guild_member)
+					role = discord.utils.get(guild.roles, name=f"W{i}")
+					await member.remove_roles(role)
 					break
 
 	@commands.command()
