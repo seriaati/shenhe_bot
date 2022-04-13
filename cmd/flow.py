@@ -427,7 +427,7 @@ class FlowCog(commands.Cog):
 				break
 
 	@shop.command()
-	async def buy(self, ctx, *, arg=''):
+	async def buy(self, ctx):
 		itemStr = ""
 		count = 1
 		for item in shop:
@@ -439,7 +439,7 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		pos = result.number - 1
+		pos = int(result.number) - 1
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				found = True
