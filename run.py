@@ -147,7 +147,7 @@ async def on_raw_reaction_add(payload):
             p = inflect.engine()
             word = p.number_to_words(i)
             emoji = emoji.emojize(f":{word}:")
-            if payload.emoji.name == str(emoji)
+            if payload.emoji.name == str(emoji):
                 guild = bot.get_guild(payload.guild_id)
                 member = guild.get_member(payload.user_id)
                 guild_member = discord.utils.get(guild.roles, name="W1")
@@ -161,7 +161,7 @@ async def on_raw_reaction_remove(payload):
             p = inflect.engine()
             word = p.number_to_words(i)
             emoji = emoji.emojize(f":{word}:")
-            if payload.emoji.name == str(emoji)
+            if payload.emoji.name == str(emoji):
                 guild = bot.get_guild(payload.guild_id)
                 member = guild.get_member(payload.user_id)
                 guild_member = discord.utils.get(guild.roles, name=f"W{i}")
