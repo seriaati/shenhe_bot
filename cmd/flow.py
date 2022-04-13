@@ -311,6 +311,9 @@ class FlowCog(commands.Cog):
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
 					embed = global_vars.defaultEmbed("❌交易失敗", "自己都不夠了還想給人ww")
+					global_vars.setFooter(embed)
+					await ctx.send(embed=embed)
+					return
 				else:
 					user['flow'] -= int(argFlow)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
@@ -321,8 +324,8 @@ class FlowCog(commands.Cog):
 				embed = global_vars.defaultEmbed("✅ 交易成功", f"{ctx.author.mention}給了{acceptor.mention} {str(argFlow)}枚flow幣")
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
-		global_vars.setFooter(embed)
-		await ctx.send(embed=embed)
+				global_vars.setFooter(embed)
+				await ctx.send(embed=embed)
 
 	@commands.command()
 	@commands.is_owner()
@@ -425,47 +428,56 @@ class FlowCog(commands.Cog):
 
 	@shop.command()
 	async def buy(self, ctx, *, arg=''):
+		itemStr = ""
+		count = 1
 		for item in shop:
-			if item['uuid'] == arg:
-				found = False
-				for user in users:
-					if user['discordID'] == ctx.author.id:
-						found = True
-						itemPrice = int(item['flow'])
-						if user['flow'] < itemPrice:
-							await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
-							return
-						else:
-							item['current'] += 1
-							with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
-								yaml.dump(shop, file)
-							newLog = {'item': item['name'], 'flow': int(item['flow']), 'buyerID': ctx.author.id, 'itemUUID': item['uuid']}
-							logs.append(newLog)
-							with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
-								yaml.dump(logs, file)
-							itemPrice = int(item['flow'])
-							user['flow'] -= itemPrice
-							bank['flow'] += itemPrice
-							with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-								yaml.dump(bank, file)
-							with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-								yaml.dump(users, file)
-							await ctx.send(f"商品 {item['name']} 購買成功, 詳情請查看私訊")
-							await ctx.author.send(f"您已在flow商城購買了 {item['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
-							embed = global_vars.defaultEmbed("📜 購買證明",f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {item['name']}\nUUID: {item['uuid']}\n價格: {item['flow']}")
-							global_vars.setFooter(embed)
-							await ctx.author.send(embed=embed)
-							break
-				if found == False:
-					discordID = ctx.author.id
-					newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
-					bank['flow'] -= 100
-					users.append(newUser)
-					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-						yaml.dump(users, file)
+			itemStr = itemStr + f"{count}. {item['name']}\n"
+			count += 1
+		form = Form(ctx, '要購買什麼商品?(輸入數字)', cleanup=True)
+		form.add_question(f'{itemStr}', 'number')
+		form.edit_and_delete(True)
+		form.set_timeout(60)
+		await form.set_color("0xa68bd3")
+		result = await form.start()
+		pos = result.number - 1
+		for user in users:
+			if user['discordID'] == ctx.author.id:
+				found = True
+				itemPrice = int(items[pos]['flow'])
+				if user['flow'] < itemPrice:
+					await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
+					return
+				else:
+					item['current'] += 1
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(shop, file)
+					newLog = {'item': items[pos]['name'], 'flow': int(items[pos]['flow']), 'buyerID': ctx.author.id, 'itemUUID': item[pos]['uuid']}
+					logs.append(newLog)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(logs, file)
+					itemPrice = int(item['flow'])
+					user['flow'] -= itemPrice
+					bank['flow'] += itemPrice
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(bank, file)
-					await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
+					await ctx.send(f"商品 {item['name']} 購買成功, 詳情請查看私訊")
+					await ctx.author.send(f"您已在flow商城購買了 {item['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
+					embed = global_vars.defaultEmbed("📜 購買證明",f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {item['name']}\nUUID: {item['uuid']}\n價格: {item['flow']}")
+					global_vars.setFooter(embed)
+					await ctx.author.send(embed=embed)
+					break
+		if found == False:
+			discordID = ctx.author.id
+			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
+			bank['flow'] -= 100
+			users.append(newUser)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
+			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`或是`!shop buy`一次試試看")
 	@shop.command()
 	@commands.is_owner()
 	async def log(self, ctx):

@@ -18,7 +18,7 @@ class RegisterCog(commands.Cog):
     @commands.command()
     async def register(self, ctx):
         embedRegister = global_vars.defaultEmbed("註冊教學", 
-            "1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('無效的cookie,請重新登錄!');c&&confirm('將cookie複製到剪貼版？')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給<@410036441129943050>或<@665092644883398671>\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
+            "1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上後按ENTER\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('無效的cookie,請重新登錄!');c&&confirm('將cookie複製到剪貼版？')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給<@410036441129943050>或<@665092644883398671>並附上你的原神UID及想要的使用者名稱\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
         global_vars.setFooter(embedRegister)
         embed = global_vars.defaultEmbed("註冊帳號有什麼好處?", 
             global_vars.whyRegister)
