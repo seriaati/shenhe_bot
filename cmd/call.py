@@ -25,10 +25,6 @@ class CallCog(commands.Cog):
     async def maple(self, ctx):
         await ctx.send("中學生楓")
 
-    # @commands.command()
-    # async def flow(self, ctx):
-    #     await ctx.send("樂心助人又帥氣的flow哥哥")
-
     @commands.command()
     async def tedd(self, ctx):
         await ctx.send("沈默寡言但內心很善良也很帥氣的tedd哥哥")
@@ -40,6 +36,10 @@ class CallCog(commands.Cog):
     @commands.command()
     async def snow(self, ctx):
         await ctx.send("❄小雪國萬歲！")
+
+    @commands.command()
+    async def 小羽(self, ctx):
+        await ctx.send("可愛的小女生..? ")
 
 def setup(bot):
     bot.add_cog(CallCog(bot))
