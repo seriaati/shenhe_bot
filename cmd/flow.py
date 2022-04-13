@@ -411,7 +411,7 @@ class FlowCog(commands.Cog):
 	@commands.is_owner()
 	async def removeitem(self, ctx, *, arg=''):
 		for item in shop:
-			if item['itemUUID'] == arg:
+			if item['uuid'] == arg:
 				shop.remove(item)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
