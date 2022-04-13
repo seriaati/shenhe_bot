@@ -166,16 +166,20 @@ class FlowCog(commands.Cog):
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(bank, file)
 
-		# w1 = discord.utils.get(ctx.guild.roles,name="W1")
-		# w2 = discord.utils.get(ctx.guild.roles,name="W2")
-		# w3 = discord.utils.get(ctx.guild.roles,name="W3")
-		# w4 = discord.utils.get(ctx.guild.roles,name="W4")
-		# w5 = discord.utils.get(ctx.guild.roles,name="W5")
-		# w6 = discord.utils.get(ctx.guild.roles,name="W6")
-		# w7 = discord.utils.get(ctx.guild.roles,name="W7")
-		# w8 = discord.utils.get(ctx.guild.roles,name="W8")
-		# roles = [w1, w2, w3, w4, w5, w6, w7, w8]
-
+		w1 = discord.utils.get(ctx.guild.roles,name="W1")
+		w2 = discord.utils.get(ctx.guild.roles,name="W2")
+		w3 = discord.utils.get(ctx.guild.roles,name="W3")
+		w4 = discord.utils.get(ctx.guild.roles,name="W4")
+		w5 = discord.utils.get(ctx.guild.roles,name="W5")
+		w6 = discord.utils.get(ctx.guild.roles,name="W6")
+		w7 = discord.utils.get(ctx.guild.roles,name="W7")
+		w8 = discord.utils.get(ctx.guild.roles,name="W8")
+		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
+		roleForChannel = self.bot.get_channel(962311051683192842)
+		roleStr = f'請至{roleForChannel.mention}選擇身份組'
+				for role in roles:
+					if role in ctx.author.roles:
+						roleStr = role.name
 		embed = global_vars.defaultEmbed("請選擇委託類別",
 			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託")
 		message = await ctx.send(embed=embed)
@@ -208,7 +212,7 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
-				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受委託")
+				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
@@ -240,7 +244,7 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
-				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
+				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: <={roleStr}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
