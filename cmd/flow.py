@@ -35,7 +35,7 @@ class FlowCog(commands.Cog):
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:")
 				print(emojiStr)
-				if payload.emoji.name == str(emoji):
+				if payload.emoji.name == str(emojiStr):
 					guild = bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					guild_member = discord.utils.get(guild.roles, name="W1")
@@ -129,7 +129,7 @@ class FlowCog(commands.Cog):
 				word = p.number_to_words(i)
 				emojiStr = emoji.emojize(f":{word}:")
 				print(emojiStr)
-				if payload.emoji.name == str(emoji):
+				if payload.emoji.name == str(emojiStr):
 					guild = bot.get_guild(payload.guild_id)
 					member = guild.get_member(payload.user_id)
 					guild_member = discord.utils.get(guild.roles, name=f"W{i}")
