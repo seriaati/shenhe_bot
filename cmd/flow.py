@@ -388,7 +388,6 @@ class FlowCog(commands.Cog):
 			paginator.add_reaction('▶', "next")
 			paginator.add_reaction('⏭️', "last")
 			await paginator.run(shopEmbeds)
-			await ctx.send(embed=embed)
 
 	@shop.command()
 	@commands.is_owner()
