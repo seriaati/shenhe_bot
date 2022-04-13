@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils
+import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -26,47 +26,6 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-
-	# @commands.Cog.listener()
-	# async def on_message(self, message):
-	# 	if message.author == self.bot.user:
-	# 		return
-	# 	if "早安" in message.content:
-	# 		found = False
-	# 		for user in users:
-	# 			if user['discordID'] == message.author.id:
-	# 				found = True
-	# 			if found == False:
-	# 				discordID = message.author.id
-	# 				user = self.bot.get_user(message.author)
-	# 				newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
-	# 				bank['flow'] -= 100
-	# 				users.append(newUser)
-	# 				if 'morning' not in user:
-	# 					print("morning not in user and not found")
-	# 					user['morning'] = datetime.datetime.today().date()
-	# 					await message.add_reaction('☀️')
-	# 					user['flow'] += 1
-	# 					bank['flow'] -= 1
-	# 					break
-	# 			elif found == True:
-	# 				if 'morning' not in user:
-	# 					print("morning not in user")
-	# 					user['morning'] = datetime.datetime.today().date()
-	# 					await message.add_reaction('☀️')
-	# 					user['flow'] += 1
-	# 					bank['flow'] -= 1
-	# 					break
-	# 				elif user['morning'] != datetime.datetime.today().date():
-	# 					print("morning in user")
-	# 					await message.add_reaction('☀️')
-	# 					user['flow'] += 1
-	# 					bank['flow'] -= 1
-	# 					break
-	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-	# 			yaml.dump(users, file)
-	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-	# 			yaml.dump(bank, file)
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
@@ -420,7 +379,7 @@ class FlowCog(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			shopEmbeds = []
 			for item in shop:
-				embed = global_vars.defaultEmbed("🛒 flow商店",f"{item['name']} - {item['flow']}\n已被購買次數: {item['current']}/{item['max']}")
+				embed = global_vars.defaultEmbed("🛒 flow商店",f"{item['name']} - {item['flow']}\n已被購買次數: {item['current']}/{item['max']}\nUUID: {item['uuid']}")
 				global_vars.setFooter(embed)
 				shopEmbeds.append(embed)
 			paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
@@ -442,7 +401,8 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		newItem = {'name': result.name, 'flow': result.flow, 'current': 0, 'max': result.max}
+		uuid = uuid.uuid1()
+		newItem = {'name': result.name, 'flow': result.flow, 'current': 0, 'max': result.max, 'uuid': str(uuid)}
 		shop.append(newItem)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(shop, file)
@@ -462,9 +422,9 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	async def buy(self, ctx, *, arg=''):
 		for item in shop:
-			if item['name'] == arg:
+			if item['uuid'] == arg:
 				item['current'] += 1
-				newLog = {'item': item['name'], 'flow': item['flow'], 'buyerID': ctx.author.id}
+				newLog = {'item': item['name'], 'flow': item['flow'], 'buyerID': ctx.author.id, 'itemUUID': item['uuid']}
 				log.append(newLog)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
@@ -472,7 +432,7 @@ class FlowCog(commands.Cog):
 					yaml.dump(log, file)
 				await ctx.send(f"商品 {item['name']} 購買成功, 詳情請查看私訊")
 				await ctx.author.send(f"您已在flow商城購買了 {item['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
-				embed = global_vars.defaultEmbed("🛒 購買證明",f"購買人: {ctx.author.mention}\nID: {ctx.author.id}\n商品: {item['name']}\n價格: {item['flow']}")
+				embed = global_vars.defaultEmbed("📜 購買證明",f"購買人: {ctx.author.mention}\nID: {ctx.author.id}\n商品: {item['name']}\nUUID: {item['uuid']}\n價格: {item['flow']}")
 				global_vars.setFooter(embed)
 				await ctx.author.send(embed=embed)
 				break
