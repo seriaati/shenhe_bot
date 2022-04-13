@@ -25,6 +25,45 @@ class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	# @commands.Cog.listener()
+	# async def on_message(self, message):
+	# 	if message.author == self.bot.user:
+	# 		return
+	# 	if "早安" in message.content:
+	# 		found = False
+	# 		for user in users:
+	# 			if user['discordID'] == message.author.id:
+	# 				found = True
+	# 			if found == False:
+	# 				discordID = message.author.id
+	# 				user = self.bot.get_user(message.author)
+	# 				newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
+	# 				bank['flow'] -= 100
+	# 				users.append(newUser)
+	# 				if 'morning' not in user:
+	# 					user['morning'] = datetime.datetime.today().date()
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 				elif user['morning'] != datetime.datetime.today().date():
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 			elif found == True:
+	# 				if 'morning' not in user:
+	# 					user['morning'] = datetime.datetime.today().date()
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 				elif user['morning'] != datetime.datetime.today().date():
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+	# 			yaml.dump(users, file)
+	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+	# 			yaml.dump(bank, file)
+
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		time.sleep(0.5)
@@ -323,10 +362,13 @@ class FlowCog(commands.Cog):
 		for user in users:
 			if user['discordID'] == member.id:
 				user['flow'] -= int(argFlow)
+				bank['flow'] += int(argFlow)
 				acceptor = self.bot.get_user(member.id)
 				embed = global_vars.defaultEmbed("✅ 沒收成功", f"{ctx.author.mention}沒收了{acceptor.mention} {str(argFlow)}枚flow幣")
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(bank, file)
 				break
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
@@ -336,11 +378,14 @@ class FlowCog(commands.Cog):
 	async def make(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == member.id:
-				user['flow'] += int(argFlow)
+				user['flow'] += int(argFlow) 
+				bank['flow'] -= int(argFlow)
 				acceptor = self.bot.get_user(member.id)
 				embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(bank, file)
 				break
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
@@ -356,6 +401,7 @@ class FlowCog(commands.Cog):
 	async def reset(self, ctx):
 		for user in users:
 			user['flow'] = 100
+			bank['flow'] = 12000
 		embed = global_vars.defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
 		global_vars.setFooter(embed)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
