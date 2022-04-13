@@ -421,7 +421,7 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	async def buy(self, ctx, *, arg=''):
 		for item in shop:
-			if item['uuid'] == int(arg):
+			if item['uuid'] == arg:
 				item['current'] += 1
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
