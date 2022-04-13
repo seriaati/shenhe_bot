@@ -401,7 +401,7 @@ class FlowCog(commands.Cog):
 		await form.set_color("0xa68bd3")
 		result = await form.start()
 		id = uuid.uuid1()
-		newItem = {'name': result.name, 'flow': result.flow, 'current': 0, 'max': result.max, 'uuid': str(id)}
+		newItem = {'name': result.name, 'flow': int(result.flow), 'current': 0, 'max': result.max, 'uuid': str(id)}
 		shop.append(newItem)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(shop, file)
@@ -411,7 +411,7 @@ class FlowCog(commands.Cog):
 	@commands.is_owner()
 	async def removeitem(self, ctx, *, arg=''):
 		for item in shop:
-			if item['name'] == arg:
+			if item['itemUUID'] == arg:
 				shop.remove(item)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
@@ -434,7 +434,7 @@ class FlowCog(commands.Cog):
 							item['current'] += 1
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 								yaml.dump(shop, file)
-							newLog = {'item': item['name'], 'flow': item['flow'], 'buyerID': ctx.author.id, 'itemUUID': item['uuid']}
+							newLog = {'item': item['name'], 'flow': int(item['flow']), 'buyerID': ctx.author.id, 'itemUUID': item['uuid']}
 							logs.append(newLog)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
 								yaml.dump(logs, file)
