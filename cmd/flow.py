@@ -31,7 +31,7 @@ class FlowCog(commands.Cog):
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == 962344110319091783:
 			for i in range(8):
-				emojiStr = emoji.emojize(f":keycap: {i}:")
+				emojiStr = emoji.emojize(f":keycap:_{i}:")
 				print(emojiStr)
 				if payload.emoji.name == str(emojiStr):
 					guild = bot.get_guild(payload.guild_id)
@@ -123,7 +123,7 @@ class FlowCog(commands.Cog):
 	async def on_raw_reaction_remove(self, payload):
 		if payload.message_id == 962344110319091783:
 			for i in range(8):
-				emojiStr = emoji.emojize(f":keycap: {i}:")
+				emojiStr = emoji.emojize(f":keycap:_{i}:")
 				print(emojiStr)
 				if payload.emoji.name == str(emojiStr):
 					guild = bot.get_guild(payload.guild_id)
