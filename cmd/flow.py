@@ -464,9 +464,18 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	@commands.is_owner()
 	async def log(self, ctx):
+		logEmbeds = []
 		for log in logs:
 			user = self.bot.get_user(int(log['buyerID']))
-			await ctx.send(f"商品: {log['item']}\n價格: {log['flow']}\n購買人: {user.mention}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
+			embed = global_vars.defaultEmbed("購買紀錄",f"商品: {log['item']}\n價格: {log['flow']}\n購買人: {user.mention}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
+			global_vars.setFooter(embed)
+			logEmbeds.append(embed)
+			paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
+			paginator.add_reaction('⏮️', "first")
+			paginator.add_reaction('◀', "back")
+			paginator.add_reaction('▶', "next")
+			paginator.add_reaction('⏭️', "last")
+			await paginator.run(logEmbeds)
 
 	@commands.command()
 	async def total(self, ctx):
