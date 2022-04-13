@@ -140,32 +140,4 @@ async def reload(ctx, arg):
                 bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
 
-@bot.event
-async def on_raw_reaction_add(payload):
-    if payload.message_id == 962344110319091783:
-        for i in range(8):
-            p = inflect.engine()
-            word = p.number_to_words(i)
-            emoji = emoji.emojize(f":{word}:")
-            if payload.emoji.name == str(emoji):
-                guild = bot.get_guild(payload.guild_id)
-                member = guild.get_member(payload.user_id)
-                guild_member = discord.utils.get(guild.roles, name="W1")
-                await member.add_roles(guild_member)
-                break
-
-@bot.event
-async def on_raw_reaction_remove(payload):
-    if payload.message_id == 962344110319091783:
-        for i in range(8):
-            p = inflect.engine()
-            word = p.number_to_words(i)
-            emoji = emoji.emojize(f":{word}:")
-            if payload.emoji.name == str(emoji):
-                guild = bot.get_guild(payload.guild_id)
-                member = guild.get_member(payload.user_id)
-                guild_member = discord.utils.get(guild.roles, name=f"W{i}")
-                await member.remove_roles(guild_member)
-                break
-
 bot.run(token, bot=True, reconnect=True)

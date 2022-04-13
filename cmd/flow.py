@@ -29,83 +29,109 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
-		time.sleep(0.5)
-		channel = self.bot.get_channel(payload.channel_id)
-		message = await channel.fetch_message(payload.message_id)
-		reaction = discord.utils.get(message.reactions, emoji='✅')
-		found = False
-		for user in users:
-			if user['discordID']==payload.user_id:
-				found = True
-				break
-		if found == False:
-			discordID = payload.user_id
-			user = self.bot.get_user(payload.user_id)
-			newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
-			bank['flow'] -= 100
-			users.append(newUser)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
-		for find in finds:
-			if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
-				for user in users:
-					if payload.user_id == find['authorID']:
-						userObj = self.bot.get_user(find['authorID'])
-						message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
-						await reaction.remove(payload.member)
-						await asyncio.sleep(2) 
-						await message.delete()
-						return
-					elif user['discordID'] == payload.user_id:
-						await message.clear_reaction('✅')
-						author = self.bot.get_user(find['authorID'])
-						acceptUser = self.bot.get_user(user['discordID'])
-						if find['type']==1:
-							await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
-							await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
-							await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
-						elif find['type']==2:
-							await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {find['title']} 素材委託")
-							await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")
-							await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 素材委託")
-						elif find['type']==3:
-							await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
-							await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
-							await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
-						embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
-						global_vars.setFooter(embedDM)
-						dm = await author.send(embed=embedDM)
-						await dm.add_reaction('🆗')
-						newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
-							'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id}
-						confirms.append(newConfirm)
-						finds.remove(find)
-						with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
-							yaml.dump(confirms, file)
-						with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-							yaml.dump(finds, file)
-						return
-		for confirm in confirms:
-			if payload.message_id == confirm['msgID'] and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-				for user in users:
-					if user['discordID'] == confirm['authorID']:
-						user['flow'] -= confirm['flow']
-					elif user['discordID'] == confirm['receiverID']:
-						user['flow'] += confirm['flow']
-				author = self.bot.get_user(confirm['authorID'])
-				receiver = self.bot.get_user(confirm['receiverID'])
-				embed = global_vars.defaultEmbed("🆗 結算成功", 
-					f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
-				global_vars.setFooter(embed)
-				await author.send(embed=embed)
-				await receiver.send(embed=embed)
-				confirms.remove(confirm)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(confirms, file)
+		if payload.message_id == 962344110319091783:
+			for i in range(8):
+				p = inflect.engine()
+				word = p.number_to_words(i)
+				emojiStr = emoji.emojize(f":{word}:")
+				if payload.emoji.name == str(emoji):
+					guild = bot.get_guild(payload.guild_id)
+					member = guild.get_member(payload.user_id)
+					guild_member = discord.utils.get(guild.roles, name="W1")
+					await member.add_roles(guild_member)
+					break
+		else:
+			time.sleep(0.5)
+			channel = self.bot.get_channel(payload.channel_id)
+			message = await channel.fetch_message(payload.message_id)
+			reaction = discord.utils.get(message.reactions, emoji='✅')
+			found = False
+			for user in users:
+				if user['discordID']==payload.user_id:
+					found = True
+					break
+			if found == False:
+				discordID = payload.user_id
+				user = self.bot.get_user(payload.user_id)
+				newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
+				bank['flow'] -= 100
+				users.append(newUser)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(users, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(bank, file)
+			for find in finds:
+				if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
+					for user in users:
+						if payload.user_id == find['authorID']:
+							userObj = self.bot.get_user(find['authorID'])
+							message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
+							await reaction.remove(payload.member)
+							await asyncio.sleep(2) 
+							await message.delete()
+							return
+						elif user['discordID'] == payload.user_id:
+							await message.clear_reaction('✅')
+							author = self.bot.get_user(find['authorID'])
+							acceptUser = self.bot.get_user(user['discordID'])
+							if find['type']==1:
+								await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
+								await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
+								await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
+							elif find['type']==2:
+								await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {find['title']} 素材委託")
+								await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")
+								await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 素材委託")
+							elif find['type']==3:
+								await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
+								await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
+								await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
+							embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
+							global_vars.setFooter(embedDM)
+							dm = await author.send(embed=embedDM)
+							await dm.add_reaction('🆗')
+							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
+								'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id}
+							confirms.append(newConfirm)
+							finds.remove(find)
+							with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
+								yaml.dump(confirms, file)
+							with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+								yaml.dump(finds, file)
+							return
+			for confirm in confirms:
+				if payload.message_id == confirm['msgID'] and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
+					for user in users:
+						if user['discordID'] == confirm['authorID']:
+							user['flow'] -= confirm['flow']
+						elif user['discordID'] == confirm['receiverID']:
+							user['flow'] += confirm['flow']
+					author = self.bot.get_user(confirm['authorID'])
+					receiver = self.bot.get_user(confirm['receiverID'])
+					embed = global_vars.defaultEmbed("🆗 結算成功", 
+						f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
+					global_vars.setFooter(embed)
+					await author.send(embed=embed)
+					await receiver.send(embed=embed)
+					confirms.remove(confirm)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(confirms, file)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
+					break
+
+	@commands.Cog.listener()
+	async def on_raw_reaction_remove(self, payload):
+	if payload.message_id == 962344110319091783:
+		for i in range(8):
+			p = inflect.engine()
+			word = p.number_to_words(i)
+			emojiStr = emoji.emojize(f":{word}:")
+			if payload.emoji.name == str(emoji):
+				guild = bot.get_guild(payload.guild_id)
+				member = guild.get_member(payload.user_id)
+				guild_member = discord.utils.get(guild.roles, name=f"W{i}")
+				await member.remove_roles(guild_member)
 				break
 
 	@commands.command()
