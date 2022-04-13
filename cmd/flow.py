@@ -165,16 +165,10 @@ class FlowCog(commands.Cog):
 				yaml.dump(users, file)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(bank, file)
-
-		w1 = discord.utils.get(ctx.guild.roles,name="W1")
-		w2 = discord.utils.get(ctx.guild.roles,name="W2")
-		w3 = discord.utils.get(ctx.guild.roles,name="W3")
-		w4 = discord.utils.get(ctx.guild.roles,name="W4")
-		w5 = discord.utils.get(ctx.guild.roles,name="W5")
-		w6 = discord.utils.get(ctx.guild.roles,name="W6")
-		w7 = discord.utils.get(ctx.guild.roles,name="W7")
-		w8 = discord.utils.get(ctx.guild.roles,name="W8")
-		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
+		roles = []
+		for i in range(8):
+			roleCount = i + 1
+			roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(roleCount)}"))
 		roleForChannel = self.bot.get_channel(962311051683192842)
 		roleStr = f'請至{roleForChannel.mention}選擇身份組'
 		for role in roles:
@@ -363,7 +357,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def flow(slef, ctx):
-		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店\n`!shop buy <UUID>`購買商品")
+		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店\n`!shop buy`購買商品")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
 
