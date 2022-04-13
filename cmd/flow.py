@@ -177,9 +177,10 @@ class FlowCog(commands.Cog):
 		roles = [w1, w2, w3, w4, w5, w6, w7, w8]
 		roleForChannel = self.bot.get_channel(962311051683192842)
 		roleStr = f'請至{roleForChannel.mention}選擇身份組'
-				for role in roles:
-					if role in ctx.author.roles:
-						roleStr = role.name
+		for role in roles:
+			if role in ctx.author.roles:
+				roleStr = role.name
+				break
 		embed = global_vars.defaultEmbed("請選擇委託類別",
 			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託")
 		message = await ctx.send(embed=embed)
