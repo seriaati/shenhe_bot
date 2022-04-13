@@ -21,7 +21,7 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', encoding = 'utf-8') as file:
 	shop = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as file:
-	log = yaml.full_load(file)
+	logs = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -427,9 +427,9 @@ class FlowCog(commands.Cog):
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
 				newLog = {'item': item['name'], 'flow': item['flow'], 'buyerID': ctx.author.id, 'itemUUID': item['uuid']}
-				log.append(newLog)
+				logs.append(newLog)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(log, file)
+					yaml.dump(logs, file)
 				for user in users:
 					if user['discordID'] == ctx.author.id:
 						user['flow'] -= item['flow']
@@ -449,7 +449,7 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	@commands.is_owner()
 	async def log(self, ctx):
-		for log in log:
+		for log in logs:
 			await ctx.send(f"商品: {log['item']}\n價格: {log['flow']}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
 
 	@commands.command()
