@@ -422,7 +422,7 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	async def buy(self, ctx, *, arg=''):
 		for item in shop:
-			if item['uuid'] == arg:
+			if item['uuid'] == int(arg):
 				item['current'] += 1
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
@@ -432,8 +432,9 @@ class FlowCog(commands.Cog):
 					yaml.dump(logs, file)
 				for user in users:
 					if user['discordID'] == ctx.author.id:
-						user['flow'] -= item['flow']
-						bank += item['flow']
+						itemPrice = int(item['flow'])
+						user['flow'] -= itemPrice
+						bank['flow'] += itemPrice
 						break
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(bank, file)
@@ -450,7 +451,8 @@ class FlowCog(commands.Cog):
 	@commands.is_owner()
 	async def log(self, ctx):
 		for log in logs:
-			await ctx.send(f"商品: {log['item']}\n價格: {log['flow']}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
+			user = self.bot.get_user(int(log['buyerID']))
+			await ctx.send(f"商品: {log['item']}\n價格: {log['flow']}\n購買人: {user.mention}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
 
 	@commands.command()
 	async def total(self, ctx):
