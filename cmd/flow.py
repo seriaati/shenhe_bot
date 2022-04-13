@@ -401,13 +401,16 @@ class FlowCog(commands.Cog):
 	@commands.command()
 	@commands.is_owner()
 	async def reset(self, ctx):
+		bank['flow'] = 12000
 		for user in users:
 			user['flow'] = 100
-			bank['flow'] = 12000
+			bank['flow'] -= 100
 		embed = global_vars.defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
 		global_vars.setFooter(embed)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(users, file)
+		with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+			yaml.dump(bank, file)
 		await ctx.send(embed=embed)
 
 	@commands.group()
