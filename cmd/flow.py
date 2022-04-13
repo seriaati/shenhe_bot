@@ -25,46 +25,46 @@ class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.Cog.listener()
-	async def on_message(self, message):
-		if message.author == self.bot.user:
-			return
-		if "早安" in message.content:
-			found = False
-			for user in users:
-				if user['discordID'] == message.author.id:
-					found = True
-				if found == False:
-					discordID = message.author.id
-					user = self.bot.get_user(message.author)
-					newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
-					bank['flow'] -= 100
-					users.append(newUser)
-					if 'morning' not in user:
-						print("morning not in user and not found")
-						user['morning'] = datetime.datetime.today().date()
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-						break
-				elif found == True:
-					if 'morning' not in user:
-						print("morning not in user")
-						user['morning'] = datetime.datetime.today().date()
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-						break
-					elif user['morning'] != datetime.datetime.today().date():
-						print("morning in user")
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-						break
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
+	# @commands.Cog.listener()
+	# async def on_message(self, message):
+	# 	if message.author == self.bot.user:
+	# 		return
+	# 	if "早安" in message.content:
+	# 		found = False
+	# 		for user in users:
+	# 			if user['discordID'] == message.author.id:
+	# 				found = True
+	# 			if found == False:
+	# 				discordID = message.author.id
+	# 				user = self.bot.get_user(message.author)
+	# 				newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
+	# 				bank['flow'] -= 100
+	# 				users.append(newUser)
+	# 				if 'morning' not in user:
+	# 					print("morning not in user and not found")
+	# 					user['morning'] = datetime.datetime.today().date()
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 					break
+	# 			elif found == True:
+	# 				if 'morning' not in user:
+	# 					print("morning not in user")
+	# 					user['morning'] = datetime.datetime.today().date()
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 					break
+	# 				elif user['morning'] != datetime.datetime.today().date():
+	# 					print("morning in user")
+	# 					await message.add_reaction('☀️')
+	# 					user['flow'] += 1
+	# 					bank['flow'] -= 1
+	# 					break
+	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+	# 			yaml.dump(users, file)
+	# 		with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+	# 			yaml.dump(bank, file)
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
