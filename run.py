@@ -47,7 +47,6 @@ async def on_ready():
     print("Shenhe has logged in.")
     print("---------------------")
 
-# 私訊提醒功能
 @tasks.loop(hours=24)
 async def claimLoop():
     for user in users:
@@ -67,41 +66,44 @@ async def claimLoop():
 @tasks.loop(seconds=600)
 async def checkLoop():
     for user in users:
-        try:
-            cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
-            uid = user['uid']
-            username = user['name']
-            userObj = bot.get_user(user['discordID'])
-            # print(userObj)
-            client = genshin.GenshinClient(cookies)
-            client.lang = "zh-tw"
-            notes = await client.get_notes(uid)
-            resin = notes.current_resin
-            dateNow = datetime.datetime.now()
-            diff = dateNow - user['dmDate']
-            diffHour = diff.total_seconds() / 3600
-            if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
-                print("已私訊 "+str(userObj))
-                print(diffHour)
-                fullTime = datetime.datetime.now() + datetime.timedelta(hours=diffHour)
-                time = notes.until_resin_recovery
-                hours, minutes = divmod(time // 60, 60)
-                embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
-                global_vars.setFooter(embed)
-                await userObj.send(embed=embed)
-                user['dmCount'] += 1
-                user['dmDate'] = dateNow
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
-                    yaml.dump(users, file)
+        if isinstance(user, type(None)) == True:
+            print(f"use is NoneType: {user['name']}")
+        else:
+            try:
+                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
+                uid = user['uid']
+                username = user['name']
+                userObj = bot.get_user(user['discordID'])
+                client = genshin.GenshinClient(cookies)
+                client.lang = "zh-tw"
+                notes = await client.get_notes(uid)
+                resin = notes.current_resin
+                dateNow = datetime.datetime.now()
+                diff = dateNow - user['dmDate']
+                diffHour = diff.total_seconds() / 3600
+                if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
+                    print("已私訊 "+str(userObj))
+                    print(diffHour)
+                    time = notes.until_resin_recovery
+                    hours, minutes = divmod(time // 60, 60)
+                    fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
+                    printTime = format(fullTime, '%點:%分')
+                    embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
+                    global_vars.setFooter(embed)
+                    await userObj.send(embed=embed)
+                    user['dmCount'] += 1
+                    user['dmDate'] = dateNow
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
+                    await client.close()
+                elif resin < 140:
+                    user['dmCount'] = 0
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(users, file)
                 await client.close()
-            elif resin < 140:
-                user['dmCount'] = 0
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
-                    yaml.dump(users, file)
-            await client.close()
-        except genshin.errors.InvalidCookies:
-            # print (f"{user['name']}帳號壞掉了")
-            await client.close()
+            except genshin.errors.InvalidCookies:
+                # print (f"{user['name']}帳號壞掉了")
+                await client.close()
         
 # 等待申鶴準備
 @checkLoop.before_loop
@@ -119,29 +121,18 @@ async def wait_until_1am():
 
 checkLoop.start()
 claimLoop.start()
-# 偵測機率字串
+
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
-        return
-    if "機率" in message.content:
-        value = randint(1,100)
-        await message.channel.send(f"{value}%")
     await bot.process_commands(message)
-
-# 新人加入
-@bot.event
-async def on_member_join(member):
-    public = bot.get_channel(916951131022843964)
-    await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
 
 @bot.command()
 @commands.is_owner()
-async def reload(ctx, *, arg=''):
-    if arg == '':
+async def reload(ctx, arg):
+    if arg == 'all':
         for extension in initial_extensions:
             bot.reload_extension(extension)
-            await ctx.send(f"已重整 {extension} 指令包")
+        await ctx.send(f"已重整所有指令包")
     else:
         for extension in initial_extensions:
             extStr = f"cmd.{arg}"
@@ -152,89 +143,23 @@ async def reload(ctx, *, arg=''):
 @bot.event
 async def on_raw_reaction_add(payload):
     if payload.message_id == 962344110319091783:
-        if payload.emoji.name == '1️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W1")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '2️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W2")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '3️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W3")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '4️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W4")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '5️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W5")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '6️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W6")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '7️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W7")
-            await member.add_roles(guild_member)
-        elif payload.emoji.name == '8️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W8")
-            await member.add_roles(guild_member)
+        for i in range(8):
+            if payload.emoji.name == f'\U0003{i}'
+                guild = bot.get_guild(payload.guild_id)
+                member = guild.get_member(payload.user_id)
+                guild_member = discord.utils.get(guild.roles, name="W1")
+                await member.add_roles(guild_member)
+                break
 
 @bot.event
 async def on_raw_reaction_remove(payload):
     if payload.message_id == 962344110319091783:
-        if payload.emoji.name == '1️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W1")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '2️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W2")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '3️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W3")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '4️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W4")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '5️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W5")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '6️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W6")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '7️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W7")
-            await member.remove_roles(guild_member)
-        elif payload.emoji.name == '8️⃣':
-            guild = bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            guild_member = discord.utils.get(guild.roles, name="W8")
-            await member.remove_roles(guild_member)
+        for i in range(8):
+            if payload.emoji.name == f'\U0003{i}'
+                guild = bot.get_guild(payload.guild_id)
+                member = guild.get_member(payload.user_id)
+                guild_member = discord.utils.get(guild.roles, name=f"W{i}")
+                await member.remove_roles(guild_member)
+                break
 
 bot.run(token, bot=True, reconnect=True)

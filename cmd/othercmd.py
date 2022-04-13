@@ -14,6 +14,20 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8'
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author == self.bot.user:
+            return
+        if "機率" in message.content:
+            value = randint(1,100)
+            await message.channel.send(f"{value}%")
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        public = self.bot.get_channel(916951131022843964)
+        await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
+
     @commands.command()
     async def ping(self, ctx):
         await ctx.send('🏓 Pong! {0}ms'.format(round(self.bot.latency, 1)))
