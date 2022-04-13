@@ -26,45 +26,6 @@ class FlowCog(commands.Cog):
 		self.bot = bot
 
 	@commands.Cog.listener()
-	async def on_message(self, message):
-		if message.author == self.bot.user:
-			return
-		if "早安" in message.content:
-			found = False
-			for user in users:
-				if user['discordID'] == message.author.id:
-					found = True
-				if found == False:
-					discordID = message.author.id
-					user = self.bot.get_user(message.author)
-					newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
-					bank['flow'] -= 100
-					users.append(newUser)
-					if 'morning' not in user:
-						user['morning'] = datetime.datetime.today().date()
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-					elif user['morning'] != datetime.datetime.today().date():
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-				elif found == True:
-					if 'morning' not in user:
-						user['morning'] = datetime.datetime.today().date()
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-					elif user['morning'] != datetime.datetime.today().date():
-						await message.add_reaction('☀️')
-						user['flow'] += 1
-						bank['flow'] -= 1
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
-
-	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		time.sleep(0.5)
 		channel = self.bot.get_channel(payload.channel_id)
