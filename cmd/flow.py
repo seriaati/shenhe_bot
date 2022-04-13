@@ -20,6 +20,8 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as
 	bank = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', encoding = 'utf-8') as file:
 	shop = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as file:
+	log = yaml.full_load(file)
 
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
@@ -455,6 +457,24 @@ class FlowCog(commands.Cog):
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(shop, file)
 				await ctx.send("商品刪除成功")
+				break
+
+	@shop.command()
+	async def buy(self, ctx, *, arg=''):
+		for item in shop:
+			if item['name'] == arg:
+				item['current'] += 1
+				newLog = {'item': item['name'], 'flow': item['flow'], 'buyerID': ctx.author.id}
+				log.append(newLog)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(shop, file)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(log, file)
+				await ctx.send(f"商品 {item['name']} 購買成功, 詳情請查看私訊")
+				await ctx.author.send(f"您已在flow商城購買了 {item['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
+				embed = global_vars.defaultEmbed("🛒 購買證明",f"購買人: {ctx.author.mention}\nID: {ctx.author.id}\n商品: {item['name']}\n價格: {item['flow']}")
+				global_vars.setFooter(embed)
+				await ctx.author.send(embed=embed)
 				break
 
 	@commands.command()
