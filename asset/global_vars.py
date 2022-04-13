@@ -9,7 +9,7 @@ def Global():
     warningColor = 0xfc5165
     purpleColor = 0xa68bd3
     footerAuthor = "所有指令打!help, 有錯誤請告知小雪"
-    footerImage = "https://media.discordapp.net/attachments/823440627127287839/963815284022591588/2926e2ok22q81-min_1_1.png"
+    footerImage = "https://media.discordapp.net/attachments/823440627127287839/963815284022591588/2926e2ok22q81-min_1_1.png?width=558&height=554"
     timeOutErrorMsg = "已取消當前操作, 請在30秒內回答問題"
     embedNoAccount = discord.Embed(title = "😢 該帳號不存在", description="請使用`!register`來註冊帳號, 如有疑問請@小雪", color=warningColor)
     embedNoGroup = discord.Embed(title = "😢 該小組不存在", description="有可能是打錯字了", color = warningColor)
