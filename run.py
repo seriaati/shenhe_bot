@@ -3,7 +3,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime
+import os, discord, asyncio, genshin, yaml, datetime, emoji, inflect
 import global_vars
 global_vars.Global()
 import config
@@ -144,7 +144,10 @@ async def reload(ctx, arg):
 async def on_raw_reaction_add(payload):
     if payload.message_id == 962344110319091783:
         for i in range(8):
-            if payload.emoji.name == f'\U0003{i}'
+            p = inflect.engine()
+            word = p.number_to_words(i)
+            emoji = emoji.emojize(f":{word}:")
+            if payload.emoji.name == str(emoji)
                 guild = bot.get_guild(payload.guild_id)
                 member = guild.get_member(payload.user_id)
                 guild_member = discord.utils.get(guild.roles, name="W1")
@@ -155,7 +158,10 @@ async def on_raw_reaction_add(payload):
 async def on_raw_reaction_remove(payload):
     if payload.message_id == 962344110319091783:
         for i in range(8):
-            if payload.emoji.name == f'\U0003{i}'
+            p = inflect.engine()
+            word = p.number_to_words(i)
+            emoji = emoji.emojize(f":{word}:")
+            if payload.emoji.name == str(emoji)
                 guild = bot.get_guild(payload.guild_id)
                 member = guild.get_member(payload.user_id)
                 guild_member = discord.utils.get(guild.roles, name=f"W{i}")
