@@ -426,7 +426,8 @@ class FlowCog(commands.Cog):
 				for user in users:
 					if user['discordID'] == ctx.author.id:
 						found = True
-						if user['flow'] < item['flow']:
+						itemPrice = int(item['flow'])
+						if user['flow'] < itemPrice:
 							await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
 							return
 						else:
