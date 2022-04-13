@@ -446,6 +446,12 @@ class FlowCog(commands.Cog):
 				await ctx.author.send(embed=embed)
 				break
 
+	@shop.command()
+	@commands.is_owner()
+	async def log(self, ctx):
+		for log in log:
+			await ctx.send(f"商品: {log['item']}\n價格: {log['flow']}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
+
 	@commands.command()
 	async def total(self, ctx):
 		total = 0
