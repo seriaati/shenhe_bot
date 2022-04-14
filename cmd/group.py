@@ -70,10 +70,12 @@ class GroupCog(commands.Cog):
                     await formTrue.set_color("0xa68bd3")
                     result = await formTrue.start()
                     memberAdd = result.members.split(", ")
-                    for member in memberAdd:
-                        group['members'].append(memberAdd)
-                        with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
-                            yaml.dump(groups, file)
+                    for group in groups:
+                        if result.name == group['name']:
+                            for member in memberAdd:
+                                group['members'].append(memberAdd)
+                                with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
+                                    yaml.dump(groups, file)
                     newGroup = {'name': result.name, "members": members, "authorID": ctx.author.id}
                     groups.append(newGroup)
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
