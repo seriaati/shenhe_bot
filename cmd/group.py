@@ -10,7 +10,7 @@ from discord.ext.forms import Form
 with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', encoding = 'utf-8') as file:
     groups = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/group_request.yaml', encoding = 'utf-8') as file:
-    requests = yaml.full_load(file)
+    confirms = yaml.full_load(file)
 
 class GroupCog(commands.Cog):
     def __init__(self, bot):
