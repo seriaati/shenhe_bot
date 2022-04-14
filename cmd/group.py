@@ -69,7 +69,11 @@ class GroupCog(commands.Cog):
                     formTrue.set_timeout(60)
                     await formTrue.set_color("0xa68bd3")
                     result = await formTrue.start()
-                    members = []
+                    memberAdd = result.members.split(", ")
+                    for member in memberAdd:
+                        group['members'].append(member)
+                        with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
+                            yaml.dump(groups, file)
                     id = uuid.uuid1()
                     newGroup = {'name': result.name, "members": members, "authorID": ctx.author.id, "uuid": id}
                     groups.append(newGroup)
