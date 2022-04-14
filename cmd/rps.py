@@ -26,8 +26,8 @@ class RPSCog(commands.Cog):
         if ev.user_id != self.bot.user.id:
             await self.bot.http.delete_message(ev.channel_id, ev.message_id)
             msg = "哈哈, 申鶴贏了!" if str(ev.emoji) == rand.choice(self.reactions) \
-                else "居然輸給你了..."
-            embed = global_vars.defaultEmbed("剪刀石頭布", msg)
+                else "可惡, 沒想到居然輸給你了..."
+            embed = global_vars.defaultEmbed("誰贏了呢!", msg)
             global_vars.setFooter(embed)
             await self.bot.get_channel(ev.channel_id).send(embed=embed)
 
