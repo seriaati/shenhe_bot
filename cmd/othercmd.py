@@ -55,5 +55,11 @@ class OtherCMDCog(commands.Cog):
     async def marry(self, ctx, arg1, arg2):
         await ctx.send(f"{arg1} ❤ {arg2}")
 
+    @commands.command()
+    async def getid(self, ctx):
+        embed = global_vars.defaultEmbed("如何取得discord ID?", "1. 打開dc設定\n2.「進階」\n3. 把「開發者模式」打開\n4. 右鍵使用者頭像, 便可以看到「copy ID」")
+        global_vars.setFooter(embed)
+        await ctx.send(embed=embed)
+        
 def setup(bot):
     bot.add_cog(OtherCMDCog(bot))
