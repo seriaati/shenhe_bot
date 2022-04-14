@@ -26,7 +26,7 @@ class RPSCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, ev: discord.RawReactionActionEvent):
-        if ev.user_id != self.bot.user.id:
+        if ev.user_id != self.bot.user.id and ev.message_id != 963970685770805288:
             await self.bot.http.delete_message(ev.channel_id, ev.message_id)
             msg = "「我輸了嗎...?」 :anger:" if str(ev.emoji) == rand.choice(self.reactions) \
                 else "「這個叫做剪刀石頭布的遊戲好像挺好玩...」"
