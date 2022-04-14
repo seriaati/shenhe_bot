@@ -28,8 +28,8 @@ class RPSCog(commands.Cog):
     async def on_raw_reaction_add(self, ev: discord.RawReactionActionEvent):
         if ev.user_id != self.bot.user.id and ev.message_id != 963972447600771092:
             await self.bot.http.delete_message(ev.channel_id, ev.message_id)
-            msg = "「這個叫做剪刀石頭布的遊戲好像挺好玩...」" if str(ev.emoji) == rand.choice(self.reactions) \
-                else "「輸, 輸了嗎?」 :anger:"
+            msg = "「輸, 輸了嗎?」 :anger:" if str(ev.emoji) == rand.choice(self.reactions) \
+                else "「這個叫做剪刀石頭布的遊戲好像挺好玩...」"
             embed = global_vars.defaultEmbed("誰贏了呢?", f"{msg}\n你出了: {str(ev.emoji)}\n申鶴出了: {rand.choice(self.reactions)}")
             global_vars.setFooter(embed)
             win = False
@@ -53,8 +53,7 @@ class RPSCog(commands.Cog):
             for user in users:
                 dateNow = datetime.datetime.now()
                 if 'rps' not in user:
-                    print("rps no in user")
-                    user['rps'] = 1
+                    user['rps'] = 0
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
                 if 'rpsDate' not in user:
