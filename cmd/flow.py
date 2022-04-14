@@ -162,7 +162,7 @@ class FlowCog(commands.Cog):
 		embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
 		global_vars.setFooter(embed)
 		message = await channel.send(embed=embed)
-		for i in range(1, 8):
+		for i in range(1, 9):
 			p = inflect.engine()
 			word = p.number_to_words(i)
 			emojiStr = emoji.emojize(f":{word}:", language='alias')
