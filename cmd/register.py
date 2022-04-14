@@ -68,11 +68,6 @@ class RegisterCog(commands.Cog):
         elif failed == False:
             newUser = {'name': str(result.name), 'uid': int(result.uid), 'discordID': int(result.discordID), 'ltoken': str(result.ltoken), 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
             users.append(newUser)
-            cookies = {"ltuid": int(result.ltuid), "ltoken": str(result.ltuid)}
-            client = genshin.GenshinClient(cookies)
-            signed_in, claimed_rewards = await client.get_reward_info()
-            await client.claim_daily_reward()
-            await client.close()
             with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號並領取今日獎勵")
