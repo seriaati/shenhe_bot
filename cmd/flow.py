@@ -415,7 +415,7 @@ class FlowCog(commands.Cog):
 			await paginator.run(shopEmbeds)
 
 	@shop.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def newitem(self, ctx):
 		form = Form(ctx, '新增商品', cleanup=True)
 		form.add_question('商品名稱?', 'name')
