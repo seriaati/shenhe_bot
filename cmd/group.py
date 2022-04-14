@@ -71,7 +71,7 @@ class GroupCog(commands.Cog):
                     result = await formTrue.start()
                     memberAdd = result.members.split(", ")
                     for member in memberAdd:
-                        group['members'].append(member)
+                        group['members'].append(memberAdd)
                         with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
                             yaml.dump(groups, file)
                     newGroup = {'name': result.name, "members": members, "authorID": ctx.author.id}
