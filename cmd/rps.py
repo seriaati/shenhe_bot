@@ -42,7 +42,7 @@ class RPSCog(commands.Cog):
                     user['flow'] += 1
                     user['rps'] += 1
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-                    yaml.dump(users, file)
+                        yaml.dump(users, file)
 
 def setup(bot: commands.Bot):
     bot.add_cog(RPSCog(bot))
