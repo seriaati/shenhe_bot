@@ -1,6 +1,5 @@
 import random as rand
-import discord
-import getpass
+import discord, yaml, getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
