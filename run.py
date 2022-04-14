@@ -81,13 +81,11 @@ async def checkLoop():
                 diff = dateNow - user['dmDate']
                 diffHour = diff.total_seconds() / 3600
                 if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
-                    print("已私訊 "+str(userObj))
-                    print(diffHour)
                     time = notes.until_resin_recovery
                     hours, minutes = divmod(time // 60, 60)
-                    # fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
-                    # printTime = '{:%點:%分}'.format(fullTime)
-                    embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
+                    fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
+                    printTime = '{:%H:%M}'.format(fullTime)
+                    embed=global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
                     global_vars.setFooter(embed)
                     await userObj.send(embed=embed)
                     user['dmCount'] += 1
