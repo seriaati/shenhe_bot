@@ -426,7 +426,7 @@ class FlowCog(commands.Cog):
 		await form.set_color("0xa68bd3")
 		result = await form.start()
 		id = uuid.uuid1()
-		newItem = {'name': result.name, 'flow': int(result.flow), 'current': 0, 'max': result.max, 'uuid': str(id)}
+		newItem = {'name': result.name, 'flow': int(result.flow), 'current': 0, 'max': int(result.max), 'uuid': str(id)}
 		shop.append(newItem)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(shop, file)

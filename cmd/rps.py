@@ -32,13 +32,28 @@ class RPSCog(commands.Cog):
                 else "「這個叫做剪刀石頭布的遊戲好像挺好玩...」"
             embed = global_vars.defaultEmbed("誰贏了呢?", f"{msg}\n你出了: {str(ev.emoji)}\n申鶴出了: {rand.choice(self.reactions)}")
             global_vars.setFooter(embed)
-            await self.bot.get_channel(ev.channel_id).send(embed=embed)
             win = False
             if msg == "「我輸了嗎...?」 :anger:":
                 win = True
+            found = False
+            for user in users:
+                if user['discordID']==payload.user_id:
+                    found = True
+                    break
+            if found == False:
+                discordID = payload.user_id
+                user = self.bot.get_user(payload.user_id)
+                newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
+                bank['flow'] -= 100
+                users.append(newUser)
+                with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+                    yaml.dump(users, file)
+                with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+                    yaml.dump(bank, file)
             for user in users:
                 dateNow = datetime.datetime.now()
                 if 'rps' not in user:
+                    print("rps no in user")
                     user['rps'] = 1
                 if 'rpsDate' not in user:
                     user['rpsDate'] = dateNow
@@ -52,6 +67,7 @@ class RPSCog(commands.Cog):
                         yaml.dump(users, file)
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(bank, file)
+            await self.bot.get_channel(ev.channel_id).send(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(RPSCog(bot))
