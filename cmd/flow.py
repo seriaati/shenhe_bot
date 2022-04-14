@@ -405,7 +405,7 @@ class FlowCog(commands.Cog):
 			itemStr = ""
 			count = 1
 			for item in shop:
-				itemStr = itemStr + f"{count}. {item['name']} - {item['flow']} flow ({item['current']}/{item['max']})\n{item['uuid']}\n"
+				itemStr = itemStr + f"{count}. {item['name']} - {item['flow']} flow ({item['current']}/{item['max']})\n||{item['uuid']}||\n"
 				count += 1
 			embed = global_vars.defaultEmbed("🛒 flow商店", itemStr)
 			global_vars.setFooter(embed)
