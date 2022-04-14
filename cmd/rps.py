@@ -26,7 +26,7 @@ class RPSCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, ev: discord.RawReactionActionEvent):
-        if ev.user_id != self.bot.user.id and ev.message_id != 963970685770805288:
+        if ev.user_id != self.bot.user.id and ev.message_id != 963972447600771092:
             await self.bot.http.delete_message(ev.channel_id, ev.message_id)
             msg = ""
             if str(ev.emoji) == rand.choice(self.reactions):

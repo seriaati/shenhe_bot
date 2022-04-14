@@ -29,7 +29,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
-		if payload.message_id == 963970685770805288:
+		if payload.message_id == 963972447600771092:
 			for i in range(1, 9):
 				p = inflect.engine()
 				word = p.number_to_words(i)
@@ -122,7 +122,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
-		if payload.message_id == 963970685770805288:
+		if payload.message_id == 963972447600771092:
 			for i in range(1, 9):
 				p = inflect.engine()
 				word = p.number_to_words(i)
