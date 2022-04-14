@@ -19,7 +19,7 @@ class AttendCog(commands.Cog):
 	async def teams(self, ctx):
 		titleStr = ""
 		for title in titleCells:
-			titleStr += f"= {wks.acell(title)}\n"
+			titleStr = titleStr + f"= {wks.acell(title).value}\n"
 		await ctx.send(titleStr)
 
 def setup(bot):
