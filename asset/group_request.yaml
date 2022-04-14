@@ -1,4 +1,3 @@
-newConfirm = {"msgID": confirmMsg.id, "requesterID": ctx.author.id, "captainID": group['authorID'], "groupName": group['name']}
 - msgID: 123
   requesterID: 123
   captainID: 123
