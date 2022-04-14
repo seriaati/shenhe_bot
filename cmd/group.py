@@ -15,7 +15,7 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/group_request.yaml', encoding = 'u
 class GroupCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @commands.Cog.listener():
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         for confirm in confirms:
             requester = self.bot.get_user(confirm['requesterID'])
