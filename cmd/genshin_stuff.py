@@ -321,8 +321,10 @@ class GenshinCog(commands.Cog):
     @commands.command()
     async def users(self, ctx):
         userStr = ""
+        count = 1
         for user in users:
-            userStr = userStr+f"{user['name']} - {user['uid']}\n"
+            userStr = userStr+f"{count}. {user['name']} - {user['uid']}\n"
+            count += 1
         embed = global_vars.defaultEmbed("所有帳號",userStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
