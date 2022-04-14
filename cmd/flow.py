@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji
+import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji, gspread
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -10,6 +10,10 @@ from discord.ext.forms import Form
 from discord.ext.forms import ReactionForm
 from discord.ext.forms import ReactionMenu
 
+sa = gspread.service_account()
+sh = sa.open("Genshin")
+wks = sh.worksheet("4/14")
+print(wks.acell('C4').value)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:
@@ -448,7 +452,7 @@ class FlowCog(commands.Cog):
 		itemStr = ""
 		count = 1
 		for item in shop:
-			itemStr = itemStr + f"{count}. {item['name']}\n"
+			itemStr = itemStr + f"{count}. {item['name']} - {item['flow']}flow\n"
 			count += 1
 		form = Form(ctx, '要購買什麼商品?(輸入數字)', cleanup=True)
 		form.add_question(f'{itemStr}', 'number')
