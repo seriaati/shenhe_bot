@@ -1,12 +1,15 @@
 import random as rand
-import discord, yaml, getpass
+import discord, yaml, getpass, datetime
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
 from discord.ext import commands
+
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as file:
+    bank = yaml.full_load(file)
 
 class RPSCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -30,6 +33,9 @@ class RPSCog(commands.Cog):
             embed = global_vars.defaultEmbed("誰贏了呢?", f"{msg}\n你出了: {str(ev.emoji)}\n申鶴出了: {rand.choice(self.reactions)}")
             global_vars.setFooter(embed)
             await self.bot.get_channel(ev.channel_id).send(embed=embed)
+            win = False
+            if msg == "「我輸了嗎...?」 :anger:":
+                win = True
             for user in users:
                 dateNow = datetime.datetime.now()
                 if 'rps' not in user:
@@ -37,11 +43,15 @@ class RPSCog(commands.Cog):
                 if 'rpsDate' not in user:
                     user['rpsDate'] = dateNow
                 diffDays = abs((dateNow - user['rpsDate']).days)
-                if diffDays >= 1 and user['rps']<= 10:
+                if diffDays >= 1 and user['rps']<= 10 and win == True:
                     user['flow'] += 1
                     user['rps'] += 1
+                    user['rpsDate'] = dateNow
+                    bank['flow'] -=1
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+                        yaml.dump(bank, file)
 
 def setup(bot: commands.Bot):
     bot.add_cog(RPSCog(bot))
