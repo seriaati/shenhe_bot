@@ -11,7 +11,7 @@ class RPSCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    reactions = [':fist:', ':hand_splayed:', ':v:']
+    reactions = ['✊', '🖐️', '✌️']
 
     @commands.command()
     async def rps(self, ctx):
