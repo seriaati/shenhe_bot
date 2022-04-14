@@ -456,13 +456,16 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		pos = int(result.number) - 1
+		pos = int(float(result.number)) - 1
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				found = True
 				itemPrice = int(shop[pos]['flow'])
 				if user['flow'] < itemPrice:
 					await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
+					return
+				if shop[pos]['current'] >= shop[pos]['max']:
+					await ctx.send(f"{ctx.author.mention} 這個商品已經售罄了")
 					return
 				else:
 					shop[pos]['current'] += 1
