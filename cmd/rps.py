@@ -15,7 +15,7 @@ class RPSCog(commands.Cog):
 
     @commands.command()
     async def rps(self, ctx):
-        embed = global_vars.defaultEmbed("剪刀石頭布", "「選擇下方的一個手勢吧...」")
+        embed = global_vars.defaultEmbed("剪刀石頭布vs申鶴", "「選擇下方的一個手勢吧...」")
         global_vars.setFooter(embed)
         msg = await ctx.send(embed=embed)
         for reaction in self.reactions: await msg.add_reaction(reaction)
