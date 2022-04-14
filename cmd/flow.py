@@ -156,7 +156,7 @@ class FlowCog(commands.Cog):
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 
 	@commands.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def roles(self, ctx):
 		channel = self.bot.get_channel(962311051683192842)
 		embed = global_vars.defaultEmbed("請選擇你的世界等級", " ")
@@ -345,7 +345,7 @@ class FlowCog(commands.Cog):
 				await ctx.send(embed=embed)
 
 	@commands.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def take(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == member.id:
@@ -362,7 +362,7 @@ class FlowCog(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def make(self, ctx, member: discord.Member, argFlow: int):
 		for user in users:
 			if user['discordID'] == member.id:
@@ -385,7 +385,7 @@ class FlowCog(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@commands.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def reset(self, ctx):
 		bank['flow'] = 12000
 		for user in users:
@@ -433,7 +433,7 @@ class FlowCog(commands.Cog):
 		await ctx.send(f"商品{result.name}新增成功")
 	
 	@shop.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def removeitem(self, ctx, *, arg=''):
 		for item in shop:
 			if item['uuid'] == arg:
@@ -497,9 +497,10 @@ class FlowCog(commands.Cog):
 				yaml.dump(users, file)
 			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 				yaml.dump(bank, file)
-			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`或是`!shop buy`一次試試看")
+			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!acc`或是`!shop buy`一次試試看")
+
 	@shop.command()
-	@commands.is_owner()
+	@commands.has_role("小雪團隊")
 	async def log(self, ctx):
 		for log in logs:
 			user = self.bot.get_user(int(log['buyerID']))
