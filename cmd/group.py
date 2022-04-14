@@ -265,9 +265,9 @@ class GroupCog(commands.Cog):
                                 with open(f'C:/Users/{owner}/shenhe_bot/asset/group_request.yaml', 'w', encoding = 'utf-8') as file:
                                     yaml.dump(requests, file)
                         if found == False:
-                        embed = global_vars.embedNoGroup
-                        global_vars.setFooter(embed)
-                        await ctx.send(embed=embed)
+                            embed = global_vars.embedNoGroup
+                            global_vars.setFooter(embed)
+                            await ctx.send(embed=embed)
                 if answer == "leave":
                     groupStr = ""
                     for group in groups:
