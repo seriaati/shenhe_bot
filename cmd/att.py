@@ -28,7 +28,7 @@ class AttendCog(commands.Cog):
 	@commands.command()
 	async def att(self, ctx):
 		titleStr = ""
-		for title in titleCells:
+		for title in teamCells:
 			titleStr += f"- {wks.acell(title).value}\n"
 		form = Form(ctx, '要對哪個隊伍做點名?', cleanup=True)
 		form.add_question(titleStr, 'title')
