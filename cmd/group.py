@@ -74,8 +74,7 @@ class GroupCog(commands.Cog):
                         group['members'].append(member)
                         with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
                             yaml.dump(groups, file)
-                    id = uuid.uuid1()
-                    newGroup = {'name': result.name, "members": members, "authorID": ctx.author.id, "uuid": id}
+                    newGroup = {'name': result.name, "members": members, "authorID": ctx.author.id}
                     groups.append(newGroup)
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/groups.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(groups, file)
