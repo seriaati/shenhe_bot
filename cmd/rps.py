@@ -37,12 +37,12 @@ class RPSCog(commands.Cog):
                 win = True
             found = False
             for user in users:
-                if user['discordID']==payload.user_id:
+                if user['discordID']==ev.user_id:
                     found = True
                     break
             if found == False:
-                discordID = payload.user_id
-                user = self.bot.get_user(payload.user_id)
+                discordID = ev.user_id
+                user = self.bot.get_user(ev.user_id)
                 newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
                 bank['flow'] -= 100
                 users.append(newUser)
