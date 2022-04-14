@@ -24,6 +24,8 @@ class AttendCog(commands.Cog):
 		for row in teamRow:
 			for col in teamCol:
 				val = wks.cell(row, col).value
+				if val == None:
+					continue
 				titleStr += f"- {val}\n"
 		form = Form(ctx, '要對哪個隊伍做點名?', cleanup=True)
 		form.add_question(titleStr, 'title')
