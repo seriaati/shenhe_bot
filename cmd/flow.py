@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji, gspread
+import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -10,10 +10,6 @@ from discord.ext.forms import Form
 from discord.ext.forms import ReactionForm
 from discord.ext.forms import ReactionMenu
 
-sa = gspread.service_account()
-sh = sa.open("Genshin")
-wks = sh.worksheet("4/14")
-print(wks.acell('C4').value)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as file:

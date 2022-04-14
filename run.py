@@ -33,6 +33,7 @@ initial_extensions = [
 "cmd.vote",
 "cmd.redeem",
 "cmd.flow",
+"cmd.attendance"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
