@@ -1,4 +1,8 @@
-- item: "example"
+- buyerID: 410036441129943050
   flow: 100
-  buyerID: 410036441129943050
-  itemUUID: "67460e74-02e3-11e8-b443-00163e990bdb"
+  item: example
+  itemUUID: 67460e74-02e3-11e8-b443-00163e990bdb
+- buyerID: 410036441129943050
+  flow: 0
+  item: test
+  itemUUID: 0fdef3d0-bbbb-11ec-878d-80913336b9bc

@@ -1,5 +1,15 @@
 - current: 0
-  flow: 0
-  max: 10
-  name: test
-  uuid: 0fdef3d0-bbbb-11ec-878d-80913336b9bc
+  flow: 380
+  max: 3
+  name: "Discord Nitro CLASSIC 1\u500B\u6708"
+  uuid: 05701152-bbbd-11ec-92ec-80913336b9bc
+- current: 0
+  flow: 780
+  max: 2
+  name: "Discord NITRO 1\u500B\u6708"
+  uuid: b84b2519-bbbd-11ec-a5a4-80913336b9bc
+- current: 0
+  flow: 380
+  max: 5
+  name: "\u539F\u795E\u5C0F\u6708\u5361 1\u500B\u6708"
+  uuid: c38a8a73-bbbd-11ec-8e21-80913336b9bc
