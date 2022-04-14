@@ -22,6 +22,8 @@ class HelpCog(commands.Cog):
             value = "`!cute <人物>`可愛~\n`!say`讓申鶴說話\n`!flash`防放閃指令\n`!vote`發起投票\n`!marry`結婚owo")
         embed.add_field(name = "➜ 其他功能", 
             value = "`!group`小組指令組界面\n`!flow`flow功能界面\n`!farm`原神今日可刷素材")
+        embed.add_field(name = "➜ 小遊戲(可賺flow幣)", 
+            value = "`!rps`剪刀石頭布")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
