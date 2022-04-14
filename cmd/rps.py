@@ -24,8 +24,8 @@ class RPSCog(commands.Cog):
     async def on_raw_reaction_add(self, ev: discord.RawReactionActionEvent):
         if ev.user_id != self.bot.user.id:
             await self.bot.http.delete_message(ev.channel_id, ev.message_id)
-            msg = "哈哈, 申鶴贏了!" if str(ev.emoji) == rand.choice(self.reactions) \
-                else "可惡, 沒想到居然輸給你了..."
+            msg = "「這個叫做剪刀石頭布的遊戲好像挺好玩...」" if str(ev.emoji) == rand.choice(self.reactions) \
+                else "「我輸了嗎...? :anger: :knife:」"
             embed = global_vars.defaultEmbed("誰贏了呢?", f"{msg}\n你出了: {str(ev.emoji)}\n申鶴出了: {rand.choice(self.reactions)}")
             global_vars.setFooter(embed)
             await self.bot.get_channel(ev.channel_id).send(embed=embed)
