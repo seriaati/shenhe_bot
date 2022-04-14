@@ -13,3 +13,18 @@
   max: 5
   name: "\u539F\u795E\u5C0F\u6708\u5361 1\u500B\u6708"
   uuid: c38a8a73-bbbd-11ec-8e21-80913336b9bc
+- current: 0
+  flow: 150
+  max: 10
+  name: "\u539F\u795E\u7D50\u6676 x60"
+  uuid: a582a4d5-bbbe-11ec-902b-80913336b9bc
+- current: 0
+  flow: 380
+  max: 5
+  name: "\u539F\u795E\u7D50\u6676 x300"
+  uuid: b02f2da5-bbbe-11ec-8564-80913336b9bc
+- current: 0
+  flow: 780
+  max: 2
+  name: "\u539F\u795E\u7D50\u6676 x660"
+  uuid: bc6cfc28-bbbe-11ec-bb07-80913336b9bc
