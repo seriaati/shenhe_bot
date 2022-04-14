@@ -143,12 +143,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-config.py
-asset/accounts.yaml
-asset/bank.yaml
-asset/confirm.yaml
-asset/find.yaml
-asset/groups.yaml
-asset/shop.yaml
-asset/log.yaml
-asset/flow.yaml
