@@ -406,17 +406,14 @@ class FlowCog(commands.Cog):
 	@commands.group()
 	async def shop(self, ctx):
 		if ctx.invoked_subcommand is None:
-			shopEmbeds = []
+			itemStr = ""
+			count = 1
 			for item in shop:
-				embed = global_vars.defaultEmbed("🛒 flow商店",f"{item['name']} - {item['flow']}\n已被購買次數: {item['current']}/{item['max']}\nUUID: {item['uuid']}")
-				global_vars.setFooter(embed)
-				shopEmbeds.append(embed)
-			paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
-			paginator.add_reaction('⏮️', "first")
-			paginator.add_reaction('◀', "back")
-			paginator.add_reaction('▶', "next")
-			paginator.add_reaction('⏭️', "last")
-			await paginator.run(shopEmbeds)
+				itemStr = itemStr + f"{count}. {item['name']} - {item['flow']}flow ({item['current']}/{item['max']})\n"
+				count += 1
+			embed = global_vars.defaultEmbed("🛒 flow商店", itemStr)
+			global_vars.setFooter(embed)
+			await ctx.send(embed=embed)
 
 	@shop.command()
 	@commands.has_role("小雪團隊")
@@ -460,7 +457,7 @@ class FlowCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		pos = int(float(result.number)) - 1
+		pos = int(result.number) - 1
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				found = True
@@ -479,16 +476,16 @@ class FlowCog(commands.Cog):
 					logs.append(newLog)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(logs, file)
-					itemPrice = int(item['flow'])
+					itemPrice = int(shop[pos]['flow'])
 					user['flow'] -= itemPrice
 					bank['flow'] += itemPrice
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(bank, file)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(users, file)
-					await ctx.send(f"商品 {item['name']} 購買成功, 詳情請查看私訊")
-					await ctx.author.send(f"您已在flow商城購買了 {item['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
-					embed = global_vars.defaultEmbed("📜 購買證明",f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {item['name']}\nUUID: {item['uuid']}\n價格: {item['flow']}")
+					await ctx.send(f"商品 {shop[pos]['name']} 購買成功, 詳情請查看私訊")
+					await ctx.author.send(f"您已在flow商城購買了 {shop[pos]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
+					embed = global_vars.defaultEmbed("📜 購買證明",f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {shop[pos]['name']}\nUUID: {shop[pos]['uuid']}\n價格: {shop[pos]['flow']}")
 					global_vars.setFooter(embed)
 					await ctx.author.send(embed=embed)
 					break
