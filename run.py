@@ -24,7 +24,7 @@ token = config.bot_token
 
 # 指令包
 initial_extensions = [
-"cmd.genshin_stuff",
+"cmd.genshin",
 "cmd.call", 
 "cmd.register", 
 "cmd.othercmd", 
@@ -33,7 +33,7 @@ initial_extensions = [
 "cmd.vote",
 "cmd.redeem",
 "cmd.flow",
-"cmd.attendance"
+"cmd.att"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
