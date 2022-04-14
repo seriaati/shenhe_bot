@@ -19,7 +19,6 @@ class RPSCog(commands.Cog):
         global_vars.setFooter(embed)
         msg = await ctx.send(embed=embed)
         for reaction in self.reactions: await msg.add_reaction(reaction)
-        await ctx.message.delete()
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, ev: discord.RawReactionActionEvent):
