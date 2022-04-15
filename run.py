@@ -81,7 +81,7 @@ async def checkLoop():
                 diff = dateNow - user['dmDate']
                 diffHour = diff.total_seconds() / 3600
                 if resin >= 140 and user['dm'] == True and user['dmCount'] < 3 and diffHour >= 1:
-                    time = (notes.max_resin - notes.current_resin)*8*60
+                    time = notes.remaining_resin_recovery_time
                     hours, minutes = divmod(time // 60, 60)
                     fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
                     printTime = '{:%H:%M}'.format(fullTime)

@@ -49,11 +49,11 @@ class GenshinCog(commands.Cog):
             else:
                 exTime = min(unfinExp, default="EMPTY")
                 hr, mn = divmod(exTime // 60,60)
-        time = (notes.max_resin - notes.current_resin)*8*60
+        time = notes.remaining_resin_recovery_time
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck=global_vars.defaultEmbed(f"使用者: {username}",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_comissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
+        embedCheck=global_vars.defaultEmbed(f"使用者: {username}",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
