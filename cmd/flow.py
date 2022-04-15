@@ -504,6 +504,15 @@ class FlowCog(commands.Cog):
 			global_vars.setFooter(embed)
 			await ctx.send(embed=embed)
 
+	@shop.command()
+	@commands.has_role("小雪團隊")
+	async def clearcurrent(self, ctx, uuid):
+		for item in shop:
+			if item['uuid'] == uuid:
+				item['current'] = 0
+				await ctx.send(f"已將 {item['name']} 的購買次數設為0")
+				break
+
 	@commands.command()
 	async def total(self, ctx):
 		total = 0
