@@ -69,7 +69,6 @@ class RegisterCog(commands.Cog):
         elif failed == False:
             newUser = {'name': str(result.name), 'uid': int(result.uid), 'discordID': int(result.discordID), 'ltoken': str(result.ltoken), 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
             users.append(newUser)
-            await client.close()
             with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
