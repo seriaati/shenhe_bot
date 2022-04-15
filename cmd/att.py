@@ -2,12 +2,16 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import gspread, discord
+import gspread, discord, yaml
 import global_vars
 global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
 from discord.ext.forms import ReactionForm
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+	users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as file:
+	bank = yaml.full_load(file)
 
 sa = gspread.service_account()
 sh = sa.open("Genshin")
@@ -33,13 +37,12 @@ for row in captainRow:
 			continue
 		captains.append(val)
 members = []
-for row in memberRow:
-	for col in memberCol:
-		val = wks.cell(row, col).value
-		if val == None:
-			val = "(暫無團員)"
-		members.append(val)
-
+for col in memberCol:
+    for row in memberRow:
+        val = wks.cell(row, col).value
+        if val == None:
+            val = "(暫無團員)"
+        members.append(val)
 x = 3
 memberList = [members[i:i+x] for i in range(0, len(members), x)]
 
@@ -58,6 +61,7 @@ class AttendCog(commands.Cog):
 			teamStr += f"• {team}\n"
 		form = Form(ctx, '要對哪個隊伍做點名?', cleanup = True)
 		form.add_question(teamStr, 'title')
+		form.add_question("每個有到的隊員要給多少flow幣?", 'flow')
 		form.edit_and_delete(True)
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
@@ -74,15 +78,26 @@ class AttendCog(commands.Cog):
 			if int(captains[pos]) == ctx.author.id:
 				list = memberList[pos]
 				for member in list:
+					if member == "(暫無團員)":
+						continue
 					embed = global_vars.defaultEmbed("這個人有來嗎?",member)
 					message = await ctx.send(embed=embed)
 					form = ReactionForm(message,self.bot,ctx.author)
 					form.add_reaction("✅", True)
 					form.add_reaction("❌", False)
 					choice = await form.start()
-					if choise == True:
-						await ctx.send(f"{member} 到")
-					elif choise == False:
+					if choice == True:
+						for user in users:
+							if user['name'] in member:
+								user['flow'] += int(result.flow)
+								bank['flow'] -= int(result.flow)
+								with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+									yaml.dump(users, file)
+								with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+									yaml.dump(bank, file)
+								await ctx.send(f"{member} 獲得了 {result.flow} flow幣")
+								break
+					elif choice == False:
 						await ctx.send(f"{member} 沒到")
 			else:
 				await ctx.send(f"{ctx.author.mention} 你不是這個團的隊長")
