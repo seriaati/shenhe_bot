@@ -31,7 +31,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         notes = await client.get_notes(uid)
         if not notes.expeditions:
@@ -73,7 +73,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
         days = genshinUser.stats.days_active
@@ -109,7 +109,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         genshinUser = await client.get_partial_user(uid)
         explorations = genshinUser.explorations
@@ -143,7 +143,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
@@ -175,7 +175,7 @@ class GenshinCog(commands.Cog):
             return
         try:
             #obtaining data
-            client = genshin.GenshinClient(cookies)
+            client = genshin.Client(cookies)
             client.lang = "zh-tw"
             abyss = await client.get_spiral_abyss(uid)
             strongestStrike = abyss.ranks.strongest_strike
@@ -218,7 +218,7 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
             return
         # 取得資料
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
         primoCategoryStr = ""
@@ -245,7 +245,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
         primoLog = ""
@@ -281,7 +281,7 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
             return
         # 取得資料
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         char = await client.get_characters(uid)
         clientCharacters = []
@@ -338,7 +338,7 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
             return
         # 取得資料
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         diary = await client.get_diary()
         # print(diary.day_data.)

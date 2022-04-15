@@ -52,7 +52,7 @@ async def claimLoop():
     for user in users:
         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
         username = user['name']
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
         client.lang = "zh-tw"
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
@@ -73,7 +73,7 @@ async def checkLoop():
                 uid = user['uid']
                 username = user['name']
                 userObj = bot.get_user(user['discordID'])
-                client = genshin.GenshinClient(cookies)
+                client = genshin.Client(cookies)
                 client.lang = "zh-tw"
                 notes = await client.get_notes(uid)
                 resin = notes.current_resin
