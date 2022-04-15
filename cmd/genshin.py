@@ -75,7 +75,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
-        genshinUser = await client.get_partial_user(uid)
+        genshinUser = await client.get_partial_genshin_user(uid)
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
         achieve = genshinUser.stats.achievements
@@ -111,7 +111,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
-        genshinUser = await client.get_partial_user(uid)
+        genshinUser = await client.get_partial_genshin_user(uid)
         explorations = genshinUser.explorations
         exploreStr = ""
         offeringStr = ""
