@@ -224,7 +224,7 @@ class GenshinCog(commands.Cog):
             return
         # 取得資料
         client = genshin.Client(cookies)
-        client.lang = "zh-tw"
+        # client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
         primoCategoryStr = ""
@@ -252,7 +252,7 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
             return
         client = genshin.Client(cookies)
-        client.lang = "zh-tw"
+        # client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
         primoLog = ""
@@ -347,10 +347,9 @@ class GenshinCog(commands.Cog):
             return
         # 取得資料
         client = genshin.Client(cookies)
-        client.lang = "zh-tw"
+        # client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
-        # print(diary.day_data.)
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
         embed = global_vars.defaultEmbed(f"今日收入: {username}",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉")
