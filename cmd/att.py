@@ -37,7 +37,7 @@ class AttendCog(commands.Cog):
 		teamStr = ""
 		for team in teams:
 			teamStr += f"• {team}\n"
-		form = Form(ctx, '要對哪個隊伍做點名?', cleanup=True)
+		form = Form(ctx, '要對哪個隊伍做點名?', cleanup = True)
 		form.add_question(teamStr, 'title')
 		form.edit_and_delete(True)
 		form.set_timeout(60)
@@ -52,9 +52,11 @@ class AttendCog(commands.Cog):
 		if pos == -1:
 			await ctx.send("找不到該小組, 請查看名稱是否輸入錯誤")
 		else:
-			if captain[pos] == ctx.author.id:
+			if captains[pos] == ctx.author.id:
 				# cotinue
 				await ctx.send("continue")
+			else:
+				await ctx.send(f"{ctx.author.mention} 你不是這個團的隊長")
 
 def setup(bot):
 	bot.add_cog(AttendCog(bot))
