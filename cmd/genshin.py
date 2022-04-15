@@ -31,9 +31,8 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.Client(cookies, "zh-tw", game: GENSHIN)
-        # client.lang = "zh-tw"
-        # client.default_game = genshin.Game.GENSHIN
+        client = genshin.Client(cookies, "zh-tw")
+        client.default_game = genshin.Game.GENSHIN
         notes = await client.get_notes(uid)
         if not notes.expeditions:
             hr = 0
