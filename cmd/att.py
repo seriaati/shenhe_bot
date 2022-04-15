@@ -23,15 +23,15 @@ captainRow = [4, 10, 16, 22]
 memberCol = [3, 7, 11]
 memberRow = [5, 6, 7, 11, 12, 13, 17, 18, 19, 23, 24, 25]
 teams = []
-for row in teamRow:
-	for col in teamCol:
+for col in teamCol:
+	for row in teamRow:
 		val = wks.cell(row, col).value
 		if val == None:
 			continue
 		teams.append(val)
 captains = []
-for row in captainRow:
-	for col in captainCol:
+for col in captainCol:
+	for row in captainRow:
 		val = wks.cell(row, col).value
 		if val == None:
 			continue
