@@ -1,6 +1,13 @@
-import gspread, discord, re
+import getpass
+owner = getpass.getuser()
+import sys 
+sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
+import gspread, discord
+import global_vars
+global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
+from discord.ext.forms import ReactionForm
 
 sa = gspread.service_account()
 sh = sa.open("Genshin")
@@ -33,7 +40,7 @@ for row in memberRow:
 			val = "(暫無團員)"
 		members.append(val)
 
-x = len(teams)
+x = 3
 memberList = [members[i:i+x] for i in range(0, len(members), x)]
 
 class AttendCog(commands.Cog):
@@ -65,11 +72,18 @@ class AttendCog(commands.Cog):
 			await ctx.send("找不到該小組, 請查看名稱是否輸入錯誤")
 		else:
 			if int(captains[pos]) == ctx.author.id:
-				memberStr = ""
 				list = memberList[pos]
 				for member in list:
-					memberStr += f"• {member}\n"
-				await ctx.send(memberStr)
+					embed = global_vars.defaultEmbed("這個人有來嗎?",member)
+					message = await ctx.send(embed=embed)
+					form = ReactionForm(message,self.bot,ctx.author)
+					form.add_reaction("✅", True)
+					form.add_reaction("❌", False)
+					choice = await form.start()
+					if choise == True:
+						await ctx.send(f"{member} 到")
+					elif choise == False:
+						await ctx.send(f"{member} 沒到")
 			else:
 				await ctx.send(f"{ctx.author.mention} 你不是這個團的隊長")
 
