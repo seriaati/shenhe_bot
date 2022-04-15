@@ -49,7 +49,7 @@ class GenshinCog(commands.Cog):
             else:
                 exTime = min(unfinExp, default="EMPTY")
                 hr, mn = divmod(exTime // 60,60)
-        time = notes.until_resin_recovery
+        time = (notes.max_resin - notes.current_resin)*8*60
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
