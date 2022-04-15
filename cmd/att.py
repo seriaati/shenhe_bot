@@ -53,7 +53,6 @@ class AttendCog(commands.Cog):
 			await ctx.send("找不到該小組, 請查看名稱是否輸入錯誤")
 		else:
 			if captains[pos] == ctx.author.id:
-				# cotinue
 				await ctx.send("continue")
 			else:
 				await ctx.send(f"{ctx.author.mention} 你不是這個團的隊長")
