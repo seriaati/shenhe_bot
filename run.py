@@ -61,7 +61,6 @@ async def claimLoop():
             print(f"{user['name']} already claimed")
         else:
             print(f"claimed for {user['name']}")
-        await client.close()
 
 @tasks.loop(seconds=600)
 async def checkLoop():
@@ -93,15 +92,12 @@ async def checkLoop():
                     user['dmDate'] = dateNow
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
-                    await client.close()
                 elif resin < 140:
                     user['dmCount'] = 0
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
-                await client.close()
             except genshin.errors.InvalidCookies:
                 # print (f"{user['name']}帳號壞掉了")
-                await client.close()
         
 # 等待申鶴準備
 @checkLoop.before_loop
