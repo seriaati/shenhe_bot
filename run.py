@@ -97,7 +97,7 @@ async def checkLoop():
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
             except genshin.errors.InvalidCookies:
-                # print (f"{user['name']}帳號壞掉了")
+                print (f"{user['name']}帳號壞掉了")
         
 # 等待申鶴準備
 @checkLoop.before_loop
