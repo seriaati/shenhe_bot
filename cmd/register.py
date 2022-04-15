@@ -56,13 +56,14 @@ class RegisterCog(commands.Cog):
         dateNow = datetime.datetime.now()
         cookies = {"ltuid": result.ltuid, "ltoken": result.ltoken}
         uid = result.uid
-        client = genshin.GenshinClient(cookies)
+        client = genshin.Client(cookies)
+        client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         failed = False
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.InvalidCookies:
             failed = True
-            await client.close()
         if failed == True:
             await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
         elif failed == False:
