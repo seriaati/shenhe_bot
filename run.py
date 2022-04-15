@@ -53,6 +53,7 @@ async def claimLoop():
         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
         username = user['name']
         client = genshin.Client(cookies)
+        client.default_game = genshin.Game.GENSHIN
         client.lang = "zh-tw"
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
@@ -74,6 +75,7 @@ async def checkLoop():
                 username = user['name']
                 userObj = bot.get_user(user['discordID'])
                 client = genshin.Client(cookies)
+                client.default_game = genshin.Game.GENSHIN
                 client.lang = "zh-tw"
                 notes = await client.get_notes(uid)
                 resin = notes.current_resin
@@ -97,7 +99,7 @@ async def checkLoop():
                     with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
                         yaml.dump(users, file)
             except genshin.errors.InvalidCookies:
-                print (f"{user['name']}帳號壞掉了")
+                print (" ")
         
 # 等待申鶴準備
 @checkLoop.before_loop

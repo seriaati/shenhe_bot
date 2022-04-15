@@ -33,6 +33,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         notes = await client.get_notes(uid)
         if not notes.expeditions:
             hr = 0
@@ -75,6 +76,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         genshinUser = await client.get_partial_genshin_user(uid)
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
@@ -111,6 +113,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         genshinUser = await client.get_partial_genshin_user(uid)
         explorations = genshinUser.explorations
         exploreStr = ""
@@ -145,6 +148,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
@@ -177,6 +181,7 @@ class GenshinCog(commands.Cog):
             #obtaining data
             client = genshin.Client(cookies)
             client.lang = "zh-tw"
+            client.default_game = genshin.Game.GENSHIN
             abyss = await client.get_spiral_abyss(uid)
             strongestStrike = abyss.ranks.strongest_strike
             mostKill = abyss.ranks.most_kills
@@ -220,6 +225,7 @@ class GenshinCog(commands.Cog):
         # 取得資料
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
         primoCategoryStr = ""
         for category in diary.data.categories:
@@ -247,6 +253,7 @@ class GenshinCog(commands.Cog):
             return
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
         primoLog = ""
         moraLog = ""
@@ -283,6 +290,7 @@ class GenshinCog(commands.Cog):
         # 取得資料
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         char = await client.get_characters(uid)
         clientCharacters = []
         charEmbeds = []
@@ -340,6 +348,7 @@ class GenshinCog(commands.Cog):
         # 取得資料
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
         # print(diary.day_data.)
         mora = diary.day_data.current_mora
