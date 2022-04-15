@@ -12,15 +12,17 @@ captainRow = [4, 10, 16, 22]
 teams = []
 for row in teamRow:
 	for col in teamCol:
+		val = wks.cell(row, col).value
 		if val == None:
 			continue
-		teams.sppend(wks.cell(row, col).value)
+		teams.sppend(val)
 captains = []
 for row in captainRow:
 	for col in captainCol:
+		val = wks.cell(row, col).value
 		if val == None:
 			continue
-		captains.append(wks.cell(row, col).value)
+		captains.append(val)
 
 class AttendCog(commands.Cog):
 	def __init__(self, bot):
