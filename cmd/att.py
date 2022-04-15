@@ -45,6 +45,14 @@ for col in memberCol:
         members.append(val)
 x = 3
 memberList = [members[i:i+x] for i in range(0, len(members), x)]
+IDs = []
+for col in captainCol:
+	for rwo in memberRow:
+		val = wks.cell(row, col).value
+		if val == None:
+			val = "No ID"
+		IDs.append(val)
+IDList = [IDs[i:i+x] for i in range(0, len(IDs), x)]
 
 class AttendCog(commands.Cog):
 	def __init__(self, bot):
@@ -87,8 +95,12 @@ class AttendCog(commands.Cog):
 					form.add_reaction("❌", False)
 					choice = await form.start()
 					if choice == True:
+						pos2 = -1
+						for member in list:
+							if result.member == member:
+								pos2 = list.index(member)
 						for user in users:
-							if user['name'] in member:
+							if user['discordID'] == IDList[pos][pos2]:
 								user['flow'] += int(result.flow)
 								bank['flow'] -= int(result.flow)
 								with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
