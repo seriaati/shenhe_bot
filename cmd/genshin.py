@@ -291,7 +291,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        char = await client.get_partial_genshin_user(uid)
+        user = await client.get_genshin_characters(uid)
         clientCharacters = []
         charEmbeds = []
         for character in char:
