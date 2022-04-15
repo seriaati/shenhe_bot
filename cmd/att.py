@@ -7,7 +7,7 @@ sh = sa.open("Genshin")
 wks = sh.worksheet("4/14")
 teamCol = [2, 6, 10]
 teamRow = [3, 9, 15, 21]
-captianCol = [4, 8, 12]
+captainCol = [4, 8, 12]
 captainRow = [4, 10, 16, 22]
 teams = []
 for row in teamRow:
