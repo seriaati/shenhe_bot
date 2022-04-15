@@ -48,9 +48,9 @@ memberList = [members[i:i+x] for i in range(0, len(members), x)]
 IDs = []
 for col in captainCol:
 	for rwo in memberRow:
-		val = wks.cell(row, col).value
+		val = int(wks.cell(row, col).value)
 		if val == None:
-			val = "No ID"
+			val = 000
 		IDs.append(val)
 IDList = [IDs[i:i+x] for i in range(0, len(IDs), x)]
 
