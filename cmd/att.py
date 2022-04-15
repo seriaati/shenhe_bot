@@ -15,7 +15,7 @@ for row in teamRow:
 		val = wks.cell(row, col).value
 		if val == None:
 			continue
-		teams.sppend(val)
+		teams.append(val)
 captains = []
 for row in captainRow:
 	for col in captainCol:
