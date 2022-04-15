@@ -56,7 +56,6 @@ class GenshinCog(commands.Cog):
         embedCheck=global_vars.defaultEmbed(f"使用者: {username}",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_comissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
-        await client.close()
 
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
@@ -92,7 +91,6 @@ class GenshinCog(commands.Cog):
             f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
-        await client.close()
 
     @commands.command()
     async def area(self, ctx, *, name: discord.Member = None):
@@ -129,7 +127,6 @@ class GenshinCog(commands.Cog):
         embed = global_vars.defaultEmbed(f"區域探索度: {username}",f"{exploreStr}\n{offeringStr}")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
-        await client.close()
 
     @commands.command()
     async def claim(self, ctx, *, member: discord.Member = None):
@@ -159,7 +156,6 @@ class GenshinCog(commands.Cog):
             embed = global_vars.defaultEmbed(f"使用者: {username}",f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
-        await client.close()
 
     @commands.command()
     async def abyss(self, ctx, *, name: discord.Member = None):
@@ -201,11 +197,9 @@ class GenshinCog(commands.Cog):
             embed = global_vars.defaultEmbed("找不到資料!", "可能是因為你還沒打深淵, 輸入`!stats`來看看你打到幾層了")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
-            await client.close()
         embedAbyss=global_vars.defaultEmbed(f"深境螺旋: {username}",f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
         global_vars.setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
-        await client.close()
 
     @commands.command()
     async def diary(self, ctx, *, name: discord.Member = None): 
@@ -234,7 +228,6 @@ class GenshinCog(commands.Cog):
         embedDiary.add_field(name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
         global_vars.setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
-        await client.close()
 
     @commands.command()
     async def log(self, ctx, *, name: discord.Member = None): 
@@ -265,13 +258,11 @@ class GenshinCog(commands.Cog):
         global_vars.setFooter(embedPrimo)
         embedMora = global_vars.defaultEmbed(f"<:mora:958577933650362468> 最近25筆摩拉紀錄",f"{moraLog}")
         global_vars.setFooter(embedMora)
-        await client.close()
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
         embeds = [embedPrimo, embedMora]
         await paginator.run(embeds)
-        await client.close()
 
     @commands.command()
     async def char(self, ctx, *, name: discord.Member = None):
@@ -318,7 +309,6 @@ class GenshinCog(commands.Cog):
         paginator.add_reaction('▶', "next")
         paginator.add_reaction('⏭️', "last")
         await paginator.run(charEmbeds)
-        await client.close()
 
     @commands.command()
     async def users(self, ctx):
@@ -357,7 +347,6 @@ class GenshinCog(commands.Cog):
         embed = global_vars.defaultEmbed(f"今日收入: {username}",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
-        await client.close()
 
 def setup(bot):
     bot.add_cog(GenshinCog(bot))
