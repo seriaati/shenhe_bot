@@ -38,7 +38,7 @@ class AttendCog(commands.Cog):
 		for team in teams:
 			teamStr += f"• {team}\n"
 		form = Form(ctx, '要對哪個隊伍做點名?', cleanup=True)
-		form.add_question(titleStr, 'title')
+		form.add_question(teamStr, 'title')
 		form.edit_and_delete(True)
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
