@@ -33,7 +33,7 @@ initial_extensions = [
 "cmd.vote",
 "cmd.redeem",
 "cmd.flow",
-"cmd.att"
+# "cmd.att"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -147,5 +147,27 @@ async def reload(ctx, arg):
                     await ctx.send(f"已重整 {extension} 指令包")
                 except:
                     await ctx.send(f"{extension} 指令包有錯誤")
+
+@commands.command()
+async def unload(ctx, arg):
+    for extension in initial_extensions:
+        exStr = F"cmd.{arg}"
+        if exStr == extension:
+            try:
+                bot.unload_extension(extension)
+                await ctx.send(f"已unload {extension} 指令包")
+            except:
+                await ctx.send(f"{extension} 指令包無法被unload")
+
+@commands.command()
+async def load(ctx, arg):
+    for extension in initial_extensions:
+        exStr = F"cmd.{arg}"
+        if exStr == extension:
+            try:
+                bot.load_extension(extension)
+                await ctx.send(f"已unload {extension} 指令包")
+            except:
+                await ctx.send(f"{extension} 指令包無法被unload")
 
 bot.run(token, bot=True, reconnect=True)
