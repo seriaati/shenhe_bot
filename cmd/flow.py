@@ -506,7 +506,7 @@ class FlowCog(commands.Cog):
 
 	@shop.command()
 	@commands.has_role("小雪團隊")
-	async def clearcurrent(self, ctx, uuid):
+	async def clear(self, ctx, uuid):
 		for item in shop:
 			if item['uuid'] == uuid:
 				item['current'] = 0
