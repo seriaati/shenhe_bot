@@ -517,6 +517,8 @@ class FlowCog(commands.Cog):
 		for item in shop:
 			if item['uuid'] == uuid:
 				item['current'] = 0
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(shop, file)
 				await ctx.send(f"已將 {item['name']} 的購買次數設為0")
 				break
 
