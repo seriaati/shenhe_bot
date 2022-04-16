@@ -3,16 +3,15 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, emoji, inflect
+import os, discord, asyncio, genshin, yaml, datetime
 import global_vars
 global_vars.Global()
 import config
 config.Token()
 from discord.ext import commands
 from discord.ext import tasks
-from random import randint
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
 
 # 前綴, token, intents
@@ -33,7 +32,6 @@ initial_extensions = [
 "cmd.vote",
 "cmd.redeem",
 "cmd.flow",
-# "cmd.att"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -123,7 +121,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command()
-@commands.is_owner()
+@commands.has_role("小雪團隊")
 async def reload(ctx, arg):
     if arg == 'all':
         failed = False
@@ -155,7 +153,7 @@ async def unload(ctx, arg):
                 bot.unload_extension(extension)
                 await ctx.send(f"已unload {extension} 指令包")
             except:
-                await ctx.send(f"{extension} 指令包無法被unload")
+                await ctx.send(f"{extension} 指令包無法被取消加載")
 
 @commands.command()
 async def load(ctx, arg):
@@ -166,6 +164,6 @@ async def load(ctx, arg):
                 bot.load_extension(extension)
                 await ctx.send(f"已unload {extension} 指令包")
             except:
-                await ctx.send(f"{extension} 指令包無法被unload")
+                await ctx.send(f"{extension} 指令包無法被加載")
 
 bot.run(token, bot=True, reconnect=True)
