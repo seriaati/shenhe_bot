@@ -98,6 +98,8 @@ async def checkLoop():
                         yaml.dump(users, file)
             except genshin.errors.InvalidCookies:
                 pass
+            except AttributeError:
+                print(f"{user['name']} AttributeError")
         
 # 等待申鶴準備
 @checkLoop.before_loop

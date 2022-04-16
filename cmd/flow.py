@@ -114,6 +114,9 @@ class FlowCog(commands.Cog):
 								await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
 								await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
 								await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
+							elif find['type']==4:
+								await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
+								return
 							embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
 							global_vars.setFooter(embedDM)
 							dm = await author.send(embed=embedDM)
@@ -217,12 +220,13 @@ class FlowCog(commands.Cog):
 				roleStr = role.name
 				break
 		embed = global_vars.defaultEmbed("請選擇委託類別",
-			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託")
+			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託\n4️⃣: 可以幫助別人(讓拿素材, 可幫打刀鐔等)")
 		message = await ctx.send(embed=embed)
 		form = ReactionForm(message,self.bot,ctx.author)
 		form.add_reaction("1️⃣", 1)
 		form.add_reaction("2️⃣", 2)
 		form.add_reaction("3️⃣", 3)
+		form.add_reaction("4️⃣", 4)
 		choice = await form.start()
 		if choice == 1: 
 			def is_me(m):
@@ -261,7 +265,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
-				print(tagStr)
+				await ctx.send(tagStr)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -303,6 +307,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
+				await ctx.send(tagStr)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -339,6 +344,25 @@ class FlowCog(commands.Cog):
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
+		elif choice == 4:
+			def is_me(m):
+				return m.author == self.bot.user
+			await ctx.channel.purge(limit=1, check=is_me)
+			formFalse = Form(ctx, '設定流程', cleanup=True)
+			formFalse.add_question('想要幫助什麼?', 'title')
+			formFalse.edit_and_delete(True)
+			formFalse.set_timeout(60)
+			await formFalse.set_color("0xa68bd3")
+			result = await formFalse.start()
+			embedResult = global_vars.defaultEmbed(f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: 請私下討論flow幣數量並用`!give`來交易\n按 ✅ 來接受幫助")
+			global_vars.setFooter(embedResult)
+			message = await ctx.send(embed=embedResult)
+			await message.add_reaction('✅')
+			newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
+			finds.append(newFind)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(finds, file)
+
 
 	@commands.command()
 	async def give(self, ctx, member: discord.Member, argFlow: int):
