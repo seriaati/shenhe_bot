@@ -378,7 +378,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
-	async def give(self, ctx, member: discord.Member, argFlow: int):
+	async def make(self, ctx, member: discord.Member, argFlow: int):
 		formFalse = Form(ctx, '發放flow幣', cleanup=True)
 		formFalse.add_question('要給哪些人?(用逗號分隔: @小雪, @sueno)', 'members')
 		formFalse.add_question('多少flow幣?', 'flow')
