@@ -46,7 +46,7 @@ class FlowCog(commands.Cog):
 				if message.author.id == user['discordID']:
 					if 'morning' not in user:
 						user['morning'] = now 
-					if (user['morning']-now).day > 1:
+					if (user['morning']-now).days > 1:
 						user['flow'] += 1
 						bank['flow'] -= 1
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
