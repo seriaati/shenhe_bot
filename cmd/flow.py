@@ -164,7 +164,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def acc(self, ctx, *, member: discord.Member = None):
-		name = name or ctx.author
+		member = member or ctx.author
 		found = False
 		for user in users:
 			if user['discordID']==member.id:
