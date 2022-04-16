@@ -22,6 +22,16 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as file:
 	logs = yaml.full_load(file)
 
+def register(name, id):
+	now = datetime.datetime.now()
+	newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': now}
+	bank['flow'] -= 100
+	users.append(newUser)
+	with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+		yaml.dump(users, file)
+	with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+		yaml.dump(bank, file)
+
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -31,7 +41,19 @@ class FlowCog(commands.Cog):
 		if message.author == self.bot.user:
 			return
 		if "早安" in message.content:
-			await message.add_reaction(f"☀️")
+			now = datetime.datetime.now()
+			for user in users:
+				if message.author.id == user['discordID']:
+					if 'morning' not in user:
+						user['morning'] = now 
+					if (user['morning']-now) > 1:
+						user['flow'] += 1
+						bank['flow'] -= 1
+						with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+							yaml.dump(users, file)
+						with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+							yaml.dump(bank, file)
+						await message.add_reaction(f"☀️")
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
@@ -59,13 +81,8 @@ class FlowCog(commands.Cog):
 			if found == False:
 				discordID = payload.user_id
 				user = self.bot.get_user(payload.user_id)
-				newUser = {'name': str(user), 'discordID': int(discordID), 'flow': 100}
-				bank['flow'] -= 100
-				users.append(newUser)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(users, file)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(bank, file)
+				register(user, discordID)
+				
 			for find in finds:
 				if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
 					for user in users:
@@ -141,24 +158,19 @@ class FlowCog(commands.Cog):
 					break
 
 	@commands.command()
-	async def acc(self, ctx, *, name: discord.Member = None):
+	async def acc(self, ctx, *, member: discord.Member = None):
 		name = name or ctx.author
 		found = False
 		for user in users:
-			if user['discordID']==name.id:
+			if user['discordID']==member.id:
 				found = True
 				embed = global_vars.defaultEmbed(f"使用者: {user['name']}",f"flow幣: {user['flow']}")
 				global_vars.setFooter(embed)
 				await ctx.send(embed=embed)
 		if found == False:
-			discordID = name.id
-			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
-			bank['flow'] -= 100
-			users.append(newUser)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
+			discordID = member.id
+			user = self.bot.get_user(discordID)
+			register(user, discordID)
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 
 	@commands.command()
@@ -187,13 +199,8 @@ class FlowCog(commands.Cog):
 				found = True
 		if found == False:
 			discordID = ctx.author.id
-			newUser = {'name': str(ctx.author), 'discordID': int(discordID), 'flow': 100}
-			bank['flow'] -= 100
-			users.append(newUser)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
+			user = self.bot.get_user(discordID)
+			register(user, discordID)
 		roles = []
 		for i in range(8):
 			roleCount = i + 1
@@ -323,13 +330,8 @@ class FlowCog(commands.Cog):
 				found = True
 		if found == False:
 			discordID = member.id
-			newUser = {'name': str(member), 'discordID': int(discordID), 'flow': 100}
-			bank['flow'] -= 100
-			users.append(newUser)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
+			user = self.bot.get_user(discordID)
+			register(user, discordID)
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
@@ -500,13 +502,8 @@ class FlowCog(commands.Cog):
 					break
 		if found == False:
 			discordID = ctx.author.id
-			newUser = {'name': str(name), 'discordID': int(discordID), 'flow': 100}
-			bank['flow'] -= 100
-			users.append(newUser)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(users, file)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(bank, file)
+			user = self.bot.get_user(discordID)
+			register(user, discordID)
 			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!acc`或是`!shop buy`一次試試看")
 
 	@shop.command()

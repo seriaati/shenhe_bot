@@ -256,8 +256,8 @@ class GenshinCog(commands.Cog):
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         diary = await client.get_diary()
-        primoLog = ""
-        moraLog = ""
+        primoLog = "找不到原石資料(請等待小雪更新)"
+        moraLog = "找不到摩拉資料(請等待小雪更新)"
         async for action in client.diary_log(limit=25):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
         # async for action in client.diary_log(limit=25, ):
