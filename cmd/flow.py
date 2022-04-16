@@ -29,9 +29,9 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if message.author == self.bot.user:
-            return
-        if "早安" in message.content:
-            await message.add_reaction(f"☀️")
+			return
+		if "早安" in message.content:
+			await message.add_reaction(f"☀️")
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
