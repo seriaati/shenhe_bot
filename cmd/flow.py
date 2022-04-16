@@ -27,6 +27,13 @@ class FlowCog(commands.Cog):
 		self.bot = bot
 
 	@commands.Cog.listener()
+	async def on_message(self, message):
+		if message.author == self.bot.user:
+            return
+        if "早安" in message.content:
+            await message.add_reaction(f"☀️")
+
+	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == 963972447600771092:
 			for i in range(1, 9):

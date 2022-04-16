@@ -121,7 +121,7 @@ class GenshinCog(commands.Cog):
         offeringStr = ""
         for exploration in explorations:
             name = exploration.name 
-            percentage = exploration.percentage
+            percentage = exploration.explored
             offerings = exploration.offerings
             exploreStr += f"{name}: {percentage}%\n"
             for offering in offerings:
