@@ -230,7 +230,7 @@ class GenshinCog(commands.Cog):
         diary = await client.get_diary()
         primoCategoryStr = ""
         for category in diary.data.categories:
-            primoCategoryStr = primoCategoryStr + f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
+            primoCategoryStr += f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
         embedDiary = global_vars.defaultEmbed(f"原石與摩拉收入: {username}",f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
         embedDiary.add_field(name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
         global_vars.setFooter(embedDiary)
