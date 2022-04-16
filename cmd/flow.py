@@ -24,8 +24,8 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as 
 	logs = yaml.full_load(file)
 
 def register(name, id):
-	now = datetime.datetime.now()
-	newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': now}
+	today = date.today()
+	newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
 	bank['flow'] -= 100
 	users.append(newUser)
 	with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
@@ -43,11 +43,6 @@ class FlowCog(commands.Cog):
 			return
 		if "早安" in message.content:
 			today = date.today()
-			for user in users:
-			    if 'morning' not in user:
-			        user['morning'] = today
-			        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-			            yaml.dump(users, file)
 			for user in users:
 				if message.author.id == user['discordID'] and user['morning']!=today:
 					user['flow'] += 1
