@@ -55,7 +55,7 @@ class FlowCog(commands.Cog):
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 							yaml.dump(bank, file)
 						await message.add_reaction(f"☀️")
-			if found = False:
+			if found == False:
 				discordID = message.author.id
 				user = self.bot.get_user(message.author.id)
 				register(user, discordID)
