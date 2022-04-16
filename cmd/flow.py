@@ -362,20 +362,27 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
-	async def make(self, ctx, member: discord.Member, argFlow: int):
-		for user in users:
-			if user['discordID'] == member.id:
-				user['flow'] += int(argFlow) 
-				bank['flow'] -= int(argFlow)
-				acceptor = self.bot.get_user(member.id)
-				embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(users, file)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(bank, file)
-				break
-		global_vars.setFooter(embed)
-		await ctx.send(embed=embed)
+	async def give(self, ctx, member: discord.Member, argFlow: int):
+		formFalse = Form(ctx, '發放flow幣', cleanup=True)
+		formFalse.add_question('要給哪些人?(用逗號分隔: @小雪, @sueno)', 'members')
+		formFalse.add_question('多少flow幣?', 'flow')
+		formFalse.edit_and_delete(True)
+		formFalse.set_timeout(60)
+		await formFalse.set_color("0xa68bd3")
+		result = await formFalse.start()
+		memberList = result.members.split(", ")
+		for member in memberList:
+			for user in users:
+				if user['discordID'] == member.id:
+					user['flow'] += int(argFlow) 
+					bank['flow'] -= int(argFlow)
+					acceptor = self.bot.get_user(member.id)
+					embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(bank, file)
+					break
 
 	@commands.command()
 	async def flow(slef, ctx):

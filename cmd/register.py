@@ -2,14 +2,11 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, yaml, datetime, genshin
+import discord, datetime
 import global_vars
 from discord.ext import commands
 from discord.ext.forms import Form
 global_vars.Global()
-
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
-    users = yaml.full_load(file)
 
 class RegisterCog(commands.Cog):
     def __init__(self, bot):
@@ -39,39 +36,6 @@ class RegisterCog(commands.Cog):
             "1. 至hoyolab網頁中\n2. 點擊頭像\n3. personal homepage\n4. 右邊會看到genshin impact\n5. 點擊之後看到設定按鈕\n6. 打開 Do you want to enable real time-notes")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
-
-    @commands.command()
-    @commands.has_role("小雪團隊")
-    async def newuser(self, ctx):
-        form = Form(ctx, '新增帳號設定流程', cleanup=True)
-        form.add_question('原神UID?', 'uid')
-        form.add_question('用戶名?', 'name')
-        form.add_question('discord ID?', 'discordID')
-        form.add_question('ltuid?', 'ltuid')
-        form.add_question('ltoken?', 'ltoken')
-        form.edit_and_delete(True)
-        form.set_timeout(60)
-        await form.set_color("0xa68bd3")
-        result = await form.start()
-        dateNow = datetime.datetime.now()
-        cookies = {"ltuid": result.ltuid, "ltoken": result.ltoken}
-        uid = result.uid
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        failed = False
-        try:
-            notes = await client.get_notes(uid)
-        except genshin.errors.InvalidCookies:
-            failed = True
-        if failed == True:
-            await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
-        elif failed == False:
-            newUser = {'name': str(result.name), 'uid': int(result.uid), 'discordID': int(result.discordID), 'ltoken': str(result.ltoken), 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
-            users.append(newUser)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(users, file)
-            await ctx.send(f"已新增該帳號")
 
     @commands.command()
     async def dm(self, ctx, *, arg=''):
