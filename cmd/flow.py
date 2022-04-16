@@ -45,7 +45,7 @@ class FlowCog(commands.Cog):
 			for user in users:
 			    if 'morning' not in user:
 			        user['morning'] = now
-			        with open(f'C:/Users/seria/Documents/playground/data.yaml', 'w', encoding = 'utf-8') as file:
+			        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 			            yaml.dump(users, file)
 			for user in users:
 				if message.author.id == user['discordID'] and (user['morning']-now).days > 1:
