@@ -45,7 +45,7 @@ class FlowCog(commands.Cog):
 			today = date.today()
 			found = False
 			for user in users:
-				if message.author.id == user['discordID']
+				if message.author.id == user['discordID']:
 					found = True
 					if user['morning']!=today:
 						user['flow'] += 1
