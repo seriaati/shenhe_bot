@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji
+import os, discord, asyncio, genshin, yaml, datetime, time, DiscordUtils, uuid, inflect, emoji, re
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -207,15 +207,17 @@ class FlowCog(commands.Cog):
 			user = self.bot.get_user(discordID)
 			register(user, discordID)
 		roles = []
-		for i in range(8):
-			roleCount = i + 1
-			roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(roleCount)}"))
+		for i in range(1, 9):
+			roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(i)}"))
+			i += 1
 		roleForChannel = self.bot.get_channel(962311051683192842)
 		roleStr = f'請至{roleForChannel.mention}選擇身份組'
 		for role in roles:
 			if role in ctx.author.roles:
 				roleStr = role.name
 				break
+		tagStr = ""
+
 		embed = global_vars.defaultEmbed("請選擇委託類別",
 			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託")
 		message = await ctx.send(embed=embed)
@@ -386,12 +388,15 @@ class FlowCog(commands.Cog):
 		result = await formFalse.start()
 		memberList = result.members.split(", ")
 		for member in memberList:
+			id = int(re.search(r'\d+', member).group())
 			for user in users:
-				if user['discordID'] == member.id:
+				if user['discordID'] == id:
 					user['flow'] += int(argFlow) 
 					bank['flow'] -= int(argFlow)
-					acceptor = self.bot.get_user(member.id)
+					acceptor = self.bot.get_user(id)
 					embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
+					global_vars.setFooter(embed)
+					await ctx.send(embed=embed)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 						yaml.dump(users, file)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
