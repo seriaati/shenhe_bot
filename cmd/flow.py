@@ -7,6 +7,7 @@ import global_vars
 global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
+from datetime import date
 from discord.ext.forms import ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
@@ -41,14 +42,14 @@ class FlowCog(commands.Cog):
 		if message.author == self.bot.user:
 			return
 		if "早安" in message.content:
-			now = datetime.datetime.now()
+			today = date.today()
 			for user in users:
 			    if 'morning' not in user:
-			        user['morning'] = now
+			        user['morning'] = today
 			        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 			            yaml.dump(users, file)
 			for user in users:
-				if message.author.id == user['discordID'] and (user['morning']-now).days > 1:
+				if message.author.id == user['discordID'] and user['morning']!=today:
 					user['flow'] += 1
 					bank['flow'] -= 1
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
