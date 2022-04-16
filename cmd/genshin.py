@@ -260,8 +260,8 @@ class GenshinCog(commands.Cog):
         moraLog = ""
         async for action in client.diary_log(limit=25):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
-        async for action in client.diary_log(limit=25):
-            moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
+        # async for action in client.diary_log(limit=25, ):
+            # moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
         embedPrimo = global_vars.defaultEmbed(f"<:primo:958555698596290570> 最近25筆原石紀錄",f"{primoLog}")
         global_vars.setFooter(embedPrimo)
         embedMora = global_vars.defaultEmbed(f"<:mora:958577933650362468> 最近25筆摩拉紀錄",f"{moraLog}")
