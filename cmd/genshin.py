@@ -200,7 +200,7 @@ class GenshinCog(commands.Cog):
             dmg = strongestStrike[0].value
             dmgChar = strongestStrike[0].name
         except IndexError:
-            embed = global_vars.defaultEmbed("找不到資料!", "可能是因為你還沒打深淵, 輸入`!stats`來看看你打到幾層了")
+            embed = global_vars.defaultEmbed("找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
         embedAbyss=global_vars.defaultEmbed(f"深境螺旋: {username}",f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
