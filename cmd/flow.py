@@ -216,8 +216,6 @@ class FlowCog(commands.Cog):
 			if role in ctx.author.roles:
 				roleStr = role.name
 				break
-		tagStr = ""
-
 		embed = global_vars.defaultEmbed("請選擇委託類別",
 			"1️⃣: 其他玩家進入你的世界(例如: 陪玩, 打素材等)\n2️⃣: 你進入其他玩家的世界(例如: 拿特產)\n3️⃣: 其他委託")
 		message = await ctx.send(embed=embed)
@@ -250,10 +248,20 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
+				tagStr = ""
+				roleIndex = -1
+				for role in roles:
+					if role in ctx.author.roles:
+						roleIndex = roles.index(role)
+						break
+				tagList = roles[roleIndex:]
+				for role in tagList:
+					tagStr += f"{role.mention} "
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
+				print(tagStr)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -282,6 +290,15 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
+				tagStr = ""
+				roleIndex = -1
+				for role in roles:
+					if role in ctx.author.roles:
+						roleIndex = roles.index(role) + 1
+						break
+				tagList = roles[:roleIndex]
+				for role in tagList:
+					tagStr += f"{role.mention} "
 				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: <={roleStr}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
