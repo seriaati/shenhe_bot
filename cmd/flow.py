@@ -378,7 +378,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
-	async def make(self, ctx, member: discord.Member, argFlow: int):
+	async def make(self, ctx):
 		formFalse = Form(ctx, '發放flow幣', cleanup=True)
 		formFalse.add_question('要給哪些人?(用逗號分隔: @小雪, @sueno)', 'members')
 		formFalse.add_question('多少flow幣?', 'flow')
@@ -391,10 +391,10 @@ class FlowCog(commands.Cog):
 			id = int(re.search(r'\d+', member).group())
 			for user in users:
 				if user['discordID'] == id:
-					user['flow'] += int(argFlow) 
-					bank['flow'] -= int(argFlow)
+					user['flow'] += int(result.flow) 
+					bank['flow'] -= int(result.flow)
 					acceptor = self.bot.get_user(id)
-					embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}憑空生出了 {str(argFlow)}枚flow幣給 {acceptor.mention}")
+					embed = global_vars.defaultEmbed("✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}從銀行轉出了 {result.flow}枚flow幣給 {acceptor.mention}")
 					global_vars.setFooter(embed)
 					await ctx.send(embed=embed)
 					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
