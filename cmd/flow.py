@@ -50,6 +50,7 @@ class FlowCog(commands.Cog):
 					if user['morning']!=today:
 						user['flow'] += 1
 						bank['flow'] -= 1
+						user['morning'] = today
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
 							yaml.dump(users, file)
 						with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
