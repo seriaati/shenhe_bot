@@ -54,6 +54,8 @@ async def claimLoop():
         client = genshin.Client(cookies)
         client.default_game = genshin.Game.GENSHIN
         client.lang = "zh-tw"
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
@@ -76,6 +78,8 @@ async def checkLoop():
                 client = genshin.Client(cookies)
                 client.default_game = genshin.Game.GENSHIN
                 client.lang = "zh-tw"
+                if user['name'] == "小雪":
+                    client.uids[genshin.Game.GENSHIN] = 901211014
                 notes = await client.get_notes(uid)
                 resin = notes.current_resin
                 dateNow = datetime.datetime.now()
@@ -99,8 +103,8 @@ async def checkLoop():
                         yaml.dump(users, file)
             except genshin.errors.InvalidCookies:
                 pass
-            except AttributeError:
-                print(f"{user['name']} AttributeError")
+            # except AttributeError:
+                # print(f"{user['name']} AttributeError")
         
 # 等待申鶴準備
 @checkLoop.before_loop
@@ -142,11 +146,6 @@ async def reload(ctx, arg):
                     await ctx.send(f"已重整 {extension} 指令包")
                 except:
                     await ctx.send(f"{extension} 指令包有錯誤")
-
-@reload.error
-async def reload_handler(self, ctx, error):
-    if isinstance(error, commands.MissingRole):
-        await ctx.send("你不是小雪團隊的一員!")
 
 @commands.command()
 async def unload(ctx, arg):
