@@ -306,6 +306,8 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
+				guild = self.bot.get_guild(payload.guild_id)
+				role = discord.utils.get(guild.roles, name=f"委託通知")
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
@@ -314,6 +316,7 @@ class FlowCog(commands.Cog):
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
+				await ctx.send(role.mention)
 		elif choice == 2:
 			def is_me(m):
 				return m.author == self.bot.user
@@ -338,10 +341,14 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
+				guild = self.bot.get_guild(payload.guild_id)
+				role = discord.utils.get(guild.roles, name=f"委託通知")
+				notifRole = self.bot.get
 				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: <={roleStr}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
+				await ctx.send(role.mention)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -370,9 +377,12 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
+				guild = self.bot.get_guild(payload.guild_id)
+				role = discord.utils.get(guild.roles, name=f"委託通知")
 				embedResult = global_vars.defaultEmbed(f"委託: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
+				await ctx.send(role.mention)
 				await message.add_reaction('✅')
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 3}
 				finds.append(newFind)

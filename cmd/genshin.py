@@ -270,8 +270,8 @@ class GenshinCog(commands.Cog):
         if user['name'] == "小雪":
             client.uids[genshin.Game.GENSHIN] = 901211014
         diary = await client.get_diary()
-        primoLog = "找不到原石資料(請告知小雪)"
-        moraLog = "找不到摩拉資料(請告知小雪)"
+        primoLog = ""
+        moraLog = ""
         async for action in client.diary_log(limit=25):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
         # async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
