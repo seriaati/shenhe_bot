@@ -143,6 +143,11 @@ async def reload(ctx, arg):
                 except:
                     await ctx.send(f"{extension} 指令包有錯誤")
 
+@reload.error
+async def reload_handler(self, ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("你不是小雪團隊的一員!")
+
 @commands.command()
 async def unload(ctx, arg):
     for extension in initial_extensions:

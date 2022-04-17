@@ -228,8 +228,7 @@ class FlowCog(commands.Cog):
 	@roles.error
 	async def roles_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.command()
 	async def find(self, ctx):
@@ -474,8 +473,7 @@ class FlowCog(commands.Cog):
 	@take.error
 	async def take_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
@@ -507,8 +505,7 @@ class FlowCog(commands.Cog):
 	@make.error
 	async def make_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.command()
 	async def flow(slef, ctx):
@@ -534,8 +531,7 @@ class FlowCog(commands.Cog):
 	@reset.error
 	async def reset_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.group()
 	async def shop(self, ctx):
@@ -570,8 +566,7 @@ class FlowCog(commands.Cog):
 	@newitem.error
 	async def newitem_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@shop.command()
 	@commands.has_role("小雪團隊")
@@ -587,8 +582,7 @@ class FlowCog(commands.Cog):
 	@removeitem.error
 	async def removeitem_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@shop.command()
 	async def buy(self, ctx):
@@ -656,14 +650,12 @@ class FlowCog(commands.Cog):
 	@log.error
 	async def log_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@make.error
 	async def do_repeat_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@shop.command()
 	@commands.has_role("小雪團隊")
@@ -686,8 +678,7 @@ class FlowCog(commands.Cog):
 	@clear.error
 	async def clear_handler(self, ctx, error):
 		if isinstance(error, commands.MissingRole):
-			if error.param.name == '小雪團隊':
-				await ctx.send("你不是小雪團隊的一員!")
+			await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.command()
 	async def total(self, ctx):
