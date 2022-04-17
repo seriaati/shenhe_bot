@@ -27,7 +27,7 @@ class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def register(name, id):
+	async def register(self, name, id):
 		dcUser = self.bot.get_user(id)
 		if not dcUser.bot:
 			today = date.today()
