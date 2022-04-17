@@ -28,8 +28,8 @@ class FlowCog(commands.Cog):
 		self.bot = bot
 
 	def register(name, id):
-		user = self.bot.get_user(id)
-		if not user.bot:
+		dcUser = self.bot.get_user(id)
+		if not dcUser.bot:
 			today = date.today()
 			newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
 			bank['flow'] -= 100
@@ -61,7 +61,7 @@ class FlowCog(commands.Cog):
 							yaml.dump(bank, file)
 						await message.add_reaction(f"☀️")
 			if found == False:
-				if not user.bot:
+				if not message.author.bot:
 					discordID = message.author.id
 					user = self.bot.get_user(message.author.id)
 					register(user, discordID)
@@ -92,7 +92,8 @@ class FlowCog(commands.Cog):
 					found = True
 					break
 			if found == False:
-				if not user.bot:
+				dcUser = self.bot.get_user(payload.user_id)
+				if not dcUser.bot:
 					discordID = payload.user_id
 					user = self.bot.get_user(payload.user_id)
 					register(user, discordID)
@@ -203,7 +204,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embed)
 				await ctx.send(embed=embed)
 		if found == False:
-			if not user.bot:
+			if not member.bot:
 				discordID = member.id
 				user = self.bot.get_user(discordID)
 				register(user, discordID)
@@ -242,7 +243,7 @@ class FlowCog(commands.Cog):
 			if user['discordID']==ctx.author.id:
 				found = True
 		if found == False:
-			if not user.bot:
+			if not ctx.author.bot:
 				discordID = ctx.author.id
 				user = self.bot.get_user(discordID)
 				register(user, discordID)
@@ -417,7 +418,7 @@ class FlowCog(commands.Cog):
 			if user['discordID']==member.id:
 				found = True
 		if found == False:
-			if not user.bot:
+			if not member.bot:
 				discordID = member.id
 				user = self.bot.get_user(discordID)
 				register(user, discordID)
@@ -635,7 +636,7 @@ class FlowCog(commands.Cog):
 					await ctx.author.send(embed=embed)
 					break
 		if found == False:
-			if not user.bot:
+			if not ctx.author.bot:
 				discordID = ctx.author.id
 				user = self.bot.get_user(discordID)
 				register(user, discordID)
