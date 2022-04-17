@@ -115,14 +115,19 @@ class FlowCog(commands.Cog):
 								await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
 								await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
 							elif find['type']==4:
+								await author.send(f"✅ {acceptUser.mention} 接受了你的 {find['title']} 幫助")
+								await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {find['title']} 幫助")
 								await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
 								return
 							embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
 							global_vars.setFooter(embedDM)
-							dm = await author.send(embed=embedDM)
+							if find['type'] == 4:
+								dm = await acceptUser.send(embed=embedDM)
+							else:
+								dm = await author.send(embed=embedDM)
 							await dm.add_reaction('🆗')
 							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
-								'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id}
+								'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id, 'dm': find['type']}
 							confirms.append(newConfirm)
 							finds.remove(find)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding = 'utf-8') as file:
@@ -132,15 +137,26 @@ class FlowCog(commands.Cog):
 							return
 			for confirm in confirms:
 				if payload.message_id == confirm['msgID'] and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-					for user in users:
-						if user['discordID'] == confirm['authorID']:
-							user['flow'] -= confirm['flow']
-						elif user['discordID'] == confirm['receiverID']:
-							user['flow'] += confirm['flow']
+					if confirm['type'] == 4:
+						for user in users:
+							if user['discordID'] == confirm['authorID']:
+								user['flow'] += confirm['flow']
+							elif user['discordID'] == confirm['receiverID']:
+								user['flow'] -= confirm['flow']
+					else:
+						for user in users:
+							if user['discordID'] == confirm['authorID']:
+								user['flow'] -= confirm['flow']
+							elif user['discordID'] == confirm['receiverID']:
+								user['flow'] += confirm['flow']
 					author = self.bot.get_user(confirm['authorID'])
 					receiver = self.bot.get_user(confirm['receiverID'])
-					embed = global_vars.defaultEmbed("🆗 結算成功", 
-						f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
+					if confirm['type'] == 4:
+						embed = global_vars.defaultEmbed("🆗 結算成功", 
+							f"委託名稱: {confirm['title']}\n委託人: {author.mention} **+{confirm['flow']} flow幣**\n接收人: {receiver.mention} **-{confirm['flow']} flow幣**")
+					else:
+						embed = global_vars.defaultEmbed("🆗 結算成功", 
+							f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
 					global_vars.setFooter(embed)
 					await author.send(embed=embed)
 					await receiver.send(embed=embed)
@@ -350,11 +366,12 @@ class FlowCog(commands.Cog):
 			await ctx.channel.purge(limit=1, check=is_me)
 			formFalse = Form(ctx, '設定流程', cleanup=True)
 			formFalse.add_question('想要幫助什麼?', 'title')
+			formFalse.add_question('你覺得這個幫助值多少flow幣?', 'flow')
 			formFalse.edit_and_delete(True)
 			formFalse.set_timeout(60)
 			await formFalse.set_color("0xa68bd3")
 			result = await formFalse.start()
-			embedResult = global_vars.defaultEmbed(f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: 請私下討論flow幣數量並用`!give`來交易\n按 ✅ 來接受幫助")
+			embedResult = global_vars.defaultEmbed(f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受幫助")
 			global_vars.setFooter(embedResult)
 			message = await ctx.send(embed=embedResult)
 			await message.add_reaction('✅')
@@ -402,20 +419,30 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
-	async def take(self, ctx, member: discord.Member, argFlow: int):
-		for user in users:
-			if user['discordID'] == member.id:
-				user['flow'] -= int(argFlow)
-				bank['flow'] += int(argFlow)
-				acceptor = self.bot.get_user(member.id)
-				embed = global_vars.defaultEmbed("✅ 沒收成功", f"{ctx.author.mention}沒收了{acceptor.mention} {str(argFlow)}枚flow幣")
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(users, file)
-				with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-					yaml.dump(bank, file)
-				break
-		global_vars.setFooter(embed)
-		await ctx.send(embed=embed)
+	async def take(self, ctx):
+		formFalse = Form(ctx, '沒收flow幣', cleanup=True)
+		formFalse.add_question('要沒收哪些人的flow幣?(用逗號分隔: @ceye, @ttos)', 'members')
+		formFalse.add_question('多少flow幣?', 'flow')
+		formFalse.edit_and_delete(True)
+		formFalse.set_timeout(60)
+		await formFalse.set_color("0xa68bd3")
+		result = await formFalse.start()
+		memberList = result.members.split(", ")
+		for member in memberList:
+			id = int(re.search(r'\d+', member).group())
+			for user in users:
+				if user['discordID'] == id:
+					user['flow'] -= int(result.flow) 
+					bank['flow'] += int(result.flow)
+					acceptor = self.bot.get_user(id)
+					embed = global_vars.defaultEmbed("✅ 已成功施展反摩拉克斯的力量", f"{ctx.author.mention} 從 {acceptor.mention} 的帳戶裡拿走了 {result.flow} 枚flow幣")
+					global_vars.setFooter(embed)
+					await ctx.send(embed=embed)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(users, file)
+					with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+						yaml.dump(bank, file)
+					break
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
@@ -569,6 +596,13 @@ class FlowCog(commands.Cog):
 	@shop.command()
 	@commands.has_role("小雪團隊")
 	async def clear(self, ctx, uuid):
+		if uuid == "all":
+			for item in shop:
+				item['current'] = 0
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(shop, file)
+			await ctx.send(f"已將所有商品的購買次數清零")
+			return
 		for item in shop:
 			if item['uuid'] == uuid:
 				item['current'] = 0

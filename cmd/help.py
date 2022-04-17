@@ -27,8 +27,15 @@ class HelpCog(commands.Cog):
 
     @commands.command()
     async def adminhelp(self, ctx):
-        embed = global_vars.defaultEmbed("管理員指令", 
-            "`!adminhelp`呼叫此界面\n`!dm`私訊提醒功能\n`!stuck`hoyo資料沒打開\n`!reload`更新封包\n`!check_loop`打開私訊功能")
+        embed = global_vars.defaultEmbed("管理員指令", "`!adminhelp`呼叫此界面")
+        embed.add_field(name = "➜ 原神與指令包", 
+            value = "`!reload <name>`更新 <name> 指令包\n\n`!newuser`註冊原神帳號\n`!reload genshin`重整原神指令包")
+        embed.add_field(name = "➜ 常見問題", 
+            value = "`!dm`私訊提醒功能\n`!stuck`hoyo資料沒打開\n`!getid`如何取得dc ID?\n`!whyregister`註冊帳號有什麼好處?")
+        embed.add_field(name = "➜ flow幣", 
+            value = "`!reset`重置flow幣\n`!take`沒收flow幣(至銀行)\n`!make`給予flow幣(從銀行)")
+        embed.add_field(name = "➜ 商店", 
+            value = "`!shop clear <uuid>`清除 <uuid> 商品的購買次數\n`!shop clear all`清除所有商品的購買次數\n`!shop log`查看購買紀錄\n`!shop removeitem <uuid>`移除商品\n`!shop newitem`新增商品")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
