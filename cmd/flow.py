@@ -224,6 +224,12 @@ class FlowCog(commands.Cog):
 			emojiStr = emoji.emojize(f":{word}:", language='alias')
 			await message.add_reaction(str(emojiStr))
 
+	@roles.error
+    async def roles_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
 	@commands.command()
 	async def find(self, ctx):
 		if ctx.channel.id != 960861105503232030:
@@ -464,6 +470,12 @@ class FlowCog(commands.Cog):
 						yaml.dump(bank, file)
 					break
 
+	@take.error
+    async def take_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
 	@commands.command()
 	@commands.has_role("小雪團隊")
 	async def make(self, ctx):
@@ -491,6 +503,12 @@ class FlowCog(commands.Cog):
 						yaml.dump(bank, file)
 					break
 
+	@make.error
+    async def make_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
 	@commands.command()
 	async def flow(slef, ctx):
 		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店\n`!shop buy`購買商品")
@@ -511,6 +529,12 @@ class FlowCog(commands.Cog):
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
 			yaml.dump(bank, file)
 		await ctx.send(embed=embed)
+
+	@reset.error
+    async def reset_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.group()
 	async def shop(self, ctx):
@@ -542,6 +566,12 @@ class FlowCog(commands.Cog):
 			yaml.dump(shop, file)
 		await ctx.send(f"商品{result.name}新增成功")
 	
+	@newitem.error
+    async def newitem_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
 	@shop.command()
 	@commands.has_role("小雪團隊")
 	async def removeitem(self, ctx, *, arg=''):
@@ -552,6 +582,12 @@ class FlowCog(commands.Cog):
 					yaml.dump(shop, file)
 				await ctx.send("商品刪除成功")
 				break
+
+	@removeitem.error
+    async def removeitem_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
 
 	@shop.command()
 	async def buy(self, ctx):
@@ -616,6 +652,18 @@ class FlowCog(commands.Cog):
 			global_vars.setFooter(embed)
 			await ctx.send(embed=embed)
 
+	@log.error
+    async def log_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
+	@make.error
+    async def do_repeat_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
+
 	@shop.command()
 	@commands.has_role("小雪團隊")
 	async def clear(self, ctx, uuid):
@@ -633,6 +681,12 @@ class FlowCog(commands.Cog):
 					yaml.dump(shop, file)
 				await ctx.send(f"已將 {item['name']} 的購買次數設為0")
 				break
+
+	@clear.error
+    async def clear_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            if error.param.name == '小雪團隊':
+                await ctx.send("你不是小雪團隊的一員!")
 
 	@commands.command()
 	async def total(self, ctx):
