@@ -126,16 +126,12 @@ async def on_message(message):
 @commands.has_role("小雪團隊")
 async def reload(ctx, arg):
     if arg == 'all':
-        failed = False
         for extension in initial_extensions:
             try:
                 bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
             except:
-                failed = True
                 await ctx.send(f"{extension} 指令包有錯誤")
-        if failed == False:
-            await ctx.send(f"已重整所有指令包")
     else:
         for extension in initial_extensions:
             extStr = f"cmd.{arg}"
