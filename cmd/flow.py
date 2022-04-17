@@ -28,7 +28,7 @@ class FlowCog(commands.Cog):
 		self.bot = bot
 
 	async def register(name, id):
-		dcUser = self.bot.get_user(id)
+		dcUser = await self.bot.get_user(id)
 		if not dcUser.bot:
 			today = date.today()
 			newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
@@ -671,7 +671,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def test(self, ctx):
-		register(ctx.author, ctx.author.id)
+		await register(ctx.author, ctx.author.id)
 		await ctx.send("test")
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
