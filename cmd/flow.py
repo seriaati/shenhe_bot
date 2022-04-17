@@ -64,7 +64,7 @@ class FlowCog(commands.Cog):
 				if not message.author.bot:
 					discordID = message.author.id
 					user = self.bot.get_user(message.author.id)
-					register(user, discordID)
+					await self.register(user, discordID)
 				else:
 					return
 
@@ -102,7 +102,7 @@ class FlowCog(commands.Cog):
 				if not dcUser.bot:
 					discordID = payload.user_id
 					user = self.bot.get_user(payload.user_id)
-					register(user, discordID)
+					await self.register(user, discordID)
 				else:
 					return
 
@@ -216,7 +216,7 @@ class FlowCog(commands.Cog):
 			if not member.bot:
 				discordID = member.id
 				user = self.bot.get_user(discordID)
-				register(user, discordID)
+				await self.register(user, discordID)
 				await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
 			else:
 				return
@@ -258,7 +258,7 @@ class FlowCog(commands.Cog):
 			if not ctx.author.bot:
 				discordID = ctx.author.id
 				user = self.bot.get_user(discordID)
-				register(user, discordID)
+				await self.register(user, discordID)
 			else:
 				return
 		roles = []
@@ -439,7 +439,7 @@ class FlowCog(commands.Cog):
 			if not member.bot:
 				discordID = member.id
 				user = self.bot.get_user(discordID)
-				register(user, discordID)
+				await self.register(user, discordID)
 			else:
 				return
 		for user in users:
@@ -627,7 +627,7 @@ class FlowCog(commands.Cog):
 			if not ctx.author.bot:
 				discordID = ctx.author.id
 				user = self.bot.get_user(discordID)
-				register(user, discordID)
+				await self.register(user, discordID)
 				await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!shop buy`試試看")
 			else:
 				return
@@ -669,9 +669,5 @@ class FlowCog(commands.Cog):
 		flowSum = total+bank['flow']
 		await ctx.send(f"目前群組裡共有:\n{count}個flow帳號\n用戶{total}+銀行{bank['flow']}={flowSum}枚flow幣")
 
-	@commands.command()
-	async def test(self, ctx):
-		await self.register(ctx.author, ctx.author.id)
-		await ctx.send("test")
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
