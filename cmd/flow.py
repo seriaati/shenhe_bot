@@ -70,7 +70,7 @@ class FlowCog(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
-		if payload.message_id == :
+		# if payload.message_id == :
 
 		if payload.message_id == 963972447600771092:
 			for i in range(1, 9):
