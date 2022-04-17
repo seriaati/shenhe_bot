@@ -31,7 +31,7 @@ class HelpCog(commands.Cog):
         embed.add_field(name = "➜ 原神與指令包", 
             value = "`!reload <name>`\n更新 <name> 指令包\n`!newuser`註冊原神帳號\n`!reload genshin`\n重整原神指令包")
         embed.add_field(name = "➜ 常見問題", 
-            value = "`!dm`私訊提醒功能\n`!stuck`hoyo資料沒打開\n`!getid`如何取得dc ID?\n`!whyregister`\n註冊帳號有什麼好處?")
+            value = "`!dm`私訊提醒功能\n`!stuck`原神資料沒打開\n`!getid`如何取得dc ID?\n`!whyregister`\n註冊帳號有什麼好處?")
         embed.add_field(name = "➜ flow幣", 
             value = "`!reset`重置flow幣\n`!take`沒收flow幣(至銀行)\n`!make`給予flow幣(從銀行)")
         embed.add_field(name = "➜ 商店", 
