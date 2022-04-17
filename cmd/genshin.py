@@ -35,7 +35,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        await client.get_game_accounts()
+        msg = await client.get_game_accounts()
+        print(msg)
         notes = await client.get_notes(uid)
         if not notes.expeditions:
             hr = 0
