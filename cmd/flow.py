@@ -134,11 +134,12 @@ class FlowCog(commands.Cog):
 								await author.send(f"✅ {acceptUser.mention} 接受了你的 {find['title']} 幫助")
 								await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {find['title']} 幫助")
 								await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
-							embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
 							global_vars.setFooter(embedDM)
 							if find['type'] == 4:
+								embedDM = global_vars.defaultEmbed("結算單",f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
 								dm = await acceptUser.send(embed=embedDM)
 							else:
+								embedDM = global_vars.defaultEmbed("結算單",f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
 								dm = await author.send(embed=embedDM)
 							await dm.add_reaction('🆗')
 							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
@@ -168,7 +169,7 @@ class FlowCog(commands.Cog):
 					receiver = self.bot.get_user(confirm['receiverID'])
 					if confirm['dm'] == 4:
 						embed = global_vars.defaultEmbed("🆗 結算成功", 
-							f"委託名稱: {confirm['title']}\n委託人: {author.mention} **+{confirm['flow']} flow幣**\n接收人: {receiver.mention} **-{confirm['flow']} flow幣**")
+							f"幫忙名稱: {confirm['title']}\n幫助人: {author.mention} **+{confirm['flow']} flow幣**\n被幫助人: {receiver.mention} **-{confirm['flow']} flow幣**")
 					else:
 						embed = global_vars.defaultEmbed("🆗 結算成功", 
 							f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
@@ -412,7 +413,7 @@ class FlowCog(commands.Cog):
 			else:
 				guild = self.bot.get_guild(916838066117824553)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
-				embedResult = global_vars.defaultEmbed(f"委託: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
+				embedResult = global_vars.defaultEmbed(f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await ctx.send(role.mention)
