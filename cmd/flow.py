@@ -82,7 +82,6 @@ class FlowCog(commands.Cog):
 					await member.add_roles(role)
 					break
 		else:
-			time.sleep(0.5)
 			channel = self.bot.get_channel(payload.channel_id)
 			message = await channel.fetch_message(payload.message_id)
 			reaction = discord.utils.get(message.reactions, emoji='✅')
@@ -107,8 +106,6 @@ class FlowCog(commands.Cog):
 							userObj = self.bot.get_user(find['authorID'])
 							message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦")
 							await reaction.remove(payload.member)
-							await asyncio.sleep(2) 
-							await message.delete()
 							return
 						elif user['discordID'] == payload.user_id:
 							await message.clear_reaction('✅')
@@ -135,9 +132,10 @@ class FlowCog(commands.Cog):
 							global_vars.setFooter(embedDM)
 							if find['type'] == 4:
 								dm = await acceptUser.send(embed=embedDM)
+								await dm.add_reaction('🆗')
 							else:
 								dm = await author.send(embed=embedDM)
-							await dm.add_reaction('🆗')
+								await dm.add_reaction('🆗')
 							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
 								'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id, 'dm': find['type']}
 							confirms.append(newConfirm)
@@ -149,7 +147,7 @@ class FlowCog(commands.Cog):
 							return
 			for confirm in confirms:
 				if payload.message_id == confirm['msgID'] and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-					if confirm['type'] == 4:
+					if confirm['dm'] == 4:
 						for user in users:
 							if user['discordID'] == confirm['authorID']:
 								user['flow'] += confirm['flow']
@@ -163,7 +161,7 @@ class FlowCog(commands.Cog):
 								user['flow'] += confirm['flow']
 					author = self.bot.get_user(confirm['authorID'])
 					receiver = self.bot.get_user(confirm['receiverID'])
-					if confirm['type'] == 4:
+					if confirm['dm'] == 4:
 						embed = global_vars.defaultEmbed("🆗 結算成功", 
 							f"委託名稱: {confirm['title']}\n委託人: {author.mention} **+{confirm['flow']} flow幣**\n接收人: {receiver.mention} **-{confirm['flow']} flow幣**")
 					else:
@@ -304,7 +302,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
-				await ctx.send(tagStr)
+				# await ctx.send(tagStr)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -346,7 +344,7 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embedResult)
 				message = await ctx.send(embed=embedResult)
 				await message.add_reaction('✅')
-				await ctx.send(tagStr)
+				# await ctx.send(tagStr)
 				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
 				finds.append(newFind)
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
@@ -384,6 +382,8 @@ class FlowCog(commands.Cog):
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
 		elif choice == 4:
+			await ctx.send("尚未完成...")
+			return
 			def is_me(m):
 				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
