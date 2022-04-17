@@ -61,9 +61,12 @@ class FlowCog(commands.Cog):
 							yaml.dump(bank, file)
 						await message.add_reaction(f"☀️")
 			if found == False:
-				discordID = message.author.id
-				user = self.bot.get_user(message.author.id)
-				register(user, discordID)
+				if not user.bot:
+					discordID = message.author.id
+					user = self.bot.get_user(message.author.id)
+					register(user, discordID)
+				else:
+					return
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
@@ -89,9 +92,12 @@ class FlowCog(commands.Cog):
 					found = True
 					break
 			if found == False:
-				discordID = payload.user_id
-				user = self.bot.get_user(payload.user_id)
-				register(user, discordID)
+				if not user.bot:
+					discordID = payload.user_id
+					user = self.bot.get_user(payload.user_id)
+					register(user, discordID)
+				else:
+					return
 				
 			for find in finds:
 				if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
@@ -197,10 +203,13 @@ class FlowCog(commands.Cog):
 				global_vars.setFooter(embed)
 				await ctx.send(embed=embed)
 		if found == False:
-			discordID = member.id
-			user = self.bot.get_user(discordID)
-			register(user, discordID)
-			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
+			if not user.bot:
+				discordID = member.id
+				user = self.bot.get_user(discordID)
+				register(user, discordID)
+				await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
+			else:
+				return
 
 	@commands.command()
 	@commands.has_role("小雪團隊")
@@ -227,9 +236,12 @@ class FlowCog(commands.Cog):
 			if user['discordID']==ctx.author.id:
 				found = True
 		if found == False:
-			discordID = ctx.author.id
-			user = self.bot.get_user(discordID)
-			register(user, discordID)
+			if not user.bot:
+				discordID = ctx.author.id
+				user = self.bot.get_user(discordID)
+				register(user, discordID)
+			else:
+				return
 		roles = []
 		for i in range(1, 9):
 			roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(i)}"))
@@ -399,9 +411,12 @@ class FlowCog(commands.Cog):
 			if user['discordID']==member.id:
 				found = True
 		if found == False:
-			discordID = member.id
-			user = self.bot.get_user(discordID)
-			register(user, discordID)
+			if not user.bot:
+				discordID = member.id
+				user = self.bot.get_user(discordID)
+				register(user, discordID)
+			else:
+				return
 		for user in users:
 			if user['discordID'] == ctx.author.id:
 				if user['flow'] < int(argFlow):
@@ -584,10 +599,13 @@ class FlowCog(commands.Cog):
 					await ctx.author.send(embed=embed)
 					break
 		if found == False:
-			discordID = ctx.author.id
-			user = self.bot.get_user(discordID)
-			register(user, discordID)
-			await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!acc`或是`!shop buy`一次試試看")
+			if not user.bot:
+				discordID = ctx.author.id
+				user = self.bot.get_user(discordID)
+				register(user, discordID)
+				await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!shop buy`試試看")
+			else:
+				return
 
 	@shop.command()
 	@commands.has_role("小雪團隊")
