@@ -134,12 +134,13 @@ class FlowCog(commands.Cog):
 								await author.send(f"✅ {acceptUser.mention} 接受了你的 {find['title']} 幫助")
 								await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {find['title']} 幫助")
 								await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
-							global_vars.setFooter(embedDM)
 							if find['type'] == 4:
 								embedDM = global_vars.defaultEmbed("結算單",f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
+								global_vars.setFooter(embedDM)
 								dm = await acceptUser.send(embed=embedDM)
 							else:
 								embedDM = global_vars.defaultEmbed("結算單",f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
+								global_vars.setFooter(embedDM)
 								dm = await author.send(embed=embedDM)
 							await dm.add_reaction('🆗')
 							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
