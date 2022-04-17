@@ -35,8 +35,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        msg = await client.get_game_accounts()
-        print(msg)
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         notes = await client.get_notes(uid)
         if not notes.expeditions:
             hr = 0
@@ -80,6 +80,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         genshinUser = await client.get_partial_genshin_user(uid)
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
@@ -117,6 +119,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         genshinUser = await client.get_partial_genshin_user(uid)
         explorations = genshinUser.explorations
         exploreStr = ""
@@ -152,6 +156,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
@@ -185,6 +191,8 @@ class GenshinCog(commands.Cog):
             client = genshin.Client(cookies)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
+            if user['name'] == "小雪":
+                client.uids[genshin.Game.GENSHIN] = 901211014
             abyss = await client.get_spiral_abyss(uid)
             strongestStrike = abyss.ranks.strongest_strike
             mostKill = abyss.ranks.most_kills
@@ -229,6 +237,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         diary = await client.get_diary()
         primoCategoryStr = ""
         for category in diary.data.categories:
@@ -257,6 +267,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         diary = await client.get_diary()
         primoLog = "找不到原石資料(請告知小雪)"
         moraLog = "找不到摩拉資料(請告知小雪)"
@@ -294,6 +306,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         char = await client.get_genshin_characters(uid)
         clientCharacters = []
         charEmbeds = []
@@ -352,6 +366,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
+        if user['name'] == "小雪":
+            client.uids[genshin.Game.GENSHIN] = 901211014
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
