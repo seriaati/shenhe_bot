@@ -669,5 +669,9 @@ class FlowCog(commands.Cog):
 		flowSum = total+bank['flow']
 		await ctx.send(f"目前群組裡共有:\n{count}個flow帳號\n用戶{total}+銀行{bank['flow']}={flowSum}枚flow幣")
 
+	@commands.command()
+	async def test(self, ctx):
+		register(ctx.author, ctx.author.id)
+		await ctx.send("test")
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
