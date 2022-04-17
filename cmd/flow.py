@@ -105,7 +105,7 @@ class FlowCog(commands.Cog):
 					register(user, discordID)
 				else:
 					return
-				
+
 			for find in finds:
 				if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
 					for user in users:
@@ -138,10 +138,9 @@ class FlowCog(commands.Cog):
 							global_vars.setFooter(embedDM)
 							if find['type'] == 4:
 								dm = await acceptUser.send(embed=embedDM)
-								await dm.add_reaction('🆗')
 							else:
 								dm = await author.send(embed=embedDM)
-								await dm.add_reaction('🆗')
+							await dm.add_reaction('🆗')
 							newConfirm = {'title': find['title'], 'authorID': int(find['authorID']), 
 								'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id, 'dm': find['type']}
 							confirms.append(newConfirm)
@@ -388,26 +387,40 @@ class FlowCog(commands.Cog):
 				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
 					yaml.dump(finds, file)
 		elif choice == 4:
-			await ctx.send("尚未完成...")
-			return
 			def is_me(m):
 				return m.author == self.bot.user
 			await ctx.channel.purge(limit=1, check=is_me)
 			formFalse = Form(ctx, '設定流程', cleanup=True)
-			formFalse.add_question('想要幫助什麼?', 'title')
-			formFalse.add_question('你覺得這個幫助值多少flow幣?', 'flow')
+			formFalse.add_question('你想要幫助什麼?', 'title')
+			formFalse.add_question('被你幫助的人要付多少flow幣給你?', 'flow')
 			formFalse.edit_and_delete(True)
 			formFalse.set_timeout(60)
 			await formFalse.set_color("0xa68bd3")
 			result = await formFalse.start()
-			embedResult = global_vars.defaultEmbed(f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受幫助")
-			global_vars.setFooter(embedResult)
-			message = await ctx.send(embed=embedResult)
-			await message.add_reaction('✅')
-			newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
-			finds.append(newFind)
-			with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
-				yaml.dump(finds, file)
+			if int(result.flow) < 0:
+				embedResult = global_vars.defaultEmbed(f"發布失敗, 請輸入大於1的flow幣"," ")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
+				return
+			for user in users:
+				if ctx.author.id == user['discordID']:
+					if int(result.flow) > user['flow']:
+						embedResult = global_vars.defaultEmbed(f"發布失敗, 請勿輸入大於自己擁有數量的flow幣"," ")
+						global_vars.setFooter(embedResult)
+						message = await ctx.send(embed=embedResult)
+						return
+			else:
+				guild = self.bot.get_guild(916838066117824553)
+				role = discord.utils.get(guild.roles, name=f"委託通知")
+				embedResult = global_vars.defaultEmbed(f"委託: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
+				global_vars.setFooter(embedResult)
+				message = await ctx.send(embed=embedResult)
+				await ctx.send(role.mention)
+				await message.add_reaction('✅')
+				newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
+				finds.append(newFind)
+				with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', 'w', encoding = 'utf-8') as file:
+					yaml.dump(finds, file)
 
 
 	@commands.command()
