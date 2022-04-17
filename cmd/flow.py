@@ -71,7 +71,7 @@ class FlowCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		if payload.message_id == 965143582178705459:
-			if payload.emoji.name == ":Serialook:959100214747222067":
+			if payload.emoji == "<:Serialook:959100214747222067>":
 				guild = self.bot.get_guild(payload.guild_id)
 				member = guild.get_member(payload.user_id)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
@@ -197,8 +197,8 @@ class FlowCog(commands.Cog):
 					role = discord.utils.get(guild.roles, name=f"W{i}")
 					await member.remove_roles(role)
 					break
-		if payload.message_id == 965143582178705459:
-			if payload.emoji.name == ":Serialook:959100214747222067":
+		elif payload.message_id == 965143582178705459:
+			if payload.emoji == ":Serialook:959100214747222067":
 				guild = self.bot.get_guild(payload.guild_id)
 				member = guild.get_member(payload.user_id)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
