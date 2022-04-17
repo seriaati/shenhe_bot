@@ -134,7 +134,6 @@ class FlowCog(commands.Cog):
 								await author.send(f"✅ {acceptUser.mention} 接受了你的 {find['title']} 幫助")
 								await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {find['title']} 幫助")
 								await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
-								return
 							embedDM = global_vars.defaultEmbed("結算單","當對方完成委託的內容時, 請按 🆗來結算flow幣")
 							global_vars.setFooter(embedDM)
 							if find['type'] == 4:
@@ -306,7 +305,7 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
-				guild = self.bot.get_guild(payload.guild_id)
+				guild = self.bot.get_guild(916838066117824553)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
 				embedResult = global_vars.defaultEmbed(f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
 				global_vars.setFooter(embedResult)
@@ -341,7 +340,7 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
-				guild = self.bot.get_guild(payload.guild_id)
+				guild = self.bot.get_guild(916838066117824553)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
 				notifRole = self.bot.get
 				embedResult = global_vars.defaultEmbed(f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: <={roleStr}\n按 ✅ 來接受請求")
@@ -377,7 +376,7 @@ class FlowCog(commands.Cog):
 						message = await ctx.send(embed=embedResult)
 						return
 			else:
-				guild = self.bot.get_guild(payload.guild_id)
+				guild = self.bot.get_guild(916838066117824553)
 				role = discord.utils.get(guild.roles, name=f"委託通知")
 				embedResult = global_vars.defaultEmbed(f"委託: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
 				global_vars.setFooter(embedResult)
@@ -505,7 +504,7 @@ class FlowCog(commands.Cog):
 					break
 
 	@commands.command()
-	async def flow(slef, ctx):
+	async def flow(self, ctx):
 		embed = global_vars.defaultEmbed("flow系統","`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店\n`!shop buy`購買商品")
 		global_vars.setFooter(embed)
 		await ctx.send(embed=embed)
