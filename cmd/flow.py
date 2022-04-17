@@ -671,7 +671,7 @@ class FlowCog(commands.Cog):
 
 	@commands.command()
 	async def test(self, ctx):
-		register(ctx.author, ctx.author.id)
+		register.register(ctx.author, ctx.author.id)
 		await ctx.send("test")
 def setup(bot):
 	bot.add_cog(FlowCog(bot))
