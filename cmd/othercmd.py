@@ -30,7 +30,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        await ctx.send('🏓 Pong! {0}ms'.format(round(self.bot.latency, 1)))
+        await ctx.send('🏓 Pong! {0}s'.format(round(self.bot.latency, 1)))
 
     @commands.command()
     async def cute(self, ctx, arg):

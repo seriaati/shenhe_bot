@@ -23,19 +23,23 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/shop.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/log.yaml', encoding = 'utf-8') as file:
 	logs = yaml.full_load(file)
 
-def register(name, id):
-	today = date.today()
-	newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
-	bank['flow'] -= 100
-	users.append(newUser)
-	with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-		yaml.dump(users, file)
-	with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-		yaml.dump(bank, file)
-
 class FlowCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
+	def register(name, id):
+		user = self.bot.get_user(id)
+		if not user.bot:
+			today = date.today()
+			newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
+			bank['flow'] -= 100
+			users.append(newUser)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(users, file)
+			with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+				yaml.dump(bank, file)
+		else:
+			return
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
