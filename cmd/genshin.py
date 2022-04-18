@@ -27,27 +27,29 @@ class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def check(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
+    async def getUserData(self, ctx, discordID:int):
         found = False
-        for user in users:
-            if member.id == user['discordID']:
-                found = True
-                cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
-                uid = user['uid']
-                username = user['name']
-                break
+        id = discordID
+        if id in users:
+            found = True
+            cookies = {"ltuid": users[id]['ltuid'], "ltoken": users[id]['ltoken']}
+            uid = users[id]['uid']
+            username = users[id]['name']
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
             return
-        client = genshin.Client(cookies)
+
+    @commands.command()
+    async def check(self, ctx, *, member: discord.Member = None):
+        member = member or ctx.author
+        data = await self.getUserData(ctx, member.id)
+        client = genshin.Client(data.cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        notes = await client.get_notes(uid)
+        client.uids[genshin.Game.GENSHIN] = data.uid
+        notes = await client.get_notes(data.uid)
         if not notes.expeditions:
             hr = 0
             mn = 0
@@ -67,7 +69,7 @@ class GenshinCog(commands.Cog):
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = global_vars.defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
+        embedCheck = global_vars.defaultEmbed(f"使用者: {data.username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
@@ -333,7 +335,7 @@ class GenshinCog(commands.Cog):
                 artifactList.append(artifact.name)
                 artifactIconList.append(artifact.icon)
             clientCharacters.append(Character(character.name, character.level, character.constellation, character.icon,
-                                    character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
+                                              character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
         for character in clientCharacters:
             artifactStr = ""
             for artifact in character.artifacts:
@@ -387,9 +389,9 @@ class GenshinCog(commands.Cog):
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
         embed = global_vars.defaultEmbed(f"今日收入: {username}", f"\
-            <:primo:958555698596290570> {primo}原石\n\
-            <:mora:958577933650362468> {mora}摩拉\n\n\
-            註: 米哈遊對此資料更新速度較慢, 請見諒")
+			<:primo:958555698596290570> {primo}原石\n\
+			<:mora:958577933650362468> {mora}摩拉\n\n\
+			註: 米哈遊對此資料更新速度較慢, 請見諒")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 

@@ -36,6 +36,7 @@ class FlowGiveawayCog(commands.Cog):
 			for user in users:
 				if user['discordID'] == payload.user_id:
 					found = True
+					break
 			if found == False and message.author.bot == False:
 				discordID = payload.user_id
 				user = self.bot.get_user(discordID)
@@ -63,21 +64,19 @@ class FlowGiveawayCog(commands.Cog):
 																f"獎品: {giveaway['prize']}\n目前flow幣: {giveaway['current']}/{giveaway['goal']}\n參加抽獎要付的flow幣: {giveaway['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
 							await giveawayMsg.edit(embed=newEmbed)
 							await channel.send(f"{reactor.mention} 花了 {giveaway['ticket']} flow幣參加 {giveaway['prize']} 抽獎", delete_after=5)
-							break
-					if giveaway['current'] == giveaway['goal']:
-						memberList = giveaway['members'].split(", ")
-						winnerID = int(random.choice(memberList))
-						winner = self.bot.get_user(winnerID)
-						giveawayMsg = await channel.fetch_message(giveaway['msgID'])
-						await giveawayMsg.delete()
-						embed = global_vars.defaultEmbed(
-							"抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
-						global_vars.setFooter(embed)
-						await channel.send(embed=embed)
-						giveaways.remove(giveaway)
-						with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-							yaml.dump(giveaways, file)
-						break
+						if giveaway['current'] == giveaway['goal']:
+							memberList = giveaway['members'].split(", ")
+							winnerID = int(random.choice(memberList))
+							winner = self.bot.get_user(winnerID)
+							giveawayMsg = await channel.fetch_message(giveaway['msgID'])
+							await giveawayMsg.delete()
+							embed = global_vars.defaultEmbed(
+								"抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
+							global_vars.setFooter(embed)
+							await channel.send(embed=embed)
+							giveaways.remove(giveaway)
+							with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+								yaml.dump(giveaways, file)
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
