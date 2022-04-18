@@ -29,7 +29,6 @@ class GenshinCog(commands.Cog):
 
     async def getUserData(self, ctx, discordID: int):
         if discordID in users:
-            found = True
             cookies= {"ltuid": users[discordID]['ltuid'],
                        "ltoken": users[discordID]['ltoken']}
             uid = users[discordID]['uid']
@@ -44,7 +43,8 @@ class GenshinCog(commands.Cog):
     @commands.command()
     async def check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
+        memberID = member.id
+        cookies, uid, username = await self.getUserData(ctx, memberID)
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
