@@ -6,10 +6,9 @@ import discord
 import genshin
 import git
 import yaml
+import asset.global_vars as Global
 from discord.ext import commands, tasks
-
-from asset.global_vars import Global, defaultEmbed, setFooter
-from config import Token
+from asset.global_vars import defaultEmbed, setFooter
 
 with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
@@ -20,7 +19,7 @@ intents.members = True
 intents.reactions = True
 bot = commands.Bot(command_prefix="!", help_command=None,
                    intents=intents, case_insensitive=True)
-token = Token.bot_token
+token = Global.bot_token
 
 # 指令包
 initial_extensions = [
