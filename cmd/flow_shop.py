@@ -22,20 +22,6 @@ class FlowShopCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def register(self, name, id):
-        dcUser = self.bot.get_user(id)
-        if not dcUser.bot:
-            today = date.today()
-            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
-            bank['flow'] -= 100
-            users.append(newUser)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(users, file)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(bank, file)
-        else:
-            return
-
     @commands.group()
     async def shop(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -126,7 +112,8 @@ class FlowShopCog(commands.Cog):
             if not ctx.author.bot:
                 discordID = ctx.author.id
                 user = self.bot.get_user(discordID)
-                await self.flow.register(user, discordID)
+                flowCog = self.bot.get_cog('FlowCog')
+                await flowCog.register(user, discordID)
                 await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!shop buy`試試看")
             else:
                 return

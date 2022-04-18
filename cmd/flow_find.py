@@ -20,20 +20,6 @@ class FlowFindCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def register(self, name, id):
-        dcUser = self.bot.get_user(id)
-        if not dcUser.bot:
-            today = date.today()
-            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
-            bank['flow'] -= 100
-            users.append(newUser)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(users, file)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(bank, file)
-        else:
-            return
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
@@ -117,7 +103,8 @@ class FlowFindCog(commands.Cog):
         if found == False and ctx.author.bot == False:
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
-            await self.flow.register(user, discordID)
+            flowCog = self.bot.get_cog('FlowCog')
+            await flowCog.register(user, discordID)
         roles = []
         for i in range(1, 9):
             roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(i)}"))

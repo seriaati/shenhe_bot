@@ -18,20 +18,6 @@ class FlowMorningCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def register(self, name, id):
-        dcUser = self.bot.get_user(id)
-        if not dcUser.bot:
-            today = date.today()
-            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
-            bank['flow'] -= 100
-            users.append(newUser)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(users, file)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
-                yaml.dump(bank, file)
-        else:
-            return
-
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
@@ -55,7 +41,8 @@ class FlowMorningCog(commands.Cog):
                 if not message.author.bot:
                     discordID = message.author.id
                     user = self.bot.get_user(message.author.id)
-                    await self.flow.register(user, discordID)
+                    flowCog = self.bot.get_cog('FlowCog')
+                    await flowCog.register(user, discordID)
                 else:
                     return
 
