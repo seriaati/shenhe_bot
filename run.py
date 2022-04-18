@@ -44,7 +44,8 @@ initial_extensions = [
     "cmd.flow_confirm",
     "cmd.flow_morning",
     "cmd.flow_gv",
-    "cmd.error_handle"
+    "cmd.error_handle",
+    "cmd.eval"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -170,7 +171,7 @@ async def unload(ctx, arg):
         if exStr == extension:
             try:
                 bot.unload_extension(extension)
-                await ctx.send(f"已unload {extension} 指令包")
+                await ctx.send(f"已暫時關閉 {extension} 指令包")
             except:
                 await ctx.send(f"{extension} 指令包無法被取消加載")
 
@@ -183,7 +184,7 @@ async def load(ctx, arg):
         if exStr == extension:
             try:
                 bot.load_extension(extension)
-                await ctx.send(f"已unload {extension} 指令包")
+                await ctx.send(f"已加載 {extension} 指令包")
             except:
                 await ctx.send(f"{extension} 指令包無法被加載")
 

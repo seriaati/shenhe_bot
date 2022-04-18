@@ -94,13 +94,13 @@ class FlowCog(commands.Cog):
         with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         member = member or ctx.author
-        if ctx.author.id in users:
+        discordID = member.id
+        if discordID in users:
             embed = global_vars.defaultEmbed(
-                f"使用者: {user['name']}", f"flow幣: {user['flow']}")
+                f"使用者: {users[discordID]['name']}", f"flow幣: {users[discordID]['flow']}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
         else:
-            discordID = member.id
             user = self.bot.get_user(discordID)
             await self.register(user, discordID)
             await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
