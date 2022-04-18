@@ -6,8 +6,6 @@ import discord, yaml, cmd.flow
 import global_vars
 global_vars.Global()
 from discord.ext import commands
-from cmd.flow import FlowCog
-flow = FlowCog()
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
