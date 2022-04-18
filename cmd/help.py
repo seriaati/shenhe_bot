@@ -39,6 +39,8 @@ class HelpCog(commands.Cog):
                         value="`!reset`重置flow幣\n`!take`沒收flow幣(至銀行)\n`!make`給予flow幣(從銀行)")
         embed.add_field(name="➜ 商店",
                         value="`!shop clear <uuid>`清除 <uuid> 商品的購買次數\n`!shop clear all`清除所有商品的購買次數\n`!shop log`查看購買紀錄\n`!shop removeitem <uuid>`移除商品\n`!shop newitem`新增商品")
+        embed.add_field(name="➜ 抽獎",
+                        value="`!gv`抽獎")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
