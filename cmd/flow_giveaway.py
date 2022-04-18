@@ -132,7 +132,7 @@ class FlowGiveawayCog(commands.Cog):
 			'goal': int(result.goal),
 			'ticket': int(result.ticket),
 			'current': 0,
-			# 'members': mbrList
+			'members': mbrList
 		}
 		giveaways.append(newGiveaway)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
