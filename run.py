@@ -1,25 +1,26 @@
 # shenhe-bot by seria
-from discord.ext import commands, tasks
-import config
-import yaml
-import global_vars
-import genshin
-import discord
-import datetime
-import sys
+#shenhe-bot by seria
 import getpass
 
 owner = getpass.getuser()
+import sys
 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
+import datetime
 
+import discord
+import genshin
+import global_vars
+import yaml
 
 global_vars.Global()
+import config
 
 config.Token()
+from discord.ext import commands, tasks
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding='utf-8') as file:
-    users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding = 'utf-8') as file:
+	users = yaml.full_load(file)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
