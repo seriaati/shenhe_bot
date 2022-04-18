@@ -281,7 +281,7 @@ class FlowFindCog(commands.Cog):
                 guild = self.bot.get_guild(916838066117824553)
                 role = discord.utils.get(guild.roles, name=f"委託通知")
                 embedResult = global_vars.defaultEmbed(
-                    f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
+                    f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受幫助")
                 global_vars.setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 await ctx.send(role.mention)
