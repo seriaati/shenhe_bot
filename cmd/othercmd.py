@@ -8,9 +8,6 @@ import yaml, discord
 from discord.ext import commands
 from random import randint
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', encoding = 'utf-8') as file:
-    users = yaml.full_load(file)
-
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

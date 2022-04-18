@@ -32,6 +32,11 @@ initial_extensions = [
 "cmd.vote",
 "cmd.redeem",
 "cmd.flow",
+"cmd.flow_shop",
+"cmd.flow_find",
+"cmd.flow_confirm",
+"cmd.flow_morning",
+"cmd.flow_giveaway",
 "cmd.error_handle"
 ]
 if __name__ == '__main__':
