@@ -8,8 +8,6 @@ global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form
 from discord.ext.forms import ReactionForm
-from cmd.flow import FlowCog
-flow = FlowCog()
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
@@ -53,7 +51,8 @@ class FlowFindCog(commands.Cog):
             if not dcUser.bot:
                 discordID = payload.user_id
                 user = self.bot.get_user(payload.user_id)
-                await self.flow.register(user, discordID)
+                flowCog = self.bot.get_cog('FlowCog')
+                await flowCog.register(user, discordID)
 
         for find in finds:
             if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
