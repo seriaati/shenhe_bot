@@ -39,8 +39,7 @@ class FlowCog(commands.Cog):
         dcUser = self.bot.get_user(id)
         if not dcUser.bot:
             today = date.today()
-            newUser = {'name': str(name), 'discordID': int(
-                id), 'flow': 100, 'morning': today}
+            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
             bank['flow'] -= 100
             users.append(newUser)
             with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
@@ -266,6 +265,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def flows(self, ctx):
+        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         userStr = ""
         count = 1
         for user in users:
