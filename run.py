@@ -78,7 +78,7 @@ async def claimLoop():
 
 @tasks.loop(seconds=600)
 async def checkLoop():
-    for user in users:
+    for user in users.items():
         if isinstance(user, type(None)) == True:
             print(f"use is NoneType: {user['name']}")
         else:
