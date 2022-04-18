@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 
 
@@ -41,6 +40,7 @@ class CallCog(commands.Cog):
     @commands.command()
     async def 小羽(self, ctx):
         await ctx.send("可愛的小女生..? ")
+
 
 def setup(bot):
     bot.add_cog(CallCog(bot))

@@ -41,8 +41,10 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send("你不是小雪團隊的一員!")
 
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            print('Ignoring exception in command {}:'.format(
+                ctx.command), file=sys.stderr)
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     async def do_repeat(self, ctx, *, inp: str):
@@ -53,6 +55,7 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
+
 
 def setup(bot):
     bot.add_cog(CommandErrorHandler(bot))

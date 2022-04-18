@@ -1,25 +1,27 @@
-import getpass
-
-owner = getpass.getuser()
-import sys
-
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import datetime
+import getpass
+import sys
 
 import discord
 import DiscordUtils
 import global_vars
 import yaml
-
-import genshin
-
-global_vars.Global()
 from classes import Character
 from discord.ext import commands
 from discord.ext.forms import Form
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r' ,encoding = 'utf-8') as file:
+import genshin
+
+owner = getpass.getuser()
+
+sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
+
+
+global_vars.Global()
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
+
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
@@ -30,7 +32,7 @@ class GenshinCog(commands.Cog):
         member = member or ctx.author
         found = False
         for user in users:
-            if member.id==user['discordID']:
+            if member.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -54,19 +56,19 @@ class GenshinCog(commands.Cog):
         else:
             unfinExp = []
             for expedition in notes.expeditions:
-                if(expedition.status=="Ongoing"):
+                if(expedition.status == "Ongoing"):
                     unfinExp.append(expedition.remaining_time)
             if not unfinExp:
                 hr = 0
                 mn = 0
             else:
                 exTime = min(unfinExp, default="EMPTY")
-                hr, mn = divmod(exTime // 60,60)
+                hr, mn = divmod(exTime // 60, 60)
         time = notes.remaining_resin_recovery_time
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck=global_vars.defaultEmbed(f"使用者: {username}",f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
+        embedCheck = global_vars.defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
@@ -75,7 +77,7 @@ class GenshinCog(commands.Cog):
         member = member or ctx.author
         found = False
         for user in users:
-            if member.id==user['discordID']:
+            if member.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -103,8 +105,8 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        embedStats=global_vars.defaultEmbed(f"使用者: {username}", 
-            f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
+        embedStats = global_vars.defaultEmbed(f"使用者: {username}",
+                                              f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
 
@@ -114,7 +116,7 @@ class GenshinCog(commands.Cog):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -135,15 +137,16 @@ class GenshinCog(commands.Cog):
         exploreStr = ""
         offeringStr = ""
         for exploration in explorations:
-            name = exploration.name 
+            name = exploration.name
             percentage = exploration.explored
             offerings = exploration.offerings
             exploreStr += f"{name}: {percentage}%\n"
             for offering in offerings:
-                offeringName = offering.name 
+                offeringName = offering.name
                 offeringLevel = offering.level
                 offeringStr += f"{offeringName}: Lvl {offeringLevel}\n"
-        embed = global_vars.defaultEmbed(f"區域探索度: {username}",f"{exploreStr}\n{offeringStr}")
+        embed = global_vars.defaultEmbed(
+            f"區域探索度: {username}", f"{exploreStr}\n{offeringStr}")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
@@ -151,7 +154,7 @@ class GenshinCog(commands.Cog):
     async def claim(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         for user in users:
-            if member.id == user['discordID'] :
+            if member.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -171,11 +174,13 @@ class GenshinCog(commands.Cog):
         try:
             reward = await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
-            embed = global_vars.defaultEmbed(f"使用者: {username}",f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
+            embed = global_vars.defaultEmbed(
+                f"使用者: {username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
         else:
-            embed = global_vars.defaultEmbed(f"使用者: {username}",f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
+            embed = global_vars.defaultEmbed(
+                f"使用者: {username}", f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
 
@@ -184,7 +189,7 @@ class GenshinCog(commands.Cog):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -196,7 +201,7 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
             return
         try:
-            #obtaining data
+            # obtaining data
             client = genshin.Client(cookies)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
@@ -219,19 +224,21 @@ class GenshinCog(commands.Cog):
             dmg = strongestStrike[0].value
             dmgChar = strongestStrike[0].name
         except IndexError:
-            embed = global_vars.defaultEmbed("找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
+            embed = global_vars.defaultEmbed(
+                "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
-        embedAbyss=global_vars.defaultEmbed(f"深境螺旋: {username}",f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
+        embedAbyss = global_vars.defaultEmbed(
+            f"深境螺旋: {username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
         global_vars.setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
 
     @commands.command()
-    async def diary(self, ctx, *, name: discord.Member = None): 
+    async def diary(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -251,17 +258,19 @@ class GenshinCog(commands.Cog):
         primoCategoryStr = ""
         for category in diary.data.categories:
             primoCategoryStr += f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
-        embedDiary = global_vars.defaultEmbed(f"原石與摩拉收入: {username}",f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
-        embedDiary.add_field(name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
+        embedDiary = global_vars.defaultEmbed(
+            f"原石與摩拉收入: {username}", f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
+        embedDiary.add_field(
+            name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
         global_vars.setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
 
     @commands.command()
-    async def log(self, ctx, *, name: discord.Member = None): 
+    async def log(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -284,11 +293,14 @@ class GenshinCog(commands.Cog):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
         # async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
         #     moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
-        embedPrimo = global_vars.defaultEmbed(f"<:primo:958555698596290570> 最近25筆原石紀錄",f"{primoLog}")
+        embedPrimo = global_vars.defaultEmbed(
+            f"<:primo:958555698596290570> 最近25筆原石紀錄", f"{primoLog}")
         global_vars.setFooter(embedPrimo)
-        embedMora = global_vars.defaultEmbed(f"<:mora:958577933650362468> 最近25筆摩拉紀錄",f"{moraLog}")
+        embedMora = global_vars.defaultEmbed(
+            f"<:mora:958577933650362468> 最近25筆摩拉紀錄", f"{moraLog}")
         global_vars.setFooter(embedMora)
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
+            ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
         embeds = [embedPrimo, embedMora]
@@ -299,7 +311,7 @@ class GenshinCog(commands.Cog):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -327,16 +339,19 @@ class GenshinCog(commands.Cog):
             for artifact in artifacts:
                 artifactList.append(artifact.name)
                 artifactIconList.append(artifact.icon)
-            clientCharacters.append(Character(character.name,character.level,character.constellation,character.icon, character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
+            clientCharacters.append(Character(character.name, character.level, character.constellation, character.icon,
+                                    character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
         for character in clientCharacters:
             artifactStr = ""
             for artifact in character.artifacts:
                 artifactStr = artifactStr + "- " + artifact + "\n"
-            embedChar = global_vars.defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}", f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
+            embedChar = global_vars.defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}",
+                                                 f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
             embedChar.set_thumbnail(url=f"{character.iconUrl}")
             global_vars.setFooter(embedChar)
             charEmbeds.append(embedChar)
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(ctx, remove_reactions=True)
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
+            ctx, remove_reactions=True)
         paginator.add_reaction('⏮️', "first")
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
@@ -350,16 +365,16 @@ class GenshinCog(commands.Cog):
         for user in users:
             userStr = userStr+f"{count}. {user['name']} - {user['uid']}\n"
             count += 1
-        embed = global_vars.defaultEmbed("所有帳號",userStr)
+        embed = global_vars.defaultEmbed("所有帳號", userStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def today(self, ctx, *, name: discord.Member = None): 
+    async def today(self, ctx, *, name: discord.Member = None):
         name = name or ctx.author
         found = False
         for user in users:
-            if name.id==user['discordID']:
+            if name.id == user['discordID']:
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
@@ -379,7 +394,7 @@ class GenshinCog(commands.Cog):
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
-        embed = global_vars.defaultEmbed(f"今日收入: {username}",f"\
+        embed = global_vars.defaultEmbed(f"今日收入: {username}", f"\
             <:primo:958555698596290570> {primo}原石\n\
             <:mora:958577933650362468> {mora}摩拉\n\n\
             註: 米哈遊對此資料更新速度較慢, 請見諒")
@@ -413,9 +428,10 @@ class GenshinCog(commands.Cog):
         if failed == True:
             await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
         elif failed == False:
-            newUser = {'name': str(result.name), 'uid': int(result.uid), 'discordID': int(result.discordID), 'ltoken': str(result.ltoken), 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
+            newUser = {'name': str(result.name), 'uid': int(result.uid), 'discordID': int(result.discordID), 'ltoken': str(
+                result.ltoken), 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
             users.append(newUser)
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding = 'utf-8') as file:
+            with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
 

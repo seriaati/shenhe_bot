@@ -1,21 +1,22 @@
+from discord.ext import commands
+from datetime import date
+import yaml
+import global_vars
+import sys
 import getpass
 
 owner = getpass.getuser()
-import sys
 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import global_vars
-import yaml
 
 global_vars.Global()
-from datetime import date
 
-from discord.ext import commands
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding = 'utf-8') as file:
+with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', encoding='utf-8') as file:
     bank = yaml.full_load(file)
+
 
 class FlowMorningCog(commands.Cog):
     def __init__(self, bot):
@@ -31,13 +32,13 @@ class FlowMorningCog(commands.Cog):
             for user in users:
                 if message.author.id == user['discordID']:
                     found = True
-                    if user['morning']!=today:
+                    if user['morning'] != today:
                         user['flow'] += 1
                         bank['flow'] -= 1
                         user['morning'] = today
-                        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+                        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
                             yaml.dump(users, file)
-                        with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+                        with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
                             yaml.dump(bank, file)
                         await message.add_reaction(f"☀️")
             if found == False:
@@ -48,6 +49,7 @@ class FlowMorningCog(commands.Cog):
                     await flowCog.register(user, discordID)
                 else:
                     return
+
 
 def setup(bot):
     bot.add_cog(FlowMorningCog(bot))

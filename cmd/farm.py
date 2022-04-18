@@ -1,15 +1,14 @@
+from discord.ext import commands
+from datetime import datetime
+import global_vars
+import sys
 import getpass
 
 owner = getpass.getuser()
-import sys
 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import global_vars
 
 global_vars.Global()
-from datetime import datetime
-
-from discord.ext import commands
 
 
 class FarmCog(commands.Cog):
@@ -33,20 +32,25 @@ class FarmCog(commands.Cog):
             weekday = "禮拜六"
         elif weekdayGet == 6:
             weekday = "禮拜日"
-        embedFarm=global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料"," ")
+        embedFarm = global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:
             # monday or thursday
-            embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
         elif weekdayGet == 1 or weekdayGet == 4:
             # tuesday or friday
-            embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png")
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png")
         elif weekdayGet == 2 or weekdayGet == 5:
             # wednesday or saturday
-            embedFarm.set_image(url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
         elif weekdayGet == 6:
-            embedFarm=global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料","禮拜日可以刷所有素材 (❁´◡`❁)")
+            embedFarm = global_vars.defaultEmbed(
+                f"今天({weekday})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         global_vars.setFooter(embedFarm)
         await ctx.send(embed=embedFarm)
+
 
 def setup(bot):
     bot.add_cog(FarmCog(bot))

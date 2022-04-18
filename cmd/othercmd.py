@@ -1,15 +1,14 @@
+from discord.ext import commands
+from random import randint
+import global_vars
+import sys
 import getpass
 
 owner = getpass.getuser()
-import sys
 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import global_vars
 
 global_vars.Global()
-from random import randint
-
-from discord.ext import commands
 
 
 class OtherCMDCog(commands.Cog):
@@ -21,7 +20,7 @@ class OtherCMDCog(commands.Cog):
         if message.author == self.bot.user:
             return
         if "機率" in message.content:
-            value = randint(1,100)
+            value = randint(1, 100)
             await message.channel.send(f"{value}%")
 
     @commands.Cog.listener()
@@ -39,7 +38,7 @@ class OtherCMDCog(commands.Cog):
         await ctx.send(f"{string}真可愛~❤")
 
     @commands.command()
-    async def say(self, ctx, * , name='', msg=''):
+    async def say(self, ctx, *, name='', msg=''):
         await ctx.message.delete()
         await ctx.send(f"{name} {msg}")
 
@@ -58,9 +57,11 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def getid(self, ctx):
-        embed = global_vars.defaultEmbed("如何取得discord ID?", "1. 打開dc設定\n2.「進階」\n3. 把「開發者模式」打開\n4. 右鍵使用者頭像, 便可以看到「copy ID」")
+        embed = global_vars.defaultEmbed(
+            "如何取得discord ID?", "1. 打開dc設定\n2.「進階」\n3. 把「開發者模式」打開\n4. 右鍵使用者頭像, 便可以看到「copy ID」")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
-        
+
+
 def setup(bot):
     bot.add_cog(OtherCMDCog(bot))
