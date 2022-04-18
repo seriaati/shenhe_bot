@@ -43,7 +43,7 @@ initial_extensions = [
     "cmd.flow_find",
     "cmd.flow_confirm",
     "cmd.flow_morning",
-    "cmd.flow_giveaway",
+    "cmd.flow_gv",
     "cmd.error_handle"
 ]
 if __name__ == '__main__':
