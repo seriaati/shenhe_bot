@@ -103,7 +103,7 @@ class FlowGiveawayCog(commands.Cog):
         giveawayMsg = await ctx.send(embed=embedGiveaway)
         await giveawayMsg.add_reaction('🎉')
         newGiveaway = {
-            'giveawayID': id,
+            'giveawayID': str(id),
             'authorID': ctx.author.id,
             'msgID': giveawayMsg.id,
             'prize': result.prize,

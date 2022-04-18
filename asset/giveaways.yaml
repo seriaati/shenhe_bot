@@ -3,5 +3,5 @@
   msgID: 123123123
   prize: "something nice"
   goal: 100
-  enter_flow: 10
+  ticket: 10
   current: 0
