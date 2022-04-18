@@ -76,6 +76,7 @@ class FlowShopCog(commands.Cog):
         await form.set_color("0xa68bd3")
         result = await form.start()
         pos = int(result.number) - 1
+        found = False
         for user in users:
             if user['discordID'] == ctx.author.id:
                 found = True
