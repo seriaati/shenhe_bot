@@ -54,7 +54,7 @@ class GenshinCog(commands.Cog):
                     cookies = {"ltuid": user['ltuid'],
                                "ltoken": user['ltoken']}
                     uid = user['uid']
-                    userObj = self.bot.get_user(user['discordID'])
+                    userObj = self.bot.get_user(user['discordID']) # type: ignore
                     client = genshin.Client(cookies)
                     client.default_game = genshin.Game.GENSHIN
                     client.lang = "zh-tw"
@@ -90,7 +90,7 @@ class GenshinCog(commands.Cog):
     @checkLoop.before_loop
     async def beforeLoop():
         print('waiting...')
-        await self.bot.wait_until_ready()
+        await self.bot.wait_until_ready() # type: ignore
 
     @claimLoop.before_loop
     async def wait_until_1am():
