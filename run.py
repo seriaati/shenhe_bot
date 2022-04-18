@@ -1,26 +1,18 @@
 # shenhe-bot by seria
-import getpass
 
-owner = getpass.getuser()
-import sys
-
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import datetime
 
 import discord
 import genshin
-import global_vars
-import yaml
 import git
-
-global_vars.Global()
-import config
-
-config.Token()
+import yaml
 from discord.ext import commands, tasks
 
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding = 'utf-8') as file:
-	users = yaml.full_load(file)
+from asset.global_vars import Global, defaultEmbed, setFooter
+from config import Token
+
+with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
+    users = yaml.full_load(file)
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -28,7 +20,7 @@ intents.members = True
 intents.reactions = True
 bot = commands.Bot(command_prefix="!", help_command=None,
                    intents=intents, case_insensitive=True)
-token = config.bot_token
+token = Token.bot_token
 
 # 指令包
 initial_extensions = [
@@ -51,7 +43,7 @@ if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
 
-# 開機時
+
 @bot.event
 async def on_ready():
     await bot.change_presence(
@@ -64,7 +56,8 @@ async def on_ready():
 async def claimLoop():
     for user in users:
         userID = user
-        cookies = {"ltuid": users[userID]['ltuid'], "ltoken": users[userID]['ltoken']}
+        cookies = {"ltuid": users[userID]['ltuid'],
+                   "ltoken": users[userID]['ltoken']}
         uid = users[userID]['uid']
         client = genshin.Client(cookies)
         client.default_game = genshin.Game.GENSHIN
@@ -84,7 +77,7 @@ async def checkLoop():
         userID = user
         try:
             cookies = {"ltuid": users[userID]['ltuid'],
-                        "ltoken": users[userID]['ltoken']}
+                       "ltoken": users[userID]['ltoken']}
             uid = users[user]['uid']
             userObj = bot.get_user(userID)
             client = genshin.Client(cookies)
@@ -101,17 +94,17 @@ async def checkLoop():
                 hours, minutes = divmod(time // 60, 60)
                 fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
                 printTime = '{:%H:%M}'.format(fullTime)
-                embed = global_vars.defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",
-                                                    f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
-                global_vars.setFooter(embed)
+                embed = defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",
+                                     f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
+                setFooter(embed)
                 await userObj.send(embed=embed)
                 users[userID]['dmCount'] += 1
                 users[userID]['dmDate'] = dateNow
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
             elif resin < 140:
                 users[userID]['dmCount'] = 0
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
         except genshin.errors.InvalidCookies:
             pass
@@ -119,6 +112,8 @@ async def checkLoop():
             print(f"{users[userID]['name']} 可能退群了")
 
 # 等待申鶴準備
+
+
 @checkLoop.before_loop
 async def beforeLoop():
     print('waiting...')
@@ -145,13 +140,16 @@ async def on_message(message):
 @bot.command()
 @commands.has_role("小雪團隊")
 async def reload(ctx, arg):
+    g = git.cmd.Git(f"C:/Users/alice/shenhe_bot")
+    g.pull()
+    await ctx.send("已從源碼更新")
     if arg == 'all':
         for extension in initial_extensions:
             try:
                 bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
-            except:
-                await ctx.send(f"{extension} 指令包有錯誤")
+            except Exception as e: 
+                await ctx.send(f"{extension}發生錯誤```{e}```")
     else:
         for extension in initial_extensions:
             extStr = f"cmd.{arg}"
@@ -159,8 +157,8 @@ async def reload(ctx, arg):
                 try:
                     bot.reload_extension(extension)
                     await ctx.send(f"已重整 {extension} 指令包")
-                except:
-                    await ctx.send(f"{extension} 指令包有錯誤")
+                except Exception as e: 
+                    await ctx.send(f"{extension}發生錯誤```{e}```")
 
 
 @bot.command()
@@ -188,11 +186,5 @@ async def load(ctx, arg):
             except:
                 await ctx.send(f"{extension} 指令包無法被加載")
 
-@bot.command()
-@commands.has_role("小雪團隊")
-async def pull(ctx):
-    g = git.cmd.Git(f"C:/Users/{owner}/shenhe_bot")
-    g.pull()
-    await ctx.send("pull completed.")
 
 bot.run(token, bot=True, reconnect=True)

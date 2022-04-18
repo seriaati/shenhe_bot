@@ -132,6 +132,7 @@ class GenshinCog(commands.Cog):
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
+        reward = await client.claim_daily_reward()
         claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
