@@ -3,7 +3,6 @@ owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import discord, yaml
-import cmd.flow as flow
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -17,11 +16,23 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8') as file:
     confirms = yaml.full_load(file)
 
-flow = flow.FlowCog()
-
 class FlowFindCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def register(self, name, id):
+        dcUser = self.bot.get_user(id)
+        if not dcUser.bot:
+            today = date.today()
+            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
+            bank['flow'] -= 100
+            users.append(newUser)
+            with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding = 'utf-8') as file:
+                yaml.dump(users, file)
+            with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding = 'utf-8') as file:
+                yaml.dump(bank, file)
+        else:
+            return
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -40,7 +51,7 @@ class FlowFindCog(commands.Cog):
             if not dcUser.bot:
                 discordID = payload.user_id
                 user = self.bot.get_user(payload.user_id)
-                await self.flow.register(user, discordID)
+                await self.register(user, discordID)
 
         for find in finds:
             if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
@@ -105,7 +116,7 @@ class FlowFindCog(commands.Cog):
         if found == False and ctx.author.bot == False:
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
-            await self.flow.register(user, discordID)
+            await self.register(user, discordID)
         roles = []
         for i in range(1, 9):
             roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(i)}"))
