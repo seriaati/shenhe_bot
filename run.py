@@ -11,6 +11,7 @@ import discord
 import genshin
 import global_vars
 import yaml
+import git
 
 global_vars.Global()
 import config
@@ -187,5 +188,12 @@ async def load(ctx, arg):
                 await ctx.send(f"已加載 {extension} 指令包")
             except:
                 await ctx.send(f"{extension} 指令包無法被加載")
+
+@bot.command()
+@commands.has_role("小雪團隊")
+async def pull(ctx):
+    g = git.cmd.Git(f"C:/Users/{owner}/shenhe_bot")
+    g.pull()
+    await ctx.send("pull completed.")
 
 bot.run(token, bot=True, reconnect=True)
