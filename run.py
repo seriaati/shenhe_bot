@@ -37,7 +37,6 @@ initial_extensions = [
 "cmd.farm", 
 "cmd.help",
 "cmd.vote",
-"cmd.redeem",
 "cmd.flow",
 "cmd.flow_shop",
 "cmd.flow_find",
