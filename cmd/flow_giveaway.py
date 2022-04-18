@@ -64,7 +64,7 @@ class FlowGiveawayCog(commands.Cog):
 							await giveawayMsg.edit(embed=newEmbed)
 							await channel.send(f"{reactor.mention} 花了 {giveaway['ticket']} flow幣參加 {giveaway['prize']} 抽獎", delete_after=5)
 							break
-					if giveaway['current'] == giveaway['max']:
+					if giveaway['current'] == giveaway['goal']:
 						memberList = giveaway['members'].split(", ")
 						winner = random.choice(memberList)
 						giveawayMsg = await channel.fetch_message(giveaway['msgID'])
