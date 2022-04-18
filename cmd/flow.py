@@ -7,19 +7,16 @@ sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import re
 
 import discord
-import DiscordUtils
 import emoji
 import global_vars
 import inflect
 import yaml
 
-import genshin
-
 global_vars.Global()
 from datetime import date
 
 from discord.ext import commands
-from discord.ext.forms import Form, ReactionForm
+from discord.ext.forms import Form
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
 	users = yaml.full_load(file)

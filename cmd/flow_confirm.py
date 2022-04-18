@@ -1,12 +1,20 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import yaml
 import global_vars
+import yaml
+
 global_vars.Global()
 from discord.ext import commands
 
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+	users = yaml.full_load(file)
+with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8') as file:
+	confirms = yaml.full_load(file)
+    
 class FlowConfirmCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

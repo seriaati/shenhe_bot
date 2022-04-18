@@ -5,10 +5,13 @@ import sys
 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
+import yaml
 from discord.ext import commands
-from discord.ext.forms import Form
 
 global_vars.Global()
+
+with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
+	users = yaml.full_load(file)
 
 class RegisterCog(commands.Cog):
     def __init__(self, bot):
