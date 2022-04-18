@@ -29,13 +29,13 @@ class GenshinCog(commands.Cog):
 
     async def getUserData(self, ctx, discordID: int):
         found = False
-        id = discordID
-        if id in users:
+        if discordID in users:
             found = True
-            cookies = {"ltuid": users[id]['ltuid'],
-                       "ltoken": users[id]['ltoken']}
-            uid = users[id]['uid']
-            username = users[id]['name']
+            cookies= {"ltuid": users[discordID]['ltuid'],
+                       "ltoken": users[discordID]['ltoken']}
+            uid = users[discordID]['uid']
+            username = users[discordID]['name']
+            return cookies, uid, username
         if found == False:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
@@ -46,11 +46,11 @@ class GenshinCog(commands.Cog):
     async def check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
-        notes = await client.get_notes(data.uid)
+        client.uids[genshin.Game.GENSHIN] = data[1]
+        notes = await client.get_notes(data[1])
         if not notes.expeditions:
             hr = 0
             mn = 0
@@ -70,7 +70,7 @@ class GenshinCog(commands.Cog):
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = global_vars.defaultEmbed(f"使用者: {data.username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
+        embedCheck = global_vars.defaultEmbed(f"使用者: {data[2]}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
         global_vars.setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
@@ -78,11 +78,11 @@ class GenshinCog(commands.Cog):
     async def stats(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
-        genshinUser = await client.get_partial_genshin_user(data.uid)
+        client.uids[genshin.Game.GENSHIN] = data[1]
+        genshinUser = await client.get_partial_genshin_user(data[1])
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
         achieve = genshinUser.stats.achievements
@@ -94,7 +94,7 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        embedStats = global_vars.defaultEmbed(f"使用者: {data.username}",
+        embedStats = global_vars.defaultEmbed(f"使用者: {data[2]}",
                                               f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         global_vars.setFooter(embedStats)
         await ctx.send(embed=embedStats)
@@ -103,11 +103,11 @@ class GenshinCog(commands.Cog):
     async def area(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
-        genshinUser = await client.get_partial_genshin_user(data.uid)
+        client.uids[genshin.Game.GENSHIN] = data[1]
+        genshinUser = await client.get_partial_genshin_user(data[1])
         explorations = genshinUser.explorations
         exploreStr = ""
         offeringStr = ""
@@ -121,7 +121,7 @@ class GenshinCog(commands.Cog):
                 offeringLevel = offering.level
                 offeringStr += f"{offeringName}: Lvl {offeringLevel}\n"
         embed = global_vars.defaultEmbed(
-            f"區域探索度: {data.username}", f"{exploreStr}\n{offeringStr}")
+            f"區域探索度: {data[2]}", f"{exploreStr}\n{offeringStr}")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
@@ -129,21 +129,21 @@ class GenshinCog(commands.Cog):
     async def claim(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
+        client.uids[genshin.Game.GENSHIN] = data[1]
         claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
             embed = global_vars.defaultEmbed(
-                f"使用者: {data.username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{data.username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
+                f"使用者: {data[2]}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{data[2]}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
         else:
             embed = global_vars.defaultEmbed(
-                f"使用者: {data.username}", f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
+                f"使用者: {data[2]}", f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
 
@@ -152,11 +152,11 @@ class GenshinCog(commands.Cog):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
         try:
-            client = genshin.Client(data.cookies)
+            client = genshin.Client(data[0])
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
-            client.uids[genshin.Game.GENSHIN] = data.uid
-            abyss = await client.get_spiral_abyss(data.uid)
+            client.uids[genshin.Game.GENSHIN] = data[1]
+            abyss = await client.get_spiral_abyss(data[1])
             strongestStrike = abyss.ranks.strongest_strike
             mostKill = abyss.ranks.most_kills
             mostPlayed = abyss.ranks.most_played
@@ -178,7 +178,7 @@ class GenshinCog(commands.Cog):
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
         embedAbyss = global_vars.defaultEmbed(
-            f"深境螺旋: {data.username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
+            f"深境螺旋: {data[2]}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
         global_vars.setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
 
@@ -186,16 +186,16 @@ class GenshinCog(commands.Cog):
     async def diary(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
+        client.uids[genshin.Game.GENSHIN] = data[1]
         diary = await client.get_diary()
         primoCategoryStr = ""
         for category in diary.data.categories:
             primoCategoryStr += f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
         embedDiary = global_vars.defaultEmbed(
-            f"原石與摩拉收入: {data.username}", f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
+            f"原石與摩拉收入: {data[2]}", f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
         embedDiary.add_field(
             name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
         global_vars.setFooter(embedDiary)
@@ -205,10 +205,10 @@ class GenshinCog(commands.Cog):
     async def log(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
+        client.uids[genshin.Game.GENSHIN] = data[1]
         diary = await client.get_diary()
         primoLog = ""
         moraLog = ""
@@ -233,11 +233,11 @@ class GenshinCog(commands.Cog):
     async def char(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
-        char = await client.get_genshin_characters(data.uid)
+        client.uids[genshin.Game.GENSHIN] = data[1]
+        char = await client.get_genshin_characters(data[1])
         clientCharacters = []
         charEmbeds = []
         for character in char:
@@ -282,14 +282,14 @@ class GenshinCog(commands.Cog):
     async def today(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         data = await self.getUserData(ctx, member.id)
-        client = genshin.Client(data.cookies)
+        client = genshin.Client(data[0])
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = data.uid
+        client.uids[genshin.Game.GENSHIN] = data[1]
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
-        embed = global_vars.defaultEmbed(f"今日收入: {data.username}", f"\
+        embed = global_vars.defaultEmbed(f"今日收入: {data[2]}", f"\
 			<:primo:958555698596290570> {primo}原石\n\
 			<:mora:958577933650362468> {mora}摩拉\n\n\
 			註: 米哈遊對此資料更新速度較慢, 請見諒")
