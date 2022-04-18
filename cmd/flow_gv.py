@@ -66,7 +66,8 @@ class FlowGiveawayCog(commands.Cog):
 							break
 					if giveaway['current'] == giveaway['goal']:
 						memberList = giveaway['members'].split(", ")
-						winner = int(random.choice(memberList))
+						winnerID = int(random.choice(memberList))
+						winner = self.bot.get_user(winnerID)
 						giveawayMsg = await channel.fetch_message(giveaway['msgID'])
 						await giveawayMsg.delete()
 						embed = global_vars.defaultEmbed("抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
