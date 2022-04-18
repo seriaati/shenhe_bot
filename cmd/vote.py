@@ -1,11 +1,16 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, asyncio
+import asyncio
+
 import global_vars
+
 global_vars.Global()
 from discord.ext import commands
+
 
 class VoteCog(commands.Cog):
     def __init__(self, bot):

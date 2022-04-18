@@ -1,12 +1,16 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 import global_vars
+
 global_vars.Global()
-import yaml, discord
-from discord.ext import commands
 from random import randint
+
+from discord.ext import commands
+
 
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):

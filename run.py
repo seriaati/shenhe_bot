@@ -1,15 +1,22 @@
 #shenhe-bot by seria
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import os, discord, asyncio, genshin, yaml, datetime
+import datetime
+
+import discord
+import genshin
 import global_vars
+import yaml
+
 global_vars.Global()
 import config
+
 config.Token()
-from discord.ext import commands
-from discord.ext import tasks
+from discord.ext import commands, tasks
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding = 'utf-8') as file:
     users = yaml.full_load(file)

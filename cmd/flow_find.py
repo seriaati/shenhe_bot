@@ -1,13 +1,16 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, yaml
+import discord
 import global_vars
+import yaml
+
 global_vars.Global()
 from discord.ext import commands
-from discord.ext.forms import Form
-from discord.ext.forms import ReactionForm
+from discord.ext.forms import Form, ReactionForm
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)

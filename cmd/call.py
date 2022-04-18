@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class CallCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

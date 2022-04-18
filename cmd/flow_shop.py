@@ -1,9 +1,13 @@
 import getpass
+import uuid
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, yaml
 import global_vars
+import yaml
+
 global_vars.Global()
 from discord.ext import commands
 from discord.ext.forms import Form

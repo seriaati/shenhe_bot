@@ -1,9 +1,18 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import genshin, discord, DiscordUtils, yaml, datetime
+import datetime
+
+import discord
+import DiscordUtils
 import global_vars
+import yaml
+
+import genshin
+
 global_vars.Global()
 from classes import Character
 from discord.ext import commands

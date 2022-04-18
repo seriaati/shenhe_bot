@@ -1,11 +1,13 @@
 import getpass
+
 owner = getpass.getuser()
-import sys 
+import sys
+
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, datetime
 import global_vars
 from discord.ext import commands
 from discord.ext.forms import Form
+
 global_vars.Global()
 
 class RegisterCog(commands.Cog):
