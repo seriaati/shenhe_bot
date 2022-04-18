@@ -267,8 +267,10 @@ class FlowCog(commands.Cog):
     @commands.command()
     async def flows(self, ctx):
         userStr = ""
+        count = 1
         for user in users:
-            userStr += f"{user['name']} -{user['flow']}\n"
+            userStr += f"{count}. {user['name']} -{user['flow']}\n"
+            count += 1
         embed = global_vars.defaultEmbed("所有flow帳戶", userStr)
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
