@@ -87,7 +87,7 @@ class FlowGiveawayCog(commands.Cog):
             ":tada: 抽獎啦!!!",
             f"獎品: {result.prize}\n目前flow幣: 0/{result.goal}\n參加抽獎要付的flow幣: {result.ticket}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
         global_vars.setFooter(embedGiveaway)
-        await ctx.send("抽獎設置完成", delete_after=2)
+        await ctx.send("✅ 抽獎設置完成", delete_after=2)
         giveawayMsg = await ctx.send(embed=embedGiveaway)
         await giveawayMsg.add_reaction('🎉')
         newGiveaway = {
@@ -95,7 +95,7 @@ class FlowGiveawayCog(commands.Cog):
             'authorID': ctx.author.id,
             'msgID': giveawayMsg.id,
             'prize': result.prize,
-            'goal': int(result.gaol),
+            'goal': int(result.goal),
             'ticket': int(result.ticket),
             'current': 0
         }
