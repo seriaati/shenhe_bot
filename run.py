@@ -135,8 +135,8 @@ async def wait_until_1am():
         next_run += datetime.timedelta(days=1)
     await discord.utils.sleep_until(next_run)
 
-checkLoop.start()
-claimLoop.start()
+# checkLoop.start()
+# claimLoop.start()
 
 
 @bot.event
