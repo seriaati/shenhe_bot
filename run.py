@@ -6,9 +6,9 @@ import discord
 import genshin
 import git
 import yaml
-import asset.global_vars as Global
 from discord.ext import commands, tasks
-from asset.global_vars import defaultEmbed, setFooter
+import cmd.asset.global_vars as Global
+from cmd.asset.global_vars import defaultEmbed, setFooter
 
 with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
@@ -99,11 +99,11 @@ async def checkLoop():
                 await userObj.send(embed=embed)
                 users[userID]['dmCount'] += 1
                 users[userID]['dmDate'] = dateNow
-                with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
             elif resin < 140:
                 users[userID]['dmCount'] = 0
-                with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
         except genshin.errors.InvalidCookies:
             pass
@@ -147,7 +147,7 @@ async def reload(ctx, arg):
             try:
                 bot.reload_extension(extension)
                 await ctx.send(f"已重整 {extension} 指令包")
-            except Exception as e: 
+            except Exception as e:
                 await ctx.send(f"{extension}發生錯誤```{e}```")
     else:
         for extension in initial_extensions:
@@ -156,7 +156,7 @@ async def reload(ctx, arg):
                 try:
                     bot.reload_extension(extension)
                     await ctx.send(f"已重整 {extension} 指令包")
-                except Exception as e: 
+                except Exception as e:
                     await ctx.send(f"{extension}發生錯誤```{e}```")
 
 

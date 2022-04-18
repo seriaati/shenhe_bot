@@ -1,14 +1,7 @@
 from discord.ext import commands
 from datetime import datetime
-import global_vars
-import sys
-import getpass
-
-owner = getpass.getuser()
-
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-
-global_vars.Global()
+import cmd.asset.global_vars as Global
+from cmd.asset.global_vars import defaultEmbed, setFooter
 
 
 class FarmCog(commands.Cog):
@@ -32,7 +25,7 @@ class FarmCog(commands.Cog):
             weekday = "禮拜六"
         elif weekdayGet == 6:
             weekday = "禮拜日"
-        embedFarm = global_vars.defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
+        embedFarm = defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:
             # monday or thursday
             embedFarm.set_image(
@@ -46,9 +39,9 @@ class FarmCog(commands.Cog):
             embedFarm.set_image(
                 url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
         elif weekdayGet == 6:
-            embedFarm = global_vars.defaultEmbed(
+            embedFarm = defaultEmbed(
                 f"今天({weekday})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
-        global_vars.setFooter(embedFarm)
+        setFooter(embedFarm)
         await ctx.send(embed=embedFarm)
 
 

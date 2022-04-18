@@ -1,15 +1,7 @@
 from discord.ext import commands
-import global_vars
+import cmd.asset.global_vars as Global
+from cmd.asset.global_vars import defaultEmbed, setFooter
 import asyncio
-import sys
-import getpass
-
-owner = getpass.getuser()
-
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-
-
-global_vars.Global()
 
 
 class VoteCog(commands.Cog):
@@ -20,7 +12,7 @@ class VoteCog(commands.Cog):
     async def vote(self, ctx):
         options = []  # 儲存選項
         emojis = []  # 儲存表情符號
-        embedAsk = global_vars.defaultEmbed("是關於什麼的投票?",
+        embedAsk = defaultEmbed("是關於什麼的投票?",
                                             "例如: ceye的頭像要用什麼")
         global_vars.setFooter(embedAsk)
         embedAsk = await ctx.send(embed=embedAsk)  # 提問
@@ -39,7 +31,7 @@ class VoteCog(commands.Cog):
             await message.delete()
             done = False  # 還沒打done
             while done == False:  # 只要還沒打done，持續提問選項
-                embed = global_vars.defaultEmbed("請輸入投票的選項，當完成時，請打done",
+                embed = defaultEmbed("請輸入投票的選項，當完成時，請打done",
                                                  "例如: 看牙醫的胡桃")
                 global_vars.setFooter(embed)
                 await embedAsk.edit(embed=embed)  # 提問選項
@@ -61,7 +53,7 @@ class VoteCog(commands.Cog):
                     else:
                         done = False
                         options.append(option)
-                        embed = global_vars.defaultEmbed("該選項要使用什麼表情符號來代表?",
+                        embed = defaultEmbed("該選項要使用什麼表情符號來代表?",
                                                          "註: 只能使用此群組所擁有的表情符號\n如要新增表情符號，請告知Tedd")
                         global_vars.setFooter(embed)
                         await embedAsk.edit(embed=embed)  # 提問表情符號
@@ -87,7 +79,7 @@ class VoteCog(commands.Cog):
                 optionStr = optionStr + \
                     emojis[count] + " : " + option + "\n"  # 將選項一行一行打出來
                 count = count + 1
-            embedPoll = global_vars.defaultEmbed(question, optionStr)
+            embedPoll = defaultEmbed(question, optionStr)
             global_vars.setFooter(embedPoll)
             await embedAsk.delete()
             message = await ctx.send(embed=embedPoll)  # 投票!

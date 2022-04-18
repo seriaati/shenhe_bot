@@ -1,25 +1,17 @@
 import datetime
-import getpass
-import sys
-
 import discord
 import DiscordUtils
-import global_vars
+import cmd.asset.global_vars as Global
+from cmd.asset.global_vars import defaultEmbed, setFooter
 import yaml
-from classes import Character
+from asset.classes import Character
 from discord.ext import commands
 from discord.ext.forms import Form
 
 import genshin
 
-owner = getpass.getuser()
 
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-
-
-global_vars.Global()
-
-with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'r', encoding='utf-8') as file:
+with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
 
 
@@ -35,8 +27,8 @@ class GenshinCog(commands.Cog):
             username = users[discordID]['name']
             return cookies, uid, username
         else:
-            embed = global_vars.embedNoAccount
-            global_vars.setFooter(embed)
+            embed = Global.embedNoAccount
+            setFooter(embed)
             await ctx.send(embed=embed)
             return
 
@@ -69,8 +61,8 @@ class GenshinCog(commands.Cog):
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = global_vars.defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
-        global_vars.setFooter(embedCheck)
+        embedCheck = defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘")
+        setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
     @commands.command()
@@ -93,9 +85,9 @@ class GenshinCog(commands.Cog):
         luxChest = genshinUser.stats.luxurious_chests
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
-        embedStats = global_vars.defaultEmbed(f"使用者: {username}",
+        embedStats = defaultEmbed(f"使用者: {username}",
                                               f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
-        global_vars.setFooter(embedStats)
+        setFooter(embedStats)
         await ctx.send(embed=embedStats)
 
     @commands.command()
@@ -119,9 +111,9 @@ class GenshinCog(commands.Cog):
                 offeringName = offering.name
                 offeringLevel = offering.level
                 offeringStr += f"{offeringName}: Lvl {offeringLevel}\n"
-        embed = global_vars.defaultEmbed(
+        embed = defaultEmbed(
             f"區域探索度: {username}", f"{exploreStr}\n{offeringStr}")
-        global_vars.setFooter(embed)
+        setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -137,14 +129,14 @@ class GenshinCog(commands.Cog):
         try:
             reward = await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
-            embed = global_vars.defaultEmbed(
+            embed = defaultEmbed(
                 f"使用者: {username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-            global_vars.setFooter(embed)
+            setFooter(embed)
             await ctx.send(embed=embed)
         else:
-            embed = global_vars.defaultEmbed(
+            embed = defaultEmbed(
                 f"使用者: {username}", f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-            global_vars.setFooter(embed)
+            setFooter(embed)
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -173,13 +165,13 @@ class GenshinCog(commands.Cog):
             dmg = strongestStrike[0].value
             dmgChar = strongestStrike[0].name
         except IndexError:
-            embed = global_vars.defaultEmbed(
+            embed = defaultEmbed(
                 "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
-            global_vars.setFooter(embed)
+            setFooter(embed)
             await ctx.send(embed=embed)
-        embedAbyss = global_vars.defaultEmbed(
+        embedAbyss = defaultEmbed(
             f"深境螺旋: {username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
-        global_vars.setFooter(embedAbyss)
+        setFooter(embedAbyss)
         await ctx.send(embed=embedAbyss)
 
     @commands.command()
@@ -194,11 +186,11 @@ class GenshinCog(commands.Cog):
         primoCategoryStr = ""
         for category in diary.data.categories:
             primoCategoryStr += f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
-        embedDiary = global_vars.defaultEmbed(
+        embedDiary = defaultEmbed(
             f"原石與摩拉收入: {username}", f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
         embedDiary.add_field(
             name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
-        global_vars.setFooter(embedDiary)
+        setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
 
     @commands.command()
@@ -216,12 +208,12 @@ class GenshinCog(commands.Cog):
             primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
         # async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
         #     moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
-        embedPrimo = global_vars.defaultEmbed(
+        embedPrimo = defaultEmbed(
             f"<:primo:958555698596290570> 最近25筆原石紀錄", f"{primoLog}")
-        global_vars.setFooter(embedPrimo)
-        embedMora = global_vars.defaultEmbed(
+        setFooter(embedPrimo)
+        embedMora = defaultEmbed(
             f"<:mora:958577933650362468> 最近25筆摩拉紀錄", f"{moraLog}")
-        global_vars.setFooter(embedMora)
+        setFooter(embedMora)
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
             ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
@@ -254,10 +246,10 @@ class GenshinCog(commands.Cog):
             artifactStr = ""
             for artifact in character.artifacts:
                 artifactStr = artifactStr + "- " + artifact + "\n"
-            embedChar = global_vars.defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}",
+            embedChar = defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}",
                                                  f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
             embedChar.set_thumbnail(url=f"{character.iconUrl}")
-            global_vars.setFooter(embedChar)
+            setFooter(embedChar)
             charEmbeds.append(embedChar)
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
             ctx, remove_reactions=True)
@@ -273,10 +265,11 @@ class GenshinCog(commands.Cog):
         count = 1
         for user in users:
             userID = user
-            userStr = userStr+f"{count}. {users[userID]['name']} - {users[userID]['uid']}\n"
+            userStr = userStr + \
+                f"{count}. {users[userID]['name']} - {users[userID]['uid']}\n"
             count += 1
-        embed = global_vars.defaultEmbed("所有帳號", userStr)
-        global_vars.setFooter(embed)
+        embed = defaultEmbed("所有帳號", userStr)
+        setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -290,11 +283,11 @@ class GenshinCog(commands.Cog):
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
-        embed = global_vars.defaultEmbed(f"今日收入: {username}", f"\
+        embed = defaultEmbed(f"今日收入: {username}", f"\
 			<:primo:958555698596290570> {primo}原石\n\
 			<:mora:958577933650362468> {mora}摩拉\n\n\
 			註: 米哈遊對此資料更新速度較慢, 請見諒")
-        global_vars.setFooter(embed)
+        setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -324,7 +317,7 @@ class GenshinCog(commands.Cog):
         if not failed:
             users[int(result.discordID)] = {'name': result.name, 'uid': int(
                 result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
-            with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+            with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
         else:
