@@ -116,6 +116,7 @@ class FlowGiveawayCog(commands.Cog):
 	@commands.command(aliases=['gv'])
 	@commands.has_role("小雪團隊")
 	async def giveaway(self, ctx):
+		await ctx.message.delete()
 		form = Form(ctx, '抽獎設置流程', cleanup=True)
 		form.add_question('獎品是什麼?', 'prize')
 		form.add_question('獎品價值多少flow幣?', 'goal')
