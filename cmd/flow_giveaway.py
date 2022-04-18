@@ -32,17 +32,17 @@ class FlowGiveawayCog(commands.Cog):
 		if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
 			return
 		if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
+			found = False 
+			for user in users:
+				if user['discordID'] == payload.user_id:
+					found = True 
+			if found == False and message.author.bot == False:
+				discordID = payload.user_id
+				user = self.bot.get_user(discordID)
+				flowCog = self.bot.get_cog('FlowCog')
+				await flowCog.register(user, discordID)
 			for giveaway in giveaways:
 				if giveaway['msgID'] == payload.message_id:
-					found = False 
-					for user in users:
-						if user['discordID'] == payload.user_id:
-							found = True 
-					if found == False and message.author.bot == False:
-						discordID = payload.user_id
-						user = self.bot.get_user(discordID)
-						flowCog = self.bot.get_cog('FlowCog')
-						await flowCog.register(user, discordID)
 					for user in users:
 						if user['flow'] < giveaway['ticket']:
 							await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
@@ -51,7 +51,7 @@ class FlowGiveawayCog(commands.Cog):
 							user['flow'] -= giveaway['ticket']
 							bank['flow'] += giveaway['ticket']
 							giveaway['current'] += giveaway['ticket']
-							giveaway['members'].append(reactor)
+							giveaway['members'].append(int(reactor.id))
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
 								yaml.dump(users, file)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
@@ -90,7 +90,7 @@ class FlowGiveawayCog(commands.Cog):
 							user['flow'] += giveaway['ticket']
 							bank['flow'] -= giveaway['ticket']
 							giveaway['current'] -= giveaway['ticket']
-							giveaway['members'].remove(reactor)
+							giveaway['members'].remove(int(reactor.id))
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
 								yaml.dump(users, file)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
