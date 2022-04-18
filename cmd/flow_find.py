@@ -2,7 +2,8 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, yaml, cmd.flow
+import discord, yaml
+import cmd.flow as flow
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -16,7 +17,7 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8') as file:
     confirms = yaml.full_load(file)
 
-flow = cmd.flow.FlowCog()
+flow = flow.FlowCog()
 
 class FlowFindCog(commands.Cog):
     def __init__(self, bot):
