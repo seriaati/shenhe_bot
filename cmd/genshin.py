@@ -272,7 +272,7 @@ class GenshinCog(commands.Cog):
         count = 1
         for user in users:
             userID = user
-            userStr = userStr+f"{count}. {user[userID]['name']} - {user[userID]['uid']}\n"
+            userStr = userStr+f"{count}. {users[userID]['name']} - {users[userID]['uid']}\n"
             count += 1
         embed = global_vars.defaultEmbed("所有帳號", userStr)
         global_vars.setFooter(embed)
