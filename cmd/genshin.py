@@ -237,8 +237,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         diary = await client.get_diary()
         primoCategoryStr = ""
         for category in diary.data.categories:
@@ -371,7 +370,7 @@ class GenshinCog(commands.Cog):
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
-        embed = global_vars.defaultEmbed(f"今日收入: {username}",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉")
+        embed = global_vars.defaultEmbed(f"今日收入: {username}",f"<:primo:958555698596290570> {primo}原石\n<:mora:958577933650362468> {mora}摩拉\n註: 米哈遊的此資料更新速度較慢, 請見諒")
         global_vars.setFooter(embed)
         await ctx.send(embed=embed)
 
