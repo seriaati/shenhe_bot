@@ -128,9 +128,9 @@ class FlowGiveawayCog(commands.Cog):
 		await giveawayMsg.add_reaction('🎉')
 		mbrList = []
 		newGiveaway = {
-			'authorID': ctx.author.id,
-			'msgID': giveawayMsg.id,
-			'prize': result.prize,
+			'authorID': int(ctx.author.id),
+			'msgID': int(giveawayMsg.id),
+			'prize': str(result.prize),
 			'goal': int(result.goal),
 			'ticket': int(result.ticket),
 			'current': 0,

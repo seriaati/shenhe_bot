@@ -1,5 +1,4 @@
-- giveawayID: random-uuid-string
-  authorID: 410036441129943050
+- authorID: 410036441129943050
   msgID: 123123123
   prize: "something nice"
   goal: 100
