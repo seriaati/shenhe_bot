@@ -86,7 +86,7 @@ class FlowGiveawayCog(commands.Cog):
         embed = global_vars.defaultEmbed("抽獎設置完成", ":tada:")
         global_vars.setFooter(embed)
         embedGiveaway = global_vars.defaultEmbed(":tada: 抽獎啦!!!",
-                                                 f"獎品: {result.prize}\n目前flow幣: 0/{result.goal}\n參加抽獎要付的flow幣: {result.enter_flow}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
+                                                 f"獎品: {result.prize}\n目前flow幣: 0/{result.goal}\n參加抽獎要付的flow幣: {result.ticket}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
         global_vars.setFooter(embedGiveaway)
         await ctx.send(embed=embed, delete_after=2)
         giveawayMsg = await ctx.send(embed=embedGiveaway)
