@@ -29,13 +29,22 @@ class FlowGiveawayCog(commands.Cog):
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
 		channel = self.bot.get_channel(payload.channel_id)
+		message = await channel.fetch_message(payload.message_id)
 		reactor = self.bot.get_user(payload.user_id)
 		if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
 			return
 		if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
 			for giveaway in giveaways:
 				if giveaway['msgID'] == payload.message_id:
+					found = False
 					for user in users:
+						if user['discordID'] == payload.user_id:
+							found = True
+						if found == False and message.author.bot == False:
+							discordID = payload.user_id
+							user = self.bot.get_user(discordID)
+							flowCog = self.bot.get_cog('FlowCog')
+							await flowCog.register(user, discordID)
 						if user['flow'] < giveaway['ticket']:
 							await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
 							return
