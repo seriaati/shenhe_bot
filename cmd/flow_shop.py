@@ -67,8 +67,8 @@ class FlowShopCog(commands.Cog):
         itemStr = ""
         count = 1
         for item in shop:
-                itemStr = itemStr + f"{count}. {item['name']} - {item['flow']} flow ({item['current']}/{item['max']})\n"
-                count += 1
+            itemStr = itemStr + f"{count}. {item['name']} - {item['flow']} flow ({item['current']}/{item['max']})\n"
+            count += 1
         form = Form(ctx, '要購買什麼商品?(輸入數字)', cleanup=True)
         form.add_question(f'{itemStr}', 'number')
         form.edit_and_delete(True)
