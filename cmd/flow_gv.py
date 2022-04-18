@@ -32,10 +32,10 @@ class FlowGiveawayCog(commands.Cog):
 		if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
 			return
 		if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
-			found = False 
+			found = False
 			for user in users:
 				if user['discordID'] == payload.user_id:
-					found = True 
+					found = True
 			if found == False and message.author.bot == False:
 				discordID = payload.user_id
 				user = self.bot.get_user(discordID)
@@ -70,7 +70,8 @@ class FlowGiveawayCog(commands.Cog):
 						winner = self.bot.get_user(winnerID)
 						giveawayMsg = await channel.fetch_message(giveaway['msgID'])
 						await giveawayMsg.delete()
-						embed = global_vars.defaultEmbed("抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
+						embed = global_vars.defaultEmbed(
+							"抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
 						global_vars.setFooter(embed)
 						await channel.send(embed=embed)
 						giveaways.remove(giveaway)
