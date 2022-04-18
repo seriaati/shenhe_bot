@@ -1,4 +1,3 @@
-from asyncio import tasks
 import datetime
 import getpass
 import sys
@@ -10,6 +9,7 @@ import yaml
 from classes import Character
 from discord.ext import commands
 from discord.ext.forms import Form
+from discord.ext import tasks
 
 import genshin
 
@@ -32,15 +32,13 @@ class GenshinCog(commands.Cog):
     async def claimLoop():
         for user in users:
             cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
-            username = user['name']
+            uid = user['uid']
             client = genshin.Client(cookies)
             client.default_game = genshin.Game.GENSHIN
             client.lang = "zh-tw"
-            if user['name'] == "小雪":
-                client.uids[genshin.Game.GENSHIN] = 901211014
-            signed_in, claimed_rewards = await client.get_reward_info()
+            client.uids[genshin.Game.GENSHIN] = uid
             try:
-                reward = await client.claim_daily_reward()
+                await client.claim_daily_reward()
             except genshin.AlreadyClaimed:
                 print(f"{user['name']} already claimed")
             else:
@@ -56,13 +54,11 @@ class GenshinCog(commands.Cog):
                     cookies = {"ltuid": user['ltuid'],
                                "ltoken": user['ltoken']}
                     uid = user['uid']
-                    username = user['name']
-                    userObj = bot.get_user(user['discordID'])
+                    userObj = self.bot.get_user(user['discordID'])
                     client = genshin.Client(cookies)
                     client.default_game = genshin.Game.GENSHIN
                     client.lang = "zh-tw"
-                    if user['name'] == "小雪":
-                        client.uids[genshin.Game.GENSHIN] = 901211014
+                    client.uids[genshin.Game.GENSHIN] = uid
                     notes = await client.get_notes(uid)
                     resin = notes.current_resin
                     dateNow = datetime.datetime.now()
@@ -94,7 +90,7 @@ class GenshinCog(commands.Cog):
     @checkLoop.before_loop
     async def beforeLoop():
         print('waiting...')
-        await bot.wait_until_ready()
+        await self.bot.wait_until_ready()
 
     @claimLoop.before_loop
     async def wait_until_1am():
@@ -126,8 +122,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         notes = await client.get_notes(uid)
         if not notes.expeditions:
             hr = 0
@@ -171,8 +166,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         genshinUser = await client.get_partial_genshin_user(uid)
         days = genshinUser.stats.days_active
         char = genshinUser.stats.characters
@@ -210,8 +204,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         genshinUser = await client.get_partial_genshin_user(uid)
         explorations = genshinUser.explorations
         exploreStr = ""
@@ -248,9 +241,8 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
-        signed_in, claimed_rewards = await client.get_reward_info()
+        client.uids[genshin.Game.GENSHIN] = uid
+        claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
@@ -364,8 +356,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         diary = await client.get_diary()
         primoLog = ""
         moraLog = ""
@@ -395,7 +386,6 @@ class GenshinCog(commands.Cog):
                 found = True
                 cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
                 uid = user['uid']
-                username = user['name']
                 break
         if found == False:
             embed = global_vars.embedNoAccount
@@ -406,8 +396,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         char = await client.get_genshin_characters(uid)
         clientCharacters = []
         charEmbeds = []
@@ -469,8 +458,7 @@ class GenshinCog(commands.Cog):
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
-        if user['name'] == "小雪":
-            client.uids[genshin.Game.GENSHIN] = 901211014
+        client.uids[genshin.Game.GENSHIN] = uid
         diary = await client.get_diary()
         mora = diary.day_data.current_mora
         primo = diary.day_data.current_primogems
@@ -502,7 +490,7 @@ class GenshinCog(commands.Cog):
         client.default_game = genshin.Game.GENSHIN
         failed = False
         try:
-            notes = await client.get_notes(uid)
+            await client.get_notes(uid)
         except genshin.errors.InvalidCookies:
             failed = True
         if failed == True:
