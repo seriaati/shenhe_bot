@@ -28,7 +28,6 @@ class GenshinCog(commands.Cog):
         self.bot = bot
 
     async def getUserData(self, ctx, discordID: int):
-        found = False
         if discordID in users:
             found = True
             cookies= {"ltuid": users[discordID]['ltuid'],
@@ -36,7 +35,7 @@ class GenshinCog(commands.Cog):
             uid = users[discordID]['uid']
             username = users[discordID]['name']
             return cookies, uid, username
-        if found == False:
+        else:
             embed = global_vars.embedNoAccount
             global_vars.setFooter(embed)
             await ctx.send(embed=embed)
