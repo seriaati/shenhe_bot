@@ -100,7 +100,8 @@ class FlowGiveawayCog(commands.Cog):
             f"獎品: {result.prize}\n目前flow幣: 0/{result.goal}\n參加抽獎要付的flow幣: {result.ticket}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
         global_vars.setFooter(embedGiveaway)
         await ctx.send("✅ 抽獎設置完成", delete_after=5)
-        giveawayMsg = await ctx.send(embed=embedGiveaway)
+        gvChannel = self.bot.get_channel(957268464928718918)
+        giveawayMsg = await gvChannel.send(embed=embedGiveaway)
         await giveawayMsg.add_reaction('🎉')
         newGiveaway = {
             'giveawayID': str(id),
