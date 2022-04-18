@@ -1,11 +1,9 @@
-from glob import glob
 from discord.ext.forms import Form
 from discord.ext import commands
 import yaml
 import global_vars
 import sys
 import getpass
-import uuid
 import random
 
 owner = getpass.getuser()
@@ -134,7 +132,7 @@ class FlowGiveawayCog(commands.Cog):
 			'goal': int(result.goal),
 			'ticket': int(result.ticket),
 			'current': 0,
-			'members': mbrList
+			# 'members': mbrList
 		}
 		giveaways.append(newGiveaway)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
