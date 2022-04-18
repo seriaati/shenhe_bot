@@ -51,7 +51,7 @@ class FlowFindCog(commands.Cog):
             if not dcUser.bot:
                 discordID = payload.user_id
                 user = self.bot.get_user(payload.user_id)
-                await self.register(user, discordID)
+                await self.flow.register(user, discordID)
 
         for find in finds:
             if payload.message_id == find['msgID'] and payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
@@ -116,7 +116,7 @@ class FlowFindCog(commands.Cog):
         if found == False and ctx.author.bot == False:
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
-            await self.register(user, discordID)
+            await self.flow.register(user, discordID)
         roles = []
         for i in range(1, 9):
             roles.append(discord.utils.get(ctx.guild.roles,name=f"W{str(i)}"))

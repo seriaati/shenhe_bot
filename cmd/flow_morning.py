@@ -53,7 +53,7 @@ class FlowMorningCog(commands.Cog):
                 if not message.author.bot:
                     discordID = message.author.id
                     user = self.bot.get_user(message.author.id)
-                    await self.register(user, discordID)
+                    await self.flow.register(user, discordID)
                 else:
                     return
 

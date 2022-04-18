@@ -6,6 +6,8 @@ import discord, yaml, cmd.flow
 import global_vars
 global_vars.Global()
 from discord.ext import commands
+from cmd.flow import FlowCog
+flow = flowCog()
 
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding = 'utf-8') as file:
     users = yaml.full_load(file)
@@ -124,7 +126,7 @@ class FlowShopCog(commands.Cog):
             if not ctx.author.bot:
                 discordID = ctx.author.id
                 user = self.bot.get_user(discordID)
-                await self.register(user, discordID)
+                await self.flow.register(user, discordID)
                 await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打一次`!shop buy`試試看")
             else:
                 return
