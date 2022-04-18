@@ -36,15 +36,16 @@ class FlowGiveawayCog(commands.Cog):
 		if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
 			for giveaway in giveaways:
 				if giveaway['msgID'] == payload.message_id:
-					found = False
+					found = False 
 					for user in users:
 						if user['discordID'] == payload.user_id:
-							found = True
-						if found == False and message.author.bot == False:
-							discordID = payload.user_id
-							user = self.bot.get_user(discordID)
-							flowCog = self.bot.get_cog('FlowCog')
-							await flowCog.register(user, discordID)
+							found = True 
+					if found == False and message.author.bot == False:
+						discordID = payload.user_id
+						user = self.bot.get_user(discordID)
+						flowCog = self.bot.get_cog('FlowCog')
+						await flowCog.register(user, discordID)
+					for user in users:
 						if user['flow'] < giveaway['ticket']:
 							await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
 							return
