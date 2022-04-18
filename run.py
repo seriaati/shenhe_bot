@@ -45,8 +45,7 @@ initial_extensions = [
     "cmd.flow_confirm",
     "cmd.flow_morning",
     "cmd.flow_gv",
-    "cmd.error_handle",
-    "cmd.eval"
+    "cmd.error_handle"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:
