@@ -35,13 +35,12 @@ class FlowCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def register(self, name, id):
-        dcUser = self.bot.get_user(id)
+    async def register(self, name, discordID):
+        dcUser = self.bot.get_user(discordID)
         if not dcUser.bot:
             today = date.today()
-            newUser = {'name': str(name), 'discordID': int(id), 'flow': 100, 'morning': today}
+            users[discordID] = {'name': str(name), 'discordID': int(discordID), 'flow': 100, 'morning': today}
             bank['flow'] -= 100
-            users.append(newUser)
             with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
@@ -95,22 +94,17 @@ class FlowCog(commands.Cog):
         with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         member = member or ctx.author
-        found = False
-        for user in users:
-            if user['discordID'] == member.id:
-                found = True
-                embed = global_vars.defaultEmbed(
-                    f"使用者: {user['name']}", f"flow幣: {user['flow']}")
-                global_vars.setFooter(embed)
-                await ctx.send(embed=embed)
-        if found == False:
-            if not member.bot:
-                discordID = member.id
-                user = self.bot.get_user(discordID)
-                await self.register(user, discordID)
-                await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
-            else:
-                return
+        if ctx.author.id in users:
+            embed = global_vars.defaultEmbed(
+                f"使用者: {user['name']}", f"flow幣: {user['flow']}")
+            global_vars.setFooter(embed)
+            await ctx.send(embed=embed)
+        else:
+            discordID = member.id
+            user = self.bot.get_user(discordID)
+            await self.register(user, discordID)
+            await ctx.send("你本來沒有帳號, 現在申鶴幫你做了一個, 再打`!acc`一次試試看")
+
 
     @commands.command()
     @commands.has_role("小雪團隊")
