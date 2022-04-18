@@ -51,7 +51,7 @@ class FlowGiveawayCog(commands.Cog):
 							user['flow'] -= giveaway['ticket']
 							bank['flow'] += giveaway['ticket']
 							giveaway['current'] += giveaway['ticket']
-							giveaway['members'].append(int(reactor.id))
+							giveaway['members'] += f"{str(reactor.id)}, "
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
 								yaml.dump(users, file)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
@@ -65,7 +65,8 @@ class FlowGiveawayCog(commands.Cog):
 							await channel.send(f"{reactor.mention} 花了 {giveaway['ticket']} flow幣參加 {giveaway['prize']} 抽獎", delete_after=5)
 							break
 					if giveaway['current'] == giveaway['max']:
-						winner = random.choice(giveaway['members'])
+						memberList = giveaway['members'].split(", ")
+						winner = random.choice(memberList)
 						giveawayMsg = await channel.fetch_message(giveaway['msgID'])
 						await giveawayMsg.delete()
 						embed = global_vars.defaultEmbed("抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
@@ -90,7 +91,12 @@ class FlowGiveawayCog(commands.Cog):
 							user['flow'] += giveaway['ticket']
 							bank['flow'] -= giveaway['ticket']
 							giveaway['current'] -= giveaway['ticket']
-							giveaway['members'].remove(int(reactor.id))
+							memberList = giveaway['members'].split(", ")
+							memberList.remove(reactor.id)
+							newMemberStr = ""
+							for member in memberList:
+								newMemberStr += f"{member}, "
+							giveaway['members'] = newMemberStr
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
 								yaml.dump(users, file)
 							with open(f'C:/Users/{owner}/shenhe_bot/asset/bank.yaml', 'w', encoding='utf-8') as file:
@@ -124,7 +130,6 @@ class FlowGiveawayCog(commands.Cog):
 		gvChannel = self.bot.get_channel(957268464928718918)
 		giveawayMsg = await gvChannel.send(embed=embedGiveaway)
 		await giveawayMsg.add_reaction('🎉')
-		mbrList = []
 		newGiveaway = {
 			'authorID': int(ctx.author.id),
 			'msgID': int(giveawayMsg.id),
@@ -132,7 +137,7 @@ class FlowGiveawayCog(commands.Cog):
 			'goal': int(result.goal),
 			'ticket': int(result.ticket),
 			'current': 0,
-			'members': mbrList
+			'members': ""
 		}
 		giveaways.append(newGiveaway)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
