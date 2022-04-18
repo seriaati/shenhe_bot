@@ -61,7 +61,7 @@ async def on_ready():
 
 @tasks.loop(hours=24)
 async def claimLoop():
-    for user in users:
+    for user in users.items():
         cookies = {"ltuid": user['ltuid'], "ltoken": user['ltoken']}
         uid = user['uid']
         client = genshin.Client(cookies)
