@@ -117,7 +117,6 @@ class FlowGiveawayCog(commands.Cog):
 		form.set_timeout(60)
 		await form.set_color("0xa68bd3")
 		result = await form.start()
-		id = uuid.uuid1()
 		embedGiveaway = global_vars.defaultEmbed(
 			":tada: 抽獎啦!!!",
 			f"獎品: {result.prize}\n目前flow幣: 0/{result.goal}\n參加抽獎要付的flow幣: {result.ticket}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
@@ -126,15 +125,15 @@ class FlowGiveawayCog(commands.Cog):
 		gvChannel = self.bot.get_channel(957268464928718918)
 		giveawayMsg = await gvChannel.send(embed=embedGiveaway)
 		await giveawayMsg.add_reaction('🎉')
+		mbrList = []
 		newGiveaway = {
-			'giveawayID': str(id),
 			'authorID': ctx.author.id,
 			'msgID': giveawayMsg.id,
 			'prize': result.prize,
 			'goal': int(result.goal),
 			'ticket': int(result.ticket),
 			'current': 0,
-			'members': []
+			'members': mbrList
 		}
 		giveaways.append(newGiveaway)
 		with open(f'C:/Users/{owner}/shenhe_bot/asset/giveaways.yaml', 'w', encoding='utf-8') as file:

@@ -1,5 +1,4 @@
 # shenhe-bot by seria
-#shenhe-bot by seria
 import getpass
 
 owner = getpass.getuser()
