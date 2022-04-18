@@ -30,6 +30,10 @@ class FlowMorningCog(commands.Cog):
             today = date.today()
             found = False
             for user in users:
+                if 'morning' not in user:
+                    user['morning'] = today 
+                    with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(users, file)
                 if message.author.id == user['discordID']:
                     found = True
                     if user['morning'] != today:
