@@ -16,7 +16,7 @@ with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding = 'utf-8') as
 with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding = 'utf-8') as file:
     confirms = yaml.full_load(file)
 
-flow = flow.FlowCog()
+flow = cmd.flow.FlowCog()
 
 class FlowFindCog(commands.Cog):
     def __init__(self, bot):
