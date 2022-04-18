@@ -66,12 +66,13 @@ class FlowGiveawayCog(commands.Cog):
 							await channel.send(f"{reactor.mention} 花了 {giveaway['ticket']} flow幣參加 {giveaway['prize']} 抽獎", delete_after=5)
 						if giveaway['current'] == giveaway['goal']:
 							memberList = giveaway['members'].split(", ")
-							winnerID = int(random.choice(memberList))
-							winner = self.bot.get_user(winnerID)
+							winner = random.choice(memberList)
+							winnerID = int(winner)
+							winnerUser = self.bot.get_user(winnerID)
 							giveawayMsg = await channel.fetch_message(giveaway['msgID'])
 							await giveawayMsg.delete()
 							embed = global_vars.defaultEmbed(
-								"抽獎結果", f"恭喜{winner.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
+								"抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
 							global_vars.setFooter(embed)
 							await channel.send(embed=embed)
 							giveaways.remove(giveaway)
