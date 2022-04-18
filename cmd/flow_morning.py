@@ -2,7 +2,7 @@ import getpass
 owner = getpass.getuser()
 import sys 
 sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-import discord, yaml
+import discord, yaml, cmd.flow
 import global_vars
 global_vars.Global()
 from discord.ext import commands
@@ -42,6 +42,6 @@ class FlowMorningCog(commands.Cog):
                     await self.flow.register(user, discordID)
                 else:
                     return
-                    
+
 def setup(bot):
     bot.add_cog(FlowMorningCog(bot))
