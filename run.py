@@ -86,7 +86,8 @@ async def checkLoop():
                 cookies = {"ltuid": user['ltuid'],
                            "ltoken": user['ltoken']}
                 uid = user['uid']
-                userObj = bot.get_user(user['discordID'])  # type: ignore
+                print("check"+ cookies)
+                userObj = bot.get_user(user['discordID'])
                 client = genshin.Client(cookies)
                 client.default_game = genshin.Game.GENSHIN
                 client.lang = "zh-tw"
@@ -119,12 +120,10 @@ async def checkLoop():
                 print(f"{user['name']} 可能退群了")
 
 # 等待申鶴準備
-
-
 @checkLoop.before_loop
 async def beforeLoop():
     print('waiting...')
-    await bot.wait_until_ready()  # type: ignore
+    await bot.wait_until_ready()
 
 
 @claimLoop.before_loop
@@ -135,8 +134,8 @@ async def wait_until_1am():
         next_run += datetime.timedelta(days=1)
     await discord.utils.sleep_until(next_run)
 
-# checkLoop.start()
-# claimLoop.start()
+checkLoop.start()
+claimLoop.start()
 
 
 @bot.event

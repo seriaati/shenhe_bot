@@ -29,7 +29,7 @@ class GenshinCog(commands.Cog):
 
     async def getUserData(self, ctx, discordID: int):
         if discordID in users:
-            cookies= {"ltuid": users[discordID]['ltuid'],
+            cookies = {"ltuid": users[discordID]['ltuid'],
                        "ltoken": users[discordID]['ltoken']}
             uid = users[discordID]['uid']
             username = users[discordID]['name']
@@ -319,14 +319,14 @@ class GenshinCog(commands.Cog):
             await client.get_notes(uid)
         except genshin.errors.InvalidCookies:
             failed = True
-        if failed == True:
-            await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
-        elif failed == False:
+        if not failed:
             users[int(result.discordID)] = {'name': result.name, 'uid': int(
                 result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
             with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
+        else:
+            await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
 
 
 def setup(bot):
