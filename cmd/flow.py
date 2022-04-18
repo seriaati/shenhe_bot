@@ -17,7 +17,6 @@ sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
 
 global_vars.Global()
 
-
 with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
 with open(f'C:/Users/{owner}/shenhe_bot/asset/find.yaml', encoding='utf-8') as file:
@@ -94,6 +93,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
+        with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         member = member or ctx.author
         found = False
         for user in users:
