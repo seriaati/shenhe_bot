@@ -62,8 +62,9 @@ async def on_ready():
 @tasks.loop(hours=24)
 async def claimLoop():
     for user in users:
-        cookies = {"ltuid": users[user]['ltuid'], "ltoken": users[user]['ltoken']}
-        uid = users[user]['uid']
+        userID = user
+        cookies = {"ltuid": users[userID]['ltuid'], "ltoken": users[userID]['ltoken']}
+        uid = users[userID]['uid']
         client = genshin.Client(cookies)
         client.default_game = genshin.Game.GENSHIN
         client.lang = "zh-tw"
@@ -71,19 +72,20 @@ async def claimLoop():
         try:
             await client.claim_daily_reward()
         except genshin.AlreadyClaimed:
-            print(f"{users[user]['name']} already claimed")
+            print(f"{users[userID]['name']} already claimed")
         else:
-            print(f"claimed for {user['name']}")
+            print(f"claimed for {users[userID]['name']}")
 
 
 @tasks.loop(seconds=600)
 async def checkLoop():
-    for user in users.items():
+    for user in users():
+        userID = user
         try:
-            cookies = {"ltuid": users[user]['ltuid'],
-                        "ltoken": users[user]['ltoken']}
+            cookies = {"ltuid": users[userID]['ltuid'],
+                        "ltoken": users[userID]['ltoken']}
             uid = users[user]['uid']
-            userObj = bot.get_user(users[user]['discordID'])
+            userObj = bot.get_user(users[userID]['discordID'])
             client = genshin.Client(cookies)
             client.default_game = genshin.Game.GENSHIN
             client.lang = "zh-tw"
@@ -91,9 +93,9 @@ async def checkLoop():
             notes = await client.get_notes(uid)
             resin = notes.current_resin
             dateNow = datetime.datetime.now()
-            diff = dateNow - users[user]['dmDate']
+            diff = dateNow - users[userID]['dmDate']
             diffHour = diff.total_seconds() / 3600
-            if resin >= 140 and users[user]['dm'] == True and users[user]['dmCount'] < 3 and diffHour >= 1:
+            if resin >= 140 and users[userID]['dm'] == True and users[userID]['dmCount'] < 3 and diffHour >= 1:
                 time = notes.remaining_resin_recovery_time
                 hours, minutes = divmod(time // 60, 60)
                 fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
@@ -102,18 +104,18 @@ async def checkLoop():
                                                     f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
                 global_vars.setFooter(embed)
                 await userObj.send(embed=embed)
-                users[user]['dmCount'] += 1
-                users[user]['dmDate'] = dateNow
+                users[userID]['dmCount'] += 1
+                users[userID]['dmDate'] = dateNow
                 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
             elif resin < 140:
-                users[user]['dmCount'] = 0
+                users[userID]['dmCount'] = 0
                 with open(f'C:/Users/{owner}/shenhe_bot/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
         except genshin.errors.InvalidCookies:
             pass
         except AttributeError:
-            print(f"{users[user]['name']} 可能退群了")
+            print(f"{users[userID]['name']} 可能退群了")
 
 # 等待申鶴準備
 @checkLoop.before_loop
