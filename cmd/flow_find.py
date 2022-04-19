@@ -18,6 +18,8 @@ class FlowFindCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         channel = self.bot.get_channel(payload.channel_id)
