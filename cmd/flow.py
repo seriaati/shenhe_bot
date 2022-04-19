@@ -330,8 +330,8 @@ class FlowCog(commands.Cog):
             with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(shop, file)
             logID = str(uuid.uuid4())
-            logs[logID] = {'item': shopList[pos][1]['name'], 'flow': itemPrice,
-                           'buyerID': ctx.author.id, 'itemUUID': shopList[pos][1]['uuid']}
+            logs[logID] = {'item': shopList[pos][1]['name'],
+                           'flow': itemPrice, 'buyerID': ctx.author.id}
             with open(f'cmd/asset/log.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(logs, file)
             users[discordID]['flow'] -= itemPrice
@@ -359,7 +359,7 @@ class FlowCog(commands.Cog):
             logID = log
             user = self.bot.get_user(logs[logID]['buyerID'])
             embed = defaultEmbed(
-                "購買紀錄", f"商品: {logs[logID]['item']}\n價格: {logs[logID]['flow']}\n購買人: {user.mention}\n購買人ID: {logs[logID]['buyerID']}\n商品UUID: {logs[logID]['itemUUID']}")
+                "購買紀錄", f"商品: {logs[logID]['item']}\n價格: {logs[logID]['flow']}\n購買人: {user.mention}\n購買人ID: {logs[logID]['buyerID']}")
             setFooter(embed)
             await ctx.send(embed=embed)
 
