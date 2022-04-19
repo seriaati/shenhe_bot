@@ -85,8 +85,8 @@ async def unload(ctx, arg):
             try:
                 bot.unload_extension(extension)
                 await ctx.send(f"已暫時關閉 {extension} 指令包")
-            except:
-                await ctx.send(f"{extension} 指令包無法被取消加載")
+            except Exception as e:
+                await ctx.send(f"{extension}發生錯誤```{e}```")
 
 
 @bot.command()
@@ -98,8 +98,8 @@ async def load(ctx, arg):
             try:
                 bot.load_extension(extension)
                 await ctx.send(f"已加載 {extension} 指令包")
-            except:
-                await ctx.send(f"{extension} 指令包無法被加載")
+            except Exception as e:
+                await ctx.send(f"{extension}發生錯誤```{e}```")
 
 
 bot.run(token, bot=True, reconnect=True)
