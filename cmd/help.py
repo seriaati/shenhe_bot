@@ -1,5 +1,5 @@
 from discord.ext import commands
-from asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, setFooter
 
 
 class HelpCog(commands.Cog):

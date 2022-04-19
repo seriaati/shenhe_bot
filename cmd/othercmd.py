@@ -1,6 +1,6 @@
 from discord.ext import commands
 from random import randint
-from asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, setFooter
 
 
 class OtherCMDCog(commands.Cog):

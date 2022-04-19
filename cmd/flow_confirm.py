@@ -1,6 +1,6 @@
 from discord.ext import commands
 import yaml
-from asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, setFooter
 
 with open(f'asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)

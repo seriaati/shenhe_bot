@@ -1,7 +1,7 @@
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 import yaml
-from asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, setFooter
 import discord
 
 with open(f'asset/flow.yaml', encoding='utf-8') as file:
