@@ -50,7 +50,7 @@ class FlowGiveawayCog(commands.Cog):
                 await giveawayMsg.edit(embed=newEmbed)
                 await channel.send(f"{reactor.mention} 花了 {giveaways[payload.message_id]['ticket']} flow幣參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
                 if giveaways[payload.message_id]['current'] == giveaways[payload.message_id]['goal']:
-                    memberList = giveaways[payload.message_id]['members'].split(", ")
+                    memberList = giveaways[payload.message_id]['members']
                     winner = random.choice(memberList)
                     winnerID = int(winner)
                     winnerUser = self.bot.get_user(winnerID)
