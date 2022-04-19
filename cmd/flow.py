@@ -30,10 +30,11 @@ class FlowCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def register(self, ctx, name, discordID: int):
+    async def register(self, ctx, name, discordID: int, *args):
         dcUser = self.bot.get_user(discordID)
         if not dcUser.bot:
-            embed = defaultEmbed("找不到帳號!", "現在申鶴已經幫你辦了一個flow帳號\n請重新執行剛才的操作")
+            embed = defaultEmbed(
+                f"{dcUser.mention}找不到你的flow帳號!", "現在申鶴已經幫你辦了一個flow帳號\n請重新執行剛才的操作")
             setFooter(embed)
             today = date.today()
             users[discordID] = {'name': str(name), 'discordID': int(
@@ -43,19 +44,32 @@ class FlowCog(commands.Cog):
                 yaml.dump(users, file)
             with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
-            await ctx.send(embed=embed, delete_after=5)
+            if args != False:
+                await ctx.send(embed=embed, delete_after=5)
+            else:
+                pass
         else:
             return
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        channel = self.bot.get_channel(payload.channel_id)
+        discordID = payload.user_id
+        reactor = self.bot.get_user(payload.user_id)
+        message = channel.get_partial_message(payload.message_id)
+
+        if discordID not in users:
+            user = self.bot.get_user(payload.user_id)
+            flowCog = self.bot.get_cog('FlowCog')
+            await flowCog.register(channel, user, discordID, False)
+
         if payload.message_id == 965143582178705459 and payload.emoji.name == "Serialook":
             guild = self.bot.get_guild(payload.guild_id)
             member = guild.get_member(payload.user_id)
             role = discord.utils.get(guild.roles, name=f"委託通知")
             await member.add_roles(role)
 
-        if payload.message_id == 963972447600771092:
+        elif payload.message_id == 963972447600771092:
             for i in range(1, 9):
                 p = inflect.engine()
                 word = p.number_to_words(i)
@@ -66,6 +80,121 @@ class FlowCog(commands.Cog):
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.add_roles(role)
                     break
+
+        elif payload.emoji.name == '✅' and payload.user_id != self.bot.user.id and payload.message_id in finds:
+            if payload.user_id == finds[payload.message_id]['authorID']:
+                userObj = self.bot.get_user(payload.user_id)
+                await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
+                return
+            else:
+                await message.clear_reaction('✅')
+                author = self.bot.get_user(
+                    finds[payload.message_id]['authorID'])
+                acceptUser = self.bot.get_user(payload.user_id)
+                if finds[payload.message_id]['type'] == 1:
+                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
+                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                elif finds[payload.message_id]['type'] == 2:
+                    await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 素材委託")
+                    await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
+                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
+                elif finds[payload.message_id]['type'] == 3:
+                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
+                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                elif finds[payload.message_id]['type'] == 4:
+                    await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 幫助")
+                    await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
+                    await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
+
+                if finds[payload.message_id]['type'] == 4:
+                    embedDM = defaultEmbed(
+                        "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
+                    setFooter(embedDM)
+                    dm = await acceptUser.send(embed=embedDM)
+                else:
+                    embedDM = defaultEmbed(
+                        "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
+                    setFooter(embedDM)
+                    dm = await author.send(embed=embedDM)
+                await dm.add_reaction('🆗')
+
+                with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(finds, file)
+                confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
+                    finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
+                del finds[payload.message_id]
+                with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(confirms, file)
+
+        elif payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id and payload.message_id in confirms:
+            authorID = confirms[payload.message_id]['authorID']
+            receiverID = confirms[payload.message_id]['receiverID']
+            flow = confirms[payload.message_id]['flow']
+            type = confirms[payload.message_id]['type']
+            title = confirms[payload.message_id]['title']
+            if type == 4:
+                if authorID in users:
+                    users[authorID]['flow'] += flow
+                if receiverID in users:
+                    users[receiverID]['flow'] -= flow
+            else:
+                if authorID in users:
+                    users[authorID]['flow'] -= flow
+                if receiverID in users:
+                    users[receiverID]['flow'] += flow
+
+            author = self.bot.get_user(authorID)
+            receiver = self.bot.get_user(receiverID)
+            if type == 4:
+                embed = defaultEmbed("🆗 結算成功",
+                                     f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
+            else:
+                embed = defaultEmbed("🆗 結算成功",
+                                     f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
+            setFooter(embed)
+            await author.send(embed=embed)
+            await receiver.send(embed=embed)
+            del confirms[payload.message_id]
+            with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(confirms, file)
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(users, file)
+
+        elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
+            if users[discordID]['flow'] < giveaways[payload.message_id]['ticket']:
+                await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
+                return
+            users[discordID]['flow'] -= giveaways[payload.message_id]['ticket']
+            bank['flow'] += giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['members'].append(
+                payload.user_id)
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(users, file)
+            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(bank, file)
+            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(giveaways, file)
+            giveawayMsg = await channel.fetch_message(payload.message_id)
+            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
+                                    f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
+            await giveawayMsg.edit(embed=newEmbed)
+            await channel.send(f"{reactor.mention} 花了 {giveaways[payload.message_id]['ticket']} flow幣參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
+            if giveaways[payload.message_id]['current'] == giveaways[payload.message_id]['goal']:
+                memberList = giveaways[payload.message_id]['members']
+                winner = random.choice(memberList)
+                winnerID = int(winner)
+                winnerUser = self.bot.get_user(winnerID)
+                await giveawayMsg.delete()
+                embed = defaultEmbed(
+                    "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
+                setFooter(embed)
+                await channel.send(embed=embed)
+                giveaways.remove(giveaways[payload.message_id])
+                with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(giveaways, file)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -382,6 +511,10 @@ class FlowCog(commands.Cog):
     async def on_message(self, message):
         discordID = message.author.id
         channel = self.bot.get_channel(message.channel.id)
+        if discordID not in users:
+            user = self.bot.get_user(message.author.id)
+            flowCog = self.bot.get_cog('FlowCog')
+            await flowCog.register(channel, user, discordID, False)
         if message.author == self.bot.user:
             return
         if "早安" in message.content:
@@ -401,101 +534,6 @@ class FlowCog(commands.Cog):
                 user = self.bot.get_user(message.author.id)
                 flowCog = self.bot.get_cog('FlowCog')
                 await flowCog.register(channel, user, discordID)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        if payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-            if payload.message_id in confirms:
-                authorID = confirms[payload.message_id]['authorID']
-                receiverID = confirms[payload.message_id]['receiverID']
-                flow = confirms[payload.message_id]['flow']
-                type = confirms[payload.message_id]['type']
-                title = confirms[payload.message_id]['title']
-                if type == 4:
-                    if authorID in users:
-                        users[authorID]['flow'] += flow
-                    if receiverID in users:
-                        users[receiverID]['flow'] -= flow
-                else:
-                    if authorID in users:
-                        users[authorID]['flow'] -= flow
-                    if receiverID in users:
-                        users[receiverID]['flow'] += flow
-
-                author = self.bot.get_user(authorID)
-                receiver = self.bot.get_user(receiverID)
-                if type == 4:
-                    embed = defaultEmbed("🆗 結算成功",
-                                         f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
-                else:
-                    embed = defaultEmbed("🆗 結算成功",
-                                         f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
-                setFooter(embed)
-                await author.send(embed=embed)
-                await receiver.send(embed=embed)
-                del confirms[payload.message_id]
-                with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(confirms, file)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(users, file)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        channel = self.bot.get_channel(payload.channel_id)
-        message = channel.get_partial_message(payload.message_id)
-        discordID = payload.user_id
-        if discordID not in users:
-            user = self.bot.get_user(payload.user_id)
-            flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(channel, user, discordID)
-            return
-        if payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
-            if payload.message_id in finds:
-                if payload.user_id == finds[payload.message_id]['authorID']:
-                    userObj = self.bot.get_user(payload.user_id)
-                    await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
-                    return
-                else:
-                    await message.clear_reaction('✅')
-                    author = self.bot.get_user(
-                        finds[payload.message_id]['authorID'])
-                    acceptUser = self.bot.get_user(payload.user_id)
-                    if finds[payload.message_id]['type'] == 1:
-                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
-                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                    elif finds[payload.message_id]['type'] == 2:
-                        await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 素材委託")
-                        await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
-                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
-                    elif finds[payload.message_id]['type'] == 3:
-                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
-                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                    elif finds[payload.message_id]['type'] == 4:
-                        await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 幫助")
-                        await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
-                        await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
-
-                    if finds[payload.message_id]['type'] == 4:
-                        embedDM = defaultEmbed(
-                            "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
-                        setFooter(embedDM)
-                        dm = await acceptUser.send(embed=embedDM)
-                    else:
-                        embedDM = defaultEmbed(
-                            "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
-                        setFooter(embedDM)
-                        dm = await author.send(embed=embedDM)
-                    await dm.add_reaction('🆗')
-
-                    with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(finds, file)
-                    confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
-                        finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
-                    del finds[payload.message_id]
-                    with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(confirms, file)
 
     @commands.command()
     async def find(self, ctx):
@@ -674,51 +712,6 @@ class FlowCog(commands.Cog):
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        channel = self.bot.get_channel(payload.channel_id)
-        reactor = self.bot.get_user(payload.user_id)
-        if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
-            discordID = payload.user_id
-            if payload.user_id not in users:
-                user = self.bot.get_user(discordID)
-                flowCog = self.bot.get_cog('FlowCog')
-                await flowCog.register(channel, user, discordID)
-                return
-            if payload.message_id in giveaways:
-                if users[discordID]['flow'] < giveaways[payload.message_id]['ticket']:
-                    await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
-                    return
-                users[discordID]['flow'] -= giveaways[payload.message_id]['ticket']
-                bank['flow'] += giveaways[payload.message_id]['ticket']
-                giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
-                giveaways[payload.message_id]['members'].append(
-                    payload.user_id)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(users, file)
-                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(bank, file)
-                with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(giveaways, file)
-                giveawayMsg = await channel.fetch_message(payload.message_id)
-                newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
-                                        f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-                await giveawayMsg.edit(embed=newEmbed)
-                await channel.send(f"{reactor.mention} 花了 {giveaways[payload.message_id]['ticket']} flow幣參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
-                if giveaways[payload.message_id]['current'] == giveaways[payload.message_id]['goal']:
-                    memberList = giveaways[payload.message_id]['members']
-                    winner = random.choice(memberList)
-                    winnerID = int(winner)
-                    winnerUser = self.bot.get_user(winnerID)
-                    await giveawayMsg.delete()
-                    embed = defaultEmbed(
-                        "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
-                    setFooter(embed)
-                    await channel.send(embed=embed)
-                    giveaways.remove(giveaways[payload.message_id])
-                    with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(giveaways, file)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):

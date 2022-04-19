@@ -54,6 +54,15 @@ class OtherCMDCog(commands.Cog):
         setFooter(embed)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def version(self, ctx):
+        embed = defaultEmbed(
+            "申鶴1.0.1",
+            ""
+        )
+        setFooter(embed)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(OtherCMDCog(bot))
