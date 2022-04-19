@@ -192,7 +192,7 @@ class FlowCog(commands.Cog):
                     "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
                 setFooter(embed)
                 await channel.send(embed=embed)
-                giveaways.remove(giveaways[payload.message_id])
+                del giveaways[payload.message_id]
                 with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(giveaways, file)
 
