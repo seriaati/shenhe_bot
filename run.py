@@ -119,13 +119,13 @@ async def beforeLoop():
     await bot.wait_until_ready()
 
 
-@claimLoop.before_loop
-async def wait_until_1am():
-    now = datetime.datetime.now().astimezone()
-    next_run = now.replace(hour=1, minute=0, second=0)
-    if next_run < now:
-        next_run += datetime.timedelta(days=1)
-    await discord.utils.sleep_until(next_run)
+# @claimLoop.before_loop
+# async def wait_until_1am():
+#     now = datetime.datetime.now().astimezone()
+#     next_run = now.replace(hour=1, minute=0, second=0)
+#     if next_run < now:
+#         next_run += datetime.timedelta(days=1)
+#     await discord.utils.sleep_until(next_run)
 
 checkLoop.start()
 claimLoop.start()
