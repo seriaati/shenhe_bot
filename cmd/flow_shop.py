@@ -26,7 +26,7 @@ class FlowShopCog(commands.Cog):
             for item in shop:
                 itemID = item
                 itemStr = itemStr + \
-                    f"{count}. {shop[itemID]['name']} - {shop[itemID]['flow']} flow ({shop[itemID]['current']}/{shop[itemID]['max']})\n||{shop[itemID]['uuid']}||\n"
+                    f"{count}. {shop[itemID]['name']} - {shop[itemID]['flow']} flow ({shop[itemID]['current']}/{shop[itemID]['max']})\n||{itemID}||\n"
                 count += 1
             embed = defaultEmbed("🛒 flow商店", itemStr)
             setFooter(embed)
