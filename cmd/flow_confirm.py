@@ -16,39 +16,40 @@ class FlowConfirmCog(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
-        if payload.message_id in confirms and payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-            authorID = confirms[payload.message_id]['authorID']
-            receiverID = confirms[payload.message_id]['receiverID']
-            flow = confirms[payload.message_id]['flow']
-            type = confirms[payload.message_id]['type']
-            title = confirms[payload.message_id]['title']
-            if type == 4:
-                if authorID in users:
-                    users[authorID]['flow'] += flow
-                if receiverID in users:
-                    users[receiverID]['flow'] -= flow
-            else:
-                if authorID in users:
-                    users[authorID]['flow'] -= flow
-                if receiverID in users:
-                    users[receiverID]['flow'] += flow
+        if payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
+            if payload.message_id in confirms:
+                authorID = confirms[payload.message_id]['authorID']
+                receiverID = confirms[payload.message_id]['receiverID']
+                flow = confirms[payload.message_id]['flow']
+                type = confirms[payload.message_id]['type']
+                title = confirms[payload.message_id]['title']
+                if type == 4:
+                    if authorID in users:
+                        users[authorID]['flow'] += flow
+                    if receiverID in users:
+                        users[receiverID]['flow'] -= flow
+                else:
+                    if authorID in users:
+                        users[authorID]['flow'] -= flow
+                    if receiverID in users:
+                        users[receiverID]['flow'] += flow
 
-            author = self.bot.get_user(authorID)
-            receiver = self.bot.get_user(receiverID)
-            if type == 4:
-                embed = defaultEmbed("🆗 結算成功",
-                                     f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
-            else:
-                embed = defaultEmbed("🆗 結算成功",
-                                     f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
-            setFooter(embed)
-            await author.send(embed=embed)
-            await receiver.send(embed=embed)
-            del confirms[payload.message_id]
-            with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(confirms, file)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(users, file)
+                author = self.bot.get_user(authorID)
+                receiver = self.bot.get_user(receiverID)
+                if type == 4:
+                    embed = defaultEmbed("🆗 結算成功",
+                                        f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
+                else:
+                    embed = defaultEmbed("🆗 結算成功",
+                                        f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
+                setFooter(embed)
+                await author.send(embed=embed)
+                await receiver.send(embed=embed)
+                del confirms[payload.message_id]
+                with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(confirms, file)
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(users, file)
 
 
 def setup(bot):
