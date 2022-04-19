@@ -28,7 +28,7 @@ class FlowFindCog(commands.Cog):
             flowCog = self.bot.get_cog('FlowCog')
             await flowCog.register(channel, user, discordID)
             return
-        if payload.emoji.name == '✅' and payload.user_id != self.bot.user.id and message.reactions[0].count != 2:
+        if payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
             if payload.message_id in finds:
                 if payload.user_id == finds[payload.message_id]['authorID']:
                     userObj = self.bot.get_user(payload.use_id)
