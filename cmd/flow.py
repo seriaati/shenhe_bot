@@ -198,6 +198,10 @@ class FlowCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
+        channel = self.bot.get_channel(payload.channel_id)
+        discordID = payload.user_id
+        reactor = self.bot.get_user(payload.user_id)
+        message = channel.get_partial_message(payload.message_id)
         if payload.message_id == 965143582178705459 and payload.emoji.name == "Serialook":
             guild = self.bot.get_guild(payload.guild_id)
             member = guild.get_member(payload.user_id)
@@ -214,6 +218,22 @@ class FlowCog(commands.Cog):
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.remove_roles(role)
                     break
+        elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
+            users[discordID]['flow'] += giveaways[payload.message_id]['ticket']
+            bank['flow'] -= giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['current'] -= giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['members'].remove(discordID)
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(users, file)
+            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(bank, file)
+            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(giveaways, file)
+            giveawayMsg = await channel.fetch_message(payload.message_id)
+            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
+                                    f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
+            await giveawayMsg.edit(embed=newEmbed)
+            await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
 
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
