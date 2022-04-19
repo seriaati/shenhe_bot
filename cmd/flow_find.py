@@ -21,7 +21,7 @@ class FlowFindCog(commands.Cog):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.get_partial_message(payload.message_id)
+        message = channel.get_partial_message(payload.message_id)
         reaction = discord.utils.get(message.reactions, emoji='✅')
         discordID = payload.user_id
         if discordID not in users:
@@ -33,7 +33,7 @@ class FlowFindCog(commands.Cog):
             if payload.message_id in finds:
                 if payload.user_id == finds[payload.message_id]['authorID']:
                     userObj = self.bot.get_user(payload.use_id)
-                    message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
+                    await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
                     await reaction.remove(payload.member)
                     return
                 else:
