@@ -19,7 +19,6 @@ class FlowConfirmCog(commands.Cog):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         if payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id:
-            print("detected OK")
             if payload.message_id in confirms:
                 authorID = confirms[payload.message_id]['authorID']
                 receiverID = confirms[payload.message_id]['receiverID']

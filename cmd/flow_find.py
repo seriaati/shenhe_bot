@@ -79,10 +79,10 @@ class FlowFindCog(commands.Cog):
 
     @commands.command()
     async def find(self, ctx):
-        # if ctx.channel.id != 960861105503232030:
-        #     channel = self.bot.get_channel(960861105503232030)
-        #     await ctx.send(f"請在{channel.mention}裡使用此指令")
-        #     return
+        if ctx.channel.id != 960861105503232030:
+            channel = self.bot.get_channel(960861105503232030)
+            await ctx.send(f"請在{channel.mention}裡使用此指令")
+            return
         await ctx.message.delete()
         discordID = ctx.author.id
         if discordID not in users:
@@ -132,6 +132,12 @@ class FlowFindCog(commands.Cog):
             if users[discordID]['flow'] < int(result.flow):
                 embedResult = defaultEmbed(
                     f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
+                setFooter(embedResult)
+                message = await ctx.send(embed=embedResult)
+                return
+            if result.flow.isnumeric() == False:
+                embedResult = defaultEmbed(
+                    f"發布失敗, 請勿輸入非數字的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
