@@ -21,72 +21,62 @@ class FlowFindCog(commands.Cog):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
+        message = await channel.get_partial_message(payload.message_id)
         reaction = discord.utils.get(message.reactions, emoji='✅')
-        found = False
-        for user in users:
-            if user['discordID'] == payload.user_id:
-                found = True
-                break
-        if found == False:
-            dcUser = self.bot.get_user(payload.user_id)
-            if not dcUser.bot:
-                discordID = payload.user_id
-                user = self.bot.get_user(payload.user_id)
-                flowCog = self.bot.get_cog('FlowCog')
-                await flowCog.register(channel, user, discordID)
-
+        discordID = payload.user_id
+        if discordID not in users:
+            user = self.bot.get_user(payload.user_id)
+            flowCog = self.bot.get_cog('FlowCog')
+            await flowCog.register(channel, user, discordID)
+            return
         if payload.emoji.name == '✅' and payload.user_id != self.bot.user.id and message.reactions[0].count != 2:
-            for find in finds:
-                if payload.message_id == find['msgID']:
-                    for user in users:
-                        if payload.user_id == find['authorID']:
-                            userObj = self.bot.get_user(find['authorID'])
-                            message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
-                            await reaction.remove(payload.member)
-                            return
-                        elif user['discordID'] == payload.user_id:
-                            await message.clear_reaction('✅')
-                            author = self.bot.get_user(find['authorID'])
-                            acceptUser = self.bot.get_user(user['discordID'])
-                            if find['type'] == 1:
-                                await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
-                                await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
-                                await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
-                            elif find['type'] == 2:
-                                await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {find['title']} 素材委託")
-                                await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {find['title']} 素材委託")
-                                await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 素材委託")
-                            elif find['type'] == 3:
-                                await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {find['title']} 委託")
-                                await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {find['title']} 委託")
-                                await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {find['title']} 委託")
-                            elif find['type'] == 4:
-                                await author.send(f"✅ {acceptUser.mention} 接受了你的 {find['title']} 幫助")
-                                await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {find['title']} 幫助")
-                                await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {find['title']} 幫助")
-                            if find['type'] == 4:
-                                embedDM = defaultEmbed(
-                                    "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
-                                setFooter(embedDM)
-                                dm = await acceptUser.send(embed=embedDM)
-                            else:
-                                embedDM = defaultEmbed(
-                                    "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {find['flow']}**, 對方則會 **+ {find['flow']}**")
-                                setFooter(embedDM)
-                                dm = await author.send(embed=embedDM)
-                            await dm.add_reaction('🆗')
+            if payload.message_id in finds:
+                if payload.user_id == finds[payload.message_id]['authorID']:
+                    userObj = self.bot.get_user(payload.use_id)
+                    message = await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
+                    await reaction.remove(payload.member)
+                    return
+                else:
+                    await message.clear_reaction('✅')
+                    author = self.bot.get_user(
+                        finds[payload.message_id]['authorID'])
+                    acceptUser = self.bot.get_user(payload.user_id)
+                    if finds[payload.message_id]['type'] == 1:
+                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
+                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                    elif finds[payload.message_id]['type'] == 2:
+                        await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 素材委託")
+                        await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
+                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
+                    elif finds[payload.message_id]['type'] == 3:
+                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
+                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                        await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
+                    elif finds[payload.message_id]['type'] == 4:
+                        await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 幫助")
+                        await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
+                        await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
 
-                            finds.remove(find)
-                            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(finds, file)
+                    if finds[payload.message_id]['type'] == 4:
+                        embedDM = defaultEmbed(
+                            "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
+                        setFooter(embedDM)
+                        dm = await acceptUser.send(embed=embedDM)
+                    else:
+                        embedDM = defaultEmbed(
+                            "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
+                        setFooter(embedDM)
+                        dm = await author.send(embed=embedDM)
+                    await dm.add_reaction('🆗')
 
-                            newConfirm = {'title': find['title'], 'authorID': int(find['authorID']),
-                                          'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id, 'dm': find['type']}
-                            confirms.append(newConfirm)
-                            with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(confirms, file)
-                            return
+                    del finds[payload.message_id]
+                    with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(finds, file)
+                    confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
+                        finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
+                    with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(confirms, file)
 
     @commands.command()
     async def find(self, ctx):
@@ -95,15 +85,12 @@ class FlowFindCog(commands.Cog):
             await ctx.send(f"請在{channel.mention}裡使用此指令")
             return
         await ctx.message.delete()
-        found = False
-        for user in users:
-            if user['discordID'] == ctx.author.id:
-                found = True
-        if found == False and ctx.author.bot == False:
-            discordID = ctx.author.id
+        discordID = ctx.author.id
+        if discordID not in users:
             user = self.bot.get_user(discordID)
             flowCog = self.bot.get_cog('FlowCog')
             await flowCog.register(ctx, user, discordID)
+            return
         roles = []
         for i in range(1, 9):
             roles.append(discord.utils.get(ctx.guild.roles, name=f"W{str(i)}"))
@@ -124,130 +111,112 @@ class FlowFindCog(commands.Cog):
         form.add_reaction("4️⃣", 4)
         choice = await form.start()
 
+        guild = self.bot.get_guild(916838066117824553)
+        role = discord.utils.get(guild.roles, name=f"委託通知")
+
         if choice == 1:
-            def is_me(m):
-                return m.author == self.bot.user
-            await ctx.channel.purge(limit=1, check=is_me)
+            await message.delete()
             formTrue = Form(ctx, '設定流程', cleanup=True)
             formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
             formTrue.add_question('你要付多少flow幣給幫你的人?', 'flow')
             formTrue.edit_and_delete(True)
-            formTrue.set_timeout(60)
+            formTrue.set_timeout(30)
             await formTrue.set_color("0xa68bd3")
             result = await formTrue.start()
+
             if int(result.flow) < 0:
                 embedResult = defaultEmbed(
                     f"發布失敗, 請輸入大於1的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
-            for user in users:
-                if ctx.author.id == user['discordID'] and int(result.flow) > user['flow']:
-                    embedResult = defaultEmbed(
-                        f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
-                    setFooter(embedResult)
-                    message = await ctx.send(embed=embedResult)
-                    return
+            if users[discordID]['flow'] < int(result.flow):
+                embedResult = defaultEmbed(
+                    f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
+                setFooter(embedResult)
+                message = await ctx.send(embed=embedResult)
+                return
 
-            guild = self.bot.get_guild(916838066117824553)
-            role = discord.utils.get(guild.roles, name=f"委託通知")
             embed = defaultEmbed(
                 f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
             setFooter(embed)
             message = await ctx.send(embed=embed)
             await message.add_reaction('✅')
             await ctx.send(role.mention)
-            newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
+            finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
-            finds.append(newFind)
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 2:
-            def is_me(m):
-                return m.author == self.bot.user
-            await ctx.channel.purge(limit=1, check=is_me)
+            await message.delete()
             formFalse = Form(ctx, '設定流程', cleanup=True)
             formFalse.add_question('需要什麼素材?(例如: 緋櫻繡球)', 'title')
             formFalse.add_question('你要付多少flow幣給讓你拿素材的人?', 'flow')
             formFalse.edit_and_delete(True)
-            formFalse.set_timeout(60)
+            formFalse.set_timeout(30)
             await formFalse.set_color("0xa68bd3")
             result = await formFalse.start()
+
             if int(result.flow) < 0:
                 embedResult = defaultEmbed(
                     f"發布失敗, 請輸入大於1的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
-            for user in users:
-                if ctx.author.id == user['discordID']:
-                    if int(result.flow) > user['flow']:
-                        embedResult = defaultEmbed(
-                            f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
-                        setFooter(embedResult)
-                        message = await ctx.send(embed=embedResult)
-                        return
+            if users[discordID]['flow'] < int(result.flow):
+                embedResult = defaultEmbed(
+                    f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
+                setFooter(embedResult)
+                message = await ctx.send(embed=embedResult)
+                return
 
-            guild = self.bot.get_guild(916838066117824553)
-            role = discord.utils.get(guild.roles, name=f"委託通知")
-            notifRole = self.bot.get
             embed = defaultEmbed(
                 f"素材請求: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: <={roleStr}\n按 ✅ 來接受請求")
             setFooter(embed)
             message = await ctx.send(embed=embed)
             await message.add_reaction('✅')
             await ctx.send(role.mention)
-            newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
+            finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
-            finds.append(newFind)
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 3:
-            def is_me(m):
-                return m.author == self.bot.user
-            await ctx.channel.purge(limit=1, check=is_me)
+            await message.delete()
             formFalse = Form(ctx, '設定流程', cleanup=True)
             formFalse.add_question('要委託什麼?', 'title')
             formFalse.add_question('你要付多少flow幣給接受委託的人?', 'flow')
             formFalse.edit_and_delete(True)
-            formFalse.set_timeout(60)
+            formFalse.set_timeout(30)
             await formFalse.set_color("0xa68bd3")
             result = await formFalse.start()
+            
             if int(result.flow) < 0:
                 embedResult = defaultEmbed(
                     f"發布失敗, 請輸入大於1的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
-            for user in users:
-                if ctx.author.id == user['discordID']:
-                    if int(result.flow) > user['flow']:
-                        embedResult = defaultEmbed(
-                            f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
-                        setFooter(embedResult)
-                        message = await ctx.send(embed=embedResult)
-                        return
+            if users[discordID]['flow'] < int(result.flow):
+                embedResult = defaultEmbed(
+                    f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
+                setFooter(embedResult)
+                message = await ctx.send(embed=embedResult)
+                return
 
-            guild = self.bot.get_guild(916838066117824553)
-            role = discord.utils.get(guild.roles, name=f"委託通知")
             embed = defaultEmbed(
                 f"委託: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受請求")
             setFooter(embed)
             message = await ctx.send(embed=embed)
-            await ctx.send(role.mention)
             await message.add_reaction('✅')
-            newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
-                result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 3}
-            finds.append(newFind)
+            await ctx.send(role.mention)
+            finds[message.id] = {'title': result.title, 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 3}
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 4:
-            def is_me(m):
-                return m.author == self.bot.user
-            await ctx.channel.purge(limit=1, check=is_me)
+            await message.delete()
             formFalse = Form(ctx, '設定流程', cleanup=True)
             formFalse.add_question('你想要幫助什麼?', 'title')
             formFalse.add_question('被你幫助的人要付多少flow幣給你?', 'flow')
@@ -255,34 +224,29 @@ class FlowFindCog(commands.Cog):
             formFalse.set_timeout(60)
             await formFalse.set_color("0xa68bd3")
             result = await formFalse.start()
+            
             if int(result.flow) < 0:
                 embedResult = defaultEmbed(
                     f"發布失敗, 請輸入大於1的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
-            for user in users:
-                if ctx.author.id == user['discordID']:
-                    if int(result.flow) > user['flow']:
-                        embedResult = defaultEmbed(
-                            f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
-                        setFooter(embedResult)
-                        message = await ctx.send(embed=embedResult)
-                        return
-            else:
-                guild = self.bot.get_guild(916838066117824553)
-                role = discord.utils.get(guild.roles, name=f"委託通知")
+            if users[discordID]['flow'] < int(result.flow):
                 embedResult = defaultEmbed(
-                    f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受幫助")
+                    f"發布失敗, 請勿輸入大於自己擁有數量的flow幣", " ")
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
-                await ctx.send(role.mention)
-                await message.add_reaction('✅')
-                newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
-                    result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
-                finds.append(newFind)
-                with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(finds, file)
+                return
+
+            embedResult = defaultEmbed(
+                f"可以幫忙: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n按 ✅ 來接受幫助")
+            setFooter(embedResult)
+            message = await ctx.send(embed=embedResult)
+            await message.add_reaction('✅')
+            await ctx.send(role.mention)
+            finds[message.id] = {'title': result.title, 'flow': int(result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
+            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(finds, file)
 
 
 def setup(bot):

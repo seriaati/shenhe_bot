@@ -22,10 +22,10 @@ class FlowMorningCog(commands.Cog):
         if "早安" in message.content:
             today = date.today()
             if discordID in users:
-                if user['morning'] != today:
-                    user['flow'] += 1
+                if users[discordID]['morning'] != today:
+                    users[discordID]['flow'] += 1
+                    users[discordID]['morning'] = today
                     bank['flow'] -= 1
-                    user['morning'] = today
                     with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                     with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:

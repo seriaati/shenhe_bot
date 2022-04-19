@@ -42,32 +42,30 @@ class FlowShopCog(commands.Cog):
         form.set_timeout(60)
         await form.set_color("0xa68bd3")
         result = await form.start()
-        id = uuid.uuid1()
-        newItem = {'name': result.name, 'flow': int(
-            result.flow), 'current': 0, 'max': int(result.max), 'uuid': str(id)}
-        shop.append(newItem)
+        uuid = str(uuid.uuid1())
+        shop[uuid] = {'name': result.name, 'flow': int(
+            result.flow), 'current': 0, 'max': int(result.max)}
         with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(shop, file)
         await ctx.send(f"商品{result.name}新增成功")
 
     @shop.command()
     @commands.has_role("小雪團隊")
-    async def removeitem(self, ctx, *, arg=''):
-        for item in shop:
-            if item['uuid'] == arg:
-                shop.remove(item)
-                with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(shop, file)
-                await ctx.send("商品刪除成功")
-                break
+    async def removeitem(self, ctx, uuid):
+        if uuid in shop:
+            del shop[uuid]
+            with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(shop, file)
+            await ctx.send("商品刪除成功")
 
     @shop.command()
     async def buy(self, ctx):
         itemStr = ""
         count = 1
         for item in shop:
+            uuid = item
             itemStr = itemStr + \
-                f"{count}. {item['name']} - {item['flow']} flow ({item['current']}/{item['max']})\n"
+                f"{count}. {shop[uuid]['name']} - {shop[uuid]['flow']} flow ({shop[uuid]['current']}/{shop[uuid]['max']})\n"
             count += 1
         form = Form(ctx, '要購買什麼商品?(輸入數字)', cleanup=True)
         form.add_question(f'{itemStr}', 'number')
@@ -75,38 +73,38 @@ class FlowShopCog(commands.Cog):
         form.set_timeout(60)
         await form.set_color("0xa68bd3")
         result = await form.start()
+        shopList = list(shop.items())
         pos = int(result.number) - 1
         discordID = ctx.author.id
         if discordID in users:
-            itemPrice = int(shop[pos]['flow'])
+            itemPrice = int(shopList[pos][1]['flow'])
             if users[discordID]['flow'] < itemPrice:
                 await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
                 return
             if shop[pos]['current'] >= shop[pos]['max']:
                 await ctx.send(f"{ctx.author.mention} 這個商品已經售罄了")
                 return
-            else:
-                shop[pos]['current'] += 1
-                with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(shop, file)
-                newLog = {'item': shop[pos]['name'], 'flow': int(
-                    shop[pos]['flow']), 'buyerID': ctx.author.id, 'itemUUID': shop[pos]['uuid']}
-                logs.append(newLog)
-                with open(f'cmd/asset/log.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(logs, file)
-                itemPrice = int(shop[pos]['flow'])
-                users[discordID]['flow'] -= itemPrice
-                bank['flow'] += itemPrice
-                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(bank, file)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(users, file)
-                await ctx.send(f"商品 {shop[pos]['name']} 購買成功, 詳情請查看私訊")
-                await ctx.author.send(f"您已在flow商城購買了 {shop[pos]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
-                embed = defaultEmbed(
-                    "📜 購買證明", f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {shop[pos]['name']}\nUUID: {shop[pos]['uuid']}\n價格: {shop[pos]['flow']}")
-                setFooter(embed)
-                await ctx.author.send(embed=embed)
+
+            shop[pos][1]['current'] += 1
+            with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(shop, file)
+            logID = str(uuid.uuid1())
+            logs[logID] = {'item': shop[pos][1]['name'], 'flow': itemPrice,
+                           'buyerID': ctx.author.id, 'itemUUID': shop[pos][1]['uuid']}
+            with open(f'cmd/asset/log.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(logs, file)
+            users[discordID]['flow'] -= itemPrice
+            bank['flow'] += itemPrice
+            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(bank, file)
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(users, file)
+            await ctx.send(f"商品 {shop[pos][1]['name']} 購買成功, 詳情請查看私訊")
+            await ctx.author.send(f"您已在flow商城購買了 {shop[1][pos]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
+            embed = defaultEmbed(
+                "📜 購買證明", f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {shop[pos]['name']}\nUUID: {shop[pos]['uuid']}\n價格: {shop[pos]['flow']}")
+            setFooter(embed)
+            await ctx.author.send(embed=embed)
         else:
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
