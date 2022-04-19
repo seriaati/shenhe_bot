@@ -31,7 +31,7 @@ class FlowFindCog(commands.Cog):
         if payload.emoji.name == '✅' and payload.user_id != self.bot.user.id:
             if payload.message_id in finds:
                 if payload.user_id == finds[payload.message_id]['authorID']:
-                    userObj = self.bot.get_user(payload.use_id)
+                    userObj = self.bot.get_user(payload.user_id)
                     await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
                     await message.reaction('✅', userObj)
                     return
