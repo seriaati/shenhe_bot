@@ -115,9 +115,10 @@ class FlowShopCog(commands.Cog):
     @commands.has_role("小雪團隊")
     async def log(self, ctx):
         for log in logs:
-            user = self.bot.get_user(int(log['buyerID']))
+            logID = log
+            user = self.bot.get_user(logs[logID]['buyerID'])
             embed = defaultEmbed(
-                "購買紀錄", f"商品: {log['item']}\n價格: {log['flow']}\n購買人: {user.mention}\n購買人ID: {log['buyerID']}\n商品UUID: {log['itemUUID']}")
+                "購買紀錄", f"商品: {logs[logID]['item']}\n價格: {logs[logID]['flow']}\n購買人: {user.mention}\n購買人ID: {logs[logID]['buyerID']}\n商品UUID: {logs[logID]['itemUUID']}")
             setFooter(embed)
             await ctx.send(embed=embed)
 
@@ -126,18 +127,14 @@ class FlowShopCog(commands.Cog):
     async def clear(self, ctx, uuid):
         if uuid == "all":
             for item in shop:
-                item['current'] = 0
+                itemID = item
+                shop[itemID]['current'] = 0
                 with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(shop, file)
             await ctx.send(f"已將所有商品的購買次數清零")
             return
-        for item in shop:
-            if item['uuid'] == uuid:
-                item['current'] = 0
-                with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(shop, file)
-                await ctx.send(f"已將 {item['name']} 的購買次數設為0")
-                break
+        elif int(uuid) in shop:
+            del shop[uuid]
 
 
 def setup(bot):
