@@ -10,7 +10,7 @@ from discord.ext import commands, tasks
 import cmd.asset.global_vars as Global
 from cmd.asset.global_vars import defaultEmbed, setFooter
 
-with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
+with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
 
 # 前綴, token, intents
