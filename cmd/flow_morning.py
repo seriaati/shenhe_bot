@@ -22,7 +22,7 @@ class FlowMorningCog(commands.Cog):
             found = False
             for user in users:
                 if 'morning' not in user:
-                    user['morning'] = today 
+                    user['morning'] = today
                     with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                 if message.author.id == user['discordID']:

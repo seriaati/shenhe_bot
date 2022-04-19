@@ -1,18 +1,10 @@
 from discord.ext import commands
 import yaml
-import global_vars
-import sys
-import getpass
+from asset.global_vars import defaultEmbed, setFooter
 
-owner = getpass.getuser()
-
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-
-global_vars.Global()
-
-with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', encoding='utf-8') as file:
+with open(f'asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', encoding='utf-8') as file:
+with open(f'asset/confirm.yaml', encoding='utf-8') as file:
     confirms = yaml.full_load(file)
 
 
@@ -41,18 +33,18 @@ class FlowConfirmCog(commands.Cog):
                 author = self.bot.get_user(confirm['authorID'])
                 receiver = self.bot.get_user(confirm['receiverID'])
                 if confirm['dm'] == 4:
-                    embed = global_vars.defaultEmbed("🆗 結算成功",
-                                                     f"幫忙名稱: {confirm['title']}\n幫助人: {author.mention} **+{confirm['flow']} flow幣**\n被幫助人: {receiver.mention} **-{confirm['flow']} flow幣**")
+                    embed = defaultEmbed("🆗 結算成功",
+                                         f"幫忙名稱: {confirm['title']}\n幫助人: {author.mention} **+{confirm['flow']} flow幣**\n被幫助人: {receiver.mention} **-{confirm['flow']} flow幣**")
                 else:
-                    embed = global_vars.defaultEmbed("🆗 結算成功",
-                                                     f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
-                global_vars.setFooter(embed)
+                    embed = defaultEmbed("🆗 結算成功",
+                                         f"委託名稱: {confirm['title']}\n委託人: {author.mention} **-{confirm['flow']} flow幣**\n接收人: {receiver.mention} **+{confirm['flow']} flow幣**")
+                setFooter(embed)
                 await author.send(embed=embed)
                 await receiver.send(embed=embed)
                 confirms.remove(confirm)
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                with open(f'asset/confirm.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(confirms, file)
-                with open(f'C:/Users/{owner}/shenhe_bot/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 break
 
