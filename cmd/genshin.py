@@ -33,7 +33,7 @@ class GenshinCog(commands.Cog):
             return
 
     @tasks.loop(hours=24)
-    async def claimLoop(self):
+    async def claimLoop():
         for user in users:
             userID = user
             cookies = {"ltuid": users[userID]['ltuid'],
@@ -96,7 +96,7 @@ class GenshinCog(commands.Cog):
         await self.bot.wait_until_ready()
 
     @claimLoop.before_loop
-    async def wait_until_1am(self):
+    async def wait_until_1am():
         now = datetime.datetime.now().astimezone()
         next_run = now.replace(hour=1, minute=0, second=0)
         if next_run < now:
