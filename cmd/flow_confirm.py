@@ -54,6 +54,10 @@ class FlowConfirmCog(commands.Cog):
                 with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
 
+    @commands.command()
+    async def testCog(self, ctx):
+        await ctx.send("cog is here")
+
 
 def setup(bot):
     bot.add_cog(FlowConfirmCog(bot))
