@@ -29,7 +29,7 @@ class FlowCog(commands.Cog):
     async def register(self, ctx, name, discordID: int):
         dcUser = self.bot.get_user(discordID)
         if not dcUser.bot:
-            embed = defaultEmbed("找不到帳號!", "現在申鶴已經幫你辦了一個flow帳號, 請重新執行剛才的操作\n\n註: 如果你在說早安時看到這個訊息, 請再說一次早安ww")
+            embed = defaultEmbed("找不到帳號!", "現在申鶴已經幫你辦了一個flow帳號\n請重新執行剛才的操作")
             setFooter(embed)
             today = date.today()
             users[discordID] = {'name': str(name), 'discordID': int(
