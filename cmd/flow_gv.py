@@ -19,7 +19,6 @@ class FlowGiveawayCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
         reactor = self.bot.get_user(payload.user_id)
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
@@ -56,7 +55,7 @@ class FlowGiveawayCog(commands.Cog):
                     winnerUser = self.bot.get_user(winnerID)
                     await giveawayMsg.delete()
                     embed = defaultEmbed(
-                        "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
+                        "抽獎結果", f"🎉 恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
                     setFooter(embed)
                     await channel.send(embed=embed)
                     giveaways.remove(giveaways[payload.message_id])
