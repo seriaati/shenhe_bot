@@ -3,9 +3,9 @@ from datetime import date
 import yaml
 
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'asset/bank.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
     bank = yaml.full_load(file)
 
 
@@ -23,7 +23,7 @@ class FlowMorningCog(commands.Cog):
             for user in users:
                 if 'morning' not in user:
                     user['morning'] = today
-                    with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                 if message.author.id == user['discordID']:
                     found = True
@@ -31,9 +31,9 @@ class FlowMorningCog(commands.Cog):
                         user['flow'] += 1
                         bank['flow'] -= 1
                         user['morning'] = today
-                        with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                             yaml.dump(users, file)
-                        with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+                        with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                             yaml.dump(bank, file)
                         await message.add_reaction(f"☀️")
             if found == False:

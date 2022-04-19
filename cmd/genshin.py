@@ -11,7 +11,7 @@ from discord.ext.forms import Form
 import genshin
 
 
-with open(f'asset/accounts.yaml', 'r', encoding='utf-8') as file:
+with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
 
 
@@ -317,7 +317,7 @@ class GenshinCog(commands.Cog):
         if not failed:
             users[int(result.discordID)] = {'name': result.name, 'uid': int(
                 result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
-            with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
         else:

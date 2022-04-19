@@ -4,11 +4,11 @@ import yaml
 from cmd.asset.global_vars import defaultEmbed, setFooter
 import discord
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'asset/find.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
     finds = yaml.full_load(file)
-with open(f'asset/confirm.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
     confirms = yaml.full_load(file)
 
 
@@ -78,13 +78,13 @@ class FlowFindCog(commands.Cog):
                             await dm.add_reaction('🆗')
 
                             finds.remove(find)
-                            with open(f'asset/find.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(finds, file)
 
                             newConfirm = {'title': find['title'], 'authorID': int(find['authorID']),
                                           'receiverID': int(user['discordID']), 'flow': find['flow'], 'msgID': dm.id, 'dm': find['type']}
                             confirms.append(newConfirm)
-                            with open(f'asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(confirms, file)
                             return
 
@@ -160,7 +160,7 @@ class FlowFindCog(commands.Cog):
             newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
             finds.append(newFind)
-            with open(f'asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 2:
@@ -201,7 +201,7 @@ class FlowFindCog(commands.Cog):
             newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
             finds.append(newFind)
-            with open(f'asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 3:
@@ -241,7 +241,7 @@ class FlowFindCog(commands.Cog):
             newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 3}
             finds.append(newFind)
-            with open(f'asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 4:
@@ -281,7 +281,7 @@ class FlowFindCog(commands.Cog):
                 newFind = {'title': str(result.title), 'msgID': int(message.id), 'flow': int(
                     result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
                 finds.append(newFind)
-                with open(f'asset/find.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(finds, file)
 
 

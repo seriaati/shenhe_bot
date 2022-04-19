@@ -4,11 +4,11 @@ import yaml
 from cmd.asset.global_vars import defaultEmbed, setFooter
 import random
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'asset/bank.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
     bank = yaml.full_load(file)
-with open(f'asset/giveaways.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
     giveaways = yaml.full_load(file)
 
 
@@ -45,11 +45,11 @@ class FlowGiveawayCog(commands.Cog):
                             bank['flow'] += giveaway['ticket']
                             giveaway['current'] += giveaway['ticket']
                             giveaway['members'] += f"{str(reactor.id)}, "
-                            with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(users, file)
-                            with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(bank, file)
-                            with open(f'asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(giveaways, file)
                             giveawayMsg = await channel.fetch_message(giveaway['msgID'])
                             newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
@@ -68,7 +68,7 @@ class FlowGiveawayCog(commands.Cog):
                             setFooter(embed)
                             await channel.send(embed=embed)
                             giveaways.remove(giveaway)
-                            with open(f'asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(giveaways, file)
 
     @commands.Cog.listener()
@@ -92,11 +92,11 @@ class FlowGiveawayCog(commands.Cog):
                             for member in memberList:
                                 newMemberStr += f"{member}, "
                             giveaway['members'] = newMemberStr
-                            with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(users, file)
-                            with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(bank, file)
-                            with open(f'asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                                 yaml.dump(giveaways, file)
                             giveawayMsg = await channel.fetch_message(giveaway['msgID'])
                             newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
@@ -136,7 +136,7 @@ class FlowGiveawayCog(commands.Cog):
             'members': ""
         }
         giveaways.append(newGiveaway)
-        with open(f'asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+        with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
 
 

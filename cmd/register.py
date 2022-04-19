@@ -3,7 +3,7 @@ import yaml
 import cmd.asset.global_vars as Global
 from cmd.asset.global_vars import defaultEmbed, setFooter
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
 
 
@@ -47,14 +47,14 @@ class RegisterCog(commands.Cog):
             for user in users:
                 if user['discordID'] == ctx.author.id:
                     user['dm'] = True
-                    with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                     await ctx.send(f"已開啟 {user['name']} 的私訊功能")
         elif arg == "off":
             for user in users:
                 if user['discordID'] == ctx.author.id:
                     user['dm'] = False
-                    with open(f'asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 

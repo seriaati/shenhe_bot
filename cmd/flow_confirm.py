@@ -2,9 +2,9 @@ from discord.ext import commands
 import yaml
 from cmd.asset.global_vars import defaultEmbed, setFooter
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'asset/confirm.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
     confirms = yaml.full_load(file)
 
 
@@ -42,9 +42,9 @@ class FlowConfirmCog(commands.Cog):
                 await author.send(embed=embed)
                 await receiver.send(embed=embed)
                 confirms.remove(confirm)
-                with open(f'asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(confirms, file)
-                with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 break
 

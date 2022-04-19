@@ -8,17 +8,17 @@ import emoji
 import discord
 import re
 
-with open(f'asset/flow.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
-with open(f'asset/find.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
     finds = yaml.full_load(file)
-with open(f'asset/confirm.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
     confirms = yaml.full_load(file)
-with open(f'asset/bank.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
     bank = yaml.full_load(file)
-with open(f'asset/shop.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
     shop = yaml.full_load(file)
-with open(f'asset/log.yaml', encoding='utf-8') as file:
+with open(f'cmd/asset/log.yaml', encoding='utf-8') as file:
     logs = yaml.full_load(file)
 
 
@@ -34,9 +34,9 @@ class FlowCog(commands.Cog):
             users[discordID] = {'name': str(name), 'discordID': int(
                 discordID), 'flow': 100, 'morning': today}
             bank['flow'] -= 100
-            with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
-            with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
         else:
             return
@@ -82,7 +82,7 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
-        with open(f'asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         member = member or ctx.author
         discordID = member.id
@@ -137,7 +137,7 @@ class FlowCog(commands.Cog):
                 return
             else:
                 users[giverID]['flow'] -= int(argFlow)
-                with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
         if acceptorID in users:
             embed = defaultEmbed(
@@ -145,7 +145,7 @@ class FlowCog(commands.Cog):
             setFooter(embed)
             await ctx.send(embed=embed)
             users[acceptorID]['flow'] += int(argFlow)
-            with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
         else:
             user = self.bot.get_user(giverID)
@@ -173,9 +173,9 @@ class FlowCog(commands.Cog):
                     "✅ 已成功施展反摩拉克斯的力量", f"{ctx.author.mention} 從 {acceptor.mention} 的帳戶裡拿走了 {result.flow} 枚flow幣")
                 setFooter(embed)
                 await ctx.send(embed=embed)
-                with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
-                with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(bank, file)
                 break
 
@@ -201,9 +201,9 @@ class FlowCog(commands.Cog):
                     "✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}從銀行轉出了 {result.flow}枚flow幣給 {acceptor.mention}")
                 setFooter(embed)
                 await ctx.send(embed=embed)
-                with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
-                with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(bank, file)
                 break
 
@@ -224,9 +224,9 @@ class FlowCog(commands.Cog):
             bank['flow'] -= 100
         embed = defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
         setFooter(embed)
-        with open(f'asset/flow.yaml', 'w', encoding='utf-8') as file:
+        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(users, file)
-        with open(f'asset/bank.yaml', 'w', encoding='utf-8') as file:
+        with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(bank, file)
         await ctx.send(embed=embed)
 
@@ -243,7 +243,7 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def flows(self, ctx):
-        with open(f'asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         userStr = ""
         count = 1
