@@ -143,7 +143,7 @@ class FlowCog(commands.Cog):
                     yaml.dump(users, file)
         if acceptorID in users:
             embed = defaultEmbed(
-                "✅ 交易成功", f"{self.bot.get_user(giverID).mention}: **+{argFlow}\n{self.bot.get_user(acceptorID).mention}: **-{argFlow}**")
+                "✅ 交易成功", f"{self.bot.get_user(giverID).mention}: **-{argFlow}**\n{self.bot.get_user(acceptorID).mention}: **+{argFlow}**")
             setFooter(embed)
             await ctx.send(embed=embed)
             users[acceptorID]['flow'] += int(argFlow)
@@ -251,7 +251,7 @@ class FlowCog(commands.Cog):
         count = 1
         for user in users:
             discordID = user
-            userStr += f"{count}. {users[discordID]['name']} -{users[discordID]['flow']}\n"
+            userStr += f"{count}. {users[discordID]['name']}: {users[discordID]['flow']}\n"
             count += 1
         embed = defaultEmbed("所有flow帳戶", userStr)
         setFooter(embed)
