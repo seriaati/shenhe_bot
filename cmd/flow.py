@@ -321,7 +321,7 @@ class FlowCog(commands.Cog):
             if users[discordID]['flow'] < itemPrice:
                 await ctx.send(f"{ctx.author.mention} 你的flow幣不足夠購買這項商品")
                 return
-            if shopList[pos]['current'] >= shopList[pos]['max']:
+            if shopList[pos][1]['current'] >= shopList[pos][1]['max']:
                 await ctx.send(f"{ctx.author.mention} 這個商品已經售罄了")
                 return
 
