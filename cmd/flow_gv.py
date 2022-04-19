@@ -24,52 +24,44 @@ class FlowGiveawayCog(commands.Cog):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
-            found = False
-            for user in users:
-                if user['discordID'] == payload.user_id:
-                    found = True
-                    break
-            if found == False and message.author.bot == False:
+            if payload.user_id not in users:
                 discordID = payload.user_id
                 user = self.bot.get_user(discordID)
                 flowCog = self.bot.get_cog('FlowCog')
                 await flowCog.register(channel, user, discordID)
-            for giveaway in giveaways:
-                if giveaway['msgID'] == payload.message_id:
-                    for user in users:
-                        if user['flow'] < giveaway['ticket']:
-                            await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
-                            return
-                        if user['discordID'] == payload.user_id:
-                            user['flow'] -= giveaway['ticket']
-                            bank['flow'] += giveaway['ticket']
-                            giveaway['current'] += giveaway['ticket']
-                            giveaway['members'] += f"{str(reactor.id)}, "
-                            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(users, file)
-                            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(bank, file)
-                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(giveaways, file)
-                            giveawayMsg = await channel.fetch_message(giveaway['msgID'])
-                            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
-                                                    f"獎品: {giveaway['prize']}\n目前flow幣: {giveaway['current']}/{giveaway['goal']}\n參加抽獎要付的flow幣: {giveaway['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-                            await giveawayMsg.edit(embed=newEmbed)
-                            await channel.send(f"{reactor.mention} 花了 {giveaway['ticket']} flow幣參加 {giveaway['prize']} 抽獎", delete_after=5)
-                        if giveaway['current'] == giveaway['goal']:
-                            memberList = giveaway['members'].split(", ")
-                            winner = random.choice(memberList)
-                            winnerID = int(winner)
-                            winnerUser = self.bot.get_user(winnerID)
-                            giveawayMsg = await channel.fetch_message(giveaway['msgID'])
-                            await giveawayMsg.delete()
-                            embed = defaultEmbed(
-                                "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaway['goal']} flow幣的 {giveaway['prize']} !")
-                            setFooter(embed)
-                            await channel.send(embed=embed)
-                            giveaways.remove(giveaway)
-                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(giveaways, file)
+                return
+            if payload.message_id in giveaways:
+                if users[discordID]['flow'] < giveaways[payload.message_id]['ticket']:
+                    await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
+                    return
+                users[discordID]['flow'] -= giveaways[payload.message_id]['ticket']
+                bank['flow'] += giveaways[payload.message_id]['ticket']
+                giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
+                giveaways[payload.message_id]['members'].append(payload.user_id)
+                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(users, file)
+                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(bank, file)
+                with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(giveaways, file)
+                giveawayMsg = await channel.fetch_message(payload.message_id)
+                newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
+                                        f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
+                await giveawayMsg.edit(embed=newEmbed)
+                await channel.send(f"{reactor.mention} 花了 {giveaways[payload.message_id]['ticket']} flow幣參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
+                if giveaways[payload.message_id]['current'] == giveaways[payload.message_id]['goal']:
+                    memberList = giveaways[payload.message_id]['members'].split(", ")
+                    winner = random.choice(memberList)
+                    winnerID = int(winner)
+                    winnerUser = self.bot.get_user(winnerID)
+                    await giveawayMsg.delete()
+                    embed = defaultEmbed(
+                        "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
+                    setFooter(embed)
+                    await channel.send(embed=embed)
+                    giveaways.remove(giveaways[payload.message_id])
+                    with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(giveaways, file)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -77,34 +69,22 @@ class FlowGiveawayCog(commands.Cog):
         reactor = self.bot.get_user(payload.user_id)
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
-        if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
-            for giveaway in giveaways:
-                if giveaway['msgID'] == payload.message_id:
-                    for user in users:
-                        if user['discordID'] == payload.user_id:
-                            user['flow'] += giveaway['ticket']
-                            bank['flow'] -= giveaway['ticket']
-                            giveaway['current'] -= giveaway['ticket']
-                            memberList = giveaway['members'].split(", ")
-                            print(memberList)
-                            memberList.remove(str(reactor.id))
-                            newMemberStr = ""
-                            for member in memberList:
-                                newMemberStr += f"{member}, "
-                            giveaway['members'] = newMemberStr
-                            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(users, file)
-                            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(bank, file)
-                            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                                yaml.dump(giveaways, file)
-                            giveawayMsg = await channel.fetch_message(giveaway['msgID'])
-                            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
-                                                    f"獎品: {giveaway['prize']}\n目前flow幣: {giveaway['current']}/{giveaway['goal']}\n參加抽獎要付的flow幣: {giveaway['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-                            await giveawayMsg.edit(embed=newEmbed)
-                            await channel.send(f"{reactor.mention} 收回了 {giveaway['ticket']} flow幣來取消參加 {giveaway['prize']} 抽獎", delete_after=5)
-                            break
-                    break
+        if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
+            users[payload.user_id]['flow'] += giveaways[payload.message_id]['ticket']
+            bank['flow'] -= giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['current'] -= giveaways[payload.message_id]['ticket']
+            giveaways[payload.message_id]['members'].remove(payload.user_id)
+            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(users, file)
+            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(bank, file)
+            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(giveaways, file)
+            giveawayMsg = await channel.fetch_message(payload.message_id)
+            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
+                                    f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
+            await giveawayMsg.edit(embed=newEmbed)
+            await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
 
     @commands.command(aliases=['gv'])
     @commands.has_role("小雪團隊")
@@ -126,16 +106,14 @@ class FlowGiveawayCog(commands.Cog):
         gvChannel = self.bot.get_channel(965517075508498452)
         giveawayMsg = await gvChannel.send(embed=embedGiveaway)
         await giveawayMsg.add_reaction('🎉')
-        newGiveaway = {
+        giveaways[giveawayMsg.id] = {
             'authorID': int(ctx.author.id),
-            'msgID': int(giveawayMsg.id),
             'prize': str(result.prize),
             'goal': int(result.goal),
             'ticket': int(result.ticket),
             'current': 0,
-            'members': ""
+            'members': []
         }
-        giveaways.append(newGiveaway)
         with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
 
