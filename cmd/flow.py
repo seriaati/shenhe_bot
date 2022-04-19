@@ -340,10 +340,10 @@ class FlowCog(commands.Cog):
                 yaml.dump(bank, file)
             with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
-            await ctx.send(f"商品 {shop[pos][1]['name']} 購買成功, 詳情請查看私訊")
-            await ctx.author.send(f"您已在flow商城購買了 {shop[1][pos]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
+            await ctx.send(f"商品 {shopList[pos][1]['name']} 購買成功, 詳情請查看私訊")
+            await ctx.author.send(f"您已在flow商城購買了 {shopList[1][pos]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
             embed = defaultEmbed(
-                "📜 購買證明", f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {shop[pos]['name']}\nUUID: {shop[pos]['uuid']}\n價格: {shop[pos]['flow']}")
+                "📜 購買證明", f"購買人: {ctx.author.mention}\n購買人ID: {ctx.author.id}\n商品: {shopList[pos]['name']}\nUUID: {shopList[pos]['uuid']}\n價格: {shopList[pos]['flow']}")
             setFooter(embed)
             await ctx.author.send(embed=embed)
         else:
