@@ -84,8 +84,6 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
         member = member or ctx.author
         discordID = member.id
         if discordID in users:
