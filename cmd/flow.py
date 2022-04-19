@@ -1,6 +1,7 @@
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
+import uuid
 import yaml
 import inflect
 from cmd.asset.global_vars import defaultEmbed, setFooter
@@ -282,7 +283,7 @@ class FlowCog(commands.Cog):
         form.set_timeout(60)
         await form.set_color("0xa68bd3")
         result = await form.start()
-        uuid = str(uuid.uuid1())
+        uuid = str(uuid.uuid4())
         shop[uuid] = {'name': result.name, 'flow': int(
             result.flow), 'current': 0, 'max': int(result.max)}
         with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
@@ -291,9 +292,9 @@ class FlowCog(commands.Cog):
 
     @shop.command()
     @commands.has_role("小雪團隊")
-    async def removeitem(self, ctx, uuid):
-        if uuid in shop:
-            del shop[uuid]
+    async def removeitem(self, ctx, uuidInput):
+        if uuidInput in shop:
+            del shop[uuidInput]
             with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(shop, file)
             await ctx.send("商品刪除成功")
@@ -303,9 +304,9 @@ class FlowCog(commands.Cog):
         itemStr = ""
         count = 1
         for item in shop:
-            uuid = item
+            itemID = item
             itemStr = itemStr + \
-                f"{count}. {shop[uuid]['name']} - {shop[uuid]['flow']} flow ({shop[uuid]['current']}/{shop[uuid]['max']})\n"
+                f"{count}. {shop[itemID]['name']} - {shop[itemID]['flow']} flow ({shop[itemID]['current']}/{shop[itemID]['max']})\n"
             count += 1
         form = Form(ctx, '要購買什麼商品?(輸入數字)', cleanup=True)
         form.add_question(f'{itemStr}', 'number')
@@ -328,7 +329,7 @@ class FlowCog(commands.Cog):
             shopList[pos][1]['current'] += 1
             with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(shop, file)
-            logID = str(uuid.uuid1())
+            logID = str(uuid.uuid4())
             logs[logID] = {'item': shopList[pos][1]['name'], 'flow': itemPrice,
                            'buyerID': ctx.author.id, 'itemUUID': shopList[pos][1]['uuid']}
             with open(f'cmd/asset/log.yaml', 'w', encoding='utf-8') as file:
