@@ -5,13 +5,13 @@ import cmd.asset.global_vars as Global
 from cmd.asset.global_vars import defaultEmbed, setFooter
 import yaml
 from cmd.asset.classes import Character
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.forms import Form
 
 import genshin
 
 
-with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
+with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
     users = yaml.full_load(file)
 
 
@@ -31,6 +31,80 @@ class GenshinCog(commands.Cog):
             setFooter(embed)
             await ctx.send(embed=embed)
             return
+
+    @tasks.loop(hours=24)
+    async def claimLoop(self):
+        for user in users:
+            userID = user
+            cookies = {"ltuid": users[userID]['ltuid'],
+                       "ltoken": users[userID]['ltoken']}
+            uid = users[userID]['uid']
+            client = genshin.Client(cookies)
+            client.default_game = genshin.Game.GENSHIN
+            client.lang = "zh-tw"
+            client.uids[genshin.Game.GENSHIN] = uid
+            try:
+                await client.claim_daily_reward()
+            except genshin.AlreadyClaimed:
+                print(f"{users[userID]['name']} already claimed")
+            else:
+                print(f"claimed for {users[userID]['name']}")
+
+    @tasks.loop(seconds=600)
+    async def checkLoop(self):
+        for user in users:
+            userID = user
+            try:
+                cookies = {"ltuid": users[userID]['ltuid'],
+                           "ltoken": users[userID]['ltoken']}
+                uid = users[user]['uid']
+                userObj = self.bot.get_user(userID)
+                client = genshin.Client(cookies)
+                client.default_game = genshin.Game.GENSHIN
+                client.lang = "zh-tw"
+                client.uids[genshin.Game.GENSHIN] = uid
+                notes = await client.get_notes(uid)
+                resin = notes.current_resin
+                dateNow = datetime.datetime.now()
+                diff = dateNow - users[userID]['dmDate']
+                diffHour = diff.total_seconds() / 3600
+                if resin >= 140 and users[userID]['dm'] == True and users[userID]['dmCount'] < 3 and diffHour >= 1:
+                    time = notes.remaining_resin_recovery_time
+                    hours, minutes = divmod(time // 60, 60)
+                    fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
+                    printTime = '{:%H:%M}'.format(fullTime)
+                    embed = defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",
+                                         f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
+                    setFooter(embed)
+                    await userObj.send(embed=embed)
+                    users[userID]['dmCount'] += 1
+                    users[userID]['dmDate'] = dateNow
+                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(users, file)
+                elif resin < 140:
+                    users[userID]['dmCount'] = 0
+                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(users, file)
+            except genshin.errors.InvalidCookies:
+                pass
+            except AttributeError:
+                print(f"{users[userID]['name']} 可能退群了")
+
+    @checkLoop.before_loop
+    async def beforeLoop(self):
+        print('waiting...')
+        await self.bot.wait_until_ready()
+
+    @claimLoop.before_loop
+    async def wait_until_1am(self):
+        now = datetime.datetime.now().astimezone()
+        next_run = now.replace(hour=1, minute=0, second=0)
+        if next_run < now:
+            next_run += datetime.timedelta(days=1)
+        await discord.utils.sleep_until(next_run)
+
+    checkLoop.start()
+    claimLoop.start()
 
     @commands.command()
     async def check(self, ctx, *, member: discord.Member = None):
@@ -86,7 +160,7 @@ class GenshinCog(commands.Cog):
         abyss = genshinUser.stats.spiral_abyss
         waypoint = genshinUser.stats.unlocked_waypoints
         embedStats = defaultEmbed(f"使用者: {username}",
-                                              f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
+                                  f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
         setFooter(embedStats)
         await ctx.send(embed=embedStats)
 
@@ -247,7 +321,7 @@ class GenshinCog(commands.Cog):
             for artifact in character.artifacts:
                 artifactStr = artifactStr + "- " + artifact + "\n"
             embedChar = defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}",
-                                                 f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
+                                     f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
             embedChar.set_thumbnail(url=f"{character.iconUrl}")
             setFooter(embedChar)
             charEmbeds.append(embedChar)
