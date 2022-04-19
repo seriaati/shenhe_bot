@@ -33,7 +33,7 @@ class FlowGiveawayCog(commands.Cog):
                 discordID = payload.user_id
                 user = self.bot.get_user(discordID)
                 flowCog = self.bot.get_cog('FlowCog')
-                await flowCog.register(user, discordID)
+                await flowCog.register(channel, user, discordID)
             for giveaway in giveaways:
                 if giveaway['msgID'] == payload.message_id:
                     for user in users:

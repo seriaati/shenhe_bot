@@ -111,7 +111,7 @@ class FlowShopCog(commands.Cog):
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
             flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(user, discordID)
+            await flowCog.register(ctx, user, discordID)
 
     @shop.command()
     @commands.has_role("小雪團隊")

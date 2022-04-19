@@ -15,35 +15,27 @@ class FlowMorningCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        discordID = message.author.id
+        channel = self.bot.get_channel(message.channel.id)
         if message.author == self.bot.user:
             return
         if "早安" in message.content:
             today = date.today()
-            found = False
-            for user in users:
-                if 'morning' not in user:
+            if discordID in users:
+                if user['morning'] != today:
+                    user['flow'] += 1
+                    bank['flow'] -= 1
                     user['morning'] = today
                     with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
-                if message.author.id == user['discordID']:
-                    found = True
-                    if user['morning'] != today:
-                        user['flow'] += 1
-                        bank['flow'] -= 1
-                        user['morning'] = today
-                        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                            yaml.dump(users, file)
-                        with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                            yaml.dump(bank, file)
-                        await message.add_reaction(f"☀️")
-            if found == False:
-                if not message.author.bot:
-                    discordID = message.author.id
-                    user = self.bot.get_user(message.author.id)
-                    flowCog = self.bot.get_cog('FlowCog')
-                    await flowCog.register(user, discordID)
-                else:
-                    return
+                    with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                        yaml.dump(bank, file)
+                    await message.add_reaction(f"☀️")
+            else:
+                discordID = message.author.id
+                user = self.bot.get_user(message.author.id)
+                flowCog = self.bot.get_cog('FlowCog')
+                await flowCog.register(channel, user, discordID)
 
 
 def setup(bot):
