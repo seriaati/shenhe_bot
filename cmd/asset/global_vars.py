@@ -4,7 +4,7 @@ import discord
 global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
 warningColor = 0xfc5165
 purpleColor = 0xa68bd3
-footerAuthor = "所有指令打!help, 有錯誤請告知小雪"
+footerAuthor = "所有指令打!help, 想要新功能或有bug請告訴小雪"
 footerImage = "https://i.imgur.com/DWYpYrd.jpg"
 timeOutErrorMsg = "已取消當前操作, 請在30秒內回答問題"
 embedNoAccount = discord.Embed(
