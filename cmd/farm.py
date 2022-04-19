@@ -1,7 +1,6 @@
 from discord.ext import commands
 from datetime import datetime
-import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from asset.global_vars import defaultEmbed, setFooter
 
 
 class FarmCog(commands.Cog):

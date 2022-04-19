@@ -1,12 +1,8 @@
 import yaml
 import discord
-import sys
 from discord.ext import commands
-import global_vars
-import getpass
-owner = getpass.getuser()
-sys.path.append(f'C:/Users/{owner}/shenhe_bot/asset')
-global_vars.Global()
+import asset.global_vars as Global
+from asset.global_vars import defaultEmbed, setFooter
 
 
 class Cog(commands.Cog):
