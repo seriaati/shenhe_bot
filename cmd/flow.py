@@ -2,6 +2,7 @@ from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
 import uuid
+import random
 import yaml
 import inflect
 from cmd.asset.global_vars import defaultEmbed, setFooter
@@ -692,7 +693,8 @@ class FlowCog(commands.Cog):
                 users[discordID]['flow'] -= giveaways[payload.message_id]['ticket']
                 bank['flow'] += giveaways[payload.message_id]['ticket']
                 giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
-                giveaways[payload.message_id]['members'].append(payload.user_id)
+                giveaways[payload.message_id]['members'].append(
+                    payload.user_id)
                 with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
@@ -771,6 +773,7 @@ class FlowCog(commands.Cog):
         }
         with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
+
 
 def setup(bot):
     bot.add_cog(FlowCog(bot))
