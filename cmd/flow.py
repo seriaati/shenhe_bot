@@ -29,7 +29,8 @@ class FlowCog(commands.Cog):
     async def register(self, ctx, name, discordID: int):
         dcUser = self.bot.get_user(discordID)
         if not dcUser.bot:
-            await ctx.send("在執行你先前輸入的指令時, 申鶴發現你沒有flow帳號, 現在已經幫你辦了一個, 請重新輸入方才的指令")
+            embed = defaultEmbed("找不到帳號!", "在執行你輸入的指令時, 申鶴發現你沒有flow帳號\n現在已經幫你辦了一個, 請重新輸入指令")
+            setFooter(embed)
             today = date.today()
             users[discordID] = {'name': str(name), 'discordID': int(
                 discordID), 'flow': 100, 'morning': today}
@@ -38,6 +39,7 @@ class FlowCog(commands.Cog):
                 yaml.dump(users, file)
             with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
+            await ctx.send(embed=embed)
         else:
             return
 
