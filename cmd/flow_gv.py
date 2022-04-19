@@ -24,8 +24,8 @@ class FlowGiveawayCog(commands.Cog):
         if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
             return
         if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id:
+            discordID = payload.user_id
             if payload.user_id not in users:
-                discordID = payload.user_id
                 user = self.bot.get_user(discordID)
                 flowCog = self.bot.get_cog('FlowCog')
                 await flowCog.register(channel, user, discordID)
