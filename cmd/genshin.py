@@ -4,7 +4,7 @@ import DiscordUtils
 import cmd.asset.global_vars as Global
 from cmd.asset.global_vars import defaultEmbed, setFooter
 import yaml
-from asset.classes import Character
+from cmd.asset.classes import Character
 from discord.ext import commands
 from discord.ext.forms import Form
 
