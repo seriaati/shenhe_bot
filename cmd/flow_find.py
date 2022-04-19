@@ -72,8 +72,7 @@ class FlowFindCog(commands.Cog):
                     del finds[payload.message_id]
                     with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(finds, file)
-                    confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
-                        finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
+                    confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
                     with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(confirms, file)
 
