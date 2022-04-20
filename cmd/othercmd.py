@@ -59,7 +59,7 @@ class OtherCMDCog(commands.Cog):
         await ctx.message.delete()
         embed = defaultEmbed(
             f"申鶴 v1.0.3",
-            "**投票系統**\n• 優化程式速度與穩定度\n\n**flow系統**• 優化存取資料邏輯與速度"
+            "**投票系統**\n• 優化程式速度與穩定度\n\n**flow系統**\n• 優化存取資料邏輯與速度"
         )
         setFooter(embed)
         await ctx.send(embed=embed)
