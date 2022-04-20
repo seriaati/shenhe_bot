@@ -14,6 +14,8 @@ import genshin
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.checkLoop.start()
+        self.claimLoop.start()
 
     async def getUserData(self, ctx, discordID: int):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
@@ -102,9 +104,6 @@ class GenshinCog(commands.Cog):
         if next_run < now:
             next_run += datetime.timedelta(days=1)
         await discord.utils.sleep_until(next_run)
-
-    checkLoop.start()
-    claimLoop.start()
 
     @commands.command()
     async def check(self, ctx, *, member: discord.Member = None):
