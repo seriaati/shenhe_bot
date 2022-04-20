@@ -794,7 +794,7 @@ class FlowCog(commands.Cog):
         embed = defaultEmbed("flow系統", "**什麼是flow系統?**\n\
             flow本質上是一個收發委託的系統, 其旨在促進群內活躍度, 幫助新人等\n\
             所有flow系統的指令皆可透過輸入`!flow`查看")
-        embed.set_thumbnail("https://images.emojiterra.com/google/android-11/512px/2699.png")
+        embed.set_thumbnail(url="https://images.emojiterra.com/google/android-11/512px/2699.png")
         await ctx.send(embed=embed)
         xiaoxue = self.bot.get_user(410036441129943050)
         embed = defaultEmbed("flow幣", f"• flow幣是一個只能在「緣神有你」群內使用的虛擬貨幣\n• 輸入`!acc`可以查看你目前擁有的flow幣數量\n\n\
@@ -802,7 +802,7 @@ class FlowCog(commands.Cog):
             **花費flow幣**\n• 抽獎\n• 至flow商店購買商品\n• 與他人交易\n • 發布委託\n\n\
             **交易flow幣**\n使用`!give`指令便可與他人交易flow幣\n例如 !give {xiaoxue.mention} 100 便會給小雪100 flow幣\n\n\
             **注意事項**\n想要擁有flow幣需要先有flow帳號,\n當你在沒有flow帳號的情況下嘗試某個flow系統的操作,\n申鶴會自動幫你申辦帳號\n\n註: 每個帳號在起始都會給予100 flow幣")
-        embed.set_thumbnail("https://whatemoji.org/wp-content/uploads/2020/07/%E2%8A%9B-Coin-Emoji.png")
+        embed.set_thumbnail(url="https://whatemoji.org/wp-content/uploads/2020/07/%E2%8A%9B-Coin-Emoji.png")
         await ctx.send(embed=embed)
         gvChannel = self.bot.get_channel(965517075508498452)
         luluR = self.bot.get_user(665092644883398671)
@@ -813,7 +813,7 @@ class FlowCog(commands.Cog):
             • 只有指定人士能發布抽獎, 如有興趣提供獎品請找小雪\n\
             • 獎品可能有原神月卡, discord Nitro等\n\
             • 特別感謝{luluR.mention}的贊助")
-        embed.set_thumbnail("https://images.emojiterra.com/twitter/512px/1f389.png")
+        embed.set_thumbnail(url="https://images.emojiterra.com/twitter/512px/1f389.png")
         await ctx.send(embed=embed)
         comChannel = self.bot.get_channel(960861105503232030)
         roleChannel = self.bot.get_channel(962311051683192842)
@@ -829,15 +829,15 @@ class FlowCog(commands.Cog):
             **接受委託**\n\
             • 按 ✅ 便可接受委託\n\
             • 當委託被接受時, 發布方會在私訊收到結算單, \n當對方完成該委託時便可按 🆗 進行flow幣結算")
-        embed.set_footer("https://media.discordapp.net/attachments/823440627127287839/966207187368161320/download-removebg-preview.png")
+        embed.set_thumbnail(url="https://media.discordapp.net/attachments/823440627127287839/966207187368161320/download-removebg-preview.png")
         await ctx.send(embed=embed)
         embed = defaultEmbed("flow商店", f"• 輸入`!shop`便可查看商店\n• 輸入`!shop buy`來購買商品\n• 購買成功後會收到私訊收據,\n\
             請以此為證來向{luluR.mention}兌換商品")
-        embed.set_thumbnail("https://www.iconpacks.net/icons/2/free-store-icon-2017-thumb.png")
+        embed.set_thumbnail(url="https://www.iconpacks.net/icons/2/free-store-icon-2017-thumb.png")
         await ctx.send(embed=embed)
         embed = defaultEmbed("其他資訊", f"• flow幣是一個固態型經濟系統,\n在群組裡流通的flow幣數量是固定的(12000 flow)\n如此可以避免flow幣貶值的情況\n\n\
             • 儘管已多次測試, 此系統仍可能存在bug,\n如有發現請通知{xiaoxue.mention},\n切勿使用漏洞賺取flow幣")
-        embed.set_thumbnail("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Information_icon4_orange.svg/1200px-Information_icon4_orange.svg.png")
+        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Information_icon4_orange.svg/1200px-Information_icon4_orange.svg.png")
         await ctx.send(embed=embed)
         
 
