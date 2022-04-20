@@ -34,7 +34,7 @@ class GenshinCog(commands.Cog):
             return
 
     @tasks.loop(hours=24)
-    async def claimLoop():
+    async def claimLoop(self):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         for user in users:
