@@ -1,38 +1,54 @@
-- author: seria#5334
-  authorID: 410036441129943050
-  flow: 1
-  maxPerson: 1
-  msgID: 962851969582633020
-  one: true
-  title: "\u6253\u516C\u5B50"
-- author: seria#5334
-  authorID: 410036441129943050
-  flow: 20
-  maxPerson: 1
-  msgID: 962910212900147271
-  one: true
-  title: "\u6253\u9A19\u9A19\u82B1\u871C"
-- author: seria#5334
-  authorID: 410036441129943050
-  flow: 1000
-  msgID: 962969868800507904
-  one: true
-  title: test
-- author: seria#5334
-  authorID: 410036441129943050
-  flow: 10
-  msgID: 962973063589281802
-  one: true
-  title: test
-- author: seria#5334
-  authorID: 410036441129943050
-  flow: 10
-  msgID: 963215843955728525
-  one: true
-  title: test
-- author: seria#5334
+962851969582633020:
+  author: seria#5334
   authorID: 410036441129943050
   flow: 0
-  msgID: 963216824307159061
-  one: true
-  title: test
+  title: "\u6253\u516C\u5B50"
+  type: 0
+965842898685919293:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: "\u6E2C\u8A66\u59D4\u8A17#55"
+  type: 1
+965851134864539668:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: "\u6E2C\u8A66\u59D4\u8A17#0"
+  type: 1
+965852550639263804:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: u
+  type: 1
+965852824212750376:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: u
+  type: 1
+965853536065835039:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: '0'
+  type: 1
+965854167023374387:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: uwu
+  type: 1
+965855141343408188:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: owob
+  type: 1
+965856167110778940:
+  author: seria#5334
+  authorID: 410036441129943050
+  flow: 0
+  title: "\u61C9\u8A72\u6210\u529F\u4E86 #1"
+  type: 1
