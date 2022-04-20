@@ -19,11 +19,14 @@ class GenshinCog(commands.Cog):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if discordID in users:
-            cookies = {"ltuid": users[discordID]['ltuid'],
-                       "ltoken": users[discordID]['ltoken']}
-            uid = users[discordID]['uid']
-            username = users[discordID]['name']
-            return cookies, uid, username
+            try:
+                cookies = {"ltuid": users[discordID]['ltuid'],
+                           "ltoken": users[discordID]['ltoken']}
+                uid = users[discordID]['uid']
+                username = users[discordID]['name']
+                return cookies, uid, username
+            except genshin.errors.DataNotPublic:
+                await ctx.send(f"你的帳號資料未公開, 輸入`!stuck`來獲取更多資訊")
         else:
             embed = Global.embedNoAccount
             setFooter(embed)

@@ -168,10 +168,7 @@ class FlowCog(commands.Cog):
                 yaml.dump(users, file)
 
         elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
-            with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
-                bank = yaml.full_load(file)
-            with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
-                giveaways = yaml.full_load(file)
+            lulurR = self.bot.get_user(665092644883398671)
             if users[discordID]['flow'] < giveaways[payload.message_id]['ticket']:
                 await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
                 return
@@ -200,6 +197,7 @@ class FlowCog(commands.Cog):
                 embed = defaultEmbed(
                     "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
                 setFooter(embed)
+                await channel.send(f"{lulurR.mention} {winnerUser.mention}")
                 await channel.send(embed=embed)
                 del giveaways[payload.message_id]
                 with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
