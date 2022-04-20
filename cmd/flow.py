@@ -668,7 +668,7 @@ class FlowCog(commands.Cog):
             formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
             formTrue.add_question('你要付多少flow幣給幫你的人?', 'flow')
             formTrue.edit_and_delete(True)
-            formTrue.set_timeout(30)
+            formTrue.set_timeout(120)
             await formTrue.set_color("0xa68bd3")
             result = await formTrue.start()
 
