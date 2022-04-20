@@ -59,7 +59,7 @@ class OtherCMDCog(commands.Cog):
         await ctx.message.delete()
         embed = defaultEmbed(
             "申鶴 v1.0.2",
-            "**原神系統** •新增了質變儀的冷卻時間"
+            "**原神系統**\n• `!check` 新增了質變儀的冷卻時間"
         )
         setFooter(embed)
         await ctx.send(embed=embed)
