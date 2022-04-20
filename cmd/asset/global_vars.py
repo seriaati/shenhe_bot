@@ -43,3 +43,4 @@ def loadFlowYaml():
 def loadGenshinYaml():
     with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
         users = yaml.full_load(file)
+    return users
