@@ -20,7 +20,6 @@ token = Global.bot_token
 initial_extensions = [
     "cmd.genshin",
     "cmd.call",
-    "cmd.register",
     "cmd.othercmd",
     "cmd.farm",
     "cmd.help",
