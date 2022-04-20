@@ -1,3 +1,4 @@
+from email.policy import default
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
@@ -786,6 +787,46 @@ class FlowCog(commands.Cog):
         }
         with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
+
+    @commands.command()
+    @commands.is_owner()
+    async def realease(self, ctx):
+        embed = defaultEmbed("flow系統","**什麼是flow系統?**\n\
+            flow本質上是一個收發委託的系統, 其旨在促進群內活躍度, 幫助新人等\n\
+            所有flow系統的指令皆可透過輸入`!flow`查看")
+        setFooter(embed)
+        await ctx.send(embed=embed)
+        embed = defaultEmbed("flow幣", "• flow幣是一個只能在「緣神有你」群內使用的虛擬貨幣\n\n\
+            **賺取flow幣**\n• 接受他人的委託並如實完成幫助\n• 參加群內活動\n• 與他人交易\n\n\
+            **花費flow幣**\n• 抽獎\n• 至flow商店購買商品\n• 與他人交易\n • 發布委託\n\n\
+            **交易flow幣**\n使用`!give`指令便可與他人交易flow幣\n例如 !give @小雪 100 便會給小雪100 flow幣\n\n\
+            **注意事項**\n想要擁有flow幣需要先有flow帳號,\n當你在沒有flow帳號的情況下嘗試某個flow系統的操作,\n申鶴會自動幫你申辦帳號\n\n註: 每個帳號在起始都會給予100 flow幣")
+        setFooter(embed)
+        await ctx.send(embed=embed)
+        gvChannel = self.bot.get_channel(965517075508498452)
+        luluR = self.bot.get_user(665092644883398671)
+        embed = defaultEmbed("抽獎系統", f"\
+            • {gvChannel.mention}是所有抽獎舉行的地方\n\
+            • 按 :tada: 便可花費flow幣參與抽獎\n\
+            • 當抽獎池裡的flow幣數量達標後便會抽取隨機一人發放獎品\n\
+            • 只有指定人士能發布抽獎, 如有興趣提供獎品請找小雪\n\
+            • 獎品可能有原神月卡, discord Nitro等\n\
+            • 特別感謝{luluR.mention}的贊助")
+        setFooter(embed)
+        await ctx.send(embed=embed)
+        comChannel = self.bot.get_channel(960861105503232030)
+        roleChannel = self.bot.get_channel(962311051683192842)
+        embed = defaultEmbed("委託系統", f"**發布委託**\
+            • {comChannel.mention}是所有委託發布的地方\n\
+            • 在發布委託前, 建議可至{roleChannel.mention}選擇世界等級, 方便其他群友\n\
+            • 輸入`!find`便可進入發布流程\n\
+            • 新人通常使用第一或第二種, 大佬可用第四種, 非常想要賺取flow幣的話可以用第三種\n\n\
+            **接受委託**\n\
+            • 按 ✅ 便可接受委託\n\
+            • 當委託被接受時, 發布方會在私訊收到結算單, \n當對方完成該委託時便可按 🆗 進行flow幣結算")
+        setFooter(embed)
+        await ctx.send(embed=embed)
+        
 
 
 def setup(bot):
