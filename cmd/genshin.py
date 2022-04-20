@@ -135,14 +135,15 @@ class GenshinCog(commands.Cog):
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
         transDelta = notes.transformer_recovery_time.replace(tzinfo=None) - datetime.datetime.now()
-        transDeltaMins = transDelta.total_minutes()
-        transDays = transDeltaMins / 1440     
-        leftover_minutes = transDeltaMins % 1440
-        transHours = leftover_minutes / 60
-        transMins = transDeltaMins - (transDays*1440) - (hours*60)
+        transDeltaSec = transDelta.total_seconds()
+        transDay = transDeltaSec // (24 * 3600)
+        transDeltaSec = transDeltaSec % (24 * 3600)
+        transHour = transDeltaSec // 3600
+        transDeltaSec %= 3600
+        transMin = transDeltaSec // 60
 
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘\n\<:transformer:966156330089971732> 質變儀冷卻時間: {transDays}天 {transHours}小時 {transMins}分鐘")
+        embedCheck = defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘\n\<:transformer:966156330089971732> 質變儀冷卻時間: {transDay}天 {transHour}小時 {transMin}分鐘")
         setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
