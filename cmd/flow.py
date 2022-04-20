@@ -219,6 +219,7 @@ class FlowCog(commands.Cog):
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.remove_roles(role)
                     break
+
         elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
             users[discordID]['flow'] += giveaways[payload.message_id]['ticket']
             bank['flow'] -= giveaways[payload.message_id]['ticket']
@@ -728,29 +729,6 @@ class FlowCog(commands.Cog):
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        channel = self.bot.get_channel(payload.channel_id)
-        reactor = self.bot.get_user(payload.user_id)
-        if payload.message_id == 965143582178705459 or payload.message_id == 963972447600771092:
-            return
-        if payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
-            users[payload.user_id]['flow'] += giveaways[payload.message_id]['ticket']
-            bank['flow'] -= giveaways[payload.message_id]['ticket']
-            giveaways[payload.message_id]['current'] -= giveaways[payload.message_id]['ticket']
-            giveaways[payload.message_id]['members'].remove(payload.user_id)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(users, file)
-            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(bank, file)
-            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(giveaways, file)
-            giveawayMsg = await channel.fetch_message(payload.message_id)
-            newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
-                                    f"獎品: {giveaways[payload.message_id]['prize']}\n目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-            await giveawayMsg.edit(embed=newEmbed)
-            await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
 
     @commands.command(aliases=['gv'])
     @commands.has_role("小雪團隊")
