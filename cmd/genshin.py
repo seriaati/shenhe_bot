@@ -490,6 +490,7 @@ class GenshinCog(commands.Cog):
                         chara_list[i].append(chara)
                 value = f'[{".".join(chara_list[0])}]／[{".".join(chara_list[1])}]'
                 embed.add_field(name=name, value=value)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
