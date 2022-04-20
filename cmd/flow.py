@@ -534,6 +534,7 @@ class FlowCog(commands.Cog):
         channel = self.bot.get_channel(message.channel.id)
         if discordID not in users:
             user = self.bot.get_user(message.author.id)
+            flowCog = self.bot.get_cog('FlowCog')
             await flowCog.register(channel, user, discordID, False)
         if message.author == self.bot.user:
             return
@@ -549,11 +550,6 @@ class FlowCog(commands.Cog):
                     with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(bank, file)
                     await message.add_reaction(f"☀️")
-            else:
-                discordID = message.author.id
-                user = self.bot.get_user(message.author.id)
-                flowCog = self.bot.get_cog('FlowCog')
-                await flowCog.register(channel, user, discordID)
 
     @commands.command()
     async def find(self, ctx):
