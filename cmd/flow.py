@@ -560,7 +560,7 @@ class FlowCog(commands.Cog):
     async def find(self, ctx):
         if ctx.channel.id != 960861105503232030:
             channel = self.bot.get_channel(960861105503232030)
-            await ctx.send(f"請在{channel.mention}裡使用此指令")
+            await ctx.send(f"請在{channel.mention}裡使用此指令", delete_after=5)
             return
         await ctx.message.delete()
         discordID = ctx.author.id
