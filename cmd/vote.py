@@ -29,7 +29,7 @@ class VoteCog(commands.Cog):
             if optionReseult.option == "done":
                 break
             else:
-                options.append(result.option)
+                options.append(optionReseult.option)
 
             emoteForm = Form(ctx, '投票設置流程', cleanup=True)
             emoteForm.add_question('該選項要用什麼表情符號代表?', 'emote')
@@ -41,7 +41,7 @@ class VoteCog(commands.Cog):
             if emoteResult.emote == "done":
                 break
             else:
-                emotes.append(result.emote)
+                emotes.append(emoteResult.emote)
 
         optionStr = ""
         count = 0
