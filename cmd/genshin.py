@@ -148,7 +148,7 @@ class GenshinCog(commands.Cog):
         transDeltaSec %= 3600
         transMin = transDeltaSec // 60
         transStr = f"{int(transDay)}天 {int(transHour)}小時 {int(transMin)}分鐘"
-        if transDeltaSec <=0: 
+        if transDeltaSec <= 0:
             transStr = "質變儀已準備就緒"
         printTime = '{:%H:%M}'.format(fullTime)
         embedCheck = defaultEmbed(f"使用者: {username}",
@@ -469,6 +469,33 @@ class GenshinCog(commands.Cog):
                     with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
+
+    @commands.command()
+    async def floor(self, ctx, *, member: discord.Member = None):
+        member = member or ctx.author
+        cookies, uid, username = await self.getUserData(ctx, member.id)
+        client = genshin.Client(cookies)
+        client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
+        client.uids[genshin.Game.GENSHIN] = uid
+        abyss = await client.get_genshin_spiral_abyss(uid)
+        embed = defaultEmbed(f"{username}: 深境螺旋第 {abyss.season} 期戰績", "")
+        embed.add_field(
+            name=f'最深抵達：{abyss.max_floor}　戰鬥次數：{abyss.total_battles}　★：{abyss.total_stars}',
+            value=f'統計週期：{abyss.start_time.strftime("%Y.%m.%d")} ~ {abyss.end_time.strftime("%Y.%m.%d")}',
+            inline=False
+        )
+        for floor in abyss.floors:
+            if floor is not abyss.floors[-1]:
+                continue
+            for chamber in floor.chambers:
+                name = f'{floor.floor}-{chamber.chamber}　★{chamber.stars}'
+                chara_list = [[], []]
+                for i, battle in enumerate(chamber.battles):
+                    for chara in battle.characters:
+                        chara_list[i].append(chara)
+                value = f'[{".".join(chara_list[0])}]／[{".".join(chara_list[1])}]'
+                embed.add_field(name=name, value=value)
 
 
 def setup(bot):
