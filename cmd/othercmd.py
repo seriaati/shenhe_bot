@@ -58,8 +58,8 @@ class OtherCMDCog(commands.Cog):
     async def version(self, ctx):
         await ctx.message.delete()
         embed = defaultEmbed(
-            "申鶴 v1.0.1",
-            "**flow系統**\n• 應該修復了抽獎會顯示負數flow幣的問題\n• 優化了沒有帳號時註冊flow帳號的邏輯"
+            "申鶴 v1.0.2",
+            "**原神系統** •新增了質變儀的冷卻時間"
         )
         setFooter(embed)
         await ctx.send(embed=embed)

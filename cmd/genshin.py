@@ -73,7 +73,7 @@ class GenshinCog(commands.Cog):
                     hours, minutes = divmod(time // 60, 60)
                     fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
                     printTime = '{:%H:%M}'.format(fullTime)
-                    embed = defaultEmbed(f"<:danger:959469906225692703>: 目前樹脂數量已經超過140!",
+                    embed = defaultEmbed(f"<:danger:959469906225692703> 目前樹脂數量已經超過140!",
                                          f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
                     setFooter(embed)
                     await userObj.send(embed=embed)
@@ -134,7 +134,8 @@ class GenshinCog(commands.Cog):
         time = notes.remaining_resin_recovery_time
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
-        transDelta = notes.transformer_recovery_time.replace(tzinfo=None) - datetime.datetime.now()
+        transDelta = notes.transformer_recovery_time.replace(
+            tzinfo=None) - datetime.datetime.now()
         transDeltaSec = transDelta.total_seconds()
         transDay = transDeltaSec // (24 * 3600)
         transDeltaSec = transDeltaSec % (24 * 3600)
@@ -143,7 +144,8 @@ class GenshinCog(commands.Cog):
         transMin = transDeltaSec // 60
 
         printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = defaultEmbed(f"使用者: {username}", f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘\n<:transformer:966156330089971732> 質變儀冷卻時間: {int(transDay)}天 {int(transHour)}小時 {int(transMin)}分鐘")
+        embedCheck = defaultEmbed(f"使用者: {username}",
+                                  f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘\n<:transformer:966156330089971732> 質變儀剩餘冷卻時間: {int(transDay)}天 {int(transHour)}小時 {int(transMin)}分鐘")
         setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
