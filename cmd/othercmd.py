@@ -64,6 +64,12 @@ class OtherCMDCog(commands.Cog):
         setFooter(embed)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def cleanup(self, ctx, arg):
+        channel = ctx.channel
+        deleted = await channel.purge(limit=arg)
+        await channel.send('Deleted {} message(s)'.format(len(deleted)))
+
 
 def setup(bot):
     bot.add_cog(OtherCMDCog(bot))

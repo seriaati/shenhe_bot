@@ -20,7 +20,8 @@ class GenshinCog(commands.Cog):
         self.bot = bot
 
     async def getUserData(self, ctx, discordID: int):
-        loadGenshinYaml()
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if discordID in users:
             cookies = {"ltuid": users[discordID]['ltuid'],
                        "ltoken": users[discordID]['ltoken']}
@@ -35,6 +36,8 @@ class GenshinCog(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claimLoop():
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         for user in users:
             userID = user
             cookies = {"ltuid": users[userID]['ltuid'],
@@ -53,6 +56,8 @@ class GenshinCog(commands.Cog):
 
     @tasks.loop(seconds=600)
     async def checkLoop(self):
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         for user in users:
             userID = user
             try:
@@ -346,6 +351,8 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def users(self, ctx):
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         userStr = ""
         count = 1
         for user in users:
@@ -378,6 +385,8 @@ class GenshinCog(commands.Cog):
     @commands.command()
     @commands.has_role("小雪團隊")
     async def newuser(self, ctx):
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         form = Form(ctx, '新增帳號設定流程', cleanup=True)
         form.add_question('原神UID?', 'uid')
         form.add_question('用戶名?', 'name')
@@ -438,6 +447,8 @@ class GenshinCog(commands.Cog):
 
     @commands.command()
     async def dm(self, ctx, *, arg=''):
+        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if arg == "":
             embed = defaultEmbed(
                 "什麼是私訊提醒功能？", "申鶴每一小時會檢測一次你的樹脂數量，當超過140的時候，\n申鶴會私訊提醒你，最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
