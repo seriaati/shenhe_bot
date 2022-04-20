@@ -2,7 +2,7 @@ import datetime
 import discord
 import DiscordUtils
 import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter, loadGenshinYaml
+from cmd.asset.global_vars import defaultEmbed, setFooter
 import yaml
 from cmd.asset.classes import Character
 from discord.ext import commands, tasks
