@@ -58,8 +58,8 @@ class OtherCMDCog(commands.Cog):
     async def version(self, ctx):
         await ctx.message.delete()
         embed = defaultEmbed(
-            "申鶴 v1.0.2",
-            "**原神系統**\n• `!check` 新增了質變儀的冷卻時間"
+            "申鶴 v1.0.3",
+            "**投票系統**\n• 優化程式速度與穩定度"
         )
         setFooter(embed)
         await ctx.send(embed=embed)
