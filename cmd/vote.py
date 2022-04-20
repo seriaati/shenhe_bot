@@ -9,6 +9,7 @@ class VoteCog(commands.Cog):
 
     @commands.command()
     async def vote(self, ctx):
+        await ctx.message.delete()
         options = []
         emotes = []
         form = Form(ctx, '投票設置流程', cleanup=True)
