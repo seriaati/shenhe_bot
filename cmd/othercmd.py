@@ -57,9 +57,8 @@ class OtherCMDCog(commands.Cog):
     @commands.command()
     async def version(self, ctx):
         await ctx.message.delete()
-        shenhe = self.bot.get_user(956049912699715634)
         embed = defaultEmbed(
-            f"{shenhe.mention} v1.0.3",
+            f"申鶴 v1.0.3",
             "**投票系統**\n• 優化程式速度與穩定度"
         )
         setFooter(embed)
