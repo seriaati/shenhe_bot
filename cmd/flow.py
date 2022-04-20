@@ -790,7 +790,7 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def realease(self, ctx):
+    async def release(self, ctx):
         embed = defaultEmbed("flow系統","**什麼是flow系統?**\n\
             flow本質上是一個收發委託的系統, 其旨在促進群內活躍度, 幫助新人等\n\
             所有flow系統的指令皆可透過輸入`!flow`查看")
@@ -826,7 +826,7 @@ class FlowCog(commands.Cog):
             • 當委託被接受時, 發布方會在私訊收到結算單, \n當對方完成該委託時便可按 🆗 進行flow幣結算")
         setFooter(embed)
         await ctx.send(embed=embed)
-        
+
 
 
 def setup(bot):
