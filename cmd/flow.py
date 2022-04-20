@@ -534,7 +534,6 @@ class FlowCog(commands.Cog):
         channel = self.bot.get_channel(message.channel.id)
         if discordID not in users:
             user = self.bot.get_user(message.author.id)
-            flowCog = self.bot.get_cog('FlowCog')
             await flowCog.register(channel, user, discordID, False)
         if message.author == self.bot.user:
             return
