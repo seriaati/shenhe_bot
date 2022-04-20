@@ -134,7 +134,7 @@ class GenshinCog(commands.Cog):
         time = notes.remaining_resin_recovery_time
         hours, minutes = divmod(time // 60, 60)
         fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
-        transDelta = notes.transformer_recovery_time - datetime.datetime.now()
+        transDelta = notes.transformer_recovery_time.replace(tzinfo=None) - datetime.datetime.now()
         transDeltaMins = transDelta.total_minutes()
         transDays = transDeltaMins / 1440     
         leftover_minutes = transDeltaMins % 1440
