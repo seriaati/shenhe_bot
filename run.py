@@ -4,7 +4,6 @@ import git
 import yaml
 from discord.ext import commands
 import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter
 
 with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
