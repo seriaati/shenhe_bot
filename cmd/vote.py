@@ -19,26 +19,26 @@ class VoteCog(commands.Cog):
         result = await form.start()
         title = result.title
         while True:
-            form = Form(ctx, '投票設置流程', cleanup=True)
-            form.add_question('請輸入投票選項, 完成時請打「done」', 'option')
-            form.edit_and_delete(True)
-            form.set_timeout(60)
-            await form.set_color("0xa68bd3")
-            result = await form.start()
+            optionForm = Form(ctx, '投票設置流程', cleanup=True)
+            optionForm.add_question('請輸入投票選項, 完成時請打「done」', 'option')
+            optionForm.edit_and_delete(True)
+            optionForm.set_timeout(60)
+            await optionForm.set_color("0xa68bd3")
+            optionReseult = await optionForm.start()
 
-            if result.option == "done":
+            if optionReseult.option == "done":
                 break
             else:
                 options.append(result.option)
 
-            form = Form(ctx, '投票設置流程', cleanup=True)
-            form.add_question('該選項要用什麼表情符號代表?', 'emote')
-            form.edit_and_delete(True)
-            form.set_timeout(60)
-            await form.set_color("0xa68bd3")
-            result = await form.start()
+            emoteForm = Form(ctx, '投票設置流程', cleanup=True)
+            emoteForm.add_question('該選項要用什麼表情符號代表?', 'emote')
+            emoteForm.edit_and_delete(True)
+            emoteForm.set_timeout(60)
+            await emoteForm.set_color("0xa68bd3")
+            emoteResult = await emoteForm.start()
 
-            if result.option == "done":
+            if emoteResult.emote == "done":
                 break
             else:
                 emotes.append(result.emote)
