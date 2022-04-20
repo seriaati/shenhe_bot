@@ -95,11 +95,6 @@ class GenshinCog(commands.Cog):
             except AttributeError:
                 print(f"{users[userID]['name']} 可能退群了")
 
-    @checkLoop.before_loop
-    async def beforeLoop(self):
-        print('waiting...')
-        await self.bot.wait_until_ready()
-
     @claimLoop.before_loop
     async def wait_until_1am(self):
         now = datetime.datetime.now().astimezone()
