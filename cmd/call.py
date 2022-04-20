@@ -23,7 +23,7 @@ class CallCog(commands.Cog):
 
     @commands.command()
     async def maple(self, ctx):
-        await ctx.send("中學生楓")
+        await ctx.send("可愛的楓！")
 
     @commands.command()
     async def tedd(self, ctx):
@@ -39,7 +39,7 @@ class CallCog(commands.Cog):
 
     @commands.command()
     async def 小羽(self, ctx):
-        await ctx.send("可愛的小女生..? ")
+        await ctx.send("可愛的小羽！")
 
 
 def setup(bot):
