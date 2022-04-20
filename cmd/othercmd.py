@@ -67,7 +67,7 @@ class OtherCMDCog(commands.Cog):
     @commands.command()
     async def cleanup(self, ctx, arg):
         channel = ctx.channel
-        deleted = await channel.purge(limit=arg)
+        deleted = await channel.purge(limit=int(arg))
         await channel.send('Deleted {} message(s)'.format(len(deleted)))
 
 
