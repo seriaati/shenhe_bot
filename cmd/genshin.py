@@ -2,7 +2,7 @@ import datetime
 import discord
 import DiscordUtils
 import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, setFooter, loadGenshinYaml
 import yaml
 from cmd.asset.classes import Character
 from discord.ext import commands, tasks
@@ -11,8 +11,8 @@ from discord.ext.forms import Form
 import genshin
 
 
-with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
-    users = yaml.full_load(file)
+# with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+#     users = yaml.full_load(file)
 
 
 class GenshinCog(commands.Cog):
@@ -20,6 +20,7 @@ class GenshinCog(commands.Cog):
         self.bot = bot
 
     async def getUserData(self, ctx, discordID: int):
+        loadGenshinYaml()
         if discordID in users:
             cookies = {"ltuid": users[discordID]['ltuid'],
                        "ltoken": users[discordID]['ltoken']}
