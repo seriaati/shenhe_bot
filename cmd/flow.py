@@ -11,8 +11,7 @@ import emoji
 import discord
 import re
 
-with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
-    users = yaml.full_load(file)
+
 with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
     finds = yaml.full_load(file)
 with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
@@ -33,6 +32,8 @@ class FlowCog(commands.Cog):
 
     async def register(self, ctx, name, discordID: int, *args):
         dcUser = self.bot.get_user(discordID)
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if not dcUser.bot:
             embed = defaultEmbed(
                 f"找不到你的flow帳號!", f"{dcUser.mention}\n現在申鶴已經幫你辦了一個flow帳號\n請重新執行剛才的操作")
@@ -54,6 +55,8 @@ class FlowCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
         reactor = self.bot.get_user(payload.user_id)
@@ -199,6 +202,8 @@ class FlowCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
         reactor = self.bot.get_user(payload.user_id)
@@ -239,6 +244,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         member = member or ctx.author
         discordID = member.id
         if discordID in users:
@@ -275,6 +282,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def give(self, ctx, member: discord.Member, argFlow: int):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if member.id == ctx.author.id:
             await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!(不可以自己給自己")
             return
@@ -309,6 +318,8 @@ class FlowCog(commands.Cog):
     @commands.command()
     @commands.has_role("小雪團隊")
     async def take(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         form = Form(ctx, '沒收flow幣', cleanup=True)
         form.add_question('要沒收哪些人的flow幣?(用逗號分隔: @ceye, @ttos)', 'members')
         form.add_question('多少flow幣?', 'flow')
@@ -337,6 +348,8 @@ class FlowCog(commands.Cog):
     @commands.command()
     @commands.has_role("小雪團隊")
     async def make(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         formFalse = Form(ctx, '發放flow幣', cleanup=True)
         formFalse.add_question('要給哪些人?(用逗號分隔: @小雪, @sueno)', 'members')
         formFalse.add_question('多少flow幣?', 'flow')
@@ -372,6 +385,8 @@ class FlowCog(commands.Cog):
     @commands.command()
     @commands.has_role("小雪團隊")
     async def reset(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         bank['flow'] = 12000
         for user in users:
             discordID = user
@@ -387,6 +402,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def total(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         total = 0
         count = 0
         for user in users:
@@ -453,6 +470,8 @@ class FlowCog(commands.Cog):
 
     @shop.command()
     async def buy(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         itemStr = ""
         count = 1
         for item in shop:
@@ -531,6 +550,8 @@ class FlowCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         discordID = message.author.id
         channel = self.bot.get_channel(message.channel.id)
         if discordID not in users:
@@ -554,6 +575,8 @@ class FlowCog(commands.Cog):
 
     @commands.command()
     async def find(self, ctx):
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
         if ctx.channel.id != 960861105503232030:
             channel = self.bot.get_channel(960861105503232030)
             await ctx.send(f"請在{channel.mention}裡使用此指令", delete_after=5)

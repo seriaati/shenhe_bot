@@ -65,10 +65,11 @@ class OtherCMDCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.has_role("小雪團隊")
     async def cleanup(self, ctx, arg):
         channel = ctx.channel
         deleted = await channel.purge(limit=int(arg))
-        await channel.send('Deleted {} message(s)'.format(len(deleted)))
+        await channel.send('已移除 {} 個訊息'.format(len(deleted)))
 
 
 def setup(bot):

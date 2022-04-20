@@ -11,10 +11,6 @@ from discord.ext.forms import Form
 import genshin
 
 
-# with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
-#     users = yaml.full_load(file)
-
-
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
