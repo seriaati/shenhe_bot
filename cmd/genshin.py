@@ -96,7 +96,7 @@ class GenshinCog(commands.Cog):
         await self.bot.wait_until_ready()
 
     @claimLoop.before_loop
-    async def wait_until_1am():
+    async def wait_until_1am(self):
         now = datetime.datetime.now().astimezone()
         next_run = now.replace(hour=1, minute=0, second=0)
         if next_run < now:
