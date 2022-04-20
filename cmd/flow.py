@@ -209,6 +209,20 @@ class FlowCog(commands.Cog):
     async def on_raw_reaction_remove(self, payload):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
+        with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
+            finds = yaml.full_load(file)
+        with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
+            confirms = yaml.full_load(file)
+        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+            bank = yaml.full_load(file)
+        with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+            shop = yaml.full_load(file)
+        with open(f'cmd/asset/log.yaml', encoding='utf-8') as file:
+            logs = yaml.full_load(file)
+        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+            giveaways = yaml.full_load(file)
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
         reactor = self.bot.get_user(payload.user_id)
