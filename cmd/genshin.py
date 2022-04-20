@@ -394,11 +394,16 @@ class GenshinCog(commands.Cog):
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         failed = False
+        notPublic = False
         try:
             await client.get_notes(uid)
         except genshin.errors.InvalidCookies:
             failed = True
+        except genshin.errors.DataNotPublic:
+            notPublic = True
         if not failed:
+            if notPublic:
+                await ctx.send(f"該帳號資料未公開, 輸入`!stuck`來獲取更多資訊")
             users[int(result.discordID)] = {'name': result.name, 'uid': int(
                 result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
             with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
