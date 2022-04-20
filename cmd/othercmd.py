@@ -69,7 +69,7 @@ class OtherCMDCog(commands.Cog):
     async def cleanup(self, ctx, arg):
         channel = ctx.channel
         deleted = await channel.purge(limit=int(arg))
-        await channel.send('已移除 {} 個訊息'.format(len(deleted)))
+        await channel.send('已移除 {} 個訊息'.format(len(deleted)), delete_after=3)
 
 
 def setup(bot):
