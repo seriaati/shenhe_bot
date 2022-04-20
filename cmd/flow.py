@@ -263,6 +263,29 @@ class FlowCog(commands.Cog):
             await giveawayMsg.edit(embed=newEmbed)
             await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
 
+    @commands.command(aliases=['fr'])
+    @commands.has_role("小雪團隊")
+    async def forceroll(self, ctx, msgID):
+        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+            giveaways = yaml.full_load(file)
+        giveawayMsg = self.bot.fetch_message(msgID)
+        giveawayChannel = self.bot.get_channel(965517075508498452)
+        lulurR = self.bot.get_user(665092644883398671)
+        if msgID in giveaways:
+            memberList = giveaways[msgID]['members']
+            winner = random.choice(memberList)
+            winnerID = int(winner)
+            winnerUser = self.bot.get_user(winnerID)
+            await giveawayMsg.delete()
+            embed = defaultEmbed(
+                "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[msgID]['goal']} flow幣的 {giveaways[msgID]['prize']} !")
+            setFooter(embed)
+            await giveawayChannel.send(f"{lulurR.mention} {winnerUser.mention}")
+            await giveawayChannel.send(embed=embed)
+            del giveaways[msgID]
+            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(giveaways, file)
+    
     @commands.command()
     async def acc(self, ctx, *, member: discord.Member = None):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
