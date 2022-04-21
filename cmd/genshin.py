@@ -484,7 +484,7 @@ class GenshinCog(commands.Cog):
                         char.append(character.name)
                     for charName in char:
                         charStr += f"• {charName}\n"
-                embed.add_field(title,charStr)
+                embed.add_field(name=title,value=charStr)
         await ctx.send(embed=embed)
                     
 
