@@ -485,8 +485,13 @@ class GenshinCog(commands.Cog):
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
                         chara_list[i].append(getCharacterName(chara))
-                value = f'[{".".join(chara_list[0])}]／[{".".join(chara_list[1])}]'
-                embed.add_field(name=name,value=value)
+                topStr = ''
+                bottomStr = ''
+                for top_char in chara_list[0]:
+                    topStr += f"• {top_char}\n"
+                for bottom_char in chara_list[1]:
+                    bottomStr += f"• {bottom_char}\n"
+                embed.add_field(name=name,value=f"上層:\n{topStr}\n\n下層:\n{bottomStr}")
         await ctx.send(embed=embed)
                     
 
