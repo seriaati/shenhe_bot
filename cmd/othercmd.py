@@ -66,8 +66,8 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def quote(self, ctx):
-        if message.reference is not None:
-            await ctx.send("test")
+        msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        await ctx.send(msg)
 
     @commands.command()
     @commands.has_role("小雪團隊")
