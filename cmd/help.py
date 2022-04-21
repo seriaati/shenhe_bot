@@ -66,7 +66,7 @@ class Help(commands.Cog):
                     for command in self.bot.get_cog(cog).get_commands():
                         if not command.hidden:
                             emb.add_field(
-                                name=f"`{prefix}{command.name}`", value=command.help, inline=False)
+                                name=f"`{prefix}{command.name}`或{prefix}{command.alias}", value=command.help)
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
