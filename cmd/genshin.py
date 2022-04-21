@@ -488,10 +488,10 @@ class GenshinCog(commands.Cog):
                 topStr = ''
                 bottomStr = ''
                 for top_char in chara_list[0]:
-                    topStr += f"• {top_char}\n"
+                    topStr += f"• {top_char}."
                 for bottom_char in chara_list[1]:
-                    bottomStr += f"• {bottom_char}\n"
-                embed.add_field(name=name,value=f"上層:\n{topStr}\n\n下層:\n{bottomStr}")
+                    bottomStr += f"• {bottom_char}."
+                embed.add_field(name=name,value=f"上:{topStr}\n\n下:{bottomStr}")
         await ctx.send(embed=embed)
                     
 
