@@ -22,10 +22,12 @@ class OtherCMDCog(commands.Cog):
             channel = self.bot.get_channel(payload.channel_id)
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
+            channel = self.bot.get_channel(payload.channel_id)
+            reactor = self.bot.get_user(payload.user_id)
+            await channel.send(f"{reactor.mention} ✅ 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar_url))
             channel = self.bot.get_channel(966549110540877875)
-            await channel.send("✅ 語錄擷取成功", delete_after=3)
             await channel.send(embed=embed)
 
     @commands.Cog.listener()
