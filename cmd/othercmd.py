@@ -58,11 +58,16 @@ class OtherCMDCog(commands.Cog):
     async def version(self, ctx):
         await ctx.message.delete()
         embed = defaultEmbed(
-            f"申鶴 v1.0.3",
-            "**投票系統**\n• 優化程式速度與穩定度\n\n**flow系統**\n• 優化存取資料邏輯與速度"
+            f"申鶴 v1.0.4",
+            "**原神系統**\n• 中文角色名稱\n• `!floor`來查看深淵不同層數的使用角色"
         )
         setFooter(embed)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def quote(self, ctx):
+        if ctx.reference is not None:
+            await ctx.send("test")
 
     @commands.command()
     @commands.has_role("小雪團隊")
