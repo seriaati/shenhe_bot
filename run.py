@@ -22,7 +22,7 @@ initial_extensions = [
     "cmd.call",
     "cmd.othercmd",
     "cmd.farm",
-    "cmd.helpv2",
+    "cmd.help",
     "cmd.vote",
     "cmd.flow",
     "cmd.error_handle"
@@ -45,7 +45,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-@bot.command()
+@bot.command(help="重整指令包", hidden = True)
 @commands.has_role("小雪團隊")
 async def reload(ctx, arg):
     g = git.cmd.Git(f"C:/Users/alice/shenhe_bot")
@@ -69,7 +69,7 @@ async def reload(ctx, arg):
                     await ctx.send(f"{extension}發生錯誤```{e}```")
 
 
-@bot.command()
+@bot.command(hidden = True)
 @commands.has_role("小雪團隊")
 async def unload(ctx, arg):
     for extension in initial_extensions:
@@ -82,7 +82,7 @@ async def unload(ctx, arg):
                 await ctx.send(f"{extension}發生錯誤```{e}```")
 
 
-@bot.command()
+@bot.command(hidden = True)
 @commands.has_role("小雪團隊")
 async def load(ctx, arg):
     for extension in initial_extensions:
