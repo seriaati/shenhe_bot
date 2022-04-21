@@ -20,7 +20,7 @@ class OtherCMDCog(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
             channel = self.bot.get_channel(payload.channel_id)
-            message = channel.get_partial_message(payload.message_id)
+            message = channel.get_message(payload.message_id)
             msg = await channel.fetch_message(message.reference.message_id)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar_url))
