@@ -5,7 +5,7 @@ import yaml
 global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
 warningColor = 0xfc5165
 purpleColor = 0xa68bd3
-footerAuthor = "有問題歡迎私訊小雪"
+footerAuthor = "輸入!help來獲得幫助"
 footerImage = "https://i.imgur.com/DWYpYrd.jpg"
 timeOutErrorMsg = "已取消當前操作, 請在30秒內回答問題"
 embedNoAccount = discord.Embed(
