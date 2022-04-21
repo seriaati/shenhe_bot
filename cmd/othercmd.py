@@ -66,7 +66,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def quote(self, ctx):
-        if ctx.reference is not None:
+        if message.reference is not None:
             await ctx.send("test")
 
     @commands.command()
