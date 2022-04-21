@@ -480,15 +480,13 @@ class GenshinCog(commands.Cog):
         embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
         for floor in abyss.floors:
             for chamber in floor.chambers:
-                title = f"{floor.floor} - {chamber.chamber}: {chamber.stars}/{chamber.max_stars}★"
-                for battle in chamber.battles:
-                    char = []
-                    charStr = ''
+                name = f'{floor.floor}-{chamber.chamber}　★{chamber.stars}'
+                chara_list = [[], []]
+                for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
-                        char.append(getCharacterName(chara))
-                    for charName in char:
-                        charStr += f"• {charName}\n"
-                embed.add_field(name=title,value=charStr)
+                        chara_list[i].append(getCharacterName(chara))
+                value = f'[{".".join(chara_list[0])}]／[{".".join(chara_list[1])}]'
+                embed.add_field(name=name,value=value)
         await ctx.send(embed=embed)
                     
 
