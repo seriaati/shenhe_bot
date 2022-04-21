@@ -34,6 +34,18 @@ class OtherCMDCog(commands.Cog):
     async def on_member_join(self, member):
         public = self.bot.get_channel(916951131022843964)
         await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
+        uid_channel = self.bot.get_channel(935111580545343509)
+        role_channel = self.bot.get_channel(962311051683192842)
+        factory = self.bot.get_channel(957268464928718918)
+        await member.send(f"{member.mention}歡迎來到緣神有你!")
+        embed = defaultEmbed("重要事項",
+        f"• 至{uid_channel.mention}輸入原神uid\n"
+        f"• 至{role_channel.mention}選擇世界等級\n"
+        "• 如果需要幫助, 推薦使用 `!find` 指令\n"
+        "[更多資訊請點我](https://discord.com/channels/916838066117824553/965964989875757156/966252132355424286)\n"
+        f"• 想要在dc裡直接查閱遊戲內樹脂嗎? 歡迎至{factory.mention}")
+        setFooter(embed)
+        await member.send(embed=embed)
 
     @commands.command()
     async def ping(self, ctx):
