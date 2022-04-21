@@ -43,7 +43,7 @@ class CommandErrorHandler(commands.Cog):
         else:
             channel = self.bot.get_channel(966525862231015464)
             await channel.send('Ignoring exception in command {}:'.format(
-                ctx.command), file=sys.stderr)
+                ctx.command))
             traceback.print_exception(
                 type(error), error, error.__traceback__, file=sys.stderr)
 
