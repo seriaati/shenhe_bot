@@ -510,7 +510,6 @@ class GenshinCog(commands.Cog):
         paginator.add_reaction('⏭️', "last")
         print(embeds)
         await paginator.run(embeds)
-        await ctx.send(embed=embed)
 
 
 def setup(bot):
