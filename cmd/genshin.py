@@ -468,7 +468,7 @@ class GenshinCog(commands.Cog):
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
-    @commands.command(aliases=['floor','fr'])
+    @commands.command(aliases=['floor','flr'])
     async def _floor(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
