@@ -485,7 +485,7 @@ class GenshinCog(commands.Cog):
         setFooter(embed)
         embeds.append(embed)
         for floor in abyss.floors:
-            embed = defaultEmbed(f"{floor.floor}層", "")
+            embed = defaultEmbed(f"第{floor.floor}層", "")
             for chamber in floor.chambers:
                 name = f'{floor.floor}-{chamber.chamber} ★{chamber.stars}'
                 chara_list = [[], []]
