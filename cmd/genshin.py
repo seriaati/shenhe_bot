@@ -451,15 +451,15 @@ class GenshinCog(commands.Cog):
             mostBurst = abyss.ranks.most_bursts_used
             mostSkill = abyss.ranks.most_skills_used
             mBurst = mostBurst[0].value
-            mBurstChar = mostBurst[0].name
+            mBurstChar = getCharacterName(mostBurst[0])
             mSkill = mostSkill[0].value
-            mSkillChar = mostSkill[0].name
+            mSkillChar = getCharacterName(mostSkill[0])
             mKill = mostKill[0].value
-            mKillChar = mostKill[0].name
+            mKillChar = getCharacterName(mostKill[0])
             mPlay = mostPlayed[0].value
-            mPlayChar = mostPlayed[0].name
+            mPlayChar = getCharacterName(mostPlayed[0])
             dmg = strongestStrike[0].value
-            dmgChar = strongestStrike[0].name
+            dmgChar = getCharacterName(strongestStrike[0])
         except IndexError:
             embed = defaultEmbed(
                 "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
@@ -473,7 +473,7 @@ class GenshinCog(commands.Cog):
         setFooter(embed)
         embeds.append(embed)
         for floor in abyss.floors:
-            embed = defaultEmbed(f"第{floor.floor}層", f"共{floor.stars}★")
+            embed = defaultEmbed(f"第{floor.floor}層 (共{floor.stars}★)", f" ")
             for chamber in floor.chambers:
                 name = f'第{chamber.chamber}間 {chamber.stars}★'
                 chara_list = [[], []]
