@@ -487,7 +487,7 @@ class GenshinCog(commands.Cog):
                 for bottom_char in chara_list[1]:
                     bottomStr += f"• {bottom_char} "
                 embed.add_field(
-                    name=name, value=f"【上半】{topStr}\n\n【下半】{bottomStr}")
+                    name=name, value=f"【上半】{topStr}\n\n【下半】{bottomStr}", inline=False)
             setFooter(embed)
             embeds.append(embed)
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
