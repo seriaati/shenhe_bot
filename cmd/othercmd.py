@@ -72,7 +72,7 @@ class OtherCMDCog(commands.Cog):
         embed.set_thumbnail(url=msg.author.avatar_url)
         channel = self.bot.get_channel(916951131022843964)
         await ctx.send("語錄擷取成功", delete_after=3)
-        await channel.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_role("小雪團隊")
