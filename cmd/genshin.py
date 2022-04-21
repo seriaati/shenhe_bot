@@ -465,32 +465,28 @@ class GenshinCog(commands.Cog):
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
     @commands.command()
-    async def floor(self, ctx, *, member: discord.Member = None):
+    async def floor(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
-        abyss = await client.get_genshin_spiral_abyss(uid)
-        embed = defaultEmbed(f"{username}: 深境螺旋第 {abyss.season} 期戰績", "")
-        embed.add_field(
-            name=f'最深抵達：{abyss.max_floor}　戰鬥次數：{abyss.total_battles}　★：{abyss.total_stars}',
-            value=f'統計週期：{abyss.start_time.strftime("%Y.%m.%d")} ~ {abyss.end_time.strftime("%Y.%m.%d")}',
-            inline=False
-        )
+        abyss = await client.get_spiral_abyss(uid)
+        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}⭐")
         for floor in abyss.floors:
-            if floor is not abyss.floors[-1]:
-                continue
             for chamber in floor.chambers:
-                name = f'{floor.floor}-{chamber.chamber}　★{chamber.stars}'
-                chara_list = [[], []]
-                for i, battle in enumerate(chamber.battles):
-                    for chara in battle.characters:
-                        chara_list[i].append(chara)
-                value = f'{chara_list[0]}／{chara_list[1]}'
-                embed.add_field(name=name, value=value)
+                title = f"{floor.floor} - {chamber.chamber}: {chamber.stars}/{chamber.max_stars} ⭐"
+                for battle in chamber.battles:
+                    char = []
+                    charStr = ''
+                    for character in battle.characters:
+                        char.append(character.name)
+                    for char in char:
+                        charStr += f"• {char}"
+                embed.add_field(title,charStr)
         await ctx.send(embed=embed)
+                    
 
 
 def setup(bot):
