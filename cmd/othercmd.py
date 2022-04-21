@@ -17,6 +17,18 @@ class OtherCMDCog(commands.Cog):
             await message.channel.send(f"{value}%")
 
     @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        if payload.emoji.name == "QuoteTimeWakuWaku":
+            channel = self.bot.get_channel(payload.channel_id)
+            message = channel.get_partial_message(payload.message_id)
+            msg = await channel.fetch_message(message.reference.message_id)
+            embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
+            embed.set_thumbnail(url=str(msg.author.avatar_url))
+            channel = self.bot.get_channel(966549110540877875)
+            await channel.send("✅ 語錄擷取成功", delete_after=3)
+            await channel.send(embed=embed)
+
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         public = self.bot.get_channel(916951131022843964)
         await public.send("<@!459189783420207104> 櫃姊兔兔請準備出動!有新人要來了!")
