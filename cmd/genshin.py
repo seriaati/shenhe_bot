@@ -111,7 +111,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             next_run += datetime.timedelta(days=1)
         await discord.utils.sleep_until(next_run)
 
-    @commands.command(name="check",aliases=['c','check'],help='查看即時便籤')
+    @commands.command(name="check",alias='c',help='查看即時便籤')
     async def _check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         memberID = member.id
