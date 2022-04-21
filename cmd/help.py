@@ -65,20 +65,18 @@ class Help(commands.Cog):
                         f'{cog} - 指令', self.bot.cogs[cog].description)
                     for command in self.bot.get_cog(cog).get_commands():
                         if not command.hidden:
+                            alias = ''
                             for a in command.aliases:
-                                if a is not None:
-                                    emb.add_field(
-                                    name=f"`{prefix}{command.name}`或`{prefix}{a}`", value=command.help)
-                                else:
-                                    emb.add_field(
-                                    name=f"`{prefix}{command.name}`", value=command.help)
+                                alias = a
+                            emb.add_field(
+                                name=f"`{prefix}{command.name}`或`{prefix}{alias}`", value=command.help)
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
                                    f"申鶴從來沒有聽過名為 `{input[0]}` 的指令包 :thinking:")
         elif len(input) > 1:
             emb = defaultEmbed("「太、太多了…」",
-                                "請一次輸入最多一個指令包名稱")
+                               "請一次輸入最多一個指令包名稱")
 
         else:
             emb = discord.Embed(title="「這裡是哪裡…？」",
