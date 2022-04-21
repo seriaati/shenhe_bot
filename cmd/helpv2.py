@@ -41,7 +41,7 @@ class Help(commands.Cog):
 
             cogs_desc = ''
             for cog in self.bot.cogs:
-                cogs_desc += f'`{cog}` {self.bot.cogs[cog].__doc__}\n'
+                cogs_desc += f'`{cog}` {self.bot.cogs[cog].description}\n'
 
             emb.add_field(name='指令包', value=cogs_desc, inline=False)
 
@@ -62,7 +62,7 @@ class Help(commands.Cog):
             for cog in self.bot.cogs:
                 if cog.lower() == input[0].lower():
                     emb = defaultEmbed(
-                        f'{cog} - 指令', self.bot.cogs[cog].__doc__)
+                        f'{cog} - 指令', self.bot.cogs[cog].description)
                     for command in self.bot.get_cog(cog).get_commands():
                         if not command.hidden:
                             emb.add_field(
@@ -70,7 +70,7 @@ class Help(commands.Cog):
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
-                                   "申鶴從來沒有聽過名為 `{input[0]}` 的指令包 :thinking:")
+                                   f"申鶴從來沒有聽過名為 `{input[0]}` 的指令包 :thinking:")
         elif len(input) > 1:
             emb = defaultEmbed("「太、太多了…」",
                                 "請一次輸入最多一個指令包名稱")
