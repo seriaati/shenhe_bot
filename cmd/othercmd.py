@@ -21,7 +21,7 @@ class OtherCMDCog(commands.Cog):
         if payload.emoji.name == "QuoteTimeWakuWaku":
             channel = self.bot.get_channel(payload.channel_id)
             channel = self.bot.get_channel(payload.channel_id)
-            msg = channel.fetch_message(payload.message_id)
+            msg = await channel.fetch_message(payload.message_id)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar_url))
             channel = self.bot.get_channel(966549110540877875)
