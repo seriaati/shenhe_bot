@@ -67,7 +67,11 @@ class OtherCMDCog(commands.Cog):
     @commands.command()
     async def quote(self, ctx):
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        await ctx.send(msg.content)
+        embed = defaultEmbed(f"語錄",f"「{msg.content}」\n\n -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
+        embed.set_thumbnail(url=msg.author.avatar_url)
+        channel = self.bot.get_channel(945001852611756052)
+        await ctx.send("語錄擷取成功", delete_after=3)
+        await channel.send(embed=embed)
 
     @commands.command()
     @commands.has_role("小雪團隊")
