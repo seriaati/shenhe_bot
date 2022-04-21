@@ -41,7 +41,8 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send("你不是小雪團隊的一員!")
 
         else:
-            print('Ignoring exception in command {}:'.format(
+            channel = self.bot.get_channel(966525862231015464)
+            channel.send('Ignoring exception in command {}:'.format(
                 ctx.command), file=sys.stderr)
             traceback.print_exception(
                 type(error), error, error.__traceback__, file=sys.stderr)
