@@ -44,10 +44,8 @@ class CommandErrorHandler(commands.Cog):
             channel = self.bot.get_channel(966525862231015464)
             xiaoxue = self.bot.get_user(410036441129943050)
             await channel.send(xiaoxue.mention)
-            await channel.send('Ignoring exception in command {}:'.format(
-                ctx.command))
-            await channel.send(traceback.print_exception(
-                type(error), error, error.__traceback__))
+            foo = traceback.format_exception(type(error), error, error.__traceback__)
+            await channel.send("".join(foo))
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     async def do_repeat(self, ctx, *, inp: str):
