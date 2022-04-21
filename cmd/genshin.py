@@ -466,19 +466,16 @@ class GenshinCog(commands.Cog):
             setFooter(embed)
             await ctx.send(embed=embed)
             return
-        embedAbyss = defaultEmbed(
-            f"深境螺旋: {username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
-        setFooter(embedAbyss)
         embeds = []
-        embeds.append(embedAbyss)
-        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",
-                             f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
+        embed = defaultEmbed(
+            f"{username}: 第{abyss.season}期深淵", f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
+        embed.add_field(name="戰績", value=f"單次最高傷害: {dmgChar} • {dmg}\n擊殺王: {mKillChar} • {mKill}次擊殺\n最常使用角色: {mPlayChar} • {mPlay}次\n最多Q使用角色: {mBurstChar} • {mBurst}次\n最多E使用角色: {mSkillChar} • {mSkill}次")
         setFooter(embed)
         embeds.append(embed)
         for floor in abyss.floors:
-            embed = defaultEmbed(f"第{floor.floor}層", "")
+            embed = defaultEmbed(f"第{floor.floor}層", f"共{floor.stars}★")
             for chamber in floor.chambers:
-                name = f'{floor.floor}-{chamber.chamber} ★{chamber.stars}'
+                name = f'第{chamber.chamber}間 {chamber.stars}★'
                 chara_list = [[], []]
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
@@ -486,11 +483,11 @@ class GenshinCog(commands.Cog):
                 topStr = ''
                 bottomStr = ''
                 for top_char in chara_list[0]:
-                    topStr += f"• {top_char}\n"
+                    topStr += f"• {top_char} "
                 for bottom_char in chara_list[1]:
-                    bottomStr += f"• {bottom_char}\n"
+                    bottomStr += f"• {bottom_char} "
                 embed.add_field(
-                    name=name, value=f"【上層】\n{topStr}---------\n【下層】\n{bottomStr}")
+                    name=name, value=f"【上半】{topStr}\n\n【下半】{bottomStr}")
             setFooter(embed)
             embeds.append(embed)
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
