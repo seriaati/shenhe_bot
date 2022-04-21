@@ -231,41 +231,6 @@ class GenshinCog(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def abyss(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        try:
-            client = genshin.Client(cookies)
-            client.lang = "zh-tw"
-            client.default_game = genshin.Game.GENSHIN
-            client.uids[genshin.Game.GENSHIN] = uid
-            abyss = await client.get_spiral_abyss(uid)
-            strongestStrike = abyss.ranks.strongest_strike
-            mostKill = abyss.ranks.most_kills
-            mostPlayed = abyss.ranks.most_played
-            mostBurst = abyss.ranks.most_bursts_used
-            mostSkill = abyss.ranks.most_skills_used
-            mBurst = mostBurst[0].value
-            mBurstChar = mostBurst[0].name
-            mSkill = mostSkill[0].value
-            mSkillChar = mostSkill[0].name
-            mKill = mostKill[0].value
-            mKillChar = mostKill[0].name
-            mPlay = mostPlayed[0].value
-            mPlayChar = mostPlayed[0].name
-            dmg = strongestStrike[0].value
-            dmgChar = strongestStrike[0].name
-        except IndexError:
-            embed = defaultEmbed(
-                "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
-            setFooter(embed)
-            await ctx.send(embed=embed)
-        embedAbyss = defaultEmbed(
-            f"深境螺旋: {username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
-        setFooter(embedAbyss)
-        await ctx.send(embed=embedAbyss)
-
-    @commands.command()
     async def diary(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
@@ -470,8 +435,8 @@ class GenshinCog(commands.Cog):
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
-    @commands.command(aliases=['floor', 'flr'])
-    async def _floor(self, ctx, member: discord.Member = None):
+    @commands.command(aliases=['abyss', 'abs'])
+    async def _abyss(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -479,7 +444,33 @@ class GenshinCog(commands.Cog):
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
         abyss = await client.get_spiral_abyss(uid)
+        try:
+            strongestStrike = abyss.ranks.strongest_strike
+            mostKill = abyss.ranks.most_kills
+            mostPlayed = abyss.ranks.most_played
+            mostBurst = abyss.ranks.most_bursts_used
+            mostSkill = abyss.ranks.most_skills_used
+            mBurst = mostBurst[0].value
+            mBurstChar = mostBurst[0].name
+            mSkill = mostSkill[0].value
+            mSkillChar = mostSkill[0].name
+            mKill = mostKill[0].value
+            mKillChar = mostKill[0].name
+            mPlay = mostPlayed[0].value
+            mPlayChar = mostPlayed[0].name
+            dmg = strongestStrike[0].value
+            dmgChar = strongestStrike[0].name
+        except IndexError:
+            embed = defaultEmbed(
+                "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
+            setFooter(embed)
+            await ctx.send(embed=embed)
+            return
+        embedAbyss = defaultEmbed(
+            f"深境螺旋: {username}", f"💥 最高單次傷害角色: {dmgChar}, {dmg}點傷害\n☠ 擊殺王: {mKillChar}, {mKill}個擊殺\n🎄 最常使用角色: {mPlayChar}, {mPlay}次\n🇶 最多大招使用角色: {mBurstChar}, {mBurst}次\n🇪 最多小技能使用角色: {mSkillChar}, {mSkill}次")
+        setFooter(embedAbyss)
         embeds = []
+        embeds.append(embedAbyss)
         embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",
                              f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
         setFooter(embed)
