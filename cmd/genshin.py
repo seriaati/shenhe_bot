@@ -329,7 +329,7 @@ class GenshinCog(commands.Cog):
             for artifact in artifacts:
                 artifactList.append(artifact.name)
                 artifactIconList.append(artifact.icon)
-            clientCharacters.append(Character(character.name, character.level, character.constellation, character.icon,
+            clientCharacters.append(Character(getCharacterName(character), character.level, character.constellation, character.icon,
                                               character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
         for character in clientCharacters:
             artifactStr = ""
@@ -480,7 +480,7 @@ class GenshinCog(commands.Cog):
         embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
         for floor in abyss.floors:
             for chamber in floor.chambers:
-                name = f'{floor.floor}-{chamber.chamber}　★{chamber.stars}'
+                name = f'{floor.floor}-{chamber.chamber} ★{chamber.stars}'
                 chara_list = [[], []]
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
