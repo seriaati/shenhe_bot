@@ -680,7 +680,7 @@ class FlowCog(commands.Cog):
             formTrue.add_question('需要什麼幫助?(例如: 打刀鐔)', 'title')
             formTrue.add_question('你要付多少flow幣給幫你的人?', 'flow')
             formTrue.edit_and_delete(True)
-            formTrue.set_timeout(120)
+            formTrue.set_timeout(90)
             await formTrue.set_color("0xa68bd3")
             result = await formTrue.start()
 
@@ -720,7 +720,7 @@ class FlowCog(commands.Cog):
             formFalse.add_question('需要什麼素材?(例如: 緋櫻繡球)', 'title')
             formFalse.add_question('你要付多少flow幣給讓你拿素材的人?', 'flow')
             formFalse.edit_and_delete(True)
-            formFalse.set_timeout(30)
+            formFalse.set_timeout(90)
             await formFalse.set_color("0xa68bd3")
             result = await formFalse.start()
 
@@ -754,7 +754,7 @@ class FlowCog(commands.Cog):
             formFalse.add_question('要委託什麼?', 'title')
             formFalse.add_question('你要付多少flow幣給接受委託的人?', 'flow')
             formFalse.edit_and_delete(True)
-            formFalse.set_timeout(30)
+            formFalse.set_timeout(90)
             await formFalse.set_color("0xa68bd3")
             result = await formFalse.start()
 

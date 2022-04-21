@@ -4,7 +4,7 @@ import traceback
 import discord
 from discord.ext import commands
 
-from cmd.asset.global_vars import defaultEmbed
+from cmd.asset.global_vars import defaultEmbed, errEmbed
 
 
 class CommandErrorHandler(commands.Cog):
@@ -43,13 +43,14 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send("你不是小雪團隊的一員!")
 
         else:
-            # channel = self.bot.get_channel(966525862231015464)
             foo = traceback.format_exception(type(error), error, error.__traceback__)
             print("".join(foo))
-            embed = defaultEmbed(f"指令錯誤: {ctx.command}",f'```{type(error).__name__}: {error}```')
+            embed = errEmbed(f"指令錯誤: {ctx.command}",
+            f'```{type(error).__name__}: {error}```'
+            '如果你見到這個畫面, 請將輸入的指令與上方的錯誤私訊給小雪')
             await ctx.send(embed=embed)
 
-    @commands.command(name='repeat', aliases=['mimic', 'copy'])
+    @commands.command(hidden=True)
     async def do_repeat(self, ctx, *, inp: str):
         await ctx.send(inp)
 

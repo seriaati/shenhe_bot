@@ -23,3 +23,6 @@ def setFooter(embed):
 
 def defaultEmbed(title, message):
     return discord.Embed(title=title, description=message, color=purpleColor)
+
+def errEmbed(title, message):
+    return discord.Embed(title=title, description=message, color=warningColor)
