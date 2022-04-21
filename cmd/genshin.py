@@ -7,9 +7,13 @@ import yaml
 from cmd.asset.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
+from cmd.asset.character_name import character_names
 
 import genshin
 
+def getCharacterName(character: genshin.models.BaseCharacter) -> str:
+    chinese_name = character_names.get(character.id)
+    return chinese_name if chinese_name != None else character.name
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
@@ -473,15 +477,15 @@ class GenshinCog(commands.Cog):
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
         abyss = await client.get_spiral_abyss(uid)
-        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}⭐")
+        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
         for floor in abyss.floors:
             for chamber in floor.chambers:
-                title = f"{floor.floor} - {chamber.chamber}: {chamber.stars}/{chamber.max_stars} ⭐"
+                title = f"{floor.floor} - {chamber.chamber}: {chamber.stars}/{chamber.max_stars}★"
                 for battle in chamber.battles:
                     char = []
                     charStr = ''
-                    for character in battle.characters:
-                        char.append(character.name)
+                    for chara in battle.characters:
+                        char.append(getCharacterName(chara))
                     for charName in char:
                         charStr += f"• {charName}\n"
                 embed.add_field(name=title,value=charStr)
