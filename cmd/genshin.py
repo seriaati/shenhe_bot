@@ -17,7 +17,7 @@ def getCharacterName(character: genshin.models.BaseCharacter) -> str:
     return chinese_name if chinese_name != None else character.name
 
 
-class GenshinCog(commands.Cog):
+class GenshinCog(commands.Cog, name="genshin", description="原神相關指令"):
     def __init__(self, bot):
         self.bot = bot
         self.checkLoop.start()

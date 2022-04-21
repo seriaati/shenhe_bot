@@ -36,6 +36,8 @@ class HelpCog(commands.Cog):
         setFooter(embed)
         await ctx.send(embed=embed)
 
+    
+
 
 def setup(bot):
     bot.add_cog(HelpCog(bot))

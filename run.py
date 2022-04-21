@@ -22,7 +22,7 @@ initial_extensions = [
     "cmd.call",
     "cmd.othercmd",
     "cmd.farm",
-    "cmd.help",
+    "cmd.helpv2",
     "cmd.vote",
     "cmd.flow",
     "cmd.error_handle"
