@@ -11,9 +11,11 @@ from cmd.asset.character_name import character_names
 
 import genshin
 
+
 def getCharacterName(character: genshin.models.BaseCharacter) -> str:
     chinese_name = character_names.get(character.id)
     return chinese_name if chinese_name != None else character.name
+
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
@@ -468,7 +470,7 @@ class GenshinCog(commands.Cog):
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
-    @commands.command(aliases=['floor','flr'])
+    @commands.command(aliases=['floor', ''])
     async def _floor(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
@@ -477,7 +479,11 @@ class GenshinCog(commands.Cog):
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
         abyss = await client.get_spiral_abyss(uid)
-        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
+        embeds = []
+        embed = defaultEmbed(f"{username}: 第{abyss.season}期深淵",
+                             f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
+        setFooter(embed)
+        embeds.append(embed)
         for floor in abyss.floors:
             for chamber in floor.chambers:
                 name = f'{floor.floor}-{chamber.chamber} ★{chamber.stars}'
@@ -491,9 +497,16 @@ class GenshinCog(commands.Cog):
                     topStr += f"{top_char}•"
                 for bottom_char in chara_list[1]:
                     bottomStr += f"{bottom_char}•"
-                embed.add_field(name=name,value=f"↑ {topStr}\n\n↓ {bottomStr}")
+                embed = defaultEmbed(
+                    name, f"【上層】 {topStr}\n\n【下層】 {bottomStr}")
+                setFooter(embed)
+                embeds.append(embed)
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
+            ctx, remove_reactions=True)
+        paginator.add_reaction('◀', "back")
+        paginator.add_reaction('▶', "next")
+        await paginator.run(embeds)
         await ctx.send(embed=embed)
-                    
 
 
 def setup(bot):
