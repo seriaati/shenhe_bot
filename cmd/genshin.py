@@ -488,7 +488,7 @@ class GenshinCog(commands.Cog):
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
                         chara_list[i].append(chara)
-                value = f'[{".".join(chara_list[0])}]／[{".".join(chara_list[1])}]'
+                value = f'{chara_list[0]}／{chara_list[1]}'
                 embed.add_field(name=name, value=value)
         await ctx.send(embed=embed)
 
