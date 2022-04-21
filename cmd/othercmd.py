@@ -66,7 +66,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command()
     async def quote(self, ctx):
-        msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        msg = await ctx.channel.get_message(ctx.message.reference.message_id)
         await ctx.send(msg)
 
     @commands.command()
