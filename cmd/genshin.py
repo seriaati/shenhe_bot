@@ -390,8 +390,14 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
 
     @commands.command(name='register',aliases=['reg'],help='查看註冊原神帳號教學')
     async def _register(self, ctx):
-        embedRegister = defaultEmbed(
-            "註冊教學", "1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上後按ENTER\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('無效的cookie,請重新登錄!');c&&confirm('將cookie複製到剪貼版？')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給<@410036441129943050>或<@665092644883398671>並附上原神UID及想要的使用者名稱\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
+        embedRegister = defaultEmbed('註冊教學', 
+        '1. 去 https://www.hoyolab.com/home 然後登入\n'
+        '2. 按F12\n'
+        '3. 點擊console, 將下方的指令貼上後按ENTER\n'
+        "```javascript:document.write(`<pre>${JSON.stringify(document.cookie.split(';').reduce((cookies, val) => { parts = val.split('='); cookies[parts[0]] = parts[1]; return cookies; }, {}), null, 2)}</pre>`)```\n"
+        '4. ctrl+A全選並ctrl+C複製後將內容私訊給<@410036441129943050>或<@665092644883398671>\n'
+        '並附上原神UID及想要的使用者名稱'
+        )
         setFooter(embedRegister)
         embed = defaultEmbed("註冊帳號有什麼好處?", Global.whyRegister)
         setFooter(embed)

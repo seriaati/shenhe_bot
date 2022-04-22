@@ -5,39 +5,39 @@ class CallCog(commands.Cog, name='call', description='呼叫相關'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(help='呼叫律律')
     async def turtle(self, ctx):
         await ctx.send("律律🐢")
 
-    @commands.command()
+    @commands.command(help='呼叫兔兔')
     async def rabbit(self, ctx):
         await ctx.send("可愛的🐰兔")
 
-    @commands.command()
+    @commands.command(help='呼叫小雪')
     async def 小雪(self, ctx):
         await ctx.send("又聰明又可愛的成熟女孩子- tedd")
 
-    @commands.command()
+    @commands.command(help='呼叫土司')
     async def ttos(self, ctx):
         await ctx.send("好吃的巧克力土司")
 
-    @commands.command()
+    @commands.command(help='呼叫楓')
     async def maple(self, ctx):
         await ctx.send("可愛的楓！")
 
-    @commands.command()
+    @commands.command(help='呼叫tedd')
     async def tedd(self, ctx):
         await ctx.send("沈默寡言但內心很善良也很帥氣的tedd哥哥")
 
-    @commands.command()
+    @commands.command(help='呼叫飛機仔')
     async def airplane(ctx):
         await ctx.send("✈仔")
 
-    @commands.command()
+    @commands.command(help='小雪國萬歲!')
     async def snow(self, ctx):
         await ctx.send("❄小雪國萬歲！")
 
-    @commands.command()
+    @commands.command(help='呼叫小羽')
     async def 小羽(self, ctx):
         await ctx.send("可愛的小羽！")
 

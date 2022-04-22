@@ -4,6 +4,7 @@ import genshin
 
 import discord
 from discord.ext import commands
+from numpy import isin
 
 from cmd.asset.global_vars import errEmbed, defaultEmbed, setFooter
 
@@ -48,6 +49,9 @@ class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤�
                 f"❌ 你已經拿過今天的每日獎勵了", f"")
             setFooter(embed)
             await ctx.send(embed=embed)
+
+        elif isinstance(error, TimeoutError):
+            embed = errEmbed('⌛ 已超時','已取消剛才的操作, 請重新執行')
 
         else:
             foo = traceback.format_exception(

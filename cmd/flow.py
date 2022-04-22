@@ -1,3 +1,4 @@
+from dis import disco
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
@@ -86,6 +87,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 confirms = yaml.full_load(file)
             with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
                 finds = yaml.full_load(file)
+            with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+                users = yaml.full_load(file)
             if payload.user_id == finds[payload.message_id]['authorID']:
                 userObj = self.bot.get_user(payload.user_id)
                 await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
@@ -101,6 +104,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
                 elif finds[payload.message_id]['type'] == 2:
                     await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 素材委託")
+                    await author.send(f"{acceptUser.mention}的原神UID是{users[payload.user_id]['uid']}")
                     await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
                     await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
                 elif finds[payload.message_id]['type'] == 3:
@@ -638,7 +642,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         discordID = ctx.author.id
         if discordID not in users:
             user = self.bot.get_user(discordID)
-            flowCog = self.bot.get_cog('FlowCog')
             await self.register(ctx, user, discordID)
             return
         roles = []
@@ -692,9 +695,16 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 setFooter(embedResult)
                 message = await ctx.send(embed=embedResult)
                 return
-
+            uid = '請用`!adduid`來新增自己的uid'
+            if 'uid' in users[ctx.author.id]:
+                uid = users[ctx.author.id]['uid']
             embed = defaultEmbed(
-                f"請求幫助: {result.title}", f"發布者: {ctx.author.mention}\nflow幣: {result.flow}\n世界等級: >={roleStr}\n按 ✅ 來接受委託")
+                f'請求幫助: {result.title}',
+                f'發布者: {ctx.author.mention}\n'
+                f'flow幣: {result.flow}\n'
+                f'世界等級: >={roleStr}\n按 ✅ 來接受委託\n'
+                f'發布者UID: {uid}'
+            )
             setFooter(embed)
             message = await ctx.send(embed=embed)
             await message.add_reaction('✅')
@@ -805,8 +815,20 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
             with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
+    
+    @commands.command(name='adduid',help='新增自己的原神uid\n例如`!adduid 901211014`')
+    async def _adduid(self, ctx, uidInput:int):
+        discordID = ctx.author.id
+        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            users = yaml.full_load(file)
+        if discordID not in users:
+            user = self.bot.get_user(discordID)
+            await self.register(ctx, user, discordID)
+        users[discordID]['uid'] = uidInput
+        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            yaml.dump(users, file)
 
-    @commands.command(aliases=['gv'])
+    @commands.command(aliases=['gv'], help='(小雪團隊)設置抽獎')
     @commands.has_role("小雪團隊")
     async def giveaway(self, ctx):
         with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:

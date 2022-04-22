@@ -79,7 +79,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         for roleID in roles:
             role = discord.utils.get(ctx.guild.roles, id=roleID)
             emote = self.bot.get_emoji(emotes[count])
-            str += f"{emote}: {role.mention}\n"
+            str += f"{emote} • {role.mention}\n"
             count += 1
         embed = defaultEmbed(title, str)
         setFooter(embed)
