@@ -1,3 +1,4 @@
+import sys
 import traceback
 import genshin
 
@@ -7,7 +8,8 @@ from discord.ext import commands
 from cmd.asset.global_vars import errEmbed
 
 
-class CommandErrorHandler(commands.Cog):
+class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器'):
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -41,8 +43,8 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("你不是小雪團隊的一員!")
 
-        # elif isinstance(error, genshin.AlreadyClaimed):
-        #     pass
+        elif isinstance(error, genshin.AlreadyClaimed):
+            pass
 
         else:
             foo = traceback.format_exception(type(error), error, error.__traceback__)
@@ -55,6 +57,12 @@ class CommandErrorHandler(commands.Cog):
     @commands.command(hidden=True)
     async def do_repeat(self, ctx, *, inp: str):
         await ctx.send(inp)
+
+    @do_repeat.error
+    async def do_repeat_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            if error.param.name == 'inp':
+                await ctx.send("You forgot to give me input to repeat!")
 
 
 def setup(bot):

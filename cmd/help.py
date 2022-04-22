@@ -16,7 +16,7 @@ async def send_embed(ctx, embed):
                 f"May you inform the server team about this issue? :slight_smile: ", embed=embed)
 
 
-class Help(commands.Cog, hidden=True):
+class Help(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -27,7 +27,6 @@ class Help(commands.Cog, hidden=True):
         version = "v1.0.4"
 
         owner = 410036441129943050
-        owner_name = "seria#5334"
 
         if not input:
             try:
