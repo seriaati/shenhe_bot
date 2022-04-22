@@ -484,8 +484,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 chara_list = [[], []]
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
-                        # chara_list[i].append(getCharacterName(chara))
-                        chara_list[i].append(chara.name)
+                        chara_list[i].append(getCharacterName(chara))
                 topStr = ''
                 bottomStr = ''
                 for top_char in chara_list[0]:
