@@ -21,7 +21,6 @@ initial_extensions = [
     "cmd.genshin",
     "cmd.call",
     "cmd.othercmd",
-    "cmd.farm",
     "cmd.help",
     "cmd.vote",
     "cmd.flow",
