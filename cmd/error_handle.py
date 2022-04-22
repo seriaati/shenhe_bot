@@ -8,7 +8,7 @@ from discord.ext import commands
 from cmd.asset.global_vars import defaultEmbed, errEmbed
 
 
-class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器', hidden=True):
+class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器'):
 
     def __init__(self, bot):
         self.bot = bot
