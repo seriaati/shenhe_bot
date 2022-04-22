@@ -156,8 +156,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
-    @commands.command()
-    async def stats(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='stats',aliases=['!s'],help='查看原神個人資料')
+    async def _stats(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -181,8 +181,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embedStats)
         await ctx.send(embed=embedStats)
 
-    @commands.command()
-    async def area(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='area',aliases=[''])
+    async def _area(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
