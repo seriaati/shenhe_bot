@@ -1,6 +1,7 @@
 import datetime
 import discord
 import DiscordUtils
+import time
 import cmd.asset.global_vars as Global
 from cmd.asset.global_vars import defaultEmbed, errEmbed, setFooter
 import yaml
@@ -60,6 +61,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 print(f"{users[userID]['name']} already claimed")
             else:
                 print(f"claimed for {users[userID]['name']}")
+            time.sleep(10)
 
     @tasks.loop(seconds=600)
     async def checkLoop(self):
@@ -102,6 +104,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 pass
             except AttributeError:
                 print(f"{users[userID]['name']} 可能退群了")
+            time.sleep(10)
 
     @claimLoop.before_loop
     async def wait_until_1am(self):
@@ -481,7 +484,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 chara_list = [[], []]
                 for i, battle in enumerate(chamber.battles):
                     for chara in battle.characters:
-                        chara_list[i].append(getCharacterName(chara))
+                        # chara_list[i].append(getCharacterName(chara))
+                        chara_list[i].append(chara.name)
                 topStr = ''
                 bottomStr = ''
                 for top_char in chara_list[0]:
