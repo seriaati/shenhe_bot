@@ -65,7 +65,6 @@ class Help(commands.Cog):
                         f'{cog} - 指令', self.bot.cogs[cog].description)
                     for command in self.bot.get_cog(cog).get_commands():
                         if not command.hidden:
-                            alias = ''
                             for a in command.aliases:
                                 alias = f"或`!{a}`"
                             emb.add_field(
