@@ -25,7 +25,8 @@ initial_extensions = [
     "cmd.help",
     "cmd.vote",
     "cmd.flow",
-    "cmd.error_handle"
+    "cmd.error_handle",
+    "cmd.rr"
 ]
 if __name__ == '__main__':
     for extension in initial_extensions:

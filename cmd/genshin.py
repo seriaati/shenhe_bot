@@ -495,6 +495,27 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         print(embeds)
         await paginator.run(embeds)
 
+    @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
+    async def _farm(self, ctx):
+        chineseNumber = ['一','二','三','四','五','六','日']
+        weekdayGet = datetime.today().weekday()
+        weekday = "禮拜"+chineseNumber[datetime.today().weekday()]
+        embedFarm = defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
+        if weekdayGet == 0 or weekdayGet == 3:
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
+        elif weekdayGet == 1 or weekdayGet == 4:
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png")
+        elif weekdayGet == 2 or weekdayGet == 5:
+            embedFarm.set_image(
+                url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
+        elif weekdayGet == 6:
+            embedFarm = defaultEmbed(
+                f"今天({weekday})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
+        setFooter(embedFarm)
+        await ctx.send(embed=embedFarm)
+
 
 def setup(bot):
     bot.add_cog(GenshinCog(bot))
