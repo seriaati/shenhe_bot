@@ -67,11 +67,11 @@ class Help(commands.Cog):
                         if not command.hidden:
                             if not command.aliases:
                                 emb.add_field(
-                                    name=f"`{prefix}{command.name}`", value=command.help)
+                                    name=f"`{prefix}{command.name}`", value=command.help, inline=False)
                             else:
                                 for a in command.aliases:
                                     emb.add_field(
-                                        name=f"`{prefix}{command.name}`或`{prefix}{a}`", value=command.help)
+                                        name=f"`{prefix}{command.name}`或`{prefix}{a}`", value=command.help, inline=False)
 
                     break
             else:

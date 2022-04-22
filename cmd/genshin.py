@@ -207,7 +207,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command(name='claim', help='領取今日hoyolab網頁登入獎勵')
+    @commands.command(name='claim', aliases=['clm'],help='領取今日hoyolab網頁登入獎勵')
     async def _claim(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
