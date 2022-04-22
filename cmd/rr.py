@@ -1,8 +1,8 @@
 import yaml
 import discord
 from discord.ext import commands
-import asset.global_vars as Global
-from asset.global_vars import defaultEmbed, setFooter
+import cmd.asset.global_vars as Global
+from cmd.asset.global_vars import defaultEmbed, setFooter
 from discord.ext.forms import Form
 import re
 
