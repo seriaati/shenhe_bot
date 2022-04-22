@@ -86,6 +86,8 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         for roleID in roles:
             emojiID = emotes[count]
             rr[rollEmbed.id] = {emojiID: roleID}
+            with open(f'cmd/asset/rr.yaml', 'w', encoding='utf-8') as file:
+                yaml.dump(rr, file)
         for emote in emotes:
             emoji = self.bot.get_emoji(emote)
             await rollEmbed.add_reaction(emoji)
