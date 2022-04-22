@@ -50,6 +50,13 @@ class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤�
 
         elif isinstance(error, TimeoutError):
             embed = errEmbed('⌛ 已超時','已取消剛才的操作, 請重新執行')
+            setFooter(embed)
+            await ctx.send(embed=embed)
+
+        elif isinstance(error, commands.MissingRequiredArgument):
+            embed= errEmbed(f"你可能少輸入了什麼, 看看!help吧","")
+            setFooter(embed)
+            await ctx.send(embed=embed)
 
         else:
             foo = traceback.format_exception(
