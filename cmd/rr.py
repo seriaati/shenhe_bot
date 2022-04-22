@@ -75,7 +75,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         str = ""
         count = 0
         for roleID in roles:
-            role = self.bot.get_role(roleID)
+            role = discord.utils.get(ctx.guild.roles, id=roleID)
             emote = self.bot.get_emoji(emotes[count])
             str += f"{emote}: {role}\n"
             count += 1
