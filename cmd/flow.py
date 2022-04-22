@@ -60,7 +60,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         if discordID not in users:
             user = self.bot.get_user(payload.user_id)
-            flowCog = self.bot.get_cog('FlowCog')
             await self.register(channel, user, discordID, False)
 
         if payload.message_id == 965143582178705459 and payload.emoji.name == "Serialook":
