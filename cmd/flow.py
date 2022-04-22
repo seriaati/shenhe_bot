@@ -827,6 +827,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users[discordID]['uid'] = uidInput
         with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(users, file)
+        await ctx.send(f"[綁定成功] 原神UID: {uidInput}")
 
     @commands.command(aliases=['gv'], help='(小雪團隊)設置抽獎')
     @commands.has_role("小雪團隊")
