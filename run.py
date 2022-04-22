@@ -17,9 +17,11 @@ bot = commands.Bot(command_prefix=['!','！'], help_command=None,
                    intents=intents, case_insensitive=True)
 token = Global.bot_token
 
+skip = ['__init__','character_name','classes','global_vars']
+
 for filepath in Path('./cmd').glob('**/*.py'):
     cog_name = Path(filepath).stem
-    if cog_name == "__init__":
+    if cog_name in skip:
         continue
     bot.load_extension(f'cmd.{cog_name}')
 
