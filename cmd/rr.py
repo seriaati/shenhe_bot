@@ -11,9 +11,31 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+            rr = yaml.full_load(file)
+        if payload.message_id in rr and payload.emoji_id in rr[payload.message_id]:
+            guild = self.bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji_id))
+            await member.add_roles(role)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
+        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+            rr = yaml.full_load(file)
+        if payload.message_id in rr and payload.emoji_id in rr[payload.message_id]:
+            guild = self.bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji_id))
+            await member.remove_roles(role)
+
     @commands.command(name='reactionrole', aliases=['rr'], help='創建一個表符身份組訊息')
     @commands.has_role('小雪團隊')
     async def _reactionrole(self, ctx):
+        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+            rr = yaml.full_load(file)
         roles = []
         emotes = []
         form = Form(ctx, '表符身份組設置', cleanup=True)
@@ -60,6 +82,10 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         embed = defaultEmbed(title, str)
         setFooter(embed)
         rollEmbed = await ctx.send(embed=embed)
+        count = 0
+        for roleID in roles:
+            emojiID = emotes[count]
+            rr[rollEmbed.id] = {emojiID: roleID}
         for emote in emotes:
             emoji = self.bot.get_emoji(emote)
             await rollEmbed.add_reaction(emoji)

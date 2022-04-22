@@ -219,7 +219,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
-        except:
+        except genshin.AlreadyClaimed:
             embed = defaultEmbed(
                 f"使用者: {username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             setFooter(embed)
@@ -417,23 +417,23 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             users = yaml.full_load(file)
         if arg == "":
             embed = defaultEmbed(
-                "什麼是私訊提醒功能？", "申鶴每一小時會檢測一次你的樹脂數量，當超過140的時候，\n申鶴會私訊提醒你，最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
+                "什麼是私訊提醒功能？", "申鶴每一小時會檢測一次你的樹脂數量, 當超過140的時候,\n申鶴會私訊提醒你,最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
             setFooter(embed)
             await ctx.send(embed=embed)
         elif arg == "on":
-            for user in users:
-                if user['discordID'] == ctx.author.id:
-                    user['dm'] = True
-                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(users, file)
-                    await ctx.send(f"已開啟 {user['name']} 的私訊功能")
+            userID = ctx.author.id
+            if userID in users:
+                users[userID]['dm'] = True
+                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(users, file)
+                await ctx.send(f"已開啟 {users[userID]['name']} 的私訊功能")
         elif arg == "off":
-            for user in users:
-                if user['discordID'] == ctx.author.id:
-                    user['dm'] = False
-                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(users, file)
-                    await ctx.send(f"已關閉 {user['name']} 的私訊功能")
+            userID = ctx.author.id
+            if userID in users:
+                users[userID]['dm'] = False
+                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    yaml.dump(users, file)
+                await ctx.send(f"已開啟 {users[userID]['name']} 的私訊功能")
 
     @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
     async def _abyss(self, ctx, member: discord.Member = None):

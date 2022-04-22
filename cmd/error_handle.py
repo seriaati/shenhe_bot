@@ -1,5 +1,5 @@
-import sys
 import traceback
+import genshin
 
 import discord
 from discord.ext import commands
@@ -41,6 +41,9 @@ class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤�
 
         elif isinstance(error, commands.MissingRole):
             await ctx.send("你不是小雪團隊的一員!")
+
+        elif isinstance(error, genshin.AlreadyClaimed):
+            pass
 
         else:
             foo = traceback.format_exception(type(error), error, error.__traceback__)
