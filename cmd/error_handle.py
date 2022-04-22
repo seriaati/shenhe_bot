@@ -1,12 +1,10 @@
-import sys
 import traceback
 import genshin
 
 import discord
 from discord.ext import commands
-from numpy import isin
 
-from cmd.asset.global_vars import errEmbed, defaultEmbed, setFooter
+from cmd.asset.global_vars import errEmbed, setFooter
 
 
 class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器'):
