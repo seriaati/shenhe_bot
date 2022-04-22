@@ -61,7 +61,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if discordID not in users:
             user = self.bot.get_user(payload.user_id)
             flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(channel, user, discordID, False)
+            await self.register(channel, user, discordID, False)
 
         if payload.message_id == 965143582178705459 and payload.emoji.name == "Serialook":
             guild = self.bot.get_guild(payload.guild_id)
@@ -567,8 +567,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             discordID = ctx.author.id
             user = self.bot.get_user(discordID)
-            flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(ctx, user, discordID)
+            await self.register(ctx, user, discordID)
 
     @shop.command()
     @commands.has_role("小雪團隊")
@@ -609,8 +608,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         channel = self.bot.get_channel(message.channel.id)
         if discordID not in users:
             user = self.bot.get_user(message.author.id)
-            flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(channel, user, discordID, False)
+            await self.register(channel, user, discordID, False)
         if message.author == self.bot.user:
             return
         if "早安" in message.content:
@@ -641,7 +639,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if discordID not in users:
             user = self.bot.get_user(discordID)
             flowCog = self.bot.get_cog('FlowCog')
-            await flowCog.register(ctx, user, discordID)
+            await self.register(ctx, user, discordID)
             return
         roles = []
         for i in range(1, 9):
