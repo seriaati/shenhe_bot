@@ -498,8 +498,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
     async def _farm(self, ctx):
         chineseNumber = ['一','二','三','四','五','六','日']
-        weekdayGet = datetime.today().weekday()
-        weekday = "禮拜"+chineseNumber[datetime.today().weekday()]
+        weekdayGet = datetime.datetime.today().weekday()
+        weekday = "禮拜"+chineseNumber[weekdayGet]
         embedFarm = defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:
             embedFarm.set_image(
