@@ -19,6 +19,8 @@ token = Global.bot_token
 
 for filepath in Path('./cmd').glob('**/*.py'):
     cog_name = Path(filepath).stem
+    if cog_name == "__init__":
+        continue
     bot.load_extension(f'cmd.{cog_name}')
 
 @bot.event
