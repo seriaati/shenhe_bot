@@ -67,9 +67,9 @@ class Help(commands.Cog):
                         if not command.hidden:
                             alias = ''
                             for a in command.aliases:
-                                alias = a
+                                alias = f"或`!{a}`"
                             emb.add_field(
-                                name=f"`{prefix}{command.name}`或`{prefix}{alias}`", value=command.help)
+                                name=f"`{prefix}{command.name}{alias}`", value=command.help)
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
