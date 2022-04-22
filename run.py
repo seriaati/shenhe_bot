@@ -4,6 +4,7 @@ import git
 import yaml
 from discord.ext import commands
 import cmd.asset.global_vars as Global
+from pathlib import Path
 
 with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
     users = yaml.full_load(file)
@@ -16,21 +17,9 @@ bot = commands.Bot(command_prefix=['!','！'], help_command=None,
                    intents=intents, case_insensitive=True)
 token = Global.bot_token
 
-# 指令包
-initial_extensions = [
-    "cmd.genshin",
-    "cmd.call",
-    "cmd.othercmd",
-    "cmd.help",
-    "cmd.vote",
-    "cmd.flow",
-    "cmd.error_handle",
-    "cmd.rr"
-]
-if __name__ == '__main__':
-    for extension in initial_extensions:
-        bot.load_extension(extension)
-
+for filepath in Path('./cmd').glob('**/*.py'):
+    cog_name = Path(filepath).stem
+    bot.load_extension(f'cmd.{cog_name}')
 
 @bot.event
 async def on_ready():
@@ -52,47 +41,22 @@ async def reload(ctx, arg):
     g.pull()
     await ctx.send("已從源碼更新")
     if arg == 'all':
-        for extension in initial_extensions:
+        for filepath in Path('./cmd').glob('**/*.py'):
+            cog_name = Path(filepath).stem
             try:
-                bot.reload_extension(extension)
-                await ctx.send(f"已重整 {extension} 指令包")
+                bot.reload_extension(f'cmd.{cog_name}')
+                await ctx.send(f"已重整 {cog_name} 指令包")
             except Exception as e:
-                await ctx.send(f"{extension}發生錯誤```{e}```")
+                await ctx.send(f"{cog_name}發生錯誤```{e}```")
     else:
-        for extension in initial_extensions:
-            extStr = f"cmd.{arg}"
-            if extStr == extension:
+        for filepath in Path('./cmd').glob('**/*.py'):
+            cog_name = Path(filepath).stem
+            if arg == cog_name:
                 try:
-                    bot.reload_extension(extension)
-                    await ctx.send(f"已重整 {extension} 指令包")
+                    bot.reload_extension(f'cmd.{cog_name}')
+                    await ctx.send(f"已重整 {cog_name} 指令包")
                 except Exception as e:
-                    await ctx.send(f"{extension}發生錯誤```{e}```")
-
-
-@bot.command(hidden = True)
-@commands.has_role("小雪團隊")
-async def unload(ctx, arg):
-    for extension in initial_extensions:
-        exStr = F"cmd.{arg}"
-        if exStr == extension:
-            try:
-                bot.unload_extension(extension)
-                await ctx.send(f"已暫時關閉 {extension} 指令包")
-            except Exception as e:
-                await ctx.send(f"{extension}發生錯誤```{e}```")
-
-
-@bot.command(hidden = True)
-@commands.has_role("小雪團隊")
-async def load(ctx, arg):
-    for extension in initial_extensions:
-        exStr = F"cmd.{arg}"
-        if exStr == extension:
-            try:
-                bot.load_extension(extension)
-                await ctx.send(f"已加載 {extension} 指令包")
-            except Exception as e:
-                await ctx.send(f"{extension}發生錯誤```{e}```")
+                    await ctx.send(f"{cog_name}發生錯誤```{e}```")
 
 
 bot.run(token, bot=True, reconnect=True)
