@@ -68,7 +68,7 @@ class Help(commands.Cog):
                             for a in command.aliases:
                                 alias = f"或`!{a}`"
                             emb.add_field(
-                                name=f"`{prefix}{command.name}{alias}`", value=command.help)
+                                name=f"`{prefix}{command.name}`{alias}", value=command.help)
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
