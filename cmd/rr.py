@@ -56,7 +56,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
             if optionReseult.role == "done":
                 break
             else:
-                roleID = int(re.search(r'\d+', result.role).group())
+                roleID = int(re.search(r'\d+', optionReseult.role).group())
                 roles.append(roleID)
 
             emoteForm = Form(ctx, '表符身份組設置', cleanup=True)
@@ -69,7 +69,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
             if emoteResult.emote == "done":
                 break
             else:
-                emoteID = int(re.search(r'\d+', result.emote).group())
+                emoteID = int(re.search(r'\d+', emoteResult.emote).group())
                 emotes.append(emoteID)
 
         str = ""
