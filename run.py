@@ -12,7 +12,7 @@ with open(f'cmd/asset/accounts.yaml', 'r', encoding='utf-8') as file:
 intents = discord.Intents.default()
 intents.members = True
 intents.reactions = True
-bot = commands.Bot(command_prefix=['!','！','! '], help_command=None,
+bot = commands.Bot(command_prefix=['!','！'], help_command=None,
                    intents=intents, case_insensitive=True)
 token = Global.bot_token
 
