@@ -15,20 +15,20 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
     async def on_raw_reaction_add(self, payload):
         with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
             rr = yaml.full_load(file)
-        if payload.message_id in rr and payload.emoji_id in rr[payload.message_id]:
+        if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             guild = self.bot.get_guild(payload.guild_id)
             member = guild.get_member(payload.user_id)
-            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji_id))
+            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji.id))
             await member.add_roles(role)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
             rr = yaml.full_load(file)
-        if payload.message_id in rr and payload.emoji_id in rr[payload.message_id]:
+        if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             guild = self.bot.get_guild(payload.guild_id)
             member = guild.get_member(payload.user_id)
-            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji_id))
+            role = discord.utils.get(guild.roles, id=rr.get(payload.emoji.id))
             await member.remove_roles(role)
 
     @commands.command(name='reactionrole', aliases=['rr'], help='創建一個表符身份組訊息')
@@ -77,7 +77,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         for roleID in roles:
             role = discord.utils.get(ctx.guild.roles, id=roleID)
             emote = self.bot.get_emoji(emotes[count])
-            str += f"{emote}: {role}\n"
+            str += f"{emote}: {role.mention}\n"
             count += 1
         embed = defaultEmbed(title, str)
         setFooter(embed)
