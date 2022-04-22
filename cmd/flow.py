@@ -626,7 +626,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         yaml.dump(bank, file)
                     await message.add_reaction(f"☀️")
 
-    @commands.command(name='find', aliases=['f'], help='發布委託')
+    @commands.command(name='find', help='發布委託')
     async def _find(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
