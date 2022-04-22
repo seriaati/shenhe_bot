@@ -56,7 +56,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
         reactor = self.bot.get_user(payload.user_id)
-        message = channel.get_partial_message(payload.message_id)
+        message = channel.fetch_message(payload.message_id)
 
         if discordID not in users:
             user = self.bot.get_user(payload.user_id)
