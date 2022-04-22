@@ -56,7 +56,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
         reactor = self.bot.get_user(payload.user_id)
-        message = channel.fetch_message(payload.message_id)
+        if channel is not None:
+            message = channel.get_partial_message(payload.message_id)
 
         if discordID not in users:
             user = self.bot.get_user(payload.user_id)
@@ -274,7 +275,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             del giveaways[msgID]
             with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(giveaways, file)
-    
+
     @commands.command(name='acc', help='查看目前擁有flow幣數量')
     async def _account(self, ctx, *, member: discord.Member = None):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
@@ -412,7 +413,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     yaml.dump(bank, file)
                 break
 
-    @commands.command(name='reset',help='(小雪團隊)重設所有帳號的flow幣數量')
+    @commands.command(name='reset', help='(小雪團隊)重設所有帳號的flow幣數量')
     @commands.has_role("小雪團隊")
     async def _reset(self, ctx):
         with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
@@ -432,7 +433,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             yaml.dump(bank, file)
         await ctx.send(embed=embed)
 
-    @commands.command(name='total',help='查看目前群組帳號及銀行flow幣分配情況')
+    @commands.command(name='total', help='查看目前群組帳號及銀行flow幣分配情況')
     async def _total(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
@@ -447,7 +448,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         flowSum = total+bank['flow']
         await ctx.send(f"目前群組裡共有:\n{count}個flow帳號\n用戶{total}+銀行{bank['flow']}={flowSum}枚flow幣")
 
-    @commands.command(name='flows',help='查看群組內所有flow帳號')
+    @commands.command(name='flows', help='查看群組內所有flow帳號')
     async def _flows(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
