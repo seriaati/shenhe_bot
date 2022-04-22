@@ -156,7 +156,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embedCheck)
         await ctx.send(embed=embedCheck)
 
-    @commands.command(name='stats',aliases=['!s'],help='查看原神個人資料')
+    @commands.command(name='stats',aliases=['s'],help='查看原神個人資料')
     async def _stats(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
@@ -181,7 +181,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embedStats)
         await ctx.send(embed=embedStats)
 
-    @commands.command(name='area',aliases=[''])
+    @commands.command(name='area', help='查看區域探索度')
     async def _area(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
@@ -207,8 +207,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def claim(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='claim', help='領取今日hoyolab網頁登入獎勵')
+    async def _claim(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -230,8 +230,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             setFooter(embed)
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def diary(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='diary',aliases=['d'],help='查看今月摩拉與原石收入')
+    async def _diary(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -249,8 +249,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embedDiary)
         await ctx.send(embed=embedDiary)
 
-    @commands.command()
-    async def log(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='log',help='查看最近25筆原石與摩拉收入紀錄與來源')
+    async def _log(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -277,8 +277,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         embeds = [embedPrimo, embedMora]
         await paginator.run(embeds)
 
-    @commands.command()
-    async def char(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='char',aliases=['ch'],help='查看所有擁有角色資訊')
+    async def _char(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -315,8 +315,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         paginator.add_reaction('⏭️', "last")
         await paginator.run(charEmbeds)
 
-    @commands.command()
-    async def users(self, ctx):
+    @commands.command(name='users',help='查看目前所有已註冊原神帳號')
+    async def _users(self, ctx):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         userStr = ""
@@ -330,8 +330,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def today(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='today',aliases=['td'],help='查看今日原石與摩拉收入')
+    async def _today(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
         client = genshin.Client(cookies)
@@ -348,7 +348,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.has_role("小雪團隊")
     async def newuser(self, ctx):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
@@ -388,8 +388,8 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         else:
             await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
 
-    @commands.command()
-    async def register(self, ctx):
+    @commands.command(name='register',aliases=['reg'],help='查看註冊原神帳號教學')
+    async def _register(self, ctx):
         embedRegister = defaultEmbed(
             "註冊教學", "1. 去 https://www.hoyolab.com/home 然後登入\n2. 按F12\n3. 點擊console，將下方的指令貼上後按ENTER\n```javascript:(()=>{_=(n)=>{for(i in(r=document.cookie.split(';'))){var a=r[i].split('=');if(a[0].trim()==n)return a[1]}};c=_('account_id')||alert('無效的cookie,請重新登錄!');c&&confirm('將cookie複製到剪貼版？')&&copy(document.cookie)})();```\n4. 將複製的訊息私訊給<@410036441129943050>或<@665092644883398671>並附上原神UID及想要的使用者名稱\n註: 如果顯示無效的cookie，請重新登入, 如果仍然無效，請用無痕視窗登入")
         setFooter(embedRegister)
@@ -398,21 +398,21 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         await ctx.send(embed=embedRegister)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def whyregister(self, ctx):
+    @commands.command(name='whyreg',help='查看註冊帳號能獲得的好處')
+    async def _whyreg(self, ctx):
         embed = defaultEmbed("註冊帳號有什麼好處?", Global.whyRegister)
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def stuck(self, ctx):
+    @commands.command(name='stuck',help='找不到原神帳號資料?')
+    async def _stuck(self, ctx):
         embed = defaultEmbed(
             "已經註冊,但有些資料找不到?", "1. 至hoyolab網頁中\n2. 點擊頭像\n3. personal homepage\n4. 右邊會看到genshin impact\n5. 點擊之後看到設定按鈕\n6. 打開 Do you want to enable real time-notes")
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def dm(self, ctx, *, arg=''):
+    @commands.command(name='dm',help='查看私訊功能介紹\n`!dm on`或`!dm off`來開關私訊功能')
+    async def _dm(self, ctx, *, arg=''):
         with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if arg == "":
@@ -435,7 +435,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                         yaml.dump(users, file)
                     await ctx.send(f"已關閉 {user['name']} 的私訊功能")
 
-    @commands.command(aliases=['abyss', 'abs'])
+    @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
     async def _abyss(self, ctx, member: discord.Member = None):
         member = member or ctx.author
         cookies, uid, username = await self.getUserData(ctx, member.id)
@@ -445,21 +445,17 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         client.uids[genshin.Game.GENSHIN] = uid
         abyss = await client.get_spiral_abyss(uid)
         try:
-            strongestStrike = abyss.ranks.strongest_strike
-            mostKill = abyss.ranks.most_kills
-            mostPlayed = abyss.ranks.most_played
-            mostBurst = abyss.ranks.most_bursts_used
-            mostSkill = abyss.ranks.most_skills_used
-            mBurst = mostBurst[0].value
-            mBurstChar = getCharacterName(mostBurst[0])
-            mSkill = mostSkill[0].value
-            mSkillChar = getCharacterName(mostSkill[0])
-            mKill = mostKill[0].value
-            mKillChar = getCharacterName(mostKill[0])
-            mPlay = mostPlayed[0].value
-            mPlayChar = getCharacterName(mostPlayed[0])
-            dmg = strongestStrike[0].value
-            dmgChar = getCharacterName(strongestStrike[0])
+            rank = abyss.ranks
+            mBurst = rank.most_bursts_used[0].value
+            mBurstChar = getCharacterName(rank.most_bursts_used[0])
+            mSkill = rank.most_skills_used[0].value
+            mSkillChar = getCharacterName(rank.most_skills_used[0])
+            mKill = rank.most_kills[0].value
+            mKillChar = getCharacterName(rank.most_kills[0])
+            mPlay = rank.most_played[0].value
+            mPlayChar = getCharacterName(rank.most_played[0])
+            dmg = rank.strongest_strike[0].value
+            dmgChar = getCharacterName(rank.strongest_strike[0])
         except IndexError:
             embed = defaultEmbed(
                 "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
