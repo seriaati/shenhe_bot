@@ -5,7 +5,7 @@ import genshin
 import discord
 from discord.ext import commands
 
-from cmd.asset.global_vars import errEmbed
+from cmd.asset.global_vars import errEmbed, defaultEmbed, setFooter
 
 
 class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器'):
@@ -44,14 +44,18 @@ class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤�
             await ctx.send("你不是小雪團隊的一員!")
 
         elif isinstance(error, genshin.AlreadyClaimed):
-            pass
+            embed = errEmbed(
+                f"❌ 你已經拿過今天的每日獎勵了", f"")
+            setFooter(embed)
+            await ctx.send(embed=embed)
 
         else:
-            foo = traceback.format_exception(type(error), error, error.__traceback__)
+            foo = traceback.format_exception(
+                type(error), error, error.__traceback__)
             print("".join(foo))
             embed = errEmbed(f"指令錯誤: {ctx.command}",
-            f'```{type(error).__name__}: {error}```\n'
-            '如果你見到這個畫面, 請將輸入的指令與上方的錯誤私訊給小雪')
+                             f'```{type(error).__name__}: {error}```\n'
+                             '如果你見到這個畫面, 請將輸入的指令與上方的錯誤私訊給小雪')
             await ctx.send(embed=embed)
 
     @commands.command(hidden=True)

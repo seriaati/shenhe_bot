@@ -433,7 +433,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 users[userID]['dm'] = False
                 with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
-                await ctx.send(f"已開啟 {users[userID]['name']} 的私訊功能")
+                await ctx.send(f"已關閉 {users[userID]['name']} 的私訊功能")
 
     @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
     async def _abyss(self, ctx, member: discord.Member = None):

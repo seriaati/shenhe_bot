@@ -53,7 +53,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
             await optionForm.set_color("0xa68bd3")
             optionReseult = await optionForm.start()
 
-            if optionReseult.option == "done":
+            if optionReseult.role == "done":
                 break
             else:
                 roleID = int(re.search(r'\d+', result.role).group())
