@@ -65,10 +65,13 @@ class Help(commands.Cog):
                         f'{cog} - 指令', self.bot.cogs[cog].description)
                     for command in self.bot.get_cog(cog).get_commands():
                         if not command.hidden:
-                            for a in command.aliases:
-                                alias = f"或`!{a}`"
-                            emb.add_field(
-                                name=f"`{prefix}{command.name}`{alias}", value=command.help)
+                            if not command.aliases:
+                                for a in command.aliases:
+                                    emb.add_field(
+                                        name=f"`{prefix}{command.name}`或`{prefix}{a}", value=command.help)
+                            else:
+                                emb.add_field(
+                                        name=f"`{prefix}{command.name}`", value=command.help)
                     break
             else:
                 emb = defaultEmbed("「這是什麼…？」",
