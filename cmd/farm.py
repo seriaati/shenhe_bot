@@ -3,12 +3,12 @@ from datetime import datetime
 from cmd.asset.global_vars import defaultEmbed, setFooter
 
 
-class FarmCog(commands.Cog):
+class FarmCog(commands.Cog, name='farm', description='原神今日可刷素材'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def farm(self, ctx):
+    @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
+    async def _farm(self, ctx):
         weekdayGet = datetime.today().weekday()
         if weekdayGet == 0:
             weekday = "禮拜一"

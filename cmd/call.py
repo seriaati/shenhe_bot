@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class CallCog(commands.Cog):
+class CallCog(commands.Cog, name='call', description='呼叫相關'):
     def __init__(self, bot):
         self.bot = bot
 

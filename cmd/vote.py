@@ -3,12 +3,12 @@ from cmd.asset.global_vars import defaultEmbed, setFooter
 from discord.ext.forms import Form
 
 
-class VoteCog(commands.Cog):
+class VoteCog(commands.Cog, name='vote', description='投票'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def vote(self, ctx):
+    @commands.command(name='vote', aliases=['v'], help='發起投票')
+    async def _vote(self, ctx):
         await ctx.message.delete()
         options = []
         emotes = []

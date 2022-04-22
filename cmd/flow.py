@@ -1,4 +1,3 @@
-from email.policy import default
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
@@ -12,7 +11,7 @@ import discord
 import re
 
 
-class FlowCog(commands.Cog):
+class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -254,9 +253,9 @@ class FlowCog(commands.Cog):
             await giveawayMsg.edit(embed=newEmbed)
             await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
 
-    @commands.command(aliases=['fr'])
+    @commands.command(name='forceroll', aliases=['fr'], help='(小雪團隊)強制結束抽獎並產生得獎者')
     @commands.has_role("小雪團隊")
-    async def forceroll(self, ctx, msgID):
+    async def _forceroll(self, ctx, msgID):
         with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
             giveaways = yaml.full_load(file)
         giveawayMsg = self.bot.fetch_message(msgID)
@@ -277,8 +276,8 @@ class FlowCog(commands.Cog):
             with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(giveaways, file)
     
-    @commands.command()
-    async def acc(self, ctx, *, member: discord.Member = None):
+    @commands.command(name='acc', help='查看目前擁有flow幣數量')
+    async def _account(self, ctx, *, member: discord.Member = None):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         member = member or ctx.author
@@ -292,7 +291,7 @@ class FlowCog(commands.Cog):
             user = self.bot.get_user(discordID)
             await self.register(ctx, user, discordID)
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.has_role("小雪團隊")
     async def roles(self):
         channel = self.bot.get_channel(962311051683192842)
@@ -305,7 +304,7 @@ class FlowCog(commands.Cog):
             emojiStr = emoji.emojize(f":{word}:", language='alias')
             await message.add_reaction(str(emojiStr))
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.has_role("小雪團隊")
     async def notif_roles(self):
         channel = self.bot.get_channel(962311051683192842)
@@ -315,8 +314,8 @@ class FlowCog(commands.Cog):
         message = await channel.send(embed=embed)
         await message.add_reaction("<:Serialook:959100214747222067>")
 
-    @commands.command()
-    async def give(self, ctx, member: discord.Member, argFlow: int):
+    @commands.command(name='give', help='給其他人flow幣')
+    async def _give(self, ctx, member: discord.Member, argFlow: int):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if member.id == ctx.author.id:
@@ -350,9 +349,9 @@ class FlowCog(commands.Cog):
             user = self.bot.get_user(giverID)
             await self.register(ctx, user, giverID)
 
-    @commands.command()
+    @commands.command(name='take', help='(小雪團隊)將某帳號的flow幣轉回銀行')
     @commands.has_role("小雪團隊")
-    async def take(self, ctx):
+    async def _take(self, ctx):
         with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
@@ -382,9 +381,9 @@ class FlowCog(commands.Cog):
                     yaml.dump(bank, file)
                 break
 
-    @commands.command()
+    @commands.command(name='make', help='從銀行轉出flow幣給某帳號')
     @commands.has_role("小雪團隊")
-    async def make(self, ctx):
+    async def _make(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
@@ -414,16 +413,9 @@ class FlowCog(commands.Cog):
                     yaml.dump(bank, file)
                 break
 
-    @commands.command()
-    async def flow(self, ctx):
-        embed = defaultEmbed(
-            "flow系統", "`!acc`查看flow帳戶\n`!give @user <number>`給flow幣\n`!find`發布委託\n`!shop`商店\n`!shop buy`購買商品")
-        setFooter(embed)
-        await ctx.send(embed=embed)
-
-    @commands.command()
+    @commands.command(name='reset',help='(小雪團隊)重設所有帳號的flow幣數量')
     @commands.has_role("小雪團隊")
-    async def reset(self, ctx):
+    async def _reset(self, ctx):
         with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
@@ -441,8 +433,8 @@ class FlowCog(commands.Cog):
             yaml.dump(bank, file)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def total(self, ctx):
+    @commands.command(name='total',help='查看目前群組帳號及銀行flow幣分配情況')
+    async def _total(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
@@ -456,8 +448,8 @@ class FlowCog(commands.Cog):
         flowSum = total+bank['flow']
         await ctx.send(f"目前群組裡共有:\n{count}個flow帳號\n用戶{total}+銀行{bank['flow']}={flowSum}枚flow幣")
 
-    @commands.command()
-    async def flows(self, ctx):
+    @commands.command(name='flows',help='查看群組內所有flow帳號')
+    async def _flows(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         userStr = ""
@@ -634,8 +626,8 @@ class FlowCog(commands.Cog):
                         yaml.dump(bank, file)
                     await message.add_reaction(f"☀️")
 
-    @commands.command()
-    async def find(self, ctx):
+    @commands.command(name='find', aliases=['f'], help='發布委託')
+    async def _find(self, ctx):
         with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
@@ -849,7 +841,7 @@ class FlowCog(commands.Cog):
         with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def release(self, ctx):
         embed = defaultEmbed(

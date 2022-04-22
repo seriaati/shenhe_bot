@@ -2,7 +2,7 @@ import datetime
 import discord
 import DiscordUtils
 import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from cmd.asset.global_vars import defaultEmbed, errEmbed, setFooter
 import yaml
 from cmd.asset.classes import Character
 from discord.ext import commands, tasks
@@ -457,7 +457,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             dmg = rank.strongest_strike[0].value
             dmgChar = getCharacterName(rank.strongest_strike[0])
         except IndexError:
-            embed = defaultEmbed(
+            embed = errEmbed(
                 "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
             setFooter(embed)
             await ctx.send(embed=embed)

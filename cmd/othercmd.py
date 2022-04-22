@@ -4,7 +4,7 @@ from random import randint
 from cmd.asset.global_vars import defaultEmbed, setFooter
 
 
-class OtherCMDCog(commands.Cog):
+class OtherCMDCog(commands.Cog, name='others', description='其他指令'):
     def __init__(self, bot):
         self.bot = bot
 
