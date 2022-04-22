@@ -46,7 +46,7 @@ class CommandErrorHandler(commands.Cog):
             foo = traceback.format_exception(type(error), error, error.__traceback__)
             print("".join(foo))
             embed = errEmbed(f"指令錯誤: {ctx.command}",
-            f'```{type(error).__name__}: {error}```'
+            f'```{type(error).__name__}: {error}```\n'
             '如果你見到這個畫面, 請將輸入的指令與上方的錯誤私訊給小雪')
             await ctx.send(embed=embed)
 
