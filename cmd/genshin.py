@@ -219,7 +219,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         signed_in, claimed_rewards = await client.get_reward_info()
         try:
             reward = await client.claim_daily_reward()
-        except genshin.AlreadyClaimed:
+        except:
             embed = defaultEmbed(
                 f"使用者: {username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
             setFooter(embed)

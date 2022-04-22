@@ -16,7 +16,7 @@ async def send_embed(ctx, embed):
                 f"May you inform the server team about this issue? :slight_smile: ", embed=embed)
 
 
-class Help(commands.Cog):
+class Help(commands.Cog, hidden=True):
 
     def __init__(self, bot):
         self.bot = bot

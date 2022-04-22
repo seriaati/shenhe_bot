@@ -462,8 +462,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         setFooter(embed)
         await ctx.send(embed=embed)
 
-    @commands.group()
-    async def shop(self, ctx):
+    @commands.group(name='shop', help='商店\n`!shop buy`來購買商品')
+    async def _shop(self, ctx):
         if ctx.invoked_subcommand is None:
             with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
                 shop = yaml.full_load(file)
