@@ -4,7 +4,7 @@ import discord
 import DiscordUtils
 import utility.utils as Global
 import yaml
-from utility.utils import defaultEmbed, errEmbed, setFooter
+from utility.utils import defaultEmbed, errEmbed, setFooter, log
 from utility.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
@@ -126,6 +126,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name="check",aliases=['c'],help='查看即時便籤')
     async def _check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
+        print(log(False, False, 'Genshin', f'{member} used command !check'))
         msg = await ctx.send('讀取中...')
         result = await genshin_app.getRealTimeNotes(member.id)
         await msg.delete()
@@ -134,27 +135,11 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='stats',aliases=['s'],help='查看原神個人資料')
     async def _stats(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        genshinUser = await client.get_partial_genshin_user(uid)
-        days = genshinUser.stats.days_active
-        char = genshinUser.stats.characters
-        achieve = genshinUser.stats.achievements
-        anemo = genshinUser.stats.anemoculi
-        geo = genshinUser.stats.geoculi
-        electro = genshinUser.stats.electroculi
-        comChest = genshinUser.stats.common_chests
-        exChest = genshinUser.stats.exquisite_chests
-        luxChest = genshinUser.stats.luxurious_chests
-        abyss = genshinUser.stats.spiral_abyss
-        waypoint = genshinUser.stats.unlocked_waypoints
-        embedStats = defaultEmbed(f"使用者: {username}",
-                                  f":calendar: 活躍天數: {days}\n<:expedition:956385168757780631> 角色數量: {char}/48\n📜 成就數量:{achieve}/586\n🗺 已解鎖傳送錨點數量: {waypoint}\n🌙 深淵已達: {abyss}層\n<:anemo:956719995906322472> 風神瞳: {anemo}/66\n<:geo:956719995440730143> 岩神瞳: {geo}/131\n<:electro:956719996262821928> 雷神瞳: {electro}/181\n⭐ 一般寶箱: {comChest}\n🌟 稀有寶箱: {exChest}\n✨ 珍貴寶箱: {luxChest}")
-        setFooter(embedStats)
-        await ctx.send(embed=embedStats)
+        print(log(False, False, 'Genshin', f'{member} used command !stats'))
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getUserStats(member.id)
+        await msg.delete()
+        await ctx.send(embed=result)
 
     @commands.command(name='area', help='查看區域探索度')
     async def _area(self, ctx, *, member: discord.Member = None):

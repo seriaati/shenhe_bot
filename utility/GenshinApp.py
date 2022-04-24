@@ -9,15 +9,15 @@ class GenshinApp:
     def __init__(self) -> None:
         try:
             with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
-                self.__user_data = yaml.full_load(f)
+                self.user_data = yaml.full_load(f)
         except:
-            self.__user_data = {}
+            self.user_data = {}
 
     async def getRealTimeNotes(self, user_id: int):
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.__user_data[user_id]['uid']
+        uid = self.user_data[user_id]['uid']
         client, nickname = self.getUserCookie(user_id)
         try:
             notes = await client.get_notes(uid)
@@ -70,6 +70,49 @@ class GenshinApp:
                 f"最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘"
                 f"\n<:transformer:966156330089971732> 質變儀剩餘冷卻時間: {transStr}"
             )
+        return result
+
+    async def getUserStats(self, user_id:int):
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        uid = self.user_data[user_id]['uid']
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            genshinUser = await client.get_partial_genshin_user(uid)
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed('太快了!', '目前原神API請求次數過多, 請稍後再試')
+        except Exception as e:
+            print(log(False, True, 'Notes', e))
+        else:
+            days = genshinUser.stats.days_active
+            char = genshinUser.stats.characters
+            achieve = genshinUser.stats.achievements
+            anemo = genshinUser.stats.anemoculi
+            geo = genshinUser.stats.geoculi
+            electro = genshinUser.stats.electroculi
+            comChest = genshinUser.stats.common_chests
+            exChest = genshinUser.stats.exquisite_chests
+            luxChest = genshinUser.stats.luxurious_chests
+            abyss = genshinUser.stats.spiral_abyss
+            result = defaultEmbed(f"{nickname}: 統計數據","")
+            result.add_field(name='綜合',value=
+                f"📅 活躍天數: {days}\n"
+                f"<:expedition:956385168757780631> 角色數量: {char}/50\n"
+                f"📜 成就數量:{achieve}/639\n"
+                f"🌙 深淵已達: {abyss}層"
+            , inline = False)
+            result.add_field(name='神瞳',value=
+                f"<:anemo:956719995906322472> 風神瞳: {anemo}/66\n"
+                f"<:geo:956719995440730143> 岩神瞳: {geo}/131\n"
+                f"<:electro:956719996262821928> 雷神瞳: {electro}/181"
+            , inline = False)
+            result.add_field(name='寶箱', value=
+                f"一般寶箱: {comChest}\n"
+                f"稀有寶箱: {exChest}\n"
+                f"珍貴寶箱: {luxChest}"
+            , inline = False)
         return result
 
     def checkUserData(self, user_id: int):
