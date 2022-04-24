@@ -610,12 +610,13 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             bank = yaml.full_load(file)
         discordID = message.author.id
         channel = self.bot.get_channel(message.channel.id)
-        if discordID not in users:
-            user = self.bot.get_user(message.author.id)
-            await self.register(channel, user, discordID, False)
+        
         if message.author == self.bot.user:
             return
         if "早安" in message.content:
+            if discordID not in users:
+                user = self.bot.get_user(message.author.id)
+                await self.register(channel, user, discordID, False)
             today = date.today()
             if discordID in users:
                 if users[discordID]['morning'] != today:

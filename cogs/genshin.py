@@ -10,9 +10,7 @@ from discord.ext import commands, tasks
 from discord.ext.forms import Form
 from utility.character_name import character_names
 from utility.GenshinApp import genshin_app
-
 import genshin
-
 
 def getCharacterName(character: genshin.models.BaseCharacter) -> str:
     chinese_name = character_names.get(character.id)

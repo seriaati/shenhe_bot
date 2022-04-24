@@ -20,7 +20,7 @@ class AdminCommands(commands.Cog, name='admin', description='管理員指令'):
             for filepath in Path('./cogs').glob('**/*.py'):
                 cog_name = Path(filepath).stem
                 try:
-                    self.bot.reload_extension(f'cmd.{cog_name}')
+                    self.bot.reload_extension(f'cogs.{cog_name}')
                     await ctx.send(f"已重整 {cog_name} 指令包")
                     print(log(True, 'Cog', f'Reloaded {cog_name} cog'))
                     
@@ -33,7 +33,7 @@ class AdminCommands(commands.Cog, name='admin', description='管理員指令'):
                 cog_name = Path(filepath).stem
                 if arg == cog_name:
                     try:
-                        self.bot.reload_extension(f'cmd.{cog_name}')
+                        self.bot.reload_extension(f'cogs.{cog_name}')
                         await ctx.send(f"已重整 {cog_name} 指令包")
                         print(log(True, False,'Cog', f'Reloaded {cog_name} cog'))
                     except Exception as e:
