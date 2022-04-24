@@ -4,7 +4,7 @@ import genshin
 import discord
 from discord.ext import commands
 
-from cmd.asset.global_vars import errEmbed, setFooter
+from utility.utils import errEmbed, setFooter
 
 
 class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤處理器'):
@@ -49,12 +49,12 @@ class CommandErrorHandler(commands.Cog, name='err_handle', description='錯誤�
             await ctx.send(embed=embed)
 
         elif isinstance(error, TimeoutError):
-            embed = errEmbed('⌛ 已超時','已取消剛才的操作, 請重新執行')
+            embed = errEmbed('⌛ 已超時', '已取消剛才的操作, 請重新執行')
             setFooter(embed)
             await ctx.send(embed=embed)
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            embed= errEmbed(f"你可能少輸入了什麼, 看看!help吧","")
+            embed = errEmbed(f"你可能少輸入了什麼, 看看!help吧", "")
             setFooter(embed)
             await ctx.send(embed=embed)
 

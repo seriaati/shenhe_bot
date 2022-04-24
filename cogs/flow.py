@@ -6,7 +6,7 @@ import uuid
 import random
 import yaml
 import inflect
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from utility.utils import defaultEmbed, setFooter
 import emoji
 import discord
 import re
@@ -18,9 +18,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     async def register(self, ctx, name, discordID: int, *args):
         dcUser = self.bot.get_user(discordID)
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         if not dcUser.bot:
             embed = defaultEmbed(
@@ -30,9 +30,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             users[discordID] = {'name': str(name), 'discordID': int(
                 discordID), 'flow': 100, 'morning': today}
             bank['flow'] -= 100
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
-            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
             if args != False:
                 await ctx.send(embed=embed, delete_after=5)
@@ -43,15 +43,15 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
+        with open(f'data/find.yaml', encoding='utf-8') as file:
             finds = yaml.full_load(file)
-        with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
+        with open(f'data/confirm.yaml', encoding='utf-8') as file:
             confirms = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
-        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+        with open(f'data/giveaways.yaml', encoding='utf-8') as file:
             giveaways = yaml.full_load(file)
 
         channel = self.bot.get_channel(payload.channel_id)
@@ -83,11 +83,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     break
 
         elif payload.emoji.name == '✅' and payload.user_id != self.bot.user.id and payload.message_id in finds:
-            with open(f'cmd/asset/confirm.yaml', encoding='utf-8') as file:
+            with open(f'data/confirm.yaml', encoding='utf-8') as file:
                 confirms = yaml.full_load(file)
-            with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
+            with open(f'data/find.yaml', encoding='utf-8') as file:
                 finds = yaml.full_load(file)
-            with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', encoding='utf-8') as file:
                 users = yaml.full_load(file)
             if payload.user_id == finds[payload.message_id]['authorID']:
                 userObj = self.bot.get_user(payload.user_id)
@@ -128,12 +128,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     dm = await author.send(embed=embedDM)
                 await dm.add_reaction('🆗')
 
-                with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/find.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(finds, file)
                 confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
                     finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
                 del finds[payload.message_id]
-                with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/confirm.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(confirms, file)
 
         elif payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id and payload.message_id in confirms:
@@ -165,9 +165,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await author.send(embed=embed)
             await receiver.send(embed=embed)
             del confirms[payload.message_id]
-            with open(f'cmd/asset/confirm.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/confirm.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(confirms, file)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
 
         elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
@@ -180,11 +180,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
             giveaways[payload.message_id]['members'].append(
                 payload.user_id)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
-            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
-            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/giveaways.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(giveaways, file)
             giveawayMsg = await channel.fetch_message(payload.message_id)
             newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
@@ -203,18 +203,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await channel.send(f"{lulurR.mention} {winnerUser.mention}")
                 await channel.send(embed=embed)
                 del giveaways[payload.message_id]
-                with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/giveaways.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(giveaways, file)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
-        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+        with open(f'data/giveaways.yaml', encoding='utf-8') as file:
             giveaways = yaml.full_load(file)
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
@@ -237,19 +237,19 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     break
 
         elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
-            with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+            with open(f'data/bank.yaml', encoding='utf-8') as file:
                 bank = yaml.full_load(file)
-            with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+            with open(f'data/giveaways.yaml', encoding='utf-8') as file:
                 giveaways = yaml.full_load(file)
             users[discordID]['flow'] += giveaways[payload.message_id]['ticket']
             bank['flow'] -= giveaways[payload.message_id]['ticket']
             giveaways[payload.message_id]['current'] -= giveaways[payload.message_id]['ticket']
             giveaways[payload.message_id]['members'].remove(discordID)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
-            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
-            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/giveaways.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(giveaways, file)
             giveawayMsg = await channel.fetch_message(payload.message_id)
             newEmbed = defaultEmbed(":tada: 抽獎啦!!!",
@@ -260,7 +260,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @commands.command(name='forceroll', aliases=['fr'], help='(小雪團隊)強制結束抽獎並產生得獎者')
     @commands.has_role("小雪團隊")
     async def _forceroll(self, ctx, msgID):
-        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+        with open(f'data/giveaways.yaml', encoding='utf-8') as file:
             giveaways = yaml.full_load(file)
         giveawayMsg = self.bot.fetch_message(msgID)
         giveawayChannel = self.bot.get_channel(965517075508498452)
@@ -277,12 +277,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await giveawayChannel.send(f"{lulurR.mention} {winnerUser.mention}")
             await giveawayChannel.send(embed=embed)
             del giveaways[msgID]
-            with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/giveaways.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(giveaways, file)
 
     @commands.command(name='acc', help='查看目前擁有flow幣數量')
     async def _account(self, ctx, *, member: discord.Member = None):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         member = member or ctx.author
         discordID = member.id
@@ -320,7 +320,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @commands.command(name='give', help='給其他人flow幣')
     async def _give(self, ctx, member: discord.Member, argFlow: int):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if member.id == ctx.author.id:
             await ctx.send(f"<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!(不可以自己給自己")
@@ -339,7 +339,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 return
             else:
                 users[giverID]['flow'] -= int(argFlow)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
         if acceptorID in users:
             embed = defaultEmbed(
@@ -347,7 +347,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             setFooter(embed)
             await ctx.send(embed=embed)
             users[acceptorID]['flow'] += int(argFlow)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
         else:
             user = self.bot.get_user(giverID)
@@ -356,9 +356,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @commands.command(name='take', help='(小雪團隊)將某帳號的flow幣轉回銀行')
     @commands.has_role("小雪團隊")
     async def _take(self, ctx):
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         form = Form(ctx, '沒收flow幣', cleanup=True)
         form.add_question('要沒收哪些人的flow幣?(用逗號分隔: @ceye, @ttos)', 'members')
@@ -379,18 +379,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     "✅ 已成功施展反摩拉克斯的力量", f"{ctx.author.mention} 從 {acceptor.mention} 的帳戶裡拿走了 {result.flow} 枚flow幣")
                 setFooter(embed)
                 await ctx.send(embed=embed)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
-                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(bank, file)
                 break
 
     @commands.command(name='make', help='從銀行轉出flow幣給某帳號')
     @commands.has_role("小雪團隊")
     async def _make(self, ctx):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         formFalse = Form(ctx, '發放flow幣', cleanup=True)
         formFalse.add_question('要給哪些人?(用逗號分隔: @小雪, @sueno)', 'members')
@@ -411,18 +411,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     "✅ 已成功施展摩拉克斯的力量", f"{ctx.author.mention}從銀行轉出了 {result.flow}枚flow幣給 {acceptor.mention}")
                 setFooter(embed)
                 await ctx.send(embed=embed)
-                with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
-                with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(bank, file)
                 break
 
     @commands.command(name='reset', help='(小雪團隊)重設所有帳號的flow幣數量')
     @commands.has_role("小雪團隊")
     async def _reset(self, ctx):
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         bank['flow'] = 12000
         for user in users:
@@ -431,17 +431,17 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             bank['flow'] -= 100
         embed = defaultEmbed("🔄 已重設世界的一切", f"所有人都回到100flow幣")
         setFooter(embed)
-        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(users, file)
-        with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(bank, file)
         await ctx.send(embed=embed)
 
     @commands.command(name='total', help='查看目前群組帳號及銀行flow幣分配情況')
     async def _total(self, ctx):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         total = 0
         count = 0
@@ -454,7 +454,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @commands.command(name='flows', help='查看群組內所有flow帳號')
     async def _flows(self, ctx):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         userStr = ""
         count = 1
@@ -469,7 +469,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @commands.group(name='shop', help='商店\n`!shop buy`來購買商品')
     async def shop(self, ctx):
         if ctx.invoked_subcommand is None:
-            with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+            with open(f'data/shop.yaml', encoding='utf-8') as file:
                 shop = yaml.full_load(file)
             itemStr = ""
             count = 1
@@ -485,7 +485,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @shop.command()
     @commands.has_role("小雪團隊")
     async def newitem(self, ctx):
-        with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+        with open(f'data/shop.yaml', encoding='utf-8') as file:
             shop = yaml.full_load(file)
         form = Form(ctx, '新增商品', cleanup=True)
         form.add_question('商品名稱?', 'name')
@@ -498,30 +498,30 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         uuid = str(uuid.uuid4())
         shop[uuid] = {'name': result.name, 'flow': int(
             result.flow), 'current': 0, 'max': int(result.max)}
-        with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+        with open(f'data/shop.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(shop, file)
         await ctx.send(f"商品{result.name}新增成功")
 
     @shop.command()
     @commands.has_role("小雪團隊")
     async def removeitem(self, ctx, uuidInput):
-        with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+        with open(f'data/shop.yaml', encoding='utf-8') as file:
             shop = yaml.full_load(file)
         if uuidInput in shop:
             del shop[uuidInput]
-            with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/shop.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(shop, file)
             await ctx.send("商品刪除成功")
 
     @shop.command()
     async def buy(self, ctx):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
-        with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+        with open(f'data/shop.yaml', encoding='utf-8') as file:
             shop = yaml.full_load(file)
-        with open(f'cmd/asset/log.yaml', encoding='utf-8') as file:
+        with open(f'data/log.yaml', encoding='utf-8') as file:
             logs = yaml.full_load(file)
         itemStr = ""
         count = 1
@@ -549,18 +549,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 return
 
             shopList[pos][1]['current'] += 1
-            with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/shop.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(shop, file)
             logID = str(uuid.uuid4())
             logs[logID] = {'item': shopList[pos][1]['name'],
                            'flow': itemPrice, 'buyerID': ctx.author.id}
-            with open(f'cmd/asset/log.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/log.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(logs, file)
             users[discordID]['flow'] -= itemPrice
             bank['flow'] += itemPrice
-            with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(bank, file)
-            with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"商品 {shopList[pos][1]['name']} 購買成功, 詳情請查看私訊")
             await ctx.author.send(f"您已在flow商城購買了 {shopList[pos][1]['name']} 商品, 請將下方的收據截圖並寄給小雪或律律來兌換商品")
@@ -576,7 +576,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @shop.command()
     @commands.has_role("小雪團隊")
     async def log(self, ctx):
-        with open(f'cmd/asset/log.yaml', encoding='utf-8') as file:
+        with open(f'data/log.yaml', encoding='utf-8') as file:
             logs = yaml.full_load(file)
         for log in logs:
             logID = log
@@ -589,13 +589,13 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @shop.command()
     @commands.has_role("小雪團隊")
     async def clear(self, ctx, uuid):
-        with open(f'cmd/asset/shop.yaml', encoding='utf-8') as file:
+        with open(f'data/shop.yaml', encoding='utf-8') as file:
             shop = yaml.full_load(file)
         if uuid == "all":
             for item in shop:
                 itemID = item
                 shop[itemID]['current'] = 0
-                with open(f'cmd/asset/shop.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/shop.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(shop, file)
             await ctx.send(f"已將所有商品的購買次數清零")
             return
@@ -604,9 +604,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/bank.yaml', encoding='utf-8') as file:
+        with open(f'data/bank.yaml', encoding='utf-8') as file:
             bank = yaml.full_load(file)
         discordID = message.author.id
         channel = self.bot.get_channel(message.channel.id)
@@ -622,17 +622,17 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     users[discordID]['flow'] += 1
                     users[discordID]['morning'] = today
                     bank['flow'] -= 1
-                    with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
-                    with open(f'cmd/asset/bank.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'data/bank.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(bank, file)
                     await message.add_reaction(f"☀️")
 
     @commands.command(name='find', help='發布委託')
     async def _find(self, ctx):
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
-        with open(f'cmd/asset/find.yaml', encoding='utf-8') as file:
+        with open(f'data/find.yaml', encoding='utf-8') as file:
             finds = yaml.full_load(file)
         if ctx.channel.id != 960861105503232030:
             channel = self.bot.get_channel(960861105503232030)
@@ -711,7 +711,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await ctx.send(role.mention)
             finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 1}
-            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 2:
@@ -745,7 +745,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await ctx.send(role.mention)
             finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 2}
-            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 3:
@@ -779,7 +779,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await ctx.send(role.mention)
             finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 3}
-            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
 
         elif choice == 4:
@@ -813,26 +813,26 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await ctx.send(role.mention)
             finds[message.id] = {'title': result.title, 'flow': int(
                 result.flow), 'author': str(ctx.author), 'authorID': ctx.author.id, 'type': 4}
-            with open(f'cmd/asset/find.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/find.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(finds, file)
     
     @commands.command(name='adduid',help='新增自己的原神uid\n例如`!adduid 901211014`')
     async def _adduid(self, ctx, uidInput:int):
         discordID = ctx.author.id
-        with open(f'cmd/asset/flow.yaml', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if discordID not in users:
             user = self.bot.get_user(discordID)
             await self.register(ctx, user, discordID)
         users[discordID]['uid'] = uidInput
-        with open(f'cmd/asset/flow.yaml', 'w', encoding='utf-8') as file:
+        with open(f'data/flow.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(users, file)
         await ctx.send(f"[綁定成功] 原神UID: {uidInput}")
 
     @commands.command(aliases=['gv'], help='(小雪團隊)設置抽獎')
     @commands.has_role("小雪團隊")
     async def giveaway(self, ctx):
-        with open(f'cmd/asset/giveaways.yaml', encoding='utf-8') as file:
+        with open(f'data/giveaways.yaml', encoding='utf-8') as file:
             giveaways = yaml.full_load(file)
         await ctx.message.delete()
         form = Form(ctx, '抽獎設置流程', cleanup=True)
@@ -859,7 +859,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             'current': 0,
             'members': []
         }
-        with open(f'cmd/asset/giveaways.yaml', 'w', encoding='utf-8') as file:
+        with open(f'data/giveaways.yaml', 'w', encoding='utf-8') as file:
             yaml.dump(giveaways, file)
 
     @commands.command(hidden=True)

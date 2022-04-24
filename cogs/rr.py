@@ -1,19 +1,18 @@
 import yaml
 import discord
 from discord.ext import commands
-import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from utility.utils import defaultEmbed, setFooter
 from discord.ext.forms import Form
 import re
 
 
-class Cog(commands.Cog, name='rr', description='表情符號身份組產生器'):
+class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組產生器'):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+        with open(f'data/rr.yaml', encoding='utf-8') as file:
             rr = yaml.full_load(file)
         if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             emoteID = payload.emoji.id
@@ -24,7 +23,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+        with open(f'data/rr.yaml', encoding='utf-8') as file:
             rr = yaml.full_load(file)
         if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             emoteID = payload.emoji.id
@@ -36,7 +35,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
     @commands.command(name='reactionrole', aliases=['rr'], help='創建一個表符身份組訊息')
     @commands.has_role('小雪團隊')
     async def _reactionrole(self, ctx):
-        with open(f'cmd/asset/rr.yaml', encoding='utf-8') as file:
+        with open(f'data/rr.yaml', encoding='utf-8') as file:
             rr = yaml.full_load(file)
         roles = []
         emotes = []
@@ -88,7 +87,7 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
         for roleID in roles:
             emojiID = emotes[count]
             rr[rollEmbed.id] = {emojiID: roleID}
-            with open(f'cmd/asset/rr.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/rr.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(rr, file)
         for emote in emotes:
             emoji = self.bot.get_emoji(emote)
@@ -96,4 +95,4 @@ class Cog(commands.Cog, name='rr', description='表情符號身份組產生器')
 
 
 def setup(bot):
-    bot.add_cog(Cog(bot))
+    bot.add_cog(ReactionRoles(bot))

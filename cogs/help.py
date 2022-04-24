@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.errors import Forbidden
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from utility.utils import defaultEmbed, setFooter
 
 
 async def send_embed(ctx, embed):

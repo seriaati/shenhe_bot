@@ -1,5 +1,5 @@
 from discord.ext import commands
-from cmd.asset.global_vars import defaultEmbed, setFooter
+from utility.utils import defaultEmbed, setFooter
 from discord.ext.forms import Form
 
 

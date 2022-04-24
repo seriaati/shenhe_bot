@@ -2,14 +2,14 @@ import asyncio
 import datetime
 import discord
 import DiscordUtils
-import time
-import cmd.asset.global_vars as Global
-from cmd.asset.global_vars import defaultEmbed, errEmbed, setFooter
+import utility.utils as Global
 import yaml
-from cmd.asset.classes import Character
+from utility.utils import defaultEmbed, errEmbed, setFooter
+from utility.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
-from cmd.asset.character_name import character_names
+from utility.character_name import character_names
+from utility.GenshinApp import genshin_app
 
 import genshin
 
@@ -26,7 +26,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         self.claimLoop.start()
 
     async def getUserData(self, ctx, discordID: int):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if discordID in users:
             try:
@@ -45,7 +45,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
 
     @tasks.loop(hours=24)
     async def claimLoop(self):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         for user in users:
             userID = user
@@ -68,9 +68,9 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                     print(f"claimed for {users[userID]['name']}")
                     break
 
-    @tasks.loop(seconds=600)
+    @tasks.loop(seconds=3600)
     async def checkLoop(self):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         for user in users:
             userID = user
@@ -99,11 +99,11 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                     await userObj.send(embed=embed)
                     users[userID]['dmCount'] += 1
                     users[userID]['dmDate'] = dateNow
-                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
                 elif resin < 140:
                     users[userID]['dmCount'] = 0
-                    with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                    with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                         yaml.dump(users, file)
             except genshin.errors.InvalidCookies:
                 pass
@@ -126,47 +126,10 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name="check",aliases=['c'],help='查看即時便籤')
     async def _check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        memberID = member.id
-        cookies, uid, username = await self.getUserData(ctx, memberID)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        notes = await client.get_notes(uid)
-        if not notes.expeditions:
-            hr = 0
-            mn = 0
-            exTime = 0
-        else:
-            unfinExp = []
-            for expedition in notes.expeditions:
-                if(expedition.status == "Ongoing"):
-                    unfinExp.append(expedition.remaining_time)
-            if not unfinExp:
-                hr = 0
-                mn = 0
-            else:
-                exTime = min(unfinExp, default="EMPTY")
-                hr, mn = divmod(exTime // 60, 60)
-        time = notes.remaining_resin_recovery_time
-        hours, minutes = divmod(time // 60, 60)
-        fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
-        transDelta = notes.transformer_recovery_time.replace(
-            tzinfo=None) - datetime.datetime.now()
-        transDeltaSec = transDelta.total_seconds()
-        transDay = transDeltaSec // (24 * 3600)
-        transDeltaSec = transDeltaSec % (24 * 3600)
-        transHour = transDeltaSec // 3600
-        transDeltaSec %= 3600
-        transMin = transDeltaSec // 60
-        transStr = f"{int(transDay)}天 {int(transHour)}小時 {int(transMin)}分鐘"
-        if transDeltaSec <= 0:
-            transStr = "質變儀已準備就緒"
-        printTime = '{:%H:%M}'.format(fullTime)
-        embedCheck = defaultEmbed(f"使用者: {username}",
-                                  f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n<:realm:956384011750613112> 目前塵歌壺幣數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n<:expedition:956385168757780631> 已結束的探索派遣數量: {sum(expedition.finished for expedition in notes.expeditions)}/{len(notes.expeditions)}\n最快結束的派遣時間: {hr:.0f}小時 {mn:.0f}分鐘\n<:transformer:966156330089971732> 質變儀剩餘冷卻時間: {transStr}")
-        setFooter(embedCheck)
-        await ctx.send(embed=embedCheck)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getRealTimeNotes(member.id)
+        await msg.delete()
+        await ctx.send(embed=result)
 
     @commands.command(name='stats',aliases=['s'],help='查看原神個人資料')
     async def _stats(self, ctx, *, member: discord.Member = None):
@@ -329,7 +292,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
 
     @commands.command(name='users',help='查看目前所有已註冊原神帳號')
     async def _users(self, ctx):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         userStr = ""
         count = 1
@@ -363,7 +326,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(hidden=True)
     @commands.has_role("小雪團隊")
     async def newuser(self, ctx):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         form = Form(ctx, '新增帳號設定流程', cleanup=True)
         form.add_question('原神UID?', 'uid')
@@ -394,7 +357,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 await ctx.send(f"該帳號資料未公開, 輸入`!stuck`來獲取更多資訊")
             users[int(result.discordID)] = {'name': result.name, 'uid': int(
                 result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
-            with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+            with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                 yaml.dump(users, file)
             await ctx.send(f"已新增該帳號")
         else:
@@ -431,7 +394,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
 
     @commands.command(name='dm',help='查看私訊功能介紹\n`!dm on`或`!dm off`來開關私訊功能')
     async def _dm(self, ctx, *, arg=''):
-        with open(f'cmd/asset/accounts.yaml', encoding='utf-8') as file:
+        with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
         if arg == "":
             embed = defaultEmbed(
@@ -442,14 +405,14 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             userID = ctx.author.id
             if userID in users:
                 users[userID]['dm'] = True
-                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 await ctx.send(f"已開啟 {users[userID]['name']} 的私訊功能")
         elif arg == "off":
             userID = ctx.author.id
             if userID in users:
                 users[userID]['dm'] = False
-                with open(f'cmd/asset/accounts.yaml', 'w', encoding='utf-8') as file:
+                with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 await ctx.send(f"已關閉 {users[userID]['name']} 的私訊功能")
 
