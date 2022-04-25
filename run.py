@@ -40,5 +40,14 @@ async def on_ready():
 async def on_message(message):
     await bot.process_commands(message)
 
+@bot.command(hidden = True)
+@commands.has_role("小雪團隊")
+async def reload(ctx):
+    for filepath in Path('./cogs').glob('**/*.py'):
+        cog_name = Path(filepath).stem
+        bot.reload_extension(f'cogs.{cog_name}')
+        print(log(True, False,'Cog', f'Reloaded {cog_name}'))
+    await ctx.send("Reloaded all Cogs")
+
 
 bot.run(token, bot=True, reconnect=True)

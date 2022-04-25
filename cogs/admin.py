@@ -18,6 +18,5 @@ class AdminCommands(commands.Cog, name='admin', description='管理員指令'):
         print(log(True, False, 'Pull', 'Pulled from github'))
         await ctx.send("已從源碼更新")
 
-
 def setup(bot):
     bot.add_cog(AdminCommands(bot))

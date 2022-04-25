@@ -62,7 +62,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             user_dict = dict(self.user_dict)
             count = 0
             for user_id, value in user_dict.items():
-                uid = self.user_data[user_id]['uid']
+                uid = user_dict[user_id]['uid']
                 client, nickname = self.getUserCookie(user_id)
                 try:
                     notes = await client.get_notes(uid)
