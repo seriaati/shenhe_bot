@@ -21,7 +21,7 @@ class GenshinApp:
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
-            result = errEmbed(f'{nickname}: 你已經領過今天的獎勵了!','')
+            result = errEmbed(f'你已經領過今天的獎勵了!','')
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Claim', e))
             result = errEmbed('簽到失敗：{e.original}','')
