@@ -43,18 +43,18 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @tasks.loop(minutes=loop_interval)
     async def schedule(self):
         now = datetime.now()
-        if now.hour == 7 :
-            print(log(True, False, 'Schedule', 'Auto claim started'))
-            channel = self.bot.get_channel(909595117952856084)
-            user_dict = dict(self.user_dict)
-            count = 0
-            for user_id, value in user_dict.items():
-                result = await genshin_app.claimDailyReward(user_id)
-                count += 1
-                print(log(True, False, 'Schedule', f'Claimed for {user_id}'))
-                await channel.send(f'[自動簽到] <@{user_id}> 領取成功')
-                await asyncio.sleep(2.5)
-            print(log(True, False, 'Schedule', f'Auto claim finished, total: {count}'))
+        # if now.hour == 7 and now.minute < self.loop_interval:
+        print(log(True, False, 'Schedule', 'Auto claim started'))
+        channel = self.bot.get_channel(909595117952856084)
+        user_dict = dict(self.user_dict)
+        count = 0
+        for user_id, value in user_dict.items():
+            result = await genshin_app.claimDailyReward(user_id)
+            count += 1
+            print(log(True, False, 'Schedule', f'Claimed for {user_id}'))
+            await channel.send(f'[自動簽到] <@{user_id}> 領取成功')
+            await asyncio.sleep(2.5)
+        print(log(True, False, 'Schedule', f'Auto claim finished, total: {count}'))
 
         if 30 <= now.minute < 30 + self.loop_interval:
             print(log(True, False, 'Schedule', 'Resin check started'))
