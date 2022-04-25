@@ -1,10 +1,10 @@
 import asyncio
-import datetime
+from datetime import datetime, timedelta
 import discord
 import DiscordUtils
 import utility.utils as Global
 import yaml
-from utility.utils import defaultEmbed, errEmbed, setFooter, log
+from utility.utils import defaultEmbed, errEmbed, setFooter, log, getCharacterName
 from utility.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
@@ -15,8 +15,12 @@ import genshin
 class GenshinCog(commands.Cog, name="genshin", description="原神相關指令"):
     def __init__(self, bot):
         self.bot = bot
-        self.checkLoop.start()
-        self.claimLoop.start()
+        try:
+            with open('data/accounts.yaml', 'r', encoding='utf-8') as f:
+                self.user_dict: dict[str, dict[str, str]] = yaml.full_load(f)
+        except:
+            self.user_dict: dict[str, dict[str, str]] = { }
+        self.schedule.start()
 
     async def getUserData(self, ctx, discordID: int):
         with open(f'data/accounts.yaml', encoding='utf-8') as file:
@@ -36,90 +40,69 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             await ctx.send(embed=embed)
             return
 
-    @tasks.loop(hours=24)
-    async def claimLoop(self):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
-        for user in users:
-            userID = user
-            cookies = {"ltuid": users[userID]['ltuid'],
-                       "ltoken": users[userID]['ltoken']}
-            uid = users[userID]['uid']
-            client = genshin.Client(cookies)
-            client.default_game = genshin.Game.GENSHIN
-            client.lang = "zh-tw"
-            client.uids[genshin.Game.GENSHIN] = uid
-            while True:
+    loop_interval = 10
+    @tasks.loop(minutes=loop_interval)
+    async def schedule(self):
+        now = datetime.now()
+        if now.hour == 1 and now.minute < self.loop_interval:
+            print(log(True, False, 'Schedule', 'Auto claim started'))
+            channel = self.bot.get_channel(909595117952856084)
+            user_dict = dict(self.user_dict)
+            count = 0
+            for user_id, value in user_dict.items():
+                result = await genshin_app.claimDailyReward(user_id)
+                count += 1
+                print(log(True, False, 'Schedule', f'Claimed for {user_id}'))
+                await channel.send(f'[自動簽到] <@{user_id}> 領取成功')
+                await asyncio.sleep(2.5)
+            print(log(True, False, 'Schedule', f'Auto claim finished, total: {count}'))
+
+        if 30 <= now.minute < 30 + self.loop_interval:
+            print(log(True, False, 'Schedule', 'Resin check started'))
+            user_dict = dict(self.user_dict)
+            count = 0
+            for user_id, value in user_dict.items():
+                uid = self.user_data[user_id]['uid']
+                client, nickname = self.getUserCookie(user_id)
                 try:
-                    await client.claim_daily_reward()
-                except genshin.AlreadyClaimed:
-                    print(f"{users[userID]['name']} already claimed")
-                except genshin.errors.GenshinException:
-                    await asyncio.sleep(10)
-                    continue
+                    notes = await client.get_notes(uid)
+                    count += 1
+                except genshin.errors.DataNotPublic as e:
+                    print(log(False, True, 'Notes', f'{user_id}: {e}'))
+                    result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+                except genshin.errors.GenshinException as e:
+                    print(log(False, True, 'Notes', f'{user_id}: {e}'))
+                except Exception as e:
+                    print(log(False, True, 'Notes', e))
                 else:
-                    print(f"claimed for {users[userID]['name']}")
-                    break
+                    if notes.current_resin >= 140 and value['dmCount'] < 3:
+                        if notes.current_resin == notes.max_resin:
+                            resin_recover_time = '已滿'
+                        else:
+                            day_msg = '今天' if notes.resin_recovery_time.day == datetime.now().day else '明天'
+                            resin_recover_time = f'{day_msg} {notes.resin_recovery_time.strftime("%H:%M")}'
+                        result = defaultEmbed(
+                            f"<:danger:959469906225692703> 樹脂數量已超過140",
+                            f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
+                            f"樹脂回滿時間: {resin_recover_time}"
+                        )
+                        user = self.bot.get_user(user_id)
+                        user.send(embed=result)
+                        value['dmCount'] += 1
+                        self.saveUserData(user_dict)
+                        await asyncio.sleep(4)
+                    else:
+                        value['dmCount'] = 0
+                        self.saveUserData(user_dict)
+            print(log(True, False, 'Schedule', f'Resin check finished, total: {count}'))
 
-    @tasks.loop(seconds=3600)
-    async def checkLoop(self):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
-        for user in users:
-            userID = user
-            cookies = {"ltuid": users[userID]['ltuid'],
-                        "ltoken": users[userID]['ltoken']}
-            uid = users[user]['uid']
-            userObj = self.bot.get_user(userID)
-            client = genshin.Client(cookies)
-            client.default_game = genshin.Game.GENSHIN
-            client.lang = "zh-tw"
-            client.uids[genshin.Game.GENSHIN] = uid
-            try:
-                notes = await client.get_notes(uid)
-                resin = notes.current_resin
-                dateNow = datetime.datetime.now()
-                diff = dateNow - users[userID]['dmDate']
-                diffHour = diff.total_seconds() / 3600
-                if resin >= 140 and users[userID]['dm'] == True and users[userID]['dmCount'] < 3 and diffHour >= 1:
-                    time = notes.remaining_resin_recovery_time
-                    hours, minutes = divmod(time // 60, 60)
-                    fullTime = datetime.datetime.now() + datetime.timedelta(hours=hours)
-                    printTime = '{:%H:%M}'.format(fullTime)
-                    embed = defaultEmbed(f"<:danger:959469906225692703> 目前樹脂數量已經超過140!",
-                                            f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n於 {hours:.0f} 小時 {minutes:.0f} 分鐘後填滿(即{printTime})\n註: 不想收到這則通知打`!dm off`, 想重新打開打`!dm on`\n註: 部份指令, 例如`!check`可以在私訊運作")
-                    setFooter(embed)
-                    await userObj.send(embed=embed)
-                    users[userID]['dmCount'] += 1
-                    users[userID]['dmDate'] = dateNow
-                    with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(users, file)
-                elif resin < 140:
-                    users[userID]['dmCount'] = 0
-                    with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
-                        yaml.dump(users, file)
-            except genshin.errors.InvalidCookies:
-                pass
-            except AttributeError:
-                print(f"{users[userID]['name']} 可能退群了")
-            except genshin.errors.GenshinException:
-                await asyncio.sleep(10)
-                continue
-            else:
-                break
-
-    @claimLoop.before_loop
-    async def wait_until_1am(self):
-        now = datetime.datetime.now().astimezone()
-        next_run = now.replace(hour=1, minute=0, second=0)
-        if next_run < now:
-            next_run += datetime.timedelta(days=1)
-        await discord.utils.sleep_until(next_run)
+    @schedule.before_loop
+    async def before_schedule(self):
+        await self.bot.wait_until_ready()
 
     @commands.command(name="check",aliases=['c'],help='查看即時便籤')
     async def _check(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        print(log(False, False, 'Genshin', f'{member} used command !check'))
         msg = await ctx.send('讀取中...')
         result = await genshin_app.getRealTimeNotes(member.id)
         await msg.delete()
@@ -128,7 +111,6 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='stats',aliases=['s'],help='查看原神個人資料')
     async def _stats(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        print(log(False, False, 'Genshin', f'{member} used command !stats'))
         msg = await ctx.send('讀取中...')
         result = await genshin_app.getUserStats(member.id)
         await msg.delete()
@@ -137,28 +119,10 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='area', help='查看區域探索度')
     async def _area(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        genshinUser = await client.get_partial_genshin_user(uid)
-        explorations = genshinUser.explorations
-        exploreStr = ""
-        offeringStr = ""
-        for exploration in explorations:
-            name = exploration.name
-            percentage = exploration.explored
-            offerings = exploration.offerings
-            exploreStr += f"{name}: {percentage}%\n"
-            for offering in offerings:
-                offeringName = offering.name
-                offeringLevel = offering.level
-                offeringStr += f"{offeringName}: Lvl {offeringLevel}\n"
-        embed = defaultEmbed(
-            f"區域探索度: {username}", f"{exploreStr}\n{offeringStr}")
-        setFooter(embed)
-        await ctx.send(embed=embed)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getArea(member.id)
+        await msg.delete()
+        await ctx.send(embed=result)
 
     @commands.command(name='claim', aliases=['clm'],help='領取今日hoyolab網頁登入獎勵')
     async def _claim(self, ctx, *, member: discord.Member = None):
@@ -474,6 +438,10 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 f"今天({weekday})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         setFooter(embedFarm)
         await ctx.send(embed=embedFarm)
+
+    def saveUserData(self, data:dict):
+        with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(data, f)
 
 
 def setup(bot):

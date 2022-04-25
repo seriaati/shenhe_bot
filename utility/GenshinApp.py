@@ -12,7 +12,27 @@ class GenshinApp:
         except:
             self.user_data = {}
 
+    async def claimDailyReward(self, user_id:int):
+        print(log(False, False, 'Claim', f'{user_id}'))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            reward = await client.claim_daily_reward()
+        except genshin.errors.AlreadyClaimed:
+            result = errEmbed(f'{nickname}: 你已經領過今天的獎勵了!','')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Claim', e))
+            result = errEmbed('簽到失敗：{e.original}','')
+        except Exception as e:
+            result = errEmbed(f'簽到失敗：{e}','')
+        else:
+            result = defaultEmbed(f'{nickname}: 今日簽到成功',f'獲得 {reward.amount}x {reward.name}')
+        return result
+    
     async def getRealTimeNotes(self, user_id: int):
+        print(log(False, False, 'Notes', user_id))
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
@@ -89,6 +109,7 @@ class GenshinApp:
         return result
 
     async def getUserStats(self, user_id:int):
+        print(log(False, False, 'Stats', user_id))
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
@@ -131,6 +152,31 @@ class GenshinApp:
             , inline = False)
         return result
 
+    async def getArea(self, user_id:int):
+        print(log(False, False, 'Area', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        uid = self.user_data[user_id]['uid']
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            genshinUser = await client.get_partial_genshin_user(uid)
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Area', f'{user_id}: {e}'))
+            result = errEmbed('太多了!', '目前原神API請求次數過多, 請稍後再試')
+        except Exception as e:
+            print(log(False, True, 'Area', e))
+        else:
+            explorations = genshinUser.explorations
+            exploreStr = ""
+            for exploration in explorations:
+                exploreStr += f"{exploration.name}: {exploration.explored}% • Lvl.{exploration.level}\n"
+            result = defaultEmbed(
+                f"{nickname}: 探索度",
+                exploreStr
+            )
+        return result
+
     def checkUserData(self, user_id: int):
         with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)
@@ -140,8 +186,8 @@ class GenshinApp:
             return True, None
 
     def getUserCookie(self, user_id: int):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
+        with open(f'data/accounts.yaml', encoding='utf-8') as f:
+            users = yaml.full_load(f)
         cookies = {"ltuid": users[user_id]['ltuid'],
                     "ltoken": users[user_id]['ltoken']}
         uid = users[user_id]['uid']
@@ -151,6 +197,10 @@ class GenshinApp:
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = uid
         return client, nickname
+
+    def saveUserData(self):
+        with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(self.user_data, f)
 
 
 genshin_app = GenshinApp()
