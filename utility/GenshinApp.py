@@ -193,8 +193,8 @@ class GenshinApp:
             result.add_field(
                 name='本月共獲得',
                 value=
-                f'<:primo:958555698596290570> : {d.current_primogems} • 上個月：{d.last_primogems}\n'
-                f'<:mora:958577933650362468> : {d.current_mora} • 上個月：{d.last_mora}',
+                f'<:primo:958555698596290570> {d.current_primogems} • 上個月：{d.last_primogems}\n'
+                f'<:mora:958577933650362468> {d.current_mora} • 上個月：{d.last_mora}',
                 inline=False
             )
             msg = ''
