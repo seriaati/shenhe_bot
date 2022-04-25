@@ -22,7 +22,7 @@ class AdminCommands(commands.Cog, name='admin', description='管理員指令'):
                 try:
                     self.bot.reload_extension(f'cogs.{cog_name}')
                     await ctx.send(f"已重整 {cog_name} 指令包")
-                    print(log(True, 'Cog', f'Reloaded {cog_name} cog'))
+                    print(log(True, False,'Cog', f'Reloaded {cog_name} cog'))
                     
                 except Exception as e:
                     await ctx.send(f"{cog_name}發生錯誤```{e}```")
