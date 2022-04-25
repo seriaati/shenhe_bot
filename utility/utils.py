@@ -1,4 +1,6 @@
 import discord
+import genshin
+from utility.character_name import character_names
 
 
 global warningColor, purpleColor, footerAuthor, footerImage, timeOutErrorMsg, embedNoAccount, embedNoGroup, groups, whyRegister
@@ -31,3 +33,10 @@ def log(is_system:bool, is_error:bool, log_type:str, log_msg:str):
         result = f"[{system}][ERROR][{log_type}] {log_msg}"
     return result
     
+def getCharacterName(character: genshin.models.BaseCharacter) -> str:
+    chinese_name = character_names.get(character.id)
+    return chinese_name if chinese_name != None else character.name
+
+weekday_dict = {0: '週一', 1: '週二', 2: '週三', 3: '週四', 4: '週五', 5: '週六', 6: '週日'}
+def getWeekdayName(n: int) -> str:
+    return weekday_dict.get(n)

@@ -8,13 +8,8 @@ from utility.utils import defaultEmbed, errEmbed, setFooter, log
 from utility.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
-from utility.character_name import character_names
 from utility.GenshinApp import genshin_app
 import genshin
-
-def getCharacterName(character: genshin.models.BaseCharacter) -> str:
-    chinese_name = character_names.get(character.id)
-    return chinese_name if chinese_name != None else character.name
 
 
 class GenshinCog(commands.Cog, name="genshin", description="原神相關指令"):
