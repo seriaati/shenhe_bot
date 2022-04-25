@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import genshin
 import yaml
+from utility.classes import Character
 from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName
 
 
@@ -24,7 +25,7 @@ class GenshinApp:
             result = errEmbed(f'你已經領過今天的獎勵了!','')
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Claim', e))
-            result = errEmbed('簽到失敗：{e.original}','')
+            result = errEmbed(f'簽到失敗: {e.original}','')
         except Exception as e:
             print(log(False, True, 'Claim', e))
             result = errEmbed(
@@ -196,10 +197,13 @@ class GenshinApp:
 
     async def getDiary(self, user_id:int, month:int):
         print(log(False, False, 'Diary', user_id))
+        currentMonth = datetime.now().month
+        if month > currentMonth:
+            result = errEmbed('不可輸入大於目前時間的月份','')
+            return result
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
         client, nickname = self.getUserCookie(user_id)
         try:
             diary = await client.get_diary(month=month)
@@ -222,15 +226,191 @@ class GenshinApp:
             result.add_field(
                 name='本月共獲得',
                 value=
-                f'<:primo:958555698596290570> {d.current_primogems} • 上個月：{d.last_primogems}\n'
-                f'<:mora:958577933650362468> {d.current_mora} • 上個月：{d.last_mora}',
+                f'<:primo:958555698596290570> {d.current_primogems} • 上個月: {d.last_primogems}\n'
+                f'<:mora:958577933650362468> {d.current_mora} • 上個月: {d.last_mora}',
                 inline=False
             )
             msg = ''
             for cat in d.categories:
                 msg += f'{cat.name}: {cat.percentage}%\n'
             result.add_field(name=f'收入分類', value=msg, inline=False)
+        return result
 
+    async def getDiaryLog(self, user_id: int):
+        print(log(False, False, 'Diary Log', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            diary = await client.get_diary()
+        except genshin.errors.DataNotPublic as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+        except Exception as e:
+            print(log(False, True, 'Notes', e))
+        else:
+            primoLog = ''
+            moraLog = ''
+            result = []
+            async for action in client.diary_log(limit=25):
+                primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
+            async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
+                moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
+            embed = defaultEmbed(
+                f"<:primo:958555698596290570> 最近25筆原石紀錄",
+                f"{primoLog}"
+            )
+            result.append(embed)
+            embed = defaultEmbed(
+                f"<:mora:958577933650362468> 最近25筆摩拉紀錄",
+                f"{moraLog}"
+            )
+            result.append(embed)
+        return result
+
+    async def getUserCharacters(self, user_id: int):
+        print(log(False, False, 'Character', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        uid = self.user_data[user_id]['uid']
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            char = await client.get_genshin_characters(uid)
+        except genshin.errors.DataNotPublic as e:
+            print(log(False, True, 'Character', f'{user_id}: {e}'))
+            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Character', f'{user_id}: {e}'))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+        except Exception as e:
+            print(log(False, True, 'Character', e))
+        else:
+            characters = []
+            result = []
+            for character in char:
+                weapon = character.weapon
+                artifacts = character.artifacts
+                artifactList = []
+                artifactIconList = []
+                for artifact in artifacts:
+                    artifactList.append(artifact.name)
+                    artifactIconList.append(artifact.icon)
+                characters.append(Character(getCharacterName(character), character.level, character.constellation, character.icon, character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
+            for character in characters:
+                artifactStr = ""
+                for artifact in character.artifacts:
+                    artifactStr = artifactStr + "• " + artifact + "\n"
+                embed = defaultEmbed(
+                    f"{character.name}: C{character.constellation} R{character.refinement}",
+                    f"Lvl {character.level}\n"
+                    f"好感度 {character.friendship}\n"
+                    f"武器 {character.weapon}, lvl{character.weaponLevel}\n"
+                    f"{artifactStr}")
+                embed.set_thumbnail(url=f"{character.iconUrl}")
+                result.append(embed)
+        return result
+
+    async def getToday(self, user_id: int):
+        print(log(False, False, 'Notes', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            diary = await client.get_diary()
+        except genshin.errors.DataNotPublic as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+        except Exception as e:
+            print(log(False, True, 'Notes', e))
+        else:
+            result = defaultEmbed(
+                f"{nickname}: 今日收入",
+                f"<:primo:958555698596290570> {diary.day_data.current_primogems}原石\n"
+                f"<:mora:958577933650362468> {diary.day_data.current_mora}摩拉"
+            )
+        return result
+
+    async def getAbyss(self, user_id: int, previous: bool):
+        print(log(False, False, 'Abyss', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        uid = self.user_data[user_id]['uid']
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            abyss = await client.get_spiral_abyss(uid, previous=previous)
+        except genshin.errors.DataNotPublic as e:
+            print(log(False, True, 'Abyss', f'{user_id}: {e}'))
+            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Abyss', f'{user_id}: {e}'))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+        except Exception as e:
+            print(log(False, True, 'Abyss', e))
+        else:
+            rank = abyss.ranks
+            result = []
+            embed = defaultEmbed(
+                f"{nickname}: 第{abyss.season}期深淵",
+                f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n"
+                f"達到{abyss.max_floor}層\n"
+                f"共{abyss.total_stars}★"
+            )
+            embed.add_field(
+                name="戰績",
+                value=f"單次最高傷害: {getCharacterName(rank.strongest_strike[0])} • {rank.strongest_strike[0].value}\n"
+                f"擊殺王 • {getCharacterName(rank.most_kills[0])} • {rank.most_kills[0].value}次擊殺\n"
+                f"最常使用角色 • {getCharacterName(rank.most_played[0])} • {rank.most_played[0].value}次\n"
+                f"最多Q使用角色 • {getCharacterName(rank.most_bursts_used[0])} • {rank.most_bursts_used[0].value}次\n"
+                f"最多E使用角色 • {getCharacterName(rank.most_skills_used[0])} • {rank.most_skills_used[0].value}次"
+            )
+            result.append(embed)
+            for floor in abyss.floors:
+                embed = defaultEmbed(f"第{floor.floor}層 (共{floor.stars}★)", f" ")
+                for chamber in floor.chambers:
+                    name = f'第{chamber.chamber}間 {chamber.stars}★'
+                    chara_list = [[], []]
+                    for i, battle in enumerate(chamber.battles):
+                        for chara in battle.characters:
+                            chara_list[i].append(getCharacterName(chara))
+                    topStr = ''
+                    bottomStr = ''
+                    for top_char in chara_list[0]:
+                        topStr += f"• {top_char} "
+                    for bottom_char in chara_list[1]:
+                        bottomStr += f"• {bottom_char} "
+                    embed.add_field(
+                        name=name,
+                        value=f"【上半】{topStr}\n\n"
+                        f"【下半】{bottomStr}",
+                        inline=False
+                    )
+                result.append(embed)
         return result
 
     def checkUserData(self, user_id: int):

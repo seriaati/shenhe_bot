@@ -5,7 +5,6 @@ import DiscordUtils
 import utility.utils as Global
 import yaml
 from utility.utils import defaultEmbed, errEmbed, setFooter, log, getCharacterName
-from utility.classes import Character
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
 from utility.GenshinApp import genshin_app
@@ -87,7 +86,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                             f"樹脂回滿時間: {resin_recover_time}"
                         )
                         user = self.bot.get_user(user_id)
-                        user.send(embed=result)
+                        await user.send(embed=result)
                         value['dmCount'] += 1
                         self.saveUserData(user_dict)
                         await asyncio.sleep(4)
@@ -148,101 +147,69 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='log',help='查看最近25筆原石與摩拉收入紀錄與來源')
     async def _log(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        diary = await client.get_diary()
-        primoLog = ""
-        moraLog = ""
-        async for action in client.diary_log(limit=25):
-            primoLog = primoLog+f"{action.action} - {action.amount} 原石"+"\n"
-        async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
-            moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
-        embedPrimo = defaultEmbed(
-            f"<:primo:958555698596290570> 最近25筆原石紀錄", f"{primoLog}")
-        setFooter(embedPrimo)
-        embedMora = defaultEmbed(
-            f"<:mora:958577933650362468> 最近25筆摩拉紀錄", f"{moraLog}")
-        setFooter(embedMora)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getDiaryLog(member.id)
+        await msg.delete()
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
             ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
-        embeds = [embedPrimo, embedMora]
-        await paginator.run(embeds)
+        await paginator.run(result)
 
     @commands.command(name='char',aliases=['ch'],help='查看所有擁有角色資訊')
     async def _char(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        char = await client.get_genshin_characters(uid)
-        clientCharacters = []
-        charEmbeds = []
-        for character in char:
-            weapon = character.weapon
-            artifacts = character.artifacts
-            artifactList = []
-            artifactIconList = []
-            for artifact in artifacts:
-                artifactList.append(artifact.name)
-                artifactIconList.append(artifact.icon)
-            clientCharacters.append(Character(getCharacterName(character), character.level, character.constellation, character.icon,
-                                              character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
-        for character in clientCharacters:
-            artifactStr = ""
-            for artifact in character.artifacts:
-                artifactStr = artifactStr + "- " + artifact + "\n"
-            embedChar = defaultEmbed(f"{character.name}: C{character.constellation} R{character.refinement}",
-                                     f"Lvl {character.level}\n好感度 {character.friendship}\n武器 {character.weapon}, lvl{character.weaponLevel}\n{artifactStr}")
-            embedChar.set_thumbnail(url=f"{character.iconUrl}")
-            setFooter(embedChar)
-            charEmbeds.append(embedChar)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getUserCharacters(member.id)
+        await msg.delete()
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
             ctx, remove_reactions=True)
         paginator.add_reaction('⏮️', "first")
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
         paginator.add_reaction('⏭️', "last")
-        await paginator.run(charEmbeds)
+        await paginator.run(result)
 
     @commands.command(name='users',help='查看目前所有已註冊原神帳號')
     async def _users(self, ctx):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
+        print(log(False, False, 'Users', ctx.author.id))
+        user_dict = dict(self.user_dict)
         userStr = ""
-        count = 1
-        for user in users:
-            userID = user
-            userStr = userStr + \
-                f"{count}. {users[userID]['name']} - {users[userID]['uid']}\n"
+        count = 0
+        for user_id, value in user_dict.items():
             count += 1
+            userStr = userStr + \
+                f"{count}. {value['name']} - {value['uid']}\n"
         embed = defaultEmbed("所有帳號", userStr)
-        setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command(name='today',aliases=['td'],help='查看今日原石與摩拉收入')
     async def _today(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        diary = await client.get_diary()
-        mora = diary.day_data.current_mora
-        primo = diary.day_data.current_primogems
-        embed = defaultEmbed(f"今日收入: {username}", f"\
-			<:primo:958555698596290570> {primo}原石\n\
-			<:mora:958577933650362468> {mora}摩拉\n\n\
-			註: 米哈遊對此資料更新速度較慢, 請見諒")
-        setFooter(embed)
-        await ctx.send(embed=embed)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getToday(member.id)
+        await msg.delete()
+        await ctx.send(embed=result)
+
+    @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
+    async def _abyss(self, ctx, member: discord.Member = None):
+        member = member or ctx.author
+        form = Form(ctx, '深淵期份選擇', cleanup=True)
+        form.add_question('本期還是上期?', 'season')
+        form.set_timeout(60)
+        await form.set_color("0xa68bd3")
+        result = await form.start()
+        previous = True if result.season == '上季' else False
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getAbyss(member.id, previous)
+        await msg.delete()
+        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
+            ctx, remove_reactions=True)
+        paginator.add_reaction('⏮️', "first")
+        paginator.add_reaction('◀', "back")
+        paginator.add_reaction('▶', "next")
+        paginator.add_reaction('⏭️', "last")
+        await paginator.run(result)
 
     @commands.command(hidden=True)
     @commands.has_role("小雪團隊")
@@ -286,24 +253,15 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
 
     @commands.command(name='register',aliases=['reg'],help='查看註冊原神帳號教學')
     async def _register(self, ctx):
-        embedRegister = defaultEmbed('註冊教學', 
-        '1. 去 https://www.hoyolab.com/home 然後登入\n'
-        '2. 按F12\n'
-        '3. 點擊console, 將下方的指令貼上後按ENTER\n'
-        "```javascript:document.write(`<pre>${JSON.stringify(document.cookie.split(';').reduce((cookies, val) => { parts = val.split('='); cookies[parts[0]] = parts[1]; return cookies; }, {}), null, 2)}</pre>`)```\n"
-        '4. ctrl+A全選並ctrl+C複製後將內容私訊給<@410036441129943050>或<@665092644883398671>\n'
-        '並附上原神UID及想要的使用者名稱'
+        embed = defaultEmbed('註冊教學', 
+            '1. PC或手機使用瀏覽器(不支援Safari,建議使用chrome)\n'
+            '開啟Hoyolab登入帳號 https://www.hoyolab.com/\n'
+            '2. 在網址列上輸入`java`\n'
+            '3. 貼上下方的程式碼, 確保網址開頭變成 `javascript:`\n'
+            "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
+            '4. ctrl+A全選並ctrl+C複製後將內容私訊給<@410036441129943050>或<@665092644883398671>\n'
+            '並附上原神UID及想要的使用者名稱'
         )
-        setFooter(embedRegister)
-        embed = defaultEmbed("註冊帳號有什麼好處?", Global.whyRegister)
-        setFooter(embed)
-        await ctx.send(embed=embedRegister)
-        await ctx.send(embed=embed)
-
-    @commands.command(name='whyreg',help='查看註冊帳號能獲得的好處')
-    async def _whyreg(self, ctx):
-        embed = defaultEmbed("註冊帳號有什麼好處?", Global.whyRegister)
-        setFooter(embed)
         await ctx.send(embed=embed)
 
     @commands.command(name='stuck',help='找不到原神帳號資料?')
@@ -336,66 +294,6 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
                     yaml.dump(users, file)
                 await ctx.send(f"已關閉 {users[userID]['name']} 的私訊功能")
-
-    @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
-    async def _abyss(self, ctx, member: discord.Member = None):
-        member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        abyss = await client.get_spiral_abyss(uid)
-        try:
-            rank = abyss.ranks
-            mBurst = rank.most_bursts_used[0].value
-            mBurstChar = getCharacterName(rank.most_bursts_used[0])
-            mSkill = rank.most_skills_used[0].value
-            mSkillChar = getCharacterName(rank.most_skills_used[0])
-            mKill = rank.most_kills[0].value
-            mKillChar = getCharacterName(rank.most_kills[0])
-            mPlay = rank.most_played[0].value
-            mPlayChar = getCharacterName(rank.most_played[0])
-            dmg = rank.strongest_strike[0].value
-            dmgChar = getCharacterName(rank.strongest_strike[0])
-        except IndexError:
-            embed = errEmbed(
-                "找不到資料!", "可能是因為你還沒打深淵: 輸入`!stats`來看看你打到幾層\n也可能是資料還未更新: 再次輸入`!abyss`來確認")
-            setFooter(embed)
-            await ctx.send(embed=embed)
-            return
-        embeds = []
-        embed = defaultEmbed(
-            f"{username}: 第{abyss.season}期深淵", f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n達到{abyss.max_floor}層\n共{abyss.total_stars}★")
-        embed.add_field(name="戰績", value=f"單次最高傷害: {dmgChar} • {dmg}\n擊殺王: {mKillChar} • {mKill}次擊殺\n最常使用角色: {mPlayChar} • {mPlay}次\n最多Q使用角色: {mBurstChar} • {mBurst}次\n最多E使用角色: {mSkillChar} • {mSkill}次")
-        setFooter(embed)
-        embeds.append(embed)
-        for floor in abyss.floors:
-            embed = defaultEmbed(f"第{floor.floor}層 (共{floor.stars}★)", f" ")
-            for chamber in floor.chambers:
-                name = f'第{chamber.chamber}間 {chamber.stars}★'
-                chara_list = [[], []]
-                for i, battle in enumerate(chamber.battles):
-                    for chara in battle.characters:
-                        chara_list[i].append(getCharacterName(chara))
-                topStr = ''
-                bottomStr = ''
-                for top_char in chara_list[0]:
-                    topStr += f"• {top_char} "
-                for bottom_char in chara_list[1]:
-                    bottomStr += f"• {bottom_char} "
-                embed.add_field(
-                    name=name, value=f"【上半】{topStr}\n\n【下半】{bottomStr}", inline=False)
-            setFooter(embed)
-            embeds.append(embed)
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
-            ctx, remove_reactions=True)
-        paginator.add_reaction('⏮️', "first")
-        paginator.add_reaction('◀', "back")
-        paginator.add_reaction('▶', "next")
-        paginator.add_reaction('⏭️', "last")
-        print(embeds)
-        await paginator.run(embeds)
 
     @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
     async def _farm(self, ctx):
