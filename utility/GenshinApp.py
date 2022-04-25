@@ -374,8 +374,7 @@ class GenshinApp:
             print(log(False, True, 'Abyss', e))
         else:
             rank = abyss.ranks
-            print(rank)
-            if not rank:
+            if not rank.most_played:
                 return errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')
             result = []
             embed = defaultEmbed(
