@@ -374,6 +374,8 @@ class GenshinApp:
             print(log(False, True, 'Abyss', e))
         else:
             rank = abyss.ranks
+            if not rank:
+                return errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')
             result = []
             embed = defaultEmbed(
                 f"{nickname}: 第{abyss.season}期深淵",
