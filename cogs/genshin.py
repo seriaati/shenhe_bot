@@ -1,10 +1,10 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 import discord
 import DiscordUtils
 import utility.utils as Global
 import yaml
-from utility.utils import defaultEmbed, errEmbed, setFooter, log, getCharacterName
+from utility.utils import defaultEmbed, errEmbed, setFooter, log
 from discord.ext import commands, tasks
 from discord.ext.forms import Form
 from utility.GenshinApp import genshin_app
@@ -43,7 +43,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @tasks.loop(minutes=loop_interval)
     async def schedule(self):
         now = datetime.now()
-        if now.hour == 1 and now.minute < self.loop_interval:
+        if now.hour == 7 :
             print(log(True, False, 'Schedule', 'Auto claim started'))
             channel = self.bot.get_channel(909595117952856084)
             user_dict = dict(self.user_dict)
@@ -298,7 +298,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
     async def _farm(self, ctx):
         chineseNumber = ['一','二','三','四','五','六','日']
-        weekdayGet = datetime.datetime.today().weekday()
+        weekdayGet = datetime.today().weekday()
         weekday = "禮拜"+chineseNumber[weekdayGet]
         embedFarm = defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:

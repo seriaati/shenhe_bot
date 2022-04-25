@@ -198,7 +198,7 @@ class GenshinApp:
     async def getDiary(self, user_id:int, month:int):
         print(log(False, False, 'Diary', user_id))
         currentMonth = datetime.now().month
-        if month > currentMonth:
+        if int(month) > currentMonth:
             result = errEmbed('不可輸入大於目前時間的月份','')
             return result
         check, msg = self.checkUserData(user_id)
@@ -386,7 +386,7 @@ class GenshinApp:
             )
             embed.add_field(
                 name="戰績",
-                value=f"單次最高傷害: {getCharacterName(rank.strongest_strike[0])} • {rank.strongest_strike[0].value}\n"
+                value=f"單次最高傷害 • {getCharacterName(rank.strongest_strike[0])} • {rank.strongest_strike[0].value}\n"
                 f"擊殺王 • {getCharacterName(rank.most_kills[0])} • {rank.most_kills[0].value}次擊殺\n"
                 f"最常使用角色 • {getCharacterName(rank.most_played[0])} • {rank.most_played[0].value}次\n"
                 f"最多Q使用角色 • {getCharacterName(rank.most_bursts_used[0])} • {rank.most_bursts_used[0].value}次\n"
