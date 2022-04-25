@@ -26,6 +26,7 @@ class GenshinApp:
             print(log(False, True, 'Claim', e))
             result = errEmbed('簽到失敗：{e.original}','')
         except Exception as e:
+            print(log(False, True, 'Claim', e))
             result = errEmbed(f'簽到失敗：{e}','')
         else:
             result = defaultEmbed(f'{nickname}: 今日簽到成功',f'獲得 {reward.amount}x {reward.name}')

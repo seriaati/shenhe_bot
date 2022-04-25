@@ -124,28 +124,13 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         await msg.delete()
         await ctx.send(embed=result)
 
-    @commands.command(name='claim', aliases=['clm'],help='領取今日hoyolab網頁登入獎勵')
+    @commands.command(name='claim',help='領取今日hoyolab網頁登入獎勵')
     async def _claim(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        reward = await client.claim_daily_reward()
-        signed_in, claimed_rewards = await client.get_reward_info()
-        try:
-            reward = await client.claim_daily_reward()
-        except genshin.AlreadyClaimed:
-            embed = defaultEmbed(
-                f"使用者: {username}", f"❌ 已經拿過今天的每日獎勵啦! 貪心鬼{username}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-            setFooter(embed)
-            await ctx.send(embed=embed)
-        else:
-            embed = defaultEmbed(
-                f"使用者: {username}", f"✅ 幫你拿到了 {reward.amount}x {reward.name}\n📘 這個月已領取的每日獎勵數量: {claimed_rewards}")
-            setFooter(embed)
-            await ctx.send(embed=embed)
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.claimDailyReward(member.id)
+        await msg.delete()
+        await ctx.send(embed=result)
 
     @commands.command(name='diary',aliases=['d'],help='查看今月摩拉與原石收入')
     async def _diary(self, ctx, *, member: discord.Member = None):
