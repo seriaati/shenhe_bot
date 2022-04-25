@@ -2,7 +2,6 @@
 
 import discord
 import git
-from os.path import dirname
 from discord.ext import commands
 from utility.config import config
 from utility.utils import log
@@ -45,8 +44,7 @@ async def on_message(message):
 @bot.command(hidden = True)
 @commands.has_role("小雪團隊")
 async def reload(ctx):
-    project_root = dirname(dirname(__file__))
-    g = git.cmd.Git(project_root)
+    g = git.cmd.Git('C:\Users\alice\shenhe_bot')
     g.pull()
     print(log(True, False, 'Pull', 'Pulled from github'))
     await ctx.send("已從源碼更新")

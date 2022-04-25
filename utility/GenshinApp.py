@@ -63,19 +63,21 @@ class GenshinApp:
                 realm_recover_time = f'{weekday_msg} {notes.realm_currency_recovery_time.strftime("%H:%M")}'
             if notes.transformer_recovery_time != None:
                 if notes.remaining_transformer_recovery_time < 10:
-                    transformer_recover_time = '已可使用'
+                    transformer_recovery_time = '已可使用'
                 else:
                     t = timedelta(seconds=notes.remaining_transformer_recovery_time+10)
                     if t.days > 0:
-                        transformer_recover_time = f'{t.days} 天'
+                        transformer_recovery_time = f'{t.days} 天'
                     elif t.seconds > 3600:
-                        transformer_recover_time = f'{round(t.seconds/3600)} 小時'
+                        transformer_recovery_time = f'{round(t.seconds/3600)} 小時'
                     else:
-                        transformer_recover_time = f'{round(t.seconds/60)} 分'
+                        transformer_recovery_time = f'{round(t.seconds/60)} 分'
+            else:
+                transformer_recovery_time = '質變儀不存在'
             result = defaultEmbed(
                 f"{nickname}: 即時便籤",
                 f"<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n"
-                f"<:transformer:966156330089971732> 質變儀剩餘時間: {transformer_recover_time}"
+                f"<:transformer:966156330089971732> 質變儀剩餘時間: {transformer_recovery_time}"
             )
             result.add_field(
                 name='樹脂',
@@ -94,7 +96,11 @@ class GenshinApp:
             )
             exped_finished = 0
             exped_msg = ''
+            if notes.expeditions is None:
+                exped_msg = '沒有探索派遣'
+                total_exped = 0
             for expedition in notes.expeditions:
+                total_exped = len(notes.expeditions)
                 exped_msg += f'• {getCharacterName(expedition.character)}'
                 if expedition.finished:
                     exped_finished += 1
@@ -103,7 +109,7 @@ class GenshinApp:
                     day_msg = '今天' if expedition.completion_time.day == datetime.now().day else '明天'
                     exped_msg += f' 完成時間: {day_msg} {expedition.completion_time.strftime("%H:%M")}\n'
             result.add_field(
-                name=f'探索派遣 ({exped_finished}/{len(notes.expeditions)})', 
+                name=f'探索派遣 ({exped_finished}/{total_exped})', 
                 value=exped_msg,
                 inline=False
             )
