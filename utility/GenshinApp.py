@@ -124,10 +124,11 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Notes', e))
         else:
+            characters = await client.get_calculator_characters()
             result = defaultEmbed(f"{nickname}: 統計數據","")
             result.add_field(name='綜合',value=
                 f"📅 活躍天數: {genshinUser.stats.days_active}\n"
-                f"<:expedition:956385168757780631> 角色數量: {genshinUser.stats.characters}/50\n"
+                f"<:expedition:956385168757780631> 角色數量: {genshinUser.stats.characters}/{len(characters)}\n"
                 f"📜 成就數量:{genshinUser.stats.achievements}/639\n"
                 f"🌙 深淵已達: {genshinUser.stats.spiral_abyss}層"
             , inline = False)
