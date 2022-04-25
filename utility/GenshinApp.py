@@ -375,7 +375,8 @@ class GenshinApp:
         else:
             rank = abyss.ranks
             if not rank.most_played:
-                return errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')
+                result = [errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')]
+                return result
             result = []
             embed = defaultEmbed(
                 f"{nickname}: 第{abyss.season}期深淵",
