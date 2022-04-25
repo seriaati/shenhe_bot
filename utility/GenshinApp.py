@@ -124,32 +124,22 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Notes', e))
         else:
-            days = genshinUser.stats.days_active
-            char = genshinUser.stats.characters
-            achieve = genshinUser.stats.achievements
-            anemo = genshinUser.stats.anemoculi
-            geo = genshinUser.stats.geoculi
-            electro = genshinUser.stats.electroculi
-            comChest = genshinUser.stats.common_chests
-            exChest = genshinUser.stats.exquisite_chests
-            luxChest = genshinUser.stats.luxurious_chests
-            abyss = genshinUser.stats.spiral_abyss
             result = defaultEmbed(f"{nickname}: 統計數據","")
             result.add_field(name='綜合',value=
-                f"📅 活躍天數: {days}\n"
-                f"<:expedition:956385168757780631> 角色數量: {char}/50\n"
-                f"📜 成就數量:{achieve}/639\n"
-                f"🌙 深淵已達: {abyss}層"
+                f"📅 活躍天數: {genshinUser.stats.days_active}\n"
+                f"<:expedition:956385168757780631> 角色數量: {genshinUser.stats.characters}/50\n"
+                f"📜 成就數量:{genshinUser.stats.achievements}/639\n"
+                f"🌙 深淵已達: {genshinUser.stats.spiral_abyss}層"
             , inline = False)
             result.add_field(name='神瞳',value=
-                f"<:anemo:956719995906322472> 風神瞳: {anemo}/66\n"
-                f"<:geo:956719995440730143> 岩神瞳: {geo}/131\n"
-                f"<:electro:956719996262821928> 雷神瞳: {electro}/181"
+                f"<:anemo:956719995906322472> 風神瞳: {genshinUser.stats.anemoculi}/66\n"
+                f"<:geo:956719995440730143> 岩神瞳: {genshinUser.stats.geoculi}/131\n"
+                f"<:electro:956719996262821928> 雷神瞳: {genshinUser.stats.electroculi}/181"
             , inline = False)
             result.add_field(name='寶箱', value=
-                f"一般寶箱: {comChest}\n"
-                f"稀有寶箱: {exChest}\n"
-                f"珍貴寶箱: {luxChest}"
+                f"一般寶箱: {genshinUser.stats.common_chests}\n"
+                f"稀有寶箱: {genshinUser.stats.exquisite_chests}\n"
+                f"珍貴寶箱: {genshinUser.stats.luxurious_chests}"
             , inline = False)
         return result
 
