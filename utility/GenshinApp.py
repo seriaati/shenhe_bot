@@ -168,6 +168,41 @@ class GenshinApp:
             )
         return result
 
+    async def getDiary(self, user_id:int, month:int):
+        print(log(False, False, 'Diary', user_id))
+        check, msg = self.checkUserData(user_id)
+        if check == False:
+            return msg
+        uid = self.user_data[user_id]['uid']
+        client, nickname = self.getUserCookie(user_id)
+        try:
+            diary = await client.get_diary(month=month)
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Diary', f'{user_id}: {e}'))
+            result = errEmbed('太多了!', '目前原神API請求次數過多, 請稍後再試')
+        except Exception as e:
+            print(log(False, True, 'Diary', e))
+        else:
+            d = diary.data 
+            result = defaultEmbed(
+                f'{nickname}: 旅行者日記  •  {month}月',
+                f'<:primo:958555698596290570> 原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
+                f'<:mora:958577933650362468> 摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
+            )
+            result.add_field(
+                name='本月共獲得',
+                value=
+                f'<:primo:958555698596290570> : {d.current_primogems} • 上個月：{d.last_primogems}\n'
+                f'<:mora:958577933650362468> : {d.current_mora} • 上個月：{d.last_mora}',
+                inline=False
+            )
+            msg = ''
+            for cat in d.categories:
+                msg += f'{cat.name}: {cat.percentage}%\n'
+            result.add_field(name=f'收入分類', value=msg, inline=False)
+
+        return result
+
     def checkUserData(self, user_id: int):
         with open(f'data/accounts.yaml', encoding='utf-8') as file:
             users = yaml.full_load(file)

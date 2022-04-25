@@ -135,21 +135,15 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     @commands.command(name='diary',aliases=['d'],help='查看今月摩拉與原石收入')
     async def _diary(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        cookies, uid, username = await self.getUserData(ctx, member.id)
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        diary = await client.get_diary()
-        primoCategoryStr = ""
-        for category in diary.data.categories:
-            primoCategoryStr += f"{category.percentage}%: {category.name} ({category.amount} 原石)" + "\n"
-        embedDiary = defaultEmbed(
-            f"原石與摩拉收入: {username}", f"<:mora:958577933650362468> **這個月獲得的摩拉數量: {diary.data.current_mora}**")
-        embedDiary.add_field(
-            name=f"<:primo:958555698596290570> 這個月獲得的原石數量: {diary.data.current_primogems}", value=f"收入分類: \n{primoCategoryStr}")
-        setFooter(embedDiary)
-        await ctx.send(embed=embedDiary)
+        form = Form(ctx, '月份選擇', cleanup=True)
+        form.add_question('要查看今年幾月的收入?', 'month')
+        form.set_timeout(60)
+        await form.set_color("0xa68bd3")
+        result = await form.start()
+        msg = await ctx.send('讀取中...')
+        result = await genshin_app.getDiary(member.id, result.month)
+        await msg.delete()
+        await ctx.send(embed=result)
 
     @commands.command(name='log',help='查看最近25筆原石與摩拉收入紀錄與來源')
     async def _log(self, ctx, *, member: discord.Member = None):
