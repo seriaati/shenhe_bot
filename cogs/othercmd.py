@@ -44,7 +44,10 @@ class OtherCMDCog(commands.Cog, name='others', description='其他指令'):
         "[更多資訊請點我](https://discord.com/channels/916838066117824553/965964989875757156/966252132355424286)\n"
         f"• 想要在dc裡直接查閱遊戲內樹脂嗎? 歡迎至{factory.mention}")
         setFooter(embed)
-        await member.send(embed=embed)
+        try:
+            await member.send(embed=embed)
+        except:
+            pass
 
     @commands.command()
     async def ping(self, ctx):
