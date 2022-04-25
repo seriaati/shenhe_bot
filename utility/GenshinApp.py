@@ -27,9 +27,16 @@ class GenshinApp:
             result = errEmbed('簽到失敗：{e.original}','')
         except Exception as e:
             print(log(False, True, 'Claim', e))
-            result = errEmbed(f'簽到失敗：{e}','')
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
         else:
-            result = defaultEmbed(f'{nickname}: 今日簽到成功',f'獲得 {reward.amount}x {reward.name}')
+            result = defaultEmbed(
+                f'{nickname}: 今日簽到成功',
+                f'獲得 {reward.amount}x {reward.name}'
+            )
         return result
     
     async def getRealTimeNotes(self, user_id: int):
@@ -46,7 +53,11 @@ class GenshinApp:
             result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
-            result = errEmbed('太快了!', '目前原神API請求次數過多, 請稍後再試')
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
         except Exception as e:
             print(log(False, True, 'Notes', e))
         else:
@@ -84,7 +95,7 @@ class GenshinApp:
                 value=
                 f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
                 f"樹脂回滿時間: {resin_recover_time}\n"
-                f'週本樹脂減半：剩餘 {notes.remaining_resin_discounts}/3 次',
+                f'週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
                 inline=False
             )
             result.add_field(
@@ -96,7 +107,7 @@ class GenshinApp:
             )
             exped_finished = 0
             exped_msg = ''
-            if notes.expeditions is None:
+            if not notes.expeditions:
                 exped_msg = '沒有探索派遣'
                 total_exped = 0
             for expedition in notes.expeditions:
@@ -126,7 +137,11 @@ class GenshinApp:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
-            result = errEmbed('太多了!', '目前原神API請求次數過多, 請稍後再試')
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
         except Exception as e:
             print(log(False, True, 'Notes', e))
         else:
@@ -161,7 +176,11 @@ class GenshinApp:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Area', f'{user_id}: {e}'))
-            result = errEmbed('太多了!', '目前原神API請求次數過多, 請稍後再試')
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
         except Exception as e:
             print(log(False, True, 'Area', e))
         else:
@@ -186,7 +205,11 @@ class GenshinApp:
             diary = await client.get_diary(month=month)
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Diary', f'{user_id}: {e}'))
-            result = errEmbed('太多了!', '目前原神API請求次數過多, 請稍後再試')
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
         except Exception as e:
             print(log(False, True, 'Diary', e))
         else:
