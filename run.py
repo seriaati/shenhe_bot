@@ -44,7 +44,7 @@ async def on_message(message):
 @bot.command(hidden = True)
 @commands.has_role("小雪團隊")
 async def reload(ctx):
-    g = git.cmd.Git('C:\Users\alice\shenhe_bot')
+    g = git.cmd.Git('C:/Users/alice/shenhe_bot')
     g.pull()
     print(log(True, False, 'Pull', 'Pulled from github'))
     await ctx.send("已從源碼更新")
