@@ -1,3 +1,4 @@
+from dis import disco
 from discord.ext.forms import Form, ReactionForm
 from discord.ext import commands
 from datetime import date
@@ -849,9 +850,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         setFooter(embedGiveaway)
         await ctx.send("✅ 抽獎設置完成", delete_after=5)
         gvChannel = self.bot.get_channel(965517075508498452)
-        guild = self.bot.get_guild(ctx.author.guild_id)
-        gvRole = discord.utils.get(guild.roles, name=f"抽獎通知")
-        await gvChannel.send(gvRole.mention)
         giveawayMsg = await gvChannel.send(embed=embedGiveaway)
         await giveawayMsg.add_reaction('🎉')
         giveaways[giveawayMsg.id] = {
