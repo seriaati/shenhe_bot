@@ -2,7 +2,7 @@
 
 import discord
 import git
-from discord.ext import commands
+from discord.ext import slash
 from utility.config import config
 from utility.utils import log
 from pathlib import Path
@@ -20,8 +20,11 @@ else:
 intents = discord.Intents.default()
 intents.members = True
 intents.reactions = True
-bot = commands.Bot(command_prefix=prefix, help_command=None,
-                   intents=intents, case_insensitive=True)
+bot = slash.SlashBot(
+    command_prefix=prefix, description='', help_command=None,
+    debug_guild=778804551972159489,
+    resolve_not_fetch=False, fetch_if_not_get=True
+)
 
 
 for filepath in Path('./cogs').glob('**/*.py'):
@@ -41,18 +44,25 @@ async def on_ready():
 async def on_message(message):
     await bot.process_commands(message)
 
-@bot.command(hidden = True)
-@commands.has_role("小雪團隊")
-async def reload(ctx):
+
+@bot.slash_cmd(default_permission=False)
+async def reload(ctx: slash.Context):
+    """重整指令包"""
+    await ctx.respond(deferred=True)
     g = git.cmd.Git('C:/Users/alice/shenhe_bot')
     g.pull()
     print(log(True, False, 'Pull', 'Pulled from github'))
-    await ctx.send("已從源碼更新")
+    await ctx.respond("已從源碼更新", ephemeral=True)
     for filepath in Path('./cogs').glob('**/*.py'):
         cog_name = Path(filepath).stem
         bot.reload_extension(f'cogs.{cog_name}')
         print(log(True, False,'Cog', f'Reloaded {cog_name}'))
-    await ctx.send("Reloaded all Cogs")
+    await ctx.respond("Reloaded all Cogs", ephemeral=True)
+
+@bot.event
+async def on_slash_permissions():
+    reload.add_perm(bot.app_info.owner, True, None)
+    await bot.register_permissions()
 
 
-bot.run(token, bot=True, reconnect=True)
+bot.run(token)

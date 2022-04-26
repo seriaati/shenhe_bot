@@ -2,7 +2,6 @@ import asyncio
 from datetime import datetime
 import discord
 import DiscordUtils
-import utility.utils as Global
 import yaml
 from utility.utils import defaultEmbed, errEmbed, setFooter, log
 from discord.ext import commands, tasks
@@ -20,24 +19,6 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
         except:
             self.user_dict: dict[str, dict[str, str]] = { }
         self.schedule.start()
-
-    async def getUserData(self, ctx, discordID: int):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
-        if discordID in users:
-            try:
-                cookies = {"ltuid": users[discordID]['ltuid'],
-                           "ltoken": users[discordID]['ltoken']}
-                uid = users[discordID]['uid']
-                username = users[discordID]['name']
-                return cookies, uid, username
-            except genshin.errors.DataNotPublic:
-                await ctx.send(f"你的帳號資料未公開, 輸入`!stuck`來獲取更多資訊")
-        else:
-            embed = Global.embedNoAccount
-            setFooter(embed)
-            await ctx.send(embed=embed)
-            return
 
     loop_interval = 10
     @tasks.loop(minutes=loop_interval)
@@ -90,7 +71,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                         value['dmCount'] += 1
                         self.saveUserData(user_dict)
                         await asyncio.sleep(4)
-                    else:
+                    elif notes.current_resin < 140:
                         value['dmCount'] = 0
                         self.saveUserData(user_dict)
             print(log(True, False, 'Schedule', f'Resin check finished, total: {count}'))
