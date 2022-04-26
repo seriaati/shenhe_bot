@@ -22,7 +22,7 @@ intents.members = True
 intents.reactions = True
 bot = slash.SlashBot(
     command_prefix=prefix, description='', help_command=None,
-    debug_guild=778804551972159489,
+    debug_guild=916838066117824553,
     resolve_not_fetch=False, fetch_if_not_get=True
 )
 
