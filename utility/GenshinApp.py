@@ -440,7 +440,7 @@ class GenshinApp:
         else:
             rank = abyss.ranks
             if not rank.most_played:
-                result = errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')
+                result = errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`/stats`來確認')
                 return result
             result = []
             embed = defaultEmbed(
@@ -482,7 +482,7 @@ class GenshinApp:
         return result
 
     async def getBuild(self, element_dict:dict, chara_name:str):
-        print(log(False, False, 'Build',f'element: {element_dict}: {chara_name}'))
+        print(log(False, False, 'Build',chara_name))
         charas = dict(element_dict)
         if chara_name not in charas:
             return errEmbed('找不到該角色的資料','')
