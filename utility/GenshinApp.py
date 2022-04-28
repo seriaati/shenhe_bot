@@ -482,6 +482,7 @@ class GenshinApp:
         return result
 
     async def getBuild(self, element_dict:dict, chara_name:str):
+        print(log(False, False, 'Build',f'element: {element_dict}: {chara_name}'))
         charas = dict(element_dict)
         if chara_name not in charas:
             return errEmbed('找不到該角色的資料','')
