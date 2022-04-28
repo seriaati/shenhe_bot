@@ -42,8 +42,8 @@ class ShenheBot(commands.Bot):
             print(log(True, False,'Cog', f'Loaded {cog_name}'))
         if guild != None:
             test_guild = discord.Object(id=guild)
-            self.tree.copy_global_to(guild=test_guild)
-            await self.tree.sync(guild=test_guild)
+            self.tree.clear_commands(guild=test_guild)
+            await self.tree.sync()
 
     async def on_ready(self):
         await self.change_presence(
