@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 import discord
-from discord import app_commands
+from discord import Interaction, app_commands
 from discord.ext import tasks, commands
 from discord.app_commands import Choice
 import DiscordUtils
@@ -12,6 +12,7 @@ from discord.ext.forms import Form
 from utility.GenshinApp import genshin_app
 from typing import List, Optional
 import genshin
+from utility.paginator import Paginator
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
@@ -174,7 +175,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def stats(self, interaction: discord.Interaction,
+    async def area(self, interaction: discord.Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -187,7 +188,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def stats(self, interaction: discord.Interaction,
+    async def claim(self, interaction: discord.Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -214,28 +215,28 @@ class GenshinCog(commands.Cog):
         result = await genshin_app.getDiary(member.id, month)
         await interaction.response.send_message(embed=result)
 
-    @commands.hybrid_command(
+    @app_commands.command(
         name='log',
-        description='查看最近25筆原石與摩拉收入紀錄'
+        description='查看最近25筆原石或摩拉收入紀錄'
     )
-    @app_commands.rename(member='其他人')
+    @app_commands.choices(
+        type=[app_commands.Choice(name='原石', value=0),
+            app_commands.Choice(name='摩拉', value=1)]
+    )
+    @app_commands.rename(type='類別',member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def log(self, ctx,
+    async def log(self, interaction:discord.Interaction, type:int,
         member: Optional[Member] = None
     ):
-        member = member or ctx.interaction.user
+        member = member or interaction.user
         result = await genshin_app.getDiaryLog(member.id)
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
-            ctx, remove_reactions=True)
-        paginator.add_reaction('◀', "back")
-        paginator.add_reaction('▶', "next")
-        await paginator.run(result)
+        await interaction.response.send_message(embed=result[type])
 
     @app_commands.command(
         name='users',
         description='查看所有已註冊原神帳號'
     )
-    async def stats(self, interaction: discord.Interaction):
+    async def users(self, interaction: discord.Interaction):
         print(log(False, False, 'Users', interaction.user.id))
         user_dict = dict(self.user_dict)
         userStr = ""
@@ -261,9 +262,38 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=result)
 
 
-    @commands.hybrid_command(
-        name='abyss',
-        description='查詢深淵資料'
+    abyss = app_commands.Group(name='abyss',description='深淵')
+
+    @abyss.command(
+        name='floor',
+        description='深淵每層資料'
+    )
+    @app_commands.rename(season='期別',floor='層數',member='其他人')
+    @app_commands.describe(season='查詢這期還是上期深淵資料',floor='要查看的層數',
+        member='查看其他群友的資料'
+    )
+    @app_commands.choices(
+        season=[app_commands.Choice(name='上期紀錄', value=0),
+                app_commands.Choice(name='本期紀錄', value=1)],
+        floor=[app_commands.Choice(name='所有樓層', value=0),
+                app_commands.Choice(name='最後一層', value=1)]
+    )
+    async def abyss_floor(self, interaction:discord.Interaction,
+        season: int = 1, floor: int = 1, member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        previous = True if season == 0 else False
+        result = await genshin_app.getAbyss(member.id, previous)
+        if type(result) == discord.Embed:
+            await interaction.response.send_message(embed=result)
+        elif floor == 1:
+            await interaction.response.send_message(embed=result[-1])
+        else:
+            await Paginator(interaction, result[1:]).start(embeded=True)
+
+    @abyss.command(
+        name='overview',
+        description='深淵資料總覽'
     )
     @app_commands.rename(season='期別',member='其他人')
     @app_commands.describe(season='查詢這期還是上期深淵資料',
@@ -273,22 +303,17 @@ class GenshinCog(commands.Cog):
         season=[app_commands.Choice(name='上期紀錄', value=0),
                 app_commands.Choice(name='本期紀錄', value=1)]
     )
-    async def abyss(self, ctx,
+    async def abyss_floor(self, interaction:discord.Interaction,
         season: int = 1, member: Optional[Member] = None
     ):
-        member = member or ctx.interaction.user
+        member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
         if type(result) == discord.Embed:
-            await ctx.interaction.response.send_message(embed=result)
+            await interaction.response.send_message(embed=result)
         else:
-            paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
-            ctx, remove_reactions=True)
-            paginator.add_reaction('⏮️', "first")
-            paginator.add_reaction('◀', "back")
-            paginator.add_reaction('▶', "next")
-            paginator.add_reaction('⏭️', "last")
-            await paginator.run(result)
+            await interaction.response.send_message(embed=result[0])
+            
 
     @app_commands.command(
         name='stuck',
@@ -313,9 +338,10 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(switch='選擇要開啟還是關閉私訊功能')
     @app_commands.choices(
         switch=[app_commands.Choice(name='on', value=0),
-                app_commands.Choice(name='false', value=1)]
+                app_commands.Choice(name='off', value=1)]
     )
     async def dm(self, interaction: discord.Interaction, switch: int):
+        print(log(False, False, 'DM', interaction.user.id))
         user_dict = dict(self.user_dict)
         if switch == 0:
             userID = interaction.user.id
