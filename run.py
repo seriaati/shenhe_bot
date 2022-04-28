@@ -12,7 +12,7 @@ user = input()
 if user == "main":
     token = config.main
     prefix = ['!', '！']
-    guild = 916838066117824553
+    guild = 778804551972159489
     application_id = 956049912699715634
 else:
     token = config.dev
