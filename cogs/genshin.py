@@ -30,7 +30,7 @@ class GenshinCog(commands.Cog):
             self.hydro_dict = yaml.full_load(f)
         with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
             self.pyro_dict = yaml.full_load(f)
-        # self.schedule.start()
+        self.schedule.start()
 
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
         cookie = discord.ui.TextInput(
@@ -61,7 +61,8 @@ class GenshinCog(commands.Cog):
                 result = await genshin_app.claimDailyReward(user_id)
                 count += 1
                 print(log(True, False, 'Schedule', f'Claimed for {user_id}'))
-                await channel.send(f'[自動簽到] <@{user_id}> 領取成功')
+                user = self.bot.get_user(user_id)
+                await channel.send(f'[自動簽到] {user} 領取成功')
                 await asyncio.sleep(2.5)
             print(log(True, False, 'Schedule', f'Auto claim finished, total: {count}'))
 
