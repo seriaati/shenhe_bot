@@ -43,7 +43,7 @@ class ShenheBot(commands.Bot):
         if guild != None:
             test_guild = discord.Object(id=guild)
             self.tree.clear_commands(guild=test_guild)
-            await self.tree.sync()
+            # await self.tree.sync()
 
     async def on_ready(self):
         await self.change_presence(
