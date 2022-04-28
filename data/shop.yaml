@@ -1,30 +1,30 @@
-05701152-bbbd-11ec-92ec-80913336b9bc:
+Discord Nitro CLASSIC 1個月:
   current: 0
   flow: 380
   max: 3
-  name: "Discord Nitro CLASSIC 1\u500B\u6708"
-a582a4d5-bbbe-11ec-902b-80913336b9bc:
+  uuid: 05701152-bbbd-11ec-92ec-80913336b9bc
+原神結晶 x60:
   current: 0
   flow: 150
   max: 10
-  name: "\u539F\u795E\u7D50\u6676 x60"
-b02f2da5-bbbe-11ec-8564-80913336b9bc:
+  uuid: a582a4d5-bbbe-11ec-902b-80913336b9bc
+原神結晶 x300:
   current: 0
   flow: 380
   max: 5
-  name: "\u539F\u795E\u7D50\u6676 x300"
-b84b2519-bbbd-11ec-a5a4-80913336b9bc:
+  uuid: b02f2da5-bbbe-11ec-8564-80913336b9bc
+Discord NITRO 1個月:
   current: 0
   flow: 780
   max: 2
-  name: "Discord NITRO 1\u500B\u6708"
-bc6cfc28-bbbe-11ec-bb07-80913336b9bc:
+  uuid: b84b2519-bbbd-11ec-a5a4-80913336b9bc
+原神結晶 x660:
   current: 0
   flow: 780
   max: 2
-  name: "\u539F\u795E\u7D50\u6676 x660"
-c38a8a73-bbbd-11ec-8e21-80913336b9bc:
+  uuid: bc6cfc28-bbbe-11ec-bb07-80913336b9bc
+原神小月卡 1個月:
   current: 0
   flow: 380
   max: 5
-  name: "\u539F\u795E\u5C0F\u6708\u5361 1\u500B\u6708"
+  uuid: c38a8a73-bbbd-11ec-8e21-80913336b9bc

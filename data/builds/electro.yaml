@@ -1,0 +1,206 @@
+八重神子:
+  element: 雷
+  icon: Yae
+  builds:
+    - weapon: 神樂之真意
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 6/10/9
+      stats:
+        攻擊力: 1985
+        暴率/暴傷: 80/185
+        元素精通: 80
+      move: 殺生櫻落雷
+      dmg: 10477
+    - weapon: 天空之卷
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 6/10/9
+      stats:
+        攻擊力: 2437
+        暴率/暴傷: 69/139
+        元素精通: 80
+      move: 殺生櫻落雷
+      dmg: 8371
+    - weapon: 匣里日月
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 6/10/9
+      stats:
+        攻擊力: 1812
+        暴率/暴傷: 80/174
+        元素精通: 80
+      move: 殺生櫻落雷
+      dmg: 8436
+    - weapon: 流浪樂章
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 6/10/9
+      stats:
+        攻擊力: 1812
+        暴率/暴傷: 80/174
+        元素精通: 80
+      move: 殺生櫻落雷
+      dmg: 10364
+雷電將軍:
+  element: 雷
+  icon: Shougun
+  builds:
+    - weapon: 薙草之稻光
+      artifacts: 絕緣4件套
+      main_stats: 充雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 2013
+        暴率/暴傷: 60/120
+        充能效率: 278.90%
+      move: 無想的一刀
+      dmg: 75156
+    - weapon: 魚獲
+      artifacts: 絕緣4件套
+      main_stats: 充攻暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1807
+        暴率/暴傷: 54/132
+        充能效率: 269.70%
+      move: 無想的一刀
+      dmg: 63503
+九條裟羅:
+  element: 雷
+  icon: Sara
+  builds:
+    - weapon: 祭禮弓
+      artifacts: 絕緣4件套
+      main_stats: 充雷暴
+      talents: 6/13/12
+      stats:
+        攻擊力: 1481
+        暴率/暴傷: 70/101
+        充能效率: 222.40%
+      move: Q吃鳥羽
+      dmg: 40839
+    - weapon: 天空之翼
+      artifacts: 絕緣4件套
+      main_stats: 充攻暴
+      talents: 6/13/12
+      stats:
+        攻擊力: 1649
+        暴率/暴傷: 80/145
+        充能效率: 191.80%
+      move: Q吃鳥羽
+      dmg: 51562
+刻晴:
+  element: 雷
+  icon: Keqing
+  builds:
+    - weapon: 霧切之回光
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 10/8/9
+      stats:
+        攻擊力: 2251
+        暴率/暴傷: 73/176
+      move: 重擊
+      dmg: 9608
+    - weapon: 磐岩結綠
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 10/8/9
+      stats:
+        攻擊力: 2272
+        暴率/暴傷: 75/217
+      move: 重擊
+      dmg: 8920
+    - weapon: 匣里龍吟
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 10/8/9
+      stats:
+        攻擊力: 2276
+        暴率/暴傷: 62/154
+      move: 重擊
+      dmg: 8763
+雷澤:
+  element: 雷
+  icon: Razor
+  builds:
+    - weapon: 螭骨劍
+      artifacts: 角斗士4件套
+      main_stats: 攻物暴
+      talents: 10/11/12
+      stats:
+        攻擊力: 1759
+        暴率/暴傷: 74/148
+      move: 普攻第一段
+      dmg: 10292
+    - weapon: 狼的末路
+      artifacts: 角斗士4件套
+      main_stats: 攻物暴
+      talents: 10/11/12
+      stats:
+        攻擊力: 2536
+        暴率/暴傷: 60/120
+      move: 普攻第一段
+      dmg: 10859
+菲謝爾:
+  element: 雷
+  icon: Fischl
+  builds:
+    - weapon: 絕弦
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 2/13/11
+      stats:
+        攻擊力: 1959
+        暴率/暴傷: 60/120
+      move: 奧茲攻擊
+      dmg: 7689
+    - weapon: 天空之翼
+      artifacts: 角斗士4件套
+      artifacts: 如雷2件套+角斗2件套
+      main_stats: 攻雷暴
+      talents: 2/13/11
+      stats:
+        攻擊力: 2318
+        暴率/暴傷: 76/152
+      move: 奧茲攻擊
+      dmg: 8034
+北斗:
+  element: 雷
+  icon: Beidou
+  builds:
+    - weapon: 狼的末路
+      artifacts: 絕緣4件套
+      main_stats: 充雷暴
+      talents: 6/12/13
+      stats:
+        攻擊力: 2362
+        暴率/暴傷: 60/120
+        充能效率: 191.80%
+      move: Q閃電鏈
+      dmg: 8973
+    - weapon: 螭骨劍
+      artifacts: 絕緣4件套
+      main_stats: 充攻暴
+      talents: 6/12/13
+      stats:
+        攻擊力: 1952
+        暴率/暴傷: 74/145
+        充能效率: 191.80%
+      move: Q閃電鏈
+      dmg: 8059
+旅行者:
+  element: 雷
+  icon: PlayerGirl
+  builds:
+    - weapon: 西風劍
+      artifacts: 絕緣4件套
+      main_stats: 充雷暴
+      talents: 6/12/13
+      stats:
+        攻擊力: 1270
+        暴率/暴傷: 60/120
+        元素精通: 60/120
+      move: 勾玉充能加成
+      dmg: 45.31

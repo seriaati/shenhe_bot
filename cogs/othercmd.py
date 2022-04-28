@@ -1,9 +1,11 @@
+import discord
 from discord.ext import commands
+from discord import app_commands
 from random import randint
-from utility.utils import defaultEmbed, setFooter
+from utility.utils import defaultEmbed, log
 
 
-class OtherCMDCog(commands.Cog, name='others', description='其他指令'):
+class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -12,18 +14,19 @@ class OtherCMDCog(commands.Cog, name='others', description='其他指令'):
         if message.author == self.bot.user:
             return
         if "機率" in message.content:
+            print(log(True,False,'Random',message.author.id))
             value = randint(1, 100)
             await message.channel.send(f"{value}%")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
+            print(log(True, False, 'Quote',payload.user_id))
             channel = self.bot.get_channel(payload.channel_id)
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
             channel = self.bot.get_channel(payload.channel_id)
-            reactor = self.bot.get_user(payload.user_id)
-            await channel.send(f"{reactor.mention} ✅ 語錄擷取成功", delete_after=3)
+            await channel.send(f"✅ 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar_url))
             channel = self.bot.get_channel(966549110540877875)
@@ -43,73 +46,105 @@ class OtherCMDCog(commands.Cog, name='others', description='其他指令'):
         "• 如果需要幫助, 推薦使用 `!find` 指令\n"
         "[更多資訊請點我](https://discord.com/channels/916838066117824553/965964989875757156/966252132355424286)\n"
         f"• 想要在dc裡直接查閱遊戲內樹脂嗎? 歡迎至{factory.mention}")
-        setFooter(embed)
         try:
             await member.send(embed=embed)
-        except:
-            pass
+        except Exception as e:
+            print(log(True, True, 'Member join DM', e))
+
+    @app_commands.command(
+        name='ping',
+        description='查看機器人目前延遲'
+    )
+    async def ping(self, interaction: discord.Interaction):
+        print(log(True, False, 'Ping',interaction.user.id))
+        await interaction.response.send_message('🏓 Pong! {0}s'.format(round(self.bot.latency, 1)))
+
+    @app_commands.command(
+        name='cute',
+        description='讓申鶴說某個人很可愛'
+    )
+    @app_commands.rename(person='某個人')
+    async def cute(self, interaction: discord.Interaction,
+        person: str
+    ):
+        print(log(True, False, 'Cute',interaction.user.id))
+        await interaction.response.send_message(f"{person}真可愛~❤")
 
     @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('🏓 Pong! {0}s'.format(round(self.bot.latency, 1)))
-
-    @commands.command()
-    async def cute(self, ctx, arg):
-        string = arg
-        await ctx.send(f"{string}真可愛~❤")
-
-    @commands.command()
-    async def say(self, ctx, *, name='', msg=''):
+    async def say(self, ctx,msg: str):
         await ctx.message.delete()
-        await ctx.send(f"{name} {msg}")
+        await ctx.send(msg)
 
-    @commands.command()
-    async def flash(self, ctx):
-        await ctx.send("https://media.discordapp.net/attachments/823440627127287839/960177992942891038/IMG_9555.jpg")
+    @app_commands.command(
+        name='flash',
+        description='防放閃機制'
+    )
+    async def flash(self, interaction: discord.Interaction):
+        print(log(True, False, 'Flash',interaction.user.id))
+        await interaction.response.send_message("https://media.discordapp.net/attachments/823440627127287839/960177992942891038/IMG_9555.jpg")
 
-    @commands.command()
-    async def randnumber(self, ctx, arg1, arg2):
-        value = randint(int(arg1), int(arg2))
-        await ctx.send(str(value))
+    @app_commands.command(
+        name='number',
+        description='讓申鶴從兩個數字間挑一個隨機的給你'
+    )
+    @app_commands.rename(num_one='數字一', num_two='數字二')
+    async def number(self, interaction: discord.Interaction,
+        num_one:int, num_two:int
+    ):
+        print(log(True, False, 'Random Number',interaction.user.id))
+        value = randint(int(num_one), int(num_two))
+        await interaction.response.send_message(str(value))
 
-    @commands.command()
-    async def marry(self, ctx, arg1, arg2):
-        await ctx.send(f"{arg1} ❤ {arg2}")
+    @app_commands.command(
+        name='marry',
+        description='結婚 💞'
+    )
+    @app_commands.rename(person_one='攻', person_two='受')
+    async def marry(self, interaction: discord.Interaction,
+        person_one:str, person_two:str
+    ):
+        print(log(True, False, 'Marry',interaction.user.id))
+        await interaction.response.send_message(f"{person_one} ❤ {person_two}")
 
-    @commands.command()
-    async def getid(self, ctx):
+    @app_commands.command(
+        name='getid',
+        description='查看discord ID獲取教學'
+    )
+    async def check(self, interaction: discord.Interaction):
+        print(log(True, False, 'Get Discord ID',interaction.user.id))
         embed = defaultEmbed(
-            "如何取得discord ID?", "1. 打開dc設定\n2.「進階」\n3. 把「開發者模式」打開\n4. 右鍵使用者頭像, 便可以看到「copy ID」")
-        setFooter(embed)
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def version(self, ctx):
-        await ctx.message.delete()
-        embed = defaultEmbed(
-            f"申鶴 v1.0.4",
-            "**原神系統**\n• 中文角色名稱\n• `!floor`來查看深淵不同層數的使用角色"
+            "如何取得discord ID?",
+            "1. 打開dc設定\n"
+            "2.「進階」\n"
+            "3. 把「開發者模式」打開\n"
+            "4. 右鍵使用者頭像, 便可以看到「copy ID」"
         )
-        setFooter(embed)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(aliases=['quote','q'])
-    async def _quote(self, ctx):
+    @commands.command(aliases=['q'])
+    async def quote(self, ctx):
+        print(log(True, False, 'Quote',ctx.author.id))
         await ctx.message.delete()
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
-        embed.set_thumbnail(url=str(msg.author.avatar_url))
+        embed.set_thumbnail(url=str(msg.author.avatar))
         channel = self.bot.get_channel(966549110540877875)
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
-    @commands.command()
-    @commands.has_role("小雪團隊")
-    async def cleanup(self, ctx, arg):
-        channel = ctx.channel
-        deleted = await channel.purge(limit=int(arg))
-        await channel.send('已移除 {} 個訊息'.format(len(deleted)), delete_after=3)
+    @app_commands.command(
+        name='cleanup',
+        description='移除此頻道的最近的n個訊息'
+    )
+    @app_commands.rename(number='訊息數量')
+    async def cleanup(self, interaction: discord.Interaction,
+        number:int
+    ):
+        print(log(True, False, 'Cleanup',interaction.user.id))
+        channel = interaction.channel
+        deleted = await channel.purge(limit=int(number))
+        await channel.send('🗑️ 已移除 {} 個訊息'.format(len(deleted)), delete_after=3)
 
 
-def setup(bot):
-    bot.add_cog(OtherCMDCog(bot))
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(OtherCMDCog(bot))

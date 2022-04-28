@@ -1,3 +1,11 @@
+3cdcad65-d5c5-4227-a2f2-2d9909dbc3c3:
+  buyerID: 410036441129943050
+  flow: 780
+  item:
+    current: 1
+    flow: 780
+    max: 2
+    uuid: b84b2519-bbbd-11ec-a5a4-80913336b9bc
 572b0519-72ff-4a98-a5f6-ee4f3e480454:
   buyerID: 410036441129943050
   flow: 380
@@ -10,6 +18,18 @@
   buyerID: 410036441129943050
   flow: 100
   item: example
+6f6b3ac6-cce6-4d5c-996d-8e15cdbcd8bd:
+  buyerID: 410036441129943050
+  flow: 380
+  item: "\u539F\u795E\u7D50\u6676 x300"
+99452016-32d9-407d-b9ce-87770fd0806e:
+  buyerID: 410036441129943050
+  flow: 380
+  item:
+    current: 1
+    flow: 380
+    max: 5
+    uuid: b02f2da5-bbbe-11ec-8564-80913336b9bc
 9a07f00c-6cb4-4087-a3a3-b278589424b7:
   buyerID: 410036441129943050
   flow: 380

@@ -2,16 +2,86 @@ from datetime import datetime, timedelta
 import genshin
 import yaml
 from utility.classes import Character
-from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName
-
+from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName, trimCookie
+from cogs.flow import FlowCog
 
 class GenshinApp:
     def __init__(self) -> None:
         try:
             with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
                 self.user_data = yaml.full_load(f)
+            with open('data/flow.yaml', 'r', encoding="utf-8") as f:
+                self.flow_data = yaml.full_load(f)
         except:
             self.user_data = {}
+
+    async def setCookie(self, user_id: int, cookie: str) -> str:
+        print(log(False, False, 'setCookie', cookie))
+        user_id = int(user_id)
+        cookie = trimCookie(cookie)
+        if cookie == None:
+            return f'無效的Cookie, 請重新輸入(輸入 `/cookie設定` 顯示說明)'
+        client = genshin.Client(lang='zh-tw')
+        client.set_cookies(cookie)
+        try:
+            accounts = await client.get_game_accounts()
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'setCookie',f'[retcode]: {e.retcode} [exception]: {e.original}'))
+            result = e.original
+        else:
+            if len(accounts) == 0:
+                print(log(False, True, 'setCookie', f'{user_id} has no account'))
+                result = '帳號內沒有任何角色, 取消設定Cookie'
+            else:
+                self.user_data[user_id] = {}
+                self.user_data[user_id]['cookie'] = cookie
+                print(log(False, False, 'setCookie', f'{user_id} set cookie success'))
+                if len(accounts) == 1 and len(str(accounts[0].uid)) == 9:
+                    await self.setUID(user_id, str(accounts[0].uid))
+                    result = f'Cookie已設定完成, 角色UID: {accounts[0].uid} 已保存！'
+                else:
+                    result = f'帳號內共有{len(accounts)}個角色\n```'
+                    for account in accounts:
+                        result += f'UID:{account.uid} 等級:{account.level} 角色名字:{account.nickname}\n'
+                    result += f'```\n請用 `/setuid` 指定要保存原神的角色(例: `/setuid 812345678`)'
+                    self.saveUserData()
+        finally:
+            return result
+    
+    async def setUID(self, user_id: int, uid: int, *, check_uid: bool = False, user_name: str) -> str:
+        print(log(False, False, 'setUID', f'uid={uid}'))
+        if not check_uid:
+            self.user_data[user_id]['uid'] = uid
+            self.saveUserData()
+            if user_id not in self.flow_data:
+                    await FlowCog.register(None, user_name, None, False)
+            self.flow_data[user_id]['uid'] = uid
+            self.saveFlowData()
+            return f'角色UID: {uid} 已設定完成'
+        check, msg = self.checkUserData(user_id, checkUID=False)
+        if check == False:
+            return msg
+        if len(uid) != 9:
+            return f'UID長度錯誤, 請輸入正確的原神UID'
+        client = self.getUserCookie(user_id)
+        try:
+            accounts = await client.get_game_accounts()
+        except Exception as e:
+            print(log(False, True, 'setUID',e))
+            return '確認帳號資料失敗, 請重新設定Cookie或是稍後再試'
+        else:
+            if int(uid) in [account.uid for account in accounts]:
+                self.user_data[user_id]['uid'] = uid
+                self.saveUserData()
+                if user_id not in self.flow_data:
+                    await FlowCog.register(None, user_name, None, False)
+                self.flow_data[user_id]['uid'] = uid
+                self.saveFlowData()
+                print(log(False, False ,'setUID', f'{user_id} setUID success'))
+                return f'角色UID: {uid} 已設定完成'
+            else:
+                print(log(False, True, 'setUID',f'{user_id} no character found for UID'))
+                return f'找不到該UID的角色資料, 請確認是否輸入正確'
 
     async def claimDailyReward(self, user_id:int):
         print(log(False, False, 'Claim', f'{user_id}'))
@@ -276,7 +346,7 @@ class GenshinApp:
             result.append(embed)
         return result
 
-    async def getUserCharacters(self, user_id: int):
+    async def getUserCharacters(self, char_name:str, user_id: int):
         print(log(False, False, 'Character', user_id))
         check, msg = self.checkUserData(user_id)
         if check == False:
@@ -298,29 +368,24 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Character', e))
         else:
-            characters = []
-            result = []
+            found = False
             for character in char:
-                weapon = character.weapon
-                artifacts = character.artifacts
-                artifactList = []
-                artifactIconList = []
-                for artifact in artifacts:
-                    artifactList.append(artifact.name)
-                    artifactIconList.append(artifact.icon)
-                characters.append(Character(getCharacterName(character), character.level, character.constellation, character.icon, character.friendship, weapon.name, weapon.refinement, weapon.level, artifactList, artifactIconList))
-            for character in characters:
-                artifactStr = ""
-                for artifact in character.artifacts:
-                    artifactStr = artifactStr + "• " + artifact + "\n"
-                embed = defaultEmbed(
-                    f"{character.name}: C{character.constellation} R{character.refinement}",
-                    f"Lvl {character.level}\n"
-                    f"好感度 {character.friendship}\n"
-                    f"武器 {character.weapon}, lvl{character.weaponLevel}\n"
-                    f"{artifactStr}")
-                embed.set_thumbnail(url=f"{character.iconUrl}")
-                result.append(embed)
+                if character.name == char_name:
+                    found = True
+                    artifactStr = ""
+                    for artifact in character.artifacts:
+                        artifactStr += f"• {artifact.name}\n"
+                    embed = defaultEmbed(
+                        f"{character.name}: C{character.constellation} R{character.weapon.refinement}",
+                        f"Lvl {character.level}\n"
+                        f"好感度 {character.friendship}\n"
+                        f"武器 {character.weapon.name}, lvl{character.weapon.level}\n"
+                        f"{artifactStr}")
+                    embed.set_thumbnail(url=f"{character.icon}")
+                    result = embed
+                    break 
+            if not found:
+                result = errEmbed('你不擁有該角色!','')
         return result
 
     async def getToday(self, user_id: int):
@@ -375,7 +440,7 @@ class GenshinApp:
         else:
             rank = abyss.ranks
             if not rank.most_played:
-                result = [errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')]
+                result = errEmbed('找不到深淵資料!','可能是因為你還沒打深淵, 請輸入`!stats`來確認')
                 return result
             result = []
             embed = defaultEmbed(
@@ -416,17 +481,43 @@ class GenshinApp:
                 result.append(embed)
         return result
 
+    async def getBuild(self, element_dict:dict, chara_name:str):
+        charas = dict(element_dict)
+        if chara_name not in charas:
+            return errEmbed('找不到該角色的資料','')
+        else:
+            name = chara_name
+            element = charas[chara_name]['element']
+            result = defaultEmbed(name,f'元素: {element}')
+            count = 1
+            for build in charas[chara_name]['builds']:
+                statStr=''
+                for stat, value in build['stats'].items():
+                    statStr+=f'{stat} ➜ {value}\n'
+                result.add_field(
+                    name=f'配置{count}',
+                    value=
+                    f"武器 • {build['weapon']}\n"
+                    f"聖遺物 • {build['artifacts']}\n"
+                    f"主詞條 • {build['main_stats']}\n"
+                    f"天賦 • {build['talents']}\n"
+                    f"{build['move']} • {build['dmg']}\n\n"
+                    f"屬性面版\n{statStr}"
+                )
+                count+=1
+            result.set_thumbnail(url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
+        return result
+            
+
     def checkUserData(self, user_id: int):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
+        users = dict(self.user_data)
         if user_id not in users:
-            return False, errEmbed('找不到原神帳號!', '請輸入`!reg`來查看註冊方式')
+            return False, errEmbed('找不到原神帳號!', '請輸入`/cookie`來查看註冊方式')
         else:
             return True, None
 
     def getUserCookie(self, user_id: int):
-        with open(f'data/accounts.yaml', encoding='utf-8') as f:
-            users = yaml.full_load(f)
+        users = dict(self.user_data)
         cookies = {"ltuid": users[user_id]['ltuid'],
                     "ltoken": users[user_id]['ltoken']}
         uid = users[user_id]['uid']
@@ -440,6 +531,10 @@ class GenshinApp:
     def saveUserData(self):
         with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(self.user_data, f)
+
+    def saveFlowData(self):
+        with open('data/flow.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(self.flow_data, f)
 
 
 genshin_app = GenshinApp()

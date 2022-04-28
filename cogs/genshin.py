@@ -1,24 +1,52 @@
 import asyncio
 from datetime import datetime
 import discord
+from discord import app_commands
+from discord.ext import tasks, commands
+from discord.app_commands import Choice
 import DiscordUtils
 import yaml
-from utility.utils import defaultEmbed, errEmbed, setFooter, log
-from discord.ext import commands, tasks
+from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
+from discord import Member
 from discord.ext.forms import Form
 from utility.GenshinApp import genshin_app
+from typing import List, Optional
 import genshin
 
-
-class GenshinCog(commands.Cog, name="genshin", description="原神相關指令"):
+class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        try:
-            with open('data/accounts.yaml', 'r', encoding='utf-8') as f:
-                self.user_dict: dict[str, dict[str, str]] = yaml.full_load(f)
-        except:
-            self.user_dict: dict[str, dict[str, str]] = { }
-        self.schedule.start()
+        with open('data/accounts.yaml', 'r', encoding='utf-8') as f:
+            self.user_dict: dict[str, dict[str, str]] = yaml.full_load(f)
+        with open('data/builds/anemo.yaml', 'r', encoding='utf-8') as f:
+            self.anemo_dict = yaml.full_load(f)
+        with open('data/builds/cryo.yaml', 'r', encoding='utf-8') as f:
+            self.cryo_dict = yaml.full_load(f)
+        with open('data/builds/electro.yaml', 'r', encoding='utf-8') as f:
+            self.electro_dict = yaml.full_load(f)
+        with open('data/builds/geo.yaml', 'r', encoding='utf-8') as f:
+            self.geo_dict = yaml.full_load(f)
+        with open('data/builds/hydro.yaml', 'r', encoding='utf-8') as f:
+            self.hydro_dict = yaml.full_load(f)
+        with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
+            self.pyro_dict = yaml.full_load(f)
+        # self.schedule.start()
+
+    class CookieModal(discord.ui.Modal, title='提交Cookie'):
+        cookie = discord.ui.TextInput(
+            label='Cookie',
+            placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 "/cookie"',
+            style=discord.TextStyle.long,
+            required=True,
+            min_length=100,
+            max_length=1500
+        )
+        async def on_submit(self, interaction: discord.Interaction):
+            result = await genshin_app.setCookie(str(interaction.user.id), self.cookie.value)
+            await interaction.response.send_message(result, ephemeral=True)
+        
+        async def on_error(self, error: Exception, interaction: discord.Interaction):
+            await interaction.response.send_message('發生未知錯誤', ephemeral=True)
 
     loop_interval = 10
     @tasks.loop(minutes=loop_interval)
@@ -55,7 +83,7 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 except Exception as e:
                     print(log(False, True, 'Notes', e))
                 else:
-                    if notes.current_resin >= 140 and value['dmCount'] < 3:
+                    if notes.current_resin >= 140 and value['dmCount'] < 3 and value['dm'] == True:
                         if notes.current_resin == notes.max_resin:
                             resin_recover_time = '已滿'
                         else:
@@ -66,8 +94,11 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                             f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
                             f"樹脂回滿時間: {resin_recover_time}"
                         )
-                        user = self.bot.get_user(user_id)
-                        await user.send(embed=result)
+                        user = await self.bot.fetch_user(user_id)
+                        try:
+                            await user.send(embed=result)
+                        except Exception as e:
+                            print(log(True, True, 'Schedule', f'{user_id}: {e}'))
                         value['dmCount'] += 1
                         self.saveUserData(user_dict)
                         await asyncio.sleep(4)
@@ -80,80 +111,131 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
     async def before_schedule(self):
         await self.bot.wait_until_ready()
 
-    @commands.command(name="check",aliases=['c'],help='查看即時便籤')
-    async def _check(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @app_commands.command(
+        name='cookie',
+        description='設定Cookie')
+    @app_commands.rename(option='選項')
+    @app_commands.choices(option=[
+        Choice(name='1. 顯示說明如何取得Cookie', value=0),
+        Choice(name='2. 提交已取得的Cookie', value=1)])
+    async def slash_cookie(self, interaction: discord.Interaction, option: int):
+        if option == 0:
+            help_msg = (
+            "1.先複製底下的整段程式碼\n"
+            "2.PC或手機使用Chrome開啟Hoyolab登入帳號 <https://www.hoyolab.com>\n"
+            "3.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"
+            "4.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n"
+            "5.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n")
+            code_msg = "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
+            await interaction.response.send_message(content=help_msg)
+            await interaction.followup.send(content=code_msg)
+        elif option == 1:
+            await interaction.response.send_modal(self.CookieModal())
+
+    @app_commands.command(
+        name='setuid',
+        description='設定原神UID')
+    @app_commands.describe(uid='請輸入要保存的原神UID')
+    async def slash_uid(self, interaction: discord.Interaction, uid: int):
+        await interaction.response.defer(ephemeral=True)
+        result = await genshin_app.setUID(str(interaction.user.id), str(uid), check_uid=True)
+        await interaction.edit_original_message(content=result)
+
+    @app_commands.command(
+        name='check',
+        description='查看即時便籤, 例如樹脂、洞天寶錢、探索派遣'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def check(self, interaction: discord.Interaction,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
         result = await genshin_app.getRealTimeNotes(member.id)
-        await msg.delete()
-        await ctx.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='stats',aliases=['s'],help='查看原神個人資料')
-    async def _stats(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @app_commands.command(
+        name='stats',
+        description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def stats(self, interaction: discord.Interaction,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
         result = await genshin_app.getUserStats(member.id)
-        await msg.delete()
-        await ctx.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='area', help='查看區域探索度')
-    async def _area(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @app_commands.command(
+        name='area',
+        description='查看區域探索度'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def stats(self, interaction: discord.Interaction,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
         result = await genshin_app.getArea(member.id)
-        await msg.delete()
-        await ctx.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='claim',help='領取今日hoyolab網頁登入獎勵')
-    async def _claim(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @app_commands.command(
+        name='claim',
+        description='領取hoyolab登入獎勵'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def stats(self, interaction: discord.Interaction,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
         result = await genshin_app.claimDailyReward(member.id)
-        await msg.delete()
-        await ctx.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='diary',aliases=['d'],help='查看今月摩拉與原石收入')
-    async def _diary(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        form = Form(ctx, '月份選擇', cleanup=True)
-        form.add_question('要查看今年幾月的收入?', 'month')
-        form.set_timeout(60)
-        await form.set_color("0xa68bd3")
-        result = await form.start()
-        msg = await ctx.send('讀取中...')
-        result = await genshin_app.getDiary(member.id, result.month)
-        await msg.delete()
-        await ctx.send(embed=result)
+    @app_commands.command(
+        name='diary',
+        description='查看旅行者日記'
+    )
+    @app_commands.rename(month='月份',member='其他人')
+    @app_commands.describe(month='要查詢的月份',member='查看其他群友的資料')
+    @app_commands.choices(month=[
+        app_commands.Choice(name='這個月', value=0),
+        app_commands.Choice(name='上個月', value=-1),
+        app_commands.Choice(name='上上個月', value=-2)]
+    )
+    async def diary(self, interaction: discord.Interaction,
+        month: int, member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        month = datetime.now().month + month
+        month = month + 12 if month < 1 else month
+        result = await genshin_app.getDiary(member.id, month)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='log',help='查看最近25筆原石與摩拉收入紀錄與來源')
-    async def _log(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @commands.hybrid_command(
+        name='log',
+        description='查看最近25筆原石與摩拉收入紀錄'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def log(self, ctx,
+        member: Optional[Member] = None
+    ):
+        member = member or ctx.interaction.user
         result = await genshin_app.getDiaryLog(member.id)
-        await msg.delete()
         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
             ctx, remove_reactions=True)
         paginator.add_reaction('◀', "back")
         paginator.add_reaction('▶', "next")
         await paginator.run(result)
 
-    @commands.command(name='char',aliases=['ch'],help='查看所有擁有角色資訊')
-    async def _char(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
-        result = await genshin_app.getUserCharacters(member.id)
-        await msg.delete()
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
-            ctx, remove_reactions=True)
-        paginator.add_reaction('⏮️', "first")
-        paginator.add_reaction('◀', "back")
-        paginator.add_reaction('▶', "next")
-        paginator.add_reaction('⏭️', "last")
-        await paginator.run(result)
-
-    @commands.command(name='users',help='查看目前所有已註冊原神帳號')
-    async def _users(self, ctx):
-        print(log(False, False, 'Users', ctx.author.id))
+    @app_commands.command(
+        name='users',
+        description='查看所有已註冊原神帳號'
+    )
+    async def stats(self, interaction: discord.Interaction):
+        print(log(False, False, 'Users', interaction.user.id))
         user_dict = dict(self.user_dict)
         userStr = ""
         count = 0
@@ -162,126 +244,102 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
             userStr = userStr + \
                 f"{count}. {value['name']} - {value['uid']}\n"
         embed = defaultEmbed("所有帳號", userStr)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(name='today',aliases=['td'],help='查看今日原石與摩拉收入')
-    async def _today(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        msg = await ctx.send('讀取中...')
+    @app_commands.command(
+        name='today',
+        description='查看今日原石與摩拉收入'
+    )
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def today(self, interaction: discord.Interaction,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
         result = await genshin_app.getToday(member.id)
-        await msg.delete()
-        await ctx.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
-    @commands.command(name='abyss',aliases=['abs'],help='查看深淵資料')
-    async def _abyss(self, ctx, member: discord.Member = None):
-        member = member or ctx.author
-        form = Form(ctx, '深淵期份選擇', cleanup=True)
-        form.add_question('本期還是上期?', 'season')
-        form.set_timeout(60)
-        await form.set_color("0xa68bd3")
-        result = await form.start()
-        previous = True if result.season == '上季' else False
-        msg = await ctx.send('讀取中...')
+
+    @commands.hybrid_command(
+        name='abyss',
+        description='查詢深淵資料'
+    )
+    @app_commands.rename(season='期別',member='其他人')
+    @app_commands.describe(season='查詢這期還是上期深淵資料',
+        member='查看其他群友的資料'
+    )
+    @app_commands.choices(
+        season=[app_commands.Choice(name='上期紀錄', value=0),
+                app_commands.Choice(name='本期紀錄', value=1)]
+    )
+    async def abyss(self, ctx,
+        season: int = 1, member: Optional[Member] = None
+    ):
+        member = member or ctx.interaction.user
+        previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
-        await msg.delete()
-        paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
-            ctx, remove_reactions=True)
-        paginator.add_reaction('⏮️', "first")
-        paginator.add_reaction('◀', "back")
-        paginator.add_reaction('▶', "next")
-        paginator.add_reaction('⏭️', "last")
-        await paginator.run(result)
-
-    @commands.command(hidden=True)
-    @commands.has_role("小雪團隊")
-    async def newuser(self, ctx):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
-        form = Form(ctx, '新增帳號設定流程', cleanup=True)
-        form.add_question('原神UID?', 'uid')
-        form.add_question('用戶名?', 'name')
-        form.add_question('discord ID?', 'discordID')
-        form.add_question('ltuid?', 'ltuid')
-        form.add_question('ltoken?', 'ltoken')
-        form.edit_and_delete(True)
-        form.set_timeout(60)
-        await form.set_color("0xa68bd3")
-        result = await form.start()
-        dateNow = datetime.datetime.now()
-        cookies = {"ltuid": result.ltuid, "ltoken": result.ltoken}
-        uid = result.uid
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        failed = False
-        notPublic = False
-        try:
-            await client.get_notes(uid)
-        except genshin.errors.InvalidCookies:
-            failed = True
-        except genshin.errors.DataNotPublic:
-            notPublic = True
-        if not failed:
-            if notPublic:
-                await ctx.send(f"該帳號資料未公開, 輸入`!stuck`來獲取更多資訊")
-            users[int(result.discordID)] = {'name': result.name, 'uid': int(
-                result.uid), 'ltoken': result.ltoken, 'ltuid': int(result.ltuid), 'dm': True, 'dmCount': 0, 'dmDate': dateNow}
-            with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
-                yaml.dump(users, file)
-            await ctx.send(f"已新增該帳號")
+        if type(result) == discord.Embed:
+            await ctx.interaction.response.send_message(embed=result)
         else:
-            await ctx.send("帳號資料錯誤，請檢查是否有輸入錯誤")
+            paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
+            ctx, remove_reactions=True)
+            paginator.add_reaction('⏮️', "first")
+            paginator.add_reaction('◀', "back")
+            paginator.add_reaction('▶', "next")
+            paginator.add_reaction('⏭️', "last")
+            await paginator.run(result)
 
-    @commands.command(name='register',aliases=['reg'],help='查看註冊原神帳號教學')
-    async def _register(self, ctx):
-        embed = defaultEmbed('註冊教學', 
-            '1. PC或手機使用瀏覽器(不支援Safari,建議使用chrome)\n'
-            '開啟Hoyolab登入帳號 https://www.hoyolab.com/\n'
-            '2. 在網址列上輸入`java`\n'
-            '3. 貼上下方的程式碼, 確保網址開頭變成 `javascript:`\n'
-            "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
-            '4. ctrl+A全選並ctrl+C複製後將內容私訊給<@410036441129943050>或<@665092644883398671>\n'
-            '並附上原神UID及想要的使用者名稱'
-        )
-        await ctx.send(embed=embed)
-
-    @commands.command(name='stuck',help='找不到原神帳號資料?')
-    async def _stuck(self, ctx):
+    @app_commands.command(
+        name='stuck',
+        description='找不到資料?'
+    )
+    async def stuck(self, interaction: discord.Interaction):
         embed = defaultEmbed(
-            "已經註冊,但有些資料找不到?", "1. 至hoyolab網頁中\n2. 點擊頭像\n3. personal homepage\n4. 右邊會看到genshin impact\n5. 點擊之後看到設定按鈕\n6. 打開 Do you want to enable real time-notes")
-        setFooter(embed)
-        await ctx.send(embed=embed)
+            "已經註冊,但有些資料找不到?",
+            "1. 至hoyolab網頁中\n"
+            "2. 點擊頭像\n"
+            "3. personal homepage\n"
+            "4. 右邊會看到genshin impact\n"
+            "5. 點擊之後看到設定按鈕\n"
+            "6. 打開 Do you want to enable real time-notes")
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(name='dm',help='查看私訊功能介紹\n`!dm on`或`!dm off`來開關私訊功能')
-    async def _dm(self, ctx, *, arg=''):
-        with open(f'data/accounts.yaml', encoding='utf-8') as file:
-            users = yaml.full_load(file)
-        if arg == "":
-            embed = defaultEmbed(
-                "什麼是私訊提醒功能？", "申鶴每一小時會檢測一次你的樹脂數量, 當超過140的時候,\n申鶴會私訊提醒你,最多提醒三次\n註: 只有已註冊的用戶能享有這個功能")
-            setFooter(embed)
-            await ctx.send(embed=embed)
-        elif arg == "on":
-            userID = ctx.author.id
-            if userID in users:
-                users[userID]['dm'] = True
-                with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(users, file)
-                await ctx.send(f"已開啟 {users[userID]['name']} 的私訊功能")
-        elif arg == "off":
-            userID = ctx.author.id
-            if userID in users:
-                users[userID]['dm'] = False
-                with open(f'data/accounts.yaml', 'w', encoding='utf-8') as file:
-                    yaml.dump(users, file)
-                await ctx.send(f"已關閉 {users[userID]['name']} 的私訊功能")
+    @app_commands.command(
+        name='dm',
+        description='開關私訊功能'
+    )
+    @app_commands.rename(switch='開關')
+    @app_commands.describe(switch='選擇要開啟還是關閉私訊功能')
+    @app_commands.choices(
+        switch=[app_commands.Choice(name='on', value=0),
+                app_commands.Choice(name='false', value=1)]
+    )
+    async def dm(self, interaction: discord.Interaction, switch: int):
+        user_dict = dict(self.user_dict)
+        if switch == 0:
+            userID = interaction.user.id
+            if userID in user_dict:
+                user_dict[userID]['dm'] = True
+                self.saveUserData(user_dict)
+                await interaction.response.send_message(
+                    f"已開啟 {user_dict[userID]['name']} 的私訊功能"
+                )
+        elif switch == 1:
+            userID = interaction.user.id
+            if userID in user_dict:
+                user_dict[userID]['dm'] = False
+                self.saveUserData(user_dict)
+                await interaction.response.send_message(
+                    f"已關閉 {user_dict[userID]['name']} 的私訊功能"
+                )
 
-    @commands.command(name='farm', aliases=['f'], help='顯示今日原神可刷素材及對應角色')
-    async def _farm(self, ctx):
-        chineseNumber = ['一','二','三','四','五','六','日']
+    @app_commands.command(
+        name='farm',
+        description='查看原神今日可刷素材'
+    )
+    async def farm(self, interaction: discord.Interaction):
         weekdayGet = datetime.today().weekday()
-        weekday = "禮拜"+chineseNumber[weekdayGet]
-        embedFarm = defaultEmbed(f"今天({weekday})可以刷的副本材料", " ")
+        embedFarm = defaultEmbed(f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:
             embedFarm.set_image(
                 url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
@@ -293,14 +351,180 @@ class GenshinCog(commands.Cog, name="genshin", description="原神相關指令")
                 url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
         elif weekdayGet == 6:
             embedFarm = defaultEmbed(
-                f"今天({weekday})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
-        setFooter(embedFarm)
-        await ctx.send(embed=embedFarm)
+                f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
+        await interaction.response.send_message(embed=embedFarm)
+
+
+    build = app_commands.Group(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
+
+    async def anemo_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        anemo = dict(self.anemo_dict)
+        return [
+            app_commands.Choice(name=anemo, value=anemo)
+            for anemo in anemo if current.lower() in anemo.lower()
+        ]
+
+    @build.command(name='風', description='查看風元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=anemo_autocomplete)
+    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.anemo_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    async def cryo_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        cryo = dict(self.cryo_dict)
+        return [
+            app_commands.Choice(name=cryo, value=cryo)
+            for cryo in cryo if current.lower() in cryo.lower()
+        ]
+
+    @build.command(name='冰', description='查看冰元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=cryo_autocomplete)
+    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.cryo_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    async def electro_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        electro = dict(self.electro_dict)
+        return [
+            app_commands.Choice(name=electro, value=electro)
+            for electro in electro if current.lower() in electro.lower()
+        ]
+
+    @build.command(name='雷', description='查看雷元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=electro_autocomplete)
+    async def electro_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.electro_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    async def geo_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        geo = dict(self.geo_dict)
+        return [
+            app_commands.Choice(name=geo, value=geo)
+            for geo in geo if current.lower() in geo.lower()
+        ]
+
+    @build.command(name='岩', description='查看岩元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=geo_autocomplete)
+    async def geo_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.geo_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    async def hydro_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        hydro = dict(self.hydro_dict)
+        return [
+            app_commands.Choice(name=hydro, value=hydro)
+            for hydro in hydro if current.lower() in hydro.lower()
+        ]
+
+    @build.command(name='水', description='查看水元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=hydro_autocomplete)
+    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.hydro_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    async def pyro_autocomplete(self,
+    interaction: discord.Interaction,
+    current: str,) -> List[app_commands.Choice[str]]:
+        pyro = dict(self.pyro_dict)
+        return [
+            app_commands.Choice(name=pyro, value=pyro)
+            for pyro in pyro if current.lower() in pyro.lower()
+        ]
+
+    @build.command(name='火', description='查看火元素角色的配置、武器、畢業面板')
+    @app_commands.rename(chara='角色')
+    @app_commands.autocomplete(chara=pyro_autocomplete)
+    async def pyro_build(self, interaction: discord.Interaction, chara: str):
+        result = await genshin_app.getBuild(self.pyro_dict, str(chara))
+        await interaction.response.send_message(embed=result)
+
+    char = app_commands.Group(name='char',description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
+
+    @char.command(name='風',description='查看已擁有風元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=anemo_autocomplete)
+    async def anemo_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
+
+    @char.command(name='冰',description='查看已擁有冰元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=cryo_autocomplete)
+    async def cryo_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
+
+    @char.command(name='雷',description='查看已擁有雷元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=electro_autocomplete)
+    async def electro_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
+
+    @char.command(name='岩',description='查看已擁有岩元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=geo_autocomplete)
+    async def geo_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
+
+    @char.command(name='水',description='查看已擁有水元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=hydro_autocomplete)
+    async def hydro_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
+
+    @char.command(name='火',description='查看已擁有火元素角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(char='角色',member='其他人')
+    @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
+    @app_commands.autocomplete(char=pyro_autocomplete)
+    async def pyro_char(self, interaction:discord.Interaction,char:str,
+        member: Optional[Member] = None
+    ):
+        member = member or interaction.user
+        result = await genshin_app.getUserCharacters(char, member.id)
+        await interaction.response.send_message(embed=result)
 
     def saveUserData(self, data:dict):
         with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(data, f)
 
 
-def setup(bot):
-    bot.add_cog(GenshinCog(bot))
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(GenshinCog(bot))
