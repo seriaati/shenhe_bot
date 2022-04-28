@@ -4,11 +4,9 @@ import discord
 from discord import Interaction, app_commands
 from discord.ext import tasks, commands
 from discord.app_commands import Choice
-import DiscordUtils
 import yaml
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
 from discord import Member
-from discord.ext.forms import Form
 from utility.GenshinApp import genshin_app
 from typing import List, Optional
 import genshin
