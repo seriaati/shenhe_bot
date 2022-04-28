@@ -32,7 +32,7 @@ from typing import Optional, List, Union
 
 class _select(Select):
 	def __init__(self, pages: List[str]):
-		super().__init__(placeholder="快速導覽", min_values=1, max_values=1, options=pages, row=0)
+		super().__init__(placeholder="樓層導覽", min_values=1, max_values=1, options=pages, row=0)
 
 
 	async def callback(self, interaction: Interaction):
@@ -55,14 +55,25 @@ class _view(View):
 
 
 	async def update_children(self, interaction: Interaction):
-		self.next.disabled = (self.current_page + 1 == len(self.pages))
-		self.previous.disabled = (self.current_page <= 0)
+		# self.next.disabled = (self.current_page + 1 == len(self.pages))
+		# self.previous.disabled = (self.current_page <= 0)
 
 		kwargs = {'content': self.pages[self.current_page]} if not (self.embeded) else {'embed': self.pages[self.current_page]}
 		kwargs['view'] = self
 
 		await interaction.response.edit_message(**kwargs)
 
+	# @button(label="◀", style=ButtonStyle.blurple, row=1)
+	async def previous(self, interaction: Interaction, button: Button):
+		self.current_page -= 1
+
+		await self.update_children(interaction)
+
+	# @button(label="▶", style=ButtonStyle.blurple, row=1)
+	async def next(self, interaction: Interaction, button: Button):
+		self.current_page += 1
+
+		await self.update_children(interaction)
 
 class Paginator:
 	def __init__(self, interaction: Interaction, pages: list, custom_children: Optional[List[Union[Button, Select]]] = []):
@@ -86,6 +97,9 @@ class Paginator:
 		if not (self.pages): raise ValueError("Missing pages")
 
 		view = _view(self.interaction.user, self.pages, embeded)
+
+		# view.previous.disabled = True
+		# view.next.disabled = True
 
 		if (quick_navigation):
 			options = []
