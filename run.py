@@ -41,12 +41,13 @@ class ShenheBot(commands.Bot):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
             print(log(True, False,'Cog', f'Loaded {cog_name}'))
+        await self.tree.sync()
         if guild != None:
             test_guild = discord.Object(id=guild)
             self.tree.copy_global_to(guild=test_guild)
             await self.tree.sync(guild=test_guild)
         # self.tree.clear_commands(guild=None)
-        # await self.tree.sync()
+        
 
     async def on_ready(self):
         await self.change_presence(
