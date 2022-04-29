@@ -552,9 +552,9 @@ class GenshinCog(commands.Cog):
     @app_commands.choices(type=[
         Choice(name='生之花', value=0),
         Choice(name='死之羽', value=1),
-        Choice(name='時之沙', value=2),
-        Choice(name='空之杯', value=3),
-        Choice(name='理之冠', value=4)])
+        # Choice(name='時之沙', value=2),
+        Choice(name='空之杯', value=3)])
+        # Choice(name='理之冠', value=4)])
     async def rate(self, interaction:discord.Interaction,type:int,crit_dmg:str,crit_rate:str,atk:str):
         crit_dmg = int(re.search(r'\d+', crit_dmg).group())
         crit_rate = int(re.search(r'\d+', crit_rate).group())
