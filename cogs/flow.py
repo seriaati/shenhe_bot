@@ -69,7 +69,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         if discordID not in users:
             user = self.bot.get_user(payload.user_id)
-            await self.register(channel, user, discordID, False)
+            await self.register(channel, discordID, False)
 
         if payload.message_id == 965143582178705459 and payload.emoji.name == "Serialook":
             guild = self.bot.get_guild(payload.guild_id)
@@ -88,37 +88,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.add_roles(role)
                     break
-
-        elif payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id and payload.message_id in confirms:
-            authorID = confirms[payload.message_id]['authorID']
-            receiverID = confirms[payload.message_id]['receiverID']
-            flow = confirms[payload.message_id]['flow']
-            type = confirms[payload.message_id]['type']
-            title = confirms[payload.message_id]['title']
-            if type == 4:
-                if authorID in users:
-                    users[authorID]['flow'] += flow
-                if receiverID in users:
-                    users[receiverID]['flow'] -= flow
-            else:
-                if authorID in users:
-                    users[authorID]['flow'] -= flow
-                if receiverID in users:
-                    users[receiverID]['flow'] += flow
-
-            author = self.bot.get_user(authorID)
-            receiver = self.bot.get_user(receiverID)
-            if type == 4:
-                embed = defaultEmbed("🆗 結算成功",
-                                     f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
-            else:
-                embed = defaultEmbed("🆗 結算成功",
-                                     f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
-            await author.send(embed=embed)
-            await receiver.send(embed=embed)
-            del confirms[payload.message_id]
-            self.saveData(confirms, 'confirm')
-            self.saveData(users, 'flow')
 
         elif payload.emoji.name == "🎉" and payload.user_id != self.bot.user.id and payload.message_id in giveaways:
             lulurR = self.bot.get_user(665092644883398671)
@@ -163,7 +132,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if "早安" in message.content:
             if discordID not in users:
                 user = self.bot.get_user(message.author.id)
-                await self.register(channel, user, discordID, False)
+                await self.register(channel, discordID, False)
             today = date.today()
             if discordID in users:
                 if users[discordID]['morning'] != today:
@@ -251,7 +220,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed)
         else:
             user = self.bot.get_user(discordID)
-            await self.register(interaction, user, discordID)
+            await self.register(interaction, discordID)
 
     @app_commands.command(name='give', description='給其他人flow幣')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
@@ -297,7 +266,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users,'flow')
         else:
             user = self.bot.get_user(giverID)
-            await self.register(interaction, user, giverID)
+            await self.register(interaction, giverID)
 
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
     @app_commands.rename(member='某人', flow='要拿取的flow幣數量')
@@ -453,7 +422,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             discordID = interaction.user.id
             user = self.bot.get_user(discordID)
-            await self.register(interaction, user, discordID)
+            await self.register(interaction, discordID)
 
     @shop.command(name='log',description='取得商品購買紀錄')
     @app_commands.checks.has_role('小雪團隊')
@@ -622,7 +591,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, user, interaction.user.id)
+            await self.register(interaction, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -672,7 +641,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, user, interaction.user.id)
+            await self.register(interaction, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -719,7 +688,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, user, interaction.user.id)
+            await self.register(interaction, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -764,7 +733,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, user, interaction.user.id)
+            await self.register(interaction, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
