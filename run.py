@@ -1,5 +1,6 @@
 # shenhe-bot by seria
 
+from re import S
 import discord
 import git
 from discord.ext import commands
@@ -44,6 +45,8 @@ class ShenheBot(commands.Bot):
             test_guild = discord.Object(id=guild)
             self.tree.copy_global_to(guild=test_guild)
             await self.tree.sync(guild=test_guild)
+        # self.tree.clear_commands(guild=None)
+        # await self.tree.sync()
 
     async def on_ready(self):
         await self.change_presence(
