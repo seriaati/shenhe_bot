@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import re
 import discord
 from discord import Interaction, app_commands
 from discord.ext import tasks, commands
@@ -546,6 +547,72 @@ class GenshinCog(commands.Cog):
         result = await genshin_app.getUserCharacters(char, member.id)
         await interaction.response.send_message(embed=result)
 
+    @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
+    @app_commands.rename(type='聖遺物類型',crit_dmg='暴傷',crit_rate='暴擊率',atk='攻擊百分比')
+    @app_commands.choices(type=[
+        Choice(name='生之花', value=0),
+        Choice(name='死之羽', value=1),
+        Choice(name='時之沙', value=2),
+        Choice(name='空之杯', value=3),
+        Choice(name='理之冠', value=4)])
+    async def rate(self, interaction:discord.Interaction,type:int,crit_dmg:str,crit_rate:str,atk:str):
+        crit_dmg = int(re.search(r'\d+', crit_dmg).group())
+        crit_rate = int(re.search(r'\d+', crit_rate).group())
+        atk = int(re.search(r'\d+', atk).group())
+        score = crit_rate*2 + atk*1.3 + crit_dmg*1
+        typeStr = ''
+        if type==0:
+            typeStr='生之花'
+        elif type==1:
+            typeStr='死之羽'
+        elif type==2:
+            typeStr='時之沙'
+        elif type==3:
+            typeStr='空之杯'
+        else:
+            typeStr='理之冠'
+        if type==0 or type==1:
+            if score >= 40:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-s.png'
+                desc = '極品聖遺物, 足以用到關服'
+            elif score >=30:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-a.png'
+                desc = '良品, 追求強度的人的目標'
+            elif score >= 20:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-b.png'
+                desc = '及格, 可以用了'
+            else:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-c.png'
+                desc = '過渡用, 繼續刷'
+        else:
+            if score >= 50:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-s.png'
+                desc = '極品聖遺物, 足以用到關服'
+            elif score >=40:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-a.png'
+                desc = '良品, 追求強度的人的目標'
+            elif score >= 30:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-b.png'
+                desc = '及格, 可以用了'
+            else:
+                tier_url = 'https://www.expertwm.com/static/images/badges/badge-c.png'
+                desc = '過渡用, 繼續刷'
+        result = defaultEmbed(
+            '聖遺物評分結果',
+            f'總分: {score}\n'
+            f'「{desc}」'
+        )
+        result.add_field(
+            name='詳情',
+            value=
+            f'類型: {typeStr}\n'
+            f'暴傷: {crit_dmg}%\n'
+            f'暴擊率: {crit_rate}%\n'
+            f'攻擊百分比: {atk}%'
+        )
+        result.set_thumbnail(url=tier_url)
+        result.set_footer(text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730)')
+        await interaction.response.send_message(embed=result)
     def saveUserData(self, data:dict):
         with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(data, f)
