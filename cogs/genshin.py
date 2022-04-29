@@ -139,7 +139,8 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(uid='請輸入要保存的原神UID')
     async def slash_uid(self, interaction: discord.Interaction, uid: int):
         await interaction.response.defer(ephemeral=True)
-        result = await genshin_app.setUID(str(interaction.user.id), str(uid), check_uid=True)
+        user = interaction.client.get_user(interaction.user.id)
+        result = await genshin_app.setUID(interaction.user.id, str(uid), user, check_uid=True)
         await interaction.edit_original_message(content=result)
 
     @app_commands.command(
