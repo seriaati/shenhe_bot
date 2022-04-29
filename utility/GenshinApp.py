@@ -507,7 +507,7 @@ class GenshinApp:
                 )
                 count+=1
             result.set_thumbnail(url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
-            result.set_footer(text='[來源](https://bbs.nga.cn/read.php?tid=25843014&rand=77)')
+            result.set_footer(text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
         return result
             
 
