@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+import re
 import genshin
 import yaml
 from utility.classes import Character
@@ -12,10 +13,12 @@ class GenshinApp:
                 self.user_data = yaml.full_load(f)
             with open('data/flow.yaml', 'r', encoding="utf-8") as f:
                 self.flow_data = yaml.full_load(f)
+            with open('data/bank.yaml', 'r', encoding="utf-8") as f:
+                self.bank_data = yaml.full_load(f)
         except:
             self.user_data = {}
 
-    async def setCookie(self, user_id: int, cookie: str) -> str:
+    async def setCookie(self, user_id: int, cookie: str, user_name:str) -> str:
         print(log(False, False, 'setCookie', cookie))
         user_id = int(user_id)
         cookie = trimCookie(cookie)
@@ -34,7 +37,12 @@ class GenshinApp:
                 result = '帳號內沒有任何角色, 取消設定Cookie'
             else:
                 self.user_data[user_id] = {}
-                self.user_data[user_id]['cookie'] = cookie
+                self.user_data[user_id]['dm'] = True
+                self.user_data[user_id]['dmCount'] = 0
+                self.user_data[user_id]['ltoken'] = re.search('[0-9A-Za-z]{20,}', cookie).group()
+                ltuidStr = re.search('ltuid=[0-9]{3,}', cookie).group()
+                self.user_data[user_id]['name'] = user_name
+                self.user_data[user_id]['ltuid'] = int(re.search(r'\d+', ltuidStr).group())
                 print(log(False, False, 'setCookie', f'{user_id} set cookie success'))
                 if len(accounts) == 1 and len(str(accounts[0].uid)) == 9:
                     await self.setUID(user_id, str(accounts[0].uid))
@@ -48,40 +56,19 @@ class GenshinApp:
         finally:
             return result
     
-    async def setUID(self, user_id: int, uid: int, *, check_uid: bool = False, user_name: str) -> str:
+    async def setUID(self, user_id: int, uid: int, *, check_uid: bool = False) -> str:
         print(log(False, False, 'setUID', f'uid={uid}'))
-        if not check_uid:
-            self.user_data[user_id]['uid'] = uid
-            self.saveUserData()
-            if user_id not in self.flow_data:
-                    await FlowCog.register(None, user_name, None, False)
-            self.flow_data[user_id]['uid'] = uid
-            self.saveFlowData()
-            return f'角色UID: {uid} 已設定完成'
-        check, msg = self.checkUserData(user_id, checkUID=False)
-        if check == False:
-            return msg
-        if len(uid) != 9:
-            return f'UID長度錯誤, 請輸入正確的原神UID'
-        client = self.getUserCookie(user_id)
-        try:
-            accounts = await client.get_game_accounts()
-        except Exception as e:
-            print(log(False, True, 'setUID',e))
-            return '確認帳號資料失敗, 請重新設定Cookie或是稍後再試'
-        else:
-            if int(uid) in [account.uid for account in accounts]:
-                self.user_data[user_id]['uid'] = uid
-                self.saveUserData()
-                if user_id not in self.flow_data:
-                    await FlowCog.register(None, user_name, None, False)
-                self.flow_data[user_id]['uid'] = uid
-                self.saveFlowData()
-                print(log(False, False ,'setUID', f'{user_id} setUID success'))
-                return f'角色UID: {uid} 已設定完成'
-            else:
-                print(log(False, True, 'setUID',f'{user_id} no character found for UID'))
-                return f'找不到該UID的角色資料, 請確認是否輸入正確'
+        self.user_data[user_id]['uid'] = int(uid)
+        self.saveUserData()
+        if user_id not in self.flow_data:
+            today = date.today()
+            self.flow_data[user_id] = {'discordID': int(
+                user_id), 'flow': 100, 'morning': today}
+            self.bank_data['flow'] -= 100
+            self.flow_data[user_id]['uid'] = int(uid)
+        self.saveFlowData()
+        self.saveBankData()
+        return f'角色UID: {uid} 已設定完成'
 
     async def claimDailyReward(self, user_id:int):
         print(log(False, False, 'Claim', f'{user_id}'))
@@ -523,7 +510,8 @@ class GenshinApp:
         cookies = {"ltuid": users[user_id]['ltuid'],
                     "ltoken": users[user_id]['ltoken']}
         uid = users[user_id]['uid']
-        nickname = users[user_id]['name']
+        if 'name' in users[user_id]:
+            nickname = users[user_id]['name']
         client = genshin.Client(cookies)
         client.lang = "zh-tw"
         client.default_game = genshin.Game.GENSHIN
@@ -537,6 +525,10 @@ class GenshinApp:
     def saveFlowData(self):
         with open('data/flow.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(self.flow_data, f)
+
+    def saveBankData(self):
+        with open('data/bank.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(self.bank_data, f)
 
 
 genshin_app = GenshinApp()

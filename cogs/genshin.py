@@ -42,7 +42,7 @@ class GenshinCog(commands.Cog):
             max_length=1500
         )
         async def on_submit(self, interaction: discord.Interaction):
-            result = await genshin_app.setCookie(str(interaction.user.id), self.cookie.value)
+            result = await genshin_app.setCookie(str(interaction.user.id), self.cookie.value, str(interaction.user))
             await interaction.response.send_message(result, ephemeral=True)
         
         async def on_error(self, error: Exception, interaction: discord.Interaction):
@@ -140,7 +140,7 @@ class GenshinCog(commands.Cog):
     async def slash_uid(self, interaction: discord.Interaction, uid: int):
         await interaction.response.defer(ephemeral=True)
         user = interaction.client.get_user(interaction.user.id)
-        result = await genshin_app.setUID(interaction.user.id, str(uid), user, check_uid=True)
+        result = await genshin_app.setUID(interaction.user.id, str(uid), check_uid=True)
         await interaction.edit_original_message(content=result)
 
     @app_commands.command(

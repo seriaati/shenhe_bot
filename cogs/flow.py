@@ -30,18 +30,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         with open('data/log.yaml', 'r', encoding="utf-8") as f:
             self.log_dict = yaml.full_load(f)
 
-    async def register(self, interaction:discord.Interaction, name, discordID: int, *args):
+    async def register(self, interaction:discord.Interaction, discordID: int, *args):
         dcUser = self.bot.get_user(discordID)
         users = dict(self.user_dict)
         bank = dict(self.bank_dict)
-        if not dcUser.bot:
+        if not dcUser.bot or args==False:
             embed = defaultEmbed(
                 f"找不到你的flow帳號!",
                 f"{dcUser.mention}\n"
                 "現在申鶴已經幫你辦了一個flow帳號\n"
                 "請重新執行剛才的操作")
             today = date.today()
-            users[discordID] = {'name': str(name), 'discordID': int(
+            users[discordID] = {'discordID': int(
                 discordID), 'flow': 100, 'morning': today}
             bank['flow'] -= 100
             self.saveData(users, 'flow')
