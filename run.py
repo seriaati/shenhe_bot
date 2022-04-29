@@ -32,8 +32,10 @@ class ShenheBot(commands.Bot):
         super().__init__(
             command_prefix=prefix,
             intents=intents,
-            application_id=application_id
+            application_id=application_id,
+            owner_ids=[289597294075183114, 410036441129943050]
         )
+
 
     async def setup_hook(self) -> None:
         await self.load_extension('jishaku')
