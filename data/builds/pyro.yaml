@@ -140,7 +140,7 @@
       dmg: 6857
 煙緋:
   element: 火
-  icon: Feiyan
+  icon: Yanfei
   builds:
     - weapon: 四風原典
       artifacts: 魔女4件套
