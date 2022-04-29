@@ -1,5 +1,5 @@
 from discord.ext import commands
-from discord import Interaction, app_commands
+from discord import Guild, Interaction, app_commands
 from datetime import date
 from discord import Member
 from typing import List, Optional
@@ -30,7 +30,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         with open('data/log.yaml', 'r', encoding="utf-8") as f:
             self.log_dict = yaml.full_load(f)
 
-    async def register(self, ctx, name, discordID: int, *args):
+    async def register(self, interaction:discord.Interaction, name, discordID: int, *args):
         dcUser = self.bot.get_user(discordID)
         users = dict(self.user_dict)
         bank = dict(self.bank_dict)
@@ -47,7 +47,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users, 'flow')
             self.saveData(bank, 'bank')
             if args != False:
-                await ctx.send(embed=embed, delete_after=5)
+                await interaction.followup.send(embed=embed, ephemeral=True)
             else:
                 pass
         else:
@@ -88,50 +88,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.add_roles(role)
                     break
-
-        elif payload.emoji.name == '✅' and payload.user_id != self.bot.user.id and payload.message_id in finds:
-            if payload.user_id == finds[payload.message_id]['authorID']:
-                userObj = self.bot.get_user(payload.user_id)
-                await channel.send(f"{userObj.mention}不可以自己接自己的委託啦", delete_after=2)
-                return
-            else:
-                await message.clear_reaction('✅')
-                author = self.bot.get_user(
-                    finds[payload.message_id]['authorID'])
-                acceptUser = self.bot.get_user(payload.user_id)
-                if finds[payload.message_id]['type'] == 1:
-                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
-                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                elif finds[payload.message_id]['type'] == 2:
-                    await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 素材委託")
-                    await author.send(f"{acceptUser.mention}的原神UID是{users[payload.user_id]['uid']}")
-                    await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
-                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 素材委託")
-                elif finds[payload.message_id]['type'] == 3:
-                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 委託")
-                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                    await channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[payload.message_id]['title']} 委託")
-                elif finds[payload.message_id]['type'] == 4:
-                    await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[payload.message_id]['title']} 幫助")
-                    await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
-                    await channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[payload.message_id]['title']} 幫助")
-
-                if finds[payload.message_id]['type'] == 4:
-                    embedDM = defaultEmbed(
-                        "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
-                    dm = await acceptUser.send(embed=embedDM)
-                else:
-                    embedDM = defaultEmbed(
-                        "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[payload.message_id]['flow']}**, 對方則會 **+ {finds[payload.message_id]['flow']}**")
-                    dm = await author.send(embed=embedDM)
-                await dm.add_reaction('🆗')
-
-                confirms[dm.id] = {'title': finds[payload.message_id]['title'], 'authorID': int(
-                    finds[payload.message_id]['authorID']), 'receiverID': payload.user_id, 'flow': finds[payload.message_id]['flow'], 'type': finds[payload.message_id]['type']}
-                del finds[payload.message_id]
-                self.saveData(finds, 'find')
-                self.saveData(confirms, 'confirm')
 
         elif payload.emoji.name == '🆗' and payload.user_id != self.bot.user.id and payload.message_id in confirms:
             authorID = confirms[payload.message_id]['authorID']
@@ -295,7 +251,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed)
         else:
             user = self.bot.get_user(discordID)
-            await self.register(interaction.channel, user, discordID)
+            await self.register(interaction, user, discordID)
 
     @app_commands.command(name='give', description='給其他人flow幣')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
@@ -341,7 +297,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users,'flow')
         else:
             user = self.bot.get_user(giverID)
-            await self.register(interaction.channel, user, giverID)
+            await self.register(interaction, user, giverID)
 
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
     @app_commands.rename(member='某人', flow='要拿取的flow幣數量')
@@ -497,7 +453,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             discordID = interaction.user.id
             user = self.bot.get_user(discordID)
-            await self.register(interaction.channel, user, discordID)
+            await self.register(interaction, user, discordID)
 
     @shop.command(name='log',description='取得商品購買紀錄')
     @app_commands.checks.has_role('小雪團隊')
@@ -541,15 +497,14 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         elif users[user_id]['flow'] < int(flow):
             result = errEmbed("發布失敗, 請勿輸入大於自己擁有數量的flow幣", "")
             return False, result
-        elif flow.isnumeric() == False:
-            result = errEmbed("發布失敗, 請勿輸入非數字的flow幣", "")
-            return False, result
         else:
             return True, None
 
     async def interaction_check(self, interaction:discord.Interaction) -> bool:
         return True or False
         
+    
+
     class Confirm(discord.ui.View):
         def __init__(self):
             super().__init__()
@@ -561,54 +516,98 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                 self.confirm_dict = yaml.full_load(f)
 
+        class OKconfirm(discord.ui.View):
+            def __init__(self):
+                super().__init__()
+                with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
+                    self.confirm_dict = yaml.full_load(f)
+                with open('data/flow.yaml', 'r', encoding="utf-8") as f:
+                    self.user_dict = yaml.full_load(f)
+
+            @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple)
+            async def ok_confirm(self, interaction:discord.Interaction, button:discord.ui.button):
+                msg = interaction.message
+                confirms = dict(self.confirm_dict)
+                users = dict(self.user_dict)
+                authorID = confirms[msg.id]['authorID']
+                receiverID = confirms[msg.id]['receiverID']
+                flow = confirms[msg.id]['flow']
+                type = confirms[msg.id]['type']
+                title = confirms[msg.id]['title']
+                if type == 4:
+                    if authorID in users:
+                        users[authorID]['flow'] += flow
+                    if receiverID in users:
+                        users[receiverID]['flow'] -= flow
+                else:
+                    if authorID in users:
+                        users[authorID]['flow'] -= flow
+                    if receiverID in users:
+                        users[receiverID]['flow'] += flow
+
+                author = self.bot.get_user(authorID)
+                receiver = self.bot.get_user(receiverID)
+                if type == 4:
+                    embed = defaultEmbed("🆗 結算成功",
+                                        f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
+                else:
+                    embed = defaultEmbed("🆗 結算成功",
+                                        f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
+                await author.send(embed=embed)
+                await receiver.send(embed=embed)
+                del confirms[msg.id]
+                FlowCog.saveData(confirms, 'confirm')
+                FlowCog.saveData(users, 'flow')
+
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-            self.value = True
-            finds = dict(self.find_dict)
-            users = dict(self.user_dict)
-            confirms = dict(self.confirm_dict)
-            msg = interaction.original_message()
+            msg = interaction.message
             check = await self.interaction_check(interaction)
             if check == True:
                 await interaction.response.send_message('不可以自己接自己的委託哦', ephemeral=True)
                 return
+            with open('data/find.yaml', 'r', encoding="utf-8") as f:
+                finds = yaml.full_load(f)
+            users = dict(self.user_dict)
+            confirms = dict(self.confirm_dict)
             if msg.id in finds:
                 self.stop()
-                author = self.bot.get_user(finds[msg.id]['authorID'])
-                acceptUser = self.bot.get_user(interaction.user.id)
+                author = interaction.client.get_user(finds[msg.id]['authorID'])
+                acceptUser = interaction.client.get_user(interaction.user.id)
                 if finds[msg.id]['type'] == 1:
                     await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
                     await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
-                    await interaction.channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
+                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 2:
                     await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 素材委託")
                     await author.send(f"{acceptUser.mention}的原神UID是{users[acceptUser.id]['uid']}")
                     await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
-                    await interaction.channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
+                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
                 elif finds[msg.id]['type'] == 3:
                     await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
                     await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
-                    await interaction.channel.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
+                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 4:
                     await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 幫助")
                     await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[msg.id]['title']} 幫助")
-                    await interaction.channel.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
+                    await interaction.response.send_message(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
+
+                view = self.OKconfirm()
 
                 if finds[msg.id]['type'] == 4:
                     embedDM = defaultEmbed(
                         "結算單", f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**, 對方則會 **+ {finds[msg.id]['flow']}**")
-                    dm = await acceptUser.send(embed=embedDM)
+                    dm = await acceptUser.send(embed=embedDM, view=view)
                 else:
                     embedDM = defaultEmbed(
                         "結算單", f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**, 對方則會 **+ {finds[msg.id]['flow']}**")
-                    dm = await author.send(embed=embedDM)
-                await dm.add_reaction('🆗')
+                    dm = await author.send(embed=embedDM, view=view)
 
                 confirms[dm.id] = {'title': finds[msg.id]['title'], 'authorID': int(
                     finds[msg.id]['authorID']), 'receiverID': interaction.user.id, 'flow': finds[msg.id]['flow'], 'type': finds[msg.id]['type']}
                 del finds[msg.id]
-                FlowCog.saveData(finds, 'find')
-                FlowCog.saveData(confirms, 'confirm')
+                FlowCog.saveData(self, finds, 'find')
+                FlowCog.saveData(self, confirms, 'confirm')
 
     find = app_commands.Group(name='find',description='發布委託')
 
@@ -623,7 +622,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction.channel, user, interaction.user.id)
+            await self.register(interaction, user, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -631,6 +630,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             i += 1
         roleForChannel = self.bot.get_channel(962311051683192842)
         roleStr = f'請至{roleForChannel.mention}選擇身份組'
+        roleStr = ''
         for role in roles:
             if role in interaction.user.roles:
                 roleStr = role.name
@@ -639,7 +639,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         role = discord.utils.get(guild.roles, name=f"委託通知")
         check, msg = self.check_flow(interaction.user.id, flow)
         if check == False:
-            await interaction.response.send_message(msg)
+            await interaction.response.send_message(embed=msg)
             return
         uid = '請用`/setuid`來新增自己的uid'
         if 'uid' in users[interaction.user.id]:
@@ -651,15 +651,15 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             f'世界等級: >={roleStr}\n'
             f'發布者UID: {uid}'
         )
-        message = await interaction.response.send_message(embed=embed)
         view = self.Confirm()
-        await interaction.followup.send(view=view)
-        await view.wait()
-        await interaction.followup.send(role.mention)
+        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
+        msg = await interaction.original_message()
         finds = dict(self.find_dict)
-        finds[message.id] = {'title': title, 'flow': int(flow),
+        finds[msg.id] = {'title': title, 'flow': int(flow),
             'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 1}
         self.saveData(finds, 'find')
+        await view.wait()
+        
 
     @find.command(name='2類委託', description='你進入其他玩家的世界(例如: 拿特產)')
     @app_commands.rename(title='幫助名稱',flow='flow幣')
@@ -672,7 +672,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction.channel, user, interaction.user.id)
+            await self.register(interaction, user, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -699,11 +699,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             f'flow幣: {flow}\n'
             f'世界等級: <={roleStr}\n'
             f'發布者UID: {uid}'
-            '按 ✅ 來接受委託\n'
         )
-        message = await interaction.response.send_message(embed=embed)
-        await message.add_reaction('✅')
-        await interaction.followup.send(role.mention)
+        view = self.Confirm()
+        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
+        message = interaction.original_message()
         finds = dict(self.find_dict)
         finds[message.id] = {'title': title, 'flow': int(flow),
             'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 2}
@@ -720,7 +719,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction.channel, user, interaction.user.id)
+            await self.register(interaction, user, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -744,12 +743,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         embed = defaultEmbed(
             f'請求幫助: {title}',
             f'發布者: {interaction.user.mention}\n'
-            f'flow幣: {flow}\n'
-            '按 ✅ 來接受委託\n'
+            f'flow幣: {flow}'
         )
-        message = await interaction.response.send_message(embed=embed)
-        await message.add_reaction('✅')
-        await interaction.followup.send(role.mention)
+        view = self.Confirm()
+        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
+        message = interaction.original_message()
         finds = dict(self.find_dict)
         finds[message.id] = {'title': title, 'flow': int(flow),
             'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 3}
@@ -766,7 +764,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = dict(self.user_dict)
         if interaction.user.id not in users:
             user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction.channel, user, interaction.user.id)
+            await self.register(interaction, user, interaction.user.id)
             return
         roles = []
         for i in range(1, 9):
@@ -793,11 +791,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             f'flow幣: {flow}\n'
             f'發布者世界等級: {roleStr}\n'
             f'發布者UID: {uid}'
-            '按 ✅ 來接受委託\n'
         )
-        message = await interaction.response.send_message(embed=embed)
-        await message.add_reaction('✅')
-        await interaction.followup.send(role.mention)
+        view = self.Confirm()
+        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
+        message = interaction.original_message()
         finds = dict(self.find_dict)
         finds[message.id] = {'title': title, 'flow': int(flow),
             'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 4}
