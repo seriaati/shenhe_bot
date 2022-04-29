@@ -24,41 +24,167 @@ class Dropdown(discord.ui.Select):
             )
             embed.add_field(
                 name='`/cookie`',
-                value='設定原神帳號'
+                value='設定原神帳號',
+                inline=False
             )
             embed.add_field(
                 name='`/setuid`',
-                value='設置原神UID'
+                value='設置原神UID',
+                inline=False
             )
             embed.add_field(
                 name='`/check`',
-                value='查看即時便籤'
+                value='查看即時便籤, 例如樹脂、洞天寶錢、探索派遣',
+                inline=False
             )
             embed.add_field(
                 name='`/stats`',
-                value=''
+                value='查看原神資料, 如活躍時間、神瞳數量、寶箱數量',
+                inline=False
+            )
+            embed.add_field(
+                name='`/area`',
+                value='查看區域探索度',
+                inline=False
+            )
+            embed.add_field(
+                name='`/claim`',
+                value='領取hoyolab登入獎勵',
+                inline=False
+            )
+            embed.add_field(
+                name='`/diary`',
+                value='查看旅行者日記',
+                inline=False
+            )
+            embed.add_field(
+                name='`/log`',
+                value='查看最近25筆原石或摩拉收入紀錄',
+                inline=False
+            )
+            embed.add_field(
+                name='`/users`',
+                value='查看所有已註冊原神帳號',
+                inline=False
+            )
+            embed.add_field(
+                name='`/today`',
+                value='查看今日原石與摩拉收入',
+                inline=False
+            )
+            embed.add_field(
+                name='`/abyss`',
+                value='查看深境螺旋資料',
+                inline=False
+            )
+            embed.add_field(
+                name='`/char`',
+                value='查看已擁有角色資訊',
+                inline=False
+            )
+            embed.add_field(
+                name='`/dm`',
+                value='開關私訊提醒功能',
+                inline=False
             )
         elif self.values[0] == '原神':
             embed = defaultEmbed(
                 '原神相關',
                 ''
             )
+            embed.add_field(
+                name='`/farm`',
+                value='查看原神今日可刷素材',
+                inline=False
+            )
+            embed.add_field(
+                name='`/build`',
+                value='查看角色推薦主詞條、畢業面板、不同配置等',
+                inline=False
+            )
+            embed.add_field(
+                name='`/rate`',
+                value='(僅供參考用)非常不穩定的聖遺物評分器',
+                inline=False
+            )
+
         elif self.values[0] == '呼叫相關':
             embed = defaultEmbed(
                 '呼叫相關',
                 ''
+            )
+            embed.add_field(
+                name='`/call`',
+                value='呼叫群裡的某個人',
+                inline=False
             )
         elif self.values[0] == 'flow系統':
             embed = defaultEmbed(
                 'flow系統相關',
                 ''
             )
+            embed.add_field(
+                name='`/acc`',
+                value='查看flow帳戶',
+                inline=False
+            )
+            embed.add_field(
+                name='`/give`',
+                value='給其他人flow幣',
+                inline=False
+            )
+            embed.add_field(
+                name='`/total`',
+                value='查看目前群組帳號及銀行flow幣分配情況',
+                inline=False
+            )
+            embed.add_field(
+                name='`/flows`',
+                value='查看群組內所有flow帳號',
+                inline=False
+            )
+            embed.add_field(
+                name='`/find`',
+                value='發布委託',
+                inline=False
+            )
+
         elif self.values[0] == '其他':  
             embed = defaultEmbed(
                 '其他指令',
                 ''
             )
-        await interaction.response.send_message(embed=embed) 
+            embed.add_field(
+                name='`/ping`',
+                value='查看機器人目前延遲',
+                inline=False
+            )
+            embed.add_field(
+                name='`/cute`',
+                value='讓申鶴說某個人很可愛',
+                inline=False
+            )
+            embed.add_field(
+                name='`/flash`',
+                value='防放閃機制',
+                inline=False
+            )
+            embed.add_field(
+                name='`/number`',
+                value='讓申鶴從兩個數字間挑一個隨機的給你',
+                inline=False
+            )
+            embed.add_field(
+                name='`/marry`',
+                value='結婚 💞',
+                inline=False
+            )
+            embed.add_field(
+                name='`!q`',
+                value='語錄他人',
+                inline=False
+            )
+        await interaction.response.send_message(embed=embed, ephemeral=True) 
 
 class DropdownView(discord.ui.View):
     def __init__(self):
