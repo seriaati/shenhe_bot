@@ -594,10 +594,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             msg = interaction.message
-            check = await self.interaction_check(interaction)
-            if check == True:
-                await interaction.response.send_message('不可以自己接自己的委託哦', ephemeral=True)
-                return
+            # check = await self.interaction_check(interaction)
+            # if check == True:
+            #     await interaction.response.send_message('不可以自己接自己的委託哦', ephemeral=True)
+            #     return
             with open('data/find.yaml', 'r', encoding="utf-8") as f:
                 finds = yaml.full_load(f)
             users = dict(self.user_dict)
@@ -713,7 +713,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         view = self.Confirm()
         await interaction.response.send_message(embed=embed, view=view)
-        await interaction.followup.send(content=role.mention)
+        await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = dict(self.find_dict)
         finds[msg.id] = {'title': title, 'flow': int(flow),
