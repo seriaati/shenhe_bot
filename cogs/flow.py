@@ -457,6 +457,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if channel_id != 960861105503232030:
             channel = self.bot.get_channel(960861105503232030)
             return False, f"請在{channel.mention}裡使用此指令"
+        else:
+            return True, f'成功'
 
     def check_flow(self, user_id:int,flow:int):
         users = dict(self.user_dict)
