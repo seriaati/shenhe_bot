@@ -533,8 +533,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             return True, None
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return True or False
+    
 
     class Confirm(discord.ui.View):
         def __init__(self):
@@ -594,6 +593,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             msg = interaction.message
+            async def interaction_check(self, interaction: discord.Interaction) -> bool:
+                return True or False
             # check = await self.interaction_check(interaction)
             # if check == True:
             #     await interaction.response.send_message('不可以自己接自己的委託哦', ephemeral=True)
@@ -713,6 +714,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         view = self.Confirm()
         await interaction.response.send_message(embed=embed, view=view)
+        await interaction.followup.send('防止發布人接取自身委託的系統尚未完成, 請千萬不要自己按自己的委託')
         await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = dict(self.find_dict)
