@@ -263,25 +263,25 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=result)
 
     @app_commands.command(name='abyss', description='深淵資料查詢')
-    @app_commands.rename(type='類別',season='期別',floor='層數',member='其他人')
-    @app_commands.describe(type='想要查看的資料類別',
+    @app_commands.rename(check_type='類別',season='期別',floor='層數',member='其他人')
+    @app_commands.describe(check_type='想要查看的資料類別',
         season='這期還是上期?',floor='欲查閱的層數', member='查看其他群友的資料')
     @app_commands.choices(
-        type=[Choice(name='總覽', value=0),
+        check_type=[Choice(name='總覽', value=0),
                 Choice(name='詳細',value=1)],
         season=[Choice(name='上期紀錄', value=0),
                 Choice(name='本期紀錄', value=1)],
         floor=[Choice(name='所有樓層', value=0),
                 Choice(name='最後一層', value=1)]
     )
-    async def abyss(self, interaction:discord.Interaction, type:int, season:int=1, floor:int=0, member: Optional[Member] = None):
+    async def abyss(self, interaction:discord.Interaction, check_type:int, season:int=1, floor:int=0, member: Optional[Member] = None):
         member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
         if type(result) == discord.Embed:
             await interaction.response.send_message(embed=result)
             return 
-        if type==0:
+        if check_type==0:
             await interaction.response.send_message(embed=result[0])
         else:
             if floor == 1:
