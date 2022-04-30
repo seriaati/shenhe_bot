@@ -262,59 +262,32 @@ class GenshinCog(commands.Cog):
         result = await genshin_app.getToday(member.id)
         await interaction.response.send_message(embed=result)
 
-
-    abyss = app_commands.Group(name='abyss',description='深淵')
-
-    @abyss.command(
-        name='floor',
-        description='深淵每層資料'
-    )
-    @app_commands.rename(season='期別',floor='層數',member='其他人')
-    @app_commands.describe(season='查詢這期還是上期深淵資料',floor='要查看的層數',
-        member='查看其他群友的資料'
-    )
+    @app_commands.command(name='abyss', description='深淵資料查詢')
+    @app_commands.rename(type='類別',season='期別',floor='層數',member='其他人')
+    @app_commands.describe(type='想要查看的資料類別',
+        season='這期還是上期?',floor='欲查閱的層數', member='查看其他群友的資料')
     @app_commands.choices(
-        season=[app_commands.Choice(name='上期紀錄', value=0),
-                app_commands.Choice(name='本期紀錄', value=1)],
-        floor=[app_commands.Choice(name='所有樓層', value=0),
-                app_commands.Choice(name='最後一層', value=1)]
+        type=[Choice(name='總覽', value=0),
+                Choice(name='詳細',value=1)],
+        season=[Choice(name='上期紀錄', value=0),
+                Choice(name='本期紀錄', value=1)],
+        floor=[Choice(name='所有樓層', value=0),
+                Choice(name='最後一層', value=1)]
     )
-    async def abyss_floor(self, interaction:discord.Interaction,
-        season: int = 1, floor: int = 1, member: Optional[Member] = None
-    ):
+    async def abyss(self, interaction:discord.Interaction, type:int, season:int=1, floor:int=0):
         member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
         if type(result) == discord.Embed:
             await interaction.response.send_message(embed=result)
-        elif floor == 1:
-            await interaction.response.send_message(embed=result[-1])
-        else:
-            await Paginator(interaction, result[1:]).start(embeded=True)
-
-    @abyss.command(
-        name='overview',
-        description='深淵資料總覽'
-    )
-    @app_commands.rename(season='期別',member='其他人')
-    @app_commands.describe(season='查詢這期還是上期深淵資料',
-        member='查看其他群友的資料'
-    )
-    @app_commands.choices(
-        season=[app_commands.Choice(name='上期紀錄', value=0),
-                app_commands.Choice(name='本期紀錄', value=1)]
-    )
-    async def abyss_floor(self, interaction:discord.Interaction,
-        season: int = 1, member: Optional[Member] = None
-    ):
-        member = member or interaction.user
-        previous = True if season == 0 else False
-        result = await genshin_app.getAbyss(member.id, previous)
-        if type(result) == discord.Embed:
-            await interaction.response.send_message(embed=result)
-        else:
+            return 
+        if type==0:
             await interaction.response.send_message(embed=result[0])
-            
+        else:
+            if floor == 1:
+                await interaction.response.send_message(embed=result[-1])
+            else:
+                await Paginator(interaction, result[1:]).start(embeded=True)
 
     @app_commands.command(
         name='stuck',
@@ -615,7 +588,7 @@ class GenshinCog(commands.Cog):
         result.set_thumbnail(url=tier_url)
         result.set_footer(text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
-        
+
     def saveUserData(self, data:dict):
         with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(data, f)
