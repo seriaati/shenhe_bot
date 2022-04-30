@@ -288,10 +288,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users,'flow')
             self.saveData(bank,'bank')
 
-    # @take.error()
-    # async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-    #     if isinstance(e, app_commands.errors.MissingRole):
-    #         await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+    @take.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
