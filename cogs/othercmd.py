@@ -28,7 +28,7 @@ class OtherCMDCog(commands.Cog):
             channel = self.bot.get_channel(payload.channel_id)
             await channel.send(f"✅ 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
-            embed.set_thumbnail(url=str(msg.author.avatar_url))
+            embed.set_thumbnail(url=str(msg.author.avatar))
             channel = self.bot.get_channel(966549110540877875)
             await channel.send(embed=embed)
 
