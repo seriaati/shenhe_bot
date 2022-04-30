@@ -1,8 +1,6 @@
 # shenhe-bot by seria
 
-from re import S
 import discord
-import git
 from discord.ext import commands
 from utility.config import config
 from utility.utils import log
