@@ -1,7 +1,9 @@
+from doctest import debug_script
 from discord.ext import commands
 from discord import Guild, Interaction, app_commands
 from datetime import date
 from discord import Member
+from discord.app_commands import Choice
 from typing import List, Optional
 import uuid
 import random
@@ -47,7 +49,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users, 'flow')
             self.saveData(bank, 'bank')
             if args != False:
-                await interaction.followup.send(embed=embed, ephemeral=True)
+                await interaction.response.send(embed=embed, ephemeral=True)
             else:
                 pass
         else:
@@ -286,6 +288,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users,'flow')
             self.saveData(bank,'bank')
 
+    @take.error()
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
     @app_commands.checks.has_role('小雪團隊')
@@ -474,9 +481,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     async def interaction_check(self, interaction:discord.Interaction) -> bool:
         return True or False
         
-    
-
-    class Confirm(discord.ui.View):
+    class Confirm(discord.ui.View(timeout=None)):
         def __init__(self):
             super().__init__()
             self.value = None
@@ -487,7 +492,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                 self.confirm_dict = yaml.full_load(f)
 
-        class OKconfirm(discord.ui.View):
+        class OKconfirm(discord.ui.View(timeout=None)):
             def __init__(self):
                 super().__init__()
                 with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
@@ -580,31 +585,32 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 FlowCog.saveData(self, finds, 'find')
                 FlowCog.saveData(self, confirms, 'confirm')
 
-    find = app_commands.Group(name='find',description='發布委託')
-
-    @find.command(name='1類委託', description='其他玩家進入你的世界(例如: 陪玩, 打素材等)')
-    @app_commands.rename(title='幫助名稱',flow='flow幣')
+    @app_commands.command(name='find', description='發布委託')
+    @app_commands.rename(type='委託類型',title='幫助名稱',flow='flow幣數量')
     @app_commands.describe(title='需要什麼幫助?',flow='這個幫助值多少flow幣?')
-    async def find_one(self, interaction:discord.Interaction, title:str, flow:int):
+    @app_commands.choices(type=[
+        Choice(name='1類委託 其他玩家進入你的世界(例如: 陪玩, 打素材等)', value=1),
+        Choice(name='2類委託 你進入其他玩家的世界(例如: 拿特產)', value=2),
+        Choice(name='3類委託 其他委託(例如: 打apex, valorant)', value=3),
+        Choice(name='4類委託 可以幫助別人(讓拿素材, 可幫打刀鐔等)', value=4)])
+    async def find(self, interaction:discord.Interaction, type:int, title:str, flow:int):
         check, msg = self.check_in_find_channel(interaction.channel.id)
         if check == False:
             await interaction.response.send_message(msg, ephemeral=True)
             return
-        users = dict(self.user_dict)
-        if interaction.user.id not in users:
-            user = self.bot.get_user(interaction.user.id)
+        if interaction.user.id not in self.user_dict:
             await self.register(interaction, interaction.user.id)
             return
-        roles = []
+        WLroles = []
         for i in range(1, 9):
-            roles.append(discord.utils.get(interaction.user.guild.roles, name=f"W{str(i)}"))
+            WLroles.append(discord.utils.get(interaction.user.guild.roles, name=f"W{str(i)}"))
             i += 1
         roleForChannel = self.bot.get_channel(962311051683192842)
         roleStr = f'請至{roleForChannel.mention}選擇身份組'
         roleStr = ''
-        for role in roles:
-            if role in interaction.user.roles:
-                roleStr = role.name
+        for r in WLroles:
+            if r in interaction.user.roles:
+                roleStr = r.name
                 break
         guild = self.bot.get_guild(916838066117824553)
         role = discord.utils.get(guild.roles, name=f"委託通知")
@@ -613,17 +619,42 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=msg)
             return
         uid = '請用`/setuid`來新增自己的uid'
-        if 'uid' in users[interaction.user.id]:
-            uid = users[interaction.user.id]['uid']
-        embed = defaultEmbed(
+        if 'uid' in self.user_dict[interaction.user.id]:
+            uid = self.user_dict[interaction.user.id]['uid']
+        if type==1:
+            embed = defaultEmbed(
+                f'請求幫助: {title}',
+                f'發布者: {interaction.user.mention}\n'
+                f'flow幣: {flow}\n'
+                f'世界等級: >={roleStr}\n'
+                f'發布者UID: {uid}'
+            )
+        elif type==2:
+            embed = defaultEmbed(
             f'請求幫助: {title}',
             f'發布者: {interaction.user.mention}\n'
             f'flow幣: {flow}\n'
-            f'世界等級: >={roleStr}\n'
+            f'世界等級: <={roleStr}\n'
             f'發布者UID: {uid}'
         )
+        elif type==3:
+            embed = defaultEmbed(
+            f'請求幫助: {title}',
+            f'發布者: {interaction.user.mention}\n'
+            f'flow幣: {flow}'
+        )
+        elif type==4:
+            embed = defaultEmbed(
+            f'可以幫忙: {title}',
+            f'發布者: {interaction.user.mention}\n'
+            f'flow幣: {flow}\n'
+            f'發布者世界等級: {roleStr}\n'
+            f'發布者UID: {uid}'
+        )
+
         view = self.Confirm()
-        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
+        await interaction.response.send_message(embed=embed, view=view)
+        await interaction.followup.send(content=role.mention)
         msg = await interaction.original_message()
         finds = dict(self.find_dict)
         finds[msg.id] = {'title': title, 'flow': int(flow),
@@ -631,146 +662,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         self.saveData(finds, 'find')
         await view.wait()
         
-
-    @find.command(name='2類委託', description='你進入其他玩家的世界(例如: 拿特產)')
-    @app_commands.rename(title='幫助名稱',flow='flow幣')
-    @app_commands.describe(title='需要什麼幫助?',flow='這個幫助值多少flow幣?')
-    async def find_two(self, interaction:discord.Interaction, title:str, flow:int):
-        check, msg = self.check_in_find_channel(interaction.channel.id)
-        if check == False:
-            await interaction.response.send_message(msg, ephemeral=True)
-            return
-        users = dict(self.user_dict)
-        if interaction.user.id not in users:
-            user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, interaction.user.id)
-            return
-        roles = []
-        for i in range(1, 9):
-            roles.append(discord.utils.get(interaction.user.guild.roles, name=f"W{str(i)}"))
-            i += 1
-        roleForChannel = self.bot.get_channel(962311051683192842)
-        roleStr = f'請至{roleForChannel.mention}選擇身份組'
-        for role in roles:
-            if role in interaction.user.roles:
-                roleStr = role.name
-                break
-        guild = self.bot.get_guild(916838066117824553)
-        role = discord.utils.get(guild.roles, name=f"委託通知")
-        check, msg = self.check_flow(interaction.user.id, flow)
-        if check == False:
-            await interaction.response.send_message(msg)
-            return
-        uid = '請用`/setuid`來新增自己的uid'
-        if 'uid' in users[interaction.user.id]:
-            uid = users[interaction.user.id]['uid']
-        embed = defaultEmbed(
-            f'請求幫助: {title}',
-            f'發布者: {interaction.user.mention}\n'
-            f'flow幣: {flow}\n'
-            f'世界等級: <={roleStr}\n'
-            f'發布者UID: {uid}'
-        )
-        view = self.Confirm()
-        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
-        message = interaction.original_message()
-        finds = dict(self.find_dict)
-        finds[message.id] = {'title': title, 'flow': int(flow),
-            'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 2}
-        self.saveData(finds, 'find')
-
-    @find.command(name='3類委託', description='其他委託(例如: 打apex, valorant)')
-    @app_commands.rename(title='幫助名稱',flow='flow幣')
-    @app_commands.describe(title='需要什麼幫助?',flow='這個幫助值多少flow幣?')
-    async def find_three(self, interaction:discord.Interaction, title:str, flow:int):
-        check, msg = self.check_in_find_channel(interaction.channel.id)
-        if check == False:
-            await interaction.response.send_message(msg, ephemeral=True)
-            return
-        users = dict(self.user_dict)
-        if interaction.user.id not in users:
-            user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, interaction.user.id)
-            return
-        roles = []
-        for i in range(1, 9):
-            roles.append(discord.utils.get(interaction.user.guild.roles, name=f"W{str(i)}"))
-            i += 1
-        roleForChannel = self.bot.get_channel(962311051683192842)
-        roleStr = f'請至{roleForChannel.mention}選擇身份組'
-        for role in roles:
-            if role in interaction.user.roles:
-                roleStr = role.name
-                break
-        guild = self.bot.get_guild(916838066117824553)
-        role = discord.utils.get(guild.roles, name=f"委託通知")
-        check, msg = self.check_flow(interaction.user.id, flow)
-        if check == False:
-            await interaction.response.send_message(msg)
-            return
-        uid = '請用`/setuid`來新增自己的uid'
-        if 'uid' in users[interaction.user.id]:
-            uid = users[interaction.user.id]['uid']
-        embed = defaultEmbed(
-            f'請求幫助: {title}',
-            f'發布者: {interaction.user.mention}\n'
-            f'flow幣: {flow}'
-        )
-        view = self.Confirm()
-        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
-        message = interaction.original_message()
-        finds = dict(self.find_dict)
-        finds[message.id] = {'title': title, 'flow': int(flow),
-            'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 3}
-        self.saveData(finds, 'find')
-
-    @find.command(name='4類委託', description='可以幫助別人(讓拿素材, 可幫打刀鐔等)')
-    @app_commands.rename(title='幫助名稱',flow='flow幣')
-    @app_commands.describe(title='需要什麼幫助?',flow='這個幫助值多少flow幣?')
-    async def find_four(self, interaction:discord.Interaction, title:str, flow:int):
-        check, msg = self.check_in_find_channel(interaction.channel.id)
-        if check == False:
-            await interaction.response.send_message(msg, ephemeral=True)
-            return
-        users = dict(self.user_dict)
-        if interaction.user.id not in users:
-            user = self.bot.get_user(interaction.user.id)
-            await self.register(interaction, interaction.user.id)
-            return
-        roles = []
-        for i in range(1, 9):
-            roles.append(discord.utils.get(interaction.user.guild.roles, name=f"W{str(i)}"))
-            i += 1
-        roleForChannel = self.bot.get_channel(962311051683192842)
-        roleStr = f'請至{roleForChannel.mention}選擇身份組'
-        for role in roles:
-            if role in interaction.user.roles:
-                roleStr = role.name
-                break
-        guild = self.bot.get_guild(916838066117824553)
-        role = discord.utils.get(guild.roles, name=f"委託通知")
-        check, msg = self.check_flow(interaction.user.id, flow)
-        if check == False:
-            await interaction.response.send_message(msg)
-            return
-        uid = '請用`/setuid`來新增自己的uid'
-        if 'uid' in users[interaction.user.id]:
-            uid = users[interaction.user.id]['uid']
-        embed = defaultEmbed(
-            f'可以幫忙: {title}',
-            f'發布者: {interaction.user.mention}\n'
-            f'flow幣: {flow}\n'
-            f'發布者世界等級: {roleStr}\n'
-            f'發布者UID: {uid}'
-        )
-        view = self.Confirm()
-        await interaction.response.send_message(embed=embed, view=view,content=role.mention)
-        message = interaction.original_message()
-        finds = dict(self.find_dict)
-        finds[message.id] = {'title': title, 'flow': int(flow),
-            'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 4}
-        self.saveData(finds, 'find')
-
     @app_commands.command(name='giveaway', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
     @app_commands.rename(prize='獎品',goal='目標',ticket='參與金額')
@@ -789,7 +680,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             "抽獎將會在目標達到後開始")
         await interaction.response.send_message("✅ 抽獎設置完成", ephemeral=True)
         guild = self.bot.get_guild(interaction.user.guild.id)
-        role = discord.utils.get(guild.roles, name=f"委託通知")
+        role = discord.utils.get(guild.roles, name=f"抽獎通知")
         channel = self.bot.get_channel(965517075508498452)
         giveawayMsg = await channel.send(embed=embedGiveaway)
         await channel.send(role.mention)
