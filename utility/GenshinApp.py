@@ -447,7 +447,7 @@ class GenshinApp:
             )
             result.append(embed)
             for floor in abyss.floors:
-                embed = defaultEmbed(f"第{floor.floor}層 (共{floor.stars}★)", f" ")
+                embed = defaultEmbed(f"{nickname}: 第{floor.floor}層 (共{floor.stars}★)", f" ")
                 for chamber in floor.chambers:
                     name = f'第{chamber.chamber}間 {chamber.stars}★'
                     chara_list = [[], []]
