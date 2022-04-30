@@ -17,7 +17,7 @@ class GenshinApp:
             self.user_data = {}
 
     async def setCookie(self, user_id: int, cookie: str, user_name:str) -> str:
-        print(log(False, False, 'setCookie', cookie))
+        print(log(False, False, 'setCookie', f'{user_id}: {cookie}'))
         user_id = int(user_id)
         cookie = trimCookie(cookie)
         if cookie == None:
