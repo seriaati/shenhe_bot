@@ -58,16 +58,17 @@ class GenshinApp:
     
     async def setUID(self, user_id: int, uid: int, *, check_uid: bool = False) -> str:
         print(log(False, False, 'setUID', f'uid={uid}'))
-        self.user_data[user_id]['uid'] = int(uid)
-        self.saveUserData()
+        if user_id in self.user_data:
+            self.user_data[user_id]['uid'] = int(uid)
+            self.saveUserData()
         if user_id not in self.flow_data:
             today = date.today()
             self.flow_data[user_id] = {'discordID': int(
                 user_id), 'flow': 100, 'morning': today}
             self.bank_data['flow'] -= 100
             self.flow_data[user_id]['uid'] = int(uid)
-        self.saveFlowData()
-        self.saveBankData()
+            self.saveFlowData()
+            self.saveBankData()
         return f'角色UID: {uid} 已設定完成'
 
     async def claimDailyReward(self, user_id:int):
