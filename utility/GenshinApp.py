@@ -34,13 +34,14 @@ class GenshinApp:
                 print(log(False, True, 'setCookie', f'{user_id} has no account'))
                 result = '帳號內沒有任何角色, 取消設定Cookie'
             else:
-                self.user_data[user_id] = {}
-                self.user_data[user_id]['dm'] = True
-                self.user_data[user_id]['dmCount'] = 0
-                self.user_data[user_id]['ltoken'] = re.search('[0-9A-Za-z]{20,}', cookie).group()
+                users = dict(self.user_data)
+                users[user_id] = {}
+                users[user_id]['dm'] = True
+                users[user_id]['dmCount'] = 0
+                users[user_id]['ltoken'] = re.search('[0-9A-Za-z]{20,}', cookie).group()
                 ltuidStr = re.search('ltuid=[0-9]{3,}', cookie).group()
-                self.user_data[user_id]['name'] = user_name
-                self.user_data[user_id]['ltuid'] = int(re.search(r'\d+', ltuidStr).group())
+                users[user_id]['name'] = user_name
+                users[user_id]['ltuid'] = int(re.search(r'\d+', ltuidStr).group())
                 print(log(False, False, 'setCookie', f'{user_id} set cookie success'))
                 if len(accounts) == 1 and len(str(accounts[0].uid)) == 9:
                     await self.setUID(user_id, str(accounts[0].uid))
@@ -50,23 +51,27 @@ class GenshinApp:
                     for account in accounts:
                         result += f'UID:{account.uid} 等級:{account.level} 角色名字:{account.nickname}\n'
                     result += f'```\n請用 `/setuid` 指定要保存原神的角色(例: `/setuid 812345678`)'
-                    self.saveUserData()
+                    self.saveData(users, 'accounts')
         finally:
             return result
     
     async def setUID(self, user_id: int, uid: int, *, check_uid: bool = False) -> str:
         print(log(False, False, 'setUID', f'uid={uid}'))
-        if user_id in self.user_data:
-            self.user_data[user_id]['uid'] = int(uid)
-            self.saveUserData()
+        users = dict(self.user_data)
+        if user_id in users:
+            users[user_id]['uid'] = int(uid)
+            self.saveData(users, 'accounts')
         if user_id not in self.flow_data:
             today = date.today()
-            self.flow_data[user_id] = {'discordID': int(
+            flows = dict(self.flow_data)
+            bank = dict(self.bank_data)
+            flows[user_id] = {'discordID': int(
                 user_id), 'flow': 100, 'morning': today}
-            self.bank_data['flow'] -= 100
-            self.flow_data[user_id]['uid'] = int(uid)
-            self.saveFlowData()
-            self.saveBankData()
+            bank['flow'] -= 100
+            flows[user_id]['uid'] = int(uid)
+            self.saveData(flows, 'flow')
+            self.saveData(bank, 'bank')
+            
         return f'角色UID: {uid} 已設定完成'
 
     async def claimDailyReward(self, user_id:int):
@@ -517,17 +522,9 @@ class GenshinApp:
         client.uids[genshin.Game.GENSHIN] = uid
         return client, nickname
 
-    def saveUserData(self):
-        with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(self.user_data, f)
-
-    def saveFlowData(self):
-        with open('data/flow.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(self.flow_data, f)
-
-    def saveBankData(self):
-        with open('data/bank.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(self.bank_data, f)
+    def saveData(self, data: dict, file_name: str):
+        with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(data, f)
 
 
 genshin_app = GenshinApp()
