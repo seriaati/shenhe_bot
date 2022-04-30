@@ -2,9 +2,7 @@ from datetime import date, datetime, timedelta
 import re
 import genshin
 import yaml
-from utility.classes import Character
 from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName, trimCookie
-from cogs.flow import FlowCog
 
 class GenshinApp:
     def __init__(self) -> None:
