@@ -503,14 +503,16 @@ class GenshinApp:
             
 
     def checkUserData(self, user_id: int):
-        users = dict(self.user_data)
+        with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
+            users = yaml.full_load(f)
         if user_id not in users:
             return False, errEmbed('找不到原神帳號!', '請輸入`/cookie`來查看註冊方式')
         else:
             return True, None
 
     def getUserCookie(self, user_id: int):
-        users = dict(self.user_data)
+        with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
+            users = yaml.full_load(f)
         cookies = {"ltuid": users[user_id]['ltuid'],
                     "ltoken": users[user_id]['ltoken']}
         uid = users[user_id]['uid']
