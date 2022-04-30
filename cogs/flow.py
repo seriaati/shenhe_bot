@@ -311,6 +311,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             self.saveData(users,'flow')
             self.saveData(bank,'bank')
 
+    @make.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+
     @app_commands.command(name='total', description='查看目前群組帳號及銀行flow幣分配情況')
     async def total(self, interaction:discord.Interaction):
         users = dict(self.user_dict)
@@ -363,6 +368,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         self.saveData(shop,'shop')
         await interaction.response.send_message(f"商品{item}新增成功")
 
+    @newitem.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+
     async def shop_autocomplete(self,
     interaction: discord.Interaction,
     current: str,) -> List[app_commands.Choice[str]]:
@@ -383,6 +393,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             del shop[item]
             self.saveData(shop,'shop')
             await interaction.response.send_message("商品刪除成功")
+
+    @removeitem.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @shop.command(name='buy',description='購買商品')
     @app_commands.rename(item='商品')
@@ -446,6 +461,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 f"購買人: {user.mention}\n"
                 f"購買人ID: {logs[logID]['buyerID']}")
             await interaction.followup.send(embed=embed, ephemeral=True)
+
+    @log.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
             
 
     @shop.command(name='clear',description='將所有商品的購買次數歸零')
@@ -459,6 +479,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             shop[item]['current'] = 0
             self.saveData(shop,'shop')
             await interaction.response.send_message('已將所有商品的購買次數清零')
+
+    @clear.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     def check_in_find_channel(self,channel_id:int):
         if channel_id != 960861105503232030:
@@ -695,6 +720,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             'members': []
         }
         self.saveData(giveaways,'giveaways')
+
+    @giveaway.error
+    async def take_error(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     def saveData(self, data:dict, file_name:str):
         with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
