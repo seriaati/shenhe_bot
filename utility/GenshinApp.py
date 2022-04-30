@@ -112,7 +112,7 @@ class GenshinApp:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
-            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
