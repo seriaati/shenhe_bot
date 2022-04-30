@@ -36,7 +36,6 @@ class ShenheBot(commands.Bot):
             owner_ids=[289597294075183114, 410036441129943050]
         )
 
-
     async def setup_hook(self) -> None:
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
