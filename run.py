@@ -53,7 +53,7 @@ class ShenheBot(commands.Bot):
     async def on_ready(self):
         await self.change_presence(
             status=discord.Status.online,
-            activity=discord.Game(name=f'輸入斜線來查看所有指令')
+            activity=discord.Game(name=f'/help')
         )
         print(log(True, False, 'Bot', 'Logged in as {0.user}'.format(self)))
 
