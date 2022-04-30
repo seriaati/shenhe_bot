@@ -48,6 +48,11 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             yaml.dump(rr, file)
         await msg.add_reaction(emoteObj)
 
+    @reactionrole.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(ReactionRoles(bot))
