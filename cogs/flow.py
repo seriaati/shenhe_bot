@@ -47,10 +47,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             bank['flow'] -= 100
             self.saveData(users, 'flow')
             self.saveData(bank, 'bank')
-            if args != False:
-                await interaction.response.send(embed=embed, ephemeral=True)
-            else:
-                pass
         else:
             return
 
