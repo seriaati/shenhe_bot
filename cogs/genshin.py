@@ -274,7 +274,7 @@ class GenshinCog(commands.Cog):
         floor=[Choice(name='所有樓層', value=0),
                 Choice(name='最後一層', value=1)]
     )
-    async def abyss(self, interaction:discord.Interaction, type:int, season:int=1, floor:int=0):
+    async def abyss(self, interaction:discord.Interaction, type:int, season:int=1, floor:int=0, member: Optional[Member] = None):
         member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)

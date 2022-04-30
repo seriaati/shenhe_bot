@@ -488,7 +488,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 f"購買人ID: {logs[logID]['buyerID']}")
             await interaction.followup.send(embed=embed, ephemeral=True)
 
-    @log.error
+    @shop_log.error
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
         if isinstance(e, app_commands.errors.MissingRole):
             await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
