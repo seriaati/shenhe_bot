@@ -15,9 +15,6 @@ embedNoAccount = discord.Embed(
 whyRegister = "• `!abyss`炫耀你的深淵傷害(或被嘲笑)\n• `!check`查看目前的派遣、樹脂、塵歌壺等狀況\n• `!char`炫耀你擁有的角色\n• `!stats`證明你是大佬\n• `!diary`看看這個月要不要課\n• `!area`炫耀探索度(或被嘲笑)\n• `!today`今天的肝還在嗎\n• 自動領取hoyolab網頁登入獎勵\n• 樹脂提醒功能(詳情請打`!dm`)"
 
 
-def setFooter(embed):
-    embed.set_footer(text=footerAuthor, icon_url=footerImage)
-
 def defaultEmbed(title:str, message:str):
     return discord.Embed(title=title, description=message, color=purpleColor)
 
