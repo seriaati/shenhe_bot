@@ -481,10 +481,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     async def interaction_check(self, interaction:discord.Interaction) -> bool:
         return True or False
         
-    class Confirm(discord.ui.View(timeout=None)):
+    class Confirm(discord.ui.View):
         def __init__(self):
             super().__init__()
-            self.value = None
+            self.timeout = None
             with open('data/flow.yaml', 'r', encoding="utf-8") as f:
                 self.user_dict = yaml.full_load(f)
             with open('data/find.yaml', 'r', encoding="utf-8") as f:
@@ -492,9 +492,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                 self.confirm_dict = yaml.full_load(f)
 
-        class OKconfirm(discord.ui.View(timeout=None)):
+        class OKconfirm(discord.ui.View):
             def __init__(self):
                 super().__init__()
+                self.timeout = None
                 with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                     self.confirm_dict = yaml.full_load(f)
                 with open('data/flow.yaml', 'r', encoding="utf-8") as f:
