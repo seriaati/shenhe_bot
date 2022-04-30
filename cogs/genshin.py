@@ -613,8 +613,9 @@ class GenshinCog(commands.Cog):
             f'攻擊百分比: {atk}%'
         )
         result.set_thumbnail(url=tier_url)
-        result.set_footer(text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730)')
+        result.set_footer(text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
+        
     def saveUserData(self, data:dict):
         with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(data, f)
