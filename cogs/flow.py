@@ -320,7 +320,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             acceptor = self.bot.get_user(member.id)
             embed = defaultEmbed(
                 "✅ 已成功施展摩拉克斯的力量",
-                f"{interaction.user.mention} 從 {acceptor.mention} 的帳戶裡拿走了 {flow} 枚flow幣"
+                f"{interaction.user.mention} 給了 {acceptor.mention} {flow} 枚flow幣"
             )
             await interaction.response.send_message(embed=embed)
 
@@ -532,9 +532,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     
 
     class Confirm(discord.ui.View):
-        def __init__(self):
-            super().__init__()
-            self.timeout = None
+        def __init__(self, author: discord.Member):
+            super().__init__(timeout=None)
+            self.author = author
             with open('data/flow.yaml', 'r', encoding="utf-8") as f:
                 self.user_dict = yaml.full_load(f)
             with open('data/find.yaml', 'r', encoding="utf-8") as f:
@@ -542,10 +542,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                 self.confirm_dict = yaml.full_load(f)
 
+        async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            return interaction.user.id != self.author.id
+
         class OKconfirm(discord.ui.View):
             def __init__(self):
-                super().__init__()
-                self.timeout = None
+                super().__init__(timeout=None)
                 with open('data/confirm.yaml', 'r', encoding="utf-8") as f:
                     self.confirm_dict = yaml.full_load(f)
                 with open('data/flow.yaml', 'r', encoding="utf-8") as f:
@@ -589,12 +591,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             msg = interaction.message
-            async def interaction_check(self, interaction: discord.Interaction) -> bool:
-                return True or False
-            # check = await self.interaction_check(interaction)
-            # if check == True:
-            #     await interaction.response.send_message('不可以自己接自己的委託哦', ephemeral=True)
-            #     return
             with open('data/find.yaml', 'r', encoding="utf-8") as f:
                 finds = yaml.full_load(f)
             users = dict(self.user_dict)
@@ -708,9 +704,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 f'發布者UID: {uid}'
             )
 
-        view = self.Confirm()
+        view = self.Confirm(interaction.user)
         await interaction.response.send_message(embed=embed, view=view)
-        await interaction.followup.send('防止發布人接取自身委託的系統尚未完成, 請千萬不要自己按自己的委託')
         await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = dict(self.find_dict)
