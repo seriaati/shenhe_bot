@@ -669,10 +669,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         await interaction.response.send_message("✅ 抽獎設置完成", ephemeral=True)
         channel = self.bot.get_channel(965517075508498452)
         giveawayMsg = await channel.send(embed=embedGiveaway)
-        if role is None:
-            role = Guild.get_role(967035645610573834)
+        if role is not None:
             await channel.send(role.mention)
         else:
+            role = Guild.get_role(967035645610573834)
             await channel.send(role.mention)
         await giveawayMsg.add_reaction('🎉')
         giveaways[giveawayMsg.id] = {
