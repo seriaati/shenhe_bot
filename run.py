@@ -16,8 +16,8 @@ if user == "main":
 else:
     token = config.dev
     prefix = ['%']
-    guild = 778804551972159489
-    application_id = 957621570128449626
+    guild = 969816313193193522
+    application_id = 970106285594931310
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -44,8 +44,8 @@ class ShenheBot(commands.Bot):
         # await self.tree.sync()
         if guild != None:
             test_guild = discord.Object(id=guild)
-            # self.tree.clear_commands(guild=test_guild)
-            self.tree.copy_global_to(guild=test_guild)
+            self.tree.clear_commands(guild=test_guild)
+            # self.tree.copy_global_to(guild=test_guild)
             await self.tree.sync(guild=test_guild)
         
         
