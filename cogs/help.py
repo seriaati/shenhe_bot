@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from utility.utils import defaultEmbed
+from utility.utils import defaultEmbed, log
 
 class Dropdown(discord.ui.Select):
     def __init__(self):
@@ -202,6 +202,7 @@ class HelpCog(commands.Cog):
 
     @app_commands.command(name='help',description='獲得幫助')
     async def help(self, interaction:discord.Interaction):
+        print(log(False, False, 'Help', interaction.user.id))
         view = DropdownView()
         await interaction.response.send_message(view=view)
     
