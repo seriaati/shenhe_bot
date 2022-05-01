@@ -84,7 +84,8 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
+        user_data = self.getUserData()
+        uid = user_data[user_id]['uid']
         client= self.getUserCookie(user_id)
         try:
             notes = await client.get_notes(uid)
@@ -177,7 +178,8 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
+        user_data = self.getUserData()
+        uid = user_data[user_id]['uid']
         client= self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
@@ -216,7 +218,8 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
+        user_data = self.getUserData()
+        uid = user_data[user_id]['uid']
         client= self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
@@ -326,7 +329,8 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
+        user_data = self.getUserData()
+        uid = user_data[user_id]['uid']
         client = self.getUserCookie(user_id)
         try:
             char = await client.get_genshin_characters(uid)
@@ -396,7 +400,8 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        uid = self.user_data[user_id]['uid']
+        user_data = self.getUserData()
+        uid = user_data[user_id]['uid']
         client = self.getUserCookie(user_id)
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
