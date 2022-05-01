@@ -3,11 +3,6 @@ import yaml
 
 from utility.utils import errEmbed, log
 class FlowApp:
-    def __init__(self) -> None:
-        with open('data/flow.yaml', 'r', encoding="utf-8") as f:
-            self.user_dict = yaml.full_load(f)
-        with open('data/bank.yaml', 'r', encoding="utf-8") as f:
-            self.bank_dict = yaml.full_load(f)
 
     def register(self, user_id: int):
         users = self.openFile('flow')
