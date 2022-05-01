@@ -649,7 +649,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         print(log(False, False, 'giveaway',
               f'{interaction.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role})'))
         giveaways = flow_app.openFile('giveaways')
-        if role is None:
+        if role is not None:
             embedGiveaway = defaultEmbed(
                 ":tada: 抽獎啦!!!",
                 f"獎品: {prize}\n"
