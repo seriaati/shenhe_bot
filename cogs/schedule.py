@@ -5,7 +5,6 @@ from datetime import datetime
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from utility.config import config
 from utility.utils import defaultEmbed, errEmbed, log
 from utility.GenshinApp import genshin_app
 
@@ -15,9 +14,9 @@ class Schedule(commands.Cog):
         self.__daily_reward_filename = 'data/schedule_daily_reward.yaml'
         self.__resin_notifi_filename = 'data/schedule_resin_notification.yaml'
         with open(self.__daily_reward_filename, 'r', encoding='utf-8') as f:
-            self.__daily_dict: dict = yaml.full_load(f)
+            self.__daily_dict = yaml.full_load(f)
         with open(self.__resin_notifi_filename, 'r', encoding='utf-8') as f:
-            self.__resin_dict:dict = yaml.full_load(f)
+            self.__resin_dict = yaml.full_load(f)
         
         self.schedule.start()
 
@@ -36,6 +35,8 @@ class Schedule(commands.Cog):
                 Choice(name='關閉功能', value=0)])
     async def slash_schedule(self, interaction: discord.Interaction, function: str, switch: int):
         print(log(False, False, 'schedule', f'{interaction.user.id}: (function={function}, switch={switch})'))
+        claim_data = self.getClaimData()
+        resin_data = self.getResinData()
         if function == 'help': # 排程功能使用說明
             embed = defaultEmbed(
             '自動化功能使用說明',
@@ -71,10 +72,11 @@ class Schedule(commands.Cog):
     async def schedule(self):
         now = datetime.now()
         if now.hour == 1 and now.minute < self.loop_interval:
+        # if True:
             print(log(True, False, 'Schedule', 'Auto claim started'))
-            daily_dict = dict(self.__daily_dict)
+            claim_data = self.getClaimData()
             count = 0
-            for user_id, value in daily_dict.items():
+            for user_id, value in claim_data.items():
                 channel = self.bot.get_channel(969816313193193525)
                 check, msg = genshin_app.checkUserData(user_id)
                 if check == False:
@@ -91,10 +93,11 @@ class Schedule(commands.Cog):
             print(log(True, False, 'Schedule', f'Auto claim finished, {count} in total'))
         
         if abs(now.hour - 1) % 1 == 1 and now.minute < self.loop_interval:
+        # if True:
             print(log(True, False, 'Schedule','Resin check started'))
-            resin_dict = dict(self.__resin_dict)
+            resin_data = self.getResinData()
             count = 0
-            for user_id, value in resin_dict.items():
+            for user_id, value in resin_data.items():
                 user = self.bot.get_user(user_id)
                 check, msg = genshin_app.checkUserData(user_id)
                 if check == False:
@@ -103,23 +106,31 @@ class Schedule(commands.Cog):
                 result = await genshin_app.getRealTimeNotes(user_id, True)
                 count += 1
                 if result == True:
-                    if resin_dict[user_id] < 3:
+                    if resin_data[user_id] < 3:
                         try:
                             embed = errEmbed('危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
                             await user.send(embed=embed)
-                            resin_dict[user_id] += 1
-                            self.__saveScheduleData(resin_dict, self.__resin_notifi_filename)
+                            resin_data[user_id] += 1
+                            self.__saveScheduleData(resin_data, self.__resin_notifi_filename)
                             
                         except:
                             self.__remove_user(user_id, self.__resin_dict, self.__resin_notifi_filename)
                 elif result==False:
-                    resin_dict[user_id] = 0
+                    resin_data[user_id] = 0
                 await asyncio.sleep(2.0)
             print(log(True, False, 'Schedule',f'Resin check finished, {count} in total'))
 
     @schedule.before_loop
     async def before_schedule(self):
         await self.bot.wait_until_ready()
+
+    def getClaimData(self):
+        with open(self.__daily_reward_filename, 'r', encoding='utf-8') as f:
+            return yaml.full_load(f)
+
+    def getResinData(self):
+        with open(self.__resin_notifi_filename, 'r', encoding='utf-8') as f:
+            return yaml.full_load(f)
 
     def __add_user(self, user_id: str, data: dict, filename: str) -> None:
         data[user_id] = 0
