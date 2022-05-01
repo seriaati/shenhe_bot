@@ -77,7 +77,7 @@ class Schedule(commands.Cog):
             claim_data = self.getClaimData()
             count = 0
             for user_id, value in claim_data.items():
-                channel = self.bot.get_channel(969816313193193525)
+                channel = self.bot.get_channel(957268464928718918)
                 check, msg = genshin_app.checkUserData(user_id)
                 if check == False:
                     self.__remove_user(user_id, self.__daily_dict, self.__daily_reward_filename)
@@ -85,10 +85,7 @@ class Schedule(commands.Cog):
                 result = await genshin_app.claimDailyReward(user_id)
                 count += 1
                 user = self.bot.get_user(user_id)
-                try:
-                    await channel.send(f'[自動簽到] {user}簽到成功')
-                except:
-                    self.__remove_user(user_id, self.__daily_dict, self.__daily_reward_filename)
+                await channel.send(f'[自動簽到] {user}簽到成功')
                 await asyncio.sleep(2.0)
             print(log(True, False, 'Schedule', f'Auto claim finished, {count} in total'))
         
