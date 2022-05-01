@@ -1,3 +1,4 @@
+import inflect
 import yaml
 import discord
 from discord import Interaction, app_commands
@@ -5,6 +6,7 @@ from discord.ext import commands
 from utility.utils import defaultEmbed
 from discord import Role
 import re
+import emoji
 
 
 class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組產生器'):
@@ -15,6 +17,9 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        reactor = self.bot.get_user(payload.user_id)
+        if reactor.bot:
+            return
         rr = dict(self.rr_dict)
         if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             emoteID = payload.emoji.id
@@ -22,9 +27,23 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             member = guild.get_member(payload.user_id)
             role = discord.utils.get(guild.roles, id=rr[payload.message_id][emoteID])
             await member.add_roles(role)
+        elif payload.message_id == 963972447600771092:  # 世界等級身份組
+            for i in range(1, 9):
+                p = inflect.engine()
+                word = p.number_to_words(i)
+                emojiStr = emoji.emojize(f":{word}:", language='alias')
+                if payload.emoji.name == str(emojiStr):
+                    guild = self.bot.get_guild(payload.guild_id)
+                    member = guild.get_member(payload.user_id)
+                    role = discord.utils.get(guild.roles, name=f"W{i}")
+                    await member.add_roles(role)
+                    break
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
+        reactor = self.bot.get_user(payload.user_id)
+        if reactor.bot:
+            return
         rr = dict(self.rr_dict)
         if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
             emoteID = payload.emoji.id
@@ -32,6 +51,18 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             member = guild.get_member(payload.user_id)
             role = discord.utils.get(guild.roles, id=rr[payload.message_id][emoteID])
             await member.remove_roles(role)
+
+        elif payload.message_id == 963972447600771092:  # 移除世界等級身份組
+            for i in range(1, 9):
+                p = inflect.engine()
+                word = p.number_to_words(i)
+                emojiStr = emoji.emojize(f":{word}:", language='alias')
+                if payload.emoji.name == str(emojiStr):
+                    guild = self.bot.get_guild(payload.guild_id)
+                    member = guild.get_member(payload.user_id)
+                    role = discord.utils.get(guild.roles, name=f"W{i}")
+                    await member.remove_roles(role)
+                    break
 
     @app_commands.command(name='reactionrole', description='創建一個表符身份組訊息')
     @app_commands.rename(title='標題',role='身份組',emote='表情符號')
