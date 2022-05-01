@@ -5,16 +5,6 @@ import yaml
 from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName, trimCookie
 
 class GenshinApp:
-    def __init__(self) -> None:
-        try:
-            with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
-                self.user_data = yaml.full_load(f)
-            with open('data/flow.yaml', 'r', encoding="utf-8") as f:
-                self.flow_data = yaml.full_load(f)
-            with open('data/bank.yaml', 'r', encoding="utf-8") as f:
-                self.bank_data = yaml.full_load(f)
-        except:
-            self.user_data = {}
 
     async def setCookie(self, user_id: int, cookie: str) -> str:
         print(log(False, False, 'setCookie', f'{user_id}: {cookie}'))
@@ -34,7 +24,7 @@ class GenshinApp:
                 print(log(False, True, 'setCookie', f'{user_id} has no account'))
                 result = '帳號內沒有任何角色, 取消設定Cookie'
             else:
-                users = dict(self.user_data)
+                users = self.getUserData()
                 users[user_id] = {}
                 users[user_id]['ltoken'] = re.search('[0-9A-Za-z]{20,}', cookie).group()
                 ltuidStr = re.search('ltuid=[0-9]{3,}', cookie).group()
@@ -59,16 +49,6 @@ class GenshinApp:
         if user_id in users:
             users[user_id]['uid'] = int(uid)
             self.saveData(users, 'accounts')
-        if user_id not in self.flow_data:
-            today = date.today()
-            flows = dict(self.flow_data)
-            bank = dict(self.bank_data)
-            flows[user_id] = {'discordID': int(
-                user_id), 'flow': 100, 'morning': today}
-            bank['flow'] -= 100
-            flows[user_id]['uid'] = int(uid)
-            self.saveData(flows, 'flow')
-            self.saveData(bank, 'bank')
             
         return f'角色UID: {uid} 已設定完成'
 
@@ -507,16 +487,14 @@ class GenshinApp:
             
 
     def checkUserData(self, user_id: int):
-        with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
-            users = yaml.full_load(f)
+        users = self.getUserData()
         if user_id not in users:
             return False, errEmbed('找不到原神帳號!', '請輸入`/cookie`來查看註冊方式')
         else:
             return True, None
 
     def getUserCookie(self, user_id: int):
-        with open('data/accounts.yaml', 'r', encoding="utf-8") as f:
-            users = yaml.full_load(f)
+        users = self.getUserData()
         cookies = {"ltuid": users[user_id]['ltuid'],
                     "ltoken": users[user_id]['ltoken']}
         uid = users[user_id]['uid']
@@ -529,6 +507,10 @@ class GenshinApp:
     def saveData(self, data: dict, file_name: str):
         with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(data, f)
+
+    def getUserData(self):
+        with open(f'data/accounts.yaml', 'r', encoding="utf-8") as f:
+            return yaml.full_load(f)
 
 
 genshin_app = GenshinApp()
