@@ -14,8 +14,6 @@ from utility.paginator import Paginator
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open('data/accounts.yaml', 'r', encoding='utf-8') as f:
-            self.user_dict: dict[str, dict[str, str]] = yaml.full_load(f)
         with open('data/builds/anemo.yaml', 'r', encoding='utf-8') as f:
             self.anemo_dict = yaml.full_load(f)
         with open('data/builds/cryo.yaml', 'r', encoding='utf-8') as f:
@@ -178,7 +176,7 @@ class GenshinCog(commands.Cog):
     )
     async def users(self, interaction: discord.Interaction):
         print(log(False, False, 'Users', interaction.user.id))
-        user_dict = dict(self.user_dict)
+        user_dict = genshin_app.getUserData()
         userStr = ""
         count = 0
         for user_id, value in user_dict.items():
