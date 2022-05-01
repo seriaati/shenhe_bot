@@ -672,6 +672,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if role is not None:
             await channel.send(role.mention)
         if role is None:
+            print('role is None')
             gvRole = Guild.get_role(957503703064137728)
             await channel.send(gvRole.mention)
         await giveawayMsg.add_reaction('🎉')
