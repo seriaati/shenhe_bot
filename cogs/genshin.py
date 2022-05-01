@@ -28,7 +28,6 @@ class GenshinCog(commands.Cog):
             self.hydro_dict = yaml.full_load(f)
         with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
             self.pyro_dict = yaml.full_load(f)
-        # self.schedule.start()
 
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
         cookie = discord.ui.TextInput(
