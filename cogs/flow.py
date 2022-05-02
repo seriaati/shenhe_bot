@@ -37,7 +37,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
                 return
             if 'role' in giveaways[payload.message_id]:
-                role = Guild.get_role(giveaways[payload.message_id]['role'])
+                guild = self.bot.get_guild(916838066117824553)
+                role = guild.get_role(giveaways[payload.message_id]['role'])
                 if role not in reactor.roles:
                     embed = errEmbed(
                         '抱歉, 這不是給你的抽獎!',
@@ -593,7 +594,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             if r in interaction.user.roles:
                 roleStr = r.name
                 break
-        role = Guild.get_role(965141973700857876)
         check, msg = self.check_flow(interaction.user.id, flow)
         if check == False:
             await interaction.response.send_message(embed=msg)
@@ -628,6 +628,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         view = self.Confirm(interaction.user)
         await interaction.response.send_message(embed=embed, view=view)
+        guild = self.bot.get_guild(916838066117824553)
+        role = guild.get_role(965141973700857876) #委託通知
         await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = flow_app.openFile('find')
@@ -671,10 +673,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         giveawayMsg = await channel.send(embed=embedGiveaway)
         if role is not None:
             await channel.send(role.mention)
-        if role is None:
-            print('role is None')
-            gvRole = Guild.get_role(957503703064137728)
-            await channel.send(gvRole.mention)
+        else:
+            guild = self.bot.get_guild(916838066117824553)
+            role = guild.get_role(967035645610573834) #抽獎通知
         await giveawayMsg.add_reaction('🎉')
         giveaways[giveawayMsg.id] = {
             'authorID': int(interaction.user.id),
