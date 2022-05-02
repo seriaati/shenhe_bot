@@ -44,7 +44,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 if role not in member_obj.roles:
                     embed = errEmbed(
                         '抱歉, 這不是給你的抽獎!',
-                        f'你不是{role.mention}的一員, 不可以參加這個抽獎')
+                        f'你不是{role.name}的一員, 不可以參加這個抽獎')
                     await reactor.send(embed=embed)
                     return
             flow_app.transaction(
