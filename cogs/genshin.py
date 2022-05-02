@@ -373,6 +373,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -385,6 +386,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -397,6 +399,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -409,6 +412,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -421,6 +425,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -433,6 +438,7 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
