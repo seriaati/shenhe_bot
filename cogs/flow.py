@@ -676,6 +676,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             guild = self.bot.get_guild(916838066117824553)
             role = guild.get_role(967035645610573834) #抽獎通知
+            await channel.send(role.mention)
         await giveawayMsg.add_reaction('🎉')
         giveaways[giveawayMsg.id] = {
             'authorID': int(interaction.user.id),
