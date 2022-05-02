@@ -1,6 +1,7 @@
 import re
 import discord
 import genshin
+import yaml
 from utility.character_name import character_names
 
 
@@ -50,3 +51,11 @@ def trimCookie(cookie: str) -> str:
 weekday_dict = {0: '週一', 1: '週二', 2: '週三', 3: '週四', 4: '週五', 5: '週六', 6: '週日'}
 def getWeekdayName(n: int) -> str:
     return weekday_dict.get(n)
+
+def openFile(file_name:str) -> dict:
+    with open(f'data/{file_name}.yaml', encoding='utf-8') as file:
+        return yaml.full_load(file)
+
+def saveFile(data:dict, file_name:str):
+    with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(data, f)
