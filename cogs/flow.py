@@ -272,7 +272,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @app_commands.command(name='total', description='查看目前群組帳號及銀行flow幣分配情況')
     async def total(self, interaction: discord.Interaction):
-        print(log(False, False, 'total', interaction.user.id))
+        print(log(False, False, 'Total', f'{interaction.user.id}'))
         users = flow_app.openFile('flow')
         bank = flow_app.openFile('bank')
         total = 0
@@ -698,7 +698,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @app_commands.rename(role='身份組')
     @app_commands.describe(role='請選擇要查看的身份組')
     async def role_members(self, i: discord.Interaction, role: Role):
-        print(log(False, False, 'role members', i.user.id))
+        print(log(False, False, 'role members', f'{i.user.id}: (role: {role})'))
         if role is None:
             await i.response.send_message('找不到該身份組!', ephemeral=True)
             return
