@@ -18,7 +18,11 @@ class FlowApp:
             users[user_id]['flow'] += flow_for_user
             bank['flow'] -= flow_for_user
             print(log(True, False, 'Transaction',
-                  f'user({user_id}): {str(flow_for_user)}, bank: {str(flow_for_user)}'))
+                  f'user({user_id}): {str(flow_for_user)}, bank: {str(-int(flow_for_user))}'))
+            sum = 0
+            for user, value in users.items():
+                sum += value['flow']
+            print(log(True, False, 'Current', f"user_total: {sum}, bank: {bank['flow']}"))
         self.saveData(users, 'flow')
         self.saveData(bank, 'bank')
 
