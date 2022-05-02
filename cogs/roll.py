@@ -104,11 +104,11 @@ class RollCog(commands.Cog):
                         elif item == '1000 flow幣':
                             flow_app.transaction(user_id=user_id, flow_for_user=1000)
                 else:
-                    if item == '10 flow幣':
+                    if prize == '10 flow幣':
                         flow_app.transaction(user_id=user_id, flow_for_user=10)
-                    elif item == '100 flow幣':
+                    elif prize == '100 flow幣':
                         flow_app.transaction(user_id=user_id, flow_for_user=100)
-                    elif item == '1000 flow幣':
+                    elif prize == '1000 flow幣':
                         flow_app.transaction(user_id=user_id, flow_for_user=1000)
 
 
