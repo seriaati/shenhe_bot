@@ -26,6 +26,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         giveaways = flow_app.openFile('giveaways')
         channel = self.bot.get_channel(payload.channel_id)
         discordID = payload.user_id
+        guild = self.bot.get_guild(916838066117824553)
+        member_obj = guild.get_member(payload.user_id)
 
         if payload.emoji.name == "🎉" and payload.message_id in giveaways:
             check, msg = flow_app.checkFlowAccount(discordID)
@@ -39,7 +41,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             if 'role' in giveaways[payload.message_id]:
                 guild = self.bot.get_guild(916838066117824553)
                 role = guild.get_role(giveaways[payload.message_id]['role'])
-                if role not in reactor.roles:
+                if role not in member_obj.roles:
                     embed = errEmbed(
                         '抱歉, 這不是給你的抽獎!',
                         f'你不是{role.mention}的一員, 不可以參加這個抽獎')
