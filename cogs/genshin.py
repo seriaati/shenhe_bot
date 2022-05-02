@@ -376,7 +376,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @char.command(name='冰',description='查看已擁有冰元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
@@ -389,7 +389,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @char.command(name='雷',description='查看已擁有雷元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
@@ -402,7 +402,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @char.command(name='岩',description='查看已擁有岩元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
@@ -415,7 +415,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @char.command(name='水',description='查看已擁有水元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
@@ -428,7 +428,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @char.command(name='火',description='查看已擁有火元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
@@ -441,7 +441,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.defer()
         result = await genshin_app.getUserCharacters(char, member.id)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
     @app_commands.rename(type='聖遺物類型',crit_dmg='暴傷',crit_rate='暴擊率',atk='攻擊百分比')
