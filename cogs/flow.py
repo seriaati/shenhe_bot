@@ -703,8 +703,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await i.response.send_message('找不到該身份組!', ephemeral=True)
             return
         memberStr = ''
+        count = 0
         for member in role.members:
-            memberStr += f'• {member}\n'
+            count += 1
+            memberStr += f'{count}. {member}\n'
         embed = defaultEmbed(role.name, memberStr)
         await i.response.send_message(embed=embed)
 
