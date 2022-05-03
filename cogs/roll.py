@@ -4,7 +4,7 @@ from discord.ext import commands
 from random import randint
 from discord import app_commands
 from utility.FlowApp import flow_app
-from utility.utils import errEmbed, openFile, saveFile, defaultEmbed
+from utility.utils import errEmbed, log, openFile, saveFile, defaultEmbed
 
 global banner_pic, banner_name, blue_gif, purple_gif, gold_gif, air, blue_sleep, purple_sleep, gold_sleep, big_prize
 banner_pic = 'https://i.imgur.com/q5q47o7.jpg'
@@ -162,6 +162,7 @@ class RollCog(commands.Cog):
                             '1000 flow幣': 0,
                             air: 0
                         }
+                        print(log(True, False, 'Roll', f'{interaction.user.id} got big_prize'))
                         await luluR.send(embed=defaultEmbed(
                             '有人在抽卡裡抽到月卡了!',
                             f'ID: {interaction.user.id}\n'
@@ -175,6 +176,7 @@ class RollCog(commands.Cog):
                             '1000 flow幣': 0,
                             air: 0
                         }
+                    print(log(True, False, 'Roll', f'{interaction.user.id} got big_prize'))
                     await luluR.send(embed=defaultEmbed(
                         '有人在抽卡裡抽到月卡了!',
                         f'ID: {interaction.user.id}\n'
