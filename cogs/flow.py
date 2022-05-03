@@ -633,7 +633,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         await interaction.response.send_message(embed=embed, view=acceptView)
         guild = self.bot.get_guild(916838066117824553)
         role = guild.get_role(965141973700857876) #委託通知
-        # await interaction.channel.send(role.mention)
+        await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = openFile('find')
         finds[msg.id] = {'title': title, 'flow': int(flow),
