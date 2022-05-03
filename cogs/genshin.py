@@ -181,8 +181,9 @@ class GenshinCog(commands.Cog):
         count = 0
         for user_id, value in user_dict.items():
             count += 1
+            name = self.bot.get_user(user_id)
             userStr = userStr + \
-                f"{count}. {value['name']} - {value['uid']}\n"
+                f"{count}. {name} - {value['uid']}\n"
         embed = defaultEmbed("所有帳號", userStr)
         await interaction.response.send_message(embed=embed)
 
