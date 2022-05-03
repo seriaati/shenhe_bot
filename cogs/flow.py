@@ -225,9 +225,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
-    @app_commands.rename(member='某人', flow='要拿取的flow幣數量')
+    @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息?')
+    @app_commands.choices(private=[
+        Choice(name='是', value=True),
+        Choice(name='否', value=False)])
     @app_commands.checks.has_role('小雪團隊')
-    async def take(self, interaction: discord.Interaction, member: Member, flow: int):
+    async def take(self, interaction: discord.Interaction, member: Member, flow: int, private:bool):
         print(log(False, False, 'Take',
               f'{interaction.user.id} take {flow} from {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
@@ -241,7 +244,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 "✅ 已成功施展反摩拉克斯的力量",
                 f"{interaction.user.mention} 從 {acceptor.mention} 的帳戶裡拿走了 {flow} 枚flow幣"
             )
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=private)
 
     @take.error
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
@@ -249,9 +252,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
-    @app_commands.rename(member='某人', flow='要給予的flow幣數量')
+    @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息?')
+    @app_commands.choices(private=[
+        Choice(name='是', value=True),
+        Choice(name='否', value=False)])
     @app_commands.checks.has_role('小雪團隊')
-    async def make(self, interaction: discord.Interaction, member: Member, flow: int):
+    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private:bool):
         print(log(False, False, 'make',
               f'{interaction.user.id} make {flow} for {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
@@ -265,7 +271,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 "✅ 已成功施展摩拉克斯的力量",
                 f"{interaction.user.mention} 給了 {acceptor.mention} {flow} 枚flow幣"
             )
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=private)
 
     @make.error
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
