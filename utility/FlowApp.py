@@ -1,18 +1,18 @@
 from datetime import date
 
-from utility.utils import errEmbed, log
+from utility.utils import errEmbed, log, openFile, saveFile
 class FlowApp:
 
     def register(self, user_id: int):
-        users = self.openFile('flow')
+        users = openFile('flow')
         today = date.today()
         users[user_id] = {'flow': 0, 'morning': today}
         self.transaction(user_id, 20)
-        self.saveData(users, 'flow')
+        saveFile(users, 'flow')
 
     def transaction(self, user_id: int, flow_for_user: int):
-        users = self.openFile('flow')
-        bank = self.openFile('bank')
+        users = openFile('flow')
+        bank = openFile('bank')
         if user_id in users:
             users[user_id]['flow'] += flow_for_user
             bank['flow'] -= flow_for_user
@@ -24,8 +24,8 @@ class FlowApp:
                 bank_add = -int(flow_for_user)
             print(log(True, False, 'Transaction',
                   f'user({user_id}): {str(flow_for_user)}, bank: {bank_add}'))
-            self.saveData(users, 'flow')
-            self.saveData(bank, 'bank')
+            saveFile(users, 'flow')
+            saveFile(bank, 'bank')
             sum = 0
             for user, value in users.items():
                 sum += value['flow']
@@ -33,7 +33,7 @@ class FlowApp:
             print(log(True, False, 'Total', sum+bank['flow']))
 
     def checkFlowAccount(self, user_id: int):
-        users = self.openFile('flow')
+        users = openFile('flow')
         if user_id not in users:
             self.register(user_id)
             embed = errEmbed('找不到flow帳號!',
