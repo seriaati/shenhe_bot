@@ -152,7 +152,7 @@ class RollCog(commands.Cog):
                     else:
                         prize[0] = big_prize
                 self.give_money(user_id=interaction.user.id, prize=prize)
-                luluR = self.bot.get_user(665092644883398671)
+                luluR = interaction.client.get_user(665092644883398671)
                 if type(prize) is not list:
                     if prize == big_prize:
                         gu[interaction.user.id] = {
