@@ -62,7 +62,7 @@ class ShenheBot(commands.Bot):
 
     async def on_command_error(self, ctx: commands.Context, error):
         print(log(True, True, 'On Command Error', error))
-        if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             pass
 
 bot = ShenheBot()
