@@ -473,7 +473,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         else:
             return True, None
 
-    class Confirm(discord.ui.View):
+    class AcceptView(discord.ui.View):
         def __init__(self, author: discord.Member):
             super().__init__(timeout=None)
             self.author = author
@@ -506,8 +506,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     if receiverID in users:
                         users[receiverID]['flow'] += flow
 
-                author = self.bot.get_user(authorID)
-                receiver = self.bot.get_user(receiverID)
+                author = interaction.client.get_user(authorID)
+                receiver = interaction.client.get_user(receiverID)
                 if type == 4:
                     embed = defaultEmbed("🆗 結算成功",
                                          f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
@@ -628,8 +628,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 f'發布者世界等級: {roleStr}\n'
             )
 
-        view = self.Confirm(interaction.user)
-        await interaction.response.send_message(embed=embed, view=view)
+        acceptView = self.AcceptView(interaction.user)
+        await interaction.response.send_message(embed=embed, view=acceptView)
         guild = self.bot.get_guild(916838066117824553)
         role = guild.get_role(965141973700857876) #委託通知
         # await interaction.channel.send(role.mention)
@@ -638,7 +638,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         finds[msg.id] = {'title': title, 'flow': int(flow),
                          'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 1}
         saveFile(finds, 'find')
-        await view.wait()
+        await acceptView.wait()
 
     @app_commands.command(name='giveaway', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
