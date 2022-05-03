@@ -24,13 +24,13 @@ class FlowApp:
                 bank_add = -int(flow_for_user)
             print(log(True, False, 'Transaction',
                   f'user({user_id}): {str(flow_for_user)}, bank: {bank_add}'))
+            self.saveData(users, 'flow')
+            self.saveData(bank, 'bank')
             sum = 0
             for user, value in users.items():
                 sum += value['flow']
             print(log(True, False, 'Current', f"user_total: {sum}, bank: {bank['flow']}"))
             print(log(True, False, 'Total', sum+bank['flow']))
-        self.saveData(users, 'flow')
-        self.saveData(bank, 'bank')
 
     def checkFlowAccount(self, user_id: int):
         users = self.openFile('flow')
