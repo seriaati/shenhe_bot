@@ -5,7 +5,7 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.app_commands import Choice
 import yaml
-from utility.utils import defaultEmbed, getWeekdayName, log
+from utility.utils import defaultEmbed, getWeekdayName, log, openFile
 from discord import Member
 from utility.GenshinApp import genshin_app
 from typing import List, Optional
@@ -268,98 +268,86 @@ class GenshinCog(commands.Cog):
 
     build = app_commands.Group(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
 
-    async def anemo_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        anemo = dict(self.anemo_dict)
-        return [
-            app_commands.Choice(name=anemo, value=anemo)
-            for anemo in anemo if current.lower() in anemo.lower()
-        ]
+    def get_anemo_choices():
+        characters = openFile('/builds/anemo')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='風', description='查看風元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=anemo_autocomplete)
+    @app_commands.choices(chara=get_anemo_choices())
     async def anemo_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.anemo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
-    async def cryo_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        cryo = dict(self.cryo_dict)
-        return [
-            app_commands.Choice(name=cryo, value=cryo)
-            for cryo in cryo if current.lower() in cryo.lower()
-        ]
+    def get_cryo_choices():
+        characters = openFile('/builds/cryo')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='冰', description='查看冰元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=cryo_autocomplete)
+    @app_commands.choices(chara=get_cryo_choices())
     async def anemo_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.cryo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
-    async def electro_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        electro = dict(self.electro_dict)
-        return [
-            app_commands.Choice(name=electro, value=electro)
-            for electro in electro if current.lower() in electro.lower()
-        ]
+    def get_electro_choices():
+        characters = openFile('/builds/electro')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='雷', description='查看雷元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=electro_autocomplete)
+    @app_commands.choices(chara=get_electro_choices())
     async def electro_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.electro_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
-    async def geo_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        geo = dict(self.geo_dict)
-        return [
-            app_commands.Choice(name=geo, value=geo)
-            for geo in geo if current.lower() in geo.lower()
-        ]
+    def get_geo_choices():
+        characters = openFile('/builds/geo')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='岩', description='查看岩元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=geo_autocomplete)
+    @app_commands.choices(chara=get_geo_choices())
     async def geo_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.geo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
-    async def hydro_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        hydro = dict(self.hydro_dict)
-        return [
-            app_commands.Choice(name=hydro, value=hydro)
-            for hydro in hydro if current.lower() in hydro.lower()
-        ]
+    def get_hydro_choices():
+        characters = openFile('/builds/hydro')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='水', description='查看水元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=hydro_autocomplete)
+    @app_commands.choices(chara=get_hydro_choices())
     async def anemo_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.hydro_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
-    async def pyro_autocomplete(self,
-    interaction: discord.Interaction,
-    current: str,) -> List[app_commands.Choice[str]]:
-        pyro = dict(self.pyro_dict)
-        return [
-            app_commands.Choice(name=pyro, value=pyro)
-            for pyro in pyro if current.lower() in pyro.lower()
-        ]
+    def get_pyro_choices():
+        characters = openFile('/builds/pyro')
+        character_list = []
+        for name, value in characters.items():
+            character_list.append(Choice(name=name, value=name))
+        return character_list
 
     @build.command(name='火', description='查看火元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
-    @app_commands.autocomplete(chara=pyro_autocomplete)
+    @app_commands.choices(chara=get_pyro_choices())
     async def pyro_build(self, interaction: discord.Interaction, chara: str):
         result = await genshin_app.getBuild(self.pyro_dict, str(chara))
         await interaction.response.send_message(embed=result)
@@ -369,7 +357,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='風',description='查看已擁有風元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=anemo_autocomplete)
+    @app_commands.choices(char=get_anemo_choices())
     async def anemo_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
@@ -382,7 +370,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='冰',description='查看已擁有冰元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=cryo_autocomplete)
+    @app_commands.choices(char=get_cryo_choices())
     async def cryo_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
@@ -395,7 +383,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='雷',description='查看已擁有雷元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=electro_autocomplete)
+    @app_commands.choices(char=get_electro_choices())
     async def electro_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
@@ -408,7 +396,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='岩',description='查看已擁有岩元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=geo_autocomplete)
+    @app_commands.choices(char=get_geo_choices())
     async def geo_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
@@ -421,7 +409,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='水',description='查看已擁有水元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=hydro_autocomplete)
+    @app_commands.choices(char=get_hydro_choices())
     async def hydro_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
@@ -434,7 +422,7 @@ class GenshinCog(commands.Cog):
     @char.command(name='火',description='查看已擁有火元素角色資訊, 如命座、親密度、聖遺物')
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
-    @app_commands.autocomplete(char=pyro_autocomplete)
+    @app_commands.choices(char=get_pyro_choices())
     async def pyro_char(self, interaction:discord.Interaction,char:str,
         member: Optional[Member] = None
     ):
