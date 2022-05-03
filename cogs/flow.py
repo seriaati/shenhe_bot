@@ -225,7 +225,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
-    @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息?')
+    @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息？')
     @app_commands.choices(private=[
         Choice(name='是', value=True),
         Choice(name='否', value=False)])
@@ -252,7 +252,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
-    @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息?')
+    @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息？')
     @app_commands.choices(private=[
         Choice(name='是', value=True),
         Choice(name='否', value=False)])
