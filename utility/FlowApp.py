@@ -1,5 +1,4 @@
 from datetime import date
-import yaml
 
 from utility.utils import errEmbed, log
 class FlowApp:
@@ -42,13 +41,5 @@ class FlowApp:
             return False, embed
         else:
             return True, None
-
-    def openFile(self, file_name:str):
-        with open(f'data/{file_name}.yaml', 'r', encoding="utf-8") as f:
-            return yaml.full_load(f)
-
-    def saveData(self, data: dict, file_name: str):
-        with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(data, f)
 
 flow_app = FlowApp()
