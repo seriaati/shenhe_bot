@@ -14,18 +14,14 @@ class FlowApp:
         users = openFile('flow')
         bank = openFile('bank')
         if user_id in users:
-            users[user_id]['flow'] += flow_for_user
-            bank['flow'] -= flow_for_user
-            if flow_for_user > 0:
-                flow_for_user = f'+{flow_for_user}'
-            if -int(flow_for_user) > 0:
-                bank_add = f'+{-int(flow_for_user)}'
-            else:
-                bank_add = -int(flow_for_user)
-            print(log(True, False, 'Transaction',
-                  f'user({user_id}): {str(flow_for_user)}, bank: {bank_add}'))
+            users[user_id]['flow'] += int(flow_for_user)
+            bank['flow'] -= int(flow_for_user)
             saveFile(users, 'flow')
             saveFile(bank, 'bank')
+            user_log = '{0:+d}'.format(int(flow_for_user))
+            bank_log = '{0:+d}'.format(-int(flow_for_user))
+            print(log(True, False, 'Transaction',
+                  f'user({user_id}): {user_log}, bank: {bank_log}'))
             sum = 0
             for user, value in users.items():
                 sum += value['flow']
