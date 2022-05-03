@@ -176,11 +176,11 @@ class RollCog(commands.Cog):
                             '1000 flow幣': 0,
                             air: 0
                         }
-                    print(log(True, False, 'Roll', f'{interaction.user.id} got big_prize'))
-                    await luluR.send(embed=defaultEmbed(
-                        '有人在抽卡裡抽到月卡了!',
-                        f'ID: {interaction.user.id}\n'
-                        '按ctrl+k並貼上ID即可查看使用者'))
+                        print(log(True, False, 'Roll', f'{interaction.user.id} got big_prize'))
+                        await luluR.send(embed=defaultEmbed(
+                            '有人在抽卡裡抽到月卡了!',
+                            f'ID: {interaction.user.id}\n'
+                            '按ctrl+k並貼上ID即可查看使用者'))
                 saveFile(history, 'pull_history')
                 saveFile(gu, 'pull_guarantee')
                 history = openFile('pull_history')
