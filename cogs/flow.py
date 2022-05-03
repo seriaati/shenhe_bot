@@ -514,7 +514,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 else:
                     embed = defaultEmbed("🆗 結算成功",
                                          f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
-                await author.send(embed=embed)
+                await interaction.response.send_message(embed=embed)
                 await receiver.send(embed=embed)
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
