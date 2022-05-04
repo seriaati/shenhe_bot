@@ -67,8 +67,9 @@ class RollCog(commands.Cog):
                         result = gold_gif, gold_sleep
                 return result
 
-            def pull_card(self, is_ten_pull: bool, state: int):
+            def pull_card(self, is_ten_pull: bool, state: int, banner: str):
                 banners = openFile('roll')
+                big_prize = banners[banner]['big_prize']
                 prize_pool = banners[self.banner]['prizes']
                 count = 0
                 prize_pool_list = []
@@ -151,13 +152,13 @@ class RollCog(commands.Cog):
                 for item, count in gu[user_id][banner].items():
                     sum += count
                 if sum < 70:
-                    prize = self.pull_card(self.ten_pull, 0)
+                    prize = self.pull_card(self.ten_pull, 0, self.banner)
                 elif 70 <= sum < 80:
-                    prize = self.pull_card(self.ten_pull, 1)
+                    prize = self.pull_card(self.ten_pull, 1, self.banner)
                 elif 80 <= sum < 89:
-                    prize = self.pull_card(self.ten_pull, 2)
+                    prize = self.pull_card(self.ten_pull, 2, self.banner)
                 elif sum >= 89:
-                    prize = self.pull_card(self.ten_pull, 3)
+                    prize = self.pull_card(self.ten_pull, 3, self.banner)
                     if type(prize) is not list:
                         prize = big_prize
                     else:
