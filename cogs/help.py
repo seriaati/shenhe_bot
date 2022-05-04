@@ -153,6 +153,11 @@ class Dropdown(discord.ui.Select):
                 value='發布委託',
                 inline=False
             )
+            embed.add_field(
+                name='`/roll`',
+                value='flow抽卡系統',
+                inline=False
+            )
 
         elif self.values[0] == '其他':  
             embed = defaultEmbed(
