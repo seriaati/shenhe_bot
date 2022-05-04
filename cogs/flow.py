@@ -108,7 +108,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if message.author.bot:
             return
 
-        if "早安" in message.content:
+        if "早安" in message.content or '早上好' in message.content:
             today = date.today()
             check, msg = flow_app.checkFlowAccount(discordID)
             if check == False:
