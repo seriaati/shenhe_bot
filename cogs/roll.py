@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from random import randint
 from discord import app_commands
-from discord.app_commands import Choice
 from utility.FlowApp import flow_app
 from utility.utils import errEmbed, log, openFile, saveFile, defaultEmbed
 
@@ -46,7 +45,9 @@ class RollCog(commands.Cog):
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
                 return interaction.user.id == self.author.id
 
-            def animation_chooser(self, prize):
+            def animation_chooser(self, prize, banner: str):
+                banners = openFile('roll')
+                big_prize = banners[banner]['big_prize']
                 if type(prize) is list:
                     for item in prize:
                         if item == big_prize:
@@ -123,7 +124,7 @@ class RollCog(commands.Cog):
                         flow_app.transaction(
                             user_id=user_id, flow_for_user=1000)
 
-            def check_user_data(self, user_id: int, banner:str):
+            def check_user_data(self, user_id: int, banner: str):
                 banners = openFile('roll')
                 history = openFile('pull_history')
                 gu = openFile('pull_guarantee')
@@ -144,7 +145,7 @@ class RollCog(commands.Cog):
                 saveFile(history, 'pull_history')
                 saveFile(gu, 'pull_guarantee')
 
-            def gu_system(self, user_id: int, banner:str):
+            def gu_system(self, user_id: int, banner: str):
                 gu = openFile('pull_guarantee')
                 sum = 0
                 for item, count in gu[user_id][banner].items():
@@ -163,7 +164,7 @@ class RollCog(commands.Cog):
                         prize[0] = big_prize
                 return prize
 
-            def check_big_prize(self, user_id: int, prize, banner:str):
+            def check_big_prize(self, user_id: int, prize, banner: str):
                 gu = openFile('pull_guarantee')
                 banners = openFile('roll')
                 big_prize = banners[banner]['big_prize']
@@ -180,7 +181,8 @@ class RollCog(commands.Cog):
                             '1000 flow幣': 0,
                             air: 0
                         }
-                        print(log(True, False, 'Roll',f'{user_id} got big_prize'))
+                        print(log(True, False, 'Roll',
+                              f'{user_id} got big_prize'))
                         saveFile(gu, 'pull_guarantee')
                         return True, msg
                     else:
@@ -194,13 +196,14 @@ class RollCog(commands.Cog):
                             '1000 flow幣': 0,
                             air: 0
                         }
-                        print(log(True, False, 'Roll',f'{user_id} got big_prize'))
+                        print(log(True, False, 'Roll',
+                              f'{user_id} got big_prize'))
                         saveFile(gu, 'pull_guarantee')
                         return True, msg
                     else:
                         return False, None
 
-            def write_history_and_gu(self, user_id:int, prize, banner:str):
+            def write_history_and_gu(self, user_id: int, prize, banner: str):
                 banners = openFile('roll')
                 history = openFile('pull_history')
                 gu = openFile('pull_guarantee')
@@ -226,7 +229,7 @@ class RollCog(commands.Cog):
                 saveFile(gu, 'pull_guarantee')
                 return prize
 
-            @discord.ui.button(label='確認', style=discord.ButtonStyle.green)
+            @discord.ui.button(label='確認', style=discord.ButtonStyle.green, row=0)
             async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
                 if not self.ten_pull:
                     flow_app.transaction(
@@ -238,14 +241,17 @@ class RollCog(commands.Cog):
                 prize = self.gu_system(interaction.user.id, self.banner)
                 self.give_money(interaction.user.id, prize)
                 luluR = interaction.client.get_user(665092644883398671)
-                check, msg = self.check_big_prize(interaction.user.id, prize, self.banner)
+                check, msg = self.check_big_prize(
+                    interaction.user.id, prize, self.banner)
                 if check == True:
                     await luluR.send(embed=msg)
-                gif, sleep_time = self.animation_chooser(prize)
-                result = self.write_history_and_gu(interaction.user.id, prize, self.banner)
+                gif, sleep_time = self.animation_chooser(prize, self.banner)
+                result = self.write_history_and_gu(
+                    interaction.user.id, prize, self.banner)
                 embed = defaultEmbed(self.banner, '')
                 embed.set_image(url=gif)
-                menu = RollCog.Menu(author=interaction.user, banner=self.banner)
+                menu = RollCog.Menu(
+                    author=interaction.user, banner=self.banner)
                 await interaction.response.edit_message(embed=embed, view=menu)
                 await asyncio.sleep(sleep_time)
                 embed = defaultEmbed('抽卡結果', result)
@@ -254,12 +260,12 @@ class RollCog(commands.Cog):
                 embed.set_image(url=self.banner_pic)
                 await interaction.edit_original_message(embed=embed)
 
-            @discord.ui.button(label='取消', style=discord.ButtonStyle.grey)
+            @discord.ui.button(label='取消', style=discord.ButtonStyle.grey, row=0)
             async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
                 menu = RollCog.Menu(interaction.user, self.banner)
                 await interaction.response.edit_message(view=menu)
 
-        @discord.ui.button(label='詳情', style=discord.ButtonStyle.gray)
+        @discord.ui.button(label='詳情', style=discord.ButtonStyle.gray, row=0)
         async def detail_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             embed = defaultEmbed('祈願詳情', '')
             embed.add_field(
@@ -279,7 +285,7 @@ class RollCog(commands.Cog):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        @discord.ui.button(label='歷史紀錄', style=discord.ButtonStyle.gray)
+        @discord.ui.button(label='歷史紀錄', style=discord.ButtonStyle.gray, row=0)
         async def history_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             history = openFile('pull_history')
             gu = openFile('pull_guarantee')
@@ -297,50 +303,56 @@ class RollCog(commands.Cog):
             embed = defaultEmbed(f'祈願紀錄(共{sum}抽, 目前距離保底{90-gu_sum}抽)', result)
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple)
+        @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0)
         async def one_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < 10:
                 embed = errEmbed('你的flow幣不足!', '1次祈願需花費10 flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = self.Confirm(author=interaction.user, is_ten_pull=False, banner=self.banner)
+            confirm = self.Confirm(
+                author=interaction.user, is_ten_pull=False, banner=self.banner)
             await interaction.response.edit_message(view=confirm)
 
-        @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple)
+        @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple, row=0)
         async def ten_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < 100:
                 embed = errEmbed('你的flow幣不足!', '10次祈願共需花費100 flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = self.Confirm(author=interaction.user, is_ten_pull=True, banner=self.banner)
+            confirm = self.Confirm(
+                author=interaction.user, is_ten_pull=True, banner=self.banner)
             await interaction.response.edit_message(view=confirm)
 
-    def get_banner_choices():
-        banners = openFile('roll')
-        banner_list = []
-        for banner, value in banners.items():
-            banner_list.append(Choice(name=banner, value=banner))
-        return banner_list
+        def get_banner_options():
+            banners = openFile('roll')
+            banner_list = []
+            for banner, value in banners.items():
+                banner_list.append(discord.SelectOption(label=banner))
+            return banner_list
+
+        @discord.ui.select(options=get_banner_options(), row=1, placeholder='請選擇你想要抽取的獎品池', min_values=1, max_values=1)
+        async def banner_chooser(self, interaction: discord.Interaction, select: discord.ui.Select):
+            banners = openFile('roll')
+            banner = select.values[0]
+            menu = RollCog.Menu(interaction.user, banner)
+            embed = defaultEmbed(banner, '')
+            embed.set_image(url=banners[banner]['banner_pic'])
+            await interaction.response.edit_message(embed=embed, view=menu)
 
     @app_commands.command(name='roll', description='flow幣祈願系統')
-    @app_commands.rename(banner='池子')
-    @app_commands.describe(banner='想抽取哪一個池子?')
-    @app_commands.choices(banner=get_banner_choices())
-    async def roll(self, interaction: discord.Interaction, banner: str):
+    async def roll(self, interaction: discord.Interaction):
         check, msg = flow_app.checkFlowAccount(interaction.user.id)
         if check == False:
             await interaction.response.send_message(embed=msg, ephemeral=True)
             return
         banners = openFile('roll')
-        if banner not in banners:
-            await interaction.response.send_message(embed=errEmbed('該池不存在!', ''), ephemeral=True)
+        banner = '星月交輝 - 限定祈願'
         menu = self.Menu(interaction.user, banner)
         embed = defaultEmbed(banner, '')
         embed.set_image(url=banners[banner]['banner_pic'])
         await interaction.response.send_message(embed=embed, view=menu)
-        await menu.wait()
 
 
 async def setup(bot: commands.Bot) -> None:
