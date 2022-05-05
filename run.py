@@ -16,8 +16,8 @@ if user == "main":
 else:
     token = config.dev
     prefix = ['%']
-    guild = 969816313193193522
-    application_id = 970106285594931310
+    guild = 778804551972159489
+    application_id = 957621570128449626
 
 # 前綴, token, intents
 intents = discord.Intents.default()
