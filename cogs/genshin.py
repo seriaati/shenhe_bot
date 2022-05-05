@@ -217,7 +217,11 @@ class GenshinCog(commands.Cog):
         member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
-        # result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
+        if type(result) is not list:
+            result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
+        else:
+            for embed in result:
+                embed.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
         if type(result) == discord.Embed:
             await interaction.response.send_message(embed=result)
             return 
