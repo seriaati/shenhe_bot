@@ -17,90 +17,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        reactor = self.bot.get_user(payload.user_id)
-        if reactor.bot:
-            return
-
-        users = openFile('flow')
-        giveaways = openFile('giveaways')
-        channel = self.bot.get_channel(payload.channel_id)
-        discordID = payload.user_id
-        guild = self.bot.get_guild(916838066117824553)
-        member_obj = guild.get_member(payload.user_id)
-
-        if payload.emoji.name == "🎉" and payload.message_id in giveaways:
-            check, msg = flow_app.checkFlowAccount(discordID)
-            if check == False:
-                await reactor.send(embed=msg)
-                return
-            lulurR = self.bot.get_user(665092644883398671)
-            if users[discordID]['flow'] < giveaways[payload.message_id]['ticket']:
-                await channel.send(f"{reactor.mention} 你的flow幣數量不足以參加這項抽獎", delete_after=5)
-                return
-            if 'role' in giveaways[payload.message_id]:
-                guild = self.bot.get_guild(916838066117824553)
-                role = guild.get_role(giveaways[payload.message_id]['role'])
-                if role not in member_obj.roles:
-                    embed = errEmbed(
-                        '抱歉, 這不是給你的抽獎!',
-                        f'你不是{role.name}的一員, 不可以參加這個抽獎')
-                    await reactor.send(embed=embed)
-                    return
-            flow_app.transaction(
-                discordID, -int(giveaways[payload.message_id]['ticket']))
-            giveaways[payload.message_id]['current'] += giveaways[payload.message_id]['ticket']
-            giveaways[payload.message_id]['members'].append(discordID)
-            saveFile(giveaways, 'giveaways')
-            giveawayMsg = await channel.fetch_message(payload.message_id)
-            newEmbed = defaultEmbed(
-                ":tada: 抽獎啦!!!",
-                f"獎品: {giveaways[payload.message_id]['prize']}\n"
-                f"目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n"
-                f"參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n"
-                "註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-            await giveawayMsg.edit(embed=newEmbed)
-            await channel.send(f"{reactor.mention} 花了 {giveaways[payload.message_id]['ticket']} flow幣參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
-            if giveaways[payload.message_id]['current'] == giveaways[payload.message_id]['goal']:
-                memberList = giveaways[payload.message_id]['members']
-                winner = random.choice(memberList)
-                winnerID = int(winner)
-                winnerUser = self.bot.get_user(winnerID)
-                await giveawayMsg.delete()
-                embed = defaultEmbed(
-                    "抽獎結果", f"恭喜{winnerUser.mention}獲得價值 {giveaways[payload.message_id]['goal']} flow幣的 {giveaways[payload.message_id]['prize']} !")
-                await channel.send(f"{lulurR.mention} {winnerUser.mention}")
-                await channel.send(embed=embed)
-                del giveaways[payload.message_id]
-                saveFile(giveaways, 'giveaways')
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        reactor = self.bot.get_user(payload.user_id)
-        if reactor.bot:
-            return
-
-        giveaways = openFile('giveaways')
-        channel = self.bot.get_channel(payload.channel_id)
-        discordID = payload.user_id
-
-        if payload.emoji.name == "🎉" and payload.message_id in giveaways:
-            flow_app.transaction(discordID, int(
-                giveaways[payload.message_id]['ticket']))
-            giveaways[payload.message_id]['current'] -= giveaways[payload.message_id]['ticket']
-            giveaways[payload.message_id]['members'].remove(discordID)
-            saveFile(giveaways, 'giveaways')
-            giveawayMsg = await channel.fetch_message(payload.message_id)
-            newEmbed = defaultEmbed(
-                ":tada: 抽獎啦!!!",
-                f"獎品: {giveaways[payload.message_id]['prize']}\n"
-                f"目前flow幣: {giveaways[payload.message_id]['current']}/{giveaways[payload.message_id]['goal']}\n"
-                f"參加抽獎要付的flow幣: {giveaways[payload.message_id]['ticket']}\n\n"
-                f"註: 按🎉來支付flow幣並參加抽獎\n抽獎將會在目標達到後開始")
-            await giveawayMsg.edit(embed=newEmbed)
-            await channel.send(f"{reactor.mention} 收回了 {giveaways[payload.message_id]['ticket']} flow幣來取消參加 {giveaways[payload.message_id]['prize']} 抽獎", delete_after=5)
-
-    @commands.Cog.listener()
     async def on_message(self, message):
         users = openFile('flow')
         discordID = message.author.id
@@ -108,7 +24,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if message.author.bot:
             return
 
-        if "早安" in message.content or '早上好' in message.content:
+        if "早" in message.content:
             today = date.today()
             check, msg = flow_app.checkFlowAccount(discordID)
             if check == False:
@@ -530,8 +446,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             msg = interaction.message
-            with open('data/find.yaml', 'r', encoding="utf-8") as f:
-                finds = yaml.full_load(f)
+            finds = openFile('find')
             users = openFile('flow')
             confirms = openFile('confirm')
             if msg.id in finds:
@@ -646,62 +561,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                          'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 1}
         saveFile(finds, 'find')
         await acceptView.wait()
-
-    @app_commands.command(name='giveaway', description='設置抽獎')
-    @app_commands.checks.has_role('小雪團隊')
-    @app_commands.rename(prize='獎品', goal='目標', ticket='參與金額', role='指定國籍')
-    @app_commands.describe(
-        prize='獎品是什麼?',
-        goal='到達多少flow幣後進行抽獎?',
-        ticket='參與者得花多少flow幣參與抽獎?')
-    async def giveaway(
-            self, interaction: discord.Interaction,
-            prize: str, goal: int, ticket: int, role: Optional[Role] = None):
-        print(log(False, False, 'giveaway',
-              f'{interaction.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role})'))
-        giveaways = openFile('giveaways')
-        if role is not None:
-            embedGiveaway = defaultEmbed(
-                ":tada: 抽獎啦!!!",
-                f"獎品: {prize}\n"
-                f"目前flow幣: 0/{goal}\n"
-                f"參加抽獎要付的flow幣: {ticket}\n"
-                f"此抽獎專屬於: {role.mention}成員\n\n"
-                "註: 按🎉來支付flow幣並參加抽獎\n"
-                "抽獎將會在目標達到後開始")
-        else:
-            embedGiveaway = defaultEmbed(
-                ":tada: 抽獎啦!!!",
-                f"獎品: {prize}\n"
-                f"目前flow幣: 0/{goal}\n"
-                f"參加抽獎要付的flow幣: {ticket}\n\n"
-                "註: 按🎉來支付flow幣並參加抽獎\n"
-                "抽獎將會在目標達到後開始")
-        await interaction.response.send_message("✅ 抽獎設置完成", ephemeral=True)
-        channel = self.bot.get_channel(965517075508498452)
-        giveawayMsg = await channel.send(embed=embedGiveaway)
-        if role is not None:
-            await channel.send(role.mention)
-        else:
-            guild = self.bot.get_guild(916838066117824553)
-            role = guild.get_role(967035645610573834) #抽獎通知
-            await channel.send(role.mention)
-        await giveawayMsg.add_reaction('🎉')
-        giveaways[giveawayMsg.id] = {
-            'authorID': int(interaction.user.id),
-            'prize': str(prize),
-            'goal': int(goal),
-            'ticket': int(ticket),
-            'current': 0,
-            'members': [],
-            'role': role.id
-        }
-        saveFile(giveaways, 'giveaways')
-
-    @giveaway.error
-    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(name='rolemembers', description='查看一個身份組內的所有成員')
     @app_commands.rename(role='身份組')
