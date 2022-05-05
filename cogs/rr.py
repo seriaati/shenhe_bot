@@ -94,7 +94,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
 
             class WorldLevelButton(discord.ui.Button):
                 def __init__(self, number:int, row:int):
-                    super().__init__(timeout=None, style=discord.ButtonStyle.blurple, label=number, row=row)
+                    super().__init__(style=discord.ButtonStyle.blurple, label=number, row=row)
                     self.number = number
 
                 async def callback(self, interaction: Interaction):
