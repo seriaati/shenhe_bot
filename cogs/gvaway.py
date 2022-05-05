@@ -27,7 +27,7 @@ class GiveAwayCog(commands.Cog):
                 return True, None
 
         def join_giveaway(self, user_id: int, ticket: int, gv_msg_id: int):
-            print(log(True, False, __name__, f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})'))
+            print(log(True, False, 'join giveaway', f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})'))
             gv = openFile('giveaways')
             flow_app.transaction(user_id, -int(ticket))
             gv[gv_msg_id]['current'] += ticket
