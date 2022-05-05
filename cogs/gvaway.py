@@ -27,6 +27,7 @@ class GiveAwayCog(commands.Cog):
                 return True, None
 
         def join_giveaway(self, user_id: int, ticket: int, gv_msg_id: int):
+            print(log(True, False, __name__, f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})'))
             gv = openFile('giveaways')
             flow_app.transaction(user_id, -int(ticket))
             gv[gv_msg_id]['current'] += ticket
@@ -67,6 +68,7 @@ class GiveAwayCog(commands.Cog):
                     f"恭喜{winner.mention}獲得價值{gv[gv_msg_id]['goal']} flow幣的 {gv[gv_msg_id]['prize']} !")
                 await channel.send(f"{lulurR.mention} {winner.mention}")
                 await channel.send(embed=embed)
+                print(log(True, False, 'Giveaway Ended', f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
                 del gv[gv_msg_id]
                 saveFile(gv, 'giveaways')
 
@@ -105,7 +107,7 @@ class GiveAwayCog(commands.Cog):
                         return
                     if role in interaction.user.roles:
                         self.join_giveaway(interaction.user.id, ticket, msg.id)
-                        await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
+                        await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
                         await self.update_gv_msg(msg.id, role)
                         await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
                         await self.check_gv_finish(msg.id, interaction)
@@ -119,7 +121,7 @@ class GiveAwayCog(commands.Cog):
                         await interaction.response.send_message(embed=check_msg)
                         return
                     self.join_giveaway(interaction.user.id, ticket, msg.id)
-                    await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}', ephemeral=True)
+                    await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
                     await self.update_gv_msg(msg.id)
                     await channel.send(f"[抽獎][{interaction.user}] (ticket={ticket}, prize={gv[msg.id]['prize']})")
                     await self.check_gv_finish(msg.id, interaction)
@@ -139,7 +141,7 @@ class GiveAwayCog(commands.Cog):
                 if check == False:
                     await interaction.response.send_message(embed=check_msg)
                     return
-                await interaction.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}', ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅退出抽獎成功',f'flow幣 +{-int(ticket)}'), ephemeral=True)
                 if gv[msg.id]['role'] is not None:
                     g = interaction.client.get_guild(916838066117824553)
                     role = g.get_role(gv[msg.id]['role'])
