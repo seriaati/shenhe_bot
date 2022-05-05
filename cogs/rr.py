@@ -67,7 +67,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     await interaction.response.send_message(embed=errEmbed('你已經擁有這個身份組了!',''), ephemeral=True)
                     return
                 await interaction.user.add_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組獲取成功', ''), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ 已獲取 {r} 身份組', ''), ephemeral=True)
 
             @discord.ui.button(label='撤回', style=discord.ButtonStyle.red)
             async def discard_role_button(self, interaction: Interaction, button: discord.ui.Button):
@@ -76,7 +76,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                 if r not in interaction.user.roles:
                     await interaction.response.send_message(embed=errEmbed('你本來就沒有這個身份組!',''),ephemeral=True)
                 await interaction.user.remove_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組撤回成功', ''), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ 已撤回 {r} 身份組', ''), ephemeral=True)
         
         def get_role_options():
             roles = ['原神世界等級','委託通知', '抽獎通知', '活動通知', '小雪通知']
@@ -102,7 +102,12 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                         if self.number == x:
                             g = interaction.client.get_guild(916838066117824553)
                             r = discord.utils.get(g.roles, name=f'W{x}')
-                            await interaction.user.add_roles(r)
+                            if r in interaction.user.roles:
+                                await interaction.user.remove_roles(r)
+                                await interaction.response.send_message(embed=defaultEmbed(f'✅ 已撤回世界等級{x}身份組',''), ephemeral=True)
+                            else:
+                                await interaction.user.add_roles(r)
+                                await interaction.response.send_message(embed=defaultEmbed(f'✅ 已給予世界等級{x}身份組',''), ephemeral=True)
                             break
 
         @discord.ui.select(options=get_role_options(), placeholder='請選擇身份組', min_values=1, max_values=1)
@@ -111,6 +116,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             action_menu = self.ButtonChoices(choice)
             wr_menu = self.WorldLevelView()
             if select.values[0] == '原神世界等級':
+                embed = defaultEmbed('選擇你的原神世界等級','按按鈕會給予對應身份組, 再按一次會撤回身份組')
                 await interaction.response.send_message(view=wr_menu, ephemeral=True)
             else:
                 await interaction.response.send_message(view=action_menu, ephemeral=True)
