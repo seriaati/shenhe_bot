@@ -119,7 +119,7 @@ class GiveAwayCog(commands.Cog):
                         await interaction.response.send_message(embed=check_msg)
                         return
                     self.join_giveaway(interaction.user.id, ticket, msg.id)
-                    await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
+                    await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}', ephemeral=True)
                     await self.update_gv_msg(msg.id)
                     await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
                     await self.check_gv_finish(msg.id, interaction)
@@ -139,7 +139,7 @@ class GiveAwayCog(commands.Cog):
                 if check == False:
                     await interaction.response.send_message(embed=check_msg)
                     return
-                await interaction.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}')
+                await interaction.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}', ephemeral=True)
                 if gv[msg.id]['role'] is not None:
                     g = interaction.client.get_guild(916838066117824553)
                     role = g.get_role(gv[msg.id]['role'])
