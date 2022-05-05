@@ -132,11 +132,6 @@ class OtherCMDCog(commands.Cog):
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
-    # @app_commands.command(name='pull',description='從源碼更新申鶴')
-    # async def pull(self, i:discord.Interaction):
-    #     g = git.cmd.Git('C:/Users/alice/shenhe_bot')
-    #     g.pull()
-
     @app_commands.command(
         name='cleanup',
         description='移除此頻道的最近的n個訊息'

@@ -6,7 +6,6 @@ from discord.app_commands import Choice
 from typing import List, Optional
 import uuid
 import random
-import yaml
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
 import discord
 from utility.FlowApp import flow_app
