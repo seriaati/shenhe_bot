@@ -1,5 +1,4 @@
 import discord
-import git
 from discord.ext import commands
 from discord import app_commands
 from random import randint
