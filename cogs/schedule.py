@@ -34,6 +34,7 @@ class Schedule(commands.Cog):
         switch=[Choice(name='開啟功能', value=1),
                 Choice(name='關閉功能', value=0)])
     async def slash_schedule(self, interaction: discord.Interaction, function: str, switch: int):
+        self.schedule.stop()
         print(log(False, False, 'schedule', f'{interaction.user.id}: (function={function}, switch={switch})'))
         claim_data = self.getClaimData()
         resin_data = self.getResinData()
@@ -55,7 +56,7 @@ class Schedule(commands.Cog):
             if switch == 1: # 開啟簽到功能
                 # 新增使用者
                 self.__add_user(interaction.user.id, self.__daily_dict, self.__daily_reward_filename)
-                await interaction.response.send_message(f'原神每日自動簽到已開啟')
+                await interaction.response.send_message('原神每日自動簽到已開啟')
             elif switch == 0: # 關閉簽到功能
                 self.__remove_user(interaction.user.id, self.__daily_dict, self.__daily_reward_filename)
                 await interaction.response.send_message('每日自動簽到已關閉')
@@ -66,6 +67,7 @@ class Schedule(commands.Cog):
             elif switch == 0: # 關閉檢查樹脂功能
                 self.__remove_user(interaction.user.id, self.__resin_dict, self.__resin_notifi_filename)
                 await interaction.response.send_message('樹脂額滿提醒已關閉')
+        self.schedule.start()
         
     loop_interval = 10
     @tasks.loop(minutes=loop_interval)
