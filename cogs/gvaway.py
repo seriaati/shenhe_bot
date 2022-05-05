@@ -121,7 +121,7 @@ class GiveAwayCog(commands.Cog):
                     self.join_giveaway(interaction.user.id, ticket, msg.id)
                     await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}', ephemeral=True)
                     await self.update_gv_msg(msg.id)
-                    await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
+                    await channel.send(f"[抽獎][{interaction.user}] (ticket={ticket}, prize={gv[msg.id]['prize']})")
                     await self.check_gv_finish(msg.id, interaction)
             else:
                 await interaction.response.send_message(embed=errEmbed('該抽獎不存在!', '(因為某些不明原因)'))
@@ -148,7 +148,7 @@ class GiveAwayCog(commands.Cog):
                     await channel.send(f"{interaction.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
                 else:
                     await self.update_gv_msg(msg.id)
-                    await channel.send(f"{interaction.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
+                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg.id]['prize']})")
 
     @app_commands.command(name='giveaway', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
