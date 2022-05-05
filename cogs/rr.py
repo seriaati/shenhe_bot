@@ -1,4 +1,3 @@
-from select import EPOLLONESHOT
 import inflect
 import yaml
 import discord
