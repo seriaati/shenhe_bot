@@ -109,7 +109,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
         async def role_chooser(self, interaction: Interaction, select: discord.ui.Select):
             choice = select.values[0]
             action_menu = self.ButtonChoices(choice)
-            wr_menu = self.WorldLevelView
+            wr_menu = self.WorldLevelView()
             if select.values[0] == '原神世界等級':
                 await interaction.response.send_message(view=wr_menu, ephemeral=True)
             else:
