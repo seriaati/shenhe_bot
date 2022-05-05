@@ -164,7 +164,7 @@ class GiveAwayCog(commands.Cog):
         else:
             g = self.bot.get_guild(916838066117824553)  # 緣神有你
             role = g.get_role(967035645610573834)  # 抽獎通知
-            await channel.send(role.mention)
+            # await channel.send(role.mention)
             role_id = None
         giveaways = openFile('giveaways')
         giveaways[msg.id] = {
