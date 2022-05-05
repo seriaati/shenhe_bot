@@ -48,7 +48,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.remove_roles(role)
                     break
-    
+
     class RoleSelection(discord.ui.View):
         def __init__(self):
             super().__init__(timeout=None)
@@ -63,25 +63,30 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                 g = interaction.client.get_guild(916838066117824553)
                 r = discord.utils.get(g, name=self.role)
                 await interaction.user.add_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組獲取成功',''), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組獲取成功', ''), ephemeral=True)
 
             @discord.ui.button(label='撤回', style=discord.ButtonStyle.red)
             async def discard_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
                 g = interaction.client.get_guild(916838066117824553)
                 r = discord.utils.get(g, name=self.role)
                 await interaction.user.remove_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組撤回成功',''), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組撤回成功', ''), ephemeral=True)
 
-        roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
+        def get_role_options():
+            roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
+            role_list = []
+            for role in roles:
+                role_list.append(discord.SelectOption(label=role))
+            return role_list
 
-        @discord.ui.select(options=roles, placeholder='請選擇身份組', min_values=1, max_values=1)
+        @discord.ui.select(options=get_role_options(), placeholder='請選擇身份組', min_values=1, max_values=1)
         async def role_chooser(self, interaction: discord.Interaction, select: discord.ui.Select):
             choice = select.values[0]
             action_menu = self.ButtonChoices(choice)
             await interaction.response.send_message(view=action_menu, ephemeral=True)
 
     @app_commands.command(name='role', description='取得身份組')
-    async def get_role(self, i:discord.Interaction):
+    async def get_role(self, i: discord.Interaction):
         print(log(False, False, 'Role', i.user.id))
         role_selection_view = self.RoleSelection()
         await i.response.send_message(view=role_selection_view, ephemeral=True)
