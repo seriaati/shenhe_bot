@@ -83,7 +83,7 @@ class GiveAwayCog(commands.Cog):
                            style=discord.ButtonStyle.green)
         async def participate(self, i: discord.Interaction,
                               button: discord.ui.Button):
-            msg = i.message
+            msg = await i.original_message()
             check, msg = flow_app.checkFlowAccount(i.user.id)
             if check == False:
                 await i.response.send_message(embed=msg, ephemeral=True)
