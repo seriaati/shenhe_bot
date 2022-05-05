@@ -109,7 +109,7 @@ class GiveAwayCog(commands.Cog):
                         self.join_giveaway(interaction.user.id, ticket, msg.id)
                         await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
                         await self.update_gv_msg(msg.id, role)
-                        await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
+                        await channel.send(f"[抽獎][{interaction.user}] (ticket={ticket}, prize={gv[msg.id]['prize']})")
                         await self.check_gv_finish(msg.id, interaction)
                     else:
                         await interaction.response.send_message(embed=errEmbed(
