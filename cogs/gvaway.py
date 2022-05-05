@@ -99,7 +99,7 @@ class GiveAwayCog(commands.Cog):
                 return
             if msg.id in gv:
                 if gv[msg.id]['role'] is not None:
-                    guild = self.bot.get_guild(916838066117824553)
+                    guild = interaction.client.get_guild(916838066117824553)
                     role = guild.get_role(gv[msg.id]['role'])
                     check, check_msg = self.check_if_already_in_gv(interaction.user.id, msg.id)
                     if check == True:
