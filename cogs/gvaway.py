@@ -13,9 +13,9 @@ class GiveAwayCog(commands.Cog):
         self.bot = bot
 
     class GiveAwayView(discord.ui.View):
-        def __init__(self, i: discord.Interaction):
+        def __init__(self, interaction: discord.Interaction):
             super().__init__(timeout=None)
-            self.i = i
+            self.interaction = interaction
 
         def ticket_flow_check(self, user_id: int, ticket: int):
             users = openFile('flow')
@@ -37,7 +37,7 @@ class GiveAwayCog(commands.Cog):
             saveFile(gv, 'giveaways')
 
         async def update_gv_msg(self, gv_msg_id: int, role: discord.Role = None):
-            channel = self.i.client.get_channel(965517075508498452)
+            channel = self.interaction.client.get_channel(965517075508498452)
             gv_msg = await channel.fetch_message(gv_msg_id)
             gv = openFile('giveaways')
             if role is not None:
@@ -55,13 +55,13 @@ class GiveAwayCog(commands.Cog):
                     f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}")
             await gv_msg.edit(embed=embed)
 
-        async def check_gv_finish(self, gv_msg_id: int, i: discord.Interaction):
+        async def check_gv_finish(self, gv_msg_id: int, interaction: discord.Interaction):
             gv = openFile('giveaways')
             if gv[gv_msg_id]['current'] == gv[gv_msg_id]['goal']:
-                channel = i.client.get_channel(965517075508498452)
-                lulurR = i.client.get_user(665092644883398671)
+                channel = interaction.client.get_channel(965517075508498452)
+                lulurR = interaction.client.get_user(665092644883398671)
                 winner_id = random.choice(gv[gv_msg_id]['members'])
-                winner = i.client.get_user(int(winner_id))
+                winner = interaction.client.get_user(int(winner_id))
                 embed = defaultEmbed(
                     "抽獎結果",
                     f"恭喜{winner.mention}獲得價值{gv[gv_msg_id]['goal']} flow幣的 {gv[gv_msg_id]['prize']} !")
@@ -81,74 +81,74 @@ class GiveAwayCog(commands.Cog):
 
         @discord.ui.button(label='參加抽獎',
                            style=discord.ButtonStyle.green)
-        async def participate(self, i: discord.Interaction,
+        async def participate(self, interaction: discord.Interaction,
                               button: discord.ui.Button):
-            msg = await i.original_message()
-            check, msg = flow_app.checkFlowAccount(i.user.id)
+            msg = interaction.message
+            check, msg = flow_app.checkFlowAccount(interaction.user.id)
             if check == False:
-                await i.response.send_message(embed=msg, ephemeral=True)
+                await interaction.response.send_message(embed=msg, ephemeral=True)
                 return
             gv = openFile('giveaways')
             ticket = gv[msg.id]['ticket']
-            check, msg = self.ticket_flow_check(i.user.id, ticket)
-            channel = i.client.get_channel(909595117952856084)
+            check, msg = self.ticket_flow_check(interaction.user.id, ticket)
+            channel = interaction.client.get_channel(909595117952856084)
             if check == False:
-                await i.response.send_message(embed=msg, ephemeral=True)
+                await interaction.response.send_message(embed=msg, ephemeral=True)
                 return
             if msg.id in gv:
                 if gv[msg.id]['role'] is not None:
                     guild = self.bot.get_guild(916838066117824553)
                     role = guild.get_role(gv[msg.id]['role'])
-                    check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                    check, msg = self.check_if_already_in_gv(interaction.user.id, msg.id)
                     if check == True:
-                        await i.response.send_message(embed=msg)
+                        await interaction.response.send_message(embed=msg)
                         return
-                    if role in i.user.roles:
-                        self.join_giveaway(i.user.id, ticket, msg.id)
-                        await i.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
+                    if role in interaction.user.roles:
+                        self.join_giveaway(interaction.user.id, ticket, msg.id)
+                        await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
                         await self.update_gv_msg(msg.id, role)
-                        await channel.send(f"{i.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
-                        await self.check_gv_finish(msg.id, i)
+                        await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
+                        await self.check_gv_finish(msg.id, interaction)
                     else:
-                        i.response.send_message(embed=errEmbed(
+                        interaction.response.send_message(embed=errEmbed(
                             '非常抱歉', f'你不是{role.mention}的一員, 不能參加這個抽獎'), ephemeral=True)
                         return
                 else:
-                    check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                    check, msg = self.check_if_already_in_gv(interaction.user.id, msg.id)
                     if check == True:
-                        await i.response.send_message(embed=msg)
+                        await interaction.response.send_message(embed=msg)
                         return
-                    self.join_giveaway(i.user.id, ticket, msg.id)
-                    await i.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
+                    self.join_giveaway(interaction.user.id, ticket, msg.id)
+                    await interaction.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
                     await self.update_gv_msg(msg.id)
-                    await channel.send(f"{i.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
-                    await self.check_gv_finish(msg.id, i)
+                    await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
+                    await self.check_gv_finish(msg.id, interaction)
             else:
-                await i.response.send_message(embed=errEmbed('該抽獎不存在!', '(因為某些不明原因)'))
+                await interaction.response.send_message(embed=errEmbed('該抽獎不存在!', '(因為某些不明原因)'))
 
         @discord.ui.button(label='退出抽獎',
                            style=discord.ButtonStyle.red)
-        async def quit(self, i: discord.Interaction,
+        async def quit(self, interaction: discord.Interaction,
                        button: discord.ui.Button):
-            msg = i.message
+            msg = interaction.message
             gv = openFile('giveaways')
             if msg.id in gv:
                 ticket = -int(gv[msg.id]['ticket'])
-                self.join_giveaway(i.user.id, ticket, msg.id)
-                check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                self.join_giveaway(interaction.user.id, ticket, msg.id)
+                check, msg = self.check_if_already_in_gv(interaction.user.id, msg.id)
                 if check == False:
-                    await i.response.send_message(embed=msg)
+                    await interaction.response.send_message(embed=msg)
                     return
-                await i.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}')
+                await interaction.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}')
                 if gv[msg.id]['role'] is not None:
-                    g = i.client.get_guild(916838066117824553)
+                    g = interaction.client.get_guild(916838066117824553)
                     role = g.get_role(gv[msg.id]['role'])
-                    channel = i.client.get_channel(909595117952856084)
+                    channel = interaction.client.get_channel(909595117952856084)
                     await self.update_gv_msg(msg.id, role)
-                    await channel.send(f"{i.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
+                    await channel.send(f"{interaction.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
                 else:
                     await self.update_gv_msg(msg.id)
-                    await channel.send(f"{i.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
+                    await channel.send(f"{interaction.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
 
     @app_commands.command(name='giveaway', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
@@ -176,7 +176,7 @@ class GiveAwayCog(commands.Cog):
                 f"目前flow幣: 0/{goal}\n"
                 f"參加抽獎要付的flow幣: {ticket}")
         channel = self.bot.get_channel(965517075508498452)
-        view = self.GiveAwayView(i=interaction)
+        view = self.GiveAwayView(interaction=interaction)
         await interaction.response.send_message(embed=embed, view=view)
         msg = await interaction.original_message()
         if role is not None:
