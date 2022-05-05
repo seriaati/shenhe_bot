@@ -31,29 +31,32 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             users = openFile('flow')
             now = datetime.now()
             if 'morning' not in users[discordID]:
-                users[discordID]['morning'] = datetime(year=now.year, month=now.mont, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                saveFile(users, 'flow')
             if 'noon' not in users[discordID]:
-                users[discordID]['noon'] = datetime(year=now.year, month=now.mont, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                saveFile(users, 'flow')
             if 'night' not in users[discordID]:
-                users[discordID]['night'] = datetime(year=now.year, month=now.mont, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-            
+                users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                saveFile(users, 'flow')
+
             if "早" in message.content:
-                start = datetime(year=now.year, month=now.mont, day=now.day, hour=5, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.mont, day=now.day, hour=11, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month, day=now.day, hour=5, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day, hour=11, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['morning'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='morning')
                         await message.add_reaction('⛅')
             elif "午" in message.content:
-                start = datetime(year=now.year, month=now.mont, day=now.day, hour=12, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.mont, day=now.day, hour=17, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month, day=now.day, hour=12, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day, hour=17, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['noon'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='noon')
                         await message.add_reaction('☀️')
             elif "晚" in message.content:
-                start = datetime(year=now.year, month=now.mont, day=now.day, hour=18, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.mont, day=now.day, hour=4, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month, day=now.day, hour=18, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day+1, hour=4, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['night'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='night')
