@@ -112,7 +112,7 @@ class GiveAwayCog(commands.Cog):
                         await channel.send(f"{interaction.user} 花了 {ticket} flow幣參加 {gv[msg.id]['prize']} 抽獎")
                         await self.check_gv_finish(msg.id, interaction)
                     else:
-                        interaction.response.send_message(embed=errEmbed(
+                        await interaction.response.send_message(embed=errEmbed(
                             '非常抱歉', f'你不是{role.mention}的一員, 不能參加這個抽獎'), ephemeral=True)
                         return
                 else:
