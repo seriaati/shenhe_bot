@@ -61,7 +61,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             @discord.ui.button(label='獲取', style=discord.ButtonStyle.green)
             async def get_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
                 g = interaction.client.get_guild(916838066117824553)
-                r = await discord.utils.get(g, name=self.role)
+                r = await discord.utils.get(g.roles, name=self.role)
                 if r in interaction.user.roles:
                     await interaction.response.send_message(embed=errEmbed('你已經擁有這個身份組了!',''), ephemeral=True)
                     return
@@ -71,7 +71,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
             @discord.ui.button(label='撤回', style=discord.ButtonStyle.red)
             async def discard_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
                 g = interaction.client.get_guild(916838066117824553)
-                r = await discord.utils.get(g, name=self.role)
+                r = await discord.utils.get(g.roles, name=self.role)
                 if r not in interaction.user.roles:
                     await interaction.response.send_message(embed=errEmbed('你本來就沒有這個身份組!',''),ephemeral=True)
                 await interaction.user.remove_roles(r)
