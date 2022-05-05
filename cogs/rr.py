@@ -1,9 +1,10 @@
+from select import EPOLLONESHOT
 import inflect
 import yaml
 import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
-from utility.utils import defaultEmbed
+from utility.utils import defaultEmbed, log
 from discord import Role
 import re
 import emoji
@@ -20,14 +21,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
         reactor = self.bot.get_user(payload.user_id)
         if reactor.bot:
             return
-        rr = dict(self.rr_dict)
-        if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
-            emoteID = payload.emoji.id
-            guild = self.bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            role = discord.utils.get(guild.roles, id=rr[payload.message_id][emoteID])
-            await member.add_roles(role)
-        elif payload.message_id == 963972447600771092:  # 世界等級身份組
+        if payload.message_id == 963972447600771092:  # 世界等級身份組
             for i in range(1, 9):
                 p = inflect.engine()
                 word = p.number_to_words(i)
@@ -44,15 +38,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
         reactor = self.bot.get_user(payload.user_id)
         if reactor.bot:
             return
-        rr = dict(self.rr_dict)
-        if payload.message_id in rr and payload.emoji.id in rr[payload.message_id]:
-            emoteID = payload.emoji.id
-            guild = self.bot.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            role = discord.utils.get(guild.roles, id=rr[payload.message_id][emoteID])
-            await member.remove_roles(role)
-
-        elif payload.message_id == 963972447600771092:  # 移除世界等級身份組
+        if payload.message_id == 963972447600771092:  # 移除世界等級身份組
             for i in range(1, 9):
                 p = inflect.engine()
                 word = p.number_to_words(i)
@@ -63,26 +49,43 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     role = discord.utils.get(guild.roles, name=f"W{i}")
                     await member.remove_roles(role)
                     break
+    
+    class RoleSelection(discord.ui.View):
+        def __init__(self):
+            super().__init__(timeout=None)
 
-    @app_commands.command(name='reactionrole', description='創建一個表符身份組訊息')
-    @app_commands.rename(title='標題',role='身份組',emote='表情符號')
-    @app_commands.checks.has_role('小雪團隊')
-    async def reactionrole(self, interaction:discord.Interaction,title:str,role:Role,emote:str):
-        rr = dict(self.rr_dict)
-        emoteID = int(re.search(r'\d+', emote).group())
-        emoteObj = self.bot.get_emoji(emoteID)
-        embed = defaultEmbed(title, f"{emoteObj} • {role.mention}")
-        await interaction.response.send_message(embed=embed)
-        msg = await interaction.original_message()
-        rr[msg.id] = {emoteID: role.id}
-        with open(f'data/rr.yaml', 'w', encoding='utf-8') as file:
-            yaml.dump(rr, file)
-        await msg.add_reaction(emoteObj)
+        class ButtonChoices(discord.ui.View):
+            def __init__(self, role):
+                super().__init__(timeout=None)
+                self.role = role
 
-    @reactionrole.error
-    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+            @discord.ui.button(label='獲取', style=discord.ButtonStyle.green)
+            async def get_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+                g = interaction.client.get_guild(916838066117824553)
+                r = discord.utils.get(g, name=self.role)
+                await interaction.user.add_roles(r)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組獲取成功',''), ephemeral=True)
+
+            @discord.ui.button(label='撤回', style=discord.ButtonStyle.red)
+            async def discard_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+                g = interaction.client.get_guild(916838066117824553)
+                r = discord.utils.get(g, name=self.role)
+                await interaction.user.remove_roles(r)
+                await interaction.response.send_message(embed=defaultEmbed(f'✅ {r} 身份組撤回成功',''), ephemeral=True)
+
+        roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
+
+        @discord.ui.select(options=roles, placeholder='請選擇身份組', min_values=1, max_values=1)
+        async def role_chooser(self, interaction: discord.Interaction, select: discord.ui.Select):
+            choice = select.values[0]
+            action_menu = self.ButtonChoices(choice)
+            await interaction.response.send_message(view=action_menu, ephemeral=True)
+
+    @app_commands.command(name='role', description='取得身份組')
+    async def get_role(self, i:discord.Interaction):
+        print(log(False, False, 'Role', i.user.id))
+        role_selection_view = self.RoleSelection()
+        await i.response.send_message(view=role_selection_view, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
