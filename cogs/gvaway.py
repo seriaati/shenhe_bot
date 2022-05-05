@@ -147,8 +147,9 @@ class GiveAwayCog(commands.Cog):
                     role = g.get_role(gv[msg.id]['role'])
                     channel = interaction.client.get_channel(909595117952856084)
                     await self.update_gv_msg(msg.id, role)
-                    await channel.send(f"{interaction.user} 收回了 {-int(ticket)} flow幣來取消參加 {gv[msg.id]['prize']} 抽獎")
+                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg.id]['prize']})")
                 else:
+                    channel = interaction.client.get_channel(909595117952856084)
                     await self.update_gv_msg(msg.id)
                     await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg.id]['prize']})")
 
