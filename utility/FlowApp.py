@@ -1,5 +1,4 @@
-from datetime import date
-from operator import is_
+from datetime import date, datetime
 
 from utility.utils import errEmbed, log, openFile, saveFile
 class FlowApp:
@@ -7,18 +6,23 @@ class FlowApp:
     def register(self, user_id: int):
         self.transaction(user_id, 20, is_new_account=True)
 
-    def transaction(self, user_id: int, flow_for_user: int, is_morning: bool = False, is_new_account: bool = False):
+    def transaction(self, user_id: int, flow_for_user: int, time_state:str = None, is_new_account: bool = False):
         users = openFile('flow')
         bank = openFile('bank')
+        now = datetime.now()
         if is_new_account:
             today = date.today()
             users[user_id] = {'flow': 0, 'morning': today}
         if user_id in users:
             users[user_id]['flow'] += int(flow_for_user)
             bank['flow'] -= int(flow_for_user)
-            if is_morning:
-                today = date.today()
-                users[user_id]['morning'] = today
+            if time_state is not None:
+                if time_state == 'morning':
+                    users[user_id]['morning'] = now
+                elif time_state == 'noon':
+                    users[user_id]['noon'] = now
+                elif time_state == 'night':
+                    users[user_id]['night'] = now
             saveFile(users, 'flow')
             saveFile(bank, 'bank')
             user_log = '{0:+d}'.format(int(flow_for_user))
