@@ -157,7 +157,7 @@ class GiveAwayCog(commands.Cog):
         channel = self.bot.get_channel(965517075508498452)
         view = self.GiveAwayView(i=interaction)
         await interaction.response.send_message(embed=embed, view=view)
-        msg = interaction.original_message()
+        msg = await interaction.original_message()
         if role is not None:
             await channel.send(role.mention)
             role_id = role.id
