@@ -70,6 +70,15 @@ class GiveAwayCog(commands.Cog):
                 del gv[gv_msg_id]
                 saveFile(gv, 'giveaways')
 
+        def check_if_already_in_gv(self, user_id:int, gv_msg_id:int):
+            gv = openFile('giveaways')
+            if user_id in gv[gv_msg_id]['members']:
+                embed = errEmbed('你已經參加過這個抽獎了','')
+                return True, embed 
+            else:
+                embed = errEmbed('你沒有參加過這個抽獎','')
+                return False, embed
+
         @discord.ui.button(label='參加抽獎',
                            style=discord.ButtonStyle.green)
         async def participate(self, i: discord.Interaction,
@@ -90,6 +99,10 @@ class GiveAwayCog(commands.Cog):
                 if gv[msg.id]['role'] is not None:
                     guild = self.bot.get_guild(916838066117824553)
                     role = guild.get_role(gv[msg.id]['role'])
+                    check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                    if check == True:
+                        await i.response.send_message(embed=msg)
+                        return
                     if role in i.user.roles:
                         self.join_giveaway(i.user.id, ticket, msg.id)
                         await i.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
@@ -101,6 +114,10 @@ class GiveAwayCog(commands.Cog):
                             '非常抱歉', f'你不是{role.mention}的一員, 不能參加這個抽獎'), ephemeral=True)
                         return
                 else:
+                    check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                    if check == True:
+                        await i.response.send_message(embed=msg)
+                        return
                     self.join_giveaway(i.user.id, ticket, msg.id)
                     await i.response.send_message(f'參加抽獎成功, flow幣 -{ticket}')
                     await self.update_gv_msg(msg.id)
@@ -118,6 +135,10 @@ class GiveAwayCog(commands.Cog):
             if msg.id in gv:
                 ticket = -int(gv[msg.id]['ticket'])
                 self.join_giveaway(i.user.id, ticket, msg.id)
+                check, msg = self.check_if_already_in_gv(i.user.id, msg.id)
+                if check == False:
+                    await i.response.send_message(embed=msg)
+                    return
                 await i.response.send_message(f'退出抽獎成功, flow幣 +{-int(ticket)}')
                 if gv[msg.id]['role'] is not None:
                     g = i.client.get_guild(916838066117824553)
