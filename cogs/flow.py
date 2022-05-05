@@ -30,7 +30,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await user.send(embed=msg)
                 return
             elif users[discordID]['morning'] != today:
-                flow_app.transaction(discordID, 1, True)
+                flow_app.transaction(discordID, 1, is_morning=True)
                 await message.add_reaction(f"☀️")
 
     @app_commands.command(name='forceroll', description='強制抽出得獎者')
