@@ -85,10 +85,9 @@ class GenshinCog(commands.Cog):
         member: Optional[Member] = None
     ):
         member = member or interaction.user
-        await interaction.response.defer()
         result = await genshin_app.getRealTimeNotes(member.id, False)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
+        await interaction.response.send_message(embed=result)
 
     @app_commands.command(
         name='stats',
