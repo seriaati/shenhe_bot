@@ -228,13 +228,13 @@ class GiveAwayCog(commands.Cog):
                 if value['prize'] == choice:
                     gv_msg_id = msg_id
             view = GiveAwayCog.GiveAwayView(interaction=interaction, gv_msg_id=gv_msg_id)
-            await interaction.response.send_message(view=view)
+            await interaction.response.send_message(view=view, ephemeral=True)
             
     
     @app_commands.command(name='join',description='參加抽獎')
     async def join_giveaway(self, i:Interaction):
         view = self.GiveawaySelection()
-        await i.response.send_message(view=view)
+        await i.response.send_message(view=view, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
