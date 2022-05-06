@@ -245,7 +245,7 @@ class GiveAwayCog(commands.Cog):
                     ticket = value['ticket']
             view = GiveAwayCog.GiveAwayView(interaction=interaction, gv_msg_id=gv_msg_id)
             if role is not None:
-                g = self.bot.get_guild(916838066117824553)
+                g = interaction.client.get_guild(916838066117824553)
                 r = g.get_role(role)
                 embed = defaultEmbed(
                     ":tada: 抽獎啦!!!",
