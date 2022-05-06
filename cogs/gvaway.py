@@ -217,22 +217,51 @@ class GiveAwayCog(commands.Cog):
 
         def get_giveaway_options():
             gv = openFile('giveaways')
-            result = []
-            for msg_id, value in gv.items():
-                if msg_id != 123123123:
-                    result.append(discord.SelectOption(label=value['prize']))
-            return result
+            result = ['目前沒有任何進行中的抽獎']
+            if not gv:
+                return result
+            else:
+                result = []
+                for msg_id, value in gv.items():
+                    if msg_id != 123123123:
+                        result.append(discord.SelectOption(label=value['prize']))
+                return result
 
         @discord.ui.select(options=get_giveaway_options(), placeholder='選擇要參加的抽獎', min_values=1, max_values=1)
         async def gv_chooser(self, interaction: Interaction, select: discord.ui.Select):
             choice = select.values[0]
+            if choice == '目前沒有任何進行中的抽獎':
+                await interaction.response.send_message(embed=errEmbed('真的沒有抽獎','真的'), ephemeral=True)
+                return
             gv = openFile('giveaways')
             gv_msg_id = None
             for msg_id, value in gv.items():
                 if value['prize'] == choice:
                     gv_msg_id = msg_id
+                    role = value['role']
+                    prize = value['prize']
+                    current = value['current']
+                    goal = value['goal']
+                    ticket = value['ticket']
             view = GiveAwayCog.GiveAwayView(interaction=interaction, gv_msg_id=gv_msg_id)
-            await interaction.response.send_message(view=view, ephemeral=True)
+            if role is not None:
+                g = self.bot.get_guild(916838066117824553)
+                r = g.get_role(role)
+                embed = defaultEmbed(
+                    ":tada: 抽獎啦!!!",
+                    f"獎品: {prize}\n"
+                    f"目前flow幣: {current}/{goal}\n"
+                    f"參加抽獎要付的flow幣: {ticket}\n"
+                    f"此抽獎專屬於: {r.mention}成員\n"
+                    "輸入`/join`指令來參加抽獎")
+            else:
+                embed = defaultEmbed(
+                    ":tada: 抽獎啦!!!",
+                    f"獎品: {prize}\n"
+                    f"目前flow幣: {current}/{goal}\n"
+                    f"參加抽獎要付的flow幣: {ticket}\n"
+                    "輸入`/join`指令來參加抽獎")
+            await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
             
     
     @app_commands.command(name='join',description='參加抽獎')
