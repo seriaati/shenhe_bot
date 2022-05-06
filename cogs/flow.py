@@ -108,7 +108,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         embed = defaultEmbed(
             f"flow帳號",
             f"flow幣: {users[discordID]['flow']}\n"
-            f"最近早安幣獲得時間: {users[discordID]['morning']}")
+            f"早安幣: {users[discordID]['morning']}\n"
+            f"午安幣: {users[discordID]['noon']}\n"
+            f"晚安幣: {users[discordID]['night']}")
         embed.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=embed)
 
@@ -245,9 +247,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = openFile('flow')
         userStr = ""
         count = 1
-        for user in users:
-            discordID = user
-            userStr += f"{count}. {users[discordID]['name']}: {users[discordID]['flow']}\n"
+        for user_id, value in users.items():
+            user = interaction.client.get_user(user_id)
+            userStr += f"{count}. {user}: {value['flow']}\n"
             count += 1
         embed = defaultEmbed("所有flow帳戶", userStr)
         await interaction.response.send_message(embed=embed)
