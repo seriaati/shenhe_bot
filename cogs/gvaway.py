@@ -252,15 +252,13 @@ class GiveAwayCog(commands.Cog):
                     f"獎品: {prize}\n"
                     f"目前flow幣: {current}/{goal}\n"
                     f"參加抽獎要付的flow幣: {ticket}\n"
-                    f"此抽獎專屬於: {r.mention}成員\n"
-                    "輸入`/join`指令來參加抽獎")
+                    f"此抽獎專屬於: {r.mention}成員")
             else:
                 embed = defaultEmbed(
                     ":tada: 抽獎啦!!!",
                     f"獎品: {prize}\n"
                     f"目前flow幣: {current}/{goal}\n"
-                    f"參加抽獎要付的flow幣: {ticket}\n"
-                    "輸入`/join`指令來參加抽獎")
+                    f"參加抽獎要付的flow幣: {ticket}")
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
             
     
