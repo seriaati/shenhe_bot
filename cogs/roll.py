@@ -2,7 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from random import randint
-from discord import app_commands
+from discord import Interaction, app_commands
 from utility.FlowApp import flow_app
 from utility.utils import errEmbed, log, openFile, saveFile, defaultEmbed
 
@@ -354,6 +354,16 @@ class RollCog(commands.Cog):
         embed = defaultEmbed(banner, '')
         embed.set_image(url=banners[banner]['banner_pic'])
         await interaction.response.send_message(embed=embed, view=menu)
+
+    @app_commands.command(name='rollstats', description='查看祈願系統資料')
+    async def roll_stats(self, i: Interaction):
+        history = openFile('pull_history')
+        sum = 0
+        for user_id, banners in history.items():
+            for banner_name, rolls in banners.items():
+                for prize, count in rolls.items():
+                    sum+=count
+        await i.response.send_message(embed=defaultEmbed('祈願資料',f'總祈願數: {sum}'))
 
 
 async def setup(bot: commands.Bot) -> None:
