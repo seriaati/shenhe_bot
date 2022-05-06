@@ -186,26 +186,26 @@ class GiveAwayCog(commands.Cog):
                         style=discord.ButtonStyle.grey)
         async def quit(self, interaction: discord.Interaction,
                     button: discord.ui.Button):
-            msg = interaction.message
+            msg_id = self.msg_id
             gv = openFile('giveaways')
-            if msg.id in gv:
-                ticket = -int(gv[msg.id]['ticket'])
-                check, check_msg = self.check_if_already_in_gv(interaction.user.id, msg.id)
+            if msg_id in gv:
+                ticket = -int(gv[msg_id]['ticket'])
+                check, check_msg = self.check_if_already_in_gv(interaction.user.id, msg_id)
                 if check == False:
                     await interaction.response.send_message(embed=check_msg, ephemeral=True)
                     return
-                self.join_giveaway(interaction.user.id, ticket, msg.id)
+                self.join_giveaway(interaction.user.id, ticket, msg_id)
                 await interaction.response.send_message(embed=defaultEmbed(f'✅退出抽獎成功',f'flow幣 +{-int(ticket)}'), ephemeral=True)
-                if gv[msg.id]['role'] is not None:
+                if gv[msg_id]['role'] is not None:
                     g = interaction.client.get_guild(916838066117824553)
-                    role = g.get_role(gv[msg.id]['role'])
+                    role = g.get_role(gv[msg_id]['role'])
                     channel = interaction.client.get_channel(909595117952856084)
-                    await self.update_gv_msg(msg.id, role)
-                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg.id]['prize']})")
+                    await self.update_gv_msg(msg_id, role)
+                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg_id]['prize']})")
                 else:
                     channel = interaction.client.get_channel(909595117952856084)
-                    await self.update_gv_msg(msg.id)
-                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg.id]['prize']})")
+                    await self.update_gv_msg(msg_id)
+                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg_id]['prize']})")
     
     class GiveawaySelection(discord.ui.View):
         def __init__(self):
