@@ -30,13 +30,15 @@ class GiveAwayCog(commands.Cog):
                 f"獎品: {prize}\n"
                 f"目前flow幣: 0/{goal}\n"
                 f"參加抽獎要付的flow幣: {ticket}\n"
-                f"此抽獎專屬於: {role.mention}成員")
+                f"此抽獎專屬於: {role.mention}成員\n"
+                "輸入`/join`指令來參加抽獎")
         else:
             embed = defaultEmbed(
                 ":tada: 抽獎啦!!!",
                 f"獎品: {prize}\n"
                 f"目前flow幣: 0/{goal}\n"
-                f"參加抽獎要付的flow幣: {ticket}")
+                f"參加抽獎要付的flow幣: {ticket}\n"
+                "輸入`/join`指令來參加抽獎")
         channel = self.bot.get_channel(965517075508498452)
         await interaction.response.send_message(embed=embed)
         msg = await interaction.original_message()
@@ -101,13 +103,15 @@ class GiveAwayCog(commands.Cog):
                     f"獎品: {gv[gv_msg_id]['prize']}\n"
                     f"目前flow幣: {gv[gv_msg_id]['current']}/{gv[gv_msg_id]['goal']}\n"
                     f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}\n"
-                    f"此抽獎專屬於: {role.mention}成員")
+                    f"此抽獎專屬於: {role.mention}成員\n"
+                    "輸入`/join`指令來參加抽獎")
             else:
                 embed = defaultEmbed(
                     ":tada: 抽獎啦!!!",
                     f"獎品: {gv[gv_msg_id]['prize']}\n"
                     f"目前flow幣: {gv[gv_msg_id]['current']}/{gv[gv_msg_id]['goal']}\n"
-                    f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}")
+                    f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}\n"
+                    "輸入`/join`指令來參加抽獎")
             await gv_msg.edit(embed=embed)
 
         async def check_gv_finish(self, gv_msg_id: int, interaction: discord.Interaction):
