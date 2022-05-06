@@ -36,11 +36,11 @@ class GenshinCog(commands.Cog):
             min_length=100,
             max_length=1500
         )
-        async def on_submit(self, interaction: discord.Interaction):
+        async def on_submit(self, interaction: Interaction):
             result = await genshin_app.setCookie(interaction.user.id, self.cookie.value)
             await interaction.response.send_message(result, ephemeral=True)
         
-        async def on_error(self, error: Exception, interaction: discord.Interaction):
+        async def on_error(self, error: Exception, interaction: Interaction):
             await interaction.response.send_message('發生未知錯誤', ephemeral=True)
             print(error)
 
@@ -51,7 +51,7 @@ class GenshinCog(commands.Cog):
     @app_commands.choices(option=[
         Choice(name='1. 顯示說明如何取得Cookie', value=0),
         Choice(name='2. 提交已取得的Cookie', value=1)])
-    async def slash_cookie(self, interaction: discord.Interaction, option: int):
+    async def slash_cookie(self, interaction: Interaction, option: int):
         if option == 0:
             help_msg = (
             "1.先複製底下的整段程式碼\n"
@@ -70,7 +70,7 @@ class GenshinCog(commands.Cog):
         name='setuid',
         description='設定原神UID')
     @app_commands.describe(uid='請輸入要保存的原神UID')
-    async def slash_uid(self, interaction: discord.Interaction, uid: int):
+    async def slash_uid(self, interaction: Interaction, uid: int):
         await interaction.response.defer(ephemeral=True)
         result = await genshin_app.setUID(interaction.user.id, int(uid))
         await interaction.edit_original_message(content=result)
@@ -81,13 +81,14 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def check(self, interaction: discord.Interaction,
+    async def check(self, interaction: Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
+        await interaction.response.defer()
         result = await genshin_app.getRealTimeNotes(member.id, False)
         result.set_author(name=self.bot.get_user(member.id), icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.followup.send(embed=result)
 
     @app_commands.command(
         name='stats',
@@ -95,7 +96,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def stats(self, interaction: discord.Interaction,
+    async def stats(self, interaction: Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -109,7 +110,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def area(self, interaction: discord.Interaction,
+    async def area(self, interaction: Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -123,7 +124,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def claim(self, interaction: discord.Interaction,
+    async def claim(self, interaction: Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -142,7 +143,7 @@ class GenshinCog(commands.Cog):
         app_commands.Choice(name='上個月', value=-1),
         app_commands.Choice(name='上上個月', value=-2)]
     )
-    async def diary(self, interaction: discord.Interaction,
+    async def diary(self, interaction: Interaction,
         month: int, member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -162,7 +163,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(type='類別',member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def log(self, interaction:discord.Interaction, type:int,
+    async def log(self, interaction:Interaction, type:int,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -174,7 +175,7 @@ class GenshinCog(commands.Cog):
         name='users',
         description='查看所有已註冊原神帳號'
     )
-    async def users(self, interaction: discord.Interaction):
+    async def users(self, interaction: Interaction):
         print(log(False, False, 'Users', interaction.user.id))
         user_dict = genshin_app.getUserData()
         userStr = ""
@@ -193,7 +194,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def today(self, interaction: discord.Interaction,
+    async def today(self, interaction: Interaction,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -213,7 +214,7 @@ class GenshinCog(commands.Cog):
         floor=[Choice(name='所有樓層', value=0),
                 Choice(name='最後一層', value=1)]
     )
-    async def abyss(self, interaction:discord.Interaction, check_type:int, season:int=1, floor:int=0, member: Optional[Member] = None):
+    async def abyss(self, interaction:Interaction, check_type:int, season:int=1, floor:int=0, member: Optional[Member] = None):
         member = member or interaction.user
         previous = True if season == 0 else False
         result = await genshin_app.getAbyss(member.id, previous)
@@ -237,7 +238,7 @@ class GenshinCog(commands.Cog):
         name='stuck',
         description='找不到資料?'
     )
-    async def stuck(self, interaction: discord.Interaction):
+    async def stuck(self, interaction: Interaction):
         embed = defaultEmbed(
             "已經註冊,但有些資料找不到?",
             "1. 至hoyolab網頁中\n"
@@ -252,7 +253,7 @@ class GenshinCog(commands.Cog):
         name='farm',
         description='查看原神今日可刷素材'
     )
-    async def farm(self, interaction: discord.Interaction):
+    async def farm(self, interaction: Interaction):
         weekdayGet = datetime.today().weekday()
         embedFarm = defaultEmbed(f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")
         if weekdayGet == 0 or weekdayGet == 3:
@@ -282,7 +283,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='風', description='查看風元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_anemo_choices())
-    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+    async def anemo_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.anemo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -296,7 +297,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='冰', description='查看冰元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_cryo_choices())
-    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+    async def anemo_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.cryo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -310,7 +311,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='雷', description='查看雷元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_electro_choices())
-    async def electro_build(self, interaction: discord.Interaction, chara: str):
+    async def electro_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.electro_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -324,7 +325,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='岩', description='查看岩元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_geo_choices())
-    async def geo_build(self, interaction: discord.Interaction, chara: str):
+    async def geo_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.geo_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -338,7 +339,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='水', description='查看水元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_hydro_choices())
-    async def anemo_build(self, interaction: discord.Interaction, chara: str):
+    async def anemo_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.hydro_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -352,7 +353,7 @@ class GenshinCog(commands.Cog):
     @build.command(name='火', description='查看火元素角色的配置、武器、畢業面板')
     @app_commands.rename(chara='角色')
     @app_commands.choices(chara=get_pyro_choices())
-    async def pyro_build(self, interaction: discord.Interaction, chara: str):
+    async def pyro_build(self, interaction: Interaction, chara: str):
         result = await genshin_app.getBuild(self.pyro_dict, str(chara))
         await interaction.response.send_message(embed=result)
 
@@ -362,7 +363,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_anemo_choices())
-    async def anemo_char(self, interaction:discord.Interaction,char:str,
+    async def anemo_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -375,7 +376,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_cryo_choices())
-    async def cryo_char(self, interaction:discord.Interaction,char:str,
+    async def cryo_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -388,7 +389,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_electro_choices())
-    async def electro_char(self, interaction:discord.Interaction,char:str,
+    async def electro_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -401,7 +402,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_geo_choices())
-    async def geo_char(self, interaction:discord.Interaction,char:str,
+    async def geo_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -414,7 +415,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_hydro_choices())
-    async def hydro_char(self, interaction:discord.Interaction,char:str,
+    async def hydro_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -427,7 +428,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(char='角色',member='其他人')
     @app_commands.describe(char='僅能查看自己擁有角色的資料',member='查看其他群友的資料')
     @app_commands.choices(char=get_pyro_choices())
-    async def pyro_char(self, interaction:discord.Interaction,char:str,
+    async def pyro_char(self, interaction:Interaction,char:str,
         member: Optional[Member] = None
     ):
         member = member or interaction.user
@@ -444,7 +445,7 @@ class GenshinCog(commands.Cog):
         # Choice(name='時之沙', value=2),
         Choice(name='空之杯', value=3)])
         # Choice(name='理之冠', value=4)])
-    async def rate(self, interaction:discord.Interaction,type:int,crit_dmg:str,crit_rate:str,atk:str):
+    async def rate(self, interaction:Interaction,type:int,crit_dmg:str,crit_rate:str,atk:str):
         crit_dmg = int(re.search(r'\d+', crit_dmg).group())
         crit_rate = int(re.search(r'\d+', crit_rate).group())
         atk = int(re.search(r'\d+', atk).group())
