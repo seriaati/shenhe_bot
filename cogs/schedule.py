@@ -91,7 +91,7 @@ class Schedule(commands.Cog):
                 await asyncio.sleep(2.0)
             print(log(True, False, 'Schedule', f'Auto claim finished, {count} in total'))
         
-        if abs(now.hour - 1) % 1 == 1 and now.minute < self.loop_interval:
+        if abs(now.hour - 1) % 2 == 1 and now.minute < self.loop_interval:
         # if True:
             print(log(True, False, 'Schedule','Resin check started'))
             resin_data = self.getResinData()
