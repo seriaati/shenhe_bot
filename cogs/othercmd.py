@@ -36,7 +36,6 @@ class OtherCMDCog(commands.Cog):
     async def on_member_join(self, member):
         public = self.bot.get_channel(916951131022843964)
         uid_channel = self.bot.get_channel(935111580545343509)
-        await public.send()
         embed = defaultEmbed(
             "重要事項",
             f"• 至{uid_channel.mention}輸入原神uid\n"
