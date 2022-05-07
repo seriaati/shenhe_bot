@@ -139,7 +139,7 @@ class GiveAwayCog(commands.Cog):
                 embed = errEmbed('你沒有參加過這個抽獎','')
                 return False, embed
 
-        async def button_update_gv_message(self, gv_msg_id:int, role:Role=None):
+        def button_update_gv_message(self, gv_msg_id:int, role:Role=None):
             gv = openFile('giveaways')
             if role is not None:
                 embed = defaultEmbed(
