@@ -114,13 +114,13 @@ class GiveAwayCog(commands.Cog):
                     "輸入`/join`指令來參加抽獎")
             await gv_msg.edit(embed=embed)
 
-        async def check_gv_finish(self, gv_msg_id: int, interaction: discord.Interaction):
+        async def check_gv_finish(self, gv_msg_id: int):
             gv = openFile('giveaways')
             if gv[gv_msg_id]['current'] == gv[gv_msg_id]['goal']:
-                channel = interaction.client.get_channel(965517075508498452)
-                lulurR = interaction.client.get_user(665092644883398671)
+                channel = self.interaction.client.get_channel(965517075508498452)
+                lulurR = self.interaction.client.get_user(665092644883398671)
                 winner_id = random.choice(gv[gv_msg_id]['members'])
-                winner = interaction.client.get_user(int(winner_id))
+                winner = self.interaction.client.get_user(int(winner_id))
                 embed = defaultEmbed(
                     "抽獎結果",
                     f"恭喜{winner.mention}獲得價值{gv[gv_msg_id]['goal']} flow幣的 {gv[gv_msg_id]['prize']} !")
@@ -189,7 +189,7 @@ class GiveAwayCog(commands.Cog):
                 await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
                 await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r), ephemeral=True)
                 await self.update_gv_msg(msg_id, r)
-                await self.check_gv_finish(msg_id, interaction)
+                await self.check_gv_finish(msg_id)
             else:
                 await interaction.response.send_message(embed=errEmbed('該抽獎不存在!', '(因為某些不明原因)'))
 
