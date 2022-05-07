@@ -680,12 +680,12 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name='setkey', description='設置原神祈願紀錄')
-    @app_commands.rename(function='功能',member='其他人')
-    @app_commands.describe(function='查看說明或提交連結',member='查看其他群友的資料')
+    @app_commands.rename(function='功能')
+    @app_commands.describe(function='查看說明或提交連結')
     @app_commands.choices(function=
         [Choice(name='查看祈願紀錄的設置方式', value='help'),
         Choice(name='提交連結', value='submit')])
-    async def set_key(self, i: Interaction, function: str, member: Optional[Member] = None):
+    async def set_key(self, i: Interaction, function: str):
         if function == 'help':
             view = GenshinCog.ChoosePlatform()
             embed = defaultEmbed(
