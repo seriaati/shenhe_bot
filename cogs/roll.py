@@ -1,13 +1,20 @@
 import asyncio
 import discord
 from discord.ext import commands
+from random import randint
 from discord import Interaction, app_commands
 from utility.FlowApp import flow_app
-from utility.utils import errEmbed, openFile, defaultEmbed
-from utility.RollApp import animation_chooser, check_big_prize, check_user_data, give_money, gu_system, write_history_and_gu
+from utility.utils import errEmbed, log, openFile, saveFile, defaultEmbed
 
-global contribution_mode
-contribution_mode = True
+global blue_gif, purple_gif, gold_gif, air, blue_sleep, purple_sleep, gold_sleep, big_prize
+blue_gif = 'https://media.discordapp.net/attachments/968783693814587423/970226962650001418/IMG_0482.gif'
+purple_gif = 'https://media.discordapp.net/attachments/968783693814587423/970226962356391966/IMG_0477.gif'
+gold_gif = 'https://c.tenor.com/Nc7Fgo43GLwAAAAC/genshin-gold-genshin-wish.gif'
+air = '再接再厲!'
+blue_sleep = 6.0
+purple_sleep = 5.6
+gold_sleep = 5.3
+
 
 class RollCog(commands.Cog):
     def __init__(self, bot) -> None:
@@ -38,6 +45,191 @@ class RollCog(commands.Cog):
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
                 return interaction.user.id == self.author.id
 
+            def animation_chooser(self, prize, banner: str):
+                banners = openFile('roll')
+                big_prize = banners[banner]['big_prize']
+                if type(prize) is list:
+                    for item in prize:
+                        if item == big_prize:
+                            result = gold_gif, gold_sleep
+                            break
+                        elif item == '100 flow幣':
+                            result = purple_gif, purple_sleep
+                            break
+                        else:
+                            result = blue_gif, blue_sleep
+                else:
+                    if prize == air or prize == '10 flow幣':
+                        result = blue_gif, blue_sleep
+                    elif prize == '100 flow幣':
+                        result = purple_gif, purple_sleep
+                    elif prize == big_prize:
+                        result = gold_gif, gold_sleep
+                return result
+
+            def pull_card(self, is_ten_pull: bool, state: int, banner: str):
+                banners = openFile('roll')
+                big_prize = banners[banner]['big_prize']
+                prize_pool = banners[self.banner]['prizes']
+                count = 0
+                prize_pool_list = []
+                for item, num in prize_pool.items():
+                    for i in range(int(num)):
+                        count += 1
+                        prize_pool_list.append(item)
+                if state == 0:
+                    for i in range(1000-count):
+                        prize_pool_list.append(air)
+                elif state == 1:
+                    for i in range(1000-count-44):
+                        prize_pool_list.append(air)
+                    for i in range(44):
+                        prize_pool_list.append(big_prize)
+                elif state == 2:
+                    for i in range(1000-count-94):
+                        prize_pool_list.append(air)
+                    for i in range(94):
+                        prize_pool_list.append(big_prize)
+                else:
+                    for i in range(1000-count):
+                        prize_pool_list.append(air)
+                if not is_ten_pull:
+                    index = randint(0, 999)
+                    return prize_pool_list[index]
+                else:
+                    result = []
+                    for i in range(10):
+                        index = randint(0, 999)
+                        result.append(prize_pool_list[index])
+                    return result
+
+            def give_money(self, user_id: int, prize):
+                if type(prize) is list:
+                    for item in prize:
+                        if item == '10 flow幣':
+                            flow_app.transaction(
+                                user_id=user_id, flow_for_user=10)
+                        elif item == '100 flow幣':
+                            flow_app.transaction(
+                                user_id=user_id, flow_for_user=100)
+                        elif item == '1000 flow幣':
+                            flow_app.transaction(
+                                user_id=user_id, flow_for_user=1000)
+                else:
+                    if prize == '10 flow幣':
+                        flow_app.transaction(user_id=user_id, flow_for_user=10)
+                    elif prize == '100 flow幣':
+                        flow_app.transaction(
+                            user_id=user_id, flow_for_user=100)
+                    elif prize == '1000 flow幣':
+                        flow_app.transaction(
+                            user_id=user_id, flow_for_user=1000)
+
+            def check_user_data(self, user_id: int, banner: str):
+                banners = openFile('roll')
+                history = openFile('pull_history')
+                gu = openFile('pull_guarantee')
+                if user_id not in history:
+                    history[user_id] = {}
+                if user_id not in gu:
+                    gu[user_id] = {}
+                if banner not in history[user_id]:
+                    history[user_id][banner] = {}
+                    for item, count in banners[banner]['prizes'].items():
+                        history[user_id][banner][item] = 0
+                    history[user_id][banner][air] = 0
+                if banner not in gu[user_id]:
+                    gu[user_id][banner] = {}
+                    for item, count in banners[banner]['prizes'].items():
+                        gu[user_id][banner][item] = 0
+                    gu[user_id][banner][air] = 0
+                saveFile(history, 'pull_history')
+                saveFile(gu, 'pull_guarantee')
+
+            def gu_system(self, user_id: int, banner: str):
+                gu = openFile('pull_guarantee')
+                sum = 0
+                for item, count in gu[user_id][banner].items():
+                    sum += count
+                if sum < 70:
+                    prize = self.pull_card(self.ten_pull, 0, self.banner)
+                elif 70 <= sum < 80:
+                    prize = self.pull_card(self.ten_pull, 1, self.banner)
+                elif 80 <= sum < 89:
+                    prize = self.pull_card(self.ten_pull, 2, self.banner)
+                elif sum >= 89:
+                    prize = self.pull_card(self.ten_pull, 3, self.banner)
+                    if type(prize) is not list:
+                        prize = big_prize
+                    else:
+                        prize[0] = big_prize
+                return prize
+
+            def check_big_prize(self, user_id: int, prize, banner: str):
+                gu = openFile('pull_guarantee')
+                banners = openFile('roll')
+                big_prize = banners[banner]['big_prize']
+                msg = defaultEmbed(
+                    '有人在抽卡裡抽到月卡了!',
+                    f'ID: {user_id}\n'
+                    '按ctrl+k並貼上ID即可查看使用者')
+                if type(prize) is not list:
+                    if prize == big_prize:
+                        gu[user_id][banner] = {
+                            big_prize: 0,
+                            '10 flow幣': 0,
+                            '100 flow幣': 0,
+                            '1000 flow幣': 0,
+                            air: 0
+                        }
+                        print(log(True, False, 'Roll',
+                              f'{user_id} got big_prize'))
+                        saveFile(gu, 'pull_guarantee')
+                        return True, msg
+                    else:
+                        return False, None
+                else:
+                    if big_prize in prize:
+                        gu[user_id][banner] = {
+                            big_prize: 0,
+                            '10 flow幣': 0,
+                            '100 flow幣': 0,
+                            '1000 flow幣': 0,
+                            air: 0
+                        }
+                        print(log(True, False, 'Roll',
+                              f'{user_id} got big_prize'))
+                        saveFile(gu, 'pull_guarantee')
+                        return True, msg
+                    else:
+                        return False, None
+
+            def write_history_and_gu(self, user_id: int, prize, banner: str):
+                banners = openFile('roll')
+                history = openFile('pull_history')
+                gu = openFile('pull_guarantee')
+                big_prize = banners[banner]['big_prize']
+                if type(prize) is not list:
+                    history[user_id][banner][prize] += 1
+                    if prize != big_prize:
+                        gu[user_id][banner][prize] += 1
+                else:
+                    prizeStr = ''
+                    count = 0
+                    for item in prize:
+                        if item == air:
+                            count += 1
+                        history[user_id][banner][item] += 1
+                        if item != big_prize:
+                            gu[user_id][banner][item] += 1
+                        prizeStr += f'• {item}\n'
+                    prize = prizeStr
+                    if count == 10:
+                        prize = '10抽什麼都沒有, 太可惜了...'
+                saveFile(history, 'pull_history')
+                saveFile(gu, 'pull_guarantee')
+                return prize
+
             @discord.ui.button(label='確認', style=discord.ButtonStyle.green, row=0)
             async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
                 if not self.ten_pull:
@@ -46,17 +238,17 @@ class RollCog(commands.Cog):
                 else:
                     flow_app.transaction(
                         user_id=interaction.user.id, flow_for_user=-100)
-                check_user_data(interaction.user.id, self.banner, contribution_mode)
-                prize = gu_system(interaction.user.id, self.ten_pull, self.banner, contribution_mode)
-                give_money(interaction.user.id, prize)
+                self.check_user_data(interaction.user.id, self.banner)
+                prize = self.gu_system(interaction.user.id, self.banner)
+                self.give_money(interaction.user.id, prize)
                 luluR = interaction.client.get_user(665092644883398671)
-                check, msg = check_big_prize(
-                    interaction.user.id, prize, self.banner, contribution_mode)
+                check, msg = self.check_big_prize(
+                    interaction.user.id, prize, self.banner)
                 if check == True:
                     await luluR.send(embed=msg)
-                gif, sleep_time = animation_chooser(prize, self.banner)
-                result = write_history_and_gu(
-                    interaction.user.id, prize, self.banner, contribution_mode)
+                gif, sleep_time = self.animation_chooser(prize, self.banner)
+                result = self.write_history_and_gu(
+                    interaction.user.id, prize, self.banner)
                 embed = defaultEmbed(self.banner, '')
                 embed.set_image(url=gif)
                 menu = RollCog.Menu(
@@ -82,7 +274,7 @@ class RollCog(commands.Cog):
                 value="70抽之前: 0.6%\n"
                 "70-80抽: 5%\n"
                 "80-90抽: 10%\n"
-                "1000抽: 100%",
+                "90抽: 100%",
                 inline=False
             )
             embed.add_field(
