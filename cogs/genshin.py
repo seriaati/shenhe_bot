@@ -526,7 +526,7 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=result)
     
     class PageChooser(discord.ui.Select):
-        def __init__(self, page:int, result:list):
+        def __init__(self, page:int, result:list, author: discord.Member):
             options = self.get_page_choices(page)
             self.page = page 
             self.result = result
@@ -538,6 +538,9 @@ class GenshinCog(commands.Cog):
                 result.append(discord.SelectOption(label=f'第 {i} 頁'))
             return result
 
+        async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            return interaction.user.id == self.author.id
+        
         async def callback(self, interaction: discord.Interaction):
             choice = self.values[0]
             pos = [int(s) for s in re.findall(r'\b\d+\b', choice)]
@@ -547,9 +550,9 @@ class GenshinCog(commands.Cog):
             await interaction.response.edit_message(embed=defaultEmbed('詳細祈願紀錄', resultStr))
 
     class PageChooserView(discord.ui.View):
-        def __init__(self, page:int, result:list):
+        def __init__(self, page:int, result:list, i: Interaction):
             super().__init__(timeout=None)
-            self.add_item(GenshinCog.PageChooser(page, result))
+            self.add_item(GenshinCog.PageChooser(page, result, i.user))
         
     def divide_chunks(l, n):
         for i in range(0, len(l), n): 
@@ -557,22 +560,22 @@ class GenshinCog(commands.Cog):
     
     @app_commands.command(name='wish', description='祈願紀錄查詢與抽卡分析')
     async def wish_history(self, i: Interaction):
+        print(log(False, False, 'Wish', i.user.id))
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
         except Exception as e:
             await i.response.send_message(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
-            print(e)
             return
         await i.response.defer()
         result = []
         for wish in user_wish_histroy:
             wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
             if wish.rarity == 5 or wish.rarity == 4:
-                result.append(f"[{wish_time}:  {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
+                result.append(f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
             else:
-                result.append(f"{wish_time}:  {wish.name} ({wish.rarity}☆ {wish.type})")
+                result.append(f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
         split_list = list(GenshinCog.divide_chunks(result, 25))
-        view = GenshinCog.PageChooserView(len(split_list), split_list)
+        view = GenshinCog.PageChooserView(len(split_list), split_list, i)
         resultStr = ''
         for wish in result[:25]:
             resultStr += f'{wish}\n'
