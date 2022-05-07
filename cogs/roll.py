@@ -40,14 +40,15 @@ class RollCog(commands.Cog):
 
             @discord.ui.button(label='確認', style=discord.ButtonStyle.green, row=0)
             async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+                one_pull_price = -40 if contribution_mode == True else -10
                 if not self.ten_pull:
                     flow_app.transaction(
-                        user_id=interaction.user.id, flow_for_user=-10)
+                        user_id=interaction.user.id, flow_for_user=one_pull_price)
                 else:
                     flow_app.transaction(
-                        user_id=interaction.user.id, flow_for_user=-100)
+                        user_id=interaction.user.id, flow_for_user=int(one_pull_price)*10)
                 check_user_data(interaction.user.id, self.banner, contribution_mode)
-                prize = gu_system(interaction.user.id, self.ten_pull, self.banner, contribution_mode)
+                prize = gu_system(interaction.user.id, self.banner, self.ten_pull,contribution_mode)
                 give_money(interaction.user.id, prize)
                 luluR = interaction.client.get_user(665092644883398671)
                 check, msg = check_big_prize(
@@ -77,14 +78,22 @@ class RollCog(commands.Cog):
         @discord.ui.button(label='詳情', style=discord.ButtonStyle.gray, row=0)
         async def detail_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             embed = defaultEmbed('祈願詳情', '')
-            embed.add_field(
-                name=f'限定 UP - {self.big_prize}',
-                value="70抽之前: 0.6%\n"
-                "70-80抽: 5%\n"
-                "80-90抽: 10%\n"
-                "1000抽: 100%",
-                inline=False
-            )
+            if contribution_mode == False:
+                embed.add_field(
+                    name=f'限定 UP - {self.big_prize}',
+                    value="70抽之前: 0.6%\n"
+                    "70-80抽: 5%\n"
+                    "80-90抽: 10%\n"
+                    "1000抽: 100%",
+                    inline=False
+                )
+            else:
+                embed.add_field(
+                    name='公眾池模式',
+                    value=
+                    '所有人保底及歷史紀錄共計\n'
+                    '1000抽: 100%'
+                )
             embed.add_field(
                 name='其他獎品',
                 value='10 Flow幣: 10%\n'
@@ -98,18 +107,26 @@ class RollCog(commands.Cog):
         async def history_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             history = openFile('pull_history')
             gu = openFile('pull_guarantee')
+            user_id = 'all' if contribution_mode == True else interaction.user.id
+            gu_count = 1000 if contribution_mode == True else 90
+            if user_id not in history:
+                history[user_id] = {}
+            if user_id not in gu:
+                gu[user_id] = {}
             sum = 0
             gu_sum = 0
             result = ''
-            if self.banner not in history[interaction.user.id]:
+            if contribution_mode == True:
+                user_id = 'all'
+            if self.banner not in history[user_id]:
                 result = '你還沒有在這期抽過卡!'
             else:
-                for item, count in history[interaction.user.id][self.banner].items():
+                for item, count in history[user_id][self.banner].items():
                     sum += count
                     result += f'{item} • {count}次\n'
-                for item, count in gu[interaction.user.id][self.banner].items():
+                for item, count in gu[user_id][self.banner].items():
                     gu_sum += count
-            embed = defaultEmbed(f'祈願紀錄(共{sum}抽, 目前距離保底{90-gu_sum}抽)', result)
+            embed = defaultEmbed(f'祈願紀錄(共{sum}抽, 目前距離保底{gu_count-gu_sum}抽)', result)
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0)
@@ -157,7 +174,7 @@ class RollCog(commands.Cog):
             await interaction.response.send_message(embed=msg, ephemeral=True)
             return
         banners = openFile('roll')
-        banner = '星月交輝 - 限定祈願'
+        banner = '曲終人散 - 風流水性'
         menu = self.Menu(interaction.user, banner)
         embed = defaultEmbed(banner, '')
         embed.set_image(url=banners[banner]['banner_pic'])
