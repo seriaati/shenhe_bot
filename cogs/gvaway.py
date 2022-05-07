@@ -187,7 +187,7 @@ class GiveAwayCog(commands.Cog):
                     return
                 self.join_giveaway(interaction.user.id, ticket, msg_id)
                 await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
-                await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r))
+                await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r), ephemeral=True)
                 await self.update_gv_msg(msg_id, r)
                 await self.check_gv_finish(msg_id, interaction)
             else:
@@ -209,7 +209,7 @@ class GiveAwayCog(commands.Cog):
                     return
                 self.join_giveaway(interaction.user.id, ticket, msg_id)
                 await interaction.response.send_message(embed=defaultEmbed(f'✅退出抽獎成功',f'flow幣 +{-int(ticket)}'), ephemeral=True)
-                await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r))
+                await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r), ephemeral=True)
                 await self.update_gv_msg(msg_id, r)
     
     class GiveawaySelection(discord.ui.View):
