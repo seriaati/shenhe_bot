@@ -111,9 +111,11 @@ class Schedule(commands.Cog):
                         try:
                             embed = errEmbed('危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
                             await user.send(embed=embed)
+                            if user_id == 410036441129943050:
+                                user = self.bot.get_user(272394461646946304)
+                                await user.send(embed=embed)
                             resin_data[user_id] += 1
                             self.__saveScheduleData(resin_data, self.__resin_notifi_filename)
-                            
                         except:
                             self.__remove_user(user_id, self.__resin_dict, self.__resin_notifi_filename)
                 elif result==False:
