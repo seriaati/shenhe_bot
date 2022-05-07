@@ -53,8 +53,11 @@ def getWeekdayName(n: int) -> str:
     return weekday_dict.get(n)
 
 def openFile(file_name:str) -> dict:
-    with open(f'data/{file_name}.yaml', encoding='utf-8') as file:
-        return yaml.full_load(file)
+    with open(f'data/{file_name}.yaml', 'r', encoding='utf-8') as file:
+        result =  yaml.unsafe_load(file)
+    if result is None:
+        result = {}
+    return result
 
 def saveFile(data:dict, file_name:str):
     with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
