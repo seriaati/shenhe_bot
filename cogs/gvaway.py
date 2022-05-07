@@ -93,10 +93,11 @@ class GiveAwayCog(commands.Cog):
                 gv[gv_msg_id]['members'].append(user_id)
             saveFile(gv, 'giveaways')
 
-        async def update_gv_msg(self, gv_msg_id: int, role: discord.Role = None):
+        async def update_gv_msg(self, gv_msg_id: int):
             channel = self.interaction.client.get_channel(965517075508498452)
             gv_msg = await channel.fetch_message(gv_msg_id)
             gv = openFile('giveaways')
+            role = gv[gv_msg_id]['role']
             if role is not None:
                 embed = defaultEmbed(
                     ":tada: 抽獎啦!!!",
@@ -139,6 +140,26 @@ class GiveAwayCog(commands.Cog):
                 embed = errEmbed('你沒有參加過這個抽獎','')
                 return False, embed
 
+        def button_update_gv_message(self, gv_msg_id:int):
+            gv = openFile('giveaways')
+            role = gv[gv_msg_id]['role']
+            if role is not None:
+                embed = defaultEmbed(
+                    ":tada: 抽獎啦!!!",
+                    f"獎品: {gv[gv_msg_id]['prize']}\n"
+                    f"目前flow幣: {gv[gv_msg_id]['current']}/{gv[gv_msg_id]['goal']}\n"
+                    f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}\n"
+                    f"此抽獎專屬於: {role.mention}成員\n"
+                    "輸入`/join`指令來參加抽獎")
+            else:
+                embed = defaultEmbed(
+                    ":tada: 抽獎啦!!!",
+                    f"獎品: {gv[gv_msg_id]['prize']}\n"
+                    f"目前flow幣: {gv[gv_msg_id]['current']}/{gv[gv_msg_id]['goal']}\n"
+                    f"參加抽獎要付的flow幣: {gv[gv_msg_id]['ticket']}\n"
+                    "輸入`/join`指令來參加抽獎")
+            return embed
+
         @discord.ui.button(label='參加抽獎',
                         style=discord.ButtonStyle.green)
         async def participate(self, interaction: discord.Interaction,
@@ -166,8 +187,8 @@ class GiveAwayCog(commands.Cog):
                     if role in interaction.user.roles:
                         self.join_giveaway(interaction.user.id, ticket, msg_id)
                         await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
-                        await self.update_gv_msg(msg_id, role)
-                        await channel.send(f"[抽獎][{interaction.user}] (ticket={ticket}, prize={gv[msg_id]['prize']})")
+                        await interaction.followup.send(embed=self.button_update_gv_message(msg_id))
+                        await self.update_gv_msg(msg_id)
                         await self.check_gv_finish(msg_id, interaction)
                     else:
                         await interaction.response.send_message(embed=errEmbed(
@@ -180,9 +201,9 @@ class GiveAwayCog(commands.Cog):
                         return
                     self.join_giveaway(interaction.user.id, ticket, msg_id)
                     await interaction.response.send_message(embed=defaultEmbed(f'✅ 參加抽獎成功',f'flow幣 -{ticket}'), ephemeral=True)
-                    await self.update_gv_msg(msg_id)
-                    await channel.send(f"[抽獎][{interaction.user}] (ticket={ticket}, prize={gv[msg_id]['prize']})")
+                    await interaction.followup.send(embed=self.button_update_gv_message(msg_id))
                     await self.check_gv_finish(msg_id, interaction)
+                    await self.update_gv_msg(msg_id)
             else:
                 await interaction.response.send_message(embed=errEmbed('該抽獎不存在!', '(因為某些不明原因)'))
 
@@ -200,16 +221,8 @@ class GiveAwayCog(commands.Cog):
                     return
                 self.join_giveaway(interaction.user.id, ticket, msg_id)
                 await interaction.response.send_message(embed=defaultEmbed(f'✅退出抽獎成功',f'flow幣 +{-int(ticket)}'), ephemeral=True)
-                if gv[msg_id]['role'] is not None:
-                    g = interaction.client.get_guild(916838066117824553)
-                    role = g.get_role(gv[msg_id]['role'])
-                    channel = interaction.client.get_channel(909595117952856084)
-                    await self.update_gv_msg(msg_id, role)
-                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg_id]['prize']})")
-                else:
-                    channel = interaction.client.get_channel(909595117952856084)
-                    await self.update_gv_msg(msg_id)
-                    await channel.send(f"[抽獎][{interaction.user}] (ticket={-int(ticket)}, prize={gv[msg_id]['prize']})")
+                await interaction.followup.send(embed=self.button_update_gv_message(msg_id))
+                await self.update_gv_msg(msg_id)
     
     class GiveawaySelection(discord.ui.View):
         def __init__(self):
