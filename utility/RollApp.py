@@ -142,7 +142,7 @@ def gu_system(user_id: int, banner: str, is_ten_pull:bool, contribution_mode: bo
             else:
                 prize[0] = big_prize
     else:
-        if sum == 1000:
+        if sum >= 99:
             prize = prize = pull_card(is_ten_pull, 3, banner)
             if type(prize) is not list:
                 prize = big_prize

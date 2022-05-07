@@ -81,10 +81,11 @@ class RollCog(commands.Cog):
             if contribution_mode == False:
                 embed.add_field(
                     name=f'限定 UP - {self.big_prize}',
-                    value="70抽之前: 0.6%\n"
-                    "70-80抽: 5%\n"
-                    "80-90抽: 10%\n"
-                    "1000抽: 100%",
+                    value=
+                    "70抽之前: 0.6%\n"
+                    "70-79抽: 5%\n"
+                    "80-89抽: 10%\n"
+                    "90抽: 100%",
                     inline=False
                 )
             else:
@@ -92,13 +93,14 @@ class RollCog(commands.Cog):
                     name='公眾池模式',
                     value=
                     '所有人保底及歷史紀錄共計\n'
-                    '1000抽: 100%'
+                    '100抽: 100%',
+                    inline=False
                 )
             embed.add_field(
                 name='其他獎品',
-                value='10 Flow幣: 10%\n'
-                '100 Flow: 3%\n'
-                '1000 Flow: 0.1%',
+                value=
+                '10 Flow幣: 10%\n'
+                '100 Flow: 3%\n',
                 inline=False
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -108,7 +110,7 @@ class RollCog(commands.Cog):
             history = openFile('pull_history')
             gu = openFile('pull_guarantee')
             user_id = 'all' if contribution_mode == True else interaction.user.id
-            gu_count = 1000 if contribution_mode == True else 90
+            gu_count = 100 if contribution_mode == True else 90
             if user_id not in history:
                 history[user_id] = {}
             if user_id not in gu:
