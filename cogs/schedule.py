@@ -50,7 +50,7 @@ class Schedule(commands.Cog):
             await interaction.response.send_message(embed=embed)
             return
         # 確認使用者Cookie資料
-        check, msg = genshin_app.checkUserData(interaction.user.id)
+        check, msg = await genshin_app.checkUserData(interaction.user.id)
         if check == False:
             await interaction.response.send_message(embed=msg)
             return
