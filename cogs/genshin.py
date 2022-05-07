@@ -559,8 +559,9 @@ class GenshinCog(commands.Cog):
     async def wish_history(self, i: Interaction):
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
-        except Exception:
+        except Exception as e:
             await i.response.send_message(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
+            print(e)
             return
         await i.response.defer()
         result = []
