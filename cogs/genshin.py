@@ -588,14 +588,12 @@ class GenshinCog(commands.Cog):
             placeholder='請ctrl+v貼上複製的連結',
             style=discord.TextStyle.long,
             required=True,
-            min_length=1500,
+            min_length=0,
             max_length=3000
         )
 
         async def on_submit(self, interaction: discord.Interaction):
-
             client = genshin.Client()
-
             try:
                 check, msg = genshin_app.checkUserData(interaction.user.id)
                 if check == False:
