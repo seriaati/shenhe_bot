@@ -6,7 +6,7 @@ from discord.app_commands import Choice
 from typing import List, Optional
 import uuid
 import random
-from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
+from utility.utils import can_dm_user, defaultEmbed, errEmbed, log, openFile, saveFile
 import discord
 from utility.FlowApp import flow_app
 
@@ -475,9 +475,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+            check, check_msg = can_dm_user(interaction.user)
+            if check == False:
+                await interaction.response.send_message(embed=check_msg, ephemeral=True)
+                return
             msg = interaction.message
             finds = openFile('find')
-            users = openFile('flow')
             confirms = openFile('confirm')
             if msg.id in finds:
                 print(log(True, False, 'Accept', f"(author = {finds[msg.id]['authorID']}, accepter = {interaction.user.id})"))
@@ -485,32 +488,20 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 author = interaction.client.get_user(finds[msg.id]['authorID'])
                 acceptUser = interaction.client.get_user(interaction.user.id)
                 if finds[msg.id]['type'] == 1:
-                    try:
-                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
-                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
-                    except:
-                        pass
+                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
+                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
                     await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 2:
-                    try:
-                        await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 素材委託")
-                        await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
-                    except:
-                        pass
+                    await author.send(f"[成功接受素材委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 素材委託")
+                    await acceptUser.send(f"[成功接受素材委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
                     await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
                 elif finds[msg.id]['type'] == 3:
-                    try:
-                        await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
-                        await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
-                    except:
-                        pass
+                    await author.send(f"[成功接受委託] {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 委託")
+                    await acceptUser.send(f"[成功接受委託] 你接受了 {author.mention} 的 {finds[msg.id]['title']} 委託")
                     await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 4:
-                    try:
-                        await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 幫助")
-                        await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[msg.id]['title']} 幫助")
-                    except:
-                        pass
+                    await author.send(f"✅ {acceptUser.mention} 接受了你的 {finds[msg.id]['title']} 幫助")
+                    await acceptUser.send(f"✅ 你接受了 {author.mention} 的 {finds[msg.id]['title']} 幫助")
                     await interaction.response.send_message(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
 
                 view = self.OKconfirm()

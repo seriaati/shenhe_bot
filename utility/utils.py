@@ -62,3 +62,16 @@ def openFile(file_name:str) -> dict:
 def saveFile(data:dict, file_name:str):
     with open(f'data/{file_name}.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(data, f)
+
+async def can_dm_user(user: discord.User) -> bool:
+    ch = user.dm_channel
+    embed = errEmbed('你沒有開啟私訊功能!','請右鍵「緣神有你」 > 隱私設定 > 打開「允許來自伺服器成員的私人訊息」 > 完成')
+    embed.set_image(url='https://images-ext-2.discordapp.net/external/yEgI-QTBf4czF65w225am3NbrDeoXDaq6-nLB92NQb8/%3Fraw%3Dtrue/https/github.com/MuMapleTW/mybot/blob/master/image/opendm.png')
+    if ch is None:
+        ch = await user.create_dm()
+    try:
+        await ch.send()
+    except discord.Forbidden:
+        return False, embed
+    except discord.HTTPException:
+        return True, None
