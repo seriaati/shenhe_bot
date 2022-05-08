@@ -133,9 +133,10 @@ class RollCog(commands.Cog):
 
         @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0)
         async def one_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            one_pull_price = -40 if contribution_mode == True else -10
             users = openFile('flow')
-            if users[interaction.user.id]['flow'] < 10:
-                embed = errEmbed('你的flow幣不足!', '1次祈願需花費10 flow幣')
+            if users[interaction.user.id]['flow'] < one_pull_price:
+                embed = errEmbed('你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = self.Confirm(
@@ -144,9 +145,10 @@ class RollCog(commands.Cog):
 
         @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple, row=0)
         async def ten_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            one_pull_price = -40 if contribution_mode == True else -10
             users = openFile('flow')
-            if users[interaction.user.id]['flow'] < 100:
-                embed = errEmbed('你的flow幣不足!', '10次祈願共需花費100 flow幣')
+            if users[interaction.user.id]['flow'] < one_pull_price*10:
+                embed = errEmbed('你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = self.Confirm(
