@@ -147,7 +147,7 @@ class RollCog(commands.Cog):
         async def ten_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             one_pull_price = -40 if contribution_mode == True else -10
             users = openFile('flow')
-            if users[interaction.user.id]['flow'] < one_pull_price*10:
+            if users[interaction.user.id]['flow'] < int(one_pull_price)*10:
                 embed = errEmbed('你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
