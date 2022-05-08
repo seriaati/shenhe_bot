@@ -131,7 +131,7 @@ class RollCog(commands.Cog):
             embed = defaultEmbed(f'祈願紀錄(共{sum}抽, 目前距離保底{gu_count-gu_sum}抽)', result)
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0)
+        @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0, disabled=True)
         async def one_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             one_pull_price = 40 if contribution_mode == True else 10
             users = openFile('flow')
@@ -143,7 +143,7 @@ class RollCog(commands.Cog):
                 author=interaction.user, is_ten_pull=False, banner=self.banner)
             await interaction.response.edit_message(view=confirm)
 
-        @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple, row=0)
+        @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple, row=0, disabled=True)
         async def ten_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
             one_pull_price = 40 if contribution_mode == True else 10
             users = openFile('flow')
