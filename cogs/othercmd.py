@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import Interaction, app_commands
 from random import randint
 from utility.utils import defaultEmbed, log
 
@@ -140,6 +140,11 @@ class OtherCMDCog(commands.Cog):
         channel = interaction.channel
         deleted = await channel.purge(limit=int(number))
         await channel.send('🗑️ 已移除 {} 個訊息'.format(len(deleted)), delete_after=3)
+
+    @app_commands.command(name='members',description='查看目前群組總人數')
+    async def members(self, i:Interaction):
+        g = i.user.guild
+        await i.response.send_message(embed=defaultEmbed('群組總人數',f'目前共 {len(g.members)} 人'))
 
 
 async def setup(bot: commands.Bot) -> None:
