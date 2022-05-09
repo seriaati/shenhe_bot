@@ -194,6 +194,11 @@ class Dropdown(discord.ui.Select):
                 value='語錄他人',
                 inline=False
             )
+            embed.add_field(
+                name='`/members`',
+                value='查看群組總人數',
+                inline=False
+            )
         await interaction.response.send_message(embed=embed, ephemeral=True) 
 
 class DropdownView(discord.ui.View):
