@@ -443,6 +443,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 msg = interaction.message
                 confirms = openFile('confirm')
                 users = openFile('flow')
+                free_trial = openFile('find_free_trial')
+                if authorID not in free_trial:
+                    free_trial[authorID] = 0
                 authorID = confirms[msg.id]['authorID']
                 receiverID = confirms[msg.id]['receiverID']
                 flow = confirms[msg.id]['flow']
@@ -458,20 +461,38 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         users[authorID]['flow'] -= flow
                     if receiverID in users:
                         users[receiverID]['flow'] += flow
-
+                str = ''
+                new_flow = flow
                 author = interaction.client.get_user(authorID)
                 receiver = interaction.client.get_user(receiverID)
                 if type == 4:
-                    embed = defaultEmbed("🆗 結算成功",
-                                         f"幫忙名稱: {title}\n幫助人: {author.mention} **+{flow} flow幣**\n被幫助人: {receiver.mention} **-{flow} flow幣**")
+                    if free_trial[receiverID] < 10:
+                        flow_app.transaction(receiverID, 10)
+                        str = '(被幫助人受到10 flow幣贊助)'
+                        new_flow = flow-10
+                        free_trial[receiverID] += 1
+                    embed = defaultEmbed(
+                        "🆗 結算成功",
+                        f"幫忙名稱: {title}\n"
+                        f"幫助人: {author.mention} **+{flow} flow幣**\n"
+                        f"被幫助人: {receiver.mention} **-{new_flow} flow幣**\n{str}")
                 else:
-                    embed = defaultEmbed("🆗 結算成功",
-                                         f"委託名稱: {title}\n委託人: {author.mention} **-{flow} flow幣**\n接收人: {receiver.mention} **+{flow} flow幣**")
+                    if free_trial[authorID] < 10:
+                        flow_app.transaction(authorID, 10)
+                        str = '(被幫助人受到10 flow幣贊助)'
+                        new_flow = flow-10
+                        free_trial[authorID] += 1
+                    embed = defaultEmbed(
+                        "🆗 結算成功",
+                        f"委託名稱: {title}\n"
+                        f"委託人: {author.mention} **-{new_flow} flow幣**\n"
+                        f"接收人: {receiver.mention} **+{flow} flow幣**\n{str}")
                 await interaction.response.send_message(embed=embed)
                 await receiver.send(embed=embed)
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
                 saveFile(users, 'flow')
+                saveFile(free_trial, 'find_free_trial')
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
