@@ -455,12 +455,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             async def ok_confirm(self, interaction: discord.Interaction, button: discord.ui.button):
                 self.stop()
                 msg = interaction.message
+                authorID = confirms[msg.id]['authorID']
                 confirms = openFile('confirm')
                 users = openFile('flow')
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
                     free_trial[authorID] = 0
-                authorID = confirms[msg.id]['authorID']
                 receiverID = confirms[msg.id]['receiverID']
                 flow = confirms[msg.id]['flow']
                 type = confirms[msg.id]['type']
@@ -480,7 +480,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 author = interaction.client.get_user(authorID)
                 receiver = interaction.client.get_user(receiverID)
                 if type == 4:
-                    if free_trial[receiverID] < 10:
+                    if free_trial[receiverID] < 10 and flow >= 10:
                         flow_app.transaction(receiverID, 10)
                         str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
@@ -491,7 +491,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         f"幫助人: {author.mention} **+{flow} flow幣**\n"
                         f"被幫助人: {receiver.mention} **-{new_flow} flow幣**\n{str}")
                 else:
-                    if free_trial[authorID] < 10:
+                    if free_trial[authorID] < 10 and flow >= 10:
                         flow_app.transaction(authorID, 10)
                         str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
