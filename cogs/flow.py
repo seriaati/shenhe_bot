@@ -502,7 +502,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         f"委託人: {author.mention} **-{new_flow} flow幣**\n"
                         f"接收人: {receiver.mention} **+{flow} flow幣**\n{str}")
                 await interaction.response.send_message(embed=embed)
-                await receiver.send(embed=embed)
+                t = await interaction.client.get_thread(confirms[msg.id]['thread_id'])
+                await t.delete()
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
                 saveFile(users, 'flow')
@@ -552,8 +553,13 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await thread.send(f'{author.mention} {acceptUser.mention}')
                 dm = await thread.send(embed=embedDM, view=view)
 
-                confirms[dm.id] = {'title': finds[msg.id]['title'], 'authorID': int(
-                    finds[msg.id]['authorID']), 'receiverID': interaction.user.id, 'flow': finds[msg.id]['flow'], 'type': finds[msg.id]['type']}
+                confirms[dm.id] = {
+                    'title': finds[msg.id]['title'],
+                    'authorID': int(finds[msg.id]['authorID']),
+                    'receiverID': interaction.user.id,
+                    'flow': finds[msg.id]['flow'],
+                    'type': finds[msg.id]['type'],
+                    'thread_id': thread.id}
                 del finds[msg.id]
                 saveFile(finds, 'find')
                 saveFile(confirms, 'confirm')
