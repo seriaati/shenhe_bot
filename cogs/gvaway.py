@@ -225,6 +225,8 @@ class GiveAwayCog(commands.Cog):
             return result
     
     @app_commands.command(name='join',description='參加抽獎')
+    @app_commands.rename(gv_option='抽獎')
+    @app_commands.describe(gv_option='請選擇想要參與的抽獎')
     @app_commands.choices(gv_option=get_giveaway_options())
     async def join_giveaway(self, i:Interaction, gv_option: str):
         if gv_option == '目前沒有任何進行中的抽獎':
