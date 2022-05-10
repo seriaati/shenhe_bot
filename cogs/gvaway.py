@@ -2,6 +2,7 @@ import random
 from typing import Optional
 import discord
 from discord.ext import commands
+from discord.app_commands import Choice
 from discord import Interaction, Role, SelectOption, app_commands
 from utility.FlowApp import flow_app
 
@@ -212,61 +213,51 @@ class GiveAwayCog(commands.Cog):
                 await interaction.followup.send(embed=self.button_update_gv_message(msg_id, r), ephemeral=True)
                 await self.update_gv_msg(msg_id, r)
     
-    class GiveawaySelection(discord.ui.View):
-        def __init__(self):
-            super().__init__(timeout=None)
-
-        def get_giveaway_options():
-            gv = openFile('giveaways')
-            result = [SelectOption(label='目前沒有任何進行中的抽獎')]
-            if not gv:
-                return result
-            else:
-                result = []
-                for msg_id, value in gv.items():
-                    result.append(discord.SelectOption(label=value['prize']))
-                return result
-        gv_options = get_giveaway_options()
-
-        @discord.ui.select(options=gv_options, placeholder='選擇要參加的抽獎', min_values=1, max_values=1)
-        async def gv_chooser(self, interaction: Interaction, select: discord.ui.Select):
-            choice = select.values[0]
-            if choice == '目前沒有任何進行中的抽獎':
-                await interaction.response.send_message(embed=errEmbed('真的沒有抽獎','真的'), ephemeral=True)
-                return
-            gv = openFile('giveaways')
-            gv_msg_id = None
-            for msg_id, value in gv.items():
-                if value['prize'] == choice:
-                    gv_msg_id = msg_id
-                    role = value['role']
-                    prize = value['prize']
-                    current = value['current']
-                    goal = value['goal']
-                    ticket = value['ticket']
-            view = GiveAwayCog.GiveAwayView(interaction=interaction, gv_msg_id=gv_msg_id)
-            if role is not None:
-                g = interaction.client.get_guild(916838066117824553)
-                r = g.get_role(role)
-                embed = defaultEmbed(
-                    ":tada: 抽獎啦!!!",
-                    f"獎品: {prize}\n"
-                    f"目前flow幣: {current}/{goal}\n"
-                    f"參加抽獎要付的flow幣: {ticket}\n"
-                    f"此抽獎專屬於: {r.mention}成員")
-            else:
-                embed = defaultEmbed(
-                    ":tada: 抽獎啦!!!",
-                    f"獎品: {prize}\n"
-                    f"目前flow幣: {current}/{goal}\n"
-                    f"參加抽獎要付的flow幣: {ticket}")
-            await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-            
+    def get_giveaway_options():
+        gv = openFile('giveaways')
+        result = [Choice(name='目前沒有任何進行中的抽獎', value='目前沒有任何進行中的抽獎')]
+        if not gv:
+            return result
+        else:
+            result = []
+            for msg_id, val in gv.items():
+                result.append(Choice(name=val['prize'], value=val['prize']))
+            return result
     
     @app_commands.command(name='join',description='參加抽獎')
-    async def join_giveaway(self, i:Interaction):
+    @app_commands.choices(gv_option=get_giveaway_options())
+    async def join_giveaway(self, i:Interaction, gv_option: str):
         view = self.GiveawaySelection()
-        await i.response.send_message(view=view, ephemeral=True)
+        if gv_option == '目前沒有任何進行中的抽獎':
+            await i.response.send_message(embed=errEmbed('真的沒有抽獎','真的'), ephemeral=True)
+            return
+        gv = openFile('giveaways')
+        gv_msg_id = None
+        for msg_id, value in gv.items():
+            if value['prize'] == gv_option:
+                gv_msg_id = msg_id
+                role = value['role']
+                prize = value['prize']
+                current = value['current']
+                goal = value['goal']
+                ticket = value['ticket']
+        view = GiveAwayCog.GiveAwayView(interaction=i, gv_msg_id=gv_msg_id)
+        if role is not None:
+            g = i.client.get_guild(916838066117824553)
+            r = g.get_role(role)
+            embed = defaultEmbed(
+                ":tada: 抽獎啦!!!",
+                f"獎品: {prize}\n"
+                f"目前flow幣: {current}/{goal}\n"
+                f"參加抽獎要付的flow幣: {ticket}\n"
+                f"此抽獎專屬於: {r.mention}成員")
+        else:
+            embed = defaultEmbed(
+                ":tada: 抽獎啦!!!",
+                f"獎品: {prize}\n"
+                f"目前flow幣: {current}/{goal}\n"
+                f"參加抽獎要付的flow幣: {ticket}")
+        await i.response.send_message(embed=embed, view=view, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
