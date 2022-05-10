@@ -128,7 +128,7 @@ class OtherCMDCog(commands.Cog):
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
-    @app_commands.context_menu(name='語錄')
+    @app_commands.context_menu(name='Quote')
     async def right_click_quote(i: Interaction, message: Message):
         print(log(True, False, 'Quote',i.user.id))
         embed = defaultEmbed(f"語錄",f"「{message.content}」\n  -{message.author.mention}\n\n[點我回到該訊息]({message.jump_url})")
