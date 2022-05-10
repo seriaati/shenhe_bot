@@ -188,11 +188,14 @@ class RollCog(commands.Cog):
     async def roll_stats(self, i: Interaction):
         history = openFile('pull_history')
         sum = 0
+        result = ''
         for user_id, banners in history.items():
             for banner_name, rolls in banners.items():
+                sum = 0
                 for prize, count in rolls.items():
                     sum+=count
-        await i.response.send_message(embed=defaultEmbed('祈願資料',f'總祈願數: {sum}'))
+                result += f'{banner_name} • {sum}'
+        await i.response.send_message(embed=defaultEmbed('祈願資料',result))
 
 
 async def setup(bot: commands.Bot) -> None:
