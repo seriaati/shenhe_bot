@@ -224,8 +224,7 @@ class GiveAwayCog(commands.Cog):
             else:
                 result = []
                 for msg_id, value in gv.items():
-                    if msg_id != 123123123:
-                        result.append(discord.SelectOption(label=value['prize']))
+                    result.append(discord.SelectOption(label=value['prize']))
                 return result
 
         @discord.ui.select(options=get_giveaway_options(), placeholder='選擇要參加的抽獎', min_values=1, max_values=1)
