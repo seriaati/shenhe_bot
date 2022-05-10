@@ -160,8 +160,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             saveFile(users, 'flow')
             embed = defaultEmbed(
                 "✅ 交易成功",
-                f"{self.bot.get_user(giverID).mention} • **-{flow}**\n"
-                f"{self.bot.get_user(acceptorID).mention} • **+{flow}**")
+                f"{self.bot.get_user(giverID).mention} **-{flow}**\n"
+                f"{self.bot.get_user(acceptorID).mention} **+{flow}**")
             await interaction.response.send_message(embed=embed)
         except Exception as e:
             print(log(True, True, 'Give', e))
