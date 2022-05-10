@@ -226,8 +226,9 @@ class GiveAwayCog(commands.Cog):
                 for msg_id, value in gv.items():
                     result.append(discord.SelectOption(label=value['prize']))
                 return result
+        gv_options = get_giveaway_options()
 
-        @discord.ui.select(options=get_giveaway_options(), placeholder='選擇要參加的抽獎', min_values=1, max_values=1)
+        @discord.ui.select(options=gv_options, placeholder='選擇要參加的抽獎', min_values=1, max_values=1)
         async def gv_chooser(self, interaction: Interaction, select: discord.ui.Select):
             choice = select.values[0]
             if choice == '目前沒有任何進行中的抽獎':
