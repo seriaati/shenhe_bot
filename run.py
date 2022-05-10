@@ -67,12 +67,12 @@ class ShenheBot(commands.Bot):
 
 
 bot = ShenheBot()
-@bot.tree.command()
-async def right_click_quote(i: Interaction, message: Message):
-    print(log(True, False, 'Quote',i.user.id))
-    embed = defaultEmbed(f"語錄",f"「{message.content}」\n  -{message.author.mention}\n\n[點我回到該訊息]({message.jump_url})")
-    embed.set_thumbnail(url=str(message.author.avatar))
-    channel = i.client.get_channel(966549110540877875)
-    await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
-    await channel.send(embed=embed)
+# @bot.tree.command()
+# async def right_click_quote(i: Interaction, message: Message):
+#     print(log(True, False, 'Quote',i.user.id))
+#     embed = defaultEmbed(f"語錄",f"「{message.content}」\n  -{message.author.mention}\n\n[點我回到該訊息]({message.jump_url})")
+#     embed.set_thumbnail(url=str(message.author.avatar))
+#     channel = i.client.get_channel(966549110540877875)
+#     await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
+#     await channel.send(embed=embed)
 bot.run(token)
