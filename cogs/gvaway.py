@@ -227,7 +227,6 @@ class GiveAwayCog(commands.Cog):
     @app_commands.command(name='join',description='參加抽獎')
     @app_commands.choices(gv_option=get_giveaway_options())
     async def join_giveaway(self, i:Interaction, gv_option: str):
-        view = self.GiveawaySelection()
         if gv_option == '目前沒有任何進行中的抽獎':
             await i.response.send_message(embed=errEmbed('真的沒有抽獎','真的'), ephemeral=True)
             return
@@ -241,7 +240,7 @@ class GiveAwayCog(commands.Cog):
                 current = value['current']
                 goal = value['goal']
                 ticket = value['ticket']
-        view = GiveAwayCog.GiveAwayView(interaction=i, gv_msg_id=gv_msg_id)
+        view = self.GiveAwayView(interaction=i, gv_msg_id=gv_msg_id)
         if role is not None:
             g = i.client.get_guild(916838066117824553)
             r = g.get_role(role)
