@@ -2,7 +2,7 @@ import random
 from typing import Optional
 import discord
 from discord.ext import commands
-from discord import Interaction, Role, app_commands
+from discord import Interaction, Role, SelectOption, app_commands
 from utility.FlowApp import flow_app
 
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
@@ -218,7 +218,7 @@ class GiveAwayCog(commands.Cog):
 
         def get_giveaway_options():
             gv = openFile('giveaways')
-            result = ['目前沒有任何進行中的抽獎']
+            result = [SelectOption(label='目前沒有任何進行中的抽獎')]
             if not gv:
                 return result
             else:
