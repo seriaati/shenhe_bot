@@ -143,10 +143,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-data/bank.yaml
-data/flow.yaml
-data/pull_guarantee.yaml
-data/pull_history.yaml
-data/roll.yaml
-data/schedule_daily_reward.yaml
-data/schedule_resin_notification.yaml
+data/
