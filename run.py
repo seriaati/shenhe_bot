@@ -3,7 +3,7 @@
 import discord
 from discord.ext import commands
 from utility.config import config
-from utility.utils import log
+from utility.utils import defaultEmbed, log
 from pathlib import Path
 
 print("main or dev?")
@@ -66,4 +66,12 @@ class ShenheBot(commands.Bot):
 
 
 bot = ShenheBot()
+@bot.tree.command()
+async def right_click_quote(i: discord.Interaction, message: discord.Message):
+    print(log(True, False, 'Quote',i.user.id))
+    embed = defaultEmbed(f"語錄",f"「{message.content}」\n  -{message.author.mention}\n\n[點我回到該訊息]({message.jump_url})")
+    embed.set_thumbnail(url=str(message.author.avatar))
+    channel = i.client.get_channel(966549110540877875)
+    await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
+    await channel.send(embed=embed)
 bot.run(token)
