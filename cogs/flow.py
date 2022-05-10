@@ -101,10 +101,20 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         users = openFile('flow')
         member = member or interaction.user
         discordID = member.id
+        now = datetime.now()
         check, msg = flow_app.checkFlowAccount(discordID)
         if check == False:
             await interaction.response.send_message(embed=msg, ephemeral=True)
             return
+        if 'morning' not in users[discordID]:
+            users[discordID]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            saveFile(users, 'flow')
+        if 'noon' not in users[discordID]:
+            users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            saveFile(users, 'flow')
+        if 'night' not in users[discordID]:
+            users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            saveFile(users, 'flow')
         embed = defaultEmbed(
             f"flow帳號",
             f"flow幣: {users[discordID]['flow']}\n"

@@ -12,7 +12,11 @@ class FlowApp:
         now = datetime.now()
         if is_new_account:
             today = date.today()
-            users[user_id] = {'flow': 0, 'morning': today}
+            users[user_id] = {'flow': 0}
+            users[user_id]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            users[user_id]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            users[user_id]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            saveFile(users, 'flow')
         if user_id in users:
             users[user_id]['flow'] += int(flow_for_user)
             bank['flow'] -= int(flow_for_user)
@@ -41,8 +45,9 @@ class FlowApp:
         users = openFile('flow')
         if user_id not in users:
             self.register(user_id)
-            embed = errEmbed('找不到flow帳號!',
-                             f'<@{user_id}>\n現在申鶴已經創建了一個, 請重新執行操作')
+            embed = errEmbed(
+                '找不到flow帳號!',
+                f'<@{user_id}>\n現在申鶴已經創建了一個, 請重新執行操作')
             return False, embed
         else:
             return True, None
