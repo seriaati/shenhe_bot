@@ -30,7 +30,7 @@ class GenshinCog(commands.Cog):
             self.hydro_dict = yaml.full_load(f)
         with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
             self.pyro_dict = yaml.full_load(f)
-
+#cookie
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
         cookie = discord.ui.TextInput(
             label='Cookie',
@@ -70,7 +70,7 @@ class GenshinCog(commands.Cog):
             await interaction.followup.send(content=code_msg)
         elif option == 1:
             await interaction.response.send_modal(self.CookieModal())
-
+#/setuid
     @app_commands.command(
         name='setuid',
         description='設定原神UID')
@@ -94,7 +94,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/stats
     @app_commands.command(
         name='stats',
         description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量'
@@ -109,7 +109,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/area
     @app_commands.command(
         name='area',
         description='查看區域探索度'
@@ -124,7 +124,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/claim
     @app_commands.command(
         name='claim',
         description='領取hoyolab登入獎勵'
@@ -139,7 +139,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/diary
     @app_commands.command(
         name='diary',
         description='查看旅行者日記'
@@ -161,7 +161,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/log
     @app_commands.command(
         name='log',
         description='查看最近25筆原石或摩拉收入紀錄'
@@ -180,7 +180,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result[type])
-
+#/users
     @app_commands.command(
         name='users',
         description='查看所有已註冊原神帳號'
@@ -197,7 +197,7 @@ class GenshinCog(commands.Cog):
                 f"{count}. {name} - {value['uid']}\n"
         embed = defaultEmbed("所有帳號", userStr)
         await interaction.response.send_message(embed=embed)
-
+#/today
     @app_commands.command(
         name='today',
         description='查看今日原石與摩拉收入'
@@ -212,7 +212,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-
+#/abyss
     @app_commands.command(name='abyss', description='深淵資料查詢')
     @app_commands.rename(check_type='類別', season='期別', floor='層數', member='其他人')
     @app_commands.describe(check_type='想要查看的資料類別',
@@ -246,7 +246,7 @@ class GenshinCog(commands.Cog):
                 await interaction.response.send_message(embed=result[-1])
             else:
                 await Paginator(interaction, result[1:]).start(embeded=True)
-
+#/stuck
     @app_commands.command(
         name='stuck',
         description='找不到資料?'
@@ -261,7 +261,7 @@ class GenshinCog(commands.Cog):
             "5. 點擊之後看到設定按鈕\n"
             "6. 打開 Do you want to enable real time-notes")
         await interaction.response.send_message(embed=embed)
-
+#/farm
     @app_commands.command(
         name='farm',
         description='查看原神今日可刷素材'
@@ -283,7 +283,7 @@ class GenshinCog(commands.Cog):
             embedFarm = defaultEmbed(
                 f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         await interaction.response.send_message(embed=embedFarm)
-
+#/build
     build = app_commands.Group(
         name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
 
@@ -457,7 +457,7 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.followup.send(embed=result)
-
+#/rate
     @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
     @app_commands.rename(type='聖遺物類型', crit_dmg='暴傷', crit_rate='暴擊率', atk='攻擊百分比')
     @app_commands.choices(type=[
@@ -524,7 +524,7 @@ class GenshinCog(commands.Cog):
         result.set_footer(
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
-    
+   #/wish 
     class PageChooser(discord.ui.Select):
         def __init__(self, page:int, result:list, author: discord.Member):
             options = self.get_page_choices(page)
