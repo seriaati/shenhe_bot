@@ -95,9 +95,10 @@ class Schedule(commands.Cog):
                 count += 1
                 if result == True:
                     if resin_data[user_id] < 3:
-                        embed = errEmbed('危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
+                        embed = errEmbed(f'危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
+                        embed.set_author(name=user,icon_url=user.avatar)
                         g = self.bot.get_guild(916838066117824553)
-                        t = await g.get_thread(973746732976447508)
+                        t = g.get_thread(973746732976447508)
                         tedd = self.bot.get_user(272394461646946304)
                         await t.send(user.mention)
                         if user_id == 410036441129943050:
