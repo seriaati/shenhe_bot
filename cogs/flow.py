@@ -467,6 +467,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple)
             async def ok_confirm(self, interaction: discord.Interaction, button: discord.ui.button):
                 self.stop()
+                confirms = openFile('confirm')
                 msg = interaction.message
                 authorID = confirms[msg.id]['authorID']
                 confirms = openFile('confirm')
