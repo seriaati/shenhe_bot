@@ -586,7 +586,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='2類委託 你進入其他玩家的世界(例如: 拿特產)', value=2),
         Choice(name='3類委託 其他委託(例如: 打apex, valorant)', value=3),
         Choice(name='4類委託 可以幫助別人(讓拿素材, 可幫打刀鐔等)', value=4)],
-        mention=[Choice(name='不tag', value=0),
+        tag=[Choice(name='不tag', value=0),
                  Choice(name='tag', value=1)])
     async def find(self, interaction: discord.Interaction, type: int, title: str, flow: int, tag: int = 1):
         print(log(False, False, 'find',
