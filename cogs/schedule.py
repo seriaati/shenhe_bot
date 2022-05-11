@@ -5,7 +5,7 @@ from datetime import datetime
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from utility.utils import can_dm_user, defaultEmbed, errEmbed, log, openFile, saveFile
+from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
 from utility.GenshinApp import genshin_app
 
 class Schedule(commands.Cog):
@@ -27,10 +27,6 @@ class Schedule(commands.Cog):
         switch=[Choice(name='開啟功能', value=1),
                 Choice(name='關閉功能', value=0)])
     async def slash_schedule(self, interaction: discord.Interaction, function: str, switch: int):
-        check, check_msg = can_dm_user(interaction.user)
-        if check == False:
-            await interaction.response.send_message(embed=check_msg, ephemeral=True)
-            return
         self.schedule.stop()
         print(log(False, False, 'schedule', f'{interaction.user.id}: (function={function}, switch={switch})'))
         if function == 'help': 

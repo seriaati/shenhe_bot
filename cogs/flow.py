@@ -6,7 +6,7 @@ from discord.app_commands import Choice
 from typing import List, Optional
 import uuid
 import random
-from utility.utils import can_dm_user, defaultEmbed, errEmbed, log, openFile, saveFile
+from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
 import discord
 from utility.FlowApp import flow_app
 
@@ -526,10 +526,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-            check, check_msg = await can_dm_user(interaction.user)
-            if check == False:
-                await interaction.response.send_message(embed=check_msg, ephemeral=True)
-                return
             msg = interaction.message
             finds = openFile('find')
             confirms = openFile('confirm')
