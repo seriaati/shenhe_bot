@@ -565,8 +565,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         f"當{acceptUser}完成委託的內容時, 請按OK來結算flow幣\n"
                         f"按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**\n"
                         f"對方則會 **+ {finds[msg.id]['flow']}**")
-
-                await thread.send(f'{author.mention} {acceptUser.mention}')
                 dm = await thread.send(embed=embedDM, view=view)
 
                 confirms[dm.id] = {
