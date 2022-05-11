@@ -539,7 +539,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 self.stop()
                 author = interaction.client.get_user(finds[msg.id]['authorID'])
                 acceptUser = interaction.client.get_user(interaction.user.id)
-                thread = await msg.create_thread(name=f"{author} • {finds[msg.id]['title']}")
+                thread = await msg.create_thread(name=f"{author.name} • {finds[msg.id]['title']}")
                 await thread.add_user(author)
                 await thread.add_user(acceptUser)
                 if finds[msg.id]['type'] == 1:
@@ -555,16 +555,17 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
                 if finds[msg.id]['type'] == 4:
                     embedDM = defaultEmbed(
-                        f"{author}的結算單",
-                        f"當{acceptUser}完成幫忙的內容時, 請按OK來結算flow幣\n"
+                        f"結算單",
+                        f"當{acceptUser.mention}完成幫忙的內容時, 請按OK來結算flow幣\n"
                         f"按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**\n"
                         f"對方則會 **+ {finds[msg.id]['flow']}**")
                 else:
                     embedDM = defaultEmbed(
-                        f"{author}的結算單",
-                        f"當{acceptUser}完成委託的內容時, 請按OK來結算flow幣\n"
+                        f"結算單",
+                        f"當{acceptUser.mention}完成委託的內容時, 請按OK來結算flow幣\n"
                         f"按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**\n"
                         f"對方則會 **+ {finds[msg.id]['flow']}**")
+                embedDM.set_author(name=author, icon_url=author.avatar)
                 dm = await thread.send(embed=embedDM, view=view)
 
                 confirms[dm.id] = {
