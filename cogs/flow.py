@@ -515,7 +515,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         f"委託人: {author.mention} **-{new_flow} flow幣**\n"
                         f"接收人: {receiver.mention} **+{flow} flow幣**\n{str}")
                 await interaction.response.send_message(embed=embed)
-                t = await interaction.client.get_thread(confirms[msg.id]['thread_id'])
+                g = interaction.client.get_guild(916838066117824553)
+                t = await g.get_thread(confirms[msg.id]['thread_id'])
                 await t.delete()
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
@@ -553,14 +554,14 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
                 if finds[msg.id]['type'] == 4:
                     embedDM = defaultEmbed(
-                        "結算單",
-                        f"當對方完成幫忙的內容時, 請按 🆗來結算flow幣\n"
+                        f"{author}的結算單",
+                        f"當{acceptUser}完成幫忙的內容時, 請按OK來結算flow幣\n"
                         f"按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**\n"
                         f"對方則會 **+ {finds[msg.id]['flow']}**")
                 else:
                     embedDM = defaultEmbed(
-                        "結算單",
-                        f"當對方完成委託的內容時, 請按 🆗來結算flow幣\n"
+                        f"{author}的結算單",
+                        f"當{acceptUser}完成委託的內容時, 請按OK來結算flow幣\n"
                         f"按下後, 你的flow幣將會 **- {finds[msg.id]['flow']}**\n"
                         f"對方則會 **+ {finds[msg.id]['flow']}**")
 
