@@ -5,19 +5,12 @@ from datetime import datetime
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from utility.utils import can_dm_user, defaultEmbed, errEmbed, log
+from utility.utils import can_dm_user, defaultEmbed, errEmbed, log, openFile, saveFile
 from utility.GenshinApp import genshin_app
 
 class Schedule(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.__daily_reward_filename = 'data/schedule_daily_reward.yaml'
-        self.__resin_notifi_filename = 'data/schedule_resin_notification.yaml'
-        with open(self.__daily_reward_filename, 'r', encoding='utf-8') as f:
-            self.__daily_dict = yaml.full_load(f)
-        with open(self.__resin_notifi_filename, 'r', encoding='utf-8') as f:
-            self.__resin_dict = yaml.full_load(f)
-        
         self.schedule.start()
 
     @app_commands.command(
@@ -40,7 +33,7 @@ class Schedule(commands.Cog):
             return
         self.schedule.stop()
         print(log(False, False, 'schedule', f'{interaction.user.id}: (function={function}, switch={switch})'))
-        if function == 'help': # 排程功能使用說明
+        if function == 'help': 
             embed = defaultEmbed(
             '自動化功能使用說明',
             '• 每日簽到：每日 1~2 點之間自動簽到\n'
@@ -49,26 +42,25 @@ class Schedule(commands.Cog):
             '設定前請先用 `/check` 指令確認申鶴能讀到你的樹脂資訊')
             await interaction.response.send_message(embed=embed)
             return
-        # 確認使用者Cookie資料
+        
         check, msg = await genshin_app.checkUserData(interaction.user.id)
         if check == False:
             await interaction.response.send_message(embed=msg)
             return
-        if function == 'daily': # 每日自動簽到
-            if switch == 1: # 開啟簽到功能
-                # 新增使用者
-                self.__add_user(interaction.user.id, self.__daily_dict, self.__daily_reward_filename)
-                await interaction.response.send_message('原神每日自動簽到已開啟')
-            elif switch == 0: # 關閉簽到功能
-                self.__remove_user(interaction.user.id, self.__daily_dict, self.__daily_reward_filename)
-                await interaction.response.send_message('每日自動簽到已關閉')
-        elif function == 'resin': # 樹脂額滿提醒
-            if switch == 1: # 開啟檢查樹脂功能
-                self.__add_user(interaction.user.id, self.__resin_dict, self.__resin_notifi_filename)
-                await interaction.response.send_message('樹脂額滿提醒已開啟')
-            elif switch == 0: # 關閉檢查樹脂功能
-                self.__remove_user(interaction.user.id, self.__resin_dict, self.__resin_notifi_filename)
-                await interaction.response.send_message('樹脂額滿提醒已關閉')
+        if function == 'daily': 
+            if switch == 1:
+                self.add_user(interaction.user.id, 'daily_reward')
+                await interaction.response.send_message('✅ 原神每日自動簽到已開啟', ephemeral=True)
+            elif switch == 0: 
+                self.remove_user(interaction.user.id, 'daily_reward')
+                await interaction.response.send_message('✅ 每日自動簽到已關閉', ephemeral=True)
+        elif function == 'resin': 
+            if switch == 1: 
+                self.add_user(interaction.user.id, 'resin_check')
+                await interaction.response.send_message('✅ 樹脂額滿提醒已開啟', ephemeral=True)
+            elif switch == 0: 
+                self.remove_user(interaction.user.id, 'resin_check')
+                await interaction.response.send_message('✅ 樹脂額滿提醒已關閉', ephemeral=True)
         self.schedule.start()
         
     loop_interval = 10
@@ -76,15 +68,14 @@ class Schedule(commands.Cog):
     async def schedule(self):
         now = datetime.now()
         if now.hour == 1 and now.minute < self.loop_interval:
-        # if True:
             print(log(True, False, 'Schedule', 'Auto claim started'))
-            claim_data = self.getClaimData()
+            claim_data = openFile('schedule_daily_reward')
             count = 0
             for user_id, value in claim_data.items():
                 channel = self.bot.get_channel(957268464928718918)
                 check, msg = genshin_app.checkUserData(user_id)
                 if check == False:
-                    self.__remove_user(user_id, self.__daily_dict, self.__daily_reward_filename)
+                    self.remove_user(user_id, 'daily_reward')
                     continue
                 result = await genshin_app.claimDailyReward(user_id)
                 count += 1
@@ -94,65 +85,58 @@ class Schedule(commands.Cog):
             print(log(True, False, 'Schedule', f'Auto claim finished, {count} in total'))
         
         if abs(now.hour - 1) % 2 == 1 and now.minute < self.loop_interval:
-        # if True:
             print(log(True, False, 'Schedule','Resin check started'))
-            resin_data = self.getResinData()
+            resin_data = openFile('schedule_resin_notification')
             count = 0
             for user_id, value in resin_data.items():
                 user = self.bot.get_user(user_id)
                 check, msg = genshin_app.checkUserData(user_id)
                 if check == False:
-                    self.__remove_user(user_id, self.__resin_dict, self.__resin_notifi_filename)
+                    self.remove_user(user_id, 'resin_check')
                     continue
                 result = await genshin_app.getRealTimeNotes(user_id, True)
                 count += 1
                 if result == True:
                     if resin_data[user_id] < 3:
-                        try:
-                            embed = errEmbed('危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
-                            await user.send(embed=embed)
-                            if user_id == 410036441129943050:
-                                user = self.bot.get_user(272394461646946304)
-                                await user.send(embed=embed)
-                            resin_data[user_id] += 1
-                            self.__saveScheduleData(resin_data, self.__resin_notifi_filename)
-                        except:
-                            self.__remove_user(user_id, self.__resin_dict, self.__resin_notifi_filename)
+                        embed = errEmbed('危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
+                        t = await self.bot.get_thread(973746732976447508)
+                        tedd = self.bot.get_user(272394461646946304)
+                        await t.send(user.mention)
+                        if user_id == 410036441129943050:
+                            await t.send(tedd.mention)
+                        await t.send(embed=embed)
+                        resin_data[user_id] += 1
                 elif result==False:
                     resin_data[user_id] = 0
                 await asyncio.sleep(2.0)
+            saveFile(resin_data, 'schedule_resin_notification')
             print(log(True, False, 'Schedule',f'Resin check finished, {count} in total'))
 
     @schedule.before_loop
     async def before_schedule(self):
         await self.bot.wait_until_ready()
 
-    def getClaimData(self):
-        with open(self.__daily_reward_filename, 'r', encoding='utf-8') as f:
-            return yaml.full_load(f)
+    def add_user(self, user_id:int, function_type:str):
+        print(log(True, False, 'Schedule', f'add_user(user_id={user_id})'))
+        if function_type == 'daily_reward':
+            daily_data = openFile('schedule_daily_reward')
+            daily_data[user_id] = 0
+            saveFile(daily_data, 'schedule_daily_reward')
+        elif function_type == 'resin_check':
+            resin_data = openFile('schedule_resin_notification')
+            resin_data[user_id] = 0
+            saveFile(resin_data, 'schedule_resin_notification')
 
-    def getResinData(self):
-        with open(self.__resin_notifi_filename, 'r', encoding='utf-8') as f:
-            return yaml.full_load(f)
-
-    def __add_user(self, user_id: str, data: dict, filename: str) -> None:
-        data[user_id] = 0
-        self.__saveScheduleData(data, filename)
-
-    def __remove_user(self, user_id: int, data: dict, filename: str) -> None:
-        try:
-            del data[user_id]
-        except:
-            print(log(True, True, 'Schedule', f'remove_user(user_id={user_id}): user does not exist'))
-        else:
-            self.__saveScheduleData(data, filename)
-    
-    def __saveScheduleData(self, data: dict, filename: str):
-        try:
-            with open(filename, 'w', encoding='utf-8') as f:
-                yaml.dump(data, f)
-        except:
-            print(log(True, True, 'Schedule', f'saveScheduleData(filename={filename}): file does not exist'))
+    def remove_user(self, user_id:int, function_type:str):
+        print(log(True, False, 'Schedule', f'remove_user(user_id={user_id})'))
+        if function_type == 'daily_reward':
+            daily_data = openFile('schedule_daily_reward')
+            del daily_data[user_id]
+            saveFile(daily_data, 'schedule_daily_reward')
+        elif function_type == 'resin_check':
+            resin_data = openFile('schedule_resin_notification')
+            del resin_data[user_id]
+            saveFile(resin_data, 'schedule_resin_notification')
 
 async def setup(client: commands.Bot):
     await client.add_cog(Schedule(client))
