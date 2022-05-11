@@ -9,6 +9,7 @@ from utility.RollApp import animation_chooser, check_big_prize, check_user_data,
 global contribution_mode
 contribution_mode = True
 
+
 class RollCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -47,8 +48,10 @@ class RollCog(commands.Cog):
                 else:
                     flow_app.transaction(
                         user_id=interaction.user.id, flow_for_user=int(one_pull_price)*10)
-                check_user_data(interaction.user.id, self.banner, contribution_mode)
-                prize = gu_system(interaction.user.id, self.banner, self.ten_pull,contribution_mode)
+                check_user_data(interaction.user.id,
+                                self.banner, contribution_mode)
+                prize = gu_system(interaction.user.id, self.banner,
+                                  self.ten_pull, contribution_mode)
                 give_money(interaction.user.id, prize)
                 luluR = interaction.client.get_user(665092644883398671)
                 check, msg = check_big_prize(
@@ -81,8 +84,7 @@ class RollCog(commands.Cog):
             if contribution_mode == False:
                 embed.add_field(
                     name=f'限定 UP - {self.big_prize}',
-                    value=
-                    "70抽之前: 0.6%\n"
+                    value="70抽之前: 0.6%\n"
                     "70-79抽: 5%\n"
                     "80-89抽: 10%\n"
                     "90抽: 100%",
@@ -91,15 +93,13 @@ class RollCog(commands.Cog):
             else:
                 embed.add_field(
                     name='公眾池模式',
-                    value=
-                    '所有人保底及歷史紀錄共計\n'
+                    value='所有人保底及歷史紀錄共計\n'
                     '100抽: 100%',
                     inline=False
                 )
             embed.add_field(
                 name='其他獎品',
-                value=
-                '10 Flow幣: 10%\n'
+                value='10 Flow幣: 10%\n'
                 '100 Flow: 3%\n',
                 inline=False
             )
@@ -128,7 +128,8 @@ class RollCog(commands.Cog):
                     result += f'{item} • {count}次\n'
                 for item, count in gu[user_id][self.banner].items():
                     gu_sum += count
-            embed = defaultEmbed(f'祈願紀錄(共{sum}抽, 目前距離保底{gu_count-gu_sum}抽)', result)
+            embed = defaultEmbed(
+                f'祈願紀錄(共{sum}抽, 目前距離保底{gu_count-gu_sum}抽)', result)
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0, disabled=False)
@@ -136,7 +137,8 @@ class RollCog(commands.Cog):
             one_pull_price = 40 if contribution_mode == True else 10
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < one_pull_price:
-                embed = errEmbed('你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
+                embed = errEmbed(
+                    '你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = self.Confirm(
@@ -148,7 +150,8 @@ class RollCog(commands.Cog):
             one_pull_price = 40 if contribution_mode == True else 10
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < int(one_pull_price)*10:
-                embed = errEmbed('你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
+                embed = errEmbed(
+                    '你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = self.Confirm(
@@ -183,19 +186,6 @@ class RollCog(commands.Cog):
         embed = defaultEmbed(banner, '')
         embed.set_image(url=banners[banner]['banner_pic'])
         await interaction.response.send_message(embed=embed, view=menu)
-
-    @app_commands.command(name='rollstats', description='查看祈願系統資料')
-    async def roll_stats(self, i: Interaction):
-        history = openFile('pull_history')
-        sum = 0
-        result = ''
-        for user_id, banners in history.items():
-            for banner_name, rolls in banners.items():
-                sum = 0
-                for prize, count in rolls.items():
-                    sum+=count
-                result += f'{banner_name} • {sum}'
-        await i.response.send_message(embed=defaultEmbed('祈願資料',result))
 
 
 async def setup(bot: commands.Bot) -> None:
