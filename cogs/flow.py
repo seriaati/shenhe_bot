@@ -471,7 +471,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 msg = interaction.message
                 authorID = confirms[msg.id]['authorID']
                 confirms = openFile('confirm')
-                users = openFile('flow')
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
                     free_trial[authorID] = 0
@@ -515,7 +514,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await t.edit(archived=True)
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
-                saveFile(users, 'flow')
                 saveFile(free_trial, 'find_free_trial')
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
