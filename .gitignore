@@ -143,6 +143,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-data/
+data/wish_history/*
+data/accounts.yaml
 config.yaml
 .vscode/
