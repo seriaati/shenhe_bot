@@ -3,7 +3,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 from discord.app_commands import Choice
-from discord import Interaction, Role, SelectOption, app_commands
+from discord import Interaction, Role, app_commands
 from utility.FlowApp import flow_app
 
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
