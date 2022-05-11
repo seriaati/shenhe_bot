@@ -537,9 +537,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 print(log(True, False, 'Accept',
                       f"(author = {finds[msg.id]['authorID']}, accepter = {interaction.user.id})"))
                 self.stop()
-                thread = await msg.create_thread(name=f"{finds[msg.id]['type']}類委託 - {finds[msg.id]['title']}")
                 author = interaction.client.get_user(finds[msg.id]['authorID'])
                 acceptUser = interaction.client.get_user(interaction.user.id)
+                thread = await msg.create_thread(name=f"{author} • {finds[msg.id]['title']}")
                 await thread.add_user(author)
                 await thread.add_user(acceptUser)
                 if finds[msg.id]['type'] == 1:
