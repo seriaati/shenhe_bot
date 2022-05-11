@@ -31,32 +31,42 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             users = openFile('flow')
             now = datetime.now()
             if 'morning' not in users[discordID]:
-                users[discordID]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['morning'] = datetime(
+                    year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
             if 'noon' not in users[discordID]:
-                users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1,
+                                                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
             if 'night' not in users[discordID]:
-                users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1,
+                                                     hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
 
             if "早" in message.content:
-                start = datetime(year=now.year, month=now.month, day=now.day, hour=5, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.month, day=now.day, hour=11, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month,
+                                 day=now.day, hour=5, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day,
+                               hour=11, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['morning'].day != now.day:
-                        flow_app.transaction(discordID, 1, time_state='morning')
+                        flow_app.transaction(
+                            discordID, 1, time_state='morning')
                         await message.add_reaction('⛅')
             elif "午" in message.content:
-                start = datetime(year=now.year, month=now.month, day=now.day, hour=12, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.month, day=now.day, hour=17, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month, day=now.day,
+                                 hour=12, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day,
+                               hour=17, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['noon'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='noon')
                         await message.add_reaction('☀️')
             elif "晚" in message.content:
-                start = datetime(year=now.year, month=now.month, day=now.day, hour=18, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.month, day=now.day+1, hour=4, minute=59, second=0, microsecond=0)
+                start = datetime(year=now.year, month=now.month, day=now.day,
+                                 hour=18, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day +
+                               1, hour=4, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     if users[discordID]['night'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='night')
@@ -107,13 +117,16 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=msg, ephemeral=True)
             return
         if 'morning' not in users[discordID]:
-            users[discordID]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            users[discordID]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1,
+                                                   hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
             saveFile(users, 'flow')
         if 'noon' not in users[discordID]:
-            users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1,
+                                                hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
             saveFile(users, 'flow')
         if 'night' not in users[discordID]:
-            users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1,
+                                                 hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
             saveFile(users, 'flow')
         embed = defaultEmbed(
             f"flow帳號",
@@ -184,7 +197,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='是', value=0),
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
-    async def take(self, interaction: discord.Interaction, member: Member, flow: int, private:int):
+    async def take(self, interaction: discord.Interaction, member: Member, flow: int, private: int):
         print(log(False, False, 'Take',
               f'{interaction.user.id} take {flow} from {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
@@ -212,7 +225,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='是', value=0),
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
-    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private:int):
+    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private: int):
         print(log(False, False, 'make',
               f'{interaction.user.id} make {flow} for {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
@@ -519,7 +532,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             finds = openFile('find')
             confirms = openFile('confirm')
             if msg.id in finds:
-                print(log(True, False, 'Accept', f"(author = {finds[msg.id]['authorID']}, accepter = {interaction.user.id})"))
+                print(log(True, False, 'Accept',
+                      f"(author = {finds[msg.id]['authorID']}, accepter = {interaction.user.id})"))
                 self.stop()
                 thread = await msg.create_thread(name=f"{finds[msg.id]['type']}類委託 - {finds[msg.id]['title']}")
                 author = interaction.client.get_user(finds[msg.id]['authorID'])
@@ -565,14 +579,16 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 saveFile(confirms, 'confirm')
 
     @app_commands.command(name='find', description='發布委託')
-    @app_commands.rename(type='委託類型', title='幫助名稱', flow='flow幣數量')
-    @app_commands.describe(title='需要什麼幫助?', flow='這個幫助值多少flow幣?')
+    @app_commands.rename(type='委託類型', title='幫助名稱', flow='flow幣數量', tag='tag人開關')
+    @app_commands.describe(title='需要什麼幫助?', flow='這個幫助值多少flow幣?', tag='是否要tag委託通知?')
     @app_commands.choices(type=[
         Choice(name='1類委託 其他玩家進入你的世界(例如: 陪玩, 打素材等)', value=1),
         Choice(name='2類委託 你進入其他玩家的世界(例如: 拿特產)', value=2),
         Choice(name='3類委託 其他委託(例如: 打apex, valorant)', value=3),
-        Choice(name='4類委託 可以幫助別人(讓拿素材, 可幫打刀鐔等)', value=4)])
-    async def find(self, interaction: discord.Interaction, type: int, title: str, flow: int):
+        Choice(name='4類委託 可以幫助別人(讓拿素材, 可幫打刀鐔等)', value=4)],
+        mention=[Choice(name='不tag', value=0),
+                 Choice(name='tag', value=1)])
+    async def find(self, interaction: discord.Interaction, type: int, title: str, flow: int, tag: int = 1):
         print(log(False, False, 'find',
               f'{interaction.user.id}: (type={type}, title={title}, flow={flow})'))
         check, msg = self.check_in_find_channel(interaction.channel.id)
@@ -629,8 +645,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         acceptView = self.AcceptView(interaction.user)
         await interaction.response.send_message(embed=embed, view=acceptView)
         guild = self.bot.get_guild(916838066117824553)
-        role = guild.get_role(965141973700857876) #委託通知
-        await interaction.channel.send(role.mention)
+        if tag == 1:
+            role = guild.get_role(965141973700857876)  # 委託通知
+            await interaction.channel.send(role.mention)
         msg = await interaction.original_message()
         finds = openFile('find')
         finds[msg.id] = {'title': title, 'flow': int(flow),
@@ -642,7 +659,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @app_commands.rename(role='身份組')
     @app_commands.describe(role='請選擇要查看的身份組')
     async def role_members(self, i: discord.Interaction, role: Role):
-        print(log(False, False, 'role members', f'{i.user.id}: (role: {role})'))
+        print(log(False, False, 'role members',
+              f'{i.user.id}: (role: {role})'))
         if role is None:
             await i.response.send_message('找不到該身份組!', ephemeral=True)
             return
