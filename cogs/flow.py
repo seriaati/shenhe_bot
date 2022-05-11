@@ -479,16 +479,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 flow = confirms[msg.id]['flow']
                 type = confirms[msg.id]['type']
                 title = confirms[msg.id]['title']
-                if type == 4:
-                    if authorID in users:
-                        users[authorID]['flow'] += flow
-                    if receiverID in users:
-                        users[receiverID]['flow'] -= flow
-                else:
-                    if authorID in users:
-                        users[authorID]['flow'] -= flow
-                    if receiverID in users:
-                        users[receiverID]['flow'] += flow
                 str = ''
                 new_flow = flow
                 author = interaction.client.get_user(authorID)
@@ -499,6 +489,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[receiverID] += 1
+                    flow_app.transaction(authorID ,flow)
+                    flow_app.transaction(receiverID,-int(new_flow))
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"幫忙名稱: {title}\n"
@@ -510,6 +502,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[authorID] += 1
+                    flow_app.transaction(authorID ,-int(new_flow))
+                    flow_app.transaction(receiverID,flow)
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"委託名稱: {title}\n"
