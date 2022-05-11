@@ -225,7 +225,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='是', value=0),
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
-    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private: int):
+    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private: int=1):
         print(log(False, False, 'make',
               f'{interaction.user.id} make {flow} for {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
