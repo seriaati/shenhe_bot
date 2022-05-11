@@ -8,6 +8,14 @@ from utility.utils import defaultEmbed, log
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.quote_ctx_menu = app_commands.ContextMenu(
+            name='語錄',
+            callback=self.quote_context_menu
+        )
+        self.bot.tree.add_command(self.quote_ctx_menu)
+
+    async def cog_unload(self) -> None:
+        self.bot.tree.remove_command(self.quote_ctx_menu.name, type=self.quote_ctx_menu.type)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -146,6 +154,13 @@ class OtherCMDCog(commands.Cog):
         g = i.user.guild
         await i.response.send_message(embed=defaultEmbed('群組總人數',f'目前共 {len(g.members)} 人'))
 
+    async def quote_context_menu(self, i: discord.Interaction, msg: discord.Message) -> None:
+        print(log(True, False, 'Quote',i.user.id))
+        embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
+        embed.set_thumbnail(url=str(msg.author.avatar))
+        channel = self.bot.get_channel(966549110540877875)
+        await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
+        await channel.send(embed=embed)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OtherCMDCog(bot))
