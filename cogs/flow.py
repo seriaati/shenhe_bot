@@ -485,9 +485,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 if type == 4:
                     if free_trial[receiverID] < 10 and flow >= 10:
                         flow_app.transaction(receiverID, 10)
-                        str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[receiverID] += 1
+                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
+                        f'已使用{free_trial[receiverID]}/10次贊助機會'
                     flow_app.transaction(authorID ,flow)
                     flow_app.transaction(receiverID,-int(new_flow))
                     embed = defaultEmbed(
@@ -498,9 +499,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 else:
                     if free_trial[authorID] < 10 and flow >= 10:
                         flow_app.transaction(authorID, 10)
-                        str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[authorID] += 1
+                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
+                        f'已使用{free_trial[receiverID]}/10次贊助機會'
                     flow_app.transaction(authorID ,-int(new_flow))
                     flow_app.transaction(receiverID,flow)
                     embed = defaultEmbed(
