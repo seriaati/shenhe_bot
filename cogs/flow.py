@@ -518,7 +518,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await interaction.response.send_message(embed=embed)
                 g = interaction.client.get_guild(916838066117824553)
                 t = g.get_thread(confirms[msg.id]['thread_id'])
-                await t.delete()
+                await t.edit(archived=True)
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
                 saveFile(users, 'flow')
