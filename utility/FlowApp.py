@@ -11,7 +11,6 @@ class FlowApp:
         bank = openFile('bank')
         now = datetime.now()
         if is_new_account:
-            today = date.today()
             users[user_id] = {'flow': 0}
             users[user_id]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
             users[user_id]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
