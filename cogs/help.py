@@ -213,6 +213,11 @@ class Dropdown(discord.ui.Select):
                 value='查看群組總人數',
                 inline=False
             )
+            embed.add_field(
+                name='`/say`'
+                value='讓申鶴幫你說話'
+                inline=False
+            )
         await interaction.response.send_message(embed=embed, ephemeral=True) 
 
 class DropdownView(discord.ui.View):
