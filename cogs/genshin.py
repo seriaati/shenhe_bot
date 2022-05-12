@@ -1,5 +1,7 @@
 from datetime import datetime
-import os
+
+from pyparsing import FollowedBy
+import GGanalysislib
 import re
 import discord
 from discord import Interaction, app_commands
@@ -553,12 +555,12 @@ class GenshinCog(commands.Cog):
         def __init__(self, page:int, result:list, i: Interaction):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.PageChooser(page, result, i.user))
-        
+    
     def divide_chunks(l, n):
         for i in range(0, len(l), n): 
             yield l[i:i + n]
     
-    @app_commands.command(name='wish', description='祈願紀錄查詢與抽卡分析')
+    @app_commands.command(name='wish', description='祈願紀錄查詢')
     async def wish_history(self, i: Interaction):
         print(log(False, False, 'Wish', i.user.id))
         try:
@@ -700,9 +702,51 @@ class GenshinCog(commands.Cog):
         else:
             await i.response.send_modal(GenshinCog.AuthKeyModal())
 
-    def saveUserData(self, data: dict):
-        with open('data/accounts.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(data, f)
+    @app_commands.command(name='wishanalysis', description='原神祈願分析')
+    @app_commands.choices(function=
+        [Choice(name='歐氣值檢測', value=0),])
+    @app_commands.rename(function='功能')
+    async def wish_analysis(self, i: Interaction, function: int):
+        print(log(False, False, 'Wish Analysis', i.user.id))
+        try:
+            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
+        except Exception as e:
+            await i.response.send_message(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
+            return
+        await i.response.defer()
+        std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
+        up_num = 0
+        up_gu = 0
+        num_until_up = 0
+        found = False
+        found_last_five_star = False
+        if function == 0:
+            for wish in user_wish_histroy:
+                if wish.banner_type==301:
+                    if wish.rarity == 5 and wish.type == '角色':
+                        if wish.name not in std_characters:
+                            up_num+=1
+                        if not found_last_five_star:
+                            found_last_five_star = True
+                            if wish.name not in std_characters:
+                                up_gu = 0
+                            else:
+                                up_gu = 1
+                        found = True
+                    else:
+                        if not found:
+                            num_until_up+=1
+            player = GGanalysislib.Up5starCharacter()
+            gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
+            embed = defaultEmbed(
+                '歐氣值檢測',
+                f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=up_num, use_pull=len(user_wish_histroy), left_pull=num_until_up, up_guarantee=up_gu), 2))}%的玩家\n'
+                f'• 共{len(user_wish_histroy)}抽\n'
+                f'• 出了{up_num}個UP\n'
+                f'• 墊了{num_until_up}抽\n'
+                f'• {gu_state}')
+            embed.set_author(name=i.user, icon_url=i.user.avatar)
+            await i.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
