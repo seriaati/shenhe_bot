@@ -57,6 +57,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     self.number = number
 
                 async def callback(self, interaction: Interaction):
+                    g = interaction.client.get_guild(916838066117824553)
                     user_wr_role = 0
                     wr_role_list = []
                     for i in range(1, 9):
@@ -70,7 +71,6 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                         return
                     for x in range(1, 9):
                         if self.number == x:
-                            g = interaction.client.get_guild(916838066117824553)
                             r = discord.utils.get(g.roles, name=f'W{x}')
                             if r in interaction.user.roles:
                                 await interaction.user.remove_roles(r)
