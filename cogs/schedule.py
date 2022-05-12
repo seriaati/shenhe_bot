@@ -116,7 +116,7 @@ class Schedule(commands.Cog):
                             await t.send(tedd.mention)
                         await t.send(embed=embed)
                         resin_data[user_id] += 1
-                elif result==False:
+                else:
                     resin_data[user_id] = 0
                 await asyncio.sleep(2.0)
             saveFile(resin_data, 'schedule_resin_notification')
