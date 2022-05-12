@@ -73,10 +73,10 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     r = discord.utils.get(g.roles, name=f'W{self.number}')
                     if r in interaction.user.roles:
                         await interaction.user.remove_roles(r)
-                        await interaction.response.send_message(embed=defaultEmbed(f'✅ 已撤回世界等級{x}身份組', ''), ephemeral=True)
+                        await interaction.response.send_message(embed=defaultEmbed(f'✅ 已撤回世界等級{self.number}身份組', ''), ephemeral=True)
                     else:
                         await interaction.user.add_roles(r)
-                        await interaction.response.send_message(embed=defaultEmbed(f'✅ 已給予世界等級{x}身份組', ''), ephemeral=True)
+                        await interaction.response.send_message(embed=defaultEmbed(f'✅ 已給予世界等級{self.number}身份組', ''), ephemeral=True)
 
         @discord.ui.select(options=get_role_options(), placeholder='請選擇身份組', min_values=1, max_values=1)
         async def role_chooser(self, interaction: Interaction, select: discord.ui.Select):
