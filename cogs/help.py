@@ -97,7 +97,7 @@ class Dropdown(discord.ui.Select):
                 inline=False 
             )
             embed.add_field(
-                name='/wishanalysis',
+                name='`/wishanalysis`',
                 value='祈願資料分析',
                 inline=False
             )
