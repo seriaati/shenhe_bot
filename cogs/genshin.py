@@ -561,12 +561,12 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='wish', description='祈願紀錄查詢')
     async def wish_history(self, i: Interaction):
         print(log(False, False, 'Wish', i.user.id))
+        await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
         except Exception as e:
             await i.response.send_message(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
             return
-        await i.response.defer()
         result = []
         for wish in user_wish_histroy:
             wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
