@@ -525,7 +525,9 @@ class GenshinCog(commands.Cog):
         result.set_footer(
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
-   #/wish 
+   
+    wish = app_commands.Group(name='wish', description='原神祈願系統相關')
+    
     class PageChooser(discord.ui.Select):
         def __init__(self, page:int, result:list, author: discord.Member):
             options = self.get_page_choices(page)
@@ -559,14 +561,15 @@ class GenshinCog(commands.Cog):
         for i in range(0, len(l), n): 
             yield l[i:i + n]
     
-    @app_commands.command(name='wish', description='祈願紀錄查詢')
+    #/wish history
+    @wish.command(name='history', description='祈願歷史紀錄查詢')
     async def wish_history(self, i: Interaction):
         print(log(False, False, 'Wish', i.user.id))
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
         except Exception as e:
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         result = []
         for wish in user_wish_histroy:
@@ -597,16 +600,17 @@ class GenshinCog(commands.Cog):
 
         async def on_submit(self, interaction: discord.Interaction):
             client = genshin.Client()
+            await interaction.response.defer()
             try:
                 check, msg = genshin_app.checkUserData(interaction.user.id)
                 if check == False:
-                    await interaction.response.send_message(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
+                    await interaction.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
                     return
                 url = self.url.value
                 authkey = genshin.utility.extract_authkey(url)
                 client = genshin_app.getUserCookie(interaction.user.id)
                 client.authkey = authkey
-                await interaction.response.send_message(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+                await interaction.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
                 wish_data = await client.wish_history()
                 file = open(
                     f'data/wish_history/{interaction.user.id}.yaml', 'w+')
@@ -628,7 +632,7 @@ class GenshinCog(commands.Cog):
                 '3. 在鍵盤點選"開始"鍵 (Windows鍵), 並搜尋 Powershell\n'
                 '4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell\n'
                 '5. 按Enter鍵, 接著連結會自動複製到剪貼簿\n'
-                '6. 在這裡提交連結, 請輸入`/setkey`指令'
+                '6. 在這裡提交連結, 請輸入`/wish setkey`指令'
             )
             code_msg = "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/41853f2b76dcb845cf8cb0c44174fb63459920f4/getlink_global.ps1'))"
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -648,7 +652,7 @@ class GenshinCog(commands.Cog):
                 '6. 此時頁面應該提示錯誤, 並顯示一些文字\n'
                 '7. 長按並複製「只有連結」的部份(粗體字)\n'
                 '8. 連網(接回wifi或行動數據)\n'
-                '9. 在這裡提交連結, 請輸入`/setkey`指令'
+                '9. 在這裡提交連結, 請輸入`/wish setkey`指令'
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -668,7 +672,7 @@ class GenshinCog(commands.Cog):
                 '9. 回到 Stream App > 停止抓包\n'
                 '10. 按 抓包歷史 > 選擇一個以.json結尾的歷史紀錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)\n'
                 '11. 點選 "請求" 分頁, 接著複製連結\n'
-                '12. 在這裡提交連結, 請輸入`/setkey`指令'
+                '12. 在這裡提交連結, 請輸入`/wish setkey`指令'
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -680,11 +684,11 @@ class GenshinCog(commands.Cog):
                 '1. 在你的 PlayStation 裡打開原神\n'
                 '2. 打開你的信箱 QR Code\n'
                 '3. 用手機掃描 QR Code 得到連結'
-                '4. 在這裡提交連結, 請輸入`/setkey`指令'
+                '4. 在這裡提交連結, 請輸入`/wish setkey`指令'
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name='setkey', description='設置原神祈願紀錄')
+    @wish.command(name='setkey', description='設置原神祈願紀錄')
     @app_commands.rename(function='功能')
     @app_commands.describe(function='查看說明或提交連結')
     @app_commands.choices(function=
@@ -703,17 +707,14 @@ class GenshinCog(commands.Cog):
         else:
             await i.response.send_modal(GenshinCog.AuthKeyModal())
 
-    @app_commands.command(name='wishanalysis', description='原神祈願分析')
-    @app_commands.choices(function=
-        [Choice(name='歐氣值檢測', value=0),])
-    @app_commands.rename(function='功能')
-    async def wish_analysis(self, i: Interaction, function: int):
+    @wish.command(name='luck', description='歐氣值分析')
+    async def wish_analysis(self, i: Interaction):
         print(log(False, False, 'Wish Analysis', i.user.id))
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
         except Exception as e:
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
         up_num = 0
@@ -721,33 +722,81 @@ class GenshinCog(commands.Cog):
         num_until_up = 0
         found = False
         found_last_five_star = False
-        if function == 0:
-            for wish in user_wish_histroy:
-                if wish.banner_type==301:
-                    if wish.rarity == 5 and wish.type == '角色':
+        wish_sum=0
+        for wish in user_wish_histroy:
+            if wish.banner_type==301:
+                wish_sum+=1
+                if wish.rarity == 5 and wish.type == '角色':
+                    if wish.name not in std_characters:
+                        up_num+=1
+                    if not found_last_five_star:
+                        found_last_five_star = True
                         if wish.name not in std_characters:
-                            up_num+=1
-                        if not found_last_five_star:
-                            found_last_five_star = True
-                            if wish.name not in std_characters:
-                                up_gu = 0
-                            else:
-                                up_gu = 1
-                        found = True
-                    else:
-                        if not found:
-                            num_until_up+=1
-            player = GGanalysislib.Up5starCharacter()
-            gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
-            embed = defaultEmbed(
-                '歐氣值檢測',
-                f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=up_num, use_pull=len(user_wish_histroy), left_pull=num_until_up, up_guarantee=up_gu), 2))}%的玩家\n'
-                f'• 共{len(user_wish_histroy)}抽\n'
-                f'• 出了{up_num}個UP\n'
-                f'• 墊了{num_until_up}抽\n'
-                f'• {gu_state}')
-            embed.set_author(name=i.user, icon_url=i.user.avatar)
-            await i.followup.send(embed=embed)
+                            up_gu = 0
+                        else:
+                            up_gu = 1
+                    found = True
+                else:
+                    if not found:
+                        num_until_up+=1
+        player = GGanalysislib.Up5starCharacter()
+        gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
+        embed = defaultEmbed(
+            '限定祈願分析',
+            f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=up_num, use_pull=wish_sum, left_pull=num_until_up, up_guarantee=up_gu), 2))}%的玩家\n'
+            f'• 共{wish_sum}抽\n'
+            f'• 出了{up_num}個UP\n'
+            f'• 墊了{num_until_up}抽\n'
+            f'• {gu_state}')
+        embed.set_author(name=i.user, icon_url=i.user.avatar)
+        await i.followup.send(embed=embed)
+
+    @wish.command(name='predict', description='預測抽到角色的機率')
+    @app_commands.rename(num='up角色數量', pull_num='祈願次數')
+    @app_commands.describe(num='想要抽到幾個5星UP角色?',pull_num='預計抽幾抽? (目前原石數除以160即是最大可抽數)')
+    async def wish_predict(self, i:Interaction, num:int, pull_num:int):
+        print(log(False, False, 'Wish Predict', i.user.id))
+        await i.response.defer()
+        try:
+            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
+        except Exception as e:
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+            return
+        std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
+        up_num = 0
+        up_gu = 0
+        num_until_up = 0
+        found = False
+        found_last_five_star = False
+        wish_sum=0
+        for wish in user_wish_histroy:
+            if wish.banner_type==301:
+                wish_sum+=1
+                if wish.rarity == 5 and wish.type == '角色':
+                    if wish.name not in std_characters:
+                        up_num+=1
+                    if not found_last_five_star:
+                        found_last_five_star = True
+                        if wish.name not in std_characters:
+                            up_gu = 0
+                        else:
+                            up_gu = 1
+                    found = True
+                else:
+                    if not found:
+                        num_until_up+=1
+        gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
+        player = GGanalysislib.Up5starCharacter()
+        result = player.get_p(item_num=num, calc_pull=pull_num, pull_state=num_until_up, up_guarantee=up_gu)
+        embed = defaultEmbed(
+            '祈願機率預測',
+            f'• {str(round(100*result, 2))}%的機率會抽中\n'
+            f'• 想要抽出{num}個5星UP角色\n'
+            f'• 預計抽{pull_num}次\n'
+            f'• 墊了{num_until_up}抽\n'
+            f'• {gu_state}')
+        embed.set_author(name=i.user, icon_url=i.user.avatar)
+        await i.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
