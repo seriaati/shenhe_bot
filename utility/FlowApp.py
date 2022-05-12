@@ -6,10 +6,15 @@ class FlowApp:
     def register(self, user_id: int):
         self.transaction(user_id, 20, is_new_account=True)
 
-    def transaction(self, user_id: int, flow_for_user: int, time_state:str = None, is_new_account: bool = False):
+    def transaction(self, user_id: int, flow_for_user: int, time_state:str = None, is_new_account: bool = False, is_removing_account: bool = False):
         users = openFile('flow')
         bank = openFile('bank')
         now = datetime.now()
+        if is_removing_account:
+            bank['flow']+=flow_for_user
+            del users[user_id]
+            saveFile(users, 'flow')
+            return
         if is_new_account:
             users[user_id] = {'flow': 0}
             users[user_id]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)

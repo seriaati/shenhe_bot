@@ -273,11 +273,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
             if user is None:
-                flow_app.transaction(user_id, value['flow'])
-                del users[user_id]
+                flow_app.transaction(user_id, value['flow'], is_removing_account=True)
                 continue
             userStr += f"{count}. {user}: {value['flow']}\n"
             count += 1
+        saveFile(users, 'accounts')
         embed = defaultEmbed("所有flow帳戶", userStr)
         await interaction.response.send_message(embed=embed)
 
