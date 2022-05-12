@@ -574,10 +574,10 @@ class GenshinCog(commands.Cog):
                 result.append(f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
             else:
                 result.append(f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
-        split_list = list(GenshinCog.divide_chunks(result, 25))
+        split_list = list(GenshinCog.divide_chunks(result, 50))
         view = GenshinCog.PageChooserView(len(split_list), split_list, i)
         resultStr = ''
-        for wish in result[:25]:
+        for wish in result[:50]:
             resultStr += f'{wish}\n'
         await i.followup.send(embed=defaultEmbed('詳細祈願紀錄',resultStr), view=view)
         
