@@ -272,6 +272,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         count = 1
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
+            if user is None:
+                flow_app.transaction(user_id, value['flow'])
+                del users[user_id]
+                continue
             userStr += f"{count}. {user}: {value['flow']}\n"
             count += 1
         embed = defaultEmbed("所有flow帳戶", userStr)
