@@ -66,7 +66,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     for role in wr_role_list:
                         if role in interaction.user.roles:
                             user_wr_role = re.findall(r'\d+', str(role.name))
-                    if user_wr_role != 0 and self.numer != user_wr_role:
+                    if user_wr_role != 0 and self.number != user_wr_role:
                         await interaction.response.send_message(errEmbed('同時最多只能擁有一個世界等級身份組',''), ephemeral=True)
                         return
                     for x in range(1, 9):
