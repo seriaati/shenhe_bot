@@ -78,10 +78,11 @@ class OtherCMDCog(commands.Cog):
     @app_commands.rename(msg='訊息')
     @app_commands.describe(msg='要讓申鶴幫你說的訊息')
     async def say(self, i:Interaction, msg:str):
+        print(log(False, False, 'Say', i.user.id))
         channel = i.channel
         await i.response.send_message('已發送',ephemeral=True)
         await i.channel.send(msg)
-        
+
     @app_commands.command(
         name='flash',
         description='防放閃機制'
