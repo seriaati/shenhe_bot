@@ -67,6 +67,8 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                         if role in interaction.user.roles:
                             user_wr_role = re.findall(r'\d+', str(role.name))
                             break
+                    print(self.numer)
+                    print(user_wr_role[0])
                     if self.number != user_wr_role[0]:
                         if user_wr_role[0] == 0:
                             pass 
