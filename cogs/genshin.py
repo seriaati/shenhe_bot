@@ -12,7 +12,8 @@ from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log, openFile,
 from discord import Member
 from utility.GenshinApp import genshin_app
 from typing import List, Optional
-from utility.paginator import Paginator
+from utility.AbyssPaginator import AbyssPaginator
+from utility.WishPaginator import WishPaginator
 
 
 class GenshinCog(commands.Cog):
@@ -245,7 +246,7 @@ class GenshinCog(commands.Cog):
             if floor == 1:
                 await interaction.response.send_message(embed=result[-1])
             else:
-                await Paginator(interaction, result[1:]).start(embeded=True)
+                await AbyssPaginator(interaction, result[1:]).start(embeded=True)
 #/stuck
     @app_commands.command(
         name='stuck',
@@ -574,12 +575,14 @@ class GenshinCog(commands.Cog):
                 result.append(f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
             else:
                 result.append(f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
-        split_list = list(GenshinCog.divide_chunks(result, 35))
-        view = GenshinCog.PageChooserView(len(split_list), split_list, i)
-        resultStr = ''
-        for wish in result[:35]:
-            resultStr += f'{wish}\n'
-        await i.followup.send(embed=defaultEmbed('詳細祈願紀錄',resultStr), view=view)
+        split_list = list(GenshinCog.divide_chunks(result, 20))
+        embed_list = []
+        for l in split_list:
+            embed_str = ''
+            for w in l:
+                embed_str+=f'{w}\n'
+            embed_list.append(defaultEmbed('詳細祈願紀錄',embed_str))
+        await WishPaginator(i, embed_list).start(embeded=True)
         
 
     class AuthKeyModal(ui.Modal, title='抽卡紀錄設定'):
