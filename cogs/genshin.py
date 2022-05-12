@@ -1,6 +1,4 @@
 from datetime import datetime
-
-from pyparsing import FollowedBy
 import GGanalysislib
 import re
 import discord
