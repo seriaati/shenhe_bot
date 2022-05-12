@@ -1,4 +1,3 @@
-import typing
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -83,8 +82,23 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/dm`',
-                value='開關私訊提醒功能',
+                name='`/schedule`',
+                value='設置自動化功能',
+                inline=False
+            )
+            embed.add_field(
+                name='`/setkey`',
+                value='設置祈願紀錄',
+                inline=False
+            )
+            embed.add_field(
+                name='`/wish`',
+                value='查看祈願紀錄',
+                inline=False 
+            )
+            embed.add_field(
+                name='/wishanalysis',
+                value='祈願資料分析',
                 inline=False
             )
         elif self.values[0] == '原神':
