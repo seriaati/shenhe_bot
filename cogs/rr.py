@@ -61,7 +61,7 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     user_wr_role = 0
                     wr_role_list = []
                     for i in range(1, 9):
-                        role = discord.utils.get(g.roles, name=f'W{x}')
+                        role = discord.utils.get(g.roles, name=f'W{i}')
                         wr_role_list.append(role)
                     for role in wr_role_list:
                         if role in interaction.user.roles:
