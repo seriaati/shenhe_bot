@@ -63,9 +63,11 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
                     for i in range(1, 9):
                         role = discord.utils.get(g.roles, name=f'W{i}')
                         wr_role_list.append(role)
+                    print(wr_role_list)
                     for role in wr_role_list:
                         if role in interaction.user.roles:
                             user_wr_role = re.findall(r'\d+', str(role.name))
+                            print(user_wr_role)
                             break
                     if user_wr_role != 0 and self.number != user_wr_role[0]:
                         await interaction.response.send_message(embed=errEmbed('同時最多只能擁有一個世界等級身份組',''), ephemeral=True)
