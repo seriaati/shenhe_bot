@@ -706,12 +706,12 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(function='功能')
     async def wish_analysis(self, i: Interaction, function: int):
         print(log(False, False, 'Wish Analysis', i.user.id))
+        await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
         except Exception as e:
             await i.response.send_message(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/setkey`指令'), ephemeral=True)
             return
-        await i.response.defer()
         std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
         up_num = 0
         up_gu = 0
