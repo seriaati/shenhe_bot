@@ -1,7 +1,7 @@
 import asyncio
 import discord
 from datetime import datetime
-from discord import app_commands
+from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
@@ -57,6 +57,22 @@ class Schedule(commands.Cog):
                 self.remove_user(interaction.user.id, 'resin_check')
                 await interaction.response.send_message('✅ 樹脂額滿提醒已關閉', ephemeral=True)
         self.schedule.start()
+
+    @app_commands.command(name='claimall',description='強制執行所有用戶簽到')
+    async def claim_all(self, i:Interaction):
+        print(log(False, False, 'Claim All', i.user.id))
+        await i.response.send_message(embed=defaultEmbed('⏳ 簽到中','請稍等'))
+        claim_data = openFile('schedule_daily_reward')
+        count = 0
+        for user_id, value in claim_data.items():
+            check, msg = genshin_app.checkUserData(user_id)
+            if check == False:
+                self.remove_user(user_id, 'daily_reward')
+                continue
+            result = await genshin_app.claimDailyReward(user_id)
+            count += 1
+            await asyncio.sleep(2.0)
+        await i.followup.send(embed=defaultEmbed('✅ 簽到完成',''))
         
     loop_interval = 10
     @tasks.loop(minutes=loop_interval)
