@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from utility.utils import errEmbed, log, openFile, saveFile
 class FlowApp:
@@ -11,9 +11,11 @@ class FlowApp:
         bank = openFile('bank')
         now = datetime.now()
         if is_removing_account:
+            print(log(True, False, 'Removing Acc',user_id))
             bank['flow']+=flow_for_user
             del users[user_id]
             saveFile(users, 'flow')
+            saveFile(bank, 'bank')
             return
         if is_new_account:
             users[user_id] = {'flow': 0}
