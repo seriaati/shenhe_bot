@@ -214,8 +214,8 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/say`'
-                value='讓申鶴幫你說話'
+                name='`/say`',
+                value='讓申鶴幫你說話',
                 inline=False
             )
         await interaction.response.send_message(embed=embed, ephemeral=True) 
