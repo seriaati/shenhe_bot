@@ -708,8 +708,11 @@ class GenshinCog(commands.Cog):
             await i.response.send_modal(GenshinCog.AuthKeyModal())
 
     @wish.command(name='luck', description='歐氣值分析')
-    async def wish_analysis(self, i: Interaction):
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def wish_analysis(self, i: Interaction, member: Optional[Member] = None):
         print(log(False, False, 'Wish Analysis', i.user.id))
+        member = member or i.user
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
@@ -752,10 +755,11 @@ class GenshinCog(commands.Cog):
         await i.followup.send(embed=embed)
 
     @wish.command(name='predict', description='預測抽到角色的機率')
-    @app_commands.rename(num='up角色數量', pull_num='祈願次數')
-    @app_commands.describe(num='想要抽到幾個5星UP角色?',pull_num='預計抽幾抽? (目前原石數除以160即是最大可抽數)')
-    async def wish_predict(self, i:Interaction, num:int, pull_num:int):
+    @app_commands.rename(num='up角色數量', pull_num='祈願次數', member='其他人')
+    @app_commands.describe(num='想要抽到幾個5星UP角色?',pull_num='預計抽幾抽? (目前原石數除以160即是最大可抽數)',member='查看其他群友的資料')
+    async def wish_predict(self, i:Interaction, num:int, pull_num:int, member: Optional[Member] = None):
         print(log(False, False, 'Wish Predict', i.user.id))
+        member = member or i.user
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
