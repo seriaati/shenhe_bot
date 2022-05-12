@@ -58,23 +58,6 @@ class ReactionRoles(commands.Cog, name='rr', description='表情符號身份組�
 
                 async def callback(self, interaction: Interaction):
                     g = interaction.client.get_guild(916838066117824553)
-                    user_wr_role = [0]
-                    wr_role_list = []
-                    for i in range(1, 9):
-                        role = discord.utils.get(g.roles, name=f'W{i}')
-                        wr_role_list.append(role)
-                    for role in wr_role_list:
-                        if role in interaction.user.roles:
-                            user_wr_role = re.findall(r'\d+', str(role.name))
-                            break
-                    print(self.number)
-                    print(user_wr_role[0])
-                    if self.number != user_wr_role[0]:
-                        if user_wr_role[0] == 0:
-                            pass 
-                        else:
-                            await interaction.response.send_message(embed=errEmbed('同時最多只能擁有一個世界等級身份組',''), ephemeral=True)
-                            return
                     r = discord.utils.get(g.roles, name=f'W{self.number}')
                     if r in interaction.user.roles:
                         await interaction.user.remove_roles(r)
