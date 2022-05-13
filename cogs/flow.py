@@ -79,6 +79,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                   member: Optional[Member] = None
                   ):
         print(log(False, False, 'Acc', interaction.user.id))
+        if interaction.channel.id == 960861105503232030:
+            await interaction.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷',''),ephemeral=True)
+            return
         users = openFile('flow')
         member = member or interaction.user
         discordID = member.id
