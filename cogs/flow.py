@@ -44,7 +44,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 saveFile(users, 'flow')
 
             if "早" in message.content:
-                if "早" in message.content and "午" in message.content and "晚" in message.content:
+                if "早午晚" in message.content:
                     await message.add_reaction(':PaimonSeria:')
                 else:
                     start = datetime(year=now.year, month=now.month,
@@ -56,7 +56,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                             flow_app.transaction(discordID, 1, time_state='morning')
                             await message.add_reaction('⛅')
             elif "午" in message.content:
-                if "早" in message.content and "午" in message.content and "晚" in message.content:
+                if "早午晚" in message.content:
                     await message.add_reaction(':PaimonSeria:')
                 else:
                     start = datetime(year=now.year, month=now.month, day=now.day, hour=12, minute=0, second=0, microsecond=0)
@@ -67,7 +67,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                             flow_app.transaction(discordID, 1, time_state='noon')
                             await message.add_reaction('☀️')
             elif "晚" in message.content:
-                if "早" in message.content and "午" in message.content and "晚" in message.content:
+                if "早午晚" in message.content:
                     await message.add_reaction(':PaimonSeria:')
                 else:
                     start = datetime(year=now.year, month=now.month, day=now.day, hour=18, minute=0, second=0, microsecond=0)
