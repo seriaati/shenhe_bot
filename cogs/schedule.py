@@ -38,7 +38,7 @@ class Schedule(commands.Cog):
             await interaction.response.send_message(embed=embed)
             return
         
-        check, msg = await genshin_app.checkUserData(interaction.user.id)
+        check, msg = genshin_app.checkUserData(interaction.user.id)
         if check == False:
             await interaction.response.send_message(embed=msg)
             return
