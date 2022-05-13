@@ -24,6 +24,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             return
 
         if "早" in message.content or "午" in message.content or "晚" in message.content:
+            if '早午晚' in message.content:
+                await message.add_reaction('<:PaimonSeria:958341967698337854>')
             check, msg = flow_app.checkFlowAccount(discordID)
             if check == False:
                 await user.send(embed=msg)
@@ -44,67 +46,33 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 saveFile(users, 'flow')
 
             if "早" in message.content:
-                if "早午晚" in message.content:
-                    await message.add_reaction(':PaimonSeria:')
-                else:
-                    start = datetime(year=now.year, month=now.month,
-                                     day=now.day, hour=5, minute=0, second=0, microsecond=0)
-                    end = datetime(year=now.year, month=now.month, day=now.day,
-                                   hour=11, minute=59, second=0, microsecond=0)
-                    if start <= now <= end:
-                        if users[discordID]['morning'].day != now.day:
-                            flow_app.transaction(discordID, 1, time_state='morning')
-                            await message.add_reaction('⛅')
+                start = datetime(year=now.year, month=now.month,
+                                 day=now.day, hour=5, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day,
+                               hour=11, minute=59, second=0, microsecond=0)
+                if start <= now <= end:
+                    if users[discordID]['morning'].day != now.day:
+                        flow_app.transaction(
+                            discordID, 1, time_state='morning')
+                        await message.add_reaction('⛅')
             elif "午" in message.content:
-                if "早午晚" in message.content:
-                    await message.add_reaction(':PaimonSeria:')
-                else:
-                    start = datetime(year=now.year, month=now.month, day=now.day, hour=12, minute=0, second=0, microsecond=0)
-                    end = datetime(year=now.year, month=now.month, day=now.day,
-                                  hour=17, minute=59, second=0, microsecond=0)
-                    if start <= now <= end:
-                        if users[discordID]['noon'].day != now.day:
-                            flow_app.transaction(discordID, 1, time_state='noon')
-                            await message.add_reaction('☀️')
+                start = datetime(year=now.year, month=now.month, day=now.day,
+                                 hour=12, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day,
+                               hour=17, minute=59, second=0, microsecond=0)
+                if start <= now <= end:
+                    if users[discordID]['noon'].day != now.day:
+                        flow_app.transaction(discordID, 1, time_state='noon')
+                        await message.add_reaction('☀️')
             elif "晚" in message.content:
-                if "早午晚" in message.content:
-                    await message.add_reaction(':PaimonSeria:')
-                else:
-                    start = datetime(year=now.year, month=now.month, day=now.day, hour=18, minute=0, second=0, microsecond=0)
-                    end = datetime(year=now.year, month=now.month, day=now.day + 1, hour=4, minute=59, second=0, microsecond=0)
-                    if start <= now <= end:
-                        if users[discordID]['night'].day != now.day:
-                            flow_app.transaction(discordID, 1, time_state='night')
-                            await message.add_reaction('🌙')
-
-    @app_commands.command(name='forceroll', description='強制抽出得獎者')
-    @app_commands.rename(msgID='訊息id')
-    @app_commands.checks.has_role('小雪團隊')
-    async def forceroll(self, interaction: discord.Interaction, msgID: int):
-        print(log(False, False, 'Forceroll', interaction.user.id))
-        giveaways = openFile('giveaways')
-        giveawayMsg = self.bot.fetch_message(msgID)
-        giveawayChannel = self.bot.get_channel(965517075508498452)
-        lulurR = self.bot.get_user(665092644883398671)
-        if msgID in giveaways:
-            memberList = giveaways[msgID]['members']
-            winner = random.choice(memberList)
-            winnerID = int(winner)
-            winnerUser = self.bot.get_user(winnerID)
-            await giveawayMsg.delete()
-            embed = defaultEmbed(
-                "抽獎結果",
-                f"恭喜{winnerUser.mention}獲得價值 {giveaways[msgID]['goal']} flow幣的 {giveaways[msgID]['prize']} !")
-            await giveawayChannel.send(f"{lulurR.mention} {winnerUser.mention}")
-            await giveawayChannel.send(embed=embed)
-            del giveaways[msgID]
-            saveFile(giveaways, 'giveaways')
-            await interaction.response.send_message(f'{msgID} 強制抽獎成功', ephemeral=True)
-
-    @forceroll.error
-    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+                start = datetime(year=now.year, month=now.month, day=now.day,
+                                 hour=18, minute=0, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=now.day +
+                               1, hour=4, minute=59, second=0, microsecond=0)
+                if start <= now <= end:
+                    if users[discordID]['night'].day != now.day:
+                        flow_app.transaction(discordID, 1, time_state='night')
+                        await message.add_reaction('🌙')
 
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
@@ -113,6 +81,9 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                   member: Optional[Member] = None
                   ):
         print(log(False, False, 'Acc', interaction.user.id))
+        if interaction.channel.id == 960861105503232030:
+            await interaction.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷',''),ephemeral=True)
+            return
         users = openFile('flow')
         member = member or interaction.user
         discordID = member.id
@@ -195,7 +166,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             print(log(True, True, 'Give', e))
             embed = errEmbed('發生未知錯誤', f'```{e}```')
             await interaction.response.send_message(embed=embed, ephemeral=True)
-#/take
+
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
     @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息')
     @app_commands.choices(private=[
@@ -223,7 +194,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
         if isinstance(e, app_commands.errors.MissingRole):
             await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-#/make
+
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息')
     @app_commands.choices(private=[
@@ -277,8 +248,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         count = 1
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
+            if user is None:
+                flow_app.transaction(user_id, value['flow'], is_removing_account=True)
+                continue
             userStr += f"{count}. {user}: {value['flow']}\n"
             count += 1
+        saveFile(users, 'flow')
         embed = defaultEmbed("所有flow帳戶", userStr)
         await interaction.response.send_message(embed=embed)
 
@@ -476,7 +451,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 msg = interaction.message
                 authorID = confirms[msg.id]['authorID']
                 confirms = openFile('confirm')
-                users = openFile('flow')
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
                     free_trial[authorID] = 0
@@ -491,9 +465,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 if type == 4:
                     if free_trial[receiverID] < 10 and flow >= 10:
                         flow_app.transaction(receiverID, 10)
-                        str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[receiverID] += 1
+                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
+                        f'已使用{free_trial[receiverID]}/10次贊助機會'
                     flow_app.transaction(authorID ,flow)
                     flow_app.transaction(receiverID,-int(new_flow))
                     embed = defaultEmbed(
@@ -504,9 +479,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 else:
                     if free_trial[authorID] < 10 and flow >= 10:
                         flow_app.transaction(authorID, 10)
-                        str = '(被幫助人受到10 flow幣贊助)'
                         new_flow = flow-10
                         free_trial[authorID] += 1
+                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
+                        f'已使用{free_trial[receiverID]}/10次贊助機會'
                     flow_app.transaction(authorID ,-int(new_flow))
                     flow_app.transaction(receiverID,flow)
                     embed = defaultEmbed(
@@ -520,7 +496,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await t.edit(archived=True)
                 del confirms[msg.id]
                 saveFile(confirms, 'confirm')
-                saveFile(users, 'flow')
                 saveFile(free_trial, 'find_free_trial')
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
