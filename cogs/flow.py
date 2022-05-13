@@ -452,6 +452,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
                     free_trial[authorID] = 0
+                if receiverID not in free_trial:
+                    free_trial[receiverID] = 0
                 receiverID = confirms[msg.id]['receiverID']
                 flow = confirms[msg.id]['flow']
                 type = confirms[msg.id]['type']
@@ -558,7 +560,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         tag=[Choice(name='不tag', value=0),
                  Choice(name='tag', value=1)])
     async def find(self, interaction: discord.Interaction, type: int, title: str, flow: int, tag: int = 1):
-        print(log(False, False, 'find',
+        print(log(False, False, 'Find',
               f'{interaction.user.id}: (type={type}, title={title}, flow={flow})'))
         check, msg = self.check_in_find_channel(interaction.channel.id)
         if check == False:
