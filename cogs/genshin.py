@@ -1,4 +1,5 @@
 from datetime import datetime
+import os.path
 import GGanalysislib
 import re
 import discord
@@ -607,6 +608,7 @@ class GenshinCog(commands.Cog):
                     await interaction.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
                     return
                 url = self.url.value
+                print(log(True, False, 'Wish Setkey', f'{interaction.user.id}(url={url})'))
                 authkey = genshin.utility.extract_authkey(url)
                 client = genshin_app.getUserCookie(interaction.user.id)
                 client.authkey = authkey
@@ -707,41 +709,61 @@ class GenshinCog(commands.Cog):
         else:
             await i.response.send_modal(GenshinCog.AuthKeyModal())
 
+    def check_if_wish_cache_exists(self, user_id:int):
+        user_wish_histroy = openFile(f'wish_history/{user_id}')
+        if not os.path.exists(f'data/wish_cache/{user_id}.yaml'):
+            required_data = ['up_num', 'up_gu', 'num_until_up', 'wish_sum']
+            print(log(True, False, 'Wish Luck', f'making wish cache for {user_id}'))
+            std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
+            up_num = 0
+            up_gu = 0
+            num_until_up = 0
+            wish_sum=0
+            found = False
+            found_last_five_star = False
+            for wish in user_wish_histroy:
+                if wish.banner_type==301:
+                    wish_sum+=1
+                    if wish.rarity == 5 and wish.type == '角色':
+                        if wish.name not in std_characters:
+                            up_num+=1
+                        if not found_last_five_star:
+                            found_last_five_star = True
+                            if wish.name not in std_characters:
+                                up_gu = 0
+                            else:
+                                up_gu = 1
+                        found = True
+                    else:
+                        if not found:
+                            num_until_up+=1
+            file = open(f'data/wish_cache/{user_id}.yaml', 'w+')
+            wish_cache = {}
+            for data in required_data:
+                wish_cache[data] = eval(data)
+            saveFile(wish_cache, f'/wish_cache/{str(user_id)}')
+            return False
+        else:
+            return True
+    
     @wish.command(name='luck', description='歐氣值分析')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Analysis', member.id))
+        print(log(False, False, 'Wish Luck', member.id))
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{member.id}')
         except Exception as e:
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
-        std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
-        up_num = 0
-        up_gu = 0
-        num_until_up = 0
-        found = False
-        found_last_five_star = False
-        wish_sum=0
-        for wish in user_wish_histroy:
-            if wish.banner_type==301:
-                wish_sum+=1
-                if wish.rarity == 5 and wish.type == '角色':
-                    if wish.name not in std_characters:
-                        up_num+=1
-                    if not found_last_five_star:
-                        found_last_five_star = True
-                        if wish.name not in std_characters:
-                            up_gu = 0
-                        else:
-                            up_gu = 1
-                    found = True
-                else:
-                    if not found:
-                        num_until_up+=1
+        self.check_if_wish_cache_exists(member.id)
+        user_wish_cache = openFile(f'/wish_cache/{member.id}')
+        up_num = user_wish_cache['up_num']
+        up_gu = user_wish_cache['up_gu']
+        num_until_up = user_wish_cache['num_until_up']
+        wish_sum = user_wish_cache['wish_sum']
         player = GGanalysislib.Up5starCharacter()
         gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
         embed = defaultEmbed(
@@ -766,29 +788,10 @@ class GenshinCog(commands.Cog):
         except Exception as e:
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
-        std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
-        up_num = 0
-        up_gu = 0
-        num_until_up = 0
-        found = False
-        found_last_five_star = False
-        wish_sum=0
-        for wish in user_wish_histroy:
-            if wish.banner_type==301:
-                wish_sum+=1
-                if wish.rarity == 5 and wish.type == '角色':
-                    if wish.name not in std_characters:
-                        up_num+=1
-                    if not found_last_five_star:
-                        found_last_five_star = True
-                        if wish.name not in std_characters:
-                            up_gu = 0
-                        else:
-                            up_gu = 1
-                    found = True
-                else:
-                    if not found:
-                        num_until_up+=1
+        self.check_if_wish_cache_exists(member.id)
+        user_wish_cache = openFile(f'/wish_cache/{member.id}')
+        up_gu = user_wish_cache['up_gu']
+        num_until_up = user_wish_cache['num_until_up']
         gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
         result = player.get_p(item_num=num, calc_pull=pull_num, pull_state=num_until_up, up_guarantee=up_gu)
