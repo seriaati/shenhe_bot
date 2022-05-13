@@ -251,7 +251,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 continue
             userStr += f"{count}. {user}: {value['flow']}\n"
             count += 1
-        saveFile(users, 'accounts')
+        saveFile(users, 'flow')
         embed = defaultEmbed("所有flow帳戶", userStr)
         await interaction.response.send_message(embed=embed)
 
