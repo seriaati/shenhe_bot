@@ -72,35 +72,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         flow_app.transaction(discordID, 1, time_state='night')
                         await message.add_reaction('🌙')
 
-    @app_commands.command(name='forceroll', description='強制抽出得獎者')
-    @app_commands.rename(msgID='訊息id')
-    @app_commands.checks.has_role('小雪團隊')
-    async def forceroll(self, interaction: discord.Interaction, msgID: int):
-        print(log(False, False, 'Forceroll', interaction.user.id))
-        giveaways = openFile('giveaways')
-        giveawayMsg = self.bot.fetch_message(msgID)
-        giveawayChannel = self.bot.get_channel(965517075508498452)
-        lulurR = self.bot.get_user(665092644883398671)
-        if msgID in giveaways:
-            memberList = giveaways[msgID]['members']
-            winner = random.choice(memberList)
-            winnerID = int(winner)
-            winnerUser = self.bot.get_user(winnerID)
-            await giveawayMsg.delete()
-            embed = defaultEmbed(
-                "抽獎結果",
-                f"恭喜{winnerUser.mention}獲得價值 {giveaways[msgID]['goal']} flow幣的 {giveaways[msgID]['prize']} !")
-            await giveawayChannel.send(f"{lulurR.mention} {winnerUser.mention}")
-            await giveawayChannel.send(embed=embed)
-            del giveaways[msgID]
-            saveFile(giveaways, 'giveaways')
-            await interaction.response.send_message(f'{msgID} 強制抽獎成功', ephemeral=True)
-
-    @forceroll.error
-    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
