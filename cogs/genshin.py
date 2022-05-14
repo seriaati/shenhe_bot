@@ -32,7 +32,8 @@ class GenshinCog(commands.Cog):
             self.hydro_dict = yaml.full_load(f)
         with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
             self.pyro_dict = yaml.full_load(f)
-#cookie
+# cookie
+
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
         cookie = discord.ui.TextInput(
             label='Cookie',
@@ -72,7 +73,8 @@ class GenshinCog(commands.Cog):
             await interaction.followup.send(content=code_msg)
         elif option == 1:
             await interaction.response.send_modal(self.CookieModal())
-#/setuid
+# /setuid
+
     @app_commands.command(
         name='setuid',
         description='設定原神UID')
@@ -96,7 +98,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/stats
+# /stats
+
     @app_commands.command(
         name='stats',
         description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量'
@@ -111,7 +114,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/area
+# /area
+
     @app_commands.command(
         name='area',
         description='查看區域探索度'
@@ -126,7 +130,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/claim
+# /claim
+
     @app_commands.command(
         name='claim',
         description='領取hoyolab登入獎勵'
@@ -141,7 +146,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/diary
+# /diary
+
     @app_commands.command(
         name='diary',
         description='查看旅行者日記'
@@ -163,7 +169,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/log
+# /log
+
     @app_commands.command(
         name='log',
         description='查看最近25筆原石或摩拉收入紀錄'
@@ -182,7 +189,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result[type])
-#/users
+# /users
+
     @app_commands.command(
         name='users',
         description='查看所有已註冊原神帳號'
@@ -199,7 +207,8 @@ class GenshinCog(commands.Cog):
                 f"{count}. {name} - {value['uid']}\n"
         embed = defaultEmbed("所有帳號", userStr)
         await interaction.response.send_message(embed=embed)
-#/today
+# /today
+
     @app_commands.command(
         name='today',
         description='查看今日原石與摩拉收入'
@@ -214,7 +223,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
-#/abyss
+# /abyss
+
     @app_commands.command(name='abyss', description='深淵資料查詢')
     @app_commands.rename(check_type='類別', season='期別', floor='層數', member='其他人')
     @app_commands.describe(check_type='想要查看的資料類別',
@@ -248,7 +258,8 @@ class GenshinCog(commands.Cog):
                 await interaction.response.send_message(embed=result[-1])
             else:
                 await AbyssPaginator(interaction, result[1:]).start(embeded=True)
-#/stuck
+# /stuck
+
     @app_commands.command(
         name='stuck',
         description='找不到資料?'
@@ -263,7 +274,8 @@ class GenshinCog(commands.Cog):
             "5. 點擊之後看到設定按鈕\n"
             "6. 打開 Do you want to enable real time-notes")
         await interaction.response.send_message(embed=embed)
-#/farm
+# /farm
+
     @app_commands.command(
         name='farm',
         description='查看原神今日可刷素材'
@@ -285,7 +297,7 @@ class GenshinCog(commands.Cog):
             embedFarm = defaultEmbed(
                 f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         await interaction.response.send_message(embed=embedFarm)
-#/build
+# /build
     build = app_commands.Group(
         name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
 
@@ -459,7 +471,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.followup.send(embed=result)
-#/rate
+# /rate
+
     @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
     @app_commands.rename(type='聖遺物類型', crit_dmg='暴傷', crit_rate='暴擊率', atk='攻擊百分比')
     @app_commands.choices(type=[
@@ -526,25 +539,25 @@ class GenshinCog(commands.Cog):
         result.set_footer(
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
-   
+
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
-    
+
     class PageChooser(discord.ui.Select):
-        def __init__(self, page:int, result:list, author: discord.Member):
+        def __init__(self, page: int, result: list, author: discord.Member):
             options = self.get_page_choices(page)
-            self.page = page 
+            self.page = page
             self.result = result
             super().__init__(placeholder='選擇頁數', min_values=1, max_values=1, options=options)
 
-        def get_page_choices(self, page:int):
+        def get_page_choices(self, page: int):
             result = []
-            for i in range (1, page+1):
+            for i in range(1, page+1):
                 result.append(discord.SelectOption(label=f'第 {i} 頁'))
             return result
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
             return interaction.user.id == self.author.id
-        
+
         async def callback(self, interaction: discord.Interaction):
             choice = self.values[0]
             pos = [int(s) for s in re.findall(r'\b\d+\b', choice)]
@@ -554,15 +567,15 @@ class GenshinCog(commands.Cog):
             await interaction.response.edit_message(embed=defaultEmbed('詳細祈願紀錄', resultStr))
 
     class PageChooserView(discord.ui.View):
-        def __init__(self, page:int, result:list, i: Interaction):
+        def __init__(self, page: int, result: list, i: Interaction):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.PageChooser(page, result, i.user))
-    
+
     def divide_chunks(l, n):
-        for i in range(0, len(l), n): 
+        for i in range(0, len(l), n):
             yield l[i:i + n]
-    
-    #/wish history
+
+    # /wish history
     @wish.command(name='history', description='祈願歷史紀錄查詢')
     async def wish_history(self, i: Interaction):
         print(log(False, False, 'Wish', i.user.id))
@@ -576,18 +589,19 @@ class GenshinCog(commands.Cog):
         for wish in user_wish_histroy:
             wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
             if wish.rarity == 5 or wish.rarity == 4:
-                result.append(f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
+                result.append(
+                    f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
             else:
-                result.append(f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
+                result.append(
+                    f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
         split_list = list(GenshinCog.divide_chunks(result, 20))
         embed_list = []
         for l in split_list:
             embed_str = ''
             for w in l:
-                embed_str+=f'{w}\n'
-            embed_list.append(defaultEmbed('詳細祈願紀錄',embed_str))
+                embed_str += f'{w}\n'
+            embed_list.append(defaultEmbed('詳細祈願紀錄', embed_str))
         await WishPaginator(i, embed_list).start(embeded=True)
-        
 
     class AuthKeyModal(ui.Modal, title='抽卡紀錄設定'):
         url = discord.ui.TextInput(
@@ -608,7 +622,8 @@ class GenshinCog(commands.Cog):
                     await interaction.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
                     return
                 url = self.url.value
-                print(log(True, False, 'Wish Setkey', f'{interaction.user.id}(url={url})'))
+                print(log(True, False, 'Wish Setkey',
+                      f'{interaction.user.id}(url={url})'))
                 authkey = genshin.utility.extract_authkey(url)
                 client = genshin_app.getUserCookie(interaction.user.id)
                 client.authkey = authkey
@@ -617,6 +632,9 @@ class GenshinCog(commands.Cog):
                 file = open(
                     f'data/wish_history/{interaction.user.id}.yaml', 'w+')
                 saveFile(wish_data, f'wish_history/{interaction.user.id}')
+                if os.path.exists(f'data/wish_cache/{interaction.user.id}.yaml'):
+                    # 刪除之前的快取檔案
+                    os.remove(f'data/wish_cache/{interaction.user.id}.yaml')
                 await interaction.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功', ''), ephemeral=True)
             except Exception as e:
                 await interaction.followup.send(embed=errEmbed('設置失敗', f'請將這個訊息私訊給小雪```{e}```'), ephemeral=True)
@@ -693,9 +711,8 @@ class GenshinCog(commands.Cog):
     @wish.command(name='setkey', description='設置原神祈願紀錄')
     @app_commands.rename(function='功能')
     @app_commands.describe(function='查看說明或提交連結')
-    @app_commands.choices(function=
-        [Choice(name='查看祈願紀錄的設置方式', value='help'),
-        Choice(name='提交連結', value='submit')])
+    @app_commands.choices(function=[Choice(name='查看祈願紀錄的設置方式', value='help'),
+                                    Choice(name='提交連結', value='submit')])
     async def set_key(self, i: Interaction, function: str):
         if function == 'help':
             view = GenshinCog.ChoosePlatform()
@@ -709,24 +726,33 @@ class GenshinCog(commands.Cog):
         else:
             await i.response.send_modal(GenshinCog.AuthKeyModal())
 
-    def check_if_wish_cache_exists(self, user_id:int):
+    def check_if_wish_cache_exists(self, user_id: int):
         user_wish_histroy = openFile(f'wish_history/{user_id}')
         if not os.path.exists(f'data/wish_cache/{user_id}.yaml'):
+            print(log(True, False, 'Wish Cache',
+                  f'making wish cache for {user_id}'))
+            file = open(f'data/wish_cache/{user_id}.yaml', 'w+')  # 創建快取檔案
+            wish_cache = {}
+            saveFile(wish_cache, f'/wish_cache/{str(user_id)}')
+        user_wish_cache = openFile(f'/wish_cache/{str(user_id)}')
+        if 'up_char' not in user_wish_cache:  # 角色限定祈願快取
+            print(log(True, False, 'Wish Cache',
+                  f'making up_char wish cache for {user_id}'))
+            user_wish_cache['up_char'] = {}
             required_data = ['up_num', 'up_gu', 'num_until_up', 'wish_sum']
-            print(log(True, False, 'Wish Luck', f'making wish cache for {user_id}'))
-            std_characters = ['迪盧克','琴','七七','莫娜','刻晴']
+            std_characters = ['迪盧克', '琴', '七七', '莫娜', '刻晴']
             up_num = 0
             up_gu = 0
             num_until_up = 0
-            wish_sum=0
+            wish_sum = 0
             found = False
             found_last_five_star = False
             for wish in user_wish_histroy:
-                if wish.banner_type==301:
-                    wish_sum+=1
+                if wish.banner_type == 301:
+                    wish_sum += 1
                     if wish.rarity == 5 and wish.type == '角色':
                         if wish.name not in std_characters:
-                            up_num+=1
+                            up_num += 1
                         if not found_last_five_star:
                             found_last_five_star = True
                             if wish.name not in std_characters:
@@ -736,16 +762,28 @@ class GenshinCog(commands.Cog):
                         found = True
                     else:
                         if not found:
-                            num_until_up+=1
-            file = open(f'data/wish_cache/{user_id}.yaml', 'w+')
-            wish_cache = {}
+                            num_until_up += 1
             for data in required_data:
-                wish_cache[data] = eval(data)
-            saveFile(wish_cache, f'/wish_cache/{str(user_id)}')
-            return False
-        else:
-            return True
-    
+                user_wish_cache['up_char'][data] = eval(data)
+            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
+        if 'weapon' not in user_wish_cache:  # 限定武器快取
+            print(log(True, False, 'Wish Cache',
+                  f'making weapon wish cache for {user_id}'))
+            user_wish_cache['weapon'] = {}
+            required_data = ['last_five_star_weapon_name', 'pull_state']
+            last_five_star_weapon_name = ''
+            pull_state = 0
+            for wish in user_wish_histroy:
+                if wish.banner_type == 302:
+                    if wish.rarity != 5:
+                        pull_state += 1
+                    else:
+                        last_five_star_weapon_name = wish.name
+                        break
+            for data in required_data:
+                user_wish_cache['weapon'][data] = eval(data)
+            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
+
     @wish.command(name='luck', description='歐氣值分析')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
@@ -760,10 +798,10 @@ class GenshinCog(commands.Cog):
             return
         self.check_if_wish_cache_exists(member.id)
         user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        up_num = user_wish_cache['up_num']
-        up_gu = user_wish_cache['up_gu']
-        num_until_up = user_wish_cache['num_until_up']
-        wish_sum = user_wish_cache['wish_sum']
+        up_num = user_wish_cache['up_char']['up_num']
+        up_gu = user_wish_cache['up_char']['up_gu']
+        num_until_up = user_wish_cache['up_char']['num_until_up']
+        wish_sum = user_wish_cache['up_char']['wish_sum']
         player = GGanalysislib.Up5starCharacter()
         gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
         embed = defaultEmbed(
@@ -776,33 +814,123 @@ class GenshinCog(commands.Cog):
         embed.set_author(name=member, icon_url=member.avatar)
         await i.followup.send(embed=embed)
 
-    @wish.command(name='predict', description='預測抽到角色的機率')
+    @wish.command(name='char', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量', pull_num='祈願次數', member='其他人')
-    @app_commands.describe(num='想要抽到幾個5星UP角色?',pull_num='預計抽幾抽? (目前原石數除以160即是最大可抽數)',member='查看其他群友的資料')
-    async def wish_predict(self, i:Interaction, num:int, pull_num:int, member: Optional[Member] = None):
+    @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
+    async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
         member = member or i.user
         print(log(False, False, 'Wish Predict', member.id))
         await i.response.defer()
         try:
             user_wish_histroy = openFile(f'wish_history/{i.user.id}')
-        except Exception as e:
+        except:
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         self.check_if_wish_cache_exists(member.id)
         user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        up_gu = user_wish_cache['up_gu']
-        num_until_up = user_wish_cache['num_until_up']
+        up_gu = user_wish_cache['up_char']['up_gu']
+        num_until_up = user_wish_cache['up_char']['num_until_up']
         gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
-        result = player.get_p(item_num=num, calc_pull=pull_num, pull_state=num_until_up, up_guarantee=up_gu)
+        result = player.get_p(item_num=num, calc_pull=pull_num,
+                              pull_state=num_until_up, up_guarantee=up_gu)
         embed = defaultEmbed(
             '祈願機率預測',
-            f'• {str(round(100*result, 2))}%的機率會抽中\n'
             f'• 想要抽出{num}個5星UP角色\n'
             f'• 預計抽{pull_num}次\n'
             f'• 墊了{num_until_up}抽\n'
-            f'• {gu_state}')
+            f'• {gu_state}\n'
+            f'• 機率為: {str(round(100*result, 2))}%')
         embed.set_author(name=member, icon_url=member.avatar)
+        await i.followup.send(embed=embed)
+
+    class UpOrStd(discord.ui.View):
+        def __init__(self, author: Member):
+            super().__init__(timeout=None)
+            self.value = None
+            self.author = author
+
+        async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            return interaction.user.id == self.author.id
+
+        @discord.ui.button(label='UP', style=discord.ButtonStyle.blurple)
+        async def is_up(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = True
+            await interaction.response.send_message('好的', ephemeral=True)
+            self.stop()
+
+        @discord.ui.button(label='常駐', style=discord.ButtonStyle.grey)
+        async def is_std(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = False
+            await interaction.response.send_message('好的', ephemeral=True)
+            self.stop()
+
+    class WantOrNot(discord.ui.View):
+        def __init__(self):
+            super().__init__(timeout=None)
+            self.value = None
+
+        @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)
+        async def want(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = True
+            await interaction.response.send_message('好的', ephemeral=True)
+            self.stop()
+
+        @discord.ui.button(label='不想要的', style=discord.ButtonStyle.grey)
+        async def dont_want(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.value = False
+            await interaction.response.send_message('好的', ephemeral=True)
+            self.stop()
+
+    @wish.command(name='weapon', description='預測抽到想要的UP武器的機率')
+    @app_commands.rename(item_num='up武器數量', calc_pull='祈願次數', member='其他人')
+    @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?', calc_pull='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
+    async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
+        member = member or i.user
+        print(log(False, False, 'Wish Char', member.id))
+        await i.response.defer()
+        try:
+            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
+        except:
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+            return
+        self.check_if_wish_cache_exists(member.id)
+        user_wish_cache = openFile(f'/wish_cache/{member.id}')
+        last_five_star_weapon_name = user_wish_cache['weapon']['last_five_star_weapon_name']
+        pull_state = user_wish_cache['weapon']['pull_state']
+        if last_five_star_weapon_name == '':
+            await i.followup.send(embed=errEmbed('很抱歉, 你目前不能使用這項功能', '你還沒有在限定武器池抽中過五星武器'), ephemeral=True)
+            return
+        up_or_std_view = GenshinCog.UpOrStd(i.user)
+        await i.followup.send(embed=defaultEmbed(
+            '限定UP還是常駐?',
+            f'你最後一次抽到的五星武器是:\n'
+            f'**{last_five_star_weapon_name}**\n'
+            '請問這是一把限定UP還是常駐武器?'),
+            view=up_or_std_view, ephemeral=True)
+        await up_or_std_view.wait()
+        if up_or_std_view.value:  # 是UP
+            want_or_not_view = GenshinCog.WantOrNot()
+            await i.followup.send(embed=defaultEmbed(
+                '是想要的UP還是不想要的?', ''),
+                view=want_or_not_view, ephemeral=True)
+            await want_or_not_view.wait()
+            if want_or_not_view.value:  # 是想要的UP
+                up_guarantee = 0
+            else:  # 是不想要的UP
+                up_guarantee = 1
+        else:  # 是常駐
+            up_guarantee = 2
+        player = GGanalysislib.Up5starWeaponEP()
+        result = player.get_p(item_num=item_num, calc_pull=calc_pull,
+                              pull_state=pull_state, up_guarantee=up_guarantee)
+        embed = defaultEmbed(
+            '武器機率預測',
+            f'• 想抽出 {item_num} 把想要的UP\n'
+            f'• 預計抽 {calc_pull} 抽\n'
+            f'• 已經墊了 {pull_state} 抽\n'
+            f'• 抽中想要UP的機率為: {str(round(100*result, 2))}%'
+        )
         await i.followup.send(embed=embed)
 
 
