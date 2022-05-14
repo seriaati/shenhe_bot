@@ -71,7 +71,6 @@ class Schedule(commands.Cog):
                 continue
             result = await genshin_app.claimDailyReward(user_id)
             count += 1
-            await asyncio.sleep(2.0)
         await i.followup.send(embed=defaultEmbed('✅ 簽到完成',''))
         
     loop_interval = 10
@@ -106,6 +105,7 @@ class Schedule(commands.Cog):
                 count += 1
                 if result == True:
                     if resin_data[user_id] < 3:
+                        print(log(True, False, 'Schedule', f'notification sent for {user_id}'))
                         embed = errEmbed(f'危險!! 樹脂已經超過140!!!!','詳情可以輸入`/check`來查看')
                         embed.set_author(name=user,icon_url=user.avatar)
                         g = self.bot.get_guild(916838066117824553)
