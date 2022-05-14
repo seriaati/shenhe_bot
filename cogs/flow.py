@@ -454,6 +454,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 confirms = openFile('confirm')
                 msg = interaction.message
                 authorID = confirms[msg.id]['authorID']
+                receiverID = interaction.user.id
                 confirms = openFile('confirm')
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
