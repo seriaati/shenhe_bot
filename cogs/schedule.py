@@ -134,7 +134,7 @@ class Schedule(commands.Cog):
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
-        now = datetime.datetime.now().astimezone()
+        now = datetime.now().astimezone()
         next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
         if next_run < now:
             next_run += datetime.timedelta(days=1)
