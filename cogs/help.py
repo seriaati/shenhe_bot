@@ -233,7 +233,7 @@ class HelpCog(commands.Cog):
     async def help(self, interaction:discord.Interaction):
         print(log(False, False, 'Help', interaction.user.id))
         view = DropdownView()
-        await interaction.response.send_message(view=view, ephemeral=True)
+        await interaction.response.send_message(view=view)
     
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(HelpCog(bot))
