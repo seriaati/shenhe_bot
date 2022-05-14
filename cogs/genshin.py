@@ -276,6 +276,7 @@ class GenshinCog(commands.Cog):
         description='查看原神今日可刷素材'
     )
     async def farm(self, interaction: Interaction):
+        print(log(False, False, 'Farm', interaction.user.id))
         weekdayGet = datetime.today().weekday()
         embedFarm = defaultEmbed(
             f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")
