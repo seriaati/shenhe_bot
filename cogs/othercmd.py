@@ -140,9 +140,12 @@ class OtherCMDCog(commands.Cog):
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
+    def is_me(self, m):
+        return m.author == self.bot.user
+    
     @app_commands.command(
         name='cleanup',
-        description='移除此頻道的最近的n個訊息'
+        description='移除此頻道申鶴發送的最近n個訊息'
     )
     @app_commands.rename(number='訊息數量')
     async def cleanup(self, interaction: discord.Interaction,
@@ -150,8 +153,8 @@ class OtherCMDCog(commands.Cog):
     ):
         print(log(True, False, 'Cleanup',interaction.user.id))
         channel = interaction.channel
-        deleted = await channel.purge(limit=int(number))
-        await channel.send('🗑️ 已移除 {} 個訊息'.format(len(deleted)), delete_after=3)
+        deleted = await channel.purge(limit=int(number), check=self.is_me)
+        await interaction.response.send_message('🗑️ 已移除 {} 個訊息'.format(len(deleted)), ephemeral=True)
 
     @app_commands.command(name='members',description='查看目前群組總人數')
     async def members(self, i:Interaction):
