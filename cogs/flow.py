@@ -26,9 +26,13 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if "早" in message.content or "午" in message.content or "晚" in message.content:
             if '早午晚' in message.content:
                 await message.add_reaction('<:PaimonSeria:958341967698337854>')
+                return
             check, msg = flow_app.checkFlowAccount(discordID)
             if check == False:
-                await user.send(embed=msg)
+                try:
+                    await user.send(embed=msg)
+                except:
+                    pass
                 return
             users = openFile('flow')
             now = datetime.now()
