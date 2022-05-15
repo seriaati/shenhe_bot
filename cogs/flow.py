@@ -270,7 +270,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             else:
                 flow_categories['大於 300 flow'].append(f'{user.name}: {value["flow"]}')
             sum += 1
-        saveFile(users, 'flow')
         embed = defaultEmbed(f"共 {sum} 個flow帳戶", '')
         for category, users in flow_categories.items():
             if len(users) == 0:
