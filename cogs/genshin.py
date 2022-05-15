@@ -4,29 +4,19 @@ from typing import Optional
 
 import discord
 import yaml
-from discord import Interaction, Member, app_commands, ui
+from discord import (ButtonStyle, Interaction, Member, SelectOption,
+                     app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
+from discord.ui import Button, Select, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import genshin_app
-from utility.utils import defaultEmbed, getWeekdayName, log, openFile
+from utility.utils import defaultEmbed, getWeekdayName, log
 
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open('data/builds/anemo.yaml', 'r', encoding='utf-8') as f:
-            self.anemo_dict = yaml.full_load(f)
-        with open('data/builds/cryo.yaml', 'r', encoding='utf-8') as f:
-            self.cryo_dict = yaml.full_load(f)
-        with open('data/builds/electro.yaml', 'r', encoding='utf-8') as f:
-            self.electro_dict = yaml.full_load(f)
-        with open('data/builds/geo.yaml', 'r', encoding='utf-8') as f:
-            self.geo_dict = yaml.full_load(f)
-        with open('data/builds/hydro.yaml', 'r', encoding='utf-8') as f:
-            self.hydro_dict = yaml.full_load(f)
-        with open('data/builds/pyro.yaml', 'r', encoding='utf-8') as f:
-            self.pyro_dict = yaml.full_load(f)
 # cookie
 
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
@@ -293,180 +283,164 @@ class GenshinCog(commands.Cog):
             embedFarm = defaultEmbed(
                 f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         await interaction.response.send_message(embed=embedFarm)
-# /build
-    build = app_commands.Group(
-        name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
 
-    def get_anemo_choices():
-        characters = openFile('/builds/anemo')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    class BuildCharactersDropdown(Select): #角色配置下拉選單(依元素分類)
+        def __init__(self, index:int):
+            elemenet_chinese = ['風','冰','雷','岩','水','火']
+            elements = ['anemo','cryo','electro','geo','hydro','pyro']
+            with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
+                self.build_dict = yaml.full_load(f)
+            options = []
+            for character, value in self.build_dict.items():
+                options.append(SelectOption(label=character, value=character))
+            super().__init__(placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
+        
+        async def callback(self, interaction: discord.Interaction):
+            result = await genshin_app.getBuild(self.build_dict, str(self.values[0]))
+            await interaction.response.send_message(embed=result)
 
-    @build.command(name='風', description='查看風元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_anemo_choices())
-    async def anemo_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.anemo_dict, str(chara))
-        await interaction.response.send_message(embed=result)
+    class UserCharactersDropdown(Select): #使用者角色下拉選單(依元素分類)
+        def __init__(self, index:int, user_characters):
+            elemenet_chinese = ['風','冰','雷','岩','水','火']
+            elements = ['Anemo','Cryo','Electro','Geo','Hydro','Pyro']
+            options = []
+            self.user_characters = user_characters
+            for character in user_characters:
+                if character.element == elements[index]:
+                    options.append(SelectOption(label=f'C{character.constellation}R{character.weapon.refinement} {character.name}', value=character.name))
+            super().__init__(placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
+        
+        async def callback(self, interaction: discord.Interaction):
+            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0]))
 
-    def get_cryo_choices():
-        characters = openFile('/builds/cryo')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    class CharactersDropdownView(View): #角色配置下拉選單的view
+        def __init__(self, index:int, user_characters):
+            super().__init__(timeout=None)
+            if user_characters is None:
+                self.add_item(GenshinCog.BuildCharactersDropdown(index))
+            else:
+                self.add_item(GenshinCog.UserCharactersDropdown(index, user_characters))
+    
+    class ElementButton(Button): #元素按鈕
+        def __init__(self, index:int, user_characters):
+            elemenet_chinese = ['風','冰','雷','岩','水','火']
+            self.index = index
+            self.user_characters = user_characters
+            super().__init__(label=f'{elemenet_chinese[index]}元素',style=ButtonStyle.blurple, row=index%2)
+        
+        async def callback(self, i:Interaction):
+            view = GenshinCog.CharactersDropdownView(self.index, self.user_characters)
+            await i.response.send_message(view=view, ephemeral=True)
 
-    @build.command(name='冰', description='查看冰元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_cryo_choices())
-    async def anemo_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.cryo_dict, str(chara))
-        await interaction.response.send_message(embed=result)
+    class ElementChooseView(View): #選擇元素按鈕的view
+        def __init__(self, user_characters=None):
+            super().__init__(timeout=None)
+            for i in range (0, 6):
+                self.add_item(GenshinCog.ElementButton(i, user_characters))
 
-    def get_electro_choices():
-        characters = openFile('/builds/electro')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    # /build
+    @app_commands.command(name='build',description='查看角色推薦主詞條、畢業面板、不同配置等')
+    async def build(self, i:Interaction):
+        view = GenshinCog.ElementChooseView()
+        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素',''),view=view, ephemeral=True)
+    
+    # /characters
+    @app_commands.command(name='characters',description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def characters(self, i:Interaction, member: Optional[Member] = None):
+        member = member or i.user
+        user_characters = await genshin_app.getUserCharacters(user_id=member.id)
+        view = GenshinCog.ElementChooseView(user_characters)
+        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素',''),view=view, ephemeral=True)
 
-    @build.command(name='雷', description='查看雷元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_electro_choices())
-    async def electro_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.electro_dict, str(chara))
-        await interaction.response.send_message(embed=result)
 
-    def get_geo_choices():
-        characters = openFile('/builds/geo')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    # char = app_commands.Group(
+    #     name='char', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
 
-    @build.command(name='岩', description='查看岩元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_geo_choices())
-    async def geo_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.geo_dict, str(chara))
-        await interaction.response.send_message(embed=result)
+    # @char.command(name='風', description='查看已擁有風元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_anemo_choices())
+    # async def anemo_char(self, interaction: Interaction, char: str,
+    #                      member: Optional[Member] = None
+    #                      ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 
-    def get_hydro_choices():
-        characters = openFile('/builds/hydro')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    # @char.command(name='冰', description='查看已擁有冰元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_cryo_choices())
+    # async def cryo_char(self, interaction: Interaction, char: str,
+    #                     member: Optional[Member] = None
+    #                     ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 
-    @build.command(name='水', description='查看水元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_hydro_choices())
-    async def anemo_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.hydro_dict, str(chara))
-        await interaction.response.send_message(embed=result)
+    # @char.command(name='雷', description='查看已擁有雷元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_electro_choices())
+    # async def electro_char(self, interaction: Interaction, char: str,
+    #                        member: Optional[Member] = None
+    #                        ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 
-    def get_pyro_choices():
-        characters = openFile('/builds/pyro')
-        character_list = []
-        for name, value in characters.items():
-            character_list.append(Choice(name=name, value=name))
-        return character_list
+    # @char.command(name='岩', description='查看已擁有岩元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_geo_choices())
+    # async def geo_char(self, interaction: Interaction, char: str,
+    #                    member: Optional[Member] = None
+    #                    ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 
-    @build.command(name='火', description='查看火元素角色的配置、武器、畢業面板')
-    @app_commands.rename(chara='角色')
-    @app_commands.choices(chara=get_pyro_choices())
-    async def pyro_build(self, interaction: Interaction, chara: str):
-        result = await genshin_app.getBuild(self.pyro_dict, str(chara))
-        await interaction.response.send_message(embed=result)
+    # @char.command(name='水', description='查看已擁有水元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_hydro_choices())
+    # async def hydro_char(self, interaction: Interaction, char: str,
+    #                      member: Optional[Member] = None
+    #                      ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 
-    char = app_commands.Group(
-        name='char', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
-
-    @char.command(name='風', description='查看已擁有風元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_anemo_choices())
-    async def anemo_char(self, interaction: Interaction, char: str,
-                         member: Optional[Member] = None
-                         ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
-
-    @char.command(name='冰', description='查看已擁有冰元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_cryo_choices())
-    async def cryo_char(self, interaction: Interaction, char: str,
-                        member: Optional[Member] = None
-                        ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
-
-    @char.command(name='雷', description='查看已擁有雷元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_electro_choices())
-    async def electro_char(self, interaction: Interaction, char: str,
-                           member: Optional[Member] = None
-                           ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
-
-    @char.command(name='岩', description='查看已擁有岩元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_geo_choices())
-    async def geo_char(self, interaction: Interaction, char: str,
-                       member: Optional[Member] = None
-                       ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
-
-    @char.command(name='水', description='查看已擁有水元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_hydro_choices())
-    async def hydro_char(self, interaction: Interaction, char: str,
-                         member: Optional[Member] = None
-                         ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
-
-    @char.command(name='火', description='查看已擁有火元素角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(char='角色', member='其他人')
-    @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
-    @app_commands.choices(char=get_pyro_choices())
-    async def pyro_char(self, interaction: Interaction, char: str,
-                        member: Optional[Member] = None
-                        ):
-        member = member or interaction.user
-        await interaction.response.defer()
-        result = await genshin_app.getUserCharacters(char, member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.followup.send(embed=result)
+    # @char.command(name='火', description='查看已擁有火元素角色資訊, 如命座、親密度、聖遺物')
+    # @app_commands.rename(char='角色', member='其他人')
+    # @app_commands.describe(char='僅能查看自己擁有角色的資料', member='查看其他群友的資料')
+    # @app_commands.choices(char=get_pyro_choices())
+    # async def pyro_char(self, interaction: Interaction, char: str,
+    #                     member: Optional[Member] = None
+    #                     ):
+    #     member = member or interaction.user
+    #     await interaction.response.defer()
+    #     result = await genshin_app.getUserCharacters(char, member.id)
+    #     result.set_author(name=self.bot.get_user(member.id),
+    #                       icon_url=self.bot.get_user(member.id).avatar)
+    #     await interaction.followup.send(embed=result)
 # /rate
 
     @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
