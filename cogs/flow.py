@@ -249,16 +249,40 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         print(log(False, False, 'flows', interaction.user.id))
         users = openFile('flow')
         userStr = ""
-        count = 1
+        sum = 0
+        flow_categories = {
+            '小於 100 flow': [],
+            '100~200 flow': [],
+            '200~300 flow': [],
+            '大於 300 flow': []
+        }
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
             if user is None:
                 flow_app.transaction(user_id, value['flow'], is_removing_account=True)
                 continue
-            userStr += f"{count}. {user}: {value['flow']}\n"
-            count += 1
+            if value['flow'] < 100:
+                flow_categories['小於 100 flow'].append(f'{user.name}: {value["flow"]}')
+            elif 100 < value['flow'] <= 200:
+                flow_categories['100~200 flow'].append(f'{user.name}: {value["flow"]}')
+            elif 200 < value['flow'] <= 300:
+                flow_categories['200~300 flow'].append(f'{user.name}: {value["flow"]}')
+            else:
+                flow_categories['大於 300 flow'].append(f'{user.name}: {value["flow"]}')
+            sum += 1
         saveFile(users, 'flow')
-        embed = defaultEmbed("所有flow帳戶", userStr)
+        embed = defaultEmbed(f"共 {sum} 個flow帳戶", '')
+        for category, users in flow_categories.items():
+            if len(users) == 0:
+                continue
+            value = ''
+            for user in users:
+                value+=f'{user}\n'
+            embed.add_field(
+                name=f'{category} ({len(users)})',
+                value=value,
+                inline=False
+            )
         await interaction.response.send_message(embed=embed)
 
     shop = app_commands.Group(name="shop", description="flow商店")
