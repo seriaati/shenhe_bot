@@ -1,7 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
-from discord import Interaction, app_commands
+from discord import app_commands
 from utility.FlowApp import flow_app
 from utility.utils import errEmbed, openFile, defaultEmbed
 from utility.RollApp import animation_chooser, check_big_prize, check_user_data, give_money, gu_system, write_history_and_gu
