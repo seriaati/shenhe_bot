@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import discord
 from discord import Interaction, app_commands
@@ -137,7 +137,7 @@ class Schedule(commands.Cog):
         now = datetime.now().astimezone()
         next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
         if next_run < now:
-            next_run += datetime.timedelta(days=1)
+            next_run += timedelta(days=1)
         await discord.utils.sleep_until(next_run)
 
     def add_user(self, user_id: int, function_type: str):
