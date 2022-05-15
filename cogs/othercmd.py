@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import Interaction, app_commands, Message
 from random import randint
+from utility.FlowApp import flow_app
 from utility.utils import defaultEmbed, log
 
 
@@ -17,6 +18,20 @@ class OtherCMDCog(commands.Cog):
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(self.quote_ctx_menu.name, type=self.quote_ctx_menu.type)
 
+    class TouchFish(discord.ui.View):
+        def __init__(self):
+            super().__init__()
+
+        @discord.ui.button(label='摸魚', style=discord.ButtonStyle.blurple)
+        async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+            value = randint(1, 100)
+            if value <= 5:
+                flow_app.transaction(interaction.user.id, 1)
+                await interaction.response.send_message('摸魚摸到 1 flow幣!', ephemeral=True)
+            else:
+                await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
+            self.stop()
+    
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
@@ -25,6 +40,15 @@ class OtherCMDCog(commands.Cog):
             print(log(True,False,'Random',message.author.id))
             value = randint(1, 100)
             await message.channel.send(f"{value}%")
+        random_number = randint(1, 100)
+        if random_number==1:
+            fish_embed = defaultEmbed(
+                '台灣 - 虱目魚',
+                '摸魚有機率獲得1 flow幣'
+            )
+            fish_embed.set_image(url='https://media.discordapp.net/attachments/948089644493455401/975409970998829056/unknown.png')
+            touch_fish_view = OtherCMDCog.TouchFish()
+            await message.channel.send(embed=fish_embed, view=touch_fish_view)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -34,11 +58,14 @@ class OtherCMDCog(commands.Cog):
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
             channel = self.bot.get_channel(payload.channel_id)
+            emoji = self.bot.get_emoji(payload.emoji.id)
+            await msg.remove_reaction(emoji)
             await channel.send(f"✅ 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(f"語錄",f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar))
             channel = self.bot.get_channel(966549110540877875)
             await channel.send(embed=embed)
+
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -53,6 +80,7 @@ class OtherCMDCog(commands.Cog):
             "• 想在dc內直接查閱原神樹脂數量嗎? 輸入`/cookie`來設定你的帳號吧!\n"
             "• 最重要的, 祝你在這裡玩的開心! <:omg:969823101133160538>")
         embed.set_thumbnail(url=member.avatar)
+        flow_app.register(member.id)
         await public.send(content=f"{member.mention}歡迎來到緣神有你!",embed=embed)
 
     @app_commands.command(
