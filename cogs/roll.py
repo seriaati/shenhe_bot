@@ -7,7 +7,7 @@ from utility.utils import errEmbed, openFile, defaultEmbed
 from utility.RollApp import animation_chooser, check_big_prize, check_user_data, give_money, gu_system, write_history_and_gu
 
 global contribution_mode
-contribution_mode = True
+contribution_mode = False
 
 
 class RollCog(commands.Cog):
