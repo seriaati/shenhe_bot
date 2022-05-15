@@ -324,7 +324,7 @@ class GenshinApp:
             result.append(embed)
         return result
 
-    async def getUserCharacters(self, char_name:str, user_id: int):
+    async def getUserCharacters(self, user_id: int):
         print(log(False, False, 'Character', user_id))
         check, msg = self.checkUserData(user_id)
         if check == False:
@@ -333,7 +333,7 @@ class GenshinApp:
         uid = user_data[user_id]['uid']
         client = self.getUserCookie(user_id)
         try:
-            char = await client.get_genshin_characters(uid)
+            result = await client.get_genshin_characters(uid)
         except genshin.errors.DataNotPublic as e:
             print(log(False, True, 'Character', f'{user_id}: {e}'))
             result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
@@ -347,25 +347,50 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Character', e))
         else:
-            found = False
-            for character in char:
-                if character.name == char_name:
-                    found = True
-                    artifactStr = ""
+            return result
+
+    def parseCharacter(self, user_characters:dict, character_name:str):
+        found = False
+        for character in user_characters:
+            if character.name == character_name:
+                found = True
+                const = character.constellation
+                refinement = character.weapon.refinement
+                character_level = character.level 
+                character_rarity = character.rarity 
+                friendship = character.friendship
+                weapon = character.weapon.name
+                weapon_level = character.weapon.level
+                weapon_rarity = character.weapon.rarity
+                icon = character.icon 
+                artifact_str = '該角色沒有裝配任何聖遺物'
+                if len(character.artifacts)>0:
+                    artifact_str = ''
                     for artifact in character.artifacts:
-                        artifactStr += f"• {artifact.name}\n"
-                    embed = defaultEmbed(
-                        f"{character.name}: C{character.constellation} R{character.weapon.refinement}",
-                        f"Lvl {character.level}\n"
-                        f"好感度 {character.friendship}\n"
-                        f"武器 {character.weapon.name}, lvl{character.weapon.level}\n"
-                        f"{artifactStr}")
-                    embed.set_thumbnail(url=f"{character.icon}")
-                    result = embed
-                    break 
-            if not found:
-                result = errEmbed('你不擁有該角色!','')
-        return result
+                        artifact_str+=f'{artifact.pos_name}: {artifact.name} ({artifact.set.name})\n'
+                embed = defaultEmbed(f'C{const}R{refinement} {character_name}','')
+                embed.add_field(
+                    name='角色',
+                    value=
+                    f'{character_rarity}☆\n'
+                    f'Lvl. {character_level}\n'
+                    f'好感度: {friendship}'
+                )
+                embed.add_field(
+                    name='武器',
+                    value=
+                    f'{weapon_rarity}☆\n'
+                    f'{weapon}\n'
+                    f'Lvl. {weapon_level}\n',
+                    inline=False)
+                embed.add_field(
+                    name='聖遺物',
+                    value=artifact_str
+                )
+                embed.set_thumbnail(url=icon)
+                return embed
+        if not found:
+            return errEmbed('你似乎不擁有該角色!','這有點奇怪, 請告訴小雪這個狀況')
 
     async def getToday(self, user_id: int):
         print(log(False, False, 'Notes', user_id))
