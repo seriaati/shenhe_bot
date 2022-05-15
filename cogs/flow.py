@@ -279,8 +279,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 value+=f'{user}\n'
             embed.add_field(
                 name=f'{category} ({len(users)})',
-                value=value,
-                inline=False
+                value=value
             )
         await interaction.response.send_message(embed=embed)
 
