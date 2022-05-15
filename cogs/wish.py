@@ -263,7 +263,7 @@ class WishCog(commands.Cog):
         embed.set_author(name=member, icon_url=member.avatar)
         await i.followup.send(embed=embed)
 
-    @wish.command(name='char', description='預測抽到角色的機率')
+    @wish.command(name='character', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量', pull_num='祈願次數', member='其他人')
     @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
@@ -380,6 +380,7 @@ class WishCog(commands.Cog):
             f'• 已經墊了 {pull_state} 抽\n'
             f'• 抽中想要UP的機率為: {str(round(100*result, 2))}%'
         )
+        embed.set_author(name=i.user, icon_url=i.user.avatar)
         await i.followup.send(embed=embed)
 
 
