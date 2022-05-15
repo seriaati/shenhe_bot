@@ -181,7 +181,7 @@ class RollCog(commands.Cog):
             await interaction.response.send_message(embed=msg, ephemeral=True)
             return
         banners = openFile('roll')
-        banner = '曲終人散 - 風流水性'
+        banner = (list(banners.keys())[0])
         menu = self.Menu(interaction.user, banner)
         embed = defaultEmbed(banner, '')
         embed.set_image(url=banners[banner]['banner_pic'])
