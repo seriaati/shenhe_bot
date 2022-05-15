@@ -356,6 +356,7 @@ class GenshinCog(commands.Cog):
         user_characters = await genshin_app.getUserCharacters(user_id=member.id)
         if type(user_characters) is discord.Embed:
             await i.response.send_message(embed=user_characters)
+            return
         view = GenshinCog.ElementChooseView(user_characters)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素',''),view=view, ephemeral=True)
 
