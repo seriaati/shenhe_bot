@@ -1,17 +1,18 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, SelectOption
 
 from utility.utils import defaultEmbed, log
 
 class Dropdown(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(label='原神資料', description='需先註冊帳號後方可使用', emoji='✨'),
-            discord.SelectOption(label='原神', description='不須註冊帳號即可使用', emoji='🌟'),
-            discord.SelectOption(label='呼叫相關', description='呼叫!', emoji='🔉'),
-            discord.SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
-            discord.SelectOption(label='其他', description='其他指令', emoji='🙂'),
+            SelectOption(label='原神資料', description='需先註冊帳號後方可使用', emoji='✨'),
+            SelectOption(label='原神', description='不須註冊帳號即可使用', emoji='🌟'),
+            SelectOption(label='原神祈願', description='需註冊+設置祈願紀錄', emoji='🌠'),
+            SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
+            SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
+            SelectOption(label='其他', description='其他指令', emoji='🙂'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?', min_values=1, max_values=1, options=options)
 
@@ -77,28 +78,13 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/char`',
+                name='`/characters`',
                 value='查看已擁有角色資訊',
                 inline=False
             )
             embed.add_field(
                 name='`/schedule`',
                 value='設置自動化功能',
-                inline=False
-            )
-            embed.add_field(
-                name='`/setkey`',
-                value='設置祈願紀錄',
-                inline=False
-            )
-            embed.add_field(
-                name='`/wish`',
-                value='查看祈願紀錄',
-                inline=False 
-            )
-            embed.add_field(
-                name='`/wishanalysis`',
-                value='祈願資料分析',
                 inline=False
             )
         elif self.values[0] == '原神':
@@ -119,6 +105,37 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/rate`',
                 value='(僅供參考用)非常不穩定的聖遺物評分器',
+                inline=False
+            )
+
+        elif self.values[0] == '原神祈願':
+            embed = defaultEmbed(
+                '原神祈願',
+                ''
+            )
+            embed.add_field(
+                name='`/setkey`',
+                value='設置祈願紀錄',
+                inline=False
+            )
+            embed.add_field(
+                name='`/weapon history`',
+                value='查看詳細祈願紀錄',
+                inline=False
+            )
+            embed.add_field(
+                name='`/wish luck`',
+                value='根據祈願紀錄分析歐氣值',
+                inline=False
+            )
+            embed.add_field(
+                name='`/wish weapon`',
+                value='預測抽到想要的UP武器的機率',
+                inline=False 
+            )
+            embed.add_field(
+                name='`/wish char`',
+                value='預測抽到想要UP角色的機率',
                 inline=False
             )
 
