@@ -263,11 +263,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 continue
             if value['flow'] < 100:
                 flow_categories['小於 100 flow'].append(f'{user.name}: {value["flow"]}')
-            elif 100 < value['flow'] <= 200:
+            elif 100 <= value['flow'] <= 200:
                 flow_categories['100~200 flow'].append(f'{user.name}: {value["flow"]}')
             elif 200 < value['flow'] <= 300:
                 flow_categories['200~300 flow'].append(f'{user.name}: {value["flow"]}')
-            else:
+            elif value['flow'] > 300:
                 flow_categories['大於 300 flow'].append(f'{user.name}: {value["flow"]}')
             sum += 1
         embed = defaultEmbed(f"共 {sum} 個flow帳戶", '')
