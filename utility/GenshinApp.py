@@ -1,5 +1,6 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import re
+from discord import Member
 import genshin
 import yaml
 from utility.utils import errEmbed, defaultEmbed, log, getCharacterName, getWeekdayName, trimCookie
@@ -349,7 +350,7 @@ class GenshinApp:
         else:
             return result
 
-    def parseCharacter(self, user_characters:dict, character_name:str):
+    def parseCharacter(self,user_characters:dict, character_name:str, user:Member):
         found = False
         for character in user_characters:
             if character.name == character_name:
@@ -388,6 +389,7 @@ class GenshinApp:
                     value=artifact_str
                 )
                 embed.set_thumbnail(url=icon)
+                embed.set_author(name=user, icon_url=user.avatar)
                 return embed
         if not found:
             return errEmbed('你似乎不擁有該角色!','這有點奇怪, 請告訴小雪這個狀況')

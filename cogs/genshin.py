@@ -311,7 +311,7 @@ class GenshinCog(commands.Cog):
             super().__init__(placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
         
         async def callback(self, interaction: discord.Interaction):
-            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0]))
+            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], interaction.user))
 
     class CharactersDropdownView(View): #角色配置下拉選單的view
         def __init__(self, index:int, user_characters):
