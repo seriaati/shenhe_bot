@@ -41,7 +41,7 @@ class RollCog(commands.Cog):
 
             @discord.ui.button(label='確認', style=discord.ButtonStyle.green, row=0)
             async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-                one_pull_price = -40 if contribution_mode == True else -10
+                one_pull_price = -10
                 if not self.ten_pull:
                     flow_app.transaction(
                         user_id=interaction.user.id, flow_for_user=one_pull_price)
@@ -134,7 +134,7 @@ class RollCog(commands.Cog):
 
         @discord.ui.button(label='祈願1次', style=discord.ButtonStyle.blurple, row=0, disabled=False)
         async def one_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-            one_pull_price = 40 if contribution_mode == True else 10
+            one_pull_price = -10
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < one_pull_price:
                 embed = errEmbed(
@@ -147,7 +147,7 @@ class RollCog(commands.Cog):
 
         @discord.ui.button(label='祈願10次', style=discord.ButtonStyle.blurple, row=0, disabled=False)
         async def ten_pull_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-            one_pull_price = 40 if contribution_mode == True else 10
+            one_pull_price = -10
             users = openFile('flow')
             if users[interaction.user.id]['flow'] < int(one_pull_price)*10:
                 embed = errEmbed(
