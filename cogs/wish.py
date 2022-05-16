@@ -144,7 +144,6 @@ class WishCog(commands.Cog):
             await i.response.send_modal(WishCog.AuthKeyModal())
 
     def make_wish_cache(self, user_id: int):
-        user_wish_histroy = openFile(f'wish_history/{user_id}')
         if not os.path.exists(f'data/wish_cache/{user_id}.yaml'):
             print(log(True, False, 'Wish Cache',
                   f'making wish cache for {user_id}'))
@@ -152,6 +151,11 @@ class WishCog(commands.Cog):
             wish_cache = {}
             saveFile(wish_cache, f'/wish_cache/{str(user_id)}')
         user_wish_cache = openFile(f'/wish_cache/{str(user_id)}')
+        wish_cache_categories = ['up_char', 'weapon', 'overview']
+        for category in wish_cache_categories:
+            if category not in user_wish_cache:
+                user_wish_histroy = openFile(f'wish_history/{user_id}')
+                break
         if 'up_char' not in user_wish_cache:  # 角色限定祈願快取
             print(log(True, False, 'Wish Cache',
                   f'making character wish cache for {user_id}'))
@@ -184,6 +188,7 @@ class WishCog(commands.Cog):
                 user_wish_cache['up_char'][data] = eval(data)
             saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
         if 'weapon' not in user_wish_cache:  # 限定武器快取
+            user_wish_histroy = openFile(f'wish_history/{user_id}')
             print(log(True, False, 'Wish Cache',
                   f'making weapon wish cache for {user_id}'))
             user_wish_cache['weapon'] = {}
