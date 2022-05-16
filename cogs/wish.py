@@ -20,38 +20,6 @@ class WishCog(commands.Cog):
 
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
-    def divide_chunks(l, n):
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
-    # /wish history
-    @wish.command(name='history', description='祈願歷史紀錄查詢')
-    async def wish_history(self, i: Interaction):
-        print(log(False, False, 'Wish', i.user.id))
-        await i.response.defer()
-        try:
-            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
-        except Exception as e:
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
-            return
-        result = []
-        for wish in user_wish_histroy:
-            wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
-            if wish.rarity == 5 or wish.rarity == 4:
-                result.append(
-                    f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
-            else:
-                result.append(
-                    f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
-        split_list = list(WishCog.divide_chunks(result, 20))
-        embed_list = []
-        for l in split_list:
-            embed_str = ''
-            for w in l:
-                embed_str += f'{w}\n'
-            embed_list.append(defaultEmbed('詳細祈願紀錄', embed_str))
-        await WishPaginator(i, embed_list).start(embeded=True)
-
     class AuthKeyModal(Modal, title='抽卡紀錄設定'):
         url = discord.ui.TextInput(
             label='Auth Key URL',
@@ -186,7 +154,7 @@ class WishCog(commands.Cog):
         user_wish_cache = openFile(f'/wish_cache/{str(user_id)}')
         if 'up_char' not in user_wish_cache:  # 角色限定祈願快取
             print(log(True, False, 'Wish Cache',
-                  f'making up_char wish cache for {user_id}'))
+                  f'making character wish cache for {user_id}'))
             user_wish_cache['up_char'] = {}
             required_data = ['up_num', 'up_gu', 'num_until_up', 'wish_sum']
             std_characters = ['迪盧克', '琴', '七七', '莫娜', '刻晴']
@@ -232,6 +200,81 @@ class WishCog(commands.Cog):
             for data in required_data:
                 user_wish_cache['weapon'][data] = eval(data)
             saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
+        if 'overview' not in user_wish_cache:
+            print(log(True, False, 'Wish Cache',
+                  f'making overview wish cache for {user_id}'))
+            user_wish_cache['overview'] = {}
+            overview_dict = user_wish_cache['overview']
+            overview_dict['character_event'] = {}
+            overview_dict['weapon_event'] = {}
+            overview_dict['standard'] = {}
+            pools = ['character_event', 'weapon_event', 'standard']
+            pool_ids = [301, 302, 200]
+            per_pool_data = ['total_wish', 'five_star',
+                             'four_star', 'pity', 'found']
+            for pool in pools:  # 設定預設值
+                for pool_data in per_pool_data:
+                    if pool_data != 'found':
+                        overview_dict[pool][pool_data] = 0
+                    else:
+                        overview_dict[pool][pool_data] = False
+            overview_dict['total_wish'] = len(user_wish_histroy)
+            for wish in user_wish_histroy:
+                for pool_id in pool_ids:
+                    if wish.banner_type == pool_id:
+                        is_five_star = self.evaluate_rarity(wish)
+                        index = pool_ids.index(pool_id)
+                        pool_name = pools[index]
+                        overview_dict[pool_name]['total_wish'] += 1
+                        if is_five_star:
+                            overview_dict[pool_name]['five_star'] += 1
+                            overview_dict[pool_name]['found'] = True
+                        else:
+                            overview_dict[pool_name]['four_star'] += 1
+                        if not overview_dict[pool_name]['found']:  # 如果還沒找到五星
+                            overview_dict[pool_name]['pity'] += 1
+                        break
+            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
+
+    def evaluate_rarity(self, wish):
+        if wish.rarity == 5:
+            return True
+        elif wish.rarity == 4:
+            return False
+
+    def divide_chunks(l, n):
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
+    # /wish history
+    @wish.command(name='history', description='祈願歷史紀錄查詢')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def wish_history(self, i: Interaction, member: Optional[Member] = None):
+        member = member or i.user
+        print(log(False, False, 'Wish', member.id))
+        await i.response.defer()
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+            return
+        result = []
+        user_wish_history = openFile(f'data/wish_history/{member.id}.yaml')
+        for wish in user_wish_history:
+            wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
+            if wish.rarity == 5 or wish.rarity == 4:
+                result.append(
+                    f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
+            else:
+                result.append(
+                    f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
+        split_list = list(WishCog.divide_chunks(result, 20))
+        embed_list = []
+        for l in split_list:
+            embed_str = ''
+            for w in l:
+                embed_str += f'{w}\n'
+            embed_list.append(defaultEmbed('詳細祈願紀錄', embed_str))
+        await WishPaginator(i, embed_list).start(embeded=True)
 
     @wish.command(name='luck', description='歐氣值分析')
     @app_commands.rename(member='其他人')
@@ -240,9 +283,7 @@ class WishCog(commands.Cog):
         member = member or i.user
         print(log(False, False, 'Wish Luck', member.id))
         await i.response.defer()
-        try:
-            user_wish_histroy = openFile(f'wish_history/{member.id}')
-        except Exception as e:
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         self.make_wish_cache(member.id)
@@ -268,11 +309,9 @@ class WishCog(commands.Cog):
     @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Predict', member.id))
+        print(log(False, False, 'Wish Character', member.id))
         await i.response.defer()
-        try:
-            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
-        except:
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         self.make_wish_cache(member.id)
@@ -336,11 +375,9 @@ class WishCog(commands.Cog):
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?', calc_pull='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Char', member.id))
+        print(log(False, False, 'Wish Weapon', member.id))
         await i.response.defer()
-        try:
-            user_wish_histroy = openFile(f'wish_history/{i.user.id}')
-        except:
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         self.make_wish_cache(member.id)
@@ -381,6 +418,55 @@ class WishCog(commands.Cog):
             f'• 抽中想要UP的機率為: {str(round(100*result, 2))}%'
         )
         embed.set_author(name=i.user, icon_url=i.user.avatar)
+        await i.followup.send(embed=embed)
+
+    @wish.command(name='overview', description='祈願紀錄總覽')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
+        member = member or i.user
+        print(log(False, False, 'Wish Overview', member.id))
+        await i.response.defer()
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
+            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+            return
+        self.make_wish_cache(member.id)
+        user_wish_cache = openFile(f'/wish_cache/{member.id}')
+        user_overview = user_wish_cache['overview']
+        character_event = user_overview['character_event']
+        weapon_event = user_overview['weapon_event']
+        standard = user_overview['standard']
+        total_wish = user_overview["total_wish"]
+        embed = defaultEmbed(
+            '祈願總覽',
+            f'共 {total_wish} 抽\n'
+            f'即 {160*int(total_wish)} 原石'
+        )
+        embed.add_field(
+            name='角色池',
+            value=f'• 共 {character_event["total_wish"]} 抽 ({160*int(character_event["total_wish"])}原石)\n'
+            f'• 5☆ {character_event["five_star"]}\n'
+            f'• 4☆ {character_event["four_star"]}\n'
+            f'• 距離保底 {90-int(character_event["pity"])} 抽',
+            inline=False
+        )
+        embed.add_field(
+            name='武器池',
+            value=f'• 共 {weapon_event["total_wish"]} 抽 ({160*int(weapon_event["total_wish"])}原石)\n'
+            f'• 5☆ {weapon_event["five_star"]}\n'
+            f'• 4☆ {weapon_event["four_star"]}\n'
+            f'• 距離保底 {90-int(weapon_event["pity"])} 抽',
+            inline=False
+        )
+        embed.add_field(
+            name='常駐池',
+            value=f'• 共 {standard["total_wish"]} 抽 ({160*int(standard["total_wish"])}原石)\n'
+            f'• 5☆ {standard["five_star"]}\n'
+            f'• 4☆ {standard["four_star"]}\n'
+            f'• 距離保底 {90-int(standard["pity"])} 抽',
+            inline=False
+        )
+        embed.set_author(name=member.name, icon_url=member.avatar)
         await i.followup.send(embed=embed)
 
 
