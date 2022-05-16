@@ -1,8 +1,8 @@
 import discord
+from discord import SelectOption, app_commands
 from discord.ext import commands
-from discord import app_commands, SelectOption
-
 from utility.utils import defaultEmbed, log
+
 
 class Dropdown(discord.ui.Select):
     def __init__(self):
@@ -14,7 +14,8 @@ class Dropdown(discord.ui.Select):
             SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
         ]
-        super().__init__(placeholder='你想要什麼樣的幫助呢?', min_values=1, max_values=1, options=options)
+        super().__init__(placeholder='你想要什麼樣的幫助呢?',
+                         min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
         if self.values[0] == '原神資料':
@@ -131,7 +132,7 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/wish weapon`',
                 value='預測抽到想要的UP武器的機率',
-                inline=False 
+                inline=False
             )
             embed.add_field(
                 name='`/wish char`',
@@ -190,7 +191,7 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
 
-        elif self.values[0] == '其他':  
+        elif self.values[0] == '其他':
             embed = defaultEmbed(
                 '其他指令',
                 ''
@@ -235,22 +236,25 @@ class Dropdown(discord.ui.Select):
                 value='讓申鶴幫你說話',
                 inline=False
             )
-        await interaction.response.send_message(embed=embed, ephemeral=True) 
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 class DropdownView(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.add_item(Dropdown())
 
+
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='help',description='獲得幫助')
-    async def help(self, interaction:discord.Interaction):
+    @app_commands.command(name='help', description='獲得幫助')
+    async def help(self, interaction: discord.Interaction):
         print(log(False, False, 'Help', interaction.user.id))
         view = DropdownView()
         await interaction.response.send_message(view=view)
-    
+
+
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(HelpCog(bot))
