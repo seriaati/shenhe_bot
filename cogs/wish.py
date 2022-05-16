@@ -417,7 +417,7 @@ class WishCog(commands.Cog):
             f'• 已經墊了 {pull_state} 抽\n'
             f'• 抽中想要UP的機率為: {str(round(100*result, 2))}%'
         )
-        embed.set_author(name=i.user, icon_url=i.user.avatar)
+        embed.set_author(name=member, icon_url=member.avatar)
         await i.followup.send(embed=embed)
 
     @wish.command(name='overview', description='祈願紀錄總覽')
@@ -466,7 +466,7 @@ class WishCog(commands.Cog):
             f'• 距離保底 {90-int(standard["pity"])} 抽',
             inline=False
         )
-        embed.set_author(name=member.name, icon_url=member.avatar)
+        embed.set_author(name=member, icon_url=member.avatar)
         await i.followup.send(embed=embed)
 
 
