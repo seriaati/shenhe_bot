@@ -29,7 +29,7 @@ class Schedule(commands.Cog):
         switch=[Choice(name='開啟功能', value=1),
                 Choice(name='關閉功能', value=0)])
     async def slash_schedule(self, interaction: discord.Interaction, function: str, switch: int):
-        self.resin_check.stop()
+        self.resin_check.cancel()
         print(log(False, False, 'schedule',
               f'{interaction.user.id}: (function={function}, switch={switch})'))
         if function == 'help':
