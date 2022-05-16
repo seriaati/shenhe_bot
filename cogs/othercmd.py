@@ -24,13 +24,14 @@ class OtherCMDCog(commands.Cog):
 
         @discord.ui.button(label='摸魚', style=discord.ButtonStyle.blurple)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.stop()
             value = randint(1, 100)
             if value <= 5:
                 flow_app.transaction(interaction.user.id, 1)
                 await interaction.response.send_message('摸魚摸到 1 flow幣!', ephemeral=True)
             else:
                 await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
-            self.stop()
+            
     
     @commands.Cog.listener()
     async def on_message(self, message):
