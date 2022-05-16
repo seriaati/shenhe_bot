@@ -86,7 +86,7 @@ class Schedule(commands.Cog):
             user = self.bot.get_user(user_id)
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
-                self.remove_user(user_id, 'resin_check')
+                del resin_data[user_id]
                 continue
             result = await genshin_app.getRealTimeNotes(user_id, True)
             count += 1
@@ -120,7 +120,7 @@ class Schedule(commands.Cog):
         for user_id, value in claim_data.items():
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
-                self.remove_user(user_id, 'daily_reward')
+                del claim_data[user_id]
                 continue
             result = await genshin_app.claimDailyReward(user_id)
             count += 1
@@ -152,7 +152,7 @@ class Schedule(commands.Cog):
             saveFile(resin_data, 'schedule_resin_notification')
 
     def remove_user(self, user_id: int, function_type: str):
-        print(log(True, False, 'Schedule', f'remove_user(user_id={user_id})'))
+        print(log(True, False, 'Schedule', f'remove_user(function = {function}, user_id={user_id})'))
         if function_type == 'daily_reward':
             daily_data = openFile('schedule_daily_reward')
             del daily_data[user_id]
