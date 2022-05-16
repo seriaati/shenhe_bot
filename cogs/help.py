@@ -115,12 +115,12 @@ class Dropdown(discord.ui.Select):
                 ''
             )
             embed.add_field(
-                name='`/setkey`',
+                name='`/wish setkey`',
                 value='設置祈願紀錄',
                 inline=False
             )
             embed.add_field(
-                name='`/weapon history`',
+                name='`/wish history`',
                 value='查看詳細祈願紀錄',
                 inline=False
             )
@@ -135,8 +135,13 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/wish char`',
+                name='`/wish character`',
                 value='預測抽到想要UP角色的機率',
+                inline=False
+            )
+            embed.add_field(
+                name='`/wish overview`',
+                value='查看祈願紀錄總覽',
                 inline=False
             )
 
