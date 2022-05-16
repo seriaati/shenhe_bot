@@ -1,3 +1,4 @@
+from platform import release
 import discord
 from discord.ext import commands
 from discord import Interaction, app_commands, Message
@@ -26,7 +27,7 @@ class OtherCMDCog(commands.Cog):
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.stop()
             value = randint(1, 100)
-            if value <= 5:
+            if value <= 10:
                 flow_app.transaction(interaction.user.id, 1)
                 await interaction.response.send_message('摸魚摸到 1 flow幣!', ephemeral=True)
             else:
@@ -50,6 +51,22 @@ class OtherCMDCog(commands.Cog):
             fish_embed.set_image(url='https://media.discordapp.net/attachments/948089644493455401/975409970998829056/unknown.png')
             touch_fish_view = OtherCMDCog.TouchFish()
             await message.channel.send(embed=fish_embed, view=touch_fish_view)
+
+    @app_commands.command(name='fish',description='緊急放出一條魚讓人摸')
+    @app_commands.checks.has_role('小雪團隊')
+    async def release_fish(self, i:Interaction):
+        fish_embed = defaultEmbed(
+            '台灣 - 虱目魚',
+            '摸魚有機率獲得1 flow幣'
+        )
+        fish_embed.set_image(url='https://media.discordapp.net/attachments/948089644493455401/975409970998829056/unknown.png')
+        touch_fish_view = OtherCMDCog.TouchFish()
+        await i.response.send_message(embed=fish_embed, view=touch_fish_view)
+
+    @release_fish.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
