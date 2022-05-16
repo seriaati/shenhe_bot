@@ -259,7 +259,7 @@ class WishCog(commands.Cog):
         member = member or i.user
         print(log(False, False, 'Wish', member.id))
         await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
+        if not os.path.exists(f'data/wish_history/{member.id}'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         result = []
