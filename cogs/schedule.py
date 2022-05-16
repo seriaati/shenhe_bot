@@ -65,29 +65,34 @@ class Schedule(commands.Cog):
     @app_commands.command(name='claimall', description='強制執行所有用戶簽到')
     async def claim_all(self, i: Interaction):
         print(log(False, False, 'Claim All', i.user.id))
+        self.resin_check.cancel()
         await i.response.send_message(embed=defaultEmbed('⏳ 簽到中', '請稍等'))
         claim_data = openFile('schedule_daily_reward')
         count = 0
+        remove_user = []
         for user_id, value in claim_data.items():
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
-                self.remove_user(user_id, 'daily_reward')
-                continue
+                remove_user.append(user_id)
             result = await genshin_app.claimDailyReward(user_id)
             count += 1
+        for user in remove_user:
+            del claim_data[user]
+        saveFile(claim_data, 'schedule_daily_reward')
         await i.followup.send(embed=defaultEmbed('✅ 簽到完成', ''))
+        self.resin_check.start()
 
     @tasks.loop(hours=1)  # 樹脂檢查
     async def resin_check(self):
         print(log(True, False, 'Schedule', 'Resin check started'))
         resin_data = openFile('schedule_resin_notification')
         count = 0
+        remove_user = []
         for user_id, value in resin_data.items():
             user = self.bot.get_user(user_id)
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
-                del resin_data[user_id]
-                continue
+                remove_user.append(user_id)
             result = await genshin_app.getRealTimeNotes(user_id, True)
             count += 1
             if result == True:
@@ -108,23 +113,30 @@ class Schedule(commands.Cog):
             else:
                 resin_data[user_id] = 0
             await asyncio.sleep(2.0)
+        for user in remove_user:
+            print(log(True, False, 'Schedule', f'remove_user (task = resin check, id={user})'))
+            del resin_data[user]
         saveFile(resin_data, 'schedule_resin_notification')
         print(log(True, False, 'Schedule',
               f'Resin check finished, {count} in total'))
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=24) # 自動領獎勵
     async def claim_reward(self):
         print(log(True, False, 'Schedule', 'Auto claim started'))
         claim_data = openFile('schedule_daily_reward')
         count = 0
+        remove_user = []
         for user_id, value in claim_data.items():
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
-                del claim_data[user_id]
-                continue
+                remove_user.append(user_id)
             result = await genshin_app.claimDailyReward(user_id)
             count += 1
             await asyncio.sleep(2.0)
+        for user in remove_user:
+            print(log(True, False, 'Schedule', f'remove_user (task = daily reward, id={user})'))
+            del claim_data[user]
+        saveFile(claim_data, 'schedule_resin_notification')
         print(log(True, False, 'Schedule',
               f'Auto claim finished, {count} in total'))
 
@@ -152,15 +164,15 @@ class Schedule(commands.Cog):
             saveFile(resin_data, 'schedule_resin_notification')
 
     def remove_user(self, user_id: int, function_type: str):
-        print(log(True, False, 'Schedule', f'remove_user(function = {function}, user_id={user_id})'))
+        print(log(True, False, 'Schedule', f'remove_user(function={function_type}, user_id={user_id})'))
         if function_type == 'daily_reward':
             daily_data = openFile('schedule_daily_reward')
             del daily_data[user_id]
-            saveFile(daily_data, 'schedule_daily_reward')
+            # saveFile(daily_data, 'schedule_daily_reward')
         elif function_type == 'resin_check':
             resin_data = openFile('schedule_resin_notification')
             del resin_data[user_id]
-            saveFile(resin_data, 'schedule_resin_notification')
+            # saveFile(resin_data, 'schedule_resin_notification')
 
 
 async def setup(client: commands.Bot):
