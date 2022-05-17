@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 from discord.ui import Button, Select, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import genshin_app
-from utility.utils import defaultEmbed, getWeekdayName, log, openFile, saveFile
+from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log, openFile, saveFile
 
 
 class GenshinCog(commands.Cog):
@@ -29,6 +29,8 @@ class GenshinCog(commands.Cog):
         users = openFile('accounts')
         count = 0
         for user_id, value in users.items():
+            if 'ltuid' not in value:
+                continue
             check, msg = genshin_app.checkUserData(user_id)
             if check == False:
                 del users[user_id]
@@ -98,9 +100,9 @@ class GenshinCog(commands.Cog):
         description='設定原神UID')
     @app_commands.describe(uid='請輸入要保存的原神UID')
     async def slash_uid(self, interaction: Interaction, uid: int):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
         result = await genshin_app.setUID(interaction.user.id, int(uid))
-        await interaction.edit_original_message(content=result)
+        await interaction.followup.send(embed=result)
 
     @app_commands.command(
         name='check',
@@ -213,9 +215,10 @@ class GenshinCog(commands.Cog):
                   ):
         member = member or interaction.user
         result = await genshin_app.getDiaryLog(member.id)
-        result.set_author(name=self.bot.get_user(member.id),
+        embed = result[type]
+        embed.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
-        await interaction.response.send_message(embed=result[type])
+        await interaction.response.send_message(embed=embed)
 # /users
 
     @app_commands.command(
@@ -352,11 +355,16 @@ class GenshinCog(commands.Cog):
                 if character.element == elements[index]:
                     options.append(SelectOption(
                         label=f'C{character.constellation}R{character.weapon.refinement} {character.name}', value=character.name))
+            if not options:
+                options.append(SelectOption(label='無角色',value='無角色'))
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
         async def callback(self, interaction: discord.Interaction):
-            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], interaction.user))
+            if self.values[0]=='無角色':
+                await interaction.response.send_message(embed=errEmbed('真的沒有角色','不應該這樣嗎?\n可能是因為你只有用`/setuid`註冊\n想查看完整角色請使用`/cookie`註冊'))
+            else:
+                await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], interaction.user))
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
         def __init__(self, index: int, user_characters):
@@ -390,7 +398,7 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
     async def build(self, i: Interaction):
         view = GenshinCog.ElementChooseView()
-        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', ''), view=view, ephemeral=True)
+        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', '如果你是用`/setuid`註冊的, 僅會顯示等級前8的角色'), view=view, ephemeral=True)
 
     # /characters
     @app_commands.command(name='characters', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')

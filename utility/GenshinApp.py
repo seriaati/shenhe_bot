@@ -46,18 +46,30 @@ class GenshinApp:
     
     async def setUID(self, user_id: int, uid: int) -> str:
         print(log(False, False, 'setUID', f'{user_id}: (uid = {uid})'))
+        try:
+            seria_id = 410036441129943050
+            cookies = {"ltuid": users[seria_id]['ltuid'],
+                        "ltoken": users[seria_id]['ltoken']}
+            uid = users[user_id]['uid']
+            client = genshin.Client(cookies)
+            await client.get_partial_genshin_user(uid)
+        except genshin.errors.DataNotPublic:
+            return errEmbed('❌ UID設置失敗',f'請至')
         users = openFile('accounts')
-        if user_id in users:
-            users[user_id]['uid'] = int(uid)
-            saveFile(users, 'accounts')
-            return f'角色UID: {uid} 已設定完成'
+        users[user_id] = {}
+        users[user_id]['uid'] = int(uid)
+        saveFile(users, 'accounts')
+        return defaultEmbed('✅ UID設置成功',f'uid: {uid}')
 
     async def claimDailyReward(self, user_id:int):
         print(log(False, False, 'Claim', f'{user_id}'))
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        client = self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
+        if check==True:
+            result = errEmbed('你不能使用這項功能!','請使用`/cookie`的方式註冊後再來試試看')
+            return result
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
@@ -84,9 +96,10 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        user_data = self.getUserData()
-        uid = user_data[user_id]['uid']
-        client= self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
+        if check==True:
+            result = errEmbed('你不能使用這項功能!','請使用`/cookie`的方式註冊後再來試試看')
+            return result
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic as e:
@@ -178,9 +191,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        user_data = self.getUserData()
-        uid = user_data[user_id]['uid']
-        client= self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.GenshinException as e:
@@ -218,9 +229,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        user_data = self.getUserData()
-        uid = user_data[user_id]['uid']
-        client= self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.GenshinException as e:
@@ -252,7 +261,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        client= self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             diary = await client.get_diary(month=month)
         except genshin.errors.GenshinException as e:
@@ -289,7 +298,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        client = self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -329,9 +338,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        user_data = self.getUserData()
-        uid = user_data[user_id]['uid']
-        client = self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             result = await client.get_genshin_characters(uid)
         except genshin.errors.DataNotPublic as e:
@@ -347,6 +354,7 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Character', e))
         else:
+            print(result)
             return result
 
     def parseCharacter(self,user_characters:dict, character_name:str, user:Member):
@@ -398,7 +406,7 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        client = self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -426,9 +434,10 @@ class GenshinApp:
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
-        user_data = self.getUserData()
-        uid = user_data[user_id]['uid']
-        client = self.getUserCookie(user_id)
+        client, uid, check = self.getUserCookie(user_id)
+        if check==True:
+            result = errEmbed('你不能使用這項功能!','請使用`/cookie`的方式註冊後再來試試看')
+            return result
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic as e:
@@ -520,20 +529,32 @@ class GenshinApp:
     def checkUserData(self, user_id: int):
         users = self.getUserData()
         if user_id not in users:
-            return False, errEmbed('找不到原神帳號!', '請輸入`/cookie`來查看註冊方式')
+            return False, errEmbed('找不到原神帳號!', '請輸入`/setuid`來註冊自己的原神UID')
         else:
             return True, None
 
     def getUserCookie(self, user_id: int):
         users = self.getUserData()
-        cookies = {"ltuid": users[user_id]['ltuid'],
-                    "ltoken": users[user_id]['ltoken']}
-        uid = users[user_id]['uid']
-        client = genshin.Client(cookies)
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = uid
-        return client
+        seria_id = 410036441129943050
+        if 'ltuid' not in users[user_id]:
+            cookies = {"ltuid": users[seria_id]['ltuid'],
+                        "ltoken": users[seria_id]['ltoken']}
+            uid = users[user_id]['uid']
+            client = genshin.Client(cookies)
+            client.lang = "zh-tw"
+            client.default_game = genshin.Game.GENSHIN
+            client.uids[genshin.Game.GENSHIN] = uid
+            only_uid = True
+        else:
+            cookies = {"ltuid": users[user_id]['ltuid'],
+                        "ltoken": users[user_id]['ltoken']}
+            uid = users[user_id]['uid']
+            client = genshin.Client(cookies)
+            client.lang = "zh-tw"
+            client.default_game = genshin.Game.GENSHIN
+            client.uids[genshin.Game.GENSHIN] = uid
+            only_uid = False
+        return client, int(uid), only_uid
 
     def getUserData(self):
         with open(f'data/accounts.yaml', 'r', encoding="utf-8") as f:
