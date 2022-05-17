@@ -1,4 +1,3 @@
-from platform import release
 import discord
 from discord.ext import commands
 from discord import Interaction, app_commands, Message
