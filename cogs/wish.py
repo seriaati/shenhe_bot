@@ -154,7 +154,7 @@ class WishCog(commands.Cog):
         wish_cache_categories = ['up_char', 'weapon', 'overview']
         for category in wish_cache_categories:
             if category not in user_wish_cache:
-                user_wish_histroy = openFile(f'wish_history/{user_id}')
+                user_wish_history = openFile(f'wish_history/{user_id}')
                 break
         if 'up_char' not in user_wish_cache:  # 角色限定祈願快取
             print(log(True, False, 'Wish Cache',
@@ -168,7 +168,7 @@ class WishCog(commands.Cog):
             wish_sum = 0
             found = False
             found_last_five_star = False
-            for wish in user_wish_histroy:
+            for wish in user_wish_history:
                 if wish.banner_type == 301:
                     wish_sum += 1
                     if wish.rarity == 5 and wish.type == '角色':
@@ -188,14 +188,14 @@ class WishCog(commands.Cog):
                 user_wish_cache['up_char'][data] = eval(data)
             saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
         if 'weapon' not in user_wish_cache:  # 限定武器快取
-            user_wish_histroy = openFile(f'wish_history/{user_id}')
+            user_wish_history = openFile(f'wish_history/{user_id}')
             print(log(True, False, 'Wish Cache',
                   f'making weapon wish cache for {user_id}'))
             user_wish_cache['weapon'] = {}
             required_data = ['last_five_star_weapon_name', 'pull_state']
             last_five_star_weapon_name = ''
             pull_state = 0
-            for wish in user_wish_histroy:
+            for wish in user_wish_history:
                 if wish.banner_type == 302:
                     if wish.rarity != 5:
                         pull_state += 1
@@ -223,8 +223,8 @@ class WishCog(commands.Cog):
                         overview_dict[pool][pool_data] = 0
                     else:
                         overview_dict[pool][pool_data] = False
-            overview_dict['total_wish'] = len(user_wish_histroy)
-            for wish in user_wish_histroy:
+            overview_dict['total_wish'] = len(user_wish_history)
+            for wish in user_wish_history:
                 for pool_id in pool_ids:
                     if wish.banner_type == pool_id:
                         is_five_star = self.evaluate_rarity(wish)
