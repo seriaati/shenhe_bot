@@ -1,11 +1,12 @@
 # shenhe-bot by seria
 
+from pathlib import Path
+
 import discord
 from discord.ext import commands
-from discord import Interaction, Message
+
 from utility.config import config
-from utility.utils import defaultEmbed, log
-from pathlib import Path
+from utility.utils import log
 
 print("main or dev?")
 user = input()
