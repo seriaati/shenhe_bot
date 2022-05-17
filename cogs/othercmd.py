@@ -65,20 +65,19 @@ class OtherCMDCog(commands.Cog):
             result = ayaakaaEmbed(
                 fish_list[index],
                 f'是可愛的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得{fish_flow_list[index]}flow幣'
+                f'摸**{fish_list[index]}**有機率獲得 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是可愛的鮭魚！要摸摸看嗎?
             #     摸鮭魚有機率獲得 2 flow幣
-            result.set_image(url=fish_image_list[index])
         else:
             result = ayaakaaEmbed(
                 fish_list[index],
                 f'是野生的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得或損失{fish_flow_list[index]}flow幣'
+                f'摸**{fish_list[index]}**有機率獲得或損失 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是野生的達達利鴨！要摸摸看嗎?
             #     摸達達利鴨有機率獲得或損失 20 flow幣
-            result.set_image(url=fish_image_list[index])
+        result.set_image(url=fish_image_list[index])
         return result
 
     class TouchFishButton(Button):
