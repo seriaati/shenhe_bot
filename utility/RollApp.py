@@ -143,7 +143,6 @@ def check_big_prize(user_id: int, prize, banner: str, contribution_mode: bool = 
             big_prize: 0,
             '10 flow幣': 0,
             '100 flow幣': 0,
-            '1000 flow幣': 0,
             air: 0
         }
         print(log(True, False, 'Roll',

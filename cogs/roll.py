@@ -100,7 +100,7 @@ class RollCog(commands.Cog):
             embed.add_field(
                 name='其他獎品',
                 value='10 Flow幣: 10%\n'
-                '100 Flow: 3%\n',
+                '100 Flow: 1%\n',
                 inline=False
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
