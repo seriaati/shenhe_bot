@@ -1,6 +1,6 @@
 import asyncio
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import discord
@@ -8,16 +8,46 @@ import yaml
 from discord import (ButtonStyle, Interaction, Member, SelectOption,
                      app_commands)
 from discord.app_commands import Choice
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ui import Button, Select, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import genshin_app
-from utility.utils import defaultEmbed, getWeekdayName, log, openFile
+from utility.utils import defaultEmbed, getWeekdayName, log, openFile, saveFile
 
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.claim_reward.start()
+
+    def cog_unload(self):
+        self.claim_reward.cancel()
+
+    @tasks.loop(hours=24)
+    async def claim_reward(self):
+        print(log(True, False, 'Schedule', 'Auto claim started'))
+        users = openFile('accounts')
+        count = 0
+        for user_id, value in users.items():
+            check, msg = genshin_app.checkUserData(user_id)
+            if check == False:
+                del users[user_id]
+                continue
+            await genshin_app.claimDailyReward(user_id)
+            count += 1
+            await asyncio.sleep(2.0)
+        saveFile(users, 'accounts')
+        print(log(True, False, 'Schedule',
+              f'Auto claim finished, {count} in total'))
+
+    @claim_reward.before_loop
+    async def before_claiming_reward(self):
+        now = datetime.now().astimezone()
+        next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await discord.utils.sleep_until(next_run)
+
 # cookie
 
     class CookieModal(discord.ui.Modal, title='提交Cookie'):
