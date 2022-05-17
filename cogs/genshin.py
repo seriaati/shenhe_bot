@@ -85,7 +85,8 @@ class GenshinCog(commands.Cog):
                 "3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n"
                 "4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"
                 "5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n"
-                "6.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n")
+                "6.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n"
+                "無法理解嗎? 跟著下面的圖示操作吧!")
             embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
             code_msg = "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
             await interaction.response.send_message(embed=embed)
