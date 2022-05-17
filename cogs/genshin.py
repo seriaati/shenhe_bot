@@ -131,8 +131,7 @@ class GenshinCog(commands.Cog):
         Choice(name='是', value=1),
         Choice(name='否', value=0)])
     async def claim(self, interaction: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
-        print(log(False, False, 'Claim', f'{interaction.user.id} (all = {all})'))
-        if all==1:
+        if all == 1:
             await interaction.response.send_message(embed=defaultEmbed('⏳ 全員簽到中'))
             users = openFile('accounts')
             for user in users:
@@ -143,7 +142,7 @@ class GenshinCog(commands.Cog):
             member = member or interaction.user
             result = await genshin_app.claimDailyReward(member.id)
             result.set_author(name=self.bot.get_user(member.id),
-                            icon_url=self.bot.get_user(member.id).avatar)
+                              icon_url=self.bot.get_user(member.id).avatar)
             await interaction.response.send_message(embed=result)
 # /diary
 
