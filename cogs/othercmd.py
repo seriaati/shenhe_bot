@@ -35,7 +35,9 @@ class OtherCMDCog(commands.Cog):
 # 5 flow
 # [5]  龍蝦
 # [6]  螃蟹
-# [7]  大王具足蟲
+
+# 7 flow
+# [7]  心海
 
 # 10 flow
 # [8]  大白鯊
@@ -44,9 +46,9 @@ class OtherCMDCog(commands.Cog):
 # [9]  達達利鴨
 
     global fish_list, fish_flow_list, fish_image_list
-    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '5', '10', '20']
+    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
-                    '龍蝦', '螃蟹', '大王具足蟲', '大白鯊', '達達利鴨']
+                    '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨']
     fish_image_list = [
         'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
         'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
@@ -55,17 +57,17 @@ class OtherCMDCog(commands.Cog):
         'https://www.boilingtime.com/img/0630/f.jpg',
         'https://seafoodfriday.hk/wp-content/uploads/2021/08/Red-Lobster-1-1536x1536.jpg',
         'https://www.freshexpressonline.com/media/catalog/product/cache/cce444513434d709cad419cac6756dc1/8/0/804001004.jpg',
-        'https://img.ruten.com.tw/s3/a2d/3e3/hobbycubic/e/69/b7/22034159596983_953.jpg',
+        'https://assets2.rockpapershotgun.com/genshin-impact-sangonomiya-kokomi.jpg/BROK/thumbnail/1200x1200/quality/100/genshin-impact-sangonomiya-kokomi.jpg',
         'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
         'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif'
     ]
 
     def generate_fish_embed(self, index: int):
-        if 0 <= index <= 4:
+        if index >=0 and index <=4 or index == 7:
             result = ayaakaaEmbed(
                 fish_list[index],
                 f'是可愛的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得{fish_flow_list[index]}flow幣'
+                f'摸**{fish_list[index]}**有機率獲得 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是可愛的鮭魚！要摸摸看嗎?
             #     摸鮭魚有機率獲得 2 flow幣
@@ -74,7 +76,7 @@ class OtherCMDCog(commands.Cog):
             result = ayaakaaEmbed(
                 fish_list[index],
                 f'是野生的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得或損失{fish_flow_list[index]}flow幣'
+                f'摸**{fish_list[index]}**有機率獲得或損失 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是野生的達達利鴨！要摸摸看嗎?
             #     摸達達利鴨有機率獲得或損失 20 flow幣
@@ -91,8 +93,8 @@ class OtherCMDCog(commands.Cog):
             view = self.view
             view.stop()
             
-            await interaction.channel.send(f'{interaction.user.mention} 摸到 {fish_list[self.index]} 了！')
-            # e.g. @綾霞 摸到魚了！
+            await interaction.channel.send(f'{interaction.user.mention} 摸到**{fish_list[self.index]}**了！')
+            # e.g. @綾霞 摸到虱目魚了！
 
             value = randint(1, 100)  # Picks a random number from 1 - 100
 
@@ -116,9 +118,9 @@ class OtherCMDCog(commands.Cog):
                 else:
                     await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
 
-            # 摸龍蝦, 螃蟹 或 大王具足蟲有機率獲得或損失 5 flow幣
-            # [5] 龍蝦, [6] 螃蟹, [7] 大王具足蟲
-            elif self.index >= 5 and self.index <= 7:
+            # 摸龍蝦 或 螃蟹有機率獲得或損失 5 flow幣
+            # [5] 龍蝦, [6] 螃蟹, 
+            elif self.index >= 5 and self.index <= 6:
                 if value <= 50:  # 50% Chance of increasing flow amount by 5
                     flow_app.transaction(interaction.user.id, 5)
                     await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 5 flow幣!', ephemeral=True)
@@ -127,6 +129,18 @@ class OtherCMDCog(commands.Cog):
                     flow_app.transaction(interaction.user.id, -5)
                     await interaction.response.send_message(f'被**{fish_list[self.index]}**鉗到了，損失了 5 flow幣 qwq', ephemeral=True)
                     # e.g. 被龍蝦鉗到了，損失了 5 flow幣 qwq
+            
+            # 摸心海有機率獲得或損失 7 flow幣
+            # [7] 心海
+            elif self.index == 7
+                if value <= 50:  # 50% Chance of increasing flow amount by 7
+                    flow_app.transaction(interaction.user.id, 7)
+                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 7 flow幣!', ephemeral=True)
+                    # e.g. 摸心海摸到 7 flow幣!
+                else:  # 50% Chance of decreasing flow amount by 7
+                    flow_app.transaction(interaction.user.id, -7)
+                    await interaction.response.send_message(f'被**{fish_list[self.index]}**打飛了，損失了 7 flow幣 qwq', ephemeral=True)
+                    # e.g. 被心海打飛了，損失了 7 flow幣 qwq                         
 
             # 摸大白鯊有機率獲得或損失 10 flow幣
             elif self.index == 8:  # [8] 大白鯊
