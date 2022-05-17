@@ -259,11 +259,11 @@ class WishCog(commands.Cog):
         member = member or i.user
         print(log(False, False, 'Wish History', member.id))
         await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}'):
+        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
         result = []
-        user_wish_history = openFile(f'wish_history/{member.id}.yaml')
+        user_wish_history = openFile(f'wish_history/{member.id}')
         for wish in user_wish_history:
             wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
             if wish.rarity == 5 or wish.rarity == 4:
