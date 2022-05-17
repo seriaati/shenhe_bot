@@ -164,7 +164,6 @@ class OtherCMDCog(commands.Cog):
             value = randint(1, 100)
             await message.channel.send(f"{value}%")
         random_number = randint(1, 100)
-        random_number = 1
         if random_number == 1:
             index = randint(0, len(fish_list)-1)
             touch_fish_view = OtherCMDCog.TouchFish(index)
