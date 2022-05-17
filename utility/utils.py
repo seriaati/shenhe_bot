@@ -9,6 +9,10 @@ def defaultEmbed(title: str, message: str=''):
     return discord.Embed(title=title, description=message, color=0xa68bd3)
 
 
+def ayaakaaEmbed(title: str, message: str=''):
+    return discord.Embed(title=title, description=message, color=0xCBD9EB)
+
+
 def errEmbed(title: str, message: str):
     return discord.Embed(title=title, description=message, color=0xfc5165)
 

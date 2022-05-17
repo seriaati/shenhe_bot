@@ -1,10 +1,11 @@
-from platform import release
+from operator import index
+from unittest import result
 import discord
 from discord.ext import commands
 from discord import Interaction, app_commands, Message
 from random import randint
-from utility.FlowApp import flow_app
-from utility.utils import defaultEmbed, log
+from utility.FlowApp import FlowApp, flow_app
+from utility.utils import defaultEmbed, ayaakaaEmbed, log
 
 
 class OtherCMDCog(commands.Cog):
@@ -19,38 +20,133 @@ class OtherCMDCog(commands.Cog):
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(self.quote_ctx_menu.name, type=self.quote_ctx_menu.type)
 
-    def generate_fish_embed(self):
-        fish_name_list = ['鮭魚','鱈魚','鮪魚','鰻魚','虱目魚','石斑魚','秋刀魚','鯖魚']
-        fish_image_url_list = [
-            'https://www.east.org.tw/sites/east/files/content/image/2021-ISSUES/20210403_4.png',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Gadus_morhua_Cod-2b-Atlanterhavsparken-Norway.JPG/360px-Gadus_morhua_Cod-2b-Atlanterhavsparken-Norway.JPG',
-            'https://linky.tw/wp-content/uploads/2019/09/bluefin-tuna-thunnus-thynnus-saltwater-fish_shutterstock_92722921-1000x600.jpg',
-            'https://www.pingroun.com.tw/article/_imagecache/nihon-eel-1200.jpg',
-            "https://www.nses.cyc.edu.tw/html/fish/32e899b1e79baee9ad9a.jpg",
-            'https://i.ntdtv.com/assets/uploads/2020/06/david-clode-iFQE-aCAWPU-unsplash-600x398.jpg',
-            'https://img.ltn.com.tw/Upload/food/page/2019/05/19/190519-9065-0-ANBro.jpg',
-            'https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2014/09/15/99/219895.jpg']
-        index = randint(1, len(fish_name_list)-1)
-        result = defaultEmbed(fish_name_list[index])
-        result.set_image(url=fish_image_url_list[index])
-        return result
-    
-    class TouchFish(discord.ui.View):
+#Touch Fish
+
+#List of Fishes
+# 1 flow
+#[0]  虱目魚
+
+# 2 flow
+#[1]  鮭魚 
+#[2]  鱈魚 
+#[3]  鮪魚 
+#[4]  鰻魚 
+
+# 5 flow
+#[5]  龍蝦
+#[6]  螃蟹 
+#[7]  大王具足蟲 
+
+# 10 flow
+#[8]  大白鯊 
+
+# 20 flow
+#[9]  達達利鴨 
+
+class TouchFish(discord.ui.View):
         def __init__(self):
             super().__init__()
 
-        @discord.ui.button(label='摸魚', style=discord.ButtonStyle.blurple)
-        async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-            self.stop()
-            await interaction.channel.send(f'{interaction.user.mention} 摸到魚了')
-            value = randint(1, 100)
-            if value <= 10:
-                flow_app.transaction(interaction.user.id, 1)
-                await interaction.response.send_message('摸魚摸到 1 flow幣!', ephemeral=True)
+        @commands.Cog.listener()
+        async def on_message(self, message):
+            if message.author == self.bot.user:
+                return
+
+            fish_flow_list = ['1','2','2','2','2','5','5','5','10','20']
+            fish_list = ['虱目魚','鮭魚','鱈魚','鮪魚','鰻魚','龍蝦','螃蟹','大王具足蟲','大白鯊','達達利鴨']
+            fish_image_list = [
+                'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
+                'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
+                'https://seafoodfriday.hk/wp-content/uploads/2021/08/Cod-Fillet-1.jpg',
+                'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/327f113f6c4342a982213da7e1dfd5d8.Tuna-Fillet-1.jpg',
+                'https://www.boilingtime.com/img/0630/f.jpg',
+                'https://seafoodfriday.hk/wp-content/uploads/2021/08/Red-Lobster-1-1536x1536.jpg',
+                'https://www.freshexpressonline.com/media/catalog/product/cache/cce444513434d709cad419cac6756dc1/8/0/804001004.jpg',
+                'https://img.ruten.com.tw/s3/a2d/3e3/hobbycubic/e/69/b7/22034159596983_953.jpg',
+                'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
+                'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif'
+                ]
+            index = randint(0, len(fish_list)-1)
+            if index >=0 and index <=4:    
+                result = ayaakaaEmbed(
+                    str(fish_list[index]), 
+                    '是可愛的' + '**' + str(fish_list[index]) + '**' + '！要摸摸看嗎?\n'
+                    '摸' + '**' + str(fish_list[index]) + '**' + '有機率獲得 ' + str(fish_flow_list[index]) + ' flow幣'
+                    )   
+                #e.g. 是可愛的鮭魚！要摸摸看嗎?
+                #     摸鮭魚有機率獲得 2 flow幣
+                result.set_image(url = fish_image_list[index])
             else:
-                await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
-            
+                result = ayaakaaEmbed(
+                    str(fish_list[index]), 
+                    '是野生的' + '**' + str(fish_list[index]) + '**' + '！要摸摸看嗎?\n'
+                    '摸' + '**' + str(fish_list[index]) + '**' + '有機率獲得或損失 ' + str(fish_flow_list[index]) + ' flow幣'
+                    )   
+                #e.g. 是野生的達達利鴨！要摸摸看嗎?
+                #     摸達達利鴨有機率獲得或損失 20 flow幣
+                result.set_image(url = fish_image_list[index])
+
+            @discord.ui.button(label='撫摸可愛的' + str(fish_list[index]), style=discord.ButtonStyle.blurple)   
+            #e.g. 撫摸可愛的鮭魚         
+            async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+                self.stop()
+                await interaction.channel.send(f'{interaction.user.mention} 摸到魚了！')
+                #e.g. @綾霞 摸到魚了！
+
+                value = randint(1, 100) #Picks a random number from 1 - 100
+
+                #摸虱目魚有機率獲得 1 flow幣
+                if index == 0: #[0] 虱目魚
+                     if value <= 60: #60% Chance of increasing flow amount by 1
+                        flow_app.transaction(interaction.user.id, 1)
+                        await interaction.response.send_message('摸' + '**' + str(fish_list[index]) + '**' + '摸到 1 flow幣!', ephemeral=True)
+                        #e.g. 摸虱目魚摸到 1 flow幣!
+
+                #摸鮭魚, 鱈魚, 鮪魚 或 鰻魚有機率獲得 2 flow幣
+                elif index >= 1 and index <= 4: #[1] 鮭魚, [2] 鱈魚, [3] 鮪魚, [4] 鰻魚 
+                    if value <= 30: #30% Chance of increasing flow amount by 2
+                        flow_app.transaction(interaction.user.id, 2)
+                        await interaction.response.send_message('摸' + '**' + str(fish_list[index]) + '**' + '摸到 2 flow幣!', ephemeral=True)
+                        #e.g. 摸鮭魚摸到 2 flow幣!
+                    else:
+                        await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
+                        
+                #摸龍蝦, 螃蟹 或 大王具足蟲有機率獲得或損失 5 flow幣
+                elif index >= 5 and index <= 7: #[5] 龍蝦, [6] 螃蟹, [7] 大王具足蟲 
+                    if value <= 50: #50% Chance of increasing flow amount by 5
+                        flow_app.transaction(interaction.user.id, 5)
+                        await interaction.response.send_message('摸' + '**' + str(fish_list[index]) + '**' + '摸到 5 flow幣!', ephemeral=True)
+                        #e.g. 摸龍蝦摸到 5 flow幣!
+                    else: #50% Chance of decreasing flow amount by 5
+                        flow_app.transaction(interaction.user.id, -5)
+                        await interaction.response.send_message('被' + '**' + str(fish_list[index]) + '**' + '鉗到了，損失了 5 flow幣 qwq', ephemeral=True)
+                        #e.g. 被龍蝦鉗到了，損失了 5 flow幣 qwq
+
+                #摸大白鯊有機率獲得或損失 10 flow幣
+                elif index == 8: #[8] 大白鯊 
+                    if value <= 50: #50% Chance of increasing flow amount by 10
+                        flow_app.transaction(interaction.user.id, 10)
+                        await interaction.response.send_message('摸' + '**' + str(fish_list[index]) + '**' + '摸到 10 flow幣!', ephemeral=True)
+                        #e.g. 摸大白鯊 摸到 10 flow幣!
+                    else: #50% Chance of decreasing flow amount by 10
+                        flow_app.transaction(interaction.user.id, -10)
+                        await interaction.response.send_message('被' + '**' + str(fish_list[index]) + '**' + '咬到了，損失了 10 flow幣 qwq', ephemeral=True)
+                        #e.g. 被大白鯊咬到了，損失了 10 flow幣 qwq
+
+                #摸達達利鴨有機率獲得或損失 20 flow幣
+                elif index == 9: #[9] 達達利鴨 
+                    if value <= 50: #50% Chance of increasing flow amount by 20
+                        flow_app.transaction(interaction.user.id, 20)
+                        await interaction.response.send_message('摸' + '**' + str(fish_list[index]) + '**' + '摸到 20 flow幣!', ephemeral=True)
+                        #e.g. 摸達達利鴨摸到 30 flow幣!
+                    else: #50% Chance of decreasing flow amount by 20
+                        flow_app.transaction(interaction.user.id, -20)
+                        await interaction.response.send_message('被' + '**' + str(fish_list[index]) + '**' + '偷襲，損失了 20 flow幣 qwq', ephemeral=True)
+                        #e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
+
+                return result 
     
+    #機率
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
@@ -64,21 +160,17 @@ class OtherCMDCog(commands.Cog):
             touch_fish_view = OtherCMDCog.TouchFish()
             await message.channel.send(embed=self.generate_fish_embed(), view=touch_fish_view)
 
+   #/fish     
     @app_commands.command(name='fish',description='緊急放出一條魚讓人摸')
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i:Interaction):
         touch_fish_view = OtherCMDCog.TouchFish()
         await i.response.send_message(embed=self.generate_fish_embed(), view=touch_fish_view)
 
-    @release_fish.error
-    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
-            print(log(True, False, 'Quote',payload.user_id))
+         print(log(True, False, 'Quote',payload.user_id))
             channel = self.bot.get_channel(payload.channel_id)
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
@@ -222,5 +314,5 @@ class OtherCMDCog(commands.Cog):
         await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
         await channel.send(embed=embed)
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(OtherCMDCog(bot))
+    async def setup(bot: commands.Bot) -> None:
+        await bot.add_cog(OtherCMDCog(bot))
