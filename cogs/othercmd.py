@@ -30,7 +30,7 @@ class OtherCMDCog(commands.Cog):
             'https://i.ntdtv.com/assets/uploads/2020/06/david-clode-iFQE-aCAWPU-unsplash-600x398.jpg',
             'https://img.ltn.com.tw/Upload/food/page/2019/05/19/190519-9065-0-ANBro.jpg',
             'https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2014/09/15/99/219895.jpg']
-        index = randint(1, len(fish_name_list-1))
+        index = randint(1, len(fish_name_list)-1)
         result = defaultEmbed(fish_name_list[index])
         result.set_image(url=fish_image_url_list[index])
         return result
