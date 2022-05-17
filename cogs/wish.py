@@ -257,7 +257,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish', member.id))
+        print(log(False, False, 'Wish History', member.id))
         await i.response.defer()
         if not os.path.exists(f'data/wish_history/{member.id}'):
             await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
