@@ -26,6 +26,7 @@ class OtherCMDCog(commands.Cog):
         @discord.ui.button(label='摸魚', style=discord.ButtonStyle.blurple)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.stop()
+            await interaction.channel.send(f'{interaction.user.mention} 摸到魚了')
             value = randint(1, 100)
             if value <= 10:
                 flow_app.transaction(interaction.user.id, 1)
