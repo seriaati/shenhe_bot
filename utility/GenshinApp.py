@@ -54,7 +54,9 @@ class GenshinApp:
             client = genshin.Client(cookies)
             await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed('❌ UID設置失敗',f'請至')
+            embed = errEmbed('❌ UID設置失敗',f'請至 <https://www.hoyolab.com>登入後跟著下方圖片中的步驟操作')
+            embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
+            return embed
         users = openFile('accounts')
         users[user_id] = {}
         users[user_id]['uid'] = int(uid)
