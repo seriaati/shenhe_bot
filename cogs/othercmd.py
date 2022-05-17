@@ -131,7 +131,7 @@ class OtherCMDCog(commands.Cog):
             
             # 摸心海有機率獲得或損失 7 flow幣
             # [7] 心海
-            elif self.index == 7
+            elif self.index == 7:
                 if value <= 50:  # 50% Chance of increasing flow amount by 7
                     flow_app.transaction(interaction.user.id, 7)
                     await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 7 flow幣!', ephemeral=True)
