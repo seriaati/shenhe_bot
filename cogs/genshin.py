@@ -80,16 +80,15 @@ class GenshinCog(commands.Cog):
         Choice(name='2. 提交已取得的Cookie', value=1)])
     async def slash_cookie(self, interaction: Interaction, option: int):
         if option == 0:
-            help_msg = (
-                "1.先複製底下的整段程式碼\n"
+            embed = defaultEmbed('Cookie設置流程',"1.先複製底下的整段程式碼\n"
                 "2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n"
                 "3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n"
                 "4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"
                 "5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n"
-                "6.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n"
-                "https://i.imgur.com/OQ8arx0.gif")
+                "6.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n")
+            embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
             code_msg = "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
-            await interaction.response.send_message(content=help_msg)
+            await interaction.response.send_message(embed=embed)
             await interaction.followup.send(content=code_msg)
         elif option == 1:
             await interaction.response.send_modal(self.CookieModal())
