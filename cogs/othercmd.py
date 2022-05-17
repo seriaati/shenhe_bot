@@ -19,6 +19,22 @@ class OtherCMDCog(commands.Cog):
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(self.quote_ctx_menu.name, type=self.quote_ctx_menu.type)
 
+    def generate_fish_embed(self):
+        fish_name_list = ['鮭魚','鱈魚','鮪魚','鰻魚','虱目魚','石斑魚','秋刀魚','鯖魚']
+        fish_image_url_list = [
+            'https://www.east.org.tw/sites/east/files/content/image/2021-ISSUES/20210403_4.png',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Gadus_morhua_Cod-2b-Atlanterhavsparken-Norway.JPG/360px-Gadus_morhua_Cod-2b-Atlanterhavsparken-Norway.JPG',
+            'https://linky.tw/wp-content/uploads/2019/09/bluefin-tuna-thunnus-thynnus-saltwater-fish_shutterstock_92722921-1000x600.jpg',
+            'https://www.pingroun.com.tw/article/_imagecache/nihon-eel-1200.jpg',
+            "https://www.nses.cyc.edu.tw/html/fish/32e899b1e79baee9ad9a.jpg",
+            'https://i.ntdtv.com/assets/uploads/2020/06/david-clode-iFQE-aCAWPU-unsplash-600x398.jpg',
+            'https://img.ltn.com.tw/Upload/food/page/2019/05/19/190519-9065-0-ANBro.jpg',
+            'https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2014/09/15/99/219895.jpg']
+        index = randint(1, len(fish_name_list-1))
+        result = defaultEmbed(fish_name_list[index])
+        result.set_image(url=fish_image_url_list[index])
+        return result
+    
     class TouchFish(discord.ui.View):
         def __init__(self):
             super().__init__()
@@ -45,24 +61,14 @@ class OtherCMDCog(commands.Cog):
             await message.channel.send(f"{value}%")
         random_number = randint(1, 100)
         if random_number==1:
-            fish_embed = defaultEmbed(
-                '台灣 - 虱目魚',
-                '摸魚有機率獲得1 flow幣'
-            )
-            fish_embed.set_image(url='https://media.discordapp.net/attachments/948089644493455401/975409970998829056/unknown.png')
             touch_fish_view = OtherCMDCog.TouchFish()
-            await message.channel.send(embed=fish_embed, view=touch_fish_view)
+            await message.channel.send(embed=self.generate_fish_embed(), view=touch_fish_view)
 
     @app_commands.command(name='fish',description='緊急放出一條魚讓人摸')
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i:Interaction):
-        fish_embed = defaultEmbed(
-            '台灣 - 虱目魚',
-            '摸魚有機率獲得1 flow幣'
-        )
-        fish_embed.set_image(url='https://media.discordapp.net/attachments/948089644493455401/975409970998829056/unknown.png')
         touch_fish_view = OtherCMDCog.TouchFish()
-        await i.response.send_message(embed=fish_embed, view=touch_fish_view)
+        await i.response.send_message(embed=self.generate_fish_embed(), view=touch_fish_view)
 
     @release_fish.error
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
