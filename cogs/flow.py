@@ -232,17 +232,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         print(log(False, False, 'Total', f'{interaction.user.id}'))
         users = openFile('flow')
         bank = openFile('bank')
-        total = 0
+        user_total = 0
         count = 0
         for user in users:
             discordID = user
             count += 1
-            total += users[discordID]['flow']
-        sum = total+bank['flow']
-        await interaction.response.send_message(
-            f"目前群組裡共有:\n"
-            f"{count}個flow帳號\n"
-            f"用戶{total}+銀行{bank['flow']}={sum}枚flow幣")
+            user_total += users[discordID]['flow']
+        sum = user_total+bank['flow']
+        embed = defaultEmbed(
+            f'目前共{count}個flow帳號',
+            f'用戶{user_total}+銀行{bank["flow"]}={sum}枚flow幣'
+        )
+        await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name='flows', description='查看群組內所有flow帳號')
     async def flows(self, interaction: discord.Interaction):
