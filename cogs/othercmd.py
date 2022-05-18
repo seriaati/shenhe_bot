@@ -3,6 +3,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 from discord.ui import View, Button, Select
+from discord.app_commands import Choice
 from discord import Interaction, SelectOption, app_commands
 from discord.utils import format_dt
 from random import randint
@@ -187,13 +188,21 @@ class OtherCMDCog(commands.Cog):
             touch_fish_view = OtherCMDCog.TouchFish(index)
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
+    def get_fish_choices():
+        choices = []
+        for fish in fish_list:
+            choices.append(Choice(name=fish, value=fish_list.index(fish)))
+        return choices
+
    # /fish
     @app_commands.command(name='fish', description='緊急放出一條魚讓人摸')
+    @app_commands.rename(fish_type='魚種')
+    @app_commands.describe(fish_type='選擇要放出的魚種')
+    @app_commands.choices(fish_type = get_fish_choices())
     @app_commands.checks.has_role('小雪團隊')
-    async def release_fish(self, i: Interaction):
-        index = randint(0, len(fish_list)-1)
-        touch_fish_view = OtherCMDCog.TouchFish(index)
-        await i.response.send_message(embed=self.generate_fish_embed(index), view=touch_fish_view)
+    async def release_fish(self, i: Interaction, fish_type:int):
+        touch_fish_view = OtherCMDCog.TouchFish(fish_type)
+        await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 
     @release_fish.error
     async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
