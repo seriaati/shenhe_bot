@@ -213,11 +213,12 @@ class OtherCMDCog(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
             print(log(True, False, 'Quote', payload.user_id))
+            member = self.bot.get_user(payload.user_id)
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
             channel = self.bot.get_channel(payload.channel_id)
             emoji = self.bot.get_emoji(payload.emoji.id)
-            await msg.remove_reaction(emoji)
+            await msg.remove_reaction(emoji, member)
             await channel.send(f"✅ 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(
                 f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
