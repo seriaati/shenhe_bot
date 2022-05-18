@@ -102,7 +102,7 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(uid='請輸入要保存的原神UID')
     async def slash_uid(self, interaction: Interaction, uid: int):
         await interaction.response.defer()
-        if len(str(uid))!=9:
+        if len(str(uid)) != 9:
             await interaction.followup.send(embed=errEmbed('請輸入長度為9的UID!'))
             return
         result = await genshin_app.setUID(interaction.user.id, int(uid))
@@ -210,7 +210,7 @@ class GenshinCog(commands.Cog):
     )
     @app_commands.choices(
         data_type=[app_commands.Choice(name='原石', value=0),
-              app_commands.Choice(name='摩拉', value=1)]
+                   app_commands.Choice(name='摩拉', value=1)]
     )
     @app_commands.rename(data_type='類別', member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
@@ -224,7 +224,7 @@ class GenshinCog(commands.Cog):
             return
         embed = result[data_type]
         embed.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+                         icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=embed)
 # /users
 
@@ -348,58 +348,61 @@ class GenshinCog(commands.Cog):
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
-        async def callback(self, interaction: discord.Interaction):
+        async def callback(self, interaction: Interaction):
             result = await genshin_app.getBuild(self.build_dict, str(self.values[0]))
             await interaction.response.send_message(embed=result)
 
     class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
-        def __init__(self, index: int, user_characters):
+        def __init__(self, index: int, user_characters: dict, user: Member):
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['Anemo', 'Cryo', 'Electro', 'Geo', 'Hydro', 'Pyro']
             options = []
             self.user_characters = user_characters
+            self.user = user
             for character in user_characters:
                 if character.element == elements[index]:
                     options.append(SelectOption(
                         label=f'C{character.constellation}R{character.weapon.refinement} {character.name}', value=character.name))
             if not options:
-                options.append(SelectOption(label='無角色',value='無角色'))
+                options.append(SelectOption(label='無角色', value='無角色'))
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
-        async def callback(self, interaction: discord.Interaction):
-            if self.values[0]=='無角色':
-                await interaction.response.send_message(embed=errEmbed('真的沒有角色','不應該這樣嗎?\n可能是因為你只有用`/setuid`註冊\n想查看完整角色請使用`/cookie`註冊'))
+        async def callback(self, interaction: Interaction):
+            if self.values[0] == '無角色':
+                await interaction.response.send_message(embed=errEmbed('真的沒有角色', '不應該這樣嗎?\n可能是因為你只有用`/setuid`註冊\n想查看完整角色請使用`/cookie`註冊'))
             else:
-                await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], interaction.user))
+                await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, user_characters):
+        def __init__(self, index: int, user_characters: dict, user: Member):
             super().__init__(timeout=None)
             if user_characters is None:
                 self.add_item(GenshinCog.BuildCharactersDropdown(index))
             else:
                 self.add_item(GenshinCog.UserCharactersDropdown(
-                    index, user_characters))
+                    index, user_characters, user))
 
     class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, user_characters):
+        def __init__(self, index: int, user_characters: dict, user: Member):
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             self.index = index
             self.user_characters = user_characters
+            self.user = user
             super().__init__(
                 label=f'{elemenet_chinese[index]}元素', style=ButtonStyle.blurple, row=index % 2)
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.user_characters)
+                self.index, self.user_characters, self.user)
             await i.response.send_message(view=view, ephemeral=True)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, user_characters=None):
+        def __init__(self, user: Member = None, user_characters: dict = None):
             super().__init__(timeout=None)
             for i in range(0, 6):
-                self.add_item(GenshinCog.ElementButton(i, user_characters))
+                self.add_item(GenshinCog.ElementButton(
+                    i, user_characters, user))
 
     # /build
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
@@ -417,7 +420,7 @@ class GenshinCog(commands.Cog):
         if type(user_characters) is discord.Embed:
             await i.response.send_message(embed=user_characters)
             return
-        view = GenshinCog.ElementChooseView(user_characters)
+        view = GenshinCog.ElementChooseView(member, user_characters)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', ''), view=view, ephemeral=True)
 
 # /rate
