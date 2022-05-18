@@ -544,7 +544,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.stop()
             button.disabled = True 
-            interaction.edit_original_message(view=FlowCog.AcceptView(interaction.user))
+            await interaction.response.edit_message(view=FlowCog.AcceptView)
             msg = interaction.message
             finds = openFile('find')
             confirms = openFile('confirm')
