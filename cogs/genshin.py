@@ -101,6 +101,9 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(uid='請輸入要保存的原神UID')
     async def slash_uid(self, interaction: Interaction, uid: int):
         await interaction.response.defer()
+        if len(str(uid))!=9:
+            await interaction.followup.send(embed=errEmbed('請輸入長度為9的UID!'))
+            return
         result = await genshin_app.setUID(interaction.user.id, int(uid))
         await interaction.followup.send(embed=result)
 
