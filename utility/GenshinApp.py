@@ -356,7 +356,6 @@ class GenshinApp:
         except Exception as e:
             print(log(False, True, 'Character', e))
         else:
-            print(result)
             return result
 
     def parseCharacter(self,user_characters:dict, character_name:str, user:Member):
