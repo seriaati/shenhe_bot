@@ -6,6 +6,7 @@ from discord.app_commands import Choice
 from typing import List, Optional
 import uuid
 import random
+from utility.WishPaginator import WishPaginator
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
 import discord
 from utility.FlowApp import flow_app
@@ -251,6 +252,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     @app_commands.command(name='flows', description='查看群組內所有flow帳號')
     async def flows(self, interaction: discord.Interaction):
         print(log(False, False, 'flows', interaction.user.id))
+        await interaction.response.defer()
         users = openFile('flow')
         userStr = ""
         sum = 0
@@ -279,18 +281,21 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 flow_categories['大於 300 flow'].append(
                     f'{user.name}: {value["flow"]}')
             sum += 1
-        embed = defaultEmbed(f"共 {sum} 個flow帳戶", '')
+        embed_list = []
+        embed = defaultEmbed(f"共 {sum} 個flow帳戶")
+        embed_list.append(embed)
         for category, users in flow_categories.items():
             if len(users) == 0:
                 continue
             value = ''
             for user in users:
                 value += f'{user}\n'
-            embed.add_field(
-                name=f'{category} ({len(users)})',
-                value=value
+            embed = defaultEmbed(
+                f'{category} ({len(users)})',
+                value
             )
-        await interaction.response.send_message(embed=embed)
+            embed_list.append(embed)
+        await WishPaginator(interaction, embed_list).start(embeded=True)
 
     shop = app_commands.Group(name="shop", description="flow商店")
 
