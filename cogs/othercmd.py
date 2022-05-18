@@ -191,6 +191,11 @@ class OtherCMDCog(commands.Cog):
         touch_fish_view = OtherCMDCog.TouchFish(index)
         await i.response.send_message(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
+    @release_fish.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
