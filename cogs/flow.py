@@ -1,15 +1,14 @@
-from discord.ext import commands
-from discord import Guild, Interaction, app_commands, Role
-from datetime import datetime
-from discord import Member
-from discord.app_commands import Choice
-from typing import List, Optional
 import uuid
-import random
-from utility.WishPaginator import WishPaginator
-from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
+from datetime import datetime
+from typing import List, Optional
+
 import discord
+from discord import Guild, Interaction, Member, Role, app_commands
+from discord.app_commands import Choice
+from discord.ext import commands
 from utility.FlowApp import flow_app
+from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
+from utility.WishPaginator import WishPaginator
 
 
 class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
@@ -37,21 +36,15 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 return
             users = openFile('flow')
             now = datetime.now()
-            if 'morning' not in users[discordID]:
-                users[discordID]['morning'] = datetime(
-                    year=now.year, month=now.month, day=now.day-1,
-                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-                saveFile(users, 'flow')
-            if 'noon' not in users[discordID]:
-                users[discordID]['noon'] = datetime(
-                    year=now.year, month=now.month, day=now.day-1,
-                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-                saveFile(users, 'flow')
-            if 'night' not in users[discordID]:
-                users[discordID]['night'] = datetime(
-                    year=now.year, month=now.month, day=now.day-1,
-                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-                saveFile(users, 'flow')
+            default_time = datetime(
+                year=now.year, month=now.month, day=now.day-1,
+                hour=now.hour, minute=now.minute, second=now.second,
+                microsecond=now.microsecond)
+            time_keys = ['morning','noon','night']
+            for time_key in time_keys:
+                if time_key not in users[discordID]:
+                    users[discordID][time_key] = default_time
+                    saveFile(users, 'flow')
 
             if "早" in message.content:
                 start = datetime(year=now.year, month=now.month,
@@ -81,6 +74,12 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     if users[discordID]['night'].day != now.day:
                         flow_app.transaction(discordID, 1, time_state='night')
                         await message.add_reaction('🌙')
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member:Member):
+        users = openFile('flow')
+        if member.id in users:
+            flow_app.transaction(member.id, users[member.id]['flow'], is_removing_account=True)
 
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
