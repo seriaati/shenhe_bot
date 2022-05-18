@@ -220,6 +220,9 @@ class GenshinCog(commands.Cog):
                   ):
         member = member or interaction.user
         result = await genshin_app.getDiaryLog(member.id)
+        if type(result) is discord.Embed:
+            await interaction.response.send_message(embed=result)
+            return
         embed = result[type]
         embed.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
