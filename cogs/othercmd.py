@@ -261,6 +261,7 @@ class OtherCMDCog(commands.Cog):
         )
 
     @feature.command(name='list',description='查看所有建議')
+    @app_commands.checks.has_role('小雪團隊')
     async def feature_list(self, i:Interaction):
         print(log(False, False, 'Feature List', i.user.id))
         await i.response.defer()
@@ -279,6 +280,11 @@ class OtherCMDCog(commands.Cog):
                 f'於{timestamp}')
             embeds.append(embed)
         await WishPaginator(i, embeds).start(embeded=True)
+
+    @feature_list.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     class FeatureSelector(Select):
         def __init__(self, feature_dict:dict):
@@ -304,6 +310,7 @@ class OtherCMDCog(commands.Cog):
             self.add_item(OtherCMDCog.FeatureSelector(feature_dict))
 
     @feature.command(name='complete',description='完成一項建議')
+    @app_commands.checks.has_role('小雪團隊')
     async def feature_complete(self, i:Interaction):
         print(log(False, False, 'Feature Complete', i.user.id))
         features = openFile('feature')
@@ -312,6 +319,11 @@ class OtherCMDCog(commands.Cog):
             return
         view = OtherCMDCog.FeatureSelectorView(features)
         await i.response.send_message(view=view)
+
+    @feature_complete.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
         
     
     @app_commands.command(
