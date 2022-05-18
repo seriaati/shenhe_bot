@@ -542,7 +542,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-            self.stop()
             button.disabled = True
             await interaction.response.edit_message(view=self)
             msg = interaction.message
