@@ -80,7 +80,9 @@ class GenshinCog(commands.Cog):
         Choice(name='2. 提交已取得的Cookie', value=1)])
     async def slash_cookie(self, interaction: Interaction, option: int):
         if option == 0:
-            embed = defaultEmbed('Cookie設置流程',"1.先複製底下的整段程式碼\n"
+            embed = defaultEmbed(
+                'Cookie設置流程',
+                "1.先複製底下的整段程式碼\n"
                 "2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n"
                 "3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n"
                 "4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"

@@ -38,15 +38,18 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             now = datetime.now()
             if 'morning' not in users[discordID]:
                 users[discordID]['morning'] = datetime(
-                    year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                    year=now.year, month=now.month, day=now.day-1,
+                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
             if 'noon' not in users[discordID]:
-                users[discordID]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1,
-                                                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['noon'] = datetime(
+                    year=now.year, month=now.month, day=now.day-1,
+                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
             if 'night' not in users[discordID]:
-                users[discordID]['night'] = datetime(year=now.year, month=now.month, day=now.day-1,
-                                                     hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+                users[discordID]['night'] = datetime(
+                    year=now.year, month=now.month, day=now.day-1,
+                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
                 saveFile(users, 'flow')
 
             if "早" in message.content:
@@ -86,7 +89,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                   ):
         print(log(False, False, 'Acc', interaction.user.id))
         if interaction.channel.id == 960861105503232030:
-            await interaction.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷',''),ephemeral=True)
+            await interaction.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷', ''), ephemeral=True)
             return
         users = openFile('flow')
         member = member or interaction.user
@@ -205,7 +208,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='是', value=0),
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
-    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private: int=1):
+    async def make(self, interaction: discord.Interaction, member: Member, flow: int, private: int = 1):
         print(log(False, False, 'make',
               f'{interaction.user.id} make {flow} for {member.id}'))
         check, msg = flow_app.checkFlowAccount(member.id)
@@ -260,16 +263,21 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
             if user is None:
-                flow_app.transaction(user_id, value['flow'], is_removing_account=True)
+                flow_app.transaction(
+                    user_id, value['flow'], is_removing_account=True)
                 continue
             if value['flow'] < 100:
-                flow_categories['小於 100 flow'].append(f'{user.name}: {value["flow"]}')
+                flow_categories['小於 100 flow'].append(
+                    f'{user.name}: {value["flow"]}')
             elif 100 <= value['flow'] <= 200:
-                flow_categories['100~200 flow'].append(f'{user.name}: {value["flow"]}')
+                flow_categories['100~200 flow'].append(
+                    f'{user.name}: {value["flow"]}')
             elif 200 < value['flow'] <= 300:
-                flow_categories['200~300 flow'].append(f'{user.name}: {value["flow"]}')
+                flow_categories['200~300 flow'].append(
+                    f'{user.name}: {value["flow"]}')
             elif value['flow'] > 300:
-                flow_categories['大於 300 flow'].append(f'{user.name}: {value["flow"]}')
+                flow_categories['大於 300 flow'].append(
+                    f'{user.name}: {value["flow"]}')
             sum += 1
         embed = defaultEmbed(f"共 {sum} 個flow帳戶", '')
         for category, users in flow_categories.items():
@@ -277,7 +285,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 continue
             value = ''
             for user in users:
-                value+=f'{user}\n'
+                value += f'{user}\n'
             embed.add_field(
                 name=f'{category} ({len(users)})',
                 value=value
@@ -499,8 +507,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         free_trial[receiverID] += 1
                         str = f'({receiver.mention}受到10 flow幣贊助)\n'
                         f'已使用{free_trial[receiverID]}/10次贊助機會'
-                    flow_app.transaction(authorID ,flow)
-                    flow_app.transaction(receiverID,-int(new_flow))
+                    flow_app.transaction(authorID, flow)
+                    flow_app.transaction(receiverID, -int(new_flow))
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"幫忙名稱: {title}\n"
@@ -513,8 +521,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         free_trial[authorID] += 1
                         str = f'({receiver.mention}受到10 flow幣贊助)\n'
                         f'已使用{free_trial[receiverID]}/10次贊助機會'
-                    flow_app.transaction(authorID ,-int(new_flow))
-                    flow_app.transaction(receiverID,flow)
+                    flow_app.transaction(authorID, -int(new_flow))
+                    flow_app.transaction(receiverID, flow)
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"委託名稱: {title}\n"
@@ -588,7 +596,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         Choice(name='3類委託 其他委託(例如: 打apex, valorant)', value=3),
         Choice(name='4類委託 可以幫助別人(讓拿素材, 可幫打刀鐔等)', value=4)],
         tag=[Choice(name='不tag', value=0),
-                 Choice(name='tag', value=1)])
+             Choice(name='tag', value=1)])
     async def find(self, interaction: discord.Interaction, type: int, title: str, flow: int, tag: int = 1):
         print(log(False, False, 'Find',
               f'{interaction.user.id}: (type={type}, title={title}, flow={flow})'))
