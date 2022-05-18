@@ -557,13 +557,13 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 await thread.add_user(author)
                 await thread.add_user(acceptUser)
                 if finds[msg.id]['type'] == 1:
-                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
+                    await interaction.followup.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 2:
-                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
+                    await interaction.followup.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 素材委託")
                 elif finds[msg.id]['type'] == 3:
-                    await interaction.response.send_message(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
+                    await interaction.followup.send(f"✅ {acceptUser.mention} 已接受 {author.mention} 的 {finds[msg.id]['title']} 委託")
                 elif finds[msg.id]['type'] == 4:
-                    await interaction.response.send_message(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
+                    await interaction.followup.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
 
                 view = self.OKconfirm(author)
 
