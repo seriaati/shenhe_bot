@@ -27,9 +27,9 @@ def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
     if not is_system:
         system = "USER"
     if not is_error:
-        result = f"[{current_date}][{current_time}][{system}][{log_type}] {log_msg}"
+        result = f"[{current_date} {current_time}][{system}][{log_type}] {log_msg}"
     else:
-        result = f"[{current_date}][{current_time}][{system}][ERROR][{log_type}] {log_msg}"
+        result = f"[{current_date} {current_time}][{system}][ERROR][{log_type}] {log_msg}"
     return result
 
 
