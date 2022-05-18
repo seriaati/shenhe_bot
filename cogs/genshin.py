@@ -210,12 +210,12 @@ class GenshinCog(commands.Cog):
         description='查看最近25筆原石或摩拉收入紀錄'
     )
     @app_commands.choices(
-        type=[app_commands.Choice(name='原石', value=0),
+        data_type=[app_commands.Choice(name='原石', value=0),
               app_commands.Choice(name='摩拉', value=1)]
     )
-    @app_commands.rename(type='類別', member='其他人')
+    @app_commands.rename(data_type='類別', member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def log(self, interaction: Interaction, type: int,
+    async def log(self, interaction: Interaction, data_type: int,
                   member: Optional[Member] = None
                   ):
         member = member or interaction.user
@@ -223,7 +223,7 @@ class GenshinCog(commands.Cog):
         if type(result) is discord.Embed:
             await interaction.response.send_message(embed=result)
             return
-        embed = result[type]
+        embed = result[data_type]
         embed.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=embed)
