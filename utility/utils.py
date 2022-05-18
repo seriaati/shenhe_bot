@@ -20,14 +20,16 @@ def errEmbed(title: str, message: str = ''):
 
 def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
     now = datetime.now()
+    today = datetime.today()
+    current_date = today.strftime('%Y-%m-%d')
     current_time = now.strftime("%H:%M:%S")
     system = "SYSTEM"
     if not is_system:
         system = "USER"
     if not is_error:
-        result = f"[{current_time}][{system}][{log_type}] {log_msg}"
+        result = f"[{today}][{current_time}][{system}][{log_type}] {log_msg}"
     else:
-        result = f"[{current_time}][{system}][ERROR][{log_type}] {log_msg}"
+        result = f"[{today}][{current_time}][{system}][ERROR][{log_type}] {log_msg}"
     return result
 
 
