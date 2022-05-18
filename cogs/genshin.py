@@ -68,7 +68,6 @@ class GenshinCog(commands.Cog):
 
         async def on_error(self, error: Exception, interaction: Interaction):
             await interaction.response.send_message('發生未知錯誤', ephemeral=True)
-            print(error)
 # Cookie Submission
 
     @app_commands.command(
