@@ -259,8 +259,10 @@ class OtherCMDCog(commands.Cog):
                       ):
         print(log(True, False, 'Cleanup', interaction.user.id))
         channel = interaction.channel
-        deleted = await channel.purge(limit=int(number), check=self.is_me)
-        await interaction.response.send_message('🗑️ 已移除 {} 個訊息'.format(len(deleted)), ephemeral=True)
+        while msg_count < number:
+            await channel.purge(limit=1, check=self.is_me)
+            msg_count += 1
+        await interaction.response.send_message(f'🗑️ 已移除 {number} 個訊息', ephemeral=True)
 
     @app_commands.command(name='members', description='查看目前群組總人數')
     async def members(self, i: Interaction):
