@@ -468,7 +468,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             return True, None
 
     class AcceptView(discord.ui.View):
-        def __init__(self, author: discord.Member):
+        def __init__(self, author: discord.Member=None):
             super().__init__(timeout=None)
             self.author = author
 
@@ -476,14 +476,14 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             return interaction.user.id != self.author.id
 
         class OKconfirm(discord.ui.View):
-            def __init__(self, author: discord.Member):
+            def __init__(self, author: discord.Member=None):
                 super().__init__(timeout=None)
                 self.author = author
 
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
                 return interaction.user.id == self.author.id
 
-            @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple)
+            @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
             async def ok_confirm(self, interaction: discord.Interaction, button: discord.ui.button):
                 self.stop()
                 confirms = openFile('confirm')
@@ -540,7 +540,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 saveFile(confirms, 'confirm')
                 saveFile(free_trial, 'find_free_trial')
 
-        @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green)
+        @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green, custom_id='accept_commision_button')
         async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
             button.disabled = True
             await interaction.response.edit_message(view=self)
