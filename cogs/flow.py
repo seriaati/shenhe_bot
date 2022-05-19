@@ -468,20 +468,22 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             return True, None
 
     class AcceptView(discord.ui.View):
-        def __init__(self, author: discord.Member=None):
+        def __init__(self):
             super().__init__(timeout=None)
-            self.author = author
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
-            return interaction.user.id != self.author.id
+            finds = openFile('find')
+            msg = await interaction.original_message()
+            return interaction.user.id != finds[msg.id]['authorID']
 
         class OKconfirm(discord.ui.View):
-            def __init__(self, author: discord.Member=None):
+            def __init__(self):
                 super().__init__(timeout=None)
-                self.author = author
 
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
-                return interaction.user.id == self.author.id
+                confirms = openFile('confirm')
+                msg = await interaction.original_message()
+                return interaction.user.id == confirms[msg.id]['authorID']
 
             @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
             async def ok_confirm(self, interaction: discord.Interaction, button: discord.ui.button):
@@ -564,7 +566,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 elif finds[msg.id]['type'] == 4:
                     await interaction.followup.send(f"✅ {acceptUser.mention} 接受 {author.mention} 的 {finds[msg.id]['title']} 幫助")
 
-                view = self.OKconfirm(author)
+                view = self.OKconfirm()
 
                 if finds[msg.id]['type'] == 4:
                     embedDM = defaultEmbed(
@@ -656,7 +658,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 f'發布者世界等級: {roleStr}\n'
             )
 
-        acceptView = self.AcceptView(interaction.user)
+        acceptView = self.AcceptView()
         await interaction.response.send_message(embed=embed, view=acceptView)
         guild = self.bot.get_guild(916838066117824553)
         if tag == 1:
