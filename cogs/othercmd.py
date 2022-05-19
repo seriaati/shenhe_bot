@@ -259,8 +259,14 @@ class OtherCMDCog(commands.Cog):
                       ):
         print(log(True, False, 'Cleanup', interaction.user.id))
         channel = interaction.channel
+        msg_count = 0
+        limit = 1
+        deleted = []
         while msg_count < number:
-            await channel.purge(limit=1, check=self.is_me)
+            while len(deleted) == 0:
+                limit+=1
+                deleted = await channel.purge(limit=limit, check=self.is_me)
+            deleted = []
             msg_count += 1
         await interaction.response.send_message(f'🗑️ 已移除 {number} 個訊息', ephemeral=True)
 
