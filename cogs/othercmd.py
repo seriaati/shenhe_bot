@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from discord.ext import commands
 from discord.ui import View, Select
-from discord import Interaction, SelectOption, app_commands, Message
+from discord import Interaction, Member, SelectOption, app_commands, Message
 from discord.utils import format_dt
 from random import randint
 from utility.FlowApp import flow_app
@@ -246,29 +246,30 @@ class OtherCMDCog(commands.Cog):
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
-    def is_me(self, m):
-        return m.author == self.bot.user
+    
 
     @app_commands.command(
         name='cleanup',
-        description='移除此頻道申鶴發送的最近n個訊息'
+        description='移除此頻道某個使用者發送的最近n個訊息'
     )
-    @app_commands.rename(number='訊息數量')
-    async def cleanup(self, interaction: Interaction,
-                      number: int
-                      ):
+    @app_commands.rename(number='訊息數量', member='使用者')
+    async def cleanup(self, interaction: Interaction,number: int, member: Member):
         print(log(True, False, 'Cleanup', interaction.user.id))
+        await interaction.response.send_message(embed=defaultEmbed('⏳ 刪除中'), ephemeral=True)
+        def is_me(m):
+            return m.author == member
         channel = interaction.channel
         msg_count = 0
-        limit = 1
+        limit = 0
         deleted = []
         while msg_count < number:
             while len(deleted) == 0:
                 limit+=1
-                deleted = await channel.purge(limit=limit, check=self.is_me)
+                deleted = await channel.purge(limit=limit, check=is_me)
             deleted = []
+            limit = 0
             msg_count += 1
-        await interaction.response.send_message(f'🗑️ 已移除 {number} 個訊息', ephemeral=True)
+        await interaction.edit_original_message(embed=defaultEmbed(f'🗑️ 已移除來自 {member} 的 {number} 個訊息'))
 
     @app_commands.command(name='members', description='查看目前群組總人數')
     async def members(self, i: Interaction):
