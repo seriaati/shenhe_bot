@@ -1,32 +1,8 @@
-"""
-MIT License
-
-Copyright (c) 2022 Marseel-E
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
 __all__ = ['WishPaginator']
 
 
 from discord import Interaction, SelectOption, User, ButtonStyle
-from discord.ui import View, select, Select, button, Button
+from discord.ui import View, Select, button, Button
 from typing import Optional, List, Union
 
 
@@ -97,17 +73,6 @@ class WishPaginator:
 
 
 	async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True) -> None:
-		"""Starts the paginator.
-
-		Parameters
-		-----------
-			'embeded' - Whether the pages are embeds or just text.
-			'quick_navigation' - Whether to include quick naviagtion or not.
-
-		Raises
-		-------
-			'Missing pages' - an empty list was passed to 'pages'.
-		"""
 		if not (self.pages): raise ValueError("Missing pages")
 
 		view = _view(self.interaction.user, self.pages, embeded)
@@ -119,8 +84,6 @@ class WishPaginator:
 			options = []
 			for index, page in enumerate(self.pages):
 				options.append(SelectOption(label=f"Page {index+1}", value=index))
-
-			# view.add_item(_select(options))
 
 		if (len(self.custom_children) > 0):
 			for child in self.custom_children:
