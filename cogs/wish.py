@@ -42,7 +42,7 @@ class WishCog(commands.Cog):
                 print(log(True, False, 'Wish Setkey',
                       f'{interaction.user.id}(url={url})'))
                 authkey = genshin.utility.extract_authkey(url)
-                client = genshin_app.getUserCookie(interaction.user.id)
+                client, uid, check = genshin_app.getUserCookie(interaction.user.id)
                 client.authkey = authkey
                 await interaction.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
                 wish_data = await client.wish_history()
@@ -52,7 +52,7 @@ class WishCog(commands.Cog):
                 if os.path.exists(f'data/wish_cache/{interaction.user.id}.yaml'):
                     # 刪除之前的快取檔案
                     os.remove(f'data/wish_cache/{interaction.user.id}.yaml')
-                await interaction.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功', ''), ephemeral=True)
+                await interaction.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功'), ephemeral=True)
             except Exception as e:
                 await interaction.followup.send(embed=errEmbed('設置失敗', f'請將這個訊息私訊給小雪```{e}```'), ephemeral=True)
 
