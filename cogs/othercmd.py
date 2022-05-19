@@ -153,7 +153,7 @@ class OtherCMDCog(commands.Cog):
             await i.response.send_message(embed=defaultEmbed('目前沒有任何建議'))
             return
         view = OtherCMDCog.FeatureSelectorView(features)
-        await i.response.send_message(view=view)
+        await i.response.send_message(view=view, ephemeral=True)
 
     @feature_complete.error
     async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
