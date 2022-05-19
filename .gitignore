@@ -147,3 +147,6 @@ data/wish_history/*
 data/accounts.yaml
 config.yaml
 .vscode/
+data/giveaways.yaml
+data/bank.yaml
+data/flow.yaml
