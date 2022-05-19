@@ -364,15 +364,14 @@ class GenshinCog(commands.Cog):
                     options.append(SelectOption(
                         label=f'C{character.constellation}R{character.weapon.refinement} {character.name}', value=character.name))
             if not options:
-                options.append(SelectOption(label='無角色', value='無角色'))
-            super().__init__(
-                placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
+                super().__init__(
+                    placeholder=f'該元素沒有任何角色', min_values=1, max_values=1, options=[SelectOption(label='disabled')], disabled=True)
+            else:
+                super().__init__(
+                    placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
         async def callback(self, interaction: Interaction):
-            if self.values[0] == '無角色':
-                await interaction.response.send_message(embed=errEmbed('真的沒有角色', '不應該這樣嗎?\n可能是因為你只有用`/setuid`註冊\n想查看完整角色請使用`/cookie`註冊'))
-            else:
-                await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
+            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
         def __init__(self, index: int, user_characters: dict, user: Member):
