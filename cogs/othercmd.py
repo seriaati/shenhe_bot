@@ -246,16 +246,15 @@ class OtherCMDCog(commands.Cog):
         await ctx.send("✅ 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
-    
-
     @app_commands.command(
         name='cleanup',
         description='移除此頻道某個使用者發送的最近n個訊息'
     )
     @app_commands.rename(number='訊息數量', member='使用者')
-    async def cleanup(self, interaction: Interaction,number: int, member: Member):
+    async def cleanup(self, interaction: Interaction, number: int, member: Member):
         print(log(True, False, 'Cleanup', interaction.user.id))
         await interaction.response.send_message(embed=defaultEmbed('⏳ 刪除中'), ephemeral=True)
+
         def is_me(m):
             return m.author == member
         channel = interaction.channel
@@ -264,7 +263,7 @@ class OtherCMDCog(commands.Cog):
         deleted = []
         while msg_count < number:
             while len(deleted) == 0:
-                limit+=1
+                limit += 1
                 deleted = await channel.purge(limit=limit, check=is_me)
             deleted = []
             limit = 0
