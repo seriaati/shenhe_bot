@@ -482,7 +482,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
                 confirms = openFile('confirm')
-                msg = await interaction.original_message()
+                msg = interaction.message
                 return interaction.user.id == confirms[msg.id]['authorID']
 
             @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
