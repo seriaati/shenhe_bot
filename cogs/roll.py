@@ -58,6 +58,8 @@ class RollCog(commands.Cog):
                     interaction.user.id, prize, self.banner, contribution_mode)
                 if check == True:
                     await luluR.send(embed=msg)
+                    public_channel = await interaction.client.get_channel(916951131022843964)
+                    await public_channel.send(f'🎉 恭喜{interaction.user.mention}抽到**{self.banner}**的大獎！！ 🎉')
                 gif, sleep_time = animation_chooser(prize, self.banner)
                 result = write_history_and_gu(
                     interaction.user.id, prize, self.banner, contribution_mode)
