@@ -4,7 +4,7 @@ from discord import ButtonStyle, Interaction, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, View
-from utility.FlowApp import FlowApp
+from utility.FlowApp import flow_app
 from utility.utils import ayaakaaEmbed, log
 
 
@@ -29,7 +29,7 @@ class FishCog(commands.Cog):
         'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif'
     ]
 
-    def generate_fish_embed(self, index: int):
+    def generate_fish_embed(self, index: int):  # 製造摸魚embed
         if index >= 0 and index <= 4 or index == 7:
             result = ayaakaaEmbed(
                 fish_list[index],
@@ -49,16 +49,16 @@ class FishCog(commands.Cog):
         result.set_image(url=fish_image_list[index])
         return result
 
-    class TouchFishButton(Button):
+    class TouchFishButton(Button):  # 摸魚按鈕
         def __init__(self, index: int):
             super().__init__(style=ButtonStyle.blurple,
                              label=f'撫摸可愛的{fish_list[index]}')
             self.index = index
 
         async def callback(self, interaction: Interaction):
-            assert self.view is not None
+            self.disabled = True
             view = self.view
-            view.stop()
+            await interaction.response.edit_message(view=view)
 
             await interaction.channel.send(f'{interaction.user.mention} 摸到**{fish_list[self.index]}**了！')
             # e.g. @綾霞 摸到虱目魚了！
@@ -69,82 +69,85 @@ class FishCog(commands.Cog):
 
             if self.index == 0:  # [0] 虱目魚
                 if value <= 60:  # 60% Chance of increasing flow amount by 1
-                    FlowApp.transaction(interaction.user.id, 1)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 1 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 1)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 1 flow幣!', ephemeral=True)
                     # e.g. 摸虱目魚摸到 1 flow幣!
                 else:
-                    await interaction.response.send_message(f'單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
+                    await interaction.followup.send(f'單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
 
             # 摸鮭魚, 鱈魚, 鮪魚 或 鰻魚有機率獲得 2 flow幣
             # [1] 鮭魚, [2] 鱈魚, [3] 鮪魚, [4] 鰻魚
             elif self.index >= 1 and self.index <= 4:
                 if value <= 30:  # 30% Chance of increasing flow amount by 2
-                    FlowApp.transaction(interaction.user.id, 2)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 2 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 2)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 2 flow幣!', ephemeral=True)
                     # e.g. 摸鮭魚摸到 2 flow幣!
                 else:
-                    await interaction.response.send_message('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
+                    await interaction.followup.send('單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
 
             # 摸龍蝦 或 螃蟹有機率獲得或損失 5 flow幣
             # [5] 龍蝦, [6] 螃蟹,
             elif self.index >= 5 and self.index <= 6:
                 if value <= 50:  # 50% Chance of increasing flow amount by 5
-                    FlowApp.transaction(interaction.user.id, 5)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 5 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 5)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 5 flow幣!', ephemeral=True)
                     # e.g. 摸龍蝦摸到 5 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 5
-                    FlowApp.transaction(interaction.user.id, -5)
-                    await interaction.response.send_message(f'被**{fish_list[self.index]}**鉗到了，損失了 5 flow幣 qwq', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, -5)
+                    await interaction.followup.send(f'被**{fish_list[self.index]}**鉗到了，損失了 5 flow幣 qwq', ephemeral=True)
                     # e.g. 被龍蝦鉗到了，損失了 5 flow幣 qwq
 
             # 摸心海有機率獲得或損失 7 flow幣
             # [7] 心海
             elif self.index == 7:
                 if value <= 50:  # 50% Chance of increasing flow amount by 7
-                    FlowApp.transaction(interaction.user.id, 7)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 7 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 7)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 7 flow幣!', ephemeral=True)
                     # e.g. 摸心海摸到 7 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 7
-                    FlowApp.transaction(interaction.user.id, -7)
-                    await interaction.response.send_message(f'被**{fish_list[self.index]}**打飛了，損失了 7 flow幣 qwq', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, -7)
+                    await interaction.followup.send(f'被**{fish_list[self.index]}**打飛了，損失了 7 flow幣 qwq', ephemeral=True)
                     # e.g. 被心海打飛了，損失了 7 flow幣 qwq
 
             # 摸大白鯊有機率獲得或損失 10 flow幣
             elif self.index == 8:  # [8] 大白鯊
                 if value <= 50:  # 50% Chance of increasing flow amount by 10
-                    FlowApp.transaction(interaction.user.id, 10)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 10 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 10)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 10 flow幣!', ephemeral=True)
                     # e.g. 摸大白鯊 摸到 10 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 10
-                    FlowApp.transaction(interaction.user.id, -10)
-                    await interaction.response.send_message(f'被**{fish_list[self.index]}**咬到了，損失了 10 flow幣 qwq', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, -10)
+                    await interaction.followup.send(f'被**{fish_list[self.index]}**咬到了，損失了 10 flow幣 qwq', ephemeral=True)
                     # e.g. 被大白鯊咬到了，損失了 10 flow幣 qwq
 
             # 摸達達利鴨有機率獲得或損失 20 flow幣
             elif self.index == 9:  # [9] 達達利鴨
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
-                    FlowApp.transaction(interaction.user.id, 20)
-                    await interaction.response.send_message(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, 20)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
                     # e.g. 摸達達利鴨摸到 30 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
-                    FlowApp.transaction(interaction.user.id, -20)
-                    await interaction.response.send_message(f'被**{fish_list[self.index]}**偷襲，損失了 20 flow幣 qwq', ephemeral=True)
+                    flow_app.transaction(interaction.user.id, -20)
+                    await interaction.followup.send(f'被**{fish_list[self.index]}**偷襲，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
 
-    class TouchFish(View):
+    class TouchFish(View):  # 摸魚view
         def __init__(self, index: str):
             super().__init__(timeout=None)
             self.add_item(FishCog.TouchFishButton(index))
 
-    def get_fish_choices():
+    def get_fish_choices():  # 取得所有魚種
         choices = []
         for fish in fish_list:
             choices.append(Choice(name=fish, value=fish_list.index(fish)))
         return choices
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message):  # 機率放魚
+        if message.author == self.bot.user:
+            return
         random_number = randint(1, 100)
+        random_number = 1
         if random_number == 1:
             index = randint(0, len(fish_list)-1)
             touch_fish_view = FishCog.TouchFish(index)
