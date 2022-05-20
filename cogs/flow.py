@@ -21,7 +21,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @tasks.loop(hours=168)
     async def remove_flow_acc(self):
-        print(log(True, False, 'Remove Flow Acc Task', ' '))
+        print(log(True, False, 'Remove Flow Acc', 'task start'))
         users = openFile('accounts')
         trans_log = openFile('transaction_log')
         now = datetime.now()
@@ -29,6 +29,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             delta = now-trans_time
             if delta.days > 7:
                 flow_app.transaction(user_id, users[user_id]['flow'], is_removing_account=True)
+        print(log(True, False, 'Remove Flow Acc', 'task finished'))
 
     @remove_flow_acc.before_loop
     async def before_loop(self):
