@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 import discord
@@ -33,7 +33,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @remove_flow_acc.before_loop
     async def before_loop(self):
-        await self.bot.wait_until_ready()
+        now = datetime.now().astimezone()
+        next_run = now.replace(hour=2, minute=0, second=0)  # 等待到早上2點
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await discord.utils.sleep_until(next_run)
     
     @commands.Cog.listener()
     async def on_message(self, message):
