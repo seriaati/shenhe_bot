@@ -29,6 +29,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             delta = now-trans_time
             if delta.days > 7:
                 flow_app.transaction(user_id, users[user_id]['flow'], is_removing_account=True)
+
+    @remove_flow_acc.before_loop()
+    async def before_loop(self):
+        await self.bot.wait_until_ready()
     
     @commands.Cog.listener()
     async def on_message(self, message):
