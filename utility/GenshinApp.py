@@ -71,24 +71,6 @@ class GenshinApp:
         saveFile(users, 'accounts')
         return defaultEmbed('✅ UID設置成功', f'uid: {uid}')
 
-    async def redeemCode(self, user_id: int, code: str):
-        check, msg = self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = self.getUserCookie(user_id)
-        if check == True:
-            result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
-            return result
-        try:
-            await client.redeem_code(code, uid)
-        except genshin.errors.GenshinException as e:
-            print(log(True, True, 'Redeem', e.msg))
-            result = errEmbed('兌換失敗', f'```{e.msg}```')
-        else:
-            result = defaultEmbed('兌換碼兌換成功!',f'兌換碼: {code}')
-        finally:
-            return result
-
     async def claimDailyReward(self, user_id: int):
         print(log(False, False, 'Claim', f'{user_id}'))
         check, msg = self.checkUserData(user_id)
