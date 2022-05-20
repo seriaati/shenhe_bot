@@ -9,6 +9,7 @@ class FlowApp:
     def transaction(self, user_id: int, flow_for_user: int, time_state:str = None, is_new_account: bool = False, is_removing_account: bool = False):
         users = openFile('flow')
         bank = openFile('bank')
+        trans_log = openFile('transaction_log')
         now = datetime.now()
         if is_removing_account:
             print(log(True, False, 'Removing Acc',user_id))
@@ -37,6 +38,8 @@ class FlowApp:
             saveFile(bank, 'bank')
             user_log = '{0:+d}'.format(int(flow_for_user))
             bank_log = '{0:+d}'.format(-int(flow_for_user))
+            trans_log[user_id] = datetime.now()
+            saveFile(trans_log, 'transaction_log')
             print(log(True, False, 'Transaction',
                   f'user({user_id}): {user_log}, bank: {bank_log}'))
             sum = 0

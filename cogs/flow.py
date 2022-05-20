@@ -143,16 +143,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
         giverID = int(interaction.user.id)
         acceptorID = int(member.id)
-        if acceptorID not in users:
-            embed = errEmbed('你沒有flow帳號!', '請重新執行交易動作')
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            flow_app.register(acceptorID)
-            return
-        if giverID not in users:
-            embed = errEmbed('對方沒有flow帳號!', '請重新執行交易動作')
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            flow_app.register(giverID)
-            return
 
         if users[giverID]['flow'] < int(flow):
             embed = errEmbed(
@@ -161,8 +151,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         try:
-            users[giverID]['flow'] -= int(flow)
-            users[acceptorID]['flow'] += int(flow)
+            flow_app.transaction(giverID, -int(flow))
+            flow_app.transaction(acceptorID, int(flow))
             saveFile(users, 'flow')
             embed = defaultEmbed(
                 "✅ 交易成功",
@@ -384,6 +374,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=errEmbed("這個商品已經售罄了", ''), ephemeral=True)
             return
         shop[item]['current'] += 1
+        saveFile('shop')
         logID = str(uuid.uuid4())
         logs[logID] = {'item': item,
                        'flow': itemPrice, 'buyerID': interaction.user.id}
@@ -666,6 +657,14 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                          'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 1}
         saveFile(finds, 'find')
         await acceptView.wait()
+
+    @app_commands.command(name='loadflow')
+    async def load_flow(self, i: Interaction):
+        users = openFile('flow')
+        trans_log = openFile('transaction_log')
+        for user in users:
+            trans_log[user] = datetime.now()
+        saveFile(trans_log, 'transaction_log')
 
     @app_commands.command(name='rolemembers', description='查看一個身份組內的所有成員')
     @app_commands.rename(role='身份組')
