@@ -1,3 +1,4 @@
+import os
 import re
 import discord
 import genshin
@@ -59,6 +60,8 @@ def getWeekdayName(n: int) -> str:
 
 
 def openFile(file_name: str) -> dict:
+    if not os.path.exists(f'data/{file_name}.yaml'):
+        f = open(f'data/{file_name}.yaml', 'w+')
     with open(f'data/{file_name}.yaml', 'r', encoding='utf-8') as file:
         result = yaml.unsafe_load(file)
     if result is None:
