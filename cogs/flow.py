@@ -510,8 +510,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 free_trial = openFile('find_free_trial')
                 if authorID not in free_trial:
                     free_trial[authorID] = 0
+                    saveFile(free_trial, 'find_free_trial')
                 if receiverID not in free_trial:
                     free_trial[receiverID] = 0
+                    saveFile(free_trial, 'find_free_trial')
                 receiverID = confirms[msg.id]['receiverID']
                 flow = confirms[msg.id]['flow']
                 type = confirms[msg.id]['type']
@@ -522,7 +524,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 receiver = interaction.client.get_user(receiverID)
                 if type == 4:
                     if free_trial[receiverID] < 10 and flow >= 10:
-                        flow_app.transaction(receiverID, 10)
                         new_flow = flow-10
                         free_trial[receiverID] += 1
                         str = f'({receiver.mention}受到10 flow幣贊助)\n'
@@ -536,11 +537,10 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         f"被幫助人: {receiver.mention} **-{new_flow} flow幣**\n{str}")
                 else:
                     if free_trial[authorID] < 10 and flow >= 10:
-                        flow_app.transaction(authorID, 10)
                         new_flow = flow-10
                         free_trial[authorID] += 1
-                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
-                        f'已使用{free_trial[receiverID]}/10次贊助機會'
+                        str = f'({author.mention}受到10 flow幣贊助)\n'
+                        f'已使用{free_trial[authorID]}/10次贊助機會'
                     flow_app.transaction(authorID, -int(new_flow))
                     flow_app.transaction(receiverID, flow)
                     embed = defaultEmbed(
