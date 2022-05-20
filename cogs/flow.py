@@ -21,6 +21,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
 
     @tasks.loop(hours=168)
     async def remove_flow_acc(self):
+        print(log(True, False, 'Remove Flow Acc Task', ' '))
         users = openFile('accounts')
         trans_log = openFile('transaction_log')
         now = datetime.now()
