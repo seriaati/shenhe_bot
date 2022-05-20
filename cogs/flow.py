@@ -5,7 +5,7 @@ from typing import List, Optional
 import discord
 from discord import Guild, Interaction, Member, Role, app_commands
 from discord.app_commands import Choice
-from discord.ext import commands
+from discord.ext import commands, tasks
 from utility.FlowApp import flow_app
 from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
 from utility.WishPaginator import WishPaginator
@@ -14,7 +14,21 @@ from utility.WishPaginator import WishPaginator
 class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.remove_flow_acc.start()
 
+    def cog_unload(self) -> None:
+        self.remove_flow_acc.cancel()
+
+    @tasks.loop(hours=168)
+    async def remove_flow_acc(self):
+        users = openFile('accounts')
+        trans_log = openFile('transaction_log')
+        now = datetime.now()
+        for user_id, trans_time in trans_log.items():
+            delta = now-trans_time
+            if delta.days > 7:
+                flow_app.transaction(user_id, users[user_id]['flow'], is_removing_account=True)
+    
     @commands.Cog.listener()
     async def on_message(self, message):
         users = openFile('flow')
@@ -657,14 +671,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                          'author': str(interaction.user), 'authorID': interaction.user.id, 'type': 1}
         saveFile(finds, 'find')
         await acceptView.wait()
-
-    @app_commands.command(name='loadflow')
-    async def load_flow(self, i: Interaction):
-        users = openFile('flow')
-        trans_log = openFile('transaction_log')
-        for user in users:
-            trans_log[user] = datetime.now()
-        saveFile(trans_log, 'transaction_log')
 
     @app_commands.command(name='rolemembers', description='查看一個身份組內的所有成員')
     @app_commands.rename(role='身份組')
