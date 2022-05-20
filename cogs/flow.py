@@ -263,10 +263,6 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         }
         for user_id, value in users.items():
             user = interaction.client.get_user(user_id)
-            if user is None:
-                flow_app.transaction(
-                    user_id, value['flow'], is_removing_account=True)
-                continue
             if value['flow'] < 100:
                 flow_categories['小於 100 flow'].append(
                     f'{user.name}: {value["flow"]}')

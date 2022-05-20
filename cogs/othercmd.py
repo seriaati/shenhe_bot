@@ -50,7 +50,7 @@ class OtherCMDCog(commands.Cog):
             await channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: Member):
         public = self.bot.get_channel(916951131022843964)
         uid_channel = self.bot.get_channel(935111580545343509)
         embed = defaultEmbed(
@@ -62,7 +62,11 @@ class OtherCMDCog(commands.Cog):
             "• 想在dc內直接查閱原神樹脂數量嗎? 輸入`/cookie`來設定你的帳號吧!\n"
             "• 最重要的, 祝你在這裡玩的開心! <:omg:969823101133160538>")
         embed.set_thumbnail(url=member.avatar)
-        flow_app.register(member.id)
+        guild_members = openFile('guild_members')
+        if member.id not in guild_members:
+            guild_members[member.id] = member.joined_at
+            flow_app.register(member.id)
+            saveFile(guild_members, 'guild_members')
         await public.send(content=f"{member.mention}歡迎來到緣神有你!", embed=embed)
 
     feature = app_commands.Group(name="feature", description="為申鶴提供建議")
@@ -274,15 +278,6 @@ class OtherCMDCog(commands.Cog):
     async def members(self, i: Interaction):
         g = i.user.guild
         await i.response.send_message(embed=defaultEmbed('群組總人數', f'目前共 {len(g.members)} 人'))
-
-    @app_commands.command(name='addmembers', description='把成員id灌到一個檔案裡')
-    async def add_members(self, i: Interaction):
-        guild_members = openFile('guild_members')
-        guild_members = {}
-        for member in i.guild.members:
-            guild_members[member.id] = member.joined_at
-        saveFile(guild_members, 'guild_members')
-        await i.response.send_message(f'已新增{len(i.guild.members)}個id')
 
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
         print(log(True, False, 'Quote', i.user.id))
