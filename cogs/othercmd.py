@@ -281,6 +281,7 @@ class OtherCMDCog(commands.Cog):
         guild_members = {}
         for member in i.guild.members:
             guild_members[member.id] = member.joined_at
+        saveFile(guild_members, 'guild_members')
         await i.response.send_message(f'已新增{len(i.guild.members)}個id')
 
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
