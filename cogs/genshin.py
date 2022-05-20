@@ -311,6 +311,14 @@ class GenshinCog(commands.Cog):
             "5. 點擊之後看到設定按鈕\n"
             "6. 打開 Do you want to enable real time-notes")
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name='redeem', description='兌換兌換碼')
+    @app_commands.rename(code='兌換碼')
+    @app_commands.describe(code='輸入要兌換的兌換碼')
+    async def redeem_code(self, i: Interaction, code: str):
+        result = await genshin_app.redeemCode(i.user.id, code)
+        await i.response.send_message(embed=result)
+
 # /farm
 
     @app_commands.command(
