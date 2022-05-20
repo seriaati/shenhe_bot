@@ -12,7 +12,7 @@ class FlowApp:
         trans_log = openFile('transaction_log')
         now = datetime.now()
         if is_removing_account:
-            print(log(True, False, 'Removing Acc',user_id))
+            print(log(True, False, 'Removing Acc', f'user_id: (flow = {flow_for_user})'))
             bank['flow']+=flow_for_user
             del users[user_id]
             saveFile(users, 'flow')
