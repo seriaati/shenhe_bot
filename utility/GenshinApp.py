@@ -72,7 +72,6 @@ class GenshinApp:
         return defaultEmbed('✅ UID設置成功', f'uid: {uid}')
 
     async def redeemCode(self, user_id: int, code: str):
-        user_id = str(user_id)
         check, msg = self.checkUserData(user_id)
         if check == False:
             return msg
