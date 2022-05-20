@@ -57,8 +57,8 @@ class GenshinApp:
             embed = errEmbed('❌ UID設置失敗',f'請至<https://www.hoyolab.com>登入\n跟著下方圖片中的步驟操作')
             embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
             return embed
-        users = openFile('accounts')
-        users[user_id] = {}
+        if user_id not in users:
+            users[user_id] = {}
         users[user_id]['uid'] = int(uid)
         saveFile(users, 'accounts')
         return defaultEmbed('✅ UID設置成功',f'uid: {uid}')
