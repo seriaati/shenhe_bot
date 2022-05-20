@@ -275,6 +275,14 @@ class OtherCMDCog(commands.Cog):
         g = i.user.guild
         await i.response.send_message(embed=defaultEmbed('群組總人數', f'目前共 {len(g.members)} 人'))
 
+    @app_commands.command(name='addmembers', description='把成員id灌到一個檔案裡')
+    async def add_members(self, i: Interaction):
+        guild_members = openFile('guild_members')
+        guild_members = {}
+        for member in i.guild.members:
+            guild_members[member.id] = member.joined_at
+        await i.response.send_message(f'已新增{len(i.guild.members)}個id')
+
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
         print(log(True, False, 'Quote', i.user.id))
         embed = defaultEmbed(
