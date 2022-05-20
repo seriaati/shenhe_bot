@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
+from importlib import reload
 from typing import List, Optional
 
 import discord
@@ -28,7 +29,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         for user_id, trans_time in trans_log.items():
             delta = now-trans_time
             if delta.days > 7:
-                flow_app.transaction(user_id, users[user_id]['flow'], is_removing_account=True)
+                flow_app.transaction(
+                    user_id, users[user_id]['flow'], is_removing_account=True)
         print(log(True, False, 'Remove Flow Acc', 'task finished'))
 
     @remove_flow_acc.before_loop
@@ -38,7 +40,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if next_run < now:
             next_run += timedelta(days=1)
         await discord.utils.sleep_until(next_run)
-    
+
     @commands.Cog.listener()
     async def on_message(self, message):
         users = openFile('flow')
@@ -64,7 +66,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                 year=now.year, month=now.month, day=now.day-1,
                 hour=now.hour, minute=now.minute, second=now.second,
                 microsecond=now.microsecond)
-            time_keys = ['morning','noon','night']
+            time_keys = ['morning', 'noon', 'night']
             for time_key in time_keys:
                 if time_key not in users[discordID]:
                     users[discordID][time_key] = default_time
@@ -100,10 +102,11 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                         await message.add_reaction('🌙')
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member:Member):
+    async def on_member_remove(self, member: Member):
         users = openFile('flow')
         if member.id in users:
-            flow_app.transaction(member.id, users[member.id]['flow'], is_removing_account=True)
+            flow_app.transaction(
+                member.id, users[member.id]['flow'], is_removing_account=True)
 
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
@@ -698,6 +701,17 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             memberStr += f'{count}. {member}\n'
         embed = defaultEmbed(role.name, memberStr)
         await i.response.send_message(embed=embed)
+
+    @app_commands.command(name='reloadflowapp', description='重整flow_app')
+    @app_commands.checks.has_role('小雪團隊')
+    async def reload_flow_app(self, i: Interaction):
+        flow_app = reload(flow_app)
+        await i.response.send_message(embed=defaultEmbed('✅ flow_app重整成功'))
+
+    @reload_flow_app.error
+    async def err_handle(self, interaction: discord.Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

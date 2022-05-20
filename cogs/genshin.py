@@ -1,6 +1,7 @@
 import asyncio
 import re
 from datetime import datetime, timedelta
+from importlib import reload
 from typing import Optional
 
 import discord
@@ -12,7 +13,8 @@ from discord.ext import commands, tasks
 from discord.ui import Button, Select, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import genshin_app
-from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log, openFile, saveFile
+from utility.utils import (defaultEmbed, errEmbed, getWeekdayName, log,
+                           openFile, saveFile)
 
 
 class GenshinCog(commands.Cog):
@@ -491,6 +493,12 @@ class GenshinCog(commands.Cog):
         result.set_footer(
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
+
+    @app_commands.command(name='reloadgenshinapp', description='重整genshin_app')
+    @app_commands.checks.has_role('小雪團隊')
+    async def reload_genshin_app(self, i: Interaction):
+        genshin_app = reload(genshin_app)
+        await i.response.send_message(embed=defaultEmbed('✅ genshin_app重整成功'))
 
 
 async def setup(bot: commands.Bot) -> None:
