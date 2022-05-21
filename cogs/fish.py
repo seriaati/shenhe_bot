@@ -149,7 +149,7 @@ class FishCog(commands.Cog):
         if message.author == self.bot.user:
             return
         random_number = randint(1, 100) if not debug_toggle else 1
-        if random_number == 1 and isinstance(message.channel, Thread):
+        if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
             touch_fish_view = FishCog.TouchFish(index)
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
