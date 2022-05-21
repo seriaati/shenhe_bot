@@ -160,6 +160,11 @@ class Dropdown(discord.ui.Select):
                 value='小雪國萬歲!',
                 inline=False
             )
+            embed.add_field(
+                name='`/rabbit`',
+                value='兔兔島萬歲!',
+                inline=False
+            )
         elif self.values[0] == 'flow系統':
             embed = defaultEmbed(
                 'flow系統相關',

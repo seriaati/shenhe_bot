@@ -174,7 +174,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         if users[giverID]['flow'] < int(flow):
             embed = errEmbed(
                 "❌ 交易失敗",
-                "你的flow幣數量不足已承擔這筆交易")
+                "你的 flow幣數量不足已承擔這筆交易")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         try:
@@ -183,8 +183,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             saveFile(users, 'flow')
             embed = defaultEmbed(
                 "✅ 交易成功",
-                f"{self.bot.get_user(giverID).mention} **-{flow}**\n"
-                f"{self.bot.get_user(acceptorID).mention} **+{flow}**")
+                f"{self.bot.get_user(giverID).mention} **-{flow}** flow幣\n"
+                f"{self.bot.get_user(acceptorID).mention} **+{flow}** flow幣")
             await interaction.response.send_message(embed=embed)
         except Exception as e:
             print(log(True, True, 'Give', e))
@@ -261,7 +261,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
         sum = user_total+bank['flow']
         embed = defaultEmbed(
             f'目前共{count}個flow帳號',
-            f'用戶{user_total}+銀行{bank["flow"]}={sum}枚flow幣'
+            f'用戶 {user_total} +銀行 {bank["flow"]} = {sum} 枚flow幣'
         )
         await interaction.response.send_message(embed=embed)
 
@@ -473,7 +473,7 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
     def check_flow(self, user_id: int, flow: int):
         users = openFile('flow')
         if int(flow) < 0:
-            result = errEmbed("發布失敗, 請輸入大於1的flow幣", "")
+            result = errEmbed("發布失敗, 請輸入大於 1 的flow幣", "")
             return False, result
         elif users[user_id]['flow'] < int(flow):
             result = errEmbed("發布失敗, 請勿輸入大於自己擁有數量的flow幣", "")
@@ -526,28 +526,28 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
                     if free_trial[receiverID] < 10 and flow >= 10:
                         new_flow = flow-10
                         free_trial[receiverID] += 1
-                        str = f'({receiver.mention}受到10 flow幣贊助)\n'
-                        f'已使用{free_trial[receiverID]}/10次贊助機會'
+                        str = f'({receiver.mention}受到 10 flow幣贊助)\n'
+                        f'已使用 {free_trial[receiverID]}/10 次贊助機會'
                     flow_app.transaction(authorID, flow)
                     flow_app.transaction(receiverID, -int(new_flow))
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"幫忙名稱: {title}\n"
-                        f"幫助人: {author.mention} **+{flow} flow幣**\n"
-                        f"被幫助人: {receiver.mention} **-{new_flow} flow幣**\n{str}")
+                        f"幫助人: {author.mention} +**{flow}** flow幣\n"
+                        f"被幫助人: {receiver.mention} -**{new_flow}** flow幣\n{str}")
                 else:
                     if free_trial[authorID] < 10 and flow >= 10:
                         new_flow = flow-10
                         free_trial[authorID] += 1
-                        str = f'({author.mention}受到10 flow幣贊助)\n'
-                        f'已使用{free_trial[authorID]}/10次贊助機會'
+                        str = f'({author.mention}受到 10 flow幣贊助)\n'
+                        f'已使用 {free_trial[authorID]}/10 次贊助機會'
                     flow_app.transaction(authorID, -int(new_flow))
                     flow_app.transaction(receiverID, flow)
                     embed = defaultEmbed(
                         "🆗 結算成功",
                         f"委託名稱: {title}\n"
-                        f"委託人: {author.mention} **-{new_flow} flow幣**\n"
-                        f"接收人: {receiver.mention} **+{flow} flow幣**\n{str}")
+                        f"委託人: {author.mention} -**{new_flow}** flow幣\n"
+                        f"接收人: {receiver.mention} +**{flow}** flow幣\n{str}")
                 await interaction.response.send_message(embed=embed)
                 g = interaction.client.get_guild(916838066117824553)
                 t = g.get_thread(confirms[msg.id]['thread_id'])
