@@ -178,8 +178,8 @@ class FlowCog(commands.Cog, name='flow', description='flow系統相關'):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         try:
-            flow_app.transaction(int(giverID), -int(flow))
-            flow_app.transaction(int(acceptorID), int(flow))
+            flow_app.transaction(interaction.user.id, -int(flow))
+            flow_app.transaction(member.id, int(flow))
             saveFile(users, 'flow')
             embed = defaultEmbed(
                 "✅ 交易成功",
