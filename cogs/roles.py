@@ -74,14 +74,19 @@ class ReactionRoles(commands.Cog):
             wr_menu = self.WorldLevelView()
             if select.values[0] == '原神世界等級':
                 embed = defaultEmbed('選擇你的原神世界等級', '按按鈕會給予對應身份組, 再按一次會撤回身份組')
-                await interaction.response.send_message(view=wr_menu, ephemeral=True)
+                await interaction.response.send_message(embed=embed, view=wr_menu, ephemeral=True)
             else:
-                await interaction.response.send_message(view=action_menu, ephemeral=True)
+                embed = defaultEmbed(f'你選擇了 {select.values[0]} 身份組', '要獲取還是撤回該身份組?')
+                await interaction.response.send_message(embed=embed, view=action_menu, ephemeral=True)
 
     @app_commands.command(name='role', description='取得身份組')
     async def get_role(self, i: Interaction):
         role_selection_view = self.RoleSelection()
-        await i.response.send_message(view=role_selection_view)
+        embed = defaultEmbed(
+            '⭐ 身份組選擇器',
+            '從選單中選擇你想要的身份組吧!'
+        )
+        await i.response.send_message(embed=embed, view=role_selection_view)
 
 
 async def setup(bot: commands.Bot) -> None:
