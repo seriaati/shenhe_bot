@@ -4,3 +4,4 @@ Huge thank you to:
 - https://github.com/thesadru/genshin.py
 - https://github.com/Rapptz/discord.py
 - https://github.com/soosBot-com/Pagination
+- https://github.com/OneBST/GGanalysis
