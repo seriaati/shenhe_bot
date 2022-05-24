@@ -26,7 +26,7 @@ class FlowCog(commands.Cog):
     def cog_unload(self) -> None:
         self.remove_flow_acc.cancel()
 
-    @tasks.loop(hours=168)
+    @tasks.loop(hours=24)
     async def remove_flow_acc(self):
         print(log(True, False, 'Remove Flow Acc', 'task start'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -34,9 +34,9 @@ class FlowCog(commands.Cog):
         result = await c.fetchall()
         now = datetime.now()
         for index, tuple in enumerate(result):
+            flow = await self.flow_app.get_user_flow(tuple[0])
             delta = now-parser.parse(tuple[1])
-            if delta.days > 7:
-                flow = await self.flow_app.get_user_flow(tuple[0])
+            if delta.days > 7 and flow <= 100:
                 await self.flow_app.transaction(
                     tuple[0], flow, is_removing_account=True)
         print(log(True, False, 'Remove Flow Acc', 'task finished'))
@@ -565,7 +565,7 @@ class FlowCog(commands.Cog):
         if check == False:
             await i.response.send_message(embed=msg)
             return
-        role_str = f'>= {role_name}' if type ==1 else f'<= {role_name}'
+        role_str = f'>= {role_name}' if type == 1 else f'<= {role_name}'
         if type == 1:
             embed = defaultEmbed(
                 f'請求幫助: {title}',
