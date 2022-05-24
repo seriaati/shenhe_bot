@@ -170,8 +170,8 @@ class FlowCog(commands.Cog):
         await self.flow_app.transaction(member.id, flow)
         embed = defaultEmbed(
             "✅ 交易成功",
-            f"{self.bot.get_user(i.user.id).mention} **-{flow}** flow幣\n"
-            f"{self.bot.get_user(member.id).mention} **+{flow}** flow幣")
+            f"{self.bot.get_user(i.user.id).mention} **- {flow}** flow幣\n"
+            f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣")
         await i.response.send_message(content=f'{i.user.mention}{member.mention}', embed=embed)
 
     @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
