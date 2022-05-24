@@ -1,4 +1,5 @@
 from random import randint
+import aiosqlite
 
 from discord import ButtonStyle, Interaction, app_commands, Thread
 from discord.app_commands import Choice
@@ -13,7 +14,6 @@ debug_toggle = False
 class FishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.flow_app = FlowApp(self.bot.db)
 
     global fish_list, fish_flow_list, fish_image_list
     fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
@@ -53,10 +53,11 @@ class FishCog(commands.Cog):
         return result
 
     class TouchFishButton(Button):  # 摸魚按鈕
-        def __init__(self, index: int):
+        def __init__(self, index: int, db: aiosqlite.Connection):
             super().__init__(style=ButtonStyle.blurple,
                              label=f'撫摸可愛的{fish_list[index]}')
             self.index = index
+            self.flow_app = FlowApp(db)
 
         async def callback(self, interaction: Interaction):
             self.view.stop()
@@ -135,9 +136,9 @@ class FishCog(commands.Cog):
                     # e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
 
     class TouchFish(View):  # 摸魚view
-        def __init__(self, index: str):
+        def __init__(self, index: str, db: aiosqlite.Connection):
             super().__init__(timeout=None)
-            self.add_item(FishCog.TouchFishButton(index))
+            self.add_item(FishCog.TouchFishButton(index, db))
 
     def get_fish_choices():  # 取得所有魚種
         choices = []
@@ -152,7 +153,7 @@ class FishCog(commands.Cog):
         random_number = randint(1, 100) if not debug_toggle else 1
         if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
-            touch_fish_view = FishCog.TouchFish(index)
+            touch_fish_view = FishCog.TouchFish(index, self.bot.db)
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
    # /fish
@@ -163,7 +164,7 @@ class FishCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i: Interaction, fish_type: int):
         print(log(False, False, 'Release Fish', i.user.id))
-        touch_fish_view = FishCog.TouchFish(fish_type)
+        touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db)
         await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 
     @release_fish.error
