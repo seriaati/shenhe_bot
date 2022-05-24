@@ -84,8 +84,8 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/schedule`',
-                value='設置自動化功能',
+                name='`/remind`',
+                value='設置樹脂提醒功能',
                 inline=False
             )
         elif self.values[0] == '原神':
@@ -197,7 +197,7 @@ class Dropdown(discord.ui.Select):
             )
             embed.add_field(
                 name='`/roll`',
-                value='flow抽卡系統',
+                value='flow祈願系統',
                 inline=False
             )
 

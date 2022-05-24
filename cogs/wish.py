@@ -1,15 +1,16 @@
 import os
 from typing import Optional
 
+import aiosqlite
 import discord
 import GGanalysislib
-from discord import Interaction, Member, app_commands
+from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Modal
-from utility.GenshinApp import genshin_app
-from utility.utils import defaultEmbed, errEmbed, log, openFile, saveFile
-from utility.WishPaginator import WishPaginator
+from discord.ui import Modal, View
+from utility.GeneralPaginator import GeneralPaginator
+from utility.GenshinApp import GenshinApp
+from utility.utils import defaultEmbed, errEmbed, log
 
 import genshin
 
@@ -17,10 +18,15 @@ import genshin
 class WishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.genshin_app = GenshinApp(self.bot.db)
 
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
-    class AuthKeyModal(Modal, title='抽卡紀錄設定'):
+    class AuthKeyModal(Modal):
+        def __init__(self, db: aiosqlite.Connection):
+            self.genshin_app = GenshinApp(db)
+            self.db = db
+            super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
         url = discord.ui.TextInput(
             label='Auth Key URL',
             placeholder='請ctrl+v貼上複製的連結',
@@ -30,33 +36,32 @@ class WishCog(commands.Cog):
             max_length=3000
         )
 
-        async def on_submit(self, interaction: discord.Interaction):
+        async def on_submit(self, i: discord.Interaction):
             client = genshin.Client()
-            await interaction.response.defer()
-            try:
-                check, msg = genshin_app.checkUserData(interaction.user.id)
-                if check == False:
-                    await interaction.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
-                    return
-                url = self.url.value
-                print(log(True, False, 'Wish Setkey',
-                      f'{interaction.user.id}(url={url})'))
-                authkey = genshin.utility.extract_authkey(url)
-                client, uid, check = genshin_app.getUserCookie(interaction.user.id)
-                client.authkey = authkey
-                await interaction.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
-                wish_data = await client.wish_history()
-                file = open(
-                    f'data/wish_history/{interaction.user.id}.yaml', 'w+')
-                saveFile(wish_data, f'wish_history/{interaction.user.id}')
-                if os.path.exists(f'data/wish_cache/{interaction.user.id}.yaml'):
-                    # 刪除之前的快取檔案
-                    os.remove(f'data/wish_cache/{interaction.user.id}.yaml')
-                await interaction.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功'), ephemeral=True)
-            except Exception as e:
-                await interaction.followup.send(embed=errEmbed('設置失敗', f'請將這個訊息私訊給小雪```{e}```'), ephemeral=True)
+            await i.response.defer()
+            check, msg = await self.genshin_app.checkUserData(i.user.id)
+            if check == False:
+                await i.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
+                return
+            url = self.url.value
+            print(log(True, False, 'Wish Setkey',
+                    f'{i.user.id}(url={url})'))
+            authkey = genshin.utility.extract_authkey(url)
+            client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
+            client.authkey = authkey
+            await i.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+            c = await self.db.cursor()
+            await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (i.user.id,))
+            result = await c.fetchone()
+            if result is not None:
+                await c.execute('DELETE FROM wish_history WHERE user_id = ?', (i.user.id,))
+            async for wish in client.wish_history():
+                wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
+                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type) VALUES (?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type))
+            await self.db.commit()
+            await i.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功'), ephemeral=True)
 
-    class ChoosePlatform(discord.ui.View):
+    class ChoosePlatform(View):
         def __init__(self):
             super().__init__(timeout=None)
 
@@ -141,113 +146,87 @@ class WishCog(commands.Cog):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal())
+            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
 
-    def make_wish_cache(self, user_id: int):
-        if not os.path.exists(f'data/wish_cache/{user_id}.yaml'):
-            print(log(True, False, 'Wish Cache',
-                  f'making wish cache for {user_id}'))
-            file = open(f'data/wish_cache/{user_id}.yaml', 'w+')  # 創建快取檔案
-            wish_cache = {}
-            saveFile(wish_cache, f'/wish_cache/{str(user_id)}')
-        user_wish_cache = openFile(f'/wish_cache/{str(user_id)}')
-        wish_cache_categories = ['up_char', 'weapon', 'overview']
-        for category in wish_cache_categories:
-            if category not in user_wish_cache:
-                user_wish_history = openFile(f'wish_history/{user_id}')
+    async def wish_history_exists(self, user_id: int) -> Embed:
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
+        result = await c.fetchone()
+        embed = errEmbed('你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄')
+        member = self.bot.get_user(user_id)
+        embed.set_author(name=member, icon_url=member.avatar)
+        if result is None:
+            return False, embed
+        else:
+            return True, None
+
+    async def char_banner_calc(self, user_id: int):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute("SELECT wish_name, wish_rarity, wish_type FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
+        user_wish_history = await c.fetchall()
+        std_characters = ['迪盧克', '琴', '七七', '莫娜', '刻晴']
+        get_num = 0
+        left_pull = 0
+        use_pull = len(user_wish_history)
+        found_last_five_star = False
+        for index, tuple in enumerate(user_wish_history):
+            wish_name = tuple[0]
+            wish_rarity = tuple[1]
+            if wish_rarity == 5:
+                if wish_name not in std_characters:
+                    get_num += 1
+                if not found_last_five_star:
+                    found_last_five_star = True
+                    if wish_name not in std_characters:
+                        up_guarantee = 0
+                    else:
+                        up_guarantee = 1
+            else:
+                if not found_last_five_star:
+                    left_pull += 1
+        return get_num, use_pull, left_pull, up_guarantee
+
+    async def weapon_banner_calc(self, user_id: int):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND wish_type = '武器'", (user_id,))
+        user_wish_history = await c.fetchall()
+        last_name = ''
+        pull_state = 0
+        for index, tuple in enumerate(user_wish_history):
+            wish_name = tuple[0]
+            wish_rarity = tuple[1]
+            if wish_rarity != 5:
+                pull_state += 1
+            else:
+                last_name = wish_name
                 break
-        if 'up_char' not in user_wish_cache:  # 角色限定祈願快取
-            print(log(True, False, 'Wish Cache',
-                  f'making character wish cache for {user_id}'))
-            user_wish_cache['up_char'] = {}
-            required_data = ['up_num', 'up_gu', 'num_until_up', 'wish_sum']
-            std_characters = ['迪盧克', '琴', '七七', '莫娜', '刻晴']
-            up_num = 0
-            up_gu = 0
-            num_until_up = 0
-            wish_sum = 0
-            found = False
-            found_last_five_star = False
-            for wish in user_wish_history:
-                if wish.banner_type == 301:
-                    wish_sum += 1
-                    if wish.rarity == 5 and wish.type == '角色':
-                        if wish.name not in std_characters:
-                            up_num += 1
-                        if not found_last_five_star:
-                            found_last_five_star = True
-                            if wish.name not in std_characters:
-                                up_gu = 0
-                            else:
-                                up_gu = 1
-                        found = True
-                    else:
-                        if not found:
-                            num_until_up += 1
-            for data in required_data:
-                user_wish_cache['up_char'][data] = eval(data)
-            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
-        if 'weapon' not in user_wish_cache:  # 限定武器快取
-            user_wish_history = openFile(f'wish_history/{user_id}')
-            print(log(True, False, 'Wish Cache',
-                  f'making weapon wish cache for {user_id}'))
-            user_wish_cache['weapon'] = {}
-            required_data = ['last_five_star_weapon_name', 'pull_state']
-            last_five_star_weapon_name = ''
-            pull_state = 0
-            for wish in user_wish_history:
-                if wish.banner_type == 302:
-                    if wish.rarity != 5:
-                        pull_state += 1
-                    else:
-                        last_five_star_weapon_name = wish.name
-                        break
-            for data in required_data:
-                user_wish_cache['weapon'][data] = eval(data)
-            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
-        if 'overview' not in user_wish_cache:
-            print(log(True, False, 'Wish Cache',
-                  f'making overview wish cache for {user_id}'))
-            user_wish_cache['overview'] = {}
-            overview_dict = user_wish_cache['overview']
-            overview_dict['character_event'] = {}
-            overview_dict['weapon_event'] = {}
-            overview_dict['standard'] = {}
-            pools = ['character_event', 'weapon_event', 'standard']
-            pool_ids = [301, 302, 200]
-            per_pool_data = ['total_wish', 'five_star',
-                             'four_star', 'pity', 'found']
-            for pool in pools:  # 設定預設值
-                for pool_data in per_pool_data:
-                    if pool_data != 'found':
-                        overview_dict[pool][pool_data] = 0
-                    else:
-                        overview_dict[pool][pool_data] = False
-            overview_dict['total_wish'] = len(user_wish_history)
-            for wish in user_wish_history:
-                for pool_id in pool_ids:
-                    if wish.banner_type == pool_id:
-                        is_five_star = self.evaluate_rarity(wish)
-                        index = pool_ids.index(pool_id)
-                        pool_name = pools[index]
-                        overview_dict[pool_name]['total_wish'] += 1
-                        if is_five_star:
-                            overview_dict[pool_name]['five_star'] += 1
-                            overview_dict[pool_name]['found'] = True
-                        else:
-                            overview_dict[pool_name]['four_star'] += 1
-                        if not overview_dict[pool_name]['found']:  # 如果還沒找到五星
-                            overview_dict[pool_name]['pity'] += 1
-                        break
-            saveFile(user_wish_cache, f'/wish_cache/{str(user_id)}')
+        return last_name, pull_state
 
-    def evaluate_rarity(self, wish):
-        if wish.rarity == 5:
-            return True
-        elif wish.rarity == 4:
-            return False
+    async def wish_overview_calc(self, user_id: int):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        banner_ids = [100, 200, 301, 302]
+        result = []
+        for banner_id in banner_ids:
+            await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
+            total = await c.fetchall()
+            total_wish = len(total)
+            left_pull = 0
+            for index, tuple in enumerate(total):
+                wish_rarity = tuple[0]
+                if wish_rarity != 5:
+                    left_pull += 1
+                else:
+                    break
+            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 5', (user_id, banner_id))
+            five_star = await c.fetchall()
+            five_star = len(five_star)
+            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 4', (user_id, banner_id))
+            four_star = await c.fetchall()
+            four_star = len(four_star)
+            result.append([total_wish, left_pull, five_star, four_star])
+        return result
 
-    def divide_chunks(l, n):
+    def divide_chunks(l, n):  # 分割祈願紀錄的helper function
         for i in range(0, len(l), n):
             yield l[i:i + n]
 
@@ -255,59 +234,65 @@ class WishCog(commands.Cog):
     @wish.command(name='history', description='祈願歷史紀錄查詢')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def wish_history(self, i: Interaction, member: Optional[Member] = None):
+    async def wish_history(self, i: Interaction, member: Member = None):
         member = member or i.user
         print(log(False, False, 'Wish History', member.id))
-        await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
+        result = await c.fetchall()
+        if result[0] is None:
+            await i.response.send_message(embed=errEmbed('你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
             return
-        result = []
-        user_wish_history = openFile(f'wish_history/{member.id}')
-        for wish in user_wish_history:
-            wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
-            if wish.rarity == 5 or wish.rarity == 4:
-                result.append(
-                    f"[{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})](http://example.com/)")
+        user_wishes = []
+        for index, tuple in enumerate(result):
+            wish_name = tuple[0]
+            wish_time = tuple[2]
+            wish_rarity = tuple[1]
+            wish_type = tuple[3]
+            if wish_rarity == 5 or wish_rarity == 4:
+                user_wishes.append(
+                    f"[{wish_time}: {wish_name} ({wish_rarity}☆ {wish_type})](https://github.com/seriaati/shenhe_bot)")
             else:
-                result.append(
-                    f"{wish_time}: {wish.name} ({wish.rarity}☆ {wish.type})")
-        split_list = list(WishCog.divide_chunks(result, 20))
-        embed_list = []
-        for l in split_list:
+                user_wishes.append(
+                    f"{wish_time}: {wish_name} ({wish_rarity}☆ {wish_type})")
+        first_twenty_wishes = list(WishCog.divide_chunks(user_wishes, 20))
+        embeds = []
+        for l in first_twenty_wishes:
             embed_str = ''
             for w in l:
                 embed_str += f'{w}\n'
-            embed_list.append(defaultEmbed('詳細祈願紀錄', embed_str))
-        await WishPaginator(i, embed_list).start(embeded=True)
+            embeds.append(defaultEmbed('詳細祈願紀錄', embed_str))
+        await GeneralPaginator(i, embeds).start(embeded=True)
 
-    @wish.command(name='luck', description='歐氣值分析')
+    @wish.command(name='luck', description='限定祈願歐氣值分析')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def wish_analysis(self, i: Interaction, member: Optional[Member] = None):
+    async def wish_analysis(self, i: Interaction, member: Member = None):
         member = member or i.user
         print(log(False, False, 'Wish Luck', member.id))
-        await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+        check, msg = await self.wish_history_exists(member.id)
+        if not check:
+            await i.response.send_message(embed=msg)
             return
-        self.make_wish_cache(member.id)
-        user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        up_num = user_wish_cache['up_char']['up_num']
-        up_gu = user_wish_cache['up_char']['up_gu']
-        num_until_up = user_wish_cache['up_char']['num_until_up']
-        wish_sum = user_wish_cache['up_char']['wish_sum']
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 301', (member.id,))
+        result = await c.fetchone()
+        if result is None:
+            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            return
+        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
+            member.id)
         player = GGanalysislib.Up5starCharacter()
-        gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
+        gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         embed = defaultEmbed(
-            '限定祈願分析',
-            f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=up_num, use_pull=wish_sum, left_pull=num_until_up, up_guarantee=up_gu), 2))}%的玩家\n'
-            f'• 共{wish_sum}抽\n'
-            f'• 出了{up_num}個UP\n'
-            f'• 墊了{num_until_up}抽\n'
-            f'• {gu_state}')
+            '限定祈願歐氣值分析',
+            f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull, up_guarantee=up_guarantee), 2))}%的玩家\n'
+            f'• 共**{use_pull}**抽\n'
+            f'• 出了**{get_num}**個UP\n'
+            f'• 墊了**{left_pull}**抽\n'
+            f'• {gu_str}')
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.followup.send(embed=embed)
+        await i.response.send_message(embed=embed)
 
     @wish.command(name='character', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量', pull_num='祈願次數', member='其他人')
@@ -315,27 +300,31 @@ class WishCog(commands.Cog):
     async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
         member = member or i.user
         print(log(False, False, 'Wish Character', member.id))
-        await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+        check, msg = await self.wish_history_exists(member.id)
+        if not check:
+            await i.response.send_message(embed=msg)
             return
-        self.make_wish_cache(member.id)
-        user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        up_gu = user_wish_cache['up_char']['up_gu']
-        num_until_up = user_wish_cache['up_char']['num_until_up']
-        gu_state = '有大保底' if up_gu == 1 else '沒有大保底'
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 301', (member.id,))
+        result = await c.fetchone()
+        if result is None:
+            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            return
+        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
+            member.id)
+        gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
         result = player.get_p(item_num=num, calc_pull=pull_num,
-                              pull_state=num_until_up, up_guarantee=up_gu)
+                              pull_state=left_pull, up_guarantee=up_guarantee)
         embed = defaultEmbed(
             '祈願機率預測',
-            f'• 想要抽出{num}個5星UP角色\n'
-            f'• 預計抽{pull_num}次\n'
-            f'• 墊了{num_until_up}抽\n'
-            f'• {gu_state}\n'
-            f'• 機率為: {str(round(100*result, 2))}%')
+            f'• 想要抽出**{num}**個5星UP角色\n'
+            f'• 預計抽**{pull_num}**次 (**{pull_num*160}**原石)\n'
+            f'• 墊了**{left_pull}**抽\n'
+            f'• {gu_str}\n'
+            f'• 機率為: **{str(round(100*result, 2))}%**')
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.followup.send(embed=embed)
+        await i.response.send_message(embed=embed)
 
     class UpOrStd(discord.ui.View):
         def __init__(self, author: Member):
@@ -381,22 +370,28 @@ class WishCog(commands.Cog):
     async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
         member = member or i.user
         print(log(False, False, 'Wish Weapon', member.id))
-        await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+        check, msg = await self.wish_history_exists(member.id)
+        if not check:
+            await i.response.send_message(embed=msg)
             return
-        self.make_wish_cache(member.id)
-        user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        last_five_star_weapon_name = user_wish_cache['weapon']['last_five_star_weapon_name']
-        pull_state = user_wish_cache['weapon']['pull_state']
-        if last_five_star_weapon_name == '':
-            await i.followup.send(embed=errEmbed('很抱歉, 你目前不能使用這項功能', '你還沒有在限定武器池抽中過五星武器'), ephemeral=True)
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (member.id,))
+        result = await c.fetchone()
+        if result is None:
+            embed = errEmbed(
+                '你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄')
+            embed.set_author(name=member, icon_url=member.avatar)
+            await i.response.send_message(embed=embed, ephemeral=True)
+            return
+        last_name, pull_state = await self.weapon_banner_calc(member.id)
+        if last_name == '':
+            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'), ephemeral=True)
             return
         up_or_std_view = WishCog.UpOrStd(i.user)
-        await i.followup.send(embed=defaultEmbed(
+        await i.response.send_message(embed=defaultEmbed(
             '限定UP還是常駐?',
             f'你最後一次抽到的五星武器是:\n'
-            f'**{last_five_star_weapon_name}**\n'
+            f'**{last_name}**\n'
             '請問這是一把限定UP還是常駐武器?'),
             view=up_or_std_view, ephemeral=True)
         await up_or_std_view.wait()
@@ -417,10 +412,10 @@ class WishCog(commands.Cog):
                               pull_state=pull_state, up_guarantee=up_guarantee)
         embed = defaultEmbed(
             '武器機率預測',
-            f'• 想抽出 {item_num} 把想要的UP\n'
-            f'• 預計抽 {calc_pull} 抽\n'
-            f'• 已經墊了 {pull_state} 抽\n'
-            f'• 抽中想要UP的機率為: {str(round(100*result, 2))}%'
+            f'• 想抽出**{item_num}**把想要的UP\n'
+            f'• 預計抽**{calc_pull}**抽\n'
+            f'• 已經墊了**{pull_state}**抽\n'
+            f'• 抽中想要UP的機率為: **{str(round(100*result, 2))}%**'
         )
         embed.set_author(name=member, icon_url=member.avatar)
         await i.followup.send(embed=embed)
@@ -431,48 +426,54 @@ class WishCog(commands.Cog):
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
         print(log(False, False, 'Wish Overview', member.id))
-        await i.response.defer()
-        if not os.path.exists(f'data/wish_history/{member.id}.yaml'):
-            await i.followup.send(embed=errEmbed('你還沒有設置過抽卡紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
+        check, msg = await self.wish_history_exists(member.id)
+        if not check:
+            await i.response.send_message(embed=msg)
             return
-        self.make_wish_cache(member.id)
-        user_wish_cache = openFile(f'/wish_cache/{member.id}')
-        user_overview = user_wish_cache['overview']
-        character_event = user_overview['character_event']
-        weapon_event = user_overview['weapon_event']
-        standard = user_overview['standard']
-        total_wish = user_overview["total_wish"]
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        overview = await self.wish_overview_calc(member.id)
+        total_wish = overview[0][0] + overview[1][0] + overview[2][0] + overview[3][0]
         embed = defaultEmbed(
             '祈願總覽',
-            f'共 {total_wish} 抽\n'
-            f'即 {160*int(total_wish)} 原石'
+            f'共**{total_wish[0]}**抽\n'
+            f'即**{160*int(total_wish[0])}**原石'
         )
+        # [100, 200, 301, 302]
+        # [total, left_pull, five_star, four_star]
         embed.add_field(
             name='角色池',
-            value=f'• 共 {character_event["total_wish"]} 抽 ({160*int(character_event["total_wish"])}原石)\n'
-            f'• 5☆ {character_event["five_star"]}\n'
-            f'• 4☆ {character_event["four_star"]}\n'
-            f'• 距離保底 {90-int(character_event["pity"])} 抽',
+            value=f'• 共**{overview[2][0]}**抽 (**{overview[2][0]*160}**原石)\n'
+            f'• 5☆ **{overview[2][2]}**\n'
+            f'• 4☆ **{overview[2][3]}**\n'
+            f'• 距離保底**{90-overview[2][1]}**抽',
             inline=False
         )
         embed.add_field(
             name='武器池',
-            value=f'• 共 {weapon_event["total_wish"]} 抽 ({160*int(weapon_event["total_wish"])}原石)\n'
-            f'• 5☆ {weapon_event["five_star"]}\n'
-            f'• 4☆ {weapon_event["four_star"]}\n'
-            f'• 距離保底 {90-int(weapon_event["pity"])} 抽',
+            value=f'• 共**{overview[3][0]}**抽 (**{160*overview[3][0]}**原石)\n'
+            f'• 5☆ **{overview[3][2]}**\n'
+            f'• 4☆ **{overview[3][3]}**\n'
+            f'• 距離保底**{90-overview[3][1]}**抽',
             inline=False
         )
         embed.add_field(
             name='常駐池',
-            value=f'• 共 {standard["total_wish"]} 抽 ({160*int(standard["total_wish"])}原石)\n'
-            f'• 5☆ {standard["five_star"]}\n'
-            f'• 4☆ {standard["four_star"]}\n'
-            f'• 距離保底 {90-int(standard["pity"])} 抽',
+            value=f'• 共**{overview[1][0]}**抽 (**{160*overview[1][0]}**原石)\n'
+            f'• 5☆ **{overview[1][2]}**\n'
+            f'• 4☆ **{overview[1][3]}**\n'
+            f'• 距離保底**{90-overview[1][1]}**抽',
+            inline=False
+        )
+        embed.add_field(
+            name='新手池',
+            value=f'• 共**{overview[0][0]}**抽 (**{160*overview[0][0]}**原石)\n'
+            f'• 5☆ **{overview[0][2]}**\n'
+            f'• 4☆ **{overview[0][3]}**\n'
+            f'• 距離保底**{20-overview[0][1]}**抽',
             inline=False
         )
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.followup.send(embed=embed)
+        await i.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

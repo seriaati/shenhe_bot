@@ -1,58 +1,68 @@
 from datetime import datetime
+from typing import Union
 
-from utility.utils import errEmbed, log, openFile, saveFile
+import aiosqlite
+from discord import Embed
+
+from utility.utils import errEmbed, log
+
+
 class FlowApp:
+    def __init__(self, db: aiosqlite.Connection) -> None:
+        self.db = db
 
     def register(self, user_id: int):
         self.transaction(user_id, 20, is_new_account=True)
 
-    def transaction(self, user_id: int, flow_for_user: int, time_state:str = None, is_new_account: bool = False, is_removing_account: bool = False):
-        users = openFile('flow')
-        bank = openFile('bank')
-        trans_log = openFile('transaction_log')
+    async def transaction(self, user_id: int, flow_for_user: int, time_state: str = None, is_new_account: bool = False, is_removing_account: bool = False):
         now = datetime.now()
+        time_states = ['morning', 'noon', 'night']
         if is_removing_account:
-            print(log(True, False, 'Removing Acc', f'user_id: (flow = {flow_for_user})'))
-            bank['flow']+=flow_for_user
-            del users[user_id]
-            saveFile(users, 'flow')
-            saveFile(bank, 'bank')
+            print(log(True, False, 'Removing Acc',
+                  f'user_id: (flow = {flow_for_user})'))
+            c = await self.db.cursor()
+            await c.execute('DELETE FROM flow_accounts WHERE user_id = ?', (user_id,))
+            bank_flow = await self.get_bank_flow()
+            await c.execute('UPDATE bank SET flow = ?', (bank_flow+flow_for_user,))
+            await self.db.commit()
             return
         if is_new_account:
-            users[user_id] = {'flow': 0}
-            users[user_id]['morning'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-            users[user_id]['noon'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-            users[user_id]['night'] = datetime(year=now.year, month=now.month, day=now.day-1, hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
-            saveFile(users, 'flow')
-        if user_id in users:
-            users[user_id]['flow'] += int(flow_for_user)
-            bank['flow'] -= int(flow_for_user)
-            if time_state is not None:
-                if time_state == 'morning':
-                    users[user_id]['morning'] = now
-                elif time_state == 'noon':
-                    users[user_id]['noon'] = now
-                elif time_state == 'night':
-                    users[user_id]['night'] = now
-            saveFile(users, 'flow')
-            saveFile(bank, 'bank')
-            user_log = '{0:+d}'.format(int(flow_for_user))
-            bank_log = '{0:+d}'.format(-int(flow_for_user))
-            trans_log[user_id] = datetime.now()
-            saveFile(trans_log, 'transaction_log')
-            print(log(True, False, 'Transaction',
+            default_time = datetime(year=now.year, month=now.month, day=now.day-1,
+                                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
+            c = await self.db.cursor()
+            await c.execute('INSERT INTO flow_accounts(user_id) VALUES(?)', (user_id))
+            await c.execute(f'UPDATE flow_accounts SET flow = ? WHERE user_id = ?', (20, user_id))
+            for time in time_states:
+                await c.execute(f'UPDATE flow_accounts SET {time} = ? WHERE user_id = ?', (default_time, user_id))
+            await self.db.commit()
+        c = await self.db.cursor()
+        user_flow = await self.get_user_flow(user_id)
+        await c.execute('UPDATE flow_accounts SET flow = ? WHERE user_id = ?', (user_flow+flow_for_user, user_id))
+        bank_flow = await self.get_bank_flow()
+        await c.execute(f'UPDATE bank SET flow = ?', (bank_flow-flow_for_user,))
+        if time_state is not None:
+            for time in time_states:
+                if time_state == time:
+                    await c.execute(f'UPDATE flow_accounts SET {time} = ? WHERE user_id = ?', (now, user_id))
+        await self.db.commit()
+        user_log = '{0:+d}'.format(int(flow_for_user))
+        bank_log = '{0:+d}'.format(-int(flow_for_user))
+        await c.execute('UPDATE flow_accounts SET last_trans = ? WHERE user_id = ?', (now, user_id))
+        await self.db.commit()
+        print(log(True, False, 'Transaction',
                   f'user({user_id}): {user_log}, bank: {bank_log}'))
-            sum = 0
-            for user, value in users.items():
-                sum += value['flow']
-            print(log(True, False, 'Current', f"user_total: {sum}, bank: {bank['flow']}"))
-            print(log(True, False, 'Total', sum+bank['flow']))
-        else:
-            print(log(True, True, 'Transaction', f"can't find id {user_id}" ))
+        bank_flow = await self.get_bank_flow()
+        await c.execute('SELECT SUM(flow) FROM flow_accounts')
+        sum = await c.fetchone()
+        print(log(True, False, 'Current',
+                  f"user_total: {sum[0]}, bank: {bank_flow}"))
+        print(log(True, False, 'Total', int(sum[0])+bank_flow))
 
-    def checkFlowAccount(self, user_id: int):
-        users = openFile('flow')
-        if user_id not in users:
+    async def checkFlowAccount(self, user_id: int) -> Union[bool, Embed]:
+        c = await self.db.cursor()
+        await c.execute('SELECT user_id FROM flow_accounts WHERE user_id = ?', (user_id,))
+        result = await c.fetchone()
+        if result is None:
             self.register(user_id)
             embed = errEmbed(
                 '找不到flow帳號!',
@@ -61,4 +71,14 @@ class FlowApp:
         else:
             return True, None
 
-flow_app = FlowApp()
+    async def get_user_flow(self, user_id: int) -> int:
+        c = await self.db.cursor()
+        await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (user_id,))
+        flow = await c.fetchone()
+        return flow[0]
+
+    async def get_bank_flow(self) -> int:
+        c = await self.db.cursor()
+        await c.execute('SELECT flow FROM bank')
+        bank_flow = await c.fetchone()
+        return bank_flow[0]

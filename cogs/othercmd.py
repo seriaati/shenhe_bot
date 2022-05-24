@@ -1,18 +1,16 @@
-from datetime import datetime
-from typing import Optional
-from discord.ext import commands
-from discord.ui import View, Select
-from discord import Interaction, Member, SelectOption, app_commands, Message
-from discord.utils import format_dt
 from random import randint
-from utility.FlowApp import flow_app
-from utility.WishPaginator import WishPaginator
-from utility.utils import defaultEmbed, log, openFile, saveFile
+
+import aiosqlite
+from discord import Interaction, Member, Message, Role, app_commands
+from discord.ext import commands
+from utility.FlowApp import FlowApp
+from utility.utils import defaultEmbed, log
 
 
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.flow_app = FlowApp(self.bot.db)
         self.quote_ctx_menu = app_commands.ContextMenu(
             name='語錄',
             callback=self.quote_context_menu
@@ -62,107 +60,13 @@ class OtherCMDCog(commands.Cog):
             "• 想在dc內直接查閱原神樹脂數量嗎? 輸入`/cookie`來設定你的帳號吧!\n"
             "• 最重要的, 祝你在這裡玩的開心! <:omg:969823101133160538>")
         embed.set_thumbnail(url=member.avatar)
-        guild_members = openFile('guild_members')
-        if member.id not in guild_members:
-            guild_members[member.id] = member.joined_at
-            flow_app.register(member.id)
-            saveFile(guild_members, 'guild_members')
+        c: aiosqlite.Cursor = self.bot.db.cursor()
+        await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (member.id,))
+        result = await c.fetchone()
+        if result is None:
+            await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
+            self.flow_app.register(member.id)
         await public.send(content=f"{member.mention}歡迎來到緣神有你!", embed=embed)
-
-    feature = app_commands.Group(name="feature", description="為申鶴提供建議")
-
-    @feature.command(name='request', description='為申鶴提供建議')
-    @app_commands.rename(request_name='建議名稱', desc='詳情')
-    @app_commands.describe(request_name='為申鶴提供各式建議! 這能有效的幫助申鶴改進, 並漸漸變成大家喜歡的模樣', desc='如果打不下的話, 可以在這裡輸入建議的詳情')
-    async def feature_request(self, i: Interaction, request_name: str, desc: Optional[str] = None):
-        print(log(False, False, 'Feature Request',
-              f'{i.user.id}: (request_name={request_name}, desc={desc})'))
-        today = datetime.today()
-        features = openFile('feature')
-        desc = desc or '(沒有敘述)'
-        features[request_name] = {
-            'desc': desc,
-            'time': today,
-            'author': i.user.id
-        }
-        saveFile(features, 'feature')
-        timestamp = format_dt(today)
-        embed = defaultEmbed(
-            request_name,
-            f'{desc}\n'
-            f'由{i.user.mention}提出\n'
-            f'於{timestamp}')
-        await i.response.send_message(
-            content='✅ 建議新增成功, 內容如下',
-            embed=embed,
-            ephemeral=True
-        )
-
-    @feature.command(name='list', description='查看所有建議')
-    @app_commands.checks.has_role('小雪團隊')
-    async def feature_list(self, i: Interaction):
-        print(log(False, False, 'Feature List', i.user.id))
-        await i.response.defer()
-        features = openFile('feature')
-        if not bool(features):
-            await i.followup.send(embed=defaultEmbed('目前還沒有任何建議呢!', '有想法嗎? 快使用`/feature request`指令吧!'))
-            return
-        embeds = []
-        for feature_name, value in features.items():
-            author = i.client.get_user(value['author'])
-            timestamp = format_dt(value['time'])
-            embed = defaultEmbed(
-                feature_name,
-                f'{value["desc"]}\n'
-                f'由{author.mention}提出\n'
-                f'於{timestamp}')
-            embeds.append(embed)
-        await WishPaginator(i, embeds).start(embeded=True)
-
-    @feature_list.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
-    class FeatureSelector(Select):
-        def __init__(self, feature_dict: dict):
-            options = []
-            for feature_name, value in feature_dict.items():
-                options.append(SelectOption(
-                    label=feature_name, value=feature_name))
-            super().__init__(placeholder=f'選擇建議', min_values=1, max_values=1, options=options)
-
-        async def callback(self, interaction: Interaction):
-            features = openFile('feature')
-            del features[self.values[0]]
-            saveFile(features, 'feature')
-            await interaction.response.send_message(
-                embed=defaultEmbed(
-                    '🎉 恭喜!',
-                    f'完成了**{self.values[0]}**'
-                )
-            )
-
-    class FeatureSelectorView(View):
-        def __init__(self, feature_dict: dict):
-            super().__init__(timeout=None)
-            self.add_item(OtherCMDCog.FeatureSelector(feature_dict))
-
-    @feature.command(name='complete', description='完成一項建議')
-    @app_commands.checks.has_role('小雪團隊')
-    async def feature_complete(self, i: Interaction):
-        print(log(False, False, 'Feature Complete', i.user.id))
-        features = openFile('feature')
-        if not bool(features):
-            await i.response.send_message(embed=defaultEmbed('目前沒有任何建議'))
-            return
-        view = OtherCMDCog.FeatureSelectorView(features)
-        await i.response.send_message(view=view, ephemeral=True)
-
-    @feature_complete.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(
         name='ping',
@@ -278,6 +182,23 @@ class OtherCMDCog(commands.Cog):
         channel = self.bot.get_channel(966549110540877875)
         await i.response.send_message("✅ 語錄擷取成功", ephemeral=True)
         await channel.send(embed=embed)
+
+    @app_commands.command(name='rolemembers', description='查看一個身份組內的所有成員')
+    @app_commands.rename(role='身份組')
+    @app_commands.describe(role='請選擇要查看的身份組')
+    async def role_members(self, i: Interaction, role: Role):
+        print(log(False, False, 'role members',
+              f'{i.user.id}: (role: {role})'))
+        if role is None:
+            await i.response.send_message('找不到該身份組!', ephemeral=True)
+            return
+        memberStr = ''
+        count = 0
+        for member in role.members:
+            count += 1
+            memberStr += f'{count}. {member}\n'
+        embed = defaultEmbed(role.name, memberStr)
+        await i.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

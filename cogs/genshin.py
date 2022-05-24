@@ -1,48 +1,85 @@
 import asyncio
 import re
 from datetime import datetime, timedelta
-from importlib import reload
 from typing import Optional
 
+import aiosqlite
 import discord
 import yaml
-from discord import (ButtonStyle, Interaction, Member, SelectOption,
-                     app_commands)
+from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption,
+                     User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from discord.ui import Button, Select, View
 from utility.AbyssPaginator import AbyssPaginator
-from utility.GenshinApp import genshin_app
-from utility.utils import (defaultEmbed, errEmbed, getWeekdayName, log,
-                           openFile, saveFile)
+from utility.GenshinApp import GenshinApp
+from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
+
+global debug_toggle
+debug_toggle = True
 
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.genshin_app = GenshinApp(self.bot.db)
         self.claim_reward.start()
+        self.resin_notification.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
+        self.resin_notification.cancel()
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        print(log(True, False, 'Schedule', 'Auto claim started'))
-        users = openFile('accounts')
+        print(log(True, False, 'Task loop', 'Auto claim started'))
         count = 0
-        for user_id, value in users.items():
-            if 'ltuid' not in value:
-                continue
-            check, msg = genshin_app.checkUserData(user_id)
-            if check == False:
-                del users[user_id]
-                continue
-            await genshin_app.claimDailyReward(user_id)
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT user_id FROM genshin_accounts')
+        users = await c.fetchall()
+        count = 0
+        for index, tuple in enumerate(users):
+            user_id = tuple[0]
+            await self.genshin_app.claimDailyReward(user_id)
             count += 1
-            await asyncio.sleep(2.0)
-        saveFile(users, 'accounts')
+            await asyncio.sleep(3.0)
         print(log(True, False, 'Schedule',
               f'Auto claim finished, {count} in total'))
+
+    @tasks.loop(hours=1)
+    async def resin_notification(self):
+        print(log(True, False, 'Task loop', 'Resin check started'))
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif FROM genshin_accounts WHERE resin_notification_toggle = 1')
+        users = await c.fetchall()
+        count = 0
+        for index, tuple in enumerate(users):
+            user_id = tuple[0]
+            resin_threshold = tuple[1]
+            current_notif = tuple[2]
+            max_notif = tuple[3]
+            resin = await self.genshin_app.getRealTimeNotes(user_id, True)
+            count += 1
+            if resin >= resin_threshold and current_notif < max_notif:
+                guild: Guild = self.bot.get_guild(
+                    778804551972159489) if debug_toggle else self.bot.get_guild(916838066117824553)
+                thread = guild.get_thread(
+                    978092463749234748) if debug_toggle else guild.get_thread(978092252154982460)
+                user: User = self.bot.get_user(user_id)
+                embed = defaultEmbed(
+                    '<:PaimonSeria:958341967698337854> 樹脂要滿出來啦',
+                    f'目前樹脂: {resin}/160\n'
+                    f'目前設定閥值: {resin_threshold}\n'
+                    f'目前最大提醒值: {max_notif}\n\n'
+                    '輸入`/remind`來更改設定')
+                await thread.send(content=user.mention, embed=embed)
+                await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
+            if resin < resin_threshold:
+                await c.execute('UPDATE genshin_accoutns SET current_notif = 0 WHERE user_id = ?', (user_id,))
+            await asyncio.sleep(3.0)
+        print(log(True, False, 'Task loop',
+              f'Resin checke finished {count} in total'))
+        await self.bot.db.commit()
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
@@ -52,9 +89,17 @@ class GenshinCog(commands.Cog):
             next_run += timedelta(days=1)
         await discord.utils.sleep_until(next_run)
 
+    @resin_notification.before_loop
+    async def before_check(self):
+        await self.bot.wait_until_ready()
+
 # cookie
 
-    class CookieModal(discord.ui.Modal, title='提交Cookie'):
+    class CookieModal(discord.ui.Modal):
+        def __init__(self, db: aiosqlite.Connection):
+            self.genshin_app = GenshinApp(db)
+            super().__init__(title='提交cookie', timeout=None, custom_id='cookie_modal')
+
         cookie = discord.ui.TextInput(
             label='Cookie',
             placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 "/cookie"',
@@ -65,7 +110,7 @@ class GenshinCog(commands.Cog):
         )
 
         async def on_submit(self, interaction: Interaction):
-            result = await genshin_app.setCookie(interaction.user.id, self.cookie.value)
+            result = await self.genshin_app.setCookie(interaction.user.id, self.cookie.value)
             await interaction.response.send_message(result, ephemeral=True)
 
         async def on_error(self, error: Exception, interaction: Interaction):
@@ -95,7 +140,7 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=embed)
             await interaction.followup.send(content=code_msg)
         elif option == 1:
-            await interaction.response.send_modal(self.CookieModal())
+            await interaction.response.send_modal(GenshinCog.CookieModal(db=self.bot.db))
 # /setuid
 
     @app_commands.command(
@@ -107,7 +152,7 @@ class GenshinCog(commands.Cog):
         if len(str(uid)) != 9:
             await interaction.followup.send(embed=errEmbed('請輸入長度為9的UID!'))
             return
-        result = await genshin_app.setUID(interaction.user.id, int(uid))
+        result = await self.genshin_app.setUID(interaction.user.id, int(uid))
         await interaction.followup.send(embed=result)
 
     @app_commands.command(
@@ -120,7 +165,7 @@ class GenshinCog(commands.Cog):
                     member: Optional[Member] = None
                     ):
         member = member or interaction.user
-        result = await genshin_app.getRealTimeNotes(member.id, False)
+        result = await self.genshin_app.getRealTimeNotes(member.id, False)
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -136,7 +181,7 @@ class GenshinCog(commands.Cog):
                     member: Optional[Member] = None
                     ):
         member = member or interaction.user
-        result = await genshin_app.getUserStats(member.id)
+        result = await self.genshin_app.getUserStats(member.id)
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -152,7 +197,7 @@ class GenshinCog(commands.Cog):
                    member: Optional[Member] = None
                    ):
         member = member or interaction.user
-        result = await genshin_app.getArea(member.id)
+        result = await self.genshin_app.getArea(member.id)
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -170,14 +215,18 @@ class GenshinCog(commands.Cog):
     async def claim(self, interaction: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
         if all == 1:
             await interaction.response.send_message(embed=defaultEmbed('⏳ 全員簽到中'))
-            users = openFile('accounts')
-            for user in users:
-                await genshin_app.claimDailyReward(user)
-                await asyncio.sleep(1)
-            await interaction.followup.send(embed=defaultEmbed('✅ 全員簽到完成'))
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT user_id FROM genshin_accounts')
+            users = await c.fetchall()
+            count = 0
+            for index, tuple in enumerate(users):
+                user_id = tuple[0]
+                await self.genshin_app.claimDailyReward(user_id)
+                count += 1
+            await interaction.followup.send(embed=defaultEmbed(f'✅ 全員簽到完成 ({count})'))
         else:
             member = member or interaction.user
-            result = await genshin_app.claimDailyReward(member.id)
+            result = await self.genshin_app.claimDailyReward(member.id)
             result.set_author(name=self.bot.get_user(member.id),
                               icon_url=self.bot.get_user(member.id).avatar)
             await interaction.response.send_message(embed=result)
@@ -200,7 +249,7 @@ class GenshinCog(commands.Cog):
         member = member or interaction.user
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
-        result = await genshin_app.getDiary(member.id, month)
+        result = await self.genshin_app.getDiary(member.id, month)
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -220,7 +269,7 @@ class GenshinCog(commands.Cog):
                   member: Optional[Member] = None
                   ):
         member = member or interaction.user
-        result = await genshin_app.getDiaryLog(member.id)
+        result = await self.genshin_app.getDiaryLog(member.id)
         if type(result) is discord.Embed:
             await interaction.response.send_message(embed=result)
             return
@@ -236,7 +285,7 @@ class GenshinCog(commands.Cog):
     )
     async def users(self, interaction: Interaction):
         print(log(False, False, 'Users', interaction.user.id))
-        user_dict = genshin_app.getUserData()
+        user_dict = self.genshin_app.getUserData()
         userStr = ""
         count = 0
         for user_id, value in user_dict.items():
@@ -258,7 +307,7 @@ class GenshinCog(commands.Cog):
                     member: Optional[Member] = None
                     ):
         member = member or interaction.user
-        result = await genshin_app.getToday(member.id)
+        result = await self.genshin_app.getToday(member.id)
         result.set_author(name=self.bot.get_user(member.id),
                           icon_url=self.bot.get_user(member.id).avatar)
         await interaction.response.send_message(embed=result)
@@ -279,7 +328,7 @@ class GenshinCog(commands.Cog):
     async def abyss(self, interaction: Interaction, check_type: int, season: int = 1, floor: int = 0, member: Optional[Member] = None):
         member = member or interaction.user
         previous = True if season == 0 else False
-        result = await genshin_app.getAbyss(member.id, previous)
+        result = await self.genshin_app.getAbyss(member.id, previous)
         if type(result) is not list:
             result.set_author(name=self.bot.get_user(
                 member.id), icon_url=self.bot.get_user(member.id).avatar)
@@ -313,6 +362,15 @@ class GenshinCog(commands.Cog):
             "5. 點擊之後看到設定按鈕\n"
             "6. 打開 Do you want to enable real time-notes")
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name='remind', description='設置樹脂提醒')
+    @app_commands.rename(toggle='開關', resin_threshold='樹脂閥值', max_notif='最大提醒數量')
+    @app_commands.describe(toggle='要開啟或關閉樹脂提醒功能', resin_threshold='在超過此樹脂量時, 申鶴會tag你進行提醒', max_notif='申鶴每一小時提醒一次, 超過這個數字就會停止提醒')
+    @app_commands.choices(toggle=[Choice(name='開', value=1),
+                                  Choice(name='關', value=0)])
+    async def resin_remind(self, i: Interaction, toggle: int, resin_threshold: int = 140, max_notif: int = 3):
+        result = await self.genshin_app.setResinNotification(i.user.id, toggle, resin_threshold, max_notif)
+        await i.response.send_message(embed=result)
 
 # /farm
 
@@ -352,7 +410,7 @@ class GenshinCog(commands.Cog):
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
         async def callback(self, interaction: Interaction):
-            result = await genshin_app.getBuild(self.build_dict, str(self.values[0]))
+            result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
             await interaction.response.send_message(embed=result)
 
     class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
@@ -374,7 +432,7 @@ class GenshinCog(commands.Cog):
                     placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
         async def callback(self, interaction: Interaction):
-            await interaction.response.send_message(embed=genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
+            await interaction.response.send_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
         def __init__(self, index: int, user_characters: dict, user: Member):
@@ -418,7 +476,7 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def characters(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        user_characters = await genshin_app.getUserCharacters(user_id=member.id)
+        user_characters = await self.genshin_app.getUserCharacters(user_id=member.id)
         if type(user_characters) is discord.Embed:
             await i.response.send_message(embed=user_characters)
             return
@@ -435,10 +493,7 @@ class GenshinCog(commands.Cog):
         # Choice(name='時之沙', value=2),
         Choice(name='空之杯', value=3)])
     # Choice(name='理之冠', value=4)])
-    async def rate(self, interaction: Interaction, type: int, crit_dmg: str, crit_rate: str, atk: str):
-        crit_dmg = int(re.search(r'\d+', crit_dmg).group())
-        crit_rate = int(re.search(r'\d+', crit_rate).group())
-        atk = int(re.search(r'\d+', atk).group())
+    async def rate(self, interaction: Interaction, type: int, crit_dmg: float, crit_rate: float, atk: float):
         score = crit_rate*2 + atk*1.3 + crit_dmg*1
         typeStr = ''
         if type == 0:
@@ -479,7 +534,7 @@ class GenshinCog(commands.Cog):
                 desc = '過渡用, 繼續刷'
         result = defaultEmbed(
             '聖遺物評分結果',
-            f'總分: {score}\n'
+            f'總分: {round(score,2)}\n'
             f'「{desc}」'
         )
         result.add_field(
@@ -493,12 +548,6 @@ class GenshinCog(commands.Cog):
         result.set_footer(
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
-
-    @app_commands.command(name='reloadgenshinapp', description='重整genshin_app')
-    @app_commands.checks.has_role('小雪團隊')
-    async def reload_genshin_app(self, i: Interaction):
-        genshin_app = reload(genshin_app)
-        await i.response.send_message(embed=defaultEmbed('✅ genshin_app重整成功'))
 
 
 async def setup(bot: commands.Bot) -> None:
