@@ -106,11 +106,6 @@ class FlowCog(commands.Cog):
                             user_id, 1, time_state='night')
                         await message.add_reaction('🌙')
 
-    @commands.Cog.listener()
-    async def on_member_remove(self, member: Member):
-        flow = await self.flow_app.get_user_flow(member.id)
-        await self.flow_app.transaction(member.id, flow, is_removing_account=True)
-
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的flow帳號')

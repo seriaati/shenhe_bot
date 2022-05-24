@@ -47,27 +47,6 @@ class OtherCMDCog(commands.Cog):
             channel = self.bot.get_channel(966549110540877875)
             await channel.send(embed=embed)
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member: Member):
-        public = self.bot.get_channel(916951131022843964)
-        uid_channel = self.bot.get_channel(935111580545343509)
-        embed = defaultEmbed(
-            "重要事項",
-            f"• 至{uid_channel.mention}輸入原神uid\n"
-            "• 輸入`/role`指令選擇原神世界等級\n"
-            "• 如果需要原神幫助, 可以使用`/find`指令\n"
-            "• [什麼是flow幣?](https://discord.com/channels/916838066117824553/965964989875757156/966252132355424286)\n"
-            "• 想在dc內直接查閱原神樹脂數量嗎? 輸入`/cookie`來設定你的帳號吧!\n"
-            "• 最重要的, 祝你在這裡玩的開心! <:omg:969823101133160538>")
-        embed.set_thumbnail(url=member.avatar)
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (member.id,))
-        result = await c.fetchone()
-        if result is None:
-            await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
-            self.flow_app.register(member.id)
-        await public.send(content=f"{member.mention}歡迎來到緣神有你!", embed=embed)
-
     @app_commands.command(
         name='ping',
         description='查看機器人目前延遲'

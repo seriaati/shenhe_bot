@@ -9,6 +9,7 @@ from discord.ext import commands
 from cogs.flow import FlowCog
 from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
+from cogs.welcome import WelcomeCog
 from utility.config import config
 from utility.utils import log
 
@@ -52,6 +53,8 @@ class ShenheBot(commands.Bot):
         self.add_view(FlowCog.ConfirmView(None, self.db))
         self.add_view(GiveAwayCog.GiveAwayView(self.db))
         self.add_view(ReactionRoles.RoleSelection())
+        self.add_view(WelcomeCog.AcceptRules())
+        self.add_view(WelcomeCog.StartTutorial())
 
     async def on_ready(self):
         await self.change_presence(
