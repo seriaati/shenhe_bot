@@ -29,17 +29,17 @@ class GiveAwayCog(commands.Cog):
         role='只有哪些身份組擁有著可以參加抽獎?',
         refund_mode='是否要開啟退款模式?')
     @app_commands.choices(refund_mode=[
-        Choice(name='是', value=0),
-        Choice(name='否', value=1)
+        Choice(name='是', value=1),
+        Choice(name='否', value=0)
     ])
     async def create_giveaway(
             self, i: Interaction,
-            prize: str, goal: int, ticket: int, role: Optional[Role] = None, refund_mode: int = 1):
+            prize: str, goal: int, ticket: int, role: Optional[Role] = None, refund_mode: int = 0):
         print(log(False, False, 'giveaway',
               f'{i.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role}, refund_mode={refund_mode})'))
         channel = i.client.get_channel(gv_channel_id)
         role_exclusive = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
-        refund_str = '(會退款)' if refund_mode == 0 else '(不會退款)'
+        refund_str = '(會退款)' if refund_mode == 1 else '(不會退款)'
         giveaway_view = GiveAwayCog.GiveAwayView(self.bot.db, i)
         await i.response.send_message(embed=defaultEmbed(
             ":tada: 抽獎啦!!!",
@@ -77,14 +77,14 @@ class GiveAwayCog(commands.Cog):
             gv = await c.fetchone()
             role = i.guild.get_role(gv[4])
             role_str = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
-            redun_str = '(會退款)' if gv[5] == 1 else '(不會退款)'
+            refund_str = '(會退款)' if gv[5] == 1 else '(不會退款)'
             embed = defaultEmbed(
                 ":tada: 抽獎啦!!!",
                 f"獎品: {gv[0]}\n"
                 f"目前flow幣: {gv[3]}/{gv[1]}\n"
                 f"參加抽獎要付的flow幣: {gv[2]}\n"
                 f"{role_str}\n"
-                f'{redun_str}')
+                f'{refund_str}')
             return embed
 
         async def ticket_flow_check(self, user_id: int, ticket: int):
@@ -235,7 +235,7 @@ class GiveAwayCog(commands.Cog):
             await c.execute('SELECT * FROM giveaway_members WHERE msg_id = ?', (self.values[0],))
             members = await c.fetchone()
             if members is None:
-                await i.response.send_message(embed=defaultEmbed('🥲 強制結束失敗','還沒有人參加過這個抽獎'), ephemeral=True)
+                await i.response.send_message(embed=defaultEmbed('🥲 強制結束失敗', '還沒有人參加過這個抽獎'), ephemeral=True)
                 return
             await c.execute('SELECT goal FROM giveaway WHERE msg_id = ?', (int(self.values[0]),))
             goal = await c.fetchone()
