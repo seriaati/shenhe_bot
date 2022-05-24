@@ -10,7 +10,7 @@ from utility.RollApp import RollApp
 
 global one_pull_price, debug_toggle
 one_pull_price = 10
-debug_toggle = True
+debug_toggle = False
 
 
 class RollCog(commands.Cog):

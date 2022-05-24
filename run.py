@@ -42,7 +42,7 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        debug_toggle = True
+        debug_toggle = False
         self.db = await aiosqlite.connect('main.db')
         db_utils = DbUtils(self.db)
         check, cursor = await db_utils.table_exists('flow_accounts')

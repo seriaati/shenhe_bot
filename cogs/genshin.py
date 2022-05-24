@@ -16,7 +16,7 @@ from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
 
 global debug_toggle
-debug_toggle = True
+debug_toggle = False
 
 
 class GenshinCog(commands.Cog):
