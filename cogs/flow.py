@@ -76,7 +76,7 @@ class FlowCog(commands.Cog):
                                hour=11, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     await c.execute('SELECT morning FROM flow_accounts WHERE user_id = ?', (user_id,))
-                    morning = c.fetchone()
+                    morning = await c.fetchone()
                     if parser.parse(morning[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='morning')
@@ -88,7 +88,7 @@ class FlowCog(commands.Cog):
                                hour=17, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     await c.execute('SELECT noon FROM flow_accounts WHERE user_id = ?', (user_id,))
-                    noon = c.fetchone()
+                    noon = await c.fetchone()
                     if parser.parse(noon[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='noon')
@@ -100,7 +100,7 @@ class FlowCog(commands.Cog):
                                1, hour=4, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     await c.execute('SELECT night FROM flow_accounts WHERE user_id = ?', (user_id,))
-                    night = c.fetchone()
+                    night = await c.fetchone()
                     if parser.parse(night[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='night')
