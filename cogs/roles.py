@@ -67,7 +67,7 @@ class ReactionRoles(commands.Cog):
                         await interaction.user.add_roles(r)
                         await interaction.response.send_message(embed=defaultEmbed(f'✅ 已給予世界等級{self.number}身份組', ''), ephemeral=True)
 
-        @select(options=get_role_options(), placeholder='請選擇身份組', min_values=1, max_values=1)
+        @select(options=get_role_options(), placeholder='請選擇身份組', min_values=1, max_values=1, custom_id='role_selection_select')
         async def role_chooser(self, interaction: Interaction, select: Select):
             choice = select.values[0]
             action_menu = self.ButtonChoices(choice)
