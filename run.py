@@ -42,7 +42,6 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        debug_toggle = False
         self.db = await aiosqlite.connect('main.db')
         db_utils = DbUtils(self.db)
         check, cursor = await db_utils.table_exists('flow_accounts')
@@ -119,9 +118,9 @@ class ShenheBot(commands.Bot):
         check, cursor = await db_utils.table_exists('guild_members')
         if not check:
             await cursor.execute('CREATE TABLE guild_members (user_id INTEGER PRIMARY KEY)')
-            guild = self.get_guild(916838066117824553) if not debug_toggle else self.get_guild(778804551972159489)
-            for member in guild.members:
-                await cursor.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
+            guild_members = openFile('guild_members')
+            for member, date in guild_members.items():
+                await cursor.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member,))
         await self.db.commit()
         
 

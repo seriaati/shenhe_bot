@@ -60,7 +60,7 @@ class OtherCMDCog(commands.Cog):
             "• 想在dc內直接查閱原神樹脂數量嗎? 輸入`/cookie`來設定你的帳號吧!\n"
             "• 最重要的, 祝你在這裡玩的開心! <:omg:969823101133160538>")
         embed.set_thumbnail(url=member.avatar)
-        c: aiosqlite.Cursor = self.bot.db.cursor()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (member.id,))
         result = await c.fetchone()
         if result is None:

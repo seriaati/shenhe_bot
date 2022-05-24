@@ -4,7 +4,7 @@ from discord import ButtonStyle, Interaction, app_commands, Thread
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, View
-from utility.FlowApp import flow_app
+from utility.FlowApp import FlowApp
 from utility.utils import ayaakaaEmbed, log
 
 global debug_toggle
@@ -13,6 +13,7 @@ debug_toggle = False
 class FishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.flow_app = FlowApp(self.bot.db)
 
     global fish_list, fish_flow_list, fish_image_list
     fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
@@ -71,7 +72,7 @@ class FishCog(commands.Cog):
 
             if self.index == 0:  # [0] 虱目魚
                 if value <= 60:  # 60% Chance of increasing flow amount by 1
-                    flow_app.transaction(interaction.user.id, 1)
+                    await self.flow_app.transaction(interaction.user.id, 1)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 1 flow幣!', ephemeral=True)
                     # e.g. 摸虱目魚摸到 1 flow幣!
                 else:
@@ -81,7 +82,7 @@ class FishCog(commands.Cog):
             # [1] 鮭魚, [2] 鱈魚, [3] 鮪魚, [4] 鰻魚
             elif self.index >= 1 and self.index <= 4:
                 if value <= 30:  # 30% Chance of increasing flow amount by 2
-                    flow_app.transaction(interaction.user.id, 2)
+                    await self.flow_app.transaction(interaction.user.id, 2)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 2 flow幣!', ephemeral=True)
                     # e.g. 摸鮭魚摸到 2 flow幣!
                 else:
@@ -91,11 +92,11 @@ class FishCog(commands.Cog):
             # [5] 龍蝦, [6] 螃蟹,
             elif self.index >= 5 and self.index <= 6:
                 if value <= 50:  # 50% Chance of increasing flow amount by 5
-                    flow_app.transaction(interaction.user.id, 5)
+                    await self.flow_app.transaction(interaction.user.id, 5)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 5 flow幣!', ephemeral=True)
                     # e.g. 摸龍蝦摸到 5 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 5
-                    flow_app.transaction(interaction.user.id, -5)
+                    await self.flow_app.transaction(interaction.user.id, -5)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**鉗到了，損失了 5 flow幣 qwq', ephemeral=True)
                     # e.g. 被龍蝦鉗到了，損失了 5 flow幣 qwq
 
@@ -103,33 +104,33 @@ class FishCog(commands.Cog):
             # [7] 心海
             elif self.index == 7:
                 if value <= 50:  # 50% Chance of increasing flow amount by 7
-                    flow_app.transaction(interaction.user.id, 7)
+                    await self.flow_app.transaction(interaction.user.id, 7)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 7 flow幣!', ephemeral=True)
                     # e.g. 摸心海摸到 7 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 7
-                    flow_app.transaction(interaction.user.id, -7)
+                    await self.flow_app.transaction(interaction.user.id, -7)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**打飛了，損失了 7 flow幣 qwq', ephemeral=True)
                     # e.g. 被心海打飛了，損失了 7 flow幣 qwq
 
             # 摸大白鯊有機率獲得或損失 10 flow幣
             elif self.index == 8:  # [8] 大白鯊
                 if value <= 50:  # 50% Chance of increasing flow amount by 10
-                    flow_app.transaction(interaction.user.id, 10)
+                    await self.flow_app.transaction(interaction.user.id, 10)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 10 flow幣!', ephemeral=True)
                     # e.g. 摸大白鯊 摸到 10 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 10
-                    flow_app.transaction(interaction.user.id, -10)
+                    await self.flow_app.transaction(interaction.user.id, -10)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**咬到了，損失了 10 flow幣 qwq', ephemeral=True)
                     # e.g. 被大白鯊咬到了，損失了 10 flow幣 qwq
 
             # 摸達達利鴨有機率獲得或損失 20 flow幣
             elif self.index == 9:  # [9] 達達利鴨
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
-                    flow_app.transaction(interaction.user.id, 20)
+                    await self.flow_app.transaction(interaction.user.id, 20)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
                     # e.g. 摸達達利鴨摸到 30 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
-                    flow_app.transaction(interaction.user.id, -20)
+                    await self.flow_app.transaction(interaction.user.id, -20)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**偷襲，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
 
