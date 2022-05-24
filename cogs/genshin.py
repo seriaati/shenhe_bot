@@ -75,7 +75,7 @@ class GenshinCog(commands.Cog):
                 await thread.send(content=user.mention, embed=embed)
                 await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
             if resin < resin_threshold:
-                await c.execute('UPDATE genshin_accoutns SET current_notif = 0 WHERE user_id = ?', (user_id,))
+                await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
         print(log(True, False, 'Task loop',
               f'Resin checke finished {count} in total'))
