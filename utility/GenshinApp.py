@@ -77,7 +77,7 @@ class GenshinApp:
         if result is None:
             await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (user_id, uid))
         else:
-            await c.execute('UPDATE genshin_accounts SET uid = ?', (uid,))
+            await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
         await self.db.commit()
         return defaultEmbed('✅ UID設置成功', f'uid: {uid}')
 
