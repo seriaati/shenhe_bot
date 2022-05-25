@@ -97,15 +97,16 @@ class WelcomeCog(commands.Cog):
                 '`/check` 目前樹脂\n'
                 '`/abyss` 深淵數據\n'
                 '`/today` 今天獲得的原石及摩拉數量\n'
-                '`/remind` 樹脂溢出提醒'
+                '`/remind` 樹脂溢出提醒\n'
                 f'有興趣的話, 可以至 {factory.mention} 使用`/cookie`設置帳號'
             )
             embeds.append(embed)
             embed = defaultEmbed(
                 'flow幣系統',
                 '本群擁有專屬的經濟系統\n'
-                '可以幫助你獲得免費原神月卡等好物'
-                '有興趣的話, 可以在進群後使用`/tutorial`指令 (不要直接在這裡用哦)'
+                '可以幫助你獲得免費原神月卡等好物\n'
+                '有興趣的話\n'
+                '可以在進群後使用`/tutorial`指令 (不要直接在這裡用哦)'
             )
             embeds.append(embed)
             role = i.client.get_channel(962311051683192842)
@@ -113,7 +114,8 @@ class WelcomeCog(commands.Cog):
                 '身份組',
                 f'請至 {role.mention} 領取原神等級身份組\n'
                 '向上滑可以看到國籍身份組領取器\n'
-                '國籍身份組是選好玩的, 按照自己內心的直覺選一個吧! (不選也可以哦)'
+                '國籍身份組是選好玩的\n'
+                '按照自己內心的直覺選一個吧! (不選也可以哦)'
             )
             embeds.append(embed)
             embed = defaultEmbed(
