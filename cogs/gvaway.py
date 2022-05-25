@@ -124,36 +124,37 @@ class GiveAwayCog(commands.Cog):
             goal = goal[0]
             await c.execute('SELECT prize_name, refund_mode_toggle, ticket FROM giveaway WHERE msg_id = ? AND current = ?', (gv_msg_id, goal))
             giveaway = await c.fetchone()
+            if giveaway is None:
+                return
             prize_name = giveaway[0]
             refund_mode_toggle = giveaway[1]
             ticket = giveaway[2]
-            if refund_mode_toggle is not None:
-                await c.execute('SELECT user_id from giveaway_members WHERE msg_id = ?', (gv_msg_id,))
-                giveaway_participants = await c.fetchall()
-                participant_list = []
-                for index, tuple in enumerate(giveaway_participants):
-                    participant_list.append(tuple[0])
-                channel = i.client.get_channel(gv_channel_id)
-                lulurR = i.client.get_user(665092644883398671)
-                winner_id = random.choice(participant_list)
-                winner = i.client.get_user(winner_id)
-                original_gv_msg: Message = await channel.fetch_message(gv_msg_id)
-                await original_gv_msg.delete()
-                embed = defaultEmbed(
-                    "🎉 抽獎結果",
-                    f"恭喜{winner.mention}獲得價值 **{goal}** flow幣的 **{prize_name}** !")
-                await channel.send(f"{lulurR.mention} {winner.mention}")
-                await channel.send(embed=embed)
-                if refund_mode_toggle == 1:  # 進行退款
-                    for user_id in participant_list:
-                        if winner_id != user_id:  # 如果該ID不是得獎者
-                            # 退款入場費/2
-                            await self.flow_app.transaction(user_id, int(ticket)/2)
-                print(log(True, False, 'Giveaway Ended',
-                      f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
-                await c.execute('DELETE FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
-                await c.execute('DELETE FROM giveaway_members WHERE msg_id = ?', (gv_msg_id,))
-                await self.db.commit()
+            await c.execute('SELECT user_id from giveaway_members WHERE msg_id = ?', (gv_msg_id,))
+            giveaway_participants = await c.fetchall()
+            participant_list = []
+            for index, tuple in enumerate(giveaway_participants):
+                participant_list.append(tuple[0])
+            channel = i.client.get_channel(gv_channel_id)
+            lulurR = i.client.get_user(665092644883398671)
+            winner_id = random.choice(participant_list)
+            winner = i.client.get_user(winner_id)
+            original_gv_msg: Message = await channel.fetch_message(gv_msg_id)
+            await original_gv_msg.delete()
+            embed = defaultEmbed(
+                "🎉 抽獎結果",
+                f"恭喜{winner.mention}獲得價值 **{goal}** flow幣的 **{prize_name}** !")
+            await channel.send(f"{lulurR.mention} {winner.mention}")
+            await channel.send(embed=embed)
+            if refund_mode_toggle == 1:  # 進行退款
+                for user_id in participant_list:
+                    if winner_id != user_id:  # 如果該ID不是得獎者
+                        # 退款入場費/2
+                        await self.flow_app.transaction(user_id, int(ticket)/2)
+            print(log(True, False, 'Giveaway Ended',
+                    f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
+            await c.execute('DELETE FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
+            await c.execute('DELETE FROM giveaway_members WHERE msg_id = ?', (gv_msg_id,))
+            await self.db.commit()
 
         async def check_if_already_in_gv(self, user_id: int, gv_msg_id: int):
             c = await self.db.cursor()
@@ -198,7 +199,8 @@ class GiveAwayCog(commands.Cog):
             await self.join_giveaway(interaction.user.id, ticket, msg.id)
             await interaction.response.send_message(embed=defaultEmbed(f'<:penguin_hug:978250194779000892> 參加抽獎成功', f'flow幣 **-{ticket}**'), ephemeral=True)
             await self.update_gv_msg(msg.id, interaction)
-            await self.check_gv_finish(gv_msg_id=msg.id, i=interaction)
+            await self.check_gv_finish(msg.id, interaction)
+
 
         @discord.ui.button(label='退出抽獎', style=discord.ButtonStyle.grey, custom_id='leave_giveaway_button')
         async def leave_giveaway_callback(self, interaction: Interaction, button: discord.ui.Button):
