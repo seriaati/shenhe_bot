@@ -546,7 +546,8 @@ class FlowCog(commands.Cog):
         if check == False:
             await i.response.send_message(embed=msg, ephemeral=True)
             return
-        role_name = f'請使用`/role`來選擇世界等級身份組'
+        channel = i.client.get_channel(962311051683192842)
+        role_found = False
         if not debug_toggle:
             WLroles = []
             for index in range(1, 9):
@@ -555,12 +556,19 @@ class FlowCog(commands.Cog):
             for r in WLroles:
                 if r in i.user.roles:
                     role_name = r.name
+                    role_found = True
                     break
         check, msg = await self.check_flow(i.user.id, flow)
         if check == False:
             await i.response.send_message(embed=msg)
             return
-        role_str = f'>= {role_name}' if type == 1 else f'<= {role_name}'
+        if not role_found:
+            role_str = f'請至 {channel.mention} 選擇世界等級身份組'
+        else:
+            if type == 1:
+                role_str = f'>= {role_name}'
+            else:
+                role_str = f'<= {role_name}'
         if type == 1:
             embed = defaultEmbed(
                 f'請求幫助: {title}',
