@@ -64,11 +64,11 @@ class TutorialPaginator:
         self.interaction = interaction
         self.pages = pages
 
-    async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True) -> None:
+    async def start(self, db: aiosqlite.Connection, embeded: Optional[bool] = False, quick_navigation: bool = True) -> None:
         if not (self.pages):
             raise ValueError("Missing pages")
 
-        view = _view(self.interaction.user, self.pages, embeded)
+        view = _view(self.interaction.user, self.pages, embeded, db)
 
         view.previous.disabled = True if (view.current_page <= 0) else False
         view.next.disabled = True if (

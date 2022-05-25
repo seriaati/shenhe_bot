@@ -68,7 +68,8 @@ class WelcomeCog(commands.Cog):
             await c.send(content=after.mention, embed=embed, view=view)
 
     class AcceptRules(View):
-        def __init__(self):
+        def __init__(self, db: aiosqlite.Connection):
+            self.db = db
             super().__init__(timeout=None)
 
         @button(label='同意以上規則並開始入群導引', style=ButtonStyle.green, custom_id='accept_rule_button')
@@ -78,11 +79,12 @@ class WelcomeCog(commands.Cog):
                 '申鶴將會快速的帶領你了解群內的主要系統\n'
                 '請有耐心的做完唷~ <:penguin_hug:978250194779000892>'
             )
-            view = WelcomeCog.StartTutorial()
+            view = WelcomeCog.StartTutorial(self.db)
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
 
     class StartTutorial(View):
-        def __init__(self):
+        def __init__(self, db: aiosqlite.Connection):
+            self.db = db
             super().__init__(timeout=None)
 
         @button(label='開始!', style=ButtonStyle.blurple, custom_id='start_tutorial_button')
@@ -139,7 +141,7 @@ class WelcomeCog(commands.Cog):
                 '在這裡好好享受歡樂的時光吧!'
             )
             embeds.append(embed)
-            await TutorialPaginator(i, embeds).start(embeded=True)
+            await TutorialPaginator(i, embeds).start(db=self.db, embeded=True)
 
     @app_commands.command(name='tutorial', description='進行flow幣系統教學')
     async def flow_tutorial(self, i: Interaction):
@@ -212,7 +214,7 @@ class WelcomeCog(commands.Cog):
             '9. 私訊騷擾其他旅行者\n\n'
             '以上守則會隨著大家違規的創意和台主們的心情不定時更新, 感謝遵守規則的各位~\n'
         )
-        view = WelcomeCog.AcceptRules()
+        view = WelcomeCog.AcceptRules(self.bot.db)
         await i.response.send_message(content=content, embed=rules, view=view)
 
     @welcome.error
