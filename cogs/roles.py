@@ -80,6 +80,7 @@ class ReactionRoles(commands.Cog):
                 await interaction.response.send_message(embed=embed, view=action_menu, ephemeral=True)
 
     @app_commands.command(name='role', description='取得身份組')
+    @app_commands.checks.has_role('小雪團隊')
     async def get_role(self, i: Interaction):
         role_selection_view = self.RoleSelection()
         embed = defaultEmbed(
@@ -87,6 +88,12 @@ class ReactionRoles(commands.Cog):
             '從選單中選擇你想要的身份組吧!'
         )
         await i.response.send_message(embed=embed, view=role_selection_view)
+
+    @get_role.error
+    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            channel = self.bot.get_channel(962311051683192842)
+            await interaction.response.send_message(f'請至 {channel.mention} 獲取身份組哦', ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
