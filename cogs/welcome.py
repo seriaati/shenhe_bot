@@ -33,8 +33,8 @@ class WelcomeCog(commands.Cog):
 
         @button(label='歡迎~', style=ButtonStyle.blurple, custom_id='welcome_button')
         async def welcome(self, i: Interaction, button: Button):
-            image_urls = ['https://media.discordapp.net/attachments/936772657536446535/978537906538954782/mhQ174-icc4ZdT1kSdw-dw.gif', 'https://images-ext-1.discordapp.net/external/Le6fh1tAi0HoIJ645bmMdznShROcixc1_cMVhdwSOQ8/https/media.discordapp.net/attachments/630553822036623370/946061268828192829/don_genshin220223.gif', 'https://media.discordapp.net/attachments/813430632347598882/821418716243427419/d6bf3d80f1151c55.gif', 'https://images-ext-2.discordapp.net/external/ZT2POprq370cRqLSihczTLR04h7yWDJ6sYDS0SlwbL0/https/media.discordapp.net/attachments/630553822036623370/811578439852228618/kq_genshin210217.gif', 'https://images-ext-1.discordapp.net/external/5WaTn6d2bg7xDlfVsKI22nbHyfr0j-t58VzkampNkXM/https/media.discordapp.net/attachments/630553822036623370/810819929187155968/kq.gif',
-                          'https://images-ext-2.discordapp.net/external/AjGrIlK21bVWi-Nl_L6gdfbkvwo_ijZKE6-F3mNNIJo/https/media.discordapp.net/attachments/630553822036623370/865978275125264414/ayk_genshin210717.gif', 'https://images-ext-1.discordapp.net/external/r0KCbNATVYUb3QzgliOmVKzzP2FxkBb3aDCHFJkz7x0/https/media.discordapp.net/attachments/630553822036623370/890615080381730836/kkm_genshin210923.gif', 'https://images-ext-2.discordapp.net/external/7rQjNK6dkCjXsF7n70Kn4qorxGyiBiX9dlzQvP2R-9c/https/media.discordapp.net/attachments/630553822036623370/840964488362590208/qq_genshin210509.gif', 'https://images-ext-2.discordapp.net/external/6OXz15XV0RNCIkbFCjXCYUPx7h1zNcZ1inqNYo0vkiM/https/media.discordapp.net/attachments/630553822036623370/920326390329516122/rid_genshin211214.gif', 'https://images-ext-2.discordapp.net/external/NqQ8IkDIOfxEp_FoobMySLzlW2JDAa1lK8IxQOVvxng/https/media.discordapp.net/attachments/630553822036623370/866703863276240926/rdsg_genshin210719.gif']
+            image_urls = ['https://media.discordapp.net/attachments/936772657536446535/978537906538954782/mhQ174-icc4ZdT1kSdw-dw.gif', 'https://images-ext-1.discordapp.net/external/Le6fh1tAi0HoIJ645bmMdznShROcixc1_cMVhdwSOQ8/, https://media.discordapp.net/attachments/630553822036623370/946061268828192829/don_genshin220223.gif', 'https://media.discordapp.net/attachments/813430632347598882/821418716243427419/d6bf3d80f1151c55.gif', 'https://images-ext-2.discordapp.net/external/ZT2POprq370cRqLSihczTLR04h7yWDJ6sYDS0SlwbL0/https/media.discordapp.net/attachments/630553822036623370/811578439852228618/kq_genshin210217.gif', 'https://images-ext-1.discordapp.net/external/5WaTn6d2bg7xDlfVsKI22nbHyfr0j-t58VzkampNkXM/https/media.discordapp.net/attachments/630553822036623370/810819929187155968/kq.gif',
+                          'https://images-ext-2.discordapp.net/external/AjGrIlK21bVWi-Nl_L6gdfbkvwo_ijZKE6-F3mNNIJo/, https://media.discordapp.net/attachments/630553822036623370/865978275125264414/ayk_genshin210717.gif', 'https://images-ext-1.discordapp.net/external/r0KCbNATVYUb3QzgliOmVKzzP2FxkBb3aDCHFJkz7x0/, https://media.discordapp.net/attachments/630553822036623370/890615080381730836/kkm_genshin210923.gif', 'https://images-ext-2.discordapp.net/external/7rQjNK6dkCjXsF7n70Kn4qorxGyiBiX9dlzQvP2R-9c/https/media.discordapp.net/attachments/630553822036623370/840964488362590208/qq_genshin210509.gif', 'https://images-ext-2.discordapp.net/external/6OXz15XV0RNCIkbFCjXCYUPx7h1zNcZ1inqNYo0vkiM/https/media.discordapp.net/attachments/630553822036623370/920326390329516122/rid_genshin211214.gif', 'https://images-ext-2.discordapp.net/external/NqQ8IkDIOfxEp_FoobMySLzlW2JDAa1lK8IxQOVvxng/https/media.discordapp.net/attachments/630553822036623370/866703863276240926/rdsg_genshin210719.gif']
             image_url = random.choices(image_urls)
             embed = defaultEmbed('歡迎歡迎~','<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
@@ -53,6 +53,7 @@ class WelcomeCog(commands.Cog):
             welcome_str = random.choices(welcome_strs)
             embed = defaultEmbed(
                 f'歡迎 {after.name} !', f'歡迎來到緣神有你(๑•̀ω•́)ノ\n {welcome_str}')
+            embed.set_thumbnail(url=after.avatar)
             await c.send(content=after.mention, embed=embed, view=view)
 
     class AcceptRules(View):
@@ -94,12 +95,6 @@ class WelcomeCog(commands.Cog):
             )
             embeds.append(embed)
             embed = defaultEmbed(
-                '原神工具',
-                '輸入`/build`可以查看任何一個原神角色的配置及數據\n'
-                '輸入`/rate`可以進行簡單的聖遺物評分'
-            )
-            embeds.append(embed)
-            embed = defaultEmbed(
                 'flow幣系統',
                 '這是群內專屬的經濟系統\n'
                 '在你入群的時候, 系統已經幫你創建一個帳號\n'
@@ -119,10 +114,8 @@ class WelcomeCog(commands.Cog):
             embeds.append(embed)
             embed = defaultEmbed(
                 '委託系統',
-                '萌新:\n'
-                f'歡迎到 {c.mention} 使用`/find`指令來發布委託\n'
-                '大佬:\n'
-                f'可以到 {role.mention} 領取 **委託通知** 身份組\n\n'
+                f'萌新:歡迎到 {c.mention} 使用`/find`指令來發布委託\n'
+                f'大佬:可以到 {role.mention} 領取 **委託通知** 身份組\n\n'
                 '可以免費發布委託, 也可以花費 **flow幣 **發布\n'
                 '接取委託有機會獲得 **flow幣** (取決於發布人)'
             )
@@ -154,13 +147,6 @@ class WelcomeCog(commands.Cog):
                 '以上只是申鶴的一小部份而已!\n'
                 '想要查看所有的指令請打`/help`(不要直接在這裡用哦)\n'
                 f'有問題歡迎至 {factory.mention} 詢問我(小雪)'
-            )
-            embeds.append(embed)
-            embed = defaultEmbed(
-                '關於申鶴',
-                '打個小小廣告\n'
-                '如果你是python大佬的話, 歡迎加入小雪團隊\n'
-                '參與申鶴的開發'
             )
             embeds.append(embed)
             embed = defaultEmbed(
