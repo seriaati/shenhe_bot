@@ -125,6 +125,7 @@ class GenshinApp:
         except genshin.errors.DataNotPublic as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
@@ -132,8 +133,15 @@ class GenshinApp:
                 '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
                 f'```{e}```'
             )
+            return result
         except Exception as e:
             print(log(False, True, 'Notes', e))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+            return result
         else:
             if check_resin_excess == True:
                 return notes.current_resin
