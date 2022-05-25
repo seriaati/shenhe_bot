@@ -43,7 +43,7 @@ class _view(View):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
         uid = await c.fetchone()
         if uid is None:
-            await interaction.response.send_message(embed=errEmbed('你似乎還沒有設定UID!', '要設定之後才可以繼續進行哦\n如果因為是亞服UID而沒辦法設定的話, 很抱歉, 可能沒辦法讓你入群了\n設置上有問題嗎? 點上面的小雪頭像來私訊她'))
+            await interaction.response.send_message(embed=errEmbed('你似乎還沒有設定UID!', '要設定之後才可以繼續進行哦\n如果因為是亞服UID而沒辦法設定的話, 很抱歉, 可能沒辦法讓你入群了\n設置上有問題嗎? 點上面的小雪頭像來私訊她'), ephemeral=True)
         else:
             self.current_page += 1
             if self.current_page == 1:
