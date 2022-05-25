@@ -1,13 +1,12 @@
 import asyncio
 from datetime import datetime, timedelta
-from select import EPOLLONESHOT
 from typing import Optional
 
 import aiosqlite
 import discord
 import yaml
-from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption, TextChannel,
-                     User, app_commands)
+from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption,
+                     TextChannel, User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from discord.ui import Button, Select, View
