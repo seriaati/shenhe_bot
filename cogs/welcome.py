@@ -51,7 +51,7 @@ class WelcomeCog(commands.Cog):
             c = self.bot.get_channel(916951131022843964)
             view = WelcomeCog.Welcome(after)
             welcome_strs = ['祝你保底不歪十連雙黃', '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
-                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||']
+                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||', '刻晴賽高!', '要好好跟大家相處唷~', '你也是偽裝成萌新的大佬嗎?', '七七喜歡你~']
             welcome_str = random.choice(welcome_strs)
             embed = defaultEmbed(
                 f'歡迎 {after.name} !', f'歡迎來到緣神有你(๑•̀ω•́)ノ\n {welcome_str}')
