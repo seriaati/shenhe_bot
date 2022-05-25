@@ -55,6 +55,7 @@ class ShenheBot(commands.Bot):
         self.add_view(ReactionRoles.RoleSelection())
         self.add_view(WelcomeCog.AcceptRules())
         self.add_view(WelcomeCog.StartTutorial())
+        self.add_view(WelcomeCog.Welcome(None))
 
     async def on_ready(self):
         await self.change_presence(
