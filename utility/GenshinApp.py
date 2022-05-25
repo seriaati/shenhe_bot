@@ -70,7 +70,7 @@ class GenshinApp:
             embed = errEmbed(
                 '❌ UID設置失敗', f'請至<https://www.hoyolab.com>登入\n跟著下方圖片中的步驟操作')
             embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
-            return embed
+            return embed, False
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
@@ -79,7 +79,7 @@ class GenshinApp:
         else:
             await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
         await self.db.commit()
-        return defaultEmbed('✅ UID設置成功', f'uid: {uid}')
+        return defaultEmbed('✅ UID設置成功', f'uid: {uid}'), True
 
     async def claimDailyReward(self, user_id: int):
         print(log(False, False, 'Claim', f'{user_id}'))

@@ -154,10 +154,11 @@ class GenshinCog(commands.Cog):
         if uid//100000000 != 9:
             await interaction.response.send_message(embed=errEmbed('你似乎不是台港澳服玩家!', '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n為保群友的遊戲質量, 我們無法接受你的入群申請\n你的確可以繞過這個檢查\n但我們相信如果你的主帳號不是台港澳服的話\n你在這個群內是無法找到一同遊玩的夥伴的\n我們真心認為其他群組對你來說可能是個更好的去處 🙏'), ephemeral=True)
             return
-        result = await self.genshin_app.setUID(interaction.user.id, int(uid))
+        result, success = await self.genshin_app.setUID(interaction.user.id, int(uid))
         c: TextChannel = interaction.client.get_channel(
             935111580545343509)  # UID台
-        await c.send(f'{interaction.user.mention} 的UID是 {uid}')
+        if success:
+            await c.send(f'{interaction.user.mention} 的UID是 {uid}')
         await interaction.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(
