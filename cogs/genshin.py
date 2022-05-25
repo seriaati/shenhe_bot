@@ -58,7 +58,7 @@ class GenshinCog(commands.Cog):
             current_notif = tuple[2]
             max_notif = tuple[3]
             resin = await self.genshin_app.getRealTimeNotes(user_id, True)
-            print(f'user_id = {user_id}, resin = {resin}')
+            print(log(True, False, 'Resin Check', f'user_id = {user_id}, resin = {resin}'))
             count += 1
             if resin >= resin_threshold and current_notif < max_notif:
                 guild: Guild = self.bot.get_guild(
