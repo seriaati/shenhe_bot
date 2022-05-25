@@ -38,7 +38,7 @@ class WelcomeCog(commands.Cog):
             image_url = random.choice(image_urls)
             embed = defaultEmbed('歡迎歡迎~','<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
-            embed.set_author(name=i.user.name, url=i.user.avatar)
+            embed.set_author(name=i.user.name, icon_url=i.user.avatar)
             await i.response.send_message(embed=embed)
 
     @commands.Cog.listener()
