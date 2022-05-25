@@ -37,7 +37,8 @@ class WelcomeCog(commands.Cog):
             image_urls = ['https://media.discordapp.net/attachments/936772657536446535/978537906538954782/mhQ174-icc4ZdT1kSdw-dw.gif', 'https://images-ext-1.discordapp.net/external/Le6fh1tAi0HoIJ645bmMdznShROcixc1_cMVhdwSOQ8/, https://media.discordapp.net/attachments/630553822036623370/946061268828192829/don_genshin220223.gif', 'https://media.discordapp.net/attachments/813430632347598882/821418716243427419/d6bf3d80f1151c55.gif', 'https://images-ext-2.discordapp.net/external/ZT2POprq370cRqLSihczTLR04h7yWDJ6sYDS0SlwbL0/https/media.discordapp.net/attachments/630553822036623370/811578439852228618/kq_genshin210217.gif', 'https://images-ext-1.discordapp.net/external/5WaTn6d2bg7xDlfVsKI22nbHyfr0j-t58VzkampNkXM/https/media.discordapp.net/attachments/630553822036623370/810819929187155968/kq.gif',
                           'https://images-ext-2.discordapp.net/external/AjGrIlK21bVWi-Nl_L6gdfbkvwo_ijZKE6-F3mNNIJo/, https://media.discordapp.net/attachments/630553822036623370/865978275125264414/ayk_genshin210717.gif', 'https://images-ext-1.discordapp.net/external/r0KCbNATVYUb3QzgliOmVKzzP2FxkBb3aDCHFJkz7x0/, https://media.discordapp.net/attachments/630553822036623370/890615080381730836/kkm_genshin210923.gif', 'https://images-ext-2.discordapp.net/external/7rQjNK6dkCjXsF7n70Kn4qorxGyiBiX9dlzQvP2R-9c/https/media.discordapp.net/attachments/630553822036623370/840964488362590208/qq_genshin210509.gif', 'https://images-ext-2.discordapp.net/external/6OXz15XV0RNCIkbFCjXCYUPx7h1zNcZ1inqNYo0vkiM/https/media.discordapp.net/attachments/630553822036623370/920326390329516122/rid_genshin211214.gif', 'https://images-ext-2.discordapp.net/external/NqQ8IkDIOfxEp_FoobMySLzlW2JDAa1lK8IxQOVvxng/https/media.discordapp.net/attachments/630553822036623370/866703863276240926/rdsg_genshin210719.gif']
             image_url = random.choice(image_urls)
-            embed = defaultEmbed(f'{self.member.name} 歡迎歡迎~','<:penguin_hug:978250194779000892>')
+            embed = defaultEmbed(
+                f'{self.member.name} 歡迎歡迎~', '<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
             embed.set_author(name=i.user.name, icon_url=i.user.avatar)
             await i.response.send_message(embed=embed)
@@ -91,56 +92,28 @@ class WelcomeCog(commands.Cog):
             embed = defaultEmbed(
                 '原神系統',
                 '申鶴有許多原神相關的方便功能\n'
-                '如樹脂查詢, 角色查詢, 自動簽到, 樹脂提醒, 祈願分析, 深淵數據等...\n'
+                '`/farm` 今天能刷的原神素材'
+                '`/build` 不同角色的配置方式'
+                '`/check` 目前樹脂\n'
+                '`/abyss` 深淵數據\n'
+                '`/today` 今天獲得的原石及摩拉數量\n'
+                '`/remind` 樹脂溢出提醒'
                 f'有興趣的話, 可以至 {factory.mention} 使用`/cookie`設置帳號'
             )
             embeds.append(embed)
             embed = defaultEmbed(
                 'flow幣系統',
-                '這是群內專屬的經濟系統\n'
-                '在你入群的時候, 系統已經幫你創建一個帳號\n'
-                '並贈送了20 flow幣給你\n'
-                '輸入`/acc`來看看你的 **flow帳號** 吧!'
+                '本群擁有專屬的經濟系統\n'
+                '可以幫助你獲得免費原神月卡等好物'
+                '有興趣的話, 可以在進群後使用`/tutorial`指令 (不要直接在這裡用哦)'
             )
             embeds.append(embed)
-            gv = i.client.get_channel(965517075508498452)
             role = i.client.get_channel(962311051683192842)
             embed = defaultEmbed(
-                '抽獎系統',
-                f'抽獎都會在 {gv.mention} 進行\n'
-                '抽獎需要支付flow幣來參與\n'
-                f'可以到 {role.mention} 領取 **抽獎通知** 身份組'
-            )
-            c = i.client.get_channel(960861105503232030)
-            embeds.append(embed)
-            embed = defaultEmbed(
-                '委託系統',
-                f'萌新:歡迎到 {c.mention} 使用`/find`指令來發布委託\n'
-                f'大佬:可以到 {role.mention} 領取 **委託通知** 身份組\n\n'
-                '可以免費發布委託, 也可以花費 **flow幣 **發布\n'
-                '接取委託有機會獲得 **flow幣** (取決於發布人)'
-            )
-            embeds.append(embed)
-            flow_c = i.client.get_channel(966621141949120532)
-            embed = defaultEmbed(
-                'flow幣活動',
-                '每週都會有不同的活動來取得flow幣\n'
-                '包括討伐挑戰, 拍照等等...盡量符合不同玩家的風格\n'
-                f'有興趣請往 {flow_c.mention}'
-            )
-            embeds.append(embed)
-            embed = defaultEmbed(
-                '祈願系統',
-                '我們在discord中複製了原神的祈願玩法\n'
-                '可以使用`/roll`指令來開啟祈願界面(不要直接在這裡用哦)\n'
-                '有機率抽中不同物品, 取決於當期獎品'
-            )
-            embeds.append(embed)
-            embed = defaultEmbed(
-                '商店系統',
-                '賺到的 **flow幣** 可以在商店進行消費\n'
-                '輸入`/shop show`來看看吧\n'
-                '當你賺到足夠的錢後, 可以用`/shop buy`來購買商品'
+                '身份組',
+                f'請至 {role.mention} 領取原神等級身份組\n'
+                '向上滑可以看到國籍身份組領取器\n'
+                '國籍身份組是選好玩的, 按照自己內心的直覺選一個吧! (不選也可以哦)'
             )
             embeds.append(embed)
             embed = defaultEmbed(
@@ -159,7 +132,61 @@ class WelcomeCog(commands.Cog):
             embeds.append(embed)
             await TutorialPaginator(i, embeds).start(embeded=True)
 
+    @app_commands.command(name='tutorial', description='進行flow幣系統教學')
+    async def flow_tutorial(self, i: Interaction):
+        embeds = []
+        embed = defaultEmbed(
+            'flow幣系統',
+            '這是群內專屬的經濟系統\n'
+            '在你入群的時候, 系統已經幫你創建一個帳號\n'
+            '並贈送了20 flow幣給你\n'
+            '輸入`/acc`來看看你的 **flow帳號** 吧!'
+        )
+        embeds.append(embed)
+        gv = i.client.get_channel(965517075508498452)
+        role = i.client.get_channel(962311051683192842)
+        embed = defaultEmbed(
+            '抽獎系統',
+            f'抽獎都會在 {gv.mention} 進行\n'
+            '抽獎需要支付flow幣來參與\n'
+            f'可以到 {role.mention} 領取 **抽獎通知** 身份組'
+        )
+        c = i.client.get_channel(960861105503232030)
+        embeds.append(embed)
+        embed = defaultEmbed(
+            '委託系統',
+            f'萌新:歡迎到 {c.mention} 使用`/find`指令來發布委託\n'
+            f'大佬:可以到 {role.mention} 領取 **委託通知** 身份組\n\n'
+            '可以免費發布委託, 也可以花費 **flow幣 **發布\n'
+            '接取委託有機會獲得 **flow幣** (取決於發布人)'
+        )
+        embeds.append(embed)
+        flow_c = i.client.get_channel(966621141949120532)
+        embed = defaultEmbed(
+            'flow幣活動',
+            '每週都會有不同的活動來取得flow幣\n'
+            '包括討伐挑戰, 拍照等等...盡量符合不同玩家的風格\n'
+            f'有興趣請往 {flow_c.mention}'
+        )
+        embeds.append(embed)
+        embed = defaultEmbed(
+            '祈願系統',
+            '我們在discord中複製了原神的祈願玩法\n'
+            '可以使用`/roll`指令來開啟祈願界面(不要直接在這裡用哦)\n'
+            '有機率抽中不同物品, 取決於當期獎品'
+        )
+        embeds.append(embed)
+        embed = defaultEmbed(
+            '商店系統',
+            '賺到的 **flow幣** 可以在商店進行消費\n'
+            '輸入`/shop show`來看看吧\n'
+            '當你賺到足夠的錢後, 可以用`/shop buy`來購買商品'
+        )
+        embeds.append(embed)
+        await TutorialPaginator(i, embeds).start(embeded=True)
+
     @app_commands.command(name='welcome', description='送出welcome message')
+    @app_commands.checks.has_role('小雪團隊')
     async def welcome(self, i: Interaction):
         content = '旅行者們，歡迎來到「緣神有你」。\n在這裡你能收到提瓦特的二手消息, 還能找到志同道合的旅行者結伴同行。\n準備好踏上旅途了嗎? 出發前請先閱讀下方的「旅行者須知」。\n'
         rules = defaultEmbed(
@@ -178,6 +205,11 @@ class WelcomeCog(commands.Cog):
         )
         view = WelcomeCog.AcceptRules()
         await i.response.send_message(content=content, embed=rules, view=view)
+
+    @welcome.error
+    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

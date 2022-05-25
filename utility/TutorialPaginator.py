@@ -39,16 +39,10 @@ class _view(View):
         if self.current_page == 1:
             role = interaction.guild.get_role(978626192301236297) # step 1 夢工廠
             await interaction.user.add_roles(role)
-        elif self.current_page == 4:
-            role = interaction.guild.get_role(978626843517288468) # step 2 抽獎台, 身份台
+        elif self.current_page == 3:
+            role = interaction.guild.get_role(978626843517288468) # step 2 身份台
             await interaction.user.add_roles(role)
         elif self.current_page == 5:
-            role = interaction.guild.get_role(978629867916636220) # step 3 委託台
-            await interaction.user.add_roles(role)
-        elif self.current_page == 6:
-            role = interaction.guild.get_role(978673403290615828) # step 4 活動台
-            await interaction.user.add_roles(role)
-        elif self.current_page == 11:
             role = interaction.guild.get_role(978532779098796042) # 旅行者
             await interaction.user.add_roles(role)
         await self.update_children(interaction)
