@@ -49,7 +49,7 @@ class FishCog(commands.Cog):
             )
             # e.g. 是野生的達達利鴨！要摸摸看嗎?
             #     摸達達利鴨有機率獲得或損失 20 flow幣
-        result.set_image(url=fish_image_list[index])
+        result.set_thumbnail(url=fish_image_list[index])
         return result
 
     class TouchFishButton(Button):  # 摸魚按鈕
