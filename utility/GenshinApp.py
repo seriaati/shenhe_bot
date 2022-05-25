@@ -68,7 +68,15 @@ class GenshinApp:
             await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
             embed = errEmbed(
-                '❌ UID設置失敗', f'請至<https://www.hoyolab.com>登入\n跟著下方圖片中的步驟操作')
+                '❌ UID設置失敗',
+                f'請至<https://www.hoyolab.com>登入\n'
+                '跟著下方圖片中的步驟操作\n\n'
+                '文字教學:\n'
+                '1. 點選右上角自己的頭像\n'
+                '2. 個人主頁\n'
+                '3. 右上角「原神」\n'
+                '4. 設定齒輪\n'
+                '5. 三個選項都打開')
             embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
             return embed, False
         c: aiosqlite.Cursor = await self.db.cursor()
