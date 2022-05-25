@@ -1,17 +1,21 @@
 __all__ = ['TutorialPaginator']
 
 
+import aiosqlite
 from discord import Interaction, SelectOption, User, ButtonStyle
 from discord.ui import View, Select, button, Button
 from typing import Optional, List, Union
 
+from utility.utils import errEmbed
+
 
 class _view(View):
-    def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
+    def __init__(self, author: User, pages: List[SelectOption], embeded: bool, db: aiosqlite.Connection):
         super().__init__()
         self.author = author
         self.pages = pages
         self.embeded = embeded
+        self.db = db
         self.current_page = 0
 
     async def interaction_check(self, interaction: Interaction) -> bool:
@@ -35,17 +39,23 @@ class _view(View):
 
     @button(label="下一頁", style=ButtonStyle.blurple, row=1)
     async def next(self, interaction: Interaction, button: Button):
-        self.current_page += 1
-        if self.current_page == 1:
-            role = interaction.guild.get_role(978626192301236297) # step 1 夢工廠
-            await interaction.user.add_roles(role)
-        elif self.current_page == 3:
-            role = interaction.guild.get_role(978626843517288468) # step 2 身份台
-            await interaction.user.add_roles(role)
-        elif self.current_page == 5:
-            role = interaction.guild.get_role(978532779098796042) # 旅行者
-            await interaction.user.add_roles(role)
-        await self.update_children(interaction)
+        c = await self.db.cursor()
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
+        uid = await c.fetchone()
+        if uid is None:
+            await interaction.followup.send(errEmbed('你似乎還沒有設定UID!', '要設定之後才可以繼續進行哦\n如果因為是亞服UID而沒辦法設定的話, 很抱歉, 可能沒辦法讓你入群了\n設置上有問題嗎? 點上面的小雪頭像來私訊她'))
+        else:
+            self.current_page += 1
+            if self.current_page == 1:
+                role = interaction.guild.get_role(978626192301236297) # step 1 夢工廠
+                await interaction.user.add_roles(role)
+            elif self.current_page == 3:
+                role = interaction.guild.get_role(978626843517288468) # step 2 身份台
+                await interaction.user.add_roles(role)
+            elif self.current_page == 5:
+                role = interaction.guild.get_role(978532779098796042) # 旅行者
+                await interaction.user.add_roles(role)
+            await self.update_children(interaction)
 
 
 class TutorialPaginator:
