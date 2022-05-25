@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from select import EPOLLONESHOT
 from typing import Optional
 
 import aiosqlite
@@ -549,6 +550,20 @@ class GenshinCog(commands.Cog):
             text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
         await interaction.response.send_message(embed=result)
 
+    @app_commands.command(name='uid', description='查詢特定使用者的原神UID')
+    @app_commands.rename(player='使用者')
+    @app_commands.describe(player='選擇想要查詢的使用者')
+    async def search_uid(self, i: Interaction, player: Member):
+        c: aiosqlite.Cursor = self.bot.db.cursor()
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
+        uid = await c.fetchone()
+        if uid is None:
+            await i.response.send_message(embed=errEmbed('查無此用戶!', '這個使用者似乎還沒有註冊過UID\n輸入`/setuid`來設置uid'), ephemeral=True)
+            return
+        uid = uid[0]
+        embed = defaultEmbed(f'UID查詢', uid)
+        embed.set_author(name=player, icon_url=player.avatar)
+        await i.response.send_message(embed=embed)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))
