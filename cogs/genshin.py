@@ -553,7 +553,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
-        c: aiosqlite.Cursor = self.bot.db.cursor()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
