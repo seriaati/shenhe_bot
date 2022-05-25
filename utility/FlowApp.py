@@ -30,7 +30,7 @@ class FlowApp:
             default_time = datetime(year=now.year, month=now.month, day=now.day-1,
                                     hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
             c = await self.db.cursor()
-            await c.execute('INSERT INTO flow_accounts(user_id) VALUES(?)', (user_id))
+            await c.execute('INSERT INTO flow_accounts(user_id) VALUES(?)', (user_id,))
             await c.execute(f'UPDATE flow_accounts SET flow = ? WHERE user_id = ?', (20, user_id))
             for time in time_states:
                 await c.execute(f'UPDATE flow_accounts SET {time} = ? WHERE user_id = ?', (default_time, user_id))
