@@ -28,7 +28,8 @@ class WelcomeCog(commands.Cog):
         await self.flow_app.transaction(member.id, flow, is_removing_account=True)
 
     class Welcome(View):
-        def __init__(self):
+        def __init__(self, member: Member):
+            self.member = member
             super().__init__(timeout=None)
 
         @button(label='歡迎~', style=ButtonStyle.blurple, custom_id='welcome_button')
@@ -36,7 +37,7 @@ class WelcomeCog(commands.Cog):
             image_urls = ['https://media.discordapp.net/attachments/936772657536446535/978537906538954782/mhQ174-icc4ZdT1kSdw-dw.gif', 'https://images-ext-1.discordapp.net/external/Le6fh1tAi0HoIJ645bmMdznShROcixc1_cMVhdwSOQ8/, https://media.discordapp.net/attachments/630553822036623370/946061268828192829/don_genshin220223.gif', 'https://media.discordapp.net/attachments/813430632347598882/821418716243427419/d6bf3d80f1151c55.gif', 'https://images-ext-2.discordapp.net/external/ZT2POprq370cRqLSihczTLR04h7yWDJ6sYDS0SlwbL0/https/media.discordapp.net/attachments/630553822036623370/811578439852228618/kq_genshin210217.gif', 'https://images-ext-1.discordapp.net/external/5WaTn6d2bg7xDlfVsKI22nbHyfr0j-t58VzkampNkXM/https/media.discordapp.net/attachments/630553822036623370/810819929187155968/kq.gif',
                           'https://images-ext-2.discordapp.net/external/AjGrIlK21bVWi-Nl_L6gdfbkvwo_ijZKE6-F3mNNIJo/, https://media.discordapp.net/attachments/630553822036623370/865978275125264414/ayk_genshin210717.gif', 'https://images-ext-1.discordapp.net/external/r0KCbNATVYUb3QzgliOmVKzzP2FxkBb3aDCHFJkz7x0/, https://media.discordapp.net/attachments/630553822036623370/890615080381730836/kkm_genshin210923.gif', 'https://images-ext-2.discordapp.net/external/7rQjNK6dkCjXsF7n70Kn4qorxGyiBiX9dlzQvP2R-9c/https/media.discordapp.net/attachments/630553822036623370/840964488362590208/qq_genshin210509.gif', 'https://images-ext-2.discordapp.net/external/6OXz15XV0RNCIkbFCjXCYUPx7h1zNcZ1inqNYo0vkiM/https/media.discordapp.net/attachments/630553822036623370/920326390329516122/rid_genshin211214.gif', 'https://images-ext-2.discordapp.net/external/NqQ8IkDIOfxEp_FoobMySLzlW2JDAa1lK8IxQOVvxng/https/media.discordapp.net/attachments/630553822036623370/866703863276240926/rdsg_genshin210719.gif']
             image_url = random.choice(image_urls)
-            embed = defaultEmbed('歡迎歡迎~','<:penguin_hug:978250194779000892>')
+            embed = defaultEmbed(f'{self.member.name} 歡迎歡迎~','<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
             embed.set_author(name=i.user.name, icon_url=i.user.avatar)
             await i.response.send_message(embed=embed)
@@ -47,7 +48,7 @@ class WelcomeCog(commands.Cog):
         r = g.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
             c = self.bot.get_channel(916951131022843964)
-            view = WelcomeCog.Welcome()
+            view = WelcomeCog.Welcome(after)
             welcome_strs = ['祝你保底不歪十連雙黃', '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
                             '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||']
             welcome_str = random.choice(welcome_strs)
