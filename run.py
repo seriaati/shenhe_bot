@@ -53,8 +53,8 @@ class ShenheBot(commands.Bot):
         self.add_view(FlowCog.ConfirmView(None, self.db))
         self.add_view(GiveAwayCog.GiveAwayView(self.db))
         self.add_view(ReactionRoles.RoleSelection())
-        self.add_view(WelcomeCog.AcceptRules(self.bot.db))
-        self.add_view(WelcomeCog.StartTutorial(self.bot.db))
+        self.add_view(WelcomeCog.AcceptRules(self.db))
+        self.add_view(WelcomeCog.StartTutorial(self.db))
         self.add_view(WelcomeCog.Welcome(None))
 
     async def on_ready(self):
