@@ -548,6 +548,20 @@ class GenshinApp:
         if check == True:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
+        try:
+            notes = await client.get_notes(uid)
+        except genshin.errors.DataNotPublic as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+        except genshin.errors.GenshinException as e:
+            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+            result = errEmbed(
+                '某個錯誤',
+                '太神奇了! 恭喜你獲得這個神秘的錯誤, 快告訴小雪吧!\n'
+                f'```{e}```'
+            )
+        except Exception as e:
+            print(log(False, True, 'Notes', e))
         await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?', (resin_notification_toggle, resin_threshold, max_notif, user_id))
         await self.db.commit()
         toggle_str = '開' if resin_notification_toggle == 1 else '關'
