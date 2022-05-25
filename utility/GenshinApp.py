@@ -201,7 +201,7 @@ class GenshinApp:
                     value=exped_msg,
                     inline=False
                 )
-        return result
+                return result
 
     async def getUserStats(self, user_id: int):
         print(log(False, False, 'Stats', user_id))
