@@ -415,9 +415,9 @@ class FlowCog(commands.Cog):
 
     class AcceptView(discord.ui.View):
         def __init__(self, author: Member, db: aiosqlite.Connection):
+            super().__init__(timeout=None)
             self.author = author
             self.db = db
-            super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:
             return i.user.id != self.author.id
