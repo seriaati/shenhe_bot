@@ -66,9 +66,7 @@ class WelcomeCog(commands.Cog):
         async def accept_rules(self, i: Interaction, button: Button):
             embed = defaultEmbed(
                 '入群導引',
-                '為了讓你進入群組後能更快速適應,\n'
                 '申鶴將會快速的帶領你了解群內的主要系統\n'
-                '這可以幫助你獲得免費的原神月卡及其他好物\n'
                 '請有耐心的做完唷~ <:penguin_hug:978250194779000892>'
             )
             view = WelcomeCog.StartTutorial()
@@ -92,8 +90,8 @@ class WelcomeCog(commands.Cog):
             embed = defaultEmbed(
                 '原神系統',
                 '申鶴有許多原神相關的方便功能\n'
-                '`/farm` 今天能刷的原神素材'
-                '`/build` 不同角色的配置方式'
+                '`/farm` 今天能刷的原神素材\n'
+                '`/build` 不同角色的配置方式\n'
                 '`/check` 目前樹脂\n'
                 '`/abyss` 深淵數據\n'
                 '`/today` 今天獲得的原石及摩拉數量\n'
