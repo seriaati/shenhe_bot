@@ -20,7 +20,7 @@ class WelcomeCog(commands.Cog):
         result = await c.fetchone()
         if result is None:
             await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
-            self.flow_app.register(member.id)
+            await self.flow_app.register(member.id)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):

@@ -11,8 +11,8 @@ class FlowApp:
     def __init__(self, db: aiosqlite.Connection) -> None:
         self.db = db
 
-    def register(self, user_id: int):
-        self.transaction(user_id, 20, is_new_account=True)
+    async def register(self, user_id: int):
+        await self.transaction(user_id, 20, is_new_account=True)
 
     async def transaction(self, user_id: int, flow_for_user: int, time_state: str = None, is_new_account: bool = False, is_removing_account: bool = False):
         now = datetime.now()
@@ -63,7 +63,7 @@ class FlowApp:
         await c.execute('SELECT user_id FROM flow_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
         if result is None:
-            self.register(user_id)
+            await self.register(user_id)
             embed = errEmbed(
                 '找不到flow帳號!',
                 f'<@{user_id}>\n現在申鶴已經創建了一個, 請重新執行操作')
