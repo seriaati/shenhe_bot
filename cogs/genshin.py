@@ -58,6 +58,7 @@ class GenshinCog(commands.Cog):
             current_notif = tuple[2]
             max_notif = tuple[3]
             resin = await self.genshin_app.getRealTimeNotes(user_id, True)
+            print(f'user_id = {user_id}, resin = {resin}')
             count += 1
             if resin >= resin_threshold and current_notif < max_notif:
                 guild: Guild = self.bot.get_guild(
@@ -154,7 +155,8 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=errEmbed('你似乎不是台港澳服玩家!', '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n為保群友的遊戲質量, 我們無法接受你的入群申請\n你的確可以繞過這個檢查\n但我們相信如果你的主帳號不是台港澳服的話\n你在這個群內是無法找到一同遊玩的夥伴的\n我們真心認為其他群組對你來說可能是個更好的去處 🙏'), ephemeral=True)
             return
         result = await self.genshin_app.setUID(interaction.user.id, int(uid))
-        c: TextChannel = interaction.client.get_channel(935111580545343509)  # UID台
+        c: TextChannel = interaction.client.get_channel(
+            935111580545343509)  # UID台
         await c.send(f'{interaction.user.mention} 的UID是 {uid}')
         await interaction.response.send_message(embed=result, ephemeral=True)
 
@@ -169,8 +171,7 @@ class GenshinCog(commands.Cog):
                     ):
         member = member or interaction.user
         result = await self.genshin_app.getRealTimeNotes(member.id, False)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=result)
 # /stats
 
@@ -185,8 +186,7 @@ class GenshinCog(commands.Cog):
                     ):
         member = member or interaction.user
         result = await self.genshin_app.getUserStats(member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=result)
 # /area
 
@@ -201,8 +201,7 @@ class GenshinCog(commands.Cog):
                    ):
         member = member or interaction.user
         result = await self.genshin_app.getArea(member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=result)
 # /claim
 
@@ -230,8 +229,7 @@ class GenshinCog(commands.Cog):
         else:
             member = member or interaction.user
             result = await self.genshin_app.claimDailyReward(member.id)
-            result.set_author(name=self.bot.get_user(member.id),
-                              icon_url=self.bot.get_user(member.id).avatar)
+            result.set_author(name=member, icon_url=member.avatar)
             await interaction.response.send_message(embed=result)
 # /diary
 
@@ -253,8 +251,7 @@ class GenshinCog(commands.Cog):
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result = await self.genshin_app.getDiary(member.id, month)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=result)
 # /log
 
@@ -277,8 +274,7 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=result)
             return
         embed = result[data_type]
-        embed.set_author(name=self.bot.get_user(member.id),
-                         icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=embed)
 # /users
 
@@ -311,8 +307,7 @@ class GenshinCog(commands.Cog):
                     ):
         member = member or interaction.user
         result = await self.genshin_app.getToday(member.id)
-        result.set_author(name=self.bot.get_user(member.id),
-                          icon_url=self.bot.get_user(member.id).avatar)
+        result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=result)
 # /abyss
 
@@ -333,12 +328,10 @@ class GenshinCog(commands.Cog):
         previous = True if season == 0 else False
         result = await self.genshin_app.getAbyss(member.id, previous)
         if type(result) is not list:
-            result.set_author(name=self.bot.get_user(
-                member.id), icon_url=self.bot.get_user(member.id).avatar)
+            result.set_author(name=member, icon_url=member.avatar)
         else:
             for embed in result:
-                embed.set_author(name=self.bot.get_user(
-                    member.id), icon_url=self.bot.get_user(member.id).avatar)
+                embed.set_author(name=member, icon_url=member.avatar)
         if type(result) == discord.Embed:
             await interaction.response.send_message(embed=result)
             return
@@ -424,7 +417,7 @@ class GenshinCog(commands.Cog):
             options = []
             self.user_characters = user_characters
             self.user = user
-            self.genshin_app = GenshinApp(self.db)
+            self.genshin_app = GenshinApp(db)
             for character in user_characters:
                 if character.element == elements[index]:
                     options.append(SelectOption(
