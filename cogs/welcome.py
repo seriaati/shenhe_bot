@@ -93,8 +93,9 @@ class WelcomeCog(commands.Cog):
             embed = defaultEmbed(
                 '原神系統',
                 '先從輸入你的原神UID開始吧!\n'
-                '請輸入`/setuid`指令來設置UID\n'
-                '如果跳出錯誤訊息, 請按照指示操作'
+                '請輸入 `/setuid` 指令來設置UID\n'
+                '如果跳出錯誤訊息, 請按照指示操作\n'
+                '**是用指令設定UID, 不是直接輸入**'
             )
             embeds.append(embed)
             factory = i.client.get_channel(957268464928718918)
