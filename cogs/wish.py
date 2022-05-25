@@ -45,7 +45,7 @@ class WishCog(commands.Cog):
                 return
             url = self.url.value
             print(log(True, False, 'Wish Setkey',
-                    f'{i.user.id}(url={url})'))
+                      f'{i.user.id}(url={url})'))
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
@@ -152,7 +152,7 @@ class WishCog(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed('你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄')
+        embed = errEmbed('你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
         member = self.bot.get_user(user_id)
         embed.set_author(name=member, icon_url=member.avatar)
         if result is None:
@@ -237,12 +237,13 @@ class WishCog(commands.Cog):
     async def wish_history(self, i: Interaction, member: Member = None):
         member = member or i.user
         print(log(False, False, 'Wish History', member.id))
+        check, msg = await self.wish_history_exists(member.id)
+        if not check:
+            await i.response.send_message(embed=msg)
+            return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
         result = await c.fetchall()
-        if result[0] is None:
-            await i.response.send_message(embed=errEmbed('你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令'), ephemeral=True)
-            return
         user_wishes = []
         for index, tuple in enumerate(result):
             wish_name = tuple[0]
@@ -275,7 +276,7 @@ class WishCog(commands.Cog):
             await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 301', (member.id,))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
             await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
@@ -305,7 +306,7 @@ class WishCog(commands.Cog):
             await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 301', (member.id,))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
             await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
@@ -378,10 +379,8 @@ class WishCog(commands.Cog):
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (member.id,))
         result = await c.fetchone()
         if result is None:
-            embed = errEmbed(
-                '你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄')
-            embed.set_author(name=member, icon_url=member.avatar)
-            await i.response.send_message(embed=embed, ephemeral=True)
+            await i.response.send_message(embed=errEmbed(
+                '你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
             return
         last_name, pull_state = await self.weapon_banner_calc(member.id)
         if last_name == '':
@@ -432,7 +431,8 @@ class WishCog(commands.Cog):
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         overview = await self.wish_overview_calc(member.id)
-        total_wish = overview[0][0] + overview[1][0] + overview[2][0] + overview[3][0]
+        total_wish = overview[0][0] + overview[1][0] + \
+            overview[2][0] + overview[3][0]
         embed = defaultEmbed(
             '祈願總覽',
             f'共**{total_wish}**抽\n'
