@@ -236,44 +236,44 @@ class FlowCog(commands.Cog):
         await i.response.send_message(embed=embed)
 
     @app_commands.command(name='flows', description='查看群組內所有flow帳號')
-    async def flows(self, i: Interaction):
-        flow_categories = {
-            '小於 100 flow': [],
-            '100~200 flow': [],
-            '200~300 flow': [],
-            '大於 300 flow': []
-        }
+    @app_commands.rename(category='範圍')
+    @app_commands.describe(category='選擇要查看的flow幣範圍')
+    @app_commands.choices(category=[
+        Choice(name='小於 100 flow', value=0),
+        Choice(name='100~200 flow', value=1),
+        Choice(name='200~300 flow', value=2),
+        Choice(name='大於 300 flow', value=3)])
+    async def flows(self, i: Interaction, category: int):
+        category_list = ['小於 100 flow', '100~200 flow', '200~300 flow', '大於 300 flow']
+        result_list = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow<100')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            flow_categories['小於 100 flow'].append(
-                f'{i.client.get_user(tuple[0])}: {tuple[1]}')
-        await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 100 AND 200')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            flow_categories['100~200 flow'].append(
-                f'{i.client.get_user(tuple[0])}: {tuple[1]}')
-        await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 201 AND 300')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            flow_categories['200~300 flow'].append(
-                f'{i.client.get_user(tuple[0])}: {tuple[1]}')
-        await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow>300')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            flow_categories['大於 300 flow'].append(
-                f'{i.client.get_user(tuple[0])}: {tuple[1]}')
-        embed_list = []
-        for category, users in flow_categories.items():
-            if len(users) == 0:
-                continue
-            value = ''
-            for user in users:
-                value += f'{user}\n'
-            embed = defaultEmbed(f'{category} ({len(users)})', value)
-            embed_list.append(embed)
-        await GeneralPaginator(i, embed_list).start(embeded=True)
+        if category == 0:
+            await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow<100')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+        elif category == 1:
+            await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 100 AND 200')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+        elif category == 2:
+            await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 201 AND 300')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+        else:
+            await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow>300')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+        if len(result_list) == 0:
+            await i.response.send_message(embed=errEmbed('此範圍還沒有任何 flow帳號'), ephemeral=True)
+        else:
+            value_str = ''
+            for user_str in result_list:
+                value_str += f'{user_str}\n'
+            await i.response.send_message(embed=defaultEmbed(category_list[category],value_str))
 
     shop = app_commands.Group(name="shop", description="flow商店")
 
@@ -419,7 +419,7 @@ class FlowCog(commands.Cog):
             self.db = db
 
         async def interaction_check(self, i: Interaction) -> bool:
-            c  = await self.db.cursor()
+            c = await self.db.cursor()
             await c.execute('SELECT author_id FROM find WHERE msg_id = ?', (i.message.id,))
             author_id = await c.fetchone()
             author_id = author_id[0]
@@ -473,7 +473,7 @@ class FlowCog(commands.Cog):
             super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:
-            c  = await self.db.cursor()
+            c = await self.db.cursor()
             await c.execute('SELECT author_id FROM find WHERE msg_id = ?', (i.message.id,))
             author_id = await c.fetchone()
             author_id = author_id[0]
