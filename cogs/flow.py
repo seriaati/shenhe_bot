@@ -500,6 +500,7 @@ class FlowCog(commands.Cog):
             result = await c.fetchone()
             confirmer_free_trial = result[0]
             if type == 4:
+                new_flow = flow
                 if confirmer_free_trial < 10 and flow >= 10:
                     new_flow = flow-10
                     await c.execute('UPDATE flow_accounts SET find_free_trial = ? WHERE user_id = ?', (confirmer_free_trial+1, confirmer_id))
@@ -513,6 +514,7 @@ class FlowCog(commands.Cog):
                     f"幫助人: {author.mention} **+{flow}** flow幣\n"
                     f"被幫助人: {confirmer.mention} **-{new_flow}** flow幣\n{str}")
             else:
+                new_flow = flow
                 if author_free_trial < 10 and flow >= 10:
                     new_flow = flow-10
                     await c.execute('UPDATE flow_accounts SET find_free_trial = ? WHERE user_id = ?', (author_free_trial+1, author_id))
@@ -572,9 +574,15 @@ class FlowCog(commands.Cog):
             role_str = f'請至 {channel.mention} 選擇世界等級身份組'
         else:
             if type == 1:
-                role_str = f'>= {role_name}'
+                if role_name == 'W8':
+                    role_str = role_name
+                else:
+                    role_str = f'>= {role_name}'
             else:
-                role_str = f'<= {role_name}'
+                if role_name == 'W1':
+                    role_str = role_name
+                else:
+                    role_str = f'<= {role_name}'
         if type == 1:
             embed = defaultEmbed(
                 f'請求幫助: {title}',
