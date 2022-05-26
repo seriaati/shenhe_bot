@@ -203,7 +203,7 @@ class WelcomeCog(commands.Cog):
             '當你賺到足夠的錢後, 可以用`/shop buy`來購買商品'
         )
         embeds.append(embed)
-        await TutorialPaginator(i, embeds).start(embeded=True)
+        await TutorialPaginator(i, embeds).start(db=self.bot.db, embeded=True)
 
     @app_commands.command(name='welcome', description='送出welcome message')
     @app_commands.checks.has_role('小雪團隊')
