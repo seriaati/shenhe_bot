@@ -4,7 +4,7 @@ from discord import ButtonStyle, Guild, Interaction, Member, app_commands
 from discord.ext import commands
 from discord.ui import Button, View, button
 from utility.FlowApp import FlowApp
-from utility.utils import defaultEmbed
+from utility.utils import defaultEmbed, log
 from utility.TutorialPaginator import TutorialPaginator
 
 
@@ -15,17 +15,40 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (member.id,))
-        result = await c.fetchone()
-        if result is None:
-            await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
-            await self.flow_app.register(member.id)
+        print(log(True, False, 'On Member Join', member.id))
+        await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
-        flow = await self.flow_app.get_user_flow(member.id)
-        await self.flow_app.transaction(member.id, flow, is_removing_account=True)
+        print(log(True, False, 'On Member Remove', member.id))
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (member.id,))
+        result = await c.fetchone()
+        if result is not None:
+            flow = await self.flow_app.get_user_flow(member.id)
+            await self.flow_app.transaction(member.id, flow, is_removing_account=True)
+
+    @commands.Cog.listener()
+    async def on_member_update(self, before: Member, after: Member):
+        g: Guild = self.bot.get_guild(916838066117824553)
+        r = g.get_role(978532779098796042)
+        if r not in before.roles and r in after.roles:
+            print(log(True, False, 'New Traveller', after.id))
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
+            await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (after.id,))
+            result = await c.fetchone()
+            if result is None:
+                await self.flow_app.register(after.id)
+            public = self.bot.get_channel(916951131022843964)
+            view = WelcomeCog.Welcome(after)
+            welcome_strs = ['祝你保底不歪十連雙黃', '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
+                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||', '刻晴賽高!', '要好好跟大家相處唷~', '你也是偽裝成萌新的大佬嗎?', '七七喜歡你~']
+            welcome_str = random.choice(welcome_strs)
+            embed = defaultEmbed(
+                f'歡迎 {after.name} !', f'歡迎來到緣神有你(๑•̀ω•́)ノ\n {welcome_str}')
+            embed.set_thumbnail(url=after.avatar)
+            await public.send(content=after.mention, embed=embed, view=view)
 
     class Welcome(View):
         def __init__(self, member: Member):
@@ -51,21 +74,6 @@ class WelcomeCog(commands.Cog):
             embed.set_thumbnail(url=image_url)
             embed.set_author(name=i.user.name, icon_url=i.user.avatar)
             await i.response.send_message(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_member_update(self, before: Member, after: Member):
-        g: Guild = self.bot.get_guild(916838066117824553)
-        r = g.get_role(978532779098796042)
-        if r not in before.roles and r in after.roles:
-            c = self.bot.get_channel(916951131022843964)
-            view = WelcomeCog.Welcome(after)
-            welcome_strs = ['祝你保底不歪十連雙黃', '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
-                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||', '刻晴賽高!', '要好好跟大家相處唷~', '你也是偽裝成萌新的大佬嗎?', '七七喜歡你~']
-            welcome_str = random.choice(welcome_strs)
-            embed = defaultEmbed(
-                f'歡迎 {after.name} !', f'歡迎來到緣神有你(๑•̀ω•́)ノ\n {welcome_str}')
-            embed.set_thumbnail(url=after.avatar)
-            await c.send(content=after.mention, embed=embed, view=view)
 
     class AcceptRules(View):
         def __init__(self, db: aiosqlite.Connection):
@@ -95,7 +103,7 @@ class WelcomeCog(commands.Cog):
                 '先從輸入你的原神UID開始吧!\n'
                 '請輸入 `/setuid` 指令來設置UID\n'
                 '如果跳出錯誤訊息, 請按照指示操作\n'
-                '**是用指令設定UID, 不是直接輸入**'
+                '**是用/setuid指令設定UID, 不是直接輸入**'
             )
             embeds.append(embed)
             factory = i.client.get_channel(957268464928718918)
