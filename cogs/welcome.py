@@ -43,8 +43,15 @@ class WelcomeCog(commands.Cog):
                 await self.flow_app.register(after.id)
             public = self.bot.get_channel(916951131022843964)
             view = WelcomeCog.Welcome(after)
-            welcome_strs = ['祝你保底不歪十連雙黃', '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
-                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛', '我們群中都是喜歡玩原神的||大課長||玩家!', '歡迎你成為我們的一份子||(扣上鐵鏈)||', '刻晴賽高!', '要好好跟大家相處唷~', '你也是偽裝成萌新的大佬嗎?', '七七喜歡你~']
+            welcome_strs = ['祝你保底不歪十連雙黃',
+                            '祝你10連全武器 <:ehe:956180671620055050> <:ehe:956180671620055050>',
+                            '希望你喜歡並享受這裡充滿歡笑和||變態||的氣氛',
+                            '我們群中都是喜歡玩原神的||大課長||玩家!',
+                            '歡迎你成為我們的一份子||(扣上鐵鏈)||',
+                            '刻晴賽高!', '要好好跟大家相處唷~',
+                            '你也是偽裝成萌新的大佬嗎?',
+                            '七七喜歡你~',
+                            '介紹一下兩位台主，<@224441463897849856> 叔叔和 <@272394461646946304> 哥哥 <:omg2:969823532420845668>']
             welcome_str = random.choice(welcome_strs)
             embed = defaultEmbed(
                 f'歡迎 {after.name} !', f'歡迎來到緣神有你(๑•̀ω•́)ノ\n {welcome_str}')
@@ -101,8 +108,8 @@ class WelcomeCog(commands.Cog):
             embeds = []
             embed = defaultEmbed(
                 '原神系統',
-                '先從輸入你的原神UID開始吧!\n'
-                '請輸入 `/setuid` 指令來設置UID\n'
+                '先從輸入你的原神 UID 開始吧!\n'
+                '請輸入`/setuid`指令來設置 UID\n'
                 '**是用/setuid指令設定UID, 不是直接輸入**'
             )
             embeds.append(embed)
@@ -140,7 +147,7 @@ class WelcomeCog(commands.Cog):
                 '還有更多...',
                 '以上只是申鶴的一小部份而已!\n'
                 '想要查看所有的指令請打`/help`\n'
-                f'有問題歡迎至 {factory.mention} 詢問我(小雪)'
+                f'有問題歡迎至 {factory.mention} 詢問我(<@410036441129943050>)或 <@831883841417248778>)'
             )
             embeds.append(embed)
             embed = defaultEmbed(
@@ -159,7 +166,7 @@ class WelcomeCog(commands.Cog):
             'flow幣系統',
             '這是群內專屬的經濟系統\n'
             '在你入群的時候, 系統已經幫你創建一個帳號\n'
-            '並贈送了20 flow幣給你\n'
+            '並贈送了 20 flow幣給你\n'
             '輸入`/acc`來看看你的 **flow帳號** 吧!'
         )
         embeds.append(embed)
@@ -168,7 +175,7 @@ class WelcomeCog(commands.Cog):
         embed = defaultEmbed(
             '抽獎系統',
             f'抽獎都會在 {gv.mention} 進行\n'
-            '抽獎需要支付flow幣來參與\n'
+            '抽獎需要支付 flow幣來參與\n'
             f'可以到 {role.mention} 領取 **抽獎通知** 身份組'
         )
         c = i.client.get_channel(960861105503232030)
@@ -191,7 +198,7 @@ class WelcomeCog(commands.Cog):
         embeds.append(embed)
         embed = defaultEmbed(
             '祈願系統',
-            '我們在discord中複製了原神的祈願玩法\n'
+            '我們在 discord 中複製了原神的祈願玩法\n'
             '可以使用`/roll`指令來開啟祈願界面(不要直接在這裡用哦)\n'
             '有機率抽中不同物品, 取決於當期獎品'
         )
