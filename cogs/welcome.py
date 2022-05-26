@@ -15,13 +15,13 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
-        print(log(True, False, 'On Member Join', member.id))
+        await self.bot.log.send(log(True, False, 'On Member Join', member.id))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
-        print(log(True, False, 'On Member Remove', member.id))
+        await self.bot.log.send(log(True, False, 'On Member Remove', member.id))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (member.id,))
         result = await c.fetchone()
@@ -34,7 +34,7 @@ class WelcomeCog(commands.Cog):
         g: Guild = self.bot.get_guild(916838066117824553)
         r = g.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
-            print(log(True, False, 'New Traveller', after.id))
+            await self.bot.log.send(log(True, False, 'New Traveller', after.id))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
             await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (after.id,))

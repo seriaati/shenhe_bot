@@ -26,14 +26,14 @@ class OtherCMDCog(commands.Cog):
         if message.author == self.bot.user:
             return
         if "機率" in message.content:
-            print(log(True, False, 'Random', message.author.id))
+            await self.bot.log.send(log(True, False, 'Random', message.author.id))
             value = randint(1, 100)
             await message.channel.send(f"{value}%")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
-            print(log(True, False, 'Quote', payload.user_id))
+            await self.bot.log.send(log(True, False, 'Quote', payload.user_id))
             member = self.bot.get_user(payload.user_id)
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
@@ -52,7 +52,7 @@ class OtherCMDCog(commands.Cog):
         description='查看機器人目前延遲'
     )
     async def ping(self, interaction: Interaction):
-        print(log(True, False, 'Ping', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Ping', interaction.user.id))
         await interaction.response.send_message('🏓 Pong! {0}s'.format(round(self.bot.latency, 1)))
 
     @app_commands.command(
@@ -63,7 +63,7 @@ class OtherCMDCog(commands.Cog):
     async def cute(self, interaction: Interaction,
                    person: str
                    ):
-        print(log(True, False, 'Cute', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Cute', interaction.user.id))
         await interaction.response.send_message(f"{person}真可愛~❤")
 
     @app_commands.command(
@@ -71,7 +71,7 @@ class OtherCMDCog(commands.Cog):
         description='防放閃機制'
     )
     async def flash(self, interaction: Interaction):
-        print(log(True, False, 'Flash', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Flash', interaction.user.id))
         await interaction.response.send_message("https://media.discordapp.net/attachments/823440627127287839/960177992942891038/IMG_9555.jpg")
 
     @app_commands.command(
@@ -82,7 +82,7 @@ class OtherCMDCog(commands.Cog):
     async def number(self, interaction: Interaction,
                      num_one: int, num_two: int
                      ):
-        print(log(True, False, 'Random Number', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Random Number', interaction.user.id))
         value = randint(int(num_one), int(num_two))
         await interaction.response.send_message(str(value))
 
@@ -94,7 +94,7 @@ class OtherCMDCog(commands.Cog):
     async def marry(self, interaction: Interaction,
                     person_one: str, person_two: str
                     ):
-        print(log(True, False, 'Marry', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Marry', interaction.user.id))
         await interaction.response.send_message(f"{person_one} ❤ {person_two}")
 
     @app_commands.command(
@@ -102,7 +102,7 @@ class OtherCMDCog(commands.Cog):
         description='查看discord ID獲取教學'
     )
     async def check(self, interaction: Interaction):
-        print(log(True, False, 'Get Discord ID', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Get Discord ID', interaction.user.id))
         embed = defaultEmbed(
             "如何取得discord ID?",
             "1. 打開dc設定\n"
@@ -114,7 +114,7 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command(aliases=['q'])
     async def quote(self, ctx):
-        print(log(True, False, 'Quote', ctx.author.id))
+        await self.bot.log.send(log(True, False, 'Quote', ctx.author.id))
         await ctx.message.delete()
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         embed = defaultEmbed(
@@ -130,7 +130,7 @@ class OtherCMDCog(commands.Cog):
     )
     @app_commands.rename(number='訊息數量', member='使用者')
     async def cleanup(self, interaction: Interaction, number: int, member: Member):
-        print(log(True, False, 'Cleanup', interaction.user.id))
+        await self.bot.log.send(log(True, False, 'Cleanup', interaction.user.id))
         await interaction.response.send_message(embed=defaultEmbed('⏳ 刪除中'), ephemeral=True)
 
         def is_me(m):
@@ -154,7 +154,7 @@ class OtherCMDCog(commands.Cog):
         await i.response.send_message(embed=defaultEmbed('群組總人數', f'目前共 {len(g.members)} 人'))
 
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
-        print(log(True, False, 'Quote', i.user.id))
+        await self.bot.log.send(log(True, False, 'Quote', i.user.id))
         embed = defaultEmbed(
             f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
         embed.set_thumbnail(url=str(msg.author.avatar))
@@ -166,7 +166,7 @@ class OtherCMDCog(commands.Cog):
     @app_commands.rename(role='身份組')
     @app_commands.describe(role='請選擇要查看的身份組')
     async def role_members(self, i: Interaction, role: Role):
-        print(log(False, False, 'role members',
+        await self.bot.log.send(log(False, False, 'role members',
               f'{i.user.id}: (role: {role})'))
         if role is None:
             await i.response.send_message('找不到該身份組!', ephemeral=True)

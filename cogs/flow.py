@@ -26,7 +26,7 @@ class FlowCog(commands.Cog):
 
     @tasks.loop(hours=24)
     async def remove_flow_acc(self):
-        print(log(True, False, 'Remove Flow Acc', 'task start'))
+        await self.bot.log.send(log(True, False, 'Remove Flow Acc', 'task start'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id, last_trans FROM flow_accounts')
         result = await c.fetchall()
@@ -37,7 +37,7 @@ class FlowCog(commands.Cog):
             if delta.days > 7 and flow <= 100:
                 await self.flow_app.transaction(
                     tuple[0], flow, is_removing_account=True)
-        print(log(True, False, 'Remove Flow Acc', 'task finished'))
+        await self.bot.log.send(log(True, False, 'Remove Flow Acc', 'task finished'))
 
     @remove_flow_acc.before_loop
     async def before_loop(self):
@@ -109,7 +109,7 @@ class FlowCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的flow帳號')
     async def acc(self, i: Interaction, member: Member = None):
         member = member or i.user
-        print(log(False, False, 'Acc', member.id))
+        await self.bot.log.send(log(False, False, 'Acc', member.id))
         if i.channel.id == 960861105503232030:  # 委託台
             await i.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷'), ephemeral=True)
             return
@@ -136,7 +136,7 @@ class FlowCog(commands.Cog):
     @app_commands.command(name='give', description='給其他人flow幣')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
     async def give(self, i: Interaction, member: Member, flow: int):
-        print(log(False, False, 'Give',
+        await self.bot.log.send(log(False, False, 'Give',
               f'{i.user.id} give {flow} to {member.id}'))
         if member.id == i.user.id:
             await i.response.send_message(
@@ -174,7 +174,7 @@ class FlowCog(commands.Cog):
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
     async def take(self, i: Interaction, member: Member, flow: int, private: int):
-        print(log(False, False, 'Take',
+        await self.bot.log.send(log(False, False, 'Take',
               f'{i.user.id} take {flow} from {member.id}'))
         check, msg = await self.flow_app.checkFlowAccount(member.id)
         if check == False:
@@ -200,7 +200,7 @@ class FlowCog(commands.Cog):
         Choice(name='否', value=1)])
     @app_commands.checks.has_role('小雪團隊')
     async def make(self, i: Interaction, member: Member, flow: int, private: int = 1):
-        print(log(False, False, 'make',
+        await self.bot.log.send(log(False, False, 'make',
               f'{i.user.id} make {flow} for {member.id}'))
         check, msg = await self.flow_app.checkFlowAccount(member.id)
         if check == False:
@@ -222,7 +222,7 @@ class FlowCog(commands.Cog):
 
     @app_commands.command(name='total', description='查看目前群組帳號及銀行flow幣分配情況')
     async def total(self, i: Interaction):
-        print(log(False, False, 'Total', f'{i.user.id}'))
+        await self.bot.log.send(log(False, False, 'Total', f'{i.user.id}'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT SUM(flow) FROM flow_accounts')
         sum = await c.fetchone()
@@ -279,7 +279,7 @@ class FlowCog(commands.Cog):
 
     @shop.command(name='show', description='顯示商店')
     async def show(self, i: Interaction):
-        print(log(False, False, 'shop show', i.user.id))
+        await self.bot.log.send(log(False, False, 'shop show', i.user.id))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT name, flow, current, max FROM flow_shop')
         result = await c.fetchall()
@@ -293,7 +293,7 @@ class FlowCog(commands.Cog):
     @app_commands.rename(item='商品名稱', flow='價格', max='最大購買次數')
     @app_commands.checks.has_role('小雪團隊')
     async def newitem(self, i: Interaction, item: str, flow: int, max: int):
-        print(log(False, False, 'shop newitem',
+        await self.bot.log.send(log(False, False, 'shop newitem',
               f'{i.user.id}: (item={item}, flow={flow}, max={max})'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('INSERT INTO flow_shop(name) values(?)', (item,))
@@ -361,7 +361,7 @@ class FlowCog(commands.Cog):
     @shop.command(name='removeitem', description='刪除商品')
     @app_commands.checks.has_role('小雪團隊')
     async def removeitem(self, i: Interaction):
-        print(log(False, False, 'shop removeitem', 'i.user.id'))
+        await self.bot.log.send(log(False, False, 'shop removeitem', 'i.user.id'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT name FROM flow_shop')
         result = await c.fetchall()
@@ -378,7 +378,7 @@ class FlowCog(commands.Cog):
 
     @shop.command(name='buy', description='購買商品')
     async def buy(self, i: Interaction):
-        print(log(False, False, 'shop buy', i.user.id))
+        await self.bot.log.send(log(False, False, 'shop buy', i.user.id))
         check, msg = await self.flow_app.checkFlowAccount(i.user.id)
         if check == False:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -437,7 +437,7 @@ class FlowCog(commands.Cog):
             title = result[2]
             type = result[3]
             author_id = result[4]
-            print(log(True, False, 'Accept',
+            await self.bot.log.send(log(True, False, 'Accept',
                   f"(author = {author_id}, confirmer = {i.user.id})"))
             author = i.client.get_user(author_id)
             confirmer = i.client.get_user(i.user.id)
@@ -481,7 +481,7 @@ class FlowCog(commands.Cog):
 
         @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
         async def ok_confirm(self, i: Interaction, button: Button):
-            print(log(False, False, 'OK Confirm', f'confirmer = {i.user.id}'))
+            await self.bot.log.send(log(False, False, 'OK Confirm', f'confirmer = {i.user.id}'))
             c: aiosqlite.Cursor = await self.db.cursor()
             await c.execute('SELECT * FROM find WHERE msg_id = ?', (i.message.id,))
             result = await c.fetchone()
@@ -544,7 +544,7 @@ class FlowCog(commands.Cog):
         tag=[Choice(name='不tag', value=0),
              Choice(name='tag', value=1)])
     async def find(self, i: Interaction, type: int, title: str, flow: int, tag: int = 1):
-        print(log(False, False, 'Find',
+        await self.bot.log.send(log(False, False, 'Find',
               f'{i.user.id}: (type={type}, title={title}, flow={flow})'))
         check, msg = self.check_in_find_channel(i.channel.id)
         if check == False:

@@ -44,7 +44,7 @@ class WishCog(commands.Cog):
                 await i.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
                 return
             url = self.url.value
-            print(log(True, False, 'Wish Setkey',
+            await self.bot.log.send(log(True, False, 'Wish Setkey',
                       f'{i.user.id}(url={url})'))
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
@@ -236,7 +236,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
         member = member or i.user
-        print(log(False, False, 'Wish History', member.id))
+        await self.bot.log.send(log(False, False, 'Wish History', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg)
@@ -270,7 +270,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
         member = member or i.user
-        print(log(False, False, 'Wish Luck', member.id))
+        await self.bot.log.send(log(False, False, 'Wish Luck', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg)
@@ -300,7 +300,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Character', member.id))
+        await self.bot.log.send(log(False, False, 'Wish Character', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg)
@@ -370,7 +370,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?', calc_pull='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Weapon', member.id))
+        await self.bot.log.send(log(False, False, 'Wish Weapon', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg)
@@ -424,7 +424,7 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        print(log(False, False, 'Wish Overview', member.id))
+        await self.bot.log.send(log(False, False, 'Wish Overview', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg)
