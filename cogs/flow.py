@@ -414,13 +414,16 @@ class FlowCog(commands.Cog):
             return True, None
 
     class AcceptView(discord.ui.View):
-        def __init__(self, author: Member, db: aiosqlite.Connection):
+        def __init__(self, db: aiosqlite.Connection):
             super().__init__(timeout=None)
-            self.author = author
             self.db = db
 
         async def interaction_check(self, i: Interaction) -> bool:
-            return i.user.id != self.author.id
+            c  = await self.db.cursor()
+            await c.execute('SELECT author_id FROM find WHERE msg_id = ?', (i.message.id,))
+            author_id = await c.fetchone()
+            author_id = author_id[0]
+            return i.user.id != author_id
 
         @discord.ui.button(label='接受委託', style=discord.ButtonStyle.green, custom_id='accept_commision_button')
         async def confirm(self, i: Interaction, button: discord.ui.Button):
@@ -458,20 +461,23 @@ class FlowCog(commands.Cog):
                     f"按下後, 你的flow幣將會 **-{flow}**\n"
                     f"對方則會 **+{flow}**")
             embedDM.set_author(name=author, icon_url=author.avatar)
-            view = FlowCog.ConfirmView(author, self.db)
+            view = FlowCog.ConfirmView(self.db)
             confirm_message = await thread.send(embed=embedDM, view=view)
             await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ?', (confirm_message.id, i.user.id))
             await self.db.commit()
 
     class ConfirmView(discord.ui.View):
-        def __init__(self, author: Member, db: aiosqlite.Connection):
-            self.author = author
+        def __init__(self, db: aiosqlite.Connection):
             self.db = db
             self.flow_app = FlowApp(self.db)
             super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:
-            return i.user.id == self.author.id
+            c  = await self.db.cursor()
+            await c.execute('SELECT author_id FROM find WHERE msg_id = ?', (i.message.id,))
+            author_id = await c.fetchone()
+            author_id = author_id[0]
+            return i.user.id == author_id
 
         @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
         async def ok_confirm(self, i: Interaction, button: Button):
@@ -600,7 +606,7 @@ class FlowCog(commands.Cog):
             g = self.bot.get_guild(916838066117824553)  # 緣神有你
             role = g.get_role(965141973700857876)  # 委託通知
             await i.channel.send(role.mention)
-        view = self.AcceptView(i.user, self.bot.db)
+        view = self.AcceptView(self.bot.db)
         await i.response.send_message(embed=embed, view=view)
         msg = await i.original_message()
         c: aiosqlite.Cursor = await self.bot.db.cursor()

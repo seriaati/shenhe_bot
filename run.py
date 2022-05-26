@@ -49,8 +49,8 @@ class ShenheBot(commands.Bot):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
             print(log(True, False, 'Cog', f'Loaded {cog_name}'))
-        self.add_view(FlowCog.AcceptView(None, self.db))
-        self.add_view(FlowCog.ConfirmView(None, self.db))
+        self.add_view(FlowCog.AcceptView(self.db))
+        self.add_view(FlowCog.ConfirmView(self.db))
         self.add_view(GiveAwayCog.GiveAwayView(self.db))
         self.add_view(ReactionRoles.RoleSelection())
         self.add_view(WelcomeCog.AcceptRules(self.db))
