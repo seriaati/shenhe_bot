@@ -18,13 +18,13 @@ import genshin
 class WishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.genshin_app = GenshinApp(self.bot.db)
+        self.genshin_app = GenshinApp(self.bot.db, self.bot)
 
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
     class AuthKeyModal(Modal):
-        def __init__(self, db: aiosqlite.Connection):
-            self.genshin_app = GenshinApp(db)
+        def __init__(self, db: aiosqlite.Connection, bot):
+            self.genshin_app = GenshinApp(db, bot)
             self.db = db
             super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
         url = discord.ui.TextInput(
@@ -146,7 +146,7 @@ class WishCog(commands.Cog):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
+            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db, self.bot))
 
     async def wish_history_exists(self, user_id: int) -> Embed:
         c: aiosqlite.Cursor = await self.bot.db.cursor()

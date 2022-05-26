@@ -10,8 +10,9 @@ from utility.utils import (defaultEmbed, errEmbed, getCharacterName,
 
 
 class GenshinApp:
-    def __init__(self, db: aiosqlite.Connection) -> None:
+    def __init__(self, db: aiosqlite.Connection, bot) -> None:
         self.db = db
+        self.bot = bot
 
     async def setCookie(self, user_id: int, cookie: str) -> str:
         await self.bot.log.send(log(False, False, 'setCookie', f'{user_id} (cookie = {cookie})'))

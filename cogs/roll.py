@@ -19,12 +19,13 @@ class RollCog(commands.Cog):
         self.flow_app = FlowApp(self.bot.db)
 
     class Menu(discord.ui.View):
-        def __init__(self, author: discord.Member, banner: str, db: aiosqlite.Connection):
+        def __init__(self, author: discord.Member, banner: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db
             self.flow_app = FlowApp(self.db)
             self.author = author
             self.banner = banner
+            self.bot = bot
 
         async def interaction_check(self, i: Interaction) -> bool:
             return i.user.id == self.author.id
@@ -85,7 +86,7 @@ class RollCog(commands.Cog):
                     '你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = RollCog.Confirm(i.user, False, self.banner, self.db)
+            confirm = RollCog.Confirm(i.user, False, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)
 
         @button(label='祈願10次', style=ButtonStyle.blurple)
@@ -96,18 +97,19 @@ class RollCog(commands.Cog):
                     '你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = RollCog.Confirm(i.user, True, self.banner, self.db)
+            confirm = RollCog.Confirm(i.user, True, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)
 
     class Confirm(discord.ui.View):
-        def __init__(self, author: discord.Member, is_ten_pull: bool, banner: str, db: aiosqlite.Connection):
+        def __init__(self, author: discord.Member, is_ten_pull: bool, banner: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db
-            self.flow_app = FlowApp(self.db)
+            self.flow_app = FlowApp(self.db, bot)
             self.roll_app = RollApp(self.db)
             self.author = author
             self.banner = banner
             self.ten_pull = is_ten_pull
+            self.bot = bot
 
         async def interaction_check(self, i: Interaction) -> bool:
             return i.user.id == self.author.id
@@ -135,7 +137,7 @@ class RollCog(commands.Cog):
                 i.user.id, prize, self.banner)
             embed = defaultEmbed(self.banner, '')
             embed.set_image(url=gif)
-            menu = RollCog.Menu(i.user, self.banner, self.db)
+            menu = RollCog.Menu(i.user, self.banner, self.db, self.bot)
             await i.response.edit_message(embed=embed, view=menu)
             await asyncio.sleep(sleep_time)
             embed = defaultEmbed('抽卡結果', result)
@@ -149,7 +151,7 @@ class RollCog(commands.Cog):
 
         @button(label='取消', style=ButtonStyle.grey, row=0)
         async def cancel(self, i: Interaction, button: Button):
-            menu = RollCog.Menu(i.user, self.banner, self.db)
+            menu = RollCog.Menu(i.user, self.banner, self.db, self.bot)
             await i.response.edit_message(view=menu)
 
     @app_commands.command(name='roll', description='flow幣祈願系統')
@@ -165,7 +167,7 @@ class RollCog(commands.Cog):
         await c.execute('SELECT image_url FROM banners WHERE banner_name = ?', (banner_name,))
         banner_image_url = await c.fetchone()
         banner_image_url = banner_image_url[0]
-        menu = self.Menu(i.user, banner_name, self.bot.db)
+        menu = self.Menu(i.user, banner_name, self.bot.db, self.bot)
         embed = defaultEmbed(banner_name)
         embed.set_image(url=banner_image_url)
         await i.response.send_message(embed=embed, view=menu)

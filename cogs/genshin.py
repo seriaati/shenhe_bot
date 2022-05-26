@@ -21,7 +21,7 @@ debug_toggle = False
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.genshin_app = GenshinApp(self.bot.db)
+        self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.claim_reward.start()
         self.resin_notification.start()
 
@@ -97,8 +97,8 @@ class GenshinCog(commands.Cog):
 # cookie
 
     class CookieModal(discord.ui.Modal):
-        def __init__(self, db: aiosqlite.Connection):
-            self.genshin_app = GenshinApp(db)
+        def __init__(self, db: aiosqlite.Connection, bot):
+            self.genshin_app = GenshinApp(db, bot)
             super().__init__(title='提交cookie', timeout=None, custom_id='cookie_modal')
 
         cookie = discord.ui.TextInput(
@@ -141,7 +141,7 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=embed)
             await interaction.followup.send(content=code_msg)
         elif option == 1:
-            await interaction.response.send_modal(GenshinCog.CookieModal(db=self.bot.db))
+            await interaction.response.send_modal(GenshinCog.CookieModal(self.bot.db, self.bot))
 # /setuid
 
     @app_commands.command(
@@ -399,8 +399,8 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=embedFarm)
 
     class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
-        def __init__(self, index: int, db: aiosqlite.Connection):
-            self.genshin_app = GenshinApp(db)
+        def __init__(self, index: int, db: aiosqlite.Connection, bot):
+            self.genshin_app = GenshinApp(db, bot)
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
             with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
@@ -416,13 +416,13 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=result)
 
     class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection):
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['Anemo', 'Cryo', 'Electro', 'Geo', 'Hydro', 'Pyro']
             options = []
             self.user_characters = user_characters
             self.user = user
-            self.genshin_app = GenshinApp(db)
+            self.genshin_app = GenshinApp(db, bot)
             for character in user_characters:
                 if character.element == elements[index]:
                     options.append(SelectOption(
@@ -438,40 +438,41 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection):
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             if user_characters is None:
                 self.add_item(GenshinCog.BuildCharactersDropdown(index, db))
             else:
                 self.add_item(GenshinCog.UserCharactersDropdown(
-                    index, user_characters, user, db))
+                    index, user_characters, user, db, bot))
 
     class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection):
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             self.index = index
             self.user_characters = user_characters
             self.user = user
             self.db = db
+            self.bot = bot
             super().__init__(
                 label=f'{elemenet_chinese[index]}元素', style=ButtonStyle.blurple, row=index % 2)
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.user_characters, self.user, self.db)
+                self.index, self.user_characters, self.user, self.db, self.bot)
             await i.response.send_message(view=view, ephemeral=True)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, user: Member = None, user_characters: dict = None):
+        def __init__(self, db: aiosqlite.Connection, bot, user: Member = None, user_characters: dict = None):
             super().__init__(timeout=None)
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
-                    i, user_characters, user, db))
+                    i, user_characters, user, db, bot))
 
     # /build
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
     async def build(self, i: Interaction):
-        view = GenshinCog.ElementChooseView(self.bot.db)
+        view = GenshinCog.ElementChooseView(self.bot.db, self.bot)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', '如果你沒有用`/cookie`註冊過, 僅會顯示等級前8的角色'), view=view, ephemeral=True)
 
     # /characters
@@ -485,7 +486,7 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=user_characters)
             return
         view = GenshinCog.ElementChooseView(
-            self.bot.db, member, user_characters)
+            self.bot.db, self.bot,member, user_characters)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', ''), view=view, ephemeral=True)
 
 # /rate

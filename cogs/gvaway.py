@@ -38,7 +38,7 @@ class GiveAwayCog(commands.Cog):
         channel = i.client.get_channel(self.gv_channel_id)
         role_exclusive = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
         refund_str = '(會退款)' if refund_mode == 1 else '(不會退款)'
-        giveaway_view = GiveAwayCog.GiveAwayView(self.bot.db, i)
+        giveaway_view = GiveAwayCog.GiveAwayView(self.bot.db, self.bot, i)
         await i.response.send_message(embed=defaultEmbed(
             ":tada: 抽獎啦!!!",
             f"獎品: {prize}\n"
@@ -63,10 +63,10 @@ class GiveAwayCog(commands.Cog):
             await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     class GiveAwayView(View):
-        def __init__(self, db: aiosqlite.Connection, i: Interaction = None):
+        def __init__(self, db: aiosqlite.Connection, bot, i: Interaction = None):
             self.db = db
             self.interaction = i
-            self.flow_app = FlowApp(self.db)
+            self.flow_app = FlowApp(self.db, bot)
             super().__init__(timeout=None)
 
         async def generate_gv_embed(self, gv_msg_id: int, i: Interaction):

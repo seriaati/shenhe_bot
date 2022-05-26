@@ -10,14 +10,13 @@ from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from discord.ui import Select, View
 from utility.FlowApp import FlowApp
-from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import defaultEmbed, errEmbed, log
 
 
 class FlowCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.flow_app = FlowApp(self.bot.db)
+        self.flow_app = FlowApp(self.bot.db, self.bot)
         self.debug_toggle = self.bot.debug_toggle
         self.remove_flow_acc.start()
 
@@ -307,15 +306,15 @@ class FlowCog(commands.Cog):
             await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     class ShopItemView(View):
-        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection):
+        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
-            self.add_item(FlowCog.ShopItemSelect(item_names, action, db))
+            self.add_item(FlowCog.ShopItemSelect(item_names, action, db, bot))
 
     class ShopItemSelect(Select):
-        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection):
+        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
             self.action = action
             self.db = db
-            self.flow_app = FlowApp(self.db)
+            self.flow_app = FlowApp(self.db, bot)
             options = []
             for item_name in item_names:
                 options.append(SelectOption(label=item_name, value=item_name))
@@ -368,7 +367,7 @@ class FlowCog(commands.Cog):
         item_names = []
         for index, tuple in enumerate(result):
             item_names.append(tuple[0])
-        view = FlowCog.ShopItemView(item_names, 'remove', self.bot.db)
+        view = FlowCog.ShopItemView(item_names, 'remove', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
 
     @removeitem.error
@@ -389,7 +388,7 @@ class FlowCog(commands.Cog):
         result = await c.fetchall()
         for index, tuple in enumerate(result):
             item_names.append(tuple[0])
-        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db)
+        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
 
     def check_in_find_channel(self, channel_id: int):
@@ -414,9 +413,10 @@ class FlowCog(commands.Cog):
             return True, None
 
     class AcceptView(discord.ui.View):
-        def __init__(self, db: aiosqlite.Connection):
+        def __init__(self, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db
+            self.bot = bot
 
         async def interaction_check(self, i: Interaction) -> bool:
             c = await self.db.cursor()
@@ -461,15 +461,15 @@ class FlowCog(commands.Cog):
                     f"按下後, 你的flow幣將會 **-{flow}**\n"
                     f"對方則會 **+{flow}**")
             embedDM.set_author(name=author, icon_url=author.avatar)
-            view = FlowCog.ConfirmView(self.db)
+            view = FlowCog.ConfirmView(self.db, self.bot)
             confirm_message = await thread.send(embed=embedDM, view=view)
             await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ?', (confirm_message.id, i.user.id))
             await self.db.commit()
 
     class ConfirmView(discord.ui.View):
-        def __init__(self, db: aiosqlite.Connection):
+        def __init__(self, db: aiosqlite.Connection, bot):
             self.db = db
-            self.flow_app = FlowApp(self.db)
+            self.flow_app = FlowApp(self.db, bot)
             super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:
@@ -614,7 +614,7 @@ class FlowCog(commands.Cog):
             g = self.bot.get_guild(916838066117824553)  # 緣神有你
             role = g.get_role(965141973700857876)  # 委託通知
             await i.channel.send(role.mention)
-        view = self.AcceptView(self.bot.db)
+        view = self.AcceptView(self.bot.db, self.bot)
         await i.response.send_message(embed=embed, view=view)
         msg = await i.original_message()
         c: aiosqlite.Cursor = await self.bot.db.cursor()

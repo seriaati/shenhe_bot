@@ -11,7 +11,7 @@ from utility.TutorialPaginator import TutorialPaginator
 class WelcomeCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.flow_app = FlowApp(self.bot.db)
+        self.flow_app = FlowApp(self.bot.db, self.bot)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):

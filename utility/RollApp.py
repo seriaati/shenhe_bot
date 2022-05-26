@@ -17,7 +17,7 @@ gold_sleep = 5.3
 class RollApp:
     def __init__(self, db: aiosqlite.Connection) -> None:
         self.db = db
-        self.flow_app = FlowApp(self.db)
+        self.flow_app = FlowApp(self.db, self.bot)
 
     async def get_banner_big_prize(self, banner: str):
         c = await self.db.cursor()
