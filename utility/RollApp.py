@@ -116,7 +116,7 @@ class RollApp:
                 '有人抽到大獎了!',
                 f'ID: {user_id}\n'
                 '按ctrl+k並貼上ID即可查看使用者')
-            print(log(True, False, 'Roll',
+            await self.bot.log.send(log(True, False, 'Roll',
                   f'{user_id} got big_prize in {banner}'))
             return True, msg
         else:

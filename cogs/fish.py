@@ -8,15 +8,17 @@ from discord.ui import Button, View
 from utility.FlowApp import FlowApp
 from utility.utils import ayaakaaEmbed, log
 
+global debug_toggle
+debug_toggle = False
+
 class FishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.debug_toggle = self.bot.debug_toggle
 
     global fish_list, fish_flow_list, fish_image_list
     fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
-                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨']
+                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '抹香鯨', '大象']
     fish_image_list = [
         'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
         'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
@@ -28,6 +30,8 @@ class FishCog(commands.Cog):
         'https://assets2.rockpapershotgun.com/genshin-impact-sangonomiya-kokomi.jpg/BROK/thumbnail/1200x1200/quality/100/genshin-impact-sangonomiya-kokomi.jpg',
         'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
         'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif'
+        'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg'
+        'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg'
     ]
 
     def generate_fish_embed(self, index: int):  # 製造摸魚embed
@@ -148,7 +152,7 @@ class FishCog(commands.Cog):
     async def on_message(self, message):  # 機率放魚
         if message.author == self.bot.user:
             return
-        random_number = randint(1, 100) if not self.debug_toggle else 1
+        random_number = randint(1, 100) if not debug_toggle else 1
         if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
             touch_fish_view = FishCog.TouchFish(index, self.bot.db)
@@ -161,7 +165,7 @@ class FishCog(commands.Cog):
     @app_commands.choices(fish_type=get_fish_choices())
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i: Interaction, fish_type: int):
-        print(log(False, False, 'Release Fish', i.user.id))
+        await self.bot.log.send(log(False, False, 'Release Fish', i.user.id))
         touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db)
         await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 

@@ -31,7 +31,7 @@ class GenshinCog(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        print(log(True, False, 'Task loop', 'Auto claim started'))
+        await self.bot.log.send(log(True, False, 'Task loop', 'Auto claim started'))
         count = 0
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id FROM genshin_accounts')
@@ -42,12 +42,12 @@ class GenshinCog(commands.Cog):
             await self.genshin_app.claimDailyReward(user_id)
             count += 1
             await asyncio.sleep(3.0)
-        print(log(True, False, 'Schedule',
+        await self.bot.log.send(log(True, False, 'Schedule',
               f'Auto claim finished, {count} in total'))
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
-        print(log(True, False, 'Task loop', 'Resin check started'))
+        await self.bot.log.send(log(True, False, 'Task loop', 'Resin check started'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif FROM genshin_accounts WHERE resin_notification_toggle = 1')
         users = await c.fetchall()
@@ -58,7 +58,7 @@ class GenshinCog(commands.Cog):
             current_notif = tuple[2]
             max_notif = tuple[3]
             resin = await self.genshin_app.getRealTimeNotes(user_id, True)
-            print(log(True, False, 'Resin Check',
+            await self.bot.log.send(log(True, False, 'Resin Check',
                   f'user_id = {user_id}, resin = {resin}'))
             count += 1
             if resin >= resin_threshold and current_notif < max_notif:
@@ -78,7 +78,7 @@ class GenshinCog(commands.Cog):
             if resin < resin_threshold:
                 await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
-        print(log(True, False, 'Task loop',
+        await self.bot.log.send(log(True, False, 'Task loop',
               f'Resin check finished {count} in total'))
         await self.bot.db.commit()
 
@@ -285,7 +285,7 @@ class GenshinCog(commands.Cog):
         description='查看所有已註冊原神帳號'
     )
     async def users(self, interaction: Interaction):
-        print(log(False, False, 'Users', interaction.user.id))
+        await self.bot.log.send(log(False, False, 'Users', interaction.user.id))
         user_dict = self.genshin_app.getUserData()
         userStr = ""
         count = 0
@@ -380,7 +380,7 @@ class GenshinCog(commands.Cog):
         description='查看原神今日可刷素材'
     )
     async def farm(self, interaction: Interaction):
-        print(log(False, False, 'Farm', interaction.user.id))
+        await self.bot.log.send(log(False, False, 'Farm', interaction.user.id))
         weekdayGet = datetime.today().weekday()
         embedFarm = defaultEmbed(
             f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")

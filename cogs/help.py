@@ -261,7 +261,7 @@ class HelpCog(commands.Cog):
 
     @app_commands.command(name='help', description='獲得幫助')
     async def help(self, interaction: discord.Interaction):
-        print(log(False, False, 'Help', interaction.user.id))
+        await self.bot.log.send(log(False, False, 'Help', interaction.user.id))
         view = DropdownView()
         await interaction.response.send_message(view=view)
 

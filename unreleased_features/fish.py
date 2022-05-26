@@ -167,7 +167,7 @@ class FishCog(commands.Cog):
     # @app_commands.choices(fish_type=get_fish_choices())
     # @app_commands.checks.has_role('小雪團隊')
     # async def release_fish(self, i: Interaction, fish_type: int):
-    #     print(log(False, False, 'Release Fish', i.user.id))
+    #     await self.bot.log.send(log(False, False, 'Release Fish', i.user.id))
     #     touch_fish_view = FishCog.TouchFish(fish_type)
     #     await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 

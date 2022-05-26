@@ -33,7 +33,7 @@ class GiveAwayCog(commands.Cog):
     async def create_giveaway(
             self, i: Interaction,
             prize: str, goal: int, ticket: int, role: Optional[Role] = None, refund_mode: int = 0):
-        print(log(False, False, 'giveaway',
+        await self.bot.log.send(log(False, False, 'giveaway',
               f'{i.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role}, refund_mode={refund_mode})'))
         channel = i.client.get_channel(self.gv_channel_id)
         role_exclusive = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
@@ -95,7 +95,7 @@ class GiveAwayCog(commands.Cog):
                 return True, None
 
         async def join_giveaway(self, user_id: int, ticket: int, gv_msg_id: int):
-            print(log(True, False, 'join giveaway',
+            await self.bot.log.send(log(True, False, 'join giveaway',
                   f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})'))
             await self.flow_app.transaction(user_id, -int(ticket))
             c = await self.db.cursor()
@@ -148,7 +148,7 @@ class GiveAwayCog(commands.Cog):
                     if winner_id != user_id:  # 如果該ID不是得獎者
                         # 退款入場費/2
                         await self.flow_app.transaction(user_id, int(ticket)/2)
-            print(log(True, False, 'Giveaway Ended',
+            await self.bot.log.send(log(True, False, 'Giveaway Ended',
                       f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
             await c.execute('DELETE FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
             await c.execute('DELETE FROM giveaway_members WHERE msg_id = ?', (gv_msg_id,))
@@ -228,7 +228,7 @@ class GiveAwayCog(commands.Cog):
                 super().__init__(placeholder='選擇要結束的抽獎', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction):
-            print(log(False, False, 'End Giveaway',
+            await self.bot.log.send(log(False, False, 'End Giveaway',
                   f'{i.user.id}: (gv_msg_id = {self.values[0]})'))
             c = await self.db.cursor()
             await c.execute('SELECT * FROM giveaway_members WHERE msg_id = ?', (self.values[0],))
