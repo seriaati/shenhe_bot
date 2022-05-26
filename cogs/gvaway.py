@@ -151,7 +151,7 @@ class GiveAwayCog(commands.Cog):
                         # 退款入場費/2
                         await self.flow_app.transaction(user_id, int(ticket)/2)
             print(log(True, False, 'Giveaway Ended',
-                    f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
+                      f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
             await c.execute('DELETE FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
             await c.execute('DELETE FROM giveaway_members WHERE msg_id = ?', (gv_msg_id,))
             await self.db.commit()
@@ -201,7 +201,6 @@ class GiveAwayCog(commands.Cog):
             await self.update_gv_msg(msg.id, interaction)
             await self.check_gv_finish(msg.id, interaction)
 
-
         @discord.ui.button(label='退出抽獎', style=discord.ButtonStyle.grey, custom_id='leave_giveaway_button')
         async def leave_giveaway_callback(self, interaction: Interaction, button: discord.ui.Button):
             msg = interaction.message
@@ -245,7 +244,7 @@ class GiveAwayCog(commands.Cog):
             await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(self.values[0])))
             await self.db.commit()
             await GiveAwayCog.GiveAwayView.check_gv_finish(self, self.values[0], i)
-            await i.response.send_message(embed=defaultEmbed('🔪 強制結束抽獎成功'), ephemeral=True)
+            await i.response.send_message(embed=defaultEmbed('✨ 強制結束抽獎成功'), ephemeral=True)
 
     class GiveawayDropdownView(View):
         def __init__(self, giveaways: dict, db: aiosqlite.Connection):
