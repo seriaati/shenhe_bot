@@ -49,7 +49,7 @@ class ShenheBot(commands.Bot):
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
-            await self.bot.log.send(log(True, False, 'Cog', f'Loaded {cog_name}'))
+            print(log(True, False, 'Cog', f'Loaded {cog_name}'))
         self.add_view(FlowCog.AcceptView(self.db))
         self.add_view(FlowCog.ConfirmView(self.db))
         self.add_view(GiveAwayCog.GiveAwayView(self.db))
@@ -64,13 +64,13 @@ class ShenheBot(commands.Bot):
             activity=discord.Game(name=f'/help')
         )
         self.log = self.get_channel(979359912855482388) #log 台
-        await self.bot.log.send(log(True, False, 'Bot', f'Logged in as {self.user}'))
+        await self.log.send(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
     async def on_message(self, message):
         await self.process_commands(message)
 
     async def on_command_error(self, ctx: commands.Context, error):
-        await self.bot.log.send(log(True, True, 'On Command Error', error))
+        await self.log.send(log(True, True, 'On Command Error', error))
         if isinstance(error, commands.CommandNotFound):
             pass
 
