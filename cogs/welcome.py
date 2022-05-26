@@ -103,7 +103,6 @@ class WelcomeCog(commands.Cog):
                 '原神系統',
                 '先從輸入你的原神UID開始吧!\n'
                 '請輸入 `/setuid` 指令來設置UID\n'
-                '如果跳出錯誤訊息, 請按照指示操作\n'
                 '**是用/setuid指令設定UID, 不是直接輸入**'
             )
             embeds.append(embed)
@@ -125,7 +124,7 @@ class WelcomeCog(commands.Cog):
                 '本群擁有專屬的經濟系統\n'
                 '可以幫助你獲得免費原神月卡等好物\n'
                 '有興趣的話\n'
-                '可以在進群後使用`/tutorial`指令 (不要直接在這裡用哦)'
+                f'可以至使用`/tutorial`指令'
             )
             embeds.append(embed)
             role = i.client.get_channel(962311051683192842)
@@ -140,7 +139,7 @@ class WelcomeCog(commands.Cog):
             embed = defaultEmbed(
                 '還有更多...',
                 '以上只是申鶴的一小部份而已!\n'
-                '想要查看所有的指令請打`/help`(不要直接在這裡用哦)\n'
+                '想要查看所有的指令請打`/help`\n'
                 f'有問題歡迎至 {factory.mention} 詢問我(小雪)'
             )
             embeds.append(embed)

@@ -79,7 +79,7 @@ class GenshinCog(commands.Cog):
                 await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
         print(log(True, False, 'Task loop',
-              f'Resin checke finished {count} in total'))
+              f'Resin check finished {count} in total'))
         await self.bot.db.commit()
 
     @claim_reward.before_loop
