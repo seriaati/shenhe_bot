@@ -8,12 +8,10 @@ from discord.ui import Button, View
 from utility.FlowApp import FlowApp
 from utility.utils import ayaakaaEmbed, log
 
-global debug_toggle
-debug_toggle = False
-
 class FishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.debug_toggle = self.bot.debug_toggle
 
     global fish_list, fish_flow_list, fish_image_list
     fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
@@ -150,7 +148,7 @@ class FishCog(commands.Cog):
     async def on_message(self, message):  # 機率放魚
         if message.author == self.bot.user:
             return
-        random_number = randint(1, 100) if not debug_toggle else 1
+        random_number = randint(1, 100) if not self.debug_toggle else 1
         if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
             touch_fish_view = FishCog.TouchFish(index, self.bot.db)

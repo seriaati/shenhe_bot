@@ -10,14 +10,12 @@ from discord.ui import Select, View
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
-global gv_channel_id, debug_toggle
-debug_toggle = False
-gv_channel_id = 965517075508498452 if not debug_toggle else 909595117952856084
-
 
 class GiveAwayCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.debug_toggle = self.bot.debug_toggle
+        self.gv_channel_id = 965517075508498452 if not self.debug_toggle else 909595117952856084
 
     @app_commands.command(name='giveaway', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
@@ -37,7 +35,7 @@ class GiveAwayCog(commands.Cog):
             prize: str, goal: int, ticket: int, role: Optional[Role] = None, refund_mode: int = 0):
         print(log(False, False, 'giveaway',
               f'{i.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role}, refund_mode={refund_mode})'))
-        channel = i.client.get_channel(gv_channel_id)
+        channel = i.client.get_channel(self.gv_channel_id)
         role_exclusive = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
         refund_str = '(會退款)' if refund_mode == 1 else '(不會退款)'
         giveaway_view = GiveAwayCog.GiveAwayView(self.bot.db, i)
@@ -112,7 +110,7 @@ class GiveAwayCog(commands.Cog):
             await self.db.commit()
 
         async def update_gv_msg(self, gv_msg_id: int, interaction: Interaction):
-            channel = interaction.client.get_channel(gv_channel_id)
+            channel = interaction.client.get_channel(self.gv_channel_id)
             gv_msg = await channel.fetch_message(gv_msg_id)
             embed = await GiveAwayCog.GiveAwayView.generate_gv_embed(self, gv_msg_id, interaction)
             await gv_msg.edit(embed=embed)
@@ -134,7 +132,7 @@ class GiveAwayCog(commands.Cog):
             participant_list = []
             for index, tuple in enumerate(giveaway_participants):
                 participant_list.append(tuple[0])
-            channel = i.client.get_channel(gv_channel_id)
+            channel = i.client.get_channel(self.gv_channel_id)
             lulurR = i.client.get_user(665092644883398671)
             winner_id = random.choice(participant_list)
             winner = i.client.get_user(winner_id)

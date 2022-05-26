@@ -19,7 +19,7 @@ class FlowApp:
         time_states = ['morning', 'noon', 'night']
         if is_removing_account:
             print(log(True, False, 'Removing Acc',
-                  f'user_id: (flow = {flow_for_user})'))
+                  f'{user_id}: (flow = {flow_for_user})'))
             c = await self.db.cursor()
             await c.execute('DELETE FROM flow_accounts WHERE user_id = ?', (user_id,))
             bank_flow = await self.get_bank_flow()

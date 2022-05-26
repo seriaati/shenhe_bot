@@ -44,6 +44,7 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
+        self.debug_toggle = False
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem

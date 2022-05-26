@@ -13,14 +13,12 @@ from utility.FlowApp import FlowApp
 from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import defaultEmbed, errEmbed, log
 
-global debug_toggle
-debug_toggle = False
-
 
 class FlowCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.flow_app = FlowApp(self.bot.db)
+        self.debug_toggle = self.bot.debug_toggle
         self.remove_flow_acc.start()
 
     def cog_unload(self) -> None:
@@ -395,7 +393,7 @@ class FlowCog(commands.Cog):
         await i.response.send_message(view=view, ephemeral=True)
 
     def check_in_find_channel(self, channel_id: int):
-        find_channel_id = 909595117952856084 if debug_toggle else 960861105503232030
+        find_channel_id = 909595117952856084 if self.debug_toggle else 960861105503232030
         if channel_id != find_channel_id:
             channel = self.bot.get_channel(find_channel_id)
             return False, f"請在{channel.mention}裡使用此指令"
@@ -404,11 +402,13 @@ class FlowCog(commands.Cog):
 
     async def check_flow(self, user_id: int, flow: int):
         user_flow = await self.flow_app.get_user_flow(user_id)
-        if int(flow) < 0:
-            result = errEmbed("發布失敗, 請輸入大於 1 的flow幣", "")
+        if user_flow < 0 and flow >= 0:
+            return True, None
+        if flow < 0:
+            result = errEmbed("發布失敗, 請輸入大於 1 的flow幣")
             return False, result
         elif user_flow < int(flow):
-            result = errEmbed("發布失敗, 請勿輸入大於自己擁有數量的flow幣", "")
+            result = errEmbed("發布失敗, 請勿輸入大於自己擁有數量的flow幣")
             return False, result
         else:
             return True, None
@@ -554,7 +554,7 @@ class FlowCog(commands.Cog):
             return
         channel = i.client.get_channel(962311051683192842)
         role_found = False
-        if not debug_toggle:
+        if not self.debug_toggle:
             WLroles = []
             for index in range(1, 9):
                 WLroles.append(discord.utils.get(
@@ -566,7 +566,7 @@ class FlowCog(commands.Cog):
                     break
         check, msg = await self.check_flow(i.user.id, flow)
         if check == False:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         if not role_found:
             role_str = f'請至 {channel.mention} 選擇世界等級身份組'

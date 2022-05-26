@@ -8,14 +8,14 @@ from utility.FlowApp import FlowApp
 from utility.utils import errEmbed, defaultEmbed
 from utility.RollApp import RollApp
 
-global one_pull_price, debug_toggle
+global one_pull_price
 one_pull_price = 10
-debug_toggle = False
 
 
 class RollCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.debug_toggle = self.bot.debug_toggle
         self.flow_app = FlowApp(self.bot.db)
 
     class Menu(discord.ui.View):
@@ -128,7 +128,7 @@ class RollCog(commands.Cog):
                 i.user.id, prize, self.banner)
             if check == True:
                 await luluR.send(embed=msg)
-                public_channel = i.client.get_channel(916951131022843964) if not debug_toggle else i.client.get_channel(909595117952856084)
+                public_channel = i.client.get_channel(916951131022843964) if not self.debug_toggle else i.client.get_channel(909595117952856084)
                 await public_channel.send(f'🎉 恭喜 {i.user.mention} 抽到 **{self.banner}** 的大獎！！ 🎉')
             gif, sleep_time = await self.roll_app.animation_chooser(prize, self.banner)
             result = await self.roll_app.write_history_and_gu(
