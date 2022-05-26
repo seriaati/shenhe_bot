@@ -16,13 +16,13 @@ class RollCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.debug_toggle = self.bot.debug_toggle
-        self.flow_app = FlowApp(self.bot.db)
+        self.flow_app = FlowApp(self.bot.db, self.bot)
 
     class Menu(discord.ui.View):
         def __init__(self, author: discord.Member, banner: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db
-            self.flow_app = FlowApp(self.db)
+            self.flow_app = FlowApp(self.db, bot)
             self.author = author
             self.banner = banner
             self.bot = bot
