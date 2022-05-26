@@ -58,7 +58,8 @@ class GenshinCog(commands.Cog):
             current_notif = tuple[2]
             max_notif = tuple[3]
             resin = await self.genshin_app.getRealTimeNotes(user_id, True)
-            print(log(True, False, 'Resin Check', f'user_id = {user_id}, resin = {resin}'))
+            print(log(True, False, 'Resin Check',
+                  f'user_id = {user_id}, resin = {resin}'))
             count += 1
             if resin >= resin_threshold and current_notif < max_notif:
                 guild: Guild = self.bot.get_guild(
@@ -351,13 +352,16 @@ class GenshinCog(commands.Cog):
     )
     async def stuck(self, interaction: Interaction):
         embed = defaultEmbed(
-            "已經註冊,但有些資料找不到?",
-            "1. 至hoyolab網頁中\n"
-            "2. 點擊頭像\n"
-            "3. personal homepage\n"
-            "4. 右邊會看到genshin impact\n"
-            "5. 點擊之後看到設定按鈕\n"
-            "6. 打開 Do you want to enable real time-notes")
+            '註冊了, 但是找不到資料?',
+            '請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n'
+            '跟著下方圖片中的步驟操作\n\n'
+            '文字教學:\n'
+            '1. 點選右上角自己的頭像\n'
+            '2. 個人主頁\n'
+            '3. 右上角「原神」\n'
+            '4. 設定齒輪\n'
+            '5. 三個選項都打開')
+        embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name='remind', description='設置樹脂提醒')
@@ -468,7 +472,7 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
     async def build(self, i: Interaction):
         view = GenshinCog.ElementChooseView(self.bot.db)
-        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', '如果你是用`/setuid`註冊的, 僅會顯示等級前8的角色'), view=view, ephemeral=True)
+        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', '如果你沒有用`/cookie`註冊過, 僅會顯示等級前8的角色'), view=view, ephemeral=True)
 
     # /characters
     @app_commands.command(name='characters', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
@@ -564,6 +568,7 @@ class GenshinCog(commands.Cog):
         embed = defaultEmbed(f'UID查詢', uid)
         embed.set_author(name=player, icon_url=player.avatar)
         await i.response.send_message(embed=embed)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))

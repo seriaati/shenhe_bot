@@ -63,22 +63,6 @@ class GenshinApp:
 
     async def setUID(self, user_id: int, uid: int) -> str:
         print(log(False, False, 'setUID', f'{user_id}: (uid = {uid})'))
-        try:
-            client, not_uid, check = await self.getUserCookie(224441463897849856)
-            await client.get_partial_genshin_user(uid)
-        except genshin.errors.DataNotPublic:
-            embed = errEmbed(
-                '❌ UID設置失敗',
-                f'請至<https://www.hoyolab.com>登入\n'
-                '跟著下方圖片中的步驟操作\n\n'
-                '文字教學:\n'
-                '1. 點選右上角自己的頭像\n'
-                '2. 個人主頁\n'
-                '3. 右上角「原神」\n'
-                '4. 設定齒輪\n'
-                '5. 三個選項都打開')
-            embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
-            return embed, False
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
@@ -91,11 +75,8 @@ class GenshinApp:
 
     async def claimDailyReward(self, user_id: int):
         print(log(False, False, 'Claim', f'{user_id}'))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
-        if check == True:
+        client, uid, only_uid = await self.getUserCookie(user_id)
+        if only_uid == True:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
@@ -121,17 +102,13 @@ class GenshinApp:
 
     async def getRealTimeNotes(self, user_id: int, check_resin_excess=False):
         print(log(False, False, 'Notes', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
-        if check == True:
+        client, uid, only_uid = await self.getUserCookie(user_id)
+        if only_uid == True:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
             notes = await client.get_notes(uid)
-        except genshin.errors.DataNotPublic as e:
-            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+        except genshin.errors.DataNotPublic:
             result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
             return result
         except genshin.errors.GenshinException as e:
@@ -221,12 +198,12 @@ class GenshinApp:
 
     async def getUserStats(self, user_id: int):
         print(log(False, False, 'Stats', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
@@ -253,12 +230,12 @@ class GenshinApp:
 
     async def getArea(self, user_id: int):
         print(log(False, False, 'Area', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Area', f'{user_id}: {e}'))
             result = errEmbed(
@@ -283,14 +260,14 @@ class GenshinApp:
         print(log(False, False, 'Diary', user_id))
         currentMonth = datetime.now().month
         if int(month) > currentMonth:
-            result = errEmbed('不可輸入大於目前時間的月份', '')
+            result = errEmbed('不可輸入大於目前時間的月份')
             return result
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary(month=month)
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Diary', f'{user_id}: {e}'))
             result = errEmbed(
@@ -321,10 +298,7 @@ class GenshinApp:
 
     async def getDiaryLog(self, user_id: int):
         print(log(False, False, 'Diary Log', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -362,15 +336,12 @@ class GenshinApp:
 
     async def getUserCharacters(self, user_id: int):
         print(log(False, False, 'Character', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             result = await client.get_genshin_characters(uid)
-        except genshin.errors.DataNotPublic as e:
-            print(log(False, True, 'Character', f'{user_id}: {e}'))
-            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Character', f'{user_id}: {e}'))
             result = errEmbed(
@@ -429,14 +400,12 @@ class GenshinApp:
     async def getToday(self, user_id: int):
         print(log(False, False, 'Notes', user_id))
         check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
+        client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
-        except genshin.errors.DataNotPublic as e:
-            print(log(False, True, 'Notes', f'{user_id}: {e}'))
-            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
@@ -456,18 +425,15 @@ class GenshinApp:
 
     async def getAbyss(self, user_id: int, previous: bool):
         print(log(False, False, 'Abyss', user_id))
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
-        if check == True:
+        client, uid, only_uid = await self.getUserCookie(user_id)
+        if only_uid:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
-        except genshin.errors.DataNotPublic as e:
-            print(log(False, True, 'Abyss', f'{user_id}: {e}'))
-            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+        except genshin.errors.DataNotPublic:
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Abyss', f'{user_id}: {e}'))
             result = errEmbed(
@@ -527,7 +493,7 @@ class GenshinApp:
         print(log(False, False, 'Build', chara_name))
         charas = dict(element_dict)
         if chara_name not in charas:
-            return errEmbed('找不到該角色的資料', '')
+            return errEmbed('找不到該角色的配置', '')
         else:
             name = chara_name
             element = charas[chara_name]['element']
@@ -557,18 +523,15 @@ class GenshinApp:
         print(log(False, False, 'Remind',
               f'{user_id}: (toggle = {resin_notification_toggle}, threshold = {resin_threshold}, max_notif = {max_notif})'))
         c: aiosqlite.Cursor = await self.db.cursor()
-        check, msg = await self.checkUserData(user_id)
-        if check == False:
-            return msg
-        client, uid, check = await self.getUserCookie(user_id)
-        if check == True:
+        client, uid, only_uid = await self.getUserCookie(user_id)
+        if only_uid:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
             notes = await client.get_notes(uid)
-        except genshin.errors.DataNotPublic as e:
-            print(log(False, True, 'Notes', f'{user_id}: {e}'))
+        except genshin.errors.DataNotPublic:
             result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except genshin.errors.GenshinException as e:
             print(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
@@ -589,21 +552,12 @@ class GenshinApp:
         )
         return embed
 
-    async def checkUserData(self, user_id: int):
-        c: aiosqlite.Cursor = await self.db.cursor()
-        await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
-        result = await c.fetchone()
-        if result is None:
-            return False, errEmbed('找不到原神帳號!', '請輸入`/setuid`來註冊自己的原神UID')
-        else:
-            return True, None
-
     async def getUserCookie(self, user_id: int):
         c: aiosqlite.Cursor = await self.db.cursor()
         seria_id = 224441463897849856
         await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        if result[0] is None:
+        if result is None:
             await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (seria_id,))
             ltuid = await c.fetchone()
             ltuid = ltuid[0]

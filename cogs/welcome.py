@@ -16,6 +16,7 @@ class WelcomeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
         print(log(True, False, 'On Member Join', member.id))
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
 
     @commands.Cog.listener()
