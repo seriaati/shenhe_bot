@@ -57,7 +57,7 @@ class CallCog(commands.Cog):
         await interaction.response.send_message("❄ 小雪國萬歲！")
 
     @app_commands.command(name='rabbit',description='兔兔島萬歲!')
-    async def snow(self, interaction: discord.Interaction):
+    async def rabbit(self, interaction: discord.Interaction):
         await self.bot.log.send(log(False, False, 'Call', interaction.user.id))
         await interaction.response.send_message("🐰 兔兔島萬歲！")    
         
