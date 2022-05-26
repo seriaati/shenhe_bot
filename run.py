@@ -63,6 +63,7 @@ class ShenheBot(commands.Bot):
             status=discord.Status.online,
             activity=discord.Game(name=f'/help')
         )
+        self.log = self.get_channel(979359912855482388) #log 台
         print(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
     async def on_message(self, message):
