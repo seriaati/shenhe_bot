@@ -149,11 +149,11 @@ class FishCog(commands.Cog):
              # 摸抹香鯨有機率獲得或損失 20 flow幣
             elif self.index == 10:  # [11] 抹香鯨
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
-                    await self.flow_app.transaction(interaction.user.id, 15)
+                    await self.flow_app.transaction(interaction.user.id, 20)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
                     # e.g. 摸抹香鯨摸到 20 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
-                    await self.flow_app.transaction(interaction.user.id, -15)
+                    await self.flow_app.transaction(interaction.user.id, -20)
                     await interaction.followup.send(f'**{fish_list[self.index]}**抹香鯨 鯨爆了，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
