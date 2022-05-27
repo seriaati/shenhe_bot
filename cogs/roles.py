@@ -100,12 +100,6 @@ class ReactionRoles(commands.Cog):
             '按按鈕會給予對應身份組, 再按一次會撤回身份組')
         await i.response.send_message(embed=embed, view=wr_menu)
 
-    @wr_role.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            channel = self.bot.get_channel(962311051683192842)
-            await interaction.response.send_message(f'請至 {channel.mention} 獲取身份組哦', ephemeral=True)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(ReactionRoles(bot))
