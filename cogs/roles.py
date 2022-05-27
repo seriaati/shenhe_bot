@@ -38,7 +38,7 @@ class ReactionRoles(commands.Cog):
                 await interaction.response.send_message(embed=defaultEmbed(f'✅ 已撤回 {r} 身份組', ''), ephemeral=True)
 
         def get_role_options():
-            roles = ['原神世界等級', '委託通知', '抽獎通知', '活動通知', '小雪通知']
+            roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
             role_list = []
             for role in roles:
                 role_list.append(SelectOption(label=role))
@@ -71,18 +71,14 @@ class ReactionRoles(commands.Cog):
         async def role_chooser(self, interaction: Interaction, select: Select):
             choice = select.values[0]
             action_menu = self.ButtonChoices(choice)
-            wr_menu = self.WorldLevelView()
-            if select.values[0] == '原神世界等級':
-                embed = defaultEmbed('選擇你的原神世界等級', '按按鈕會給予對應身份組, 再按一次會撤回身份組')
-                await interaction.response.send_message(embed=embed, view=wr_menu, ephemeral=True)
-            else:
-                embed = defaultEmbed(f'你選擇了 {select.values[0]} 身份組', '要獲取還是撤回該身份組?')
-                await interaction.response.send_message(embed=embed, view=action_menu, ephemeral=True)
+            embed = defaultEmbed(
+                f'你選擇了 {select.values[0]} 身份組', '要獲取還是撤回該身份組?')
+            await interaction.response.send_message(embed=embed, view=action_menu, ephemeral=True)
 
     @app_commands.command(name='role', description='取得身份組')
     @app_commands.checks.has_role('小雪團隊')
     async def get_role(self, i: Interaction):
-        role_selection_view = self.RoleSelection()
+        role_selection_view = ReactionRoles.RoleSelection()
         embed = defaultEmbed(
             '⭐ 身份組選擇器',
             '從選單中選擇你想要的身份組吧!'
@@ -90,6 +86,21 @@ class ReactionRoles(commands.Cog):
         await i.response.send_message(embed=embed, view=role_selection_view)
 
     @get_role.error
+    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            channel = self.bot.get_channel(962311051683192842)
+            await interaction.response.send_message(f'請至 {channel.mention} 獲取身份組哦', ephemeral=True)
+
+    @app_commands.command(name='wrrole', description='世界等級身份組')
+    @app_commands.checks.has_role('小雪團隊')
+    async def wr_role(self, i: Interaction):
+        wr_menu = ReactionRoles.WorldLevelView()
+        embed = defaultEmbed(
+            '選擇你的原神世界等級',
+            '按按鈕會給予對應身份組, 再按一次會撤回身份組')
+        await i.response.send_message(embed=embed, view=wr_menu)
+
+    @wr_role.error
     async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
         if isinstance(e, app_commands.errors.MissingRole):
             channel = self.bot.get_channel(962311051683192842)
