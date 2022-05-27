@@ -14,9 +14,9 @@ class FishCog(commands.Cog):
         self.debug_toggle = self.bot.debug_toggle
 
     global fish_list, fish_flow_list, fish_image_list
-    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20', '15', '20']
+    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20', '15', '20', '3', '3']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
-                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '大象', '抹香鯨']
+                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '大象', '抹香鯨', '企鵝', '兔兔']
     fish_image_list = [
         'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
         'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
@@ -29,11 +29,13 @@ class FishCog(commands.Cog):
         'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
         'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif',
         'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg',
-        'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg'
+        'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg', 
+        'https://i.pinimg.com/originals/f2/38/ce/f238ce8da599e3beb5e3f85441083ea2.gif', 
+        'https://i.pinimg.com/236x/f6/de/7f/f6de7f2ec162913fa46704ccf9cb0bd6.jpg'
     ]
 
     def generate_fish_embed(self, index: int):  # 製造摸魚embed
-        if index >= 0 and index <= 4 or index == 7:
+        if index >= 0 and index <= 4 or index == 7 or index == 12 or index == 13:
             result = ayaakaaEmbed(
                 fish_list[index],
                 f'是可愛的**{fish_list[index]}**！要摸摸看嗎?\n'
@@ -156,6 +158,26 @@ class FishCog(commands.Cog):
                     await self.flow_app.transaction(interaction.user.id, -20)
                     await interaction.followup.send(f'**{fish_list[self.index]}**抹香鯨 鯨爆了，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
+            
+            if self.index == 12:  # [12] 企鵝
+                if value <= 70:  # 70% Chance of increasing flow amount by 3
+                    await self.flow_app.transaction(interaction.user.id, 3)
+                    await interaction.followup.send(f'撫摸**{fish_list[self.index]}**摸到 3 flow幣!', ephemeral=True)
+                    # e.g. 撫摸企鵝摸到 3 flow幣!
+                else:
+                    penguin_random_number = randint(1, 100)
+                    if penguin_random_number == 1:
+                        await interaction.followup.send(f'被企鵝噴了一臉奇怪的白色液體, 沒有摸到flow幣 qwq', ephemeral=True)
+                    else:
+                        await interaction.followup.send(f'被企鵝噴了一臉茶, 沒有摸到flow幣 qwq', ephemeral=True)
+            
+            if self.index == 13:  # [13] 兔兔
+                if value <= 70:  # 70% Chance of increasing flow amount by 3
+                    await self.flow_app.transaction(interaction.user.id, 3)
+                    await interaction.followup.send(f'撫摸**{fish_list[self.index]}**摸到 3 flow幣!', ephemeral=True)
+                    # e.g. 撫摸兔兔摸到 3 flow幣!
+                else:
+                    await interaction.followup.send(f'兔兔逃走了, 沒有摸到flow幣 qwq', ephemeral=True)
 
     class TouchFish(View):  # 摸魚view
         def __init__(self, index: str, db: aiosqlite.Connection, bot):
