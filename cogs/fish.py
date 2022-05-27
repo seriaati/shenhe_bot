@@ -53,11 +53,11 @@ class FishCog(commands.Cog):
         return result
 
     class TouchFishButton(Button):  # 摸魚按鈕
-        def __init__(self, index: int, db: aiosqlite.Connection):
+        def __init__(self, index: int, db: aiosqlite.Connection, bot):
             super().__init__(style=ButtonStyle.blurple,
                              label=f'撫摸可愛的{fish_list[index]}')
             self.index = index
-            self.flow_app = FlowApp(db)
+            self.flow_app = FlowApp(db, bot)
 
         async def callback(self, interaction: Interaction):
             self.view.stop()
@@ -136,9 +136,9 @@ class FishCog(commands.Cog):
                     # e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
 
     class TouchFish(View):  # 摸魚view
-        def __init__(self, index: str, db: aiosqlite.Connection):
+        def __init__(self, index: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
-            self.add_item(FishCog.TouchFishButton(index, db))
+            self.add_item(FishCog.TouchFishButton(index, db, bot))
 
     def get_fish_choices():  # 取得所有魚種
         choices = []
@@ -153,7 +153,7 @@ class FishCog(commands.Cog):
         random_number = randint(1, 100) if not self.debug_toggle else 1
         if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
-            touch_fish_view = FishCog.TouchFish(index, self.bot.db)
+            touch_fish_view = FishCog.TouchFish(index, self.bot.db, self.bot)
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
    # /fish
@@ -164,7 +164,7 @@ class FishCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i: Interaction, fish_type: int):
         await self.bot.log.send(log(False, False, 'Release Fish', i.user.id))
-        touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db)
+        touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db, self.bot)
         await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 
     @release_fish.error
