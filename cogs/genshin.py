@@ -439,7 +439,7 @@ class GenshinCog(commands.Cog):
         def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             if user_characters is None:
-                self.add_item(GenshinCog.BuildCharactersDropdown(index, db))
+                self.add_item(GenshinCog.BuildCharactersDropdown(index, db, bot))
             else:
                 self.add_item(GenshinCog.UserCharactersDropdown(
                     index, user_characters, user, db, bot))
