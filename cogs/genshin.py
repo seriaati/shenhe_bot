@@ -599,6 +599,7 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(target='目標等級', a='普攻目標等級', e='e技能目標等級', q='q技能目標等級')
     @app_commands.describe(target='角色目標等級',a='普攻目標等級',e='E技能(元素戰技)目標等級',q='Q技能(元素爆發)目標等級')
     async def calc_character(self, i: Interaction, target: int, a: int, e: int, q: int):
+        await self.bot.log.send(log(False, False, 'Calc Character', i.user.id))
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         chara_list = []
         try:

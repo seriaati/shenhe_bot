@@ -13,6 +13,7 @@ class FlowApp:
         self.bot = bot
 
     async def register(self, user_id: int):
+        await self.bot.log.send(log(True, False, 'Register', user_id))
         await self.transaction(user_id, 20, is_new_account=True)
 
     async def transaction(self, user_id: int, flow_for_user: int, time_state: str = None, is_new_account: bool = False, is_removing_account: bool = False):
