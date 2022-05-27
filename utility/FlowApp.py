@@ -20,7 +20,7 @@ class FlowApp:
         time_states = ['morning', 'noon', 'night']
         if is_removing_account:
             await self.bot.log.send(log(True, False, 'Removing Acc',
-                  f'{user_id}: (flow = {flow_for_user})'))
+                                        f'{user_id}: (flow = {flow_for_user})'))
             c = await self.db.cursor()
             await c.execute('DELETE FROM flow_accounts WHERE user_id = ?', (user_id,))
             bank_flow = await self.get_bank_flow()
@@ -50,14 +50,15 @@ class FlowApp:
         bank_log = '{0:+d}'.format(-int(flow_for_user))
         await c.execute('UPDATE flow_accounts SET last_trans = ? WHERE user_id = ?', (now, user_id))
         await self.db.commit()
-        await self.bot.log.send(log(True, False, 'Transaction',
-                  f'user({user_id}): {user_log}, bank: {bank_log}'))
+        tranasaction_log_msg = log(True, False, 'Transaction',
+                                   f'user({user_id}): {user_log}, bank: {bank_log}')
         bank_flow = await self.get_bank_flow()
         await c.execute('SELECT SUM(flow) FROM flow_accounts')
         sum = await c.fetchone()
-        await self.bot.log.send(log(True, False, 'Current',
-                  f"user_total: {sum[0]}, bank: {bank_flow}"))
-        await self.bot.log.send(log(True, False, 'Total', int(sum[0])+bank_flow))
+        current_log_msg = log(True, False, 'Current',
+                              f"user_total: {sum[0]}, bank: {bank_flow}")
+        total_log_msg = (log(True, False, 'Total', int(sum[0])+bank_flow))
+        await self.bot.log.send(f'{tranasaction_log_msg}\n{current_log_msg}\n{total_log_msg}')
 
     async def checkFlowAccount(self, user_id: int) -> Union[bool, Embed]:
         c = await self.db.cursor()
