@@ -339,13 +339,13 @@ class WishCog(commands.Cog):
         @discord.ui.button(label='UP', style=discord.ButtonStyle.blurple)
         async def is_up(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.value = True
-            await interaction.response.send_message('好的', ephemeral=True)
+            await interaction.response.defer()
             self.stop()
 
         @discord.ui.button(label='常駐', style=discord.ButtonStyle.grey)
         async def is_std(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.value = False
-            await interaction.response.send_message('好的', ephemeral=True)
+            await interaction.response.defer()
             self.stop()
 
     class WantOrNot(discord.ui.View):
@@ -356,13 +356,13 @@ class WishCog(commands.Cog):
         @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)
         async def want(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.value = True
-            await interaction.response.send_message('好的', ephemeral=True)
+            await interaction.response.defer()
             self.stop()
 
         @discord.ui.button(label='不想要的', style=discord.ButtonStyle.grey)
         async def dont_want(self, interaction: discord.Interaction, button: discord.ui.Button):
             self.value = False
-            await interaction.response.send_message('好的', ephemeral=True)
+            await interaction.response.defer()
             self.stop()
 
     @wish.command(name='weapon', description='預測抽到想要的UP武器的機率')
