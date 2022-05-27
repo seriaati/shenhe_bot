@@ -14,9 +14,9 @@ class FishCog(commands.Cog):
         self.debug_toggle = self.bot.debug_toggle
 
     global fish_list, fish_flow_list, fish_image_list
-    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20']
+    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20', '15', '20']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
-                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '抹香鯨', '大象']
+                 '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '大象', '抹香鯨']
     fish_image_list = [
         'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
         'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
@@ -27,9 +27,9 @@ class FishCog(commands.Cog):
         'https://www.freshexpressonline.com/media/catalog/product/cache/cce444513434d709cad419cac6756dc1/8/0/804001004.jpg',
         'https://assets2.rockpapershotgun.com/genshin-impact-sangonomiya-kokomi.jpg/BROK/thumbnail/1200x1200/quality/100/genshin-impact-sangonomiya-kokomi.jpg',
         'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
-        'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif'
+        'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif',
+        'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg',
         'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg'
-        'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg'
     ]
 
     def generate_fish_embed(self, index: int):  # 製造摸魚embed
@@ -129,11 +129,33 @@ class FishCog(commands.Cog):
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, 20)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
-                    # e.g. 摸達達利鴨摸到 30 flow幣!
+                    # e.g. 摸達達利鴨摸到 20 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, -20)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**偷襲，損失了 20 flow幣 qwq', ephemeral=True)
-                    # e.g. 被達達利鴨偷襲，損失了 30 flow幣 qwq
+                    # e.g. 被達達利鴨偷襲，損失了 20 flow幣 qwq
+            
+             # 摸大象有機率獲得或損失 15 flow幣
+            elif self.index == 10:  # [10] 大象
+                if value <= 50:  # 50% Chance of increasing flow amount by 15
+                    await self.flow_app.transaction(interaction.user.id, 15)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 15 flow幣!', ephemeral=True)
+                    # e.g. 摸大象摸到 15 flow幣!
+                else:  # 50% Chance of decreasing flow amount by 15
+                    await self.flow_app.transaction(interaction.user.id, -15)
+                    await interaction.followup.send(f'被**{fish_list[self.index]}**踩到了，損失了 15 flow幣 qwq', ephemeral=True)
+                    # e.g. 被大象踩到了，損失了 15 flow幣 qwq
+            
+             # 摸抹香鯨有機率獲得或損失 20 flow幣
+            elif self.index == 10:  # [11] 抹香鯨
+                if value <= 50:  # 50% Chance of increasing flow amount by 20
+                    await self.flow_app.transaction(interaction.user.id, 15)
+                    await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
+                    # e.g. 摸抹香鯨摸到 20 flow幣!
+                else:  # 50% Chance of decreasing flow amount by 20
+                    await self.flow_app.transaction(interaction.user.id, -15)
+                    await interaction.followup.send(f'**{fish_list[self.index]}**抹香鯨 鯨爆了，損失了 20 flow幣 qwq', ephemeral=True)
+                    # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
     class TouchFish(View):  # 摸魚view
         def __init__(self, index: str, db: aiosqlite.Connection, bot):
