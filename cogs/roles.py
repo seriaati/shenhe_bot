@@ -94,11 +94,17 @@ class ReactionRoles(commands.Cog):
     @app_commands.command(name='wrrole', description='世界等級身份組')
     @app_commands.checks.has_role('小雪團隊')
     async def wr_role(self, i: Interaction):
-        wr_menu = ReactionRoles.WorldLevelView()
+        wr_menu = ReactionRoles.RoleSelection.WorldLevelView()
         embed = defaultEmbed(
             '選擇你的原神世界等級',
             '按按鈕會給予對應身份組, 再按一次會撤回身份組')
         await i.response.send_message(embed=embed, view=wr_menu)
+
+    @wr_role.error
+    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
+        if isinstance(e, app_commands.errors.MissingRole):
+            channel = self.bot.get_channel(962311051683192842)
+            await interaction.response.send_message(f'請至 {channel.mention} 獲取身份組哦', ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
