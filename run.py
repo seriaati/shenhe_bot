@@ -20,11 +20,13 @@ if user == "main":
     prefix = ['!', '！']
     guild = 778804551972159489
     application_id = 956049912699715634
+    debug_toggle = False
 else:
     token = config.dev
     prefix = ['%']
     guild = 778804551972159489
     application_id = 957621570128449626
+    debug_toggle = True
 
 # 前綴, token, intents
 intents = discord.Intents.default()
@@ -44,7 +46,7 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
-        self.debug_toggle = False
+        self.debug_toggle = debug_toggle
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
@@ -63,7 +65,7 @@ class ShenheBot(commands.Bot):
             status=discord.Status.online,
             activity=discord.Game(name=f'/help')
         )
-        self.log = self.get_channel(979359912855482388) #log 台
+        self.log = self.get_channel(979359912855482388) if not self.debug_toggle else self.get_channel(979541650474934282)#log 台
         await self.log.send(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
     async def on_message(self, message):

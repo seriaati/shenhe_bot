@@ -14,14 +14,12 @@ from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
 
-global debug_toggle
-debug_toggle = False
-
 
 class GenshinCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
+        self.debug_toggle = self.bot.debug_toggle
         self.claim_reward.start()
         self.resin_notification.start()
 
@@ -63,9 +61,9 @@ class GenshinCog(commands.Cog):
             count += 1
             if resin >= resin_threshold and current_notif < max_notif:
                 guild: Guild = self.bot.get_guild(
-                    778804551972159489) if debug_toggle else self.bot.get_guild(916838066117824553)
+                    778804551972159489) if self.debug_toggle else self.bot.get_guild(916838066117824553)
                 thread = guild.get_thread(
-                    978092463749234748) if debug_toggle else guild.get_thread(978092252154982460)
+                    978092463749234748) if self.debug_toggle else guild.get_thread(978092252154982460)
                 user: User = self.bot.get_user(user_id)
                 embed = defaultEmbed(
                     '<:PaimonSeria:958341967698337854> 樹脂要滿出來啦',

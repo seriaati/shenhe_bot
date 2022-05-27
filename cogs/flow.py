@@ -136,7 +136,7 @@ class FlowCog(commands.Cog):
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
     async def give(self, i: Interaction, member: Member, flow: int):
         await self.bot.log.send(log(False, False, 'Give',
-              f'{i.user.id} give {flow} to {member.id}'))
+                                    f'{i.user.id} give {flow} to {member.id}'))
         if member.id == i.user.id:
             await i.response.send_message(
                 embed=errEmbed(
@@ -174,7 +174,7 @@ class FlowCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def take(self, i: Interaction, member: Member, flow: int, private: int):
         await self.bot.log.send(log(False, False, 'Take',
-              f'{i.user.id} take {flow} from {member.id}'))
+                                    f'{i.user.id} take {flow} from {member.id}'))
         check, msg = await self.flow_app.checkFlowAccount(member.id)
         if check == False:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -200,7 +200,7 @@ class FlowCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def make(self, i: Interaction, member: Member, flow: int, private: int = 1):
         await self.bot.log.send(log(False, False, 'make',
-              f'{i.user.id} make {flow} for {member.id}'))
+                                    f'{i.user.id} make {flow} for {member.id}'))
         check, msg = await self.flow_app.checkFlowAccount(member.id)
         if check == False:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -243,36 +243,41 @@ class FlowCog(commands.Cog):
         Choice(name='200~300 flow', value=2),
         Choice(name='大於 300 flow', value=3)])
     async def flows(self, i: Interaction, category: int):
-        category_list = ['小於 100 flow', '100~200 flow', '200~300 flow', '大於 300 flow']
+        category_list = ['小於 100 flow', '100~200 flow',
+                         '200~300 flow', '大於 300 flow']
         result_list = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         if category == 0:
             await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow<100')
             result = await c.fetchall()
             for index, tuple in enumerate(result):
-                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+                result_list.append(
+                    f'{i.client.get_user(tuple[0])}: {tuple[1]}')
         elif category == 1:
             await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 100 AND 200')
             result = await c.fetchall()
             for index, tuple in enumerate(result):
-                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+                result_list.append(
+                    f'{i.client.get_user(tuple[0])}: {tuple[1]}')
         elif category == 2:
             await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow BETWEEN 201 AND 300')
             result = await c.fetchall()
             for index, tuple in enumerate(result):
-                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+                result_list.append(
+                    f'{i.client.get_user(tuple[0])}: {tuple[1]}')
         else:
             await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow>300')
             result = await c.fetchall()
             for index, tuple in enumerate(result):
-                result_list.append(f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+                result_list.append(
+                    f'{i.client.get_user(tuple[0])}: {tuple[1]}')
         if len(result_list) == 0:
             await i.response.send_message(embed=errEmbed('此範圍還沒有任何 flow帳號'), ephemeral=True)
         else:
             value_str = ''
             for user_str in result_list:
                 value_str += f'{user_str}\n'
-            await i.response.send_message(embed=defaultEmbed(category_list[category],value_str))
+            await i.response.send_message(embed=defaultEmbed(category_list[category], value_str))
 
     shop = app_commands.Group(name="shop", description="flow商店")
 
@@ -293,7 +298,7 @@ class FlowCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def newitem(self, i: Interaction, item: str, flow: int, max: int):
         await self.bot.log.send(log(False, False, 'shop newitem',
-              f'{i.user.id}: (item={item}, flow={flow}, max={max})'))
+                                    f'{i.user.id}: (item={item}, flow={flow}, max={max})'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('INSERT INTO flow_shop(name) values(?)', (item,))
         await c.execute('UPDATE flow_shop SET flow = ?, current = 0, max = ? WHERE name = ?', (flow, max, item))
@@ -367,7 +372,8 @@ class FlowCog(commands.Cog):
         item_names = []
         for index, tuple in enumerate(result):
             item_names.append(tuple[0])
-        view = FlowCog.ShopItemView(item_names, 'remove', self.bot.db, self.bot)
+        view = FlowCog.ShopItemView(
+            item_names, 'remove', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
 
     @removeitem.error
@@ -438,7 +444,7 @@ class FlowCog(commands.Cog):
             type = result[3]
             author_id = result[4]
             await self.bot.log.send(log(True, False, 'Accept',
-                  f"(author = {author_id}, confirmer = {i.user.id})"))
+                                        f"(author = {author_id}, confirmer = {i.user.id})"))
             author = i.client.get_user(author_id)
             confirmer = i.client.get_user(i.user.id)
             thread = await msg.create_thread(name=f"{author.name} • {title}")
@@ -545,7 +551,7 @@ class FlowCog(commands.Cog):
              Choice(name='tag', value=1)])
     async def find(self, i: Interaction, type: int, title: str, flow: int, tag: int = 1):
         await self.bot.log.send(log(False, False, 'Find',
-              f'{i.user.id}: (type={type}, title={title}, flow={flow})'))
+                                    f'{i.user.id}: (type={type}, title={title}, flow={flow})'))
         check, msg = self.check_in_find_channel(i.channel.id)
         if check == False:
             await i.response.send_message(msg, ephemeral=True)

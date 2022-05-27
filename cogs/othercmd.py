@@ -1,8 +1,7 @@
 from random import randint
-
-import aiosqlite
 from discord import Interaction, Member, Message, Role, app_commands
 from discord.ext import commands
+from discord.app_commands import Choice
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, log
 
@@ -167,7 +166,7 @@ class OtherCMDCog(commands.Cog):
     @app_commands.describe(role='請選擇要查看的身份組')
     async def role_members(self, i: Interaction, role: Role):
         await self.bot.log.send(log(False, False, 'role members',
-              f'{i.user.id}: (role: {role})'))
+                                    f'{i.user.id}: (role: {role})'))
         if role is None:
             await i.response.send_message('找不到該身份組!', ephemeral=True)
             return
