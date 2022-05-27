@@ -147,7 +147,7 @@ class FishCog(commands.Cog):
                     # e.g. 被大象踩到了，損失了 15 flow幣 qwq
             
              # 摸抹香鯨有機率獲得或損失 20 flow幣
-            elif self.index == 10:  # [11] 抹香鯨
+            elif self.index == 11:  # [11] 抹香鯨
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, 20)
                     await interaction.followup.send(f'摸**{fish_list[self.index]}**摸到 20 flow幣!', ephemeral=True)
