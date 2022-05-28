@@ -23,19 +23,19 @@ class ReactionRoles(commands.Cog):
                 g = interaction.client.get_guild(916838066117824553)
                 r = get(g.roles, name=self.role)
                 if r in interaction.user.roles:
-                    await interaction.response.edit_message(embed=errEmbed('<:penguin_dead:978841159147343962> 你已經擁有這個身份組了!'), ephemeral=True)
+                    await interaction.response.edit_message(embed=errEmbed('<:penguin_dead:978841159147343962> 你已經擁有這個身份組了!'))
                     return
                 await interaction.user.add_roles(r)
-                await interaction.response.edit_message(embed=defaultEmbed(f'<:penguin_hug:978250194779000892> 已獲取 {r} 身份組'), ephemeral=True)
+                await interaction.response.edit_message(embed=defaultEmbed(f'<:penguin_hug:978250194779000892> 已獲取 {r} 身份組'))
 
             @button(label='撤回', style=ButtonStyle.red, custom_id='remove_role_button')
             async def discard_role_button(self, interaction: Interaction, button: Button):
                 g = interaction.client.get_guild(916838066117824553)
                 r = get(g.roles, name=self.role)
                 if r not in interaction.user.roles:
-                    await interaction.response.edit_message(embed=errEmbed('<:penguin_dead:978841159147343962> 你本來就沒有這個身份組!'), ephemeral=True)
+                    await interaction.response.edit_message(embed=errEmbed('<:penguin_dead:978841159147343962> 你本來就沒有這個身份組!'))
                 await interaction.user.remove_roles(r)
-                await interaction.response.edit_message(embed=defaultEmbed(f'<a:HutaoByebye:957675381891158016> 已撤回 {r} 身份組'), ephemeral=True)
+                await interaction.response.edit_message(embed=defaultEmbed(f'<a:HutaoByebye:957675381891158016> 已撤回 {r} 身份組'))
 
         def get_role_options():
             roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
