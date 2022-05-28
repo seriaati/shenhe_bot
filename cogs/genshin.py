@@ -666,11 +666,15 @@ class GenshinCog(commands.Cog):
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                if value == '':
+                    value = '不需要任何素材'
                 embed.add_field(name='角色所需素材', value=value, inline=False)
             if tuple[0] == 'talents':
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                if value == '':
+                    value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
         await i.edit_original_message(embed=embed, view=None)
 
