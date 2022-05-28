@@ -436,7 +436,7 @@ class WishCog(commands.Cog):
         embed = defaultEmbed(
             '祈願總覽',
             f'共**{total_wish}**抽\n'
-            f'即**{160*int(total_wish[0])}**原石'
+            f'即**{160*int(total_wish)}**原石'
         )
         # [100, 200, 301, 302]
         # [total, left_pull, five_star, four_star]
