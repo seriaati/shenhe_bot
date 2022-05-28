@@ -572,13 +572,18 @@ class GenshinCog(commands.Cog):
     def chunks(self, lst, n):
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
-    
+
     class CalculatorItems(View):
-        def __init__(self, items, type):
+        def __init__(self, items, type, author: Member):
             super().__init__(timeout=None)
+            self.author = author
             divided_lists = GenshinCog.chunks(GenshinCog, items, 25)
             for individual_list in divided_lists:
-                self.add_item(GenshinCog.CalculatorItemSelect(individual_list, type))
+                self.add_item(GenshinCog.CalculatorItemSelect(
+                    individual_list, type))
+
+        async def interaction_check(self, i: Interaction) -> bool:
+            return self.author.id == i.user.id
 
     class CalculatorItemSelect(Select):
         def __init__(self, items, type):
@@ -597,28 +602,41 @@ class GenshinCog(commands.Cog):
 
     @calc.command(name='character', description='個別計算一個角色所需的素材')
     @app_commands.rename(target='目標等級', a='普攻目標等級', e='e技能目標等級', q='q技能目標等級')
-    @app_commands.describe(target='角色目標等級',a='普攻目標等級',e='E技能(元素戰技)目標等級',q='Q技能(元素爆發)目標等級')
+    @app_commands.describe(target='角色目標等級', a='普攻目標等級', e='E技能(元素戰技)目標等級', q='Q技能(元素爆發)目標等級')
     async def calc_character(self, i: Interaction, target: int, a: int, e: int, q: int):
         await self.bot.log.send(log(False, False, 'Calc Character', i.user.id))
+        if target > 90:
+            await i.response.send_message(embed=errEmbed('原神目前的最大等級是90唷'), ephemeral=True)
+            return
+        if a > 10 or e > 10 or q > 10:
+            await i.response.send_message(embed=errEmbed('天賦的最高等級是10唷', '有命座請自行減3'), ephemeral=True)
+            return
+        if target <= 0:
+            await i.response.send_message(embed=errEmbed('原神角色最少至少要1等唷'), ephemeral=True)
+            return
+        if a <= 0 or e <= 0 or q <= 0:
+            await i.response.send_message(embed=errEmbed('天賦至少要1等唷'), ephemeral=True)
+            return
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         chara_list = []
         try:
             charas = await client.get_calculator_characters(sync=True)
         except:
-            embed = defaultEmbed('等等!',
-            '非常抱歉\n'
-            '由於米哈遊真的很煩\n'
-            '你需要先進行下列的操作才能使用此功能\n'
-            '並且由於米哈遊非常想要大家使用他們的 hoyolab APP\n'
-            '所以以下操作只能在手機上用 APP 進行 <:penguin_dead:978841159147343962>\n'
-            'APP 下載連結: [IOS](https://apps.apple.com/us/app/hoyolab/id1559483982) [Android](https://play.google.com/store/apps/details?id=com.mihoyo.hoyolab&hl=en&gl=US)')
+            embed = defaultEmbed(
+                '等等!',
+                '非常抱歉\n'
+                '由於米哈遊真的很煩\n'
+                '你需要先進行下列的操作才能使用此功能\n'
+                '並且由於米哈遊非常想要大家使用他們的 hoyolab APP\n'
+                '所以以下操作只能在手機上用 APP 進行 <:penguin_dead:978841159147343962>\n'
+                'APP 下載連結: [IOS](https://apps.apple.com/us/app/hoyolab/id1559483982) [Android](https://play.google.com/store/apps/details?id=com.mihoyo.hoyolab&hl=en&gl=US)')
             embed.set_image(url='https://i.imgur.com/GiYbVwU.gif')
             await i.response.send_message(embed=embed, ephemeral=True)
             return
         for chara in charas:
             chara_list.append([chara.name, chara.id])
-        view = GenshinCog.CalculatorItems(chara_list, '角色')
-        await i.response.send_message(view=view, ephemeral=True)
+        view = GenshinCog.CalculatorItems(chara_list, '角色', i.user)
+        await i.response.send_message(view=view)
         await view.wait()
         chara_name = ''
         for chara in chara_list:
@@ -632,10 +650,10 @@ class GenshinCog(commands.Cog):
         value = ''
         for index, tuple in enumerate(details):
             if tuple[0] == 'talents':
-                value += f'角色等級 • {character.level} > {target}\n'
-                value += f'{tuple[1][0].name} • {tuple[1][0].level} > {a}\n'
-                value += f'{tuple[1][1].name} • {tuple[1][1].level} > {e}\n'
-                value += f'{tuple[1][2].name} • {tuple[1][2].level} > {q}\n'
+                value += f'角色等級 {character.level} ▸ {target}\n'
+                value += f'{tuple[1][0].name} {tuple[1][0].level} ▸ {a}\n'
+                value += f'{tuple[1][1].name} {tuple[1][1].level} ▸ {e}\n'
+                value += f'{tuple[1][2].name} {tuple[1][2].level} ▸ {q}\n'
                 break
         embed.add_field(name='計算內容', value=value, inline=False)
         cost = await (
@@ -647,14 +665,14 @@ class GenshinCog(commands.Cog):
             if tuple[0] == 'character':
                 value = ''
                 for item in tuple[1]:
-                    value += f'{item.name} •  x{item.amount}\n'
-                embed.add_field(name='角色所需素材',value=value, inline=False)
+                    value += f'{item.name}  x{item.amount}\n'
+                embed.add_field(name='角色所需素材', value=value, inline=False)
             if tuple[0] == 'talents':
                 value = ''
                 for item in tuple[1]:
-                    value += f'{item.name} •  x{item.amount}\n'
-                embed.add_field(name='天賦所需素材',value=value, inline=False)
-        await i.followup.send(embed=embed)
+                    value += f'{item.name}  x{item.amount}\n'
+                embed.add_field(name='天賦所需素材', value=value, inline=False)
+        await i.edit_original_message(embed=embed, view=None)
 
 
 async def setup(bot: commands.Bot) -> None:
