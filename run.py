@@ -56,6 +56,7 @@ class ShenheBot(commands.Bot):
         self.add_view(FlowCog.ConfirmView(self.db, self))
         self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
         self.add_view(ReactionRoles.RoleSelection())
+        self.add_view(ReactionRoles.RoleSelection.WorldLevelView())
         self.add_view(WelcomeCog.AcceptRules(self.db))
         self.add_view(WelcomeCog.StartTutorial(self.db))
         self.add_view(WelcomeCog.Welcome(None))
