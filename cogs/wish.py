@@ -207,7 +207,10 @@ class WishCog(commands.Cog):
         banner_ids = [100, 200, 301, 302]
         result = []
         for banner_id in banner_ids:
-            await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
+            if banner_id == 301:
+                await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND (wish_banner_type = ? OR wish_banner_type = ?)', (user_id, banner_id, 400))
+            else:
+                await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
             total = await c.fetchall()
             total_wish = len(total)
             left_pull = 0
