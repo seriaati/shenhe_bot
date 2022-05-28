@@ -411,7 +411,7 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, interaction: Interaction):
             result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
-            await interaction.response.send_message(embed=result)
+            await interaction.response.edit_message(embed=result, view=None)
 
     class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
         def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
@@ -433,17 +433,21 @@ class GenshinCog(commands.Cog):
                     placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
         async def callback(self, interaction: Interaction):
-            await interaction.response.send_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user))
+            await interaction.response.edit_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user), view=None)
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot, author):
             super().__init__(timeout=None)
+            self.author = author
             if user_characters is None:
                 self.add_item(
                     GenshinCog.BuildCharactersDropdown(index, db, bot))
             else:
                 self.add_item(GenshinCog.UserCharactersDropdown(
                     index, user_characters, user, db, bot))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
 
     class ElementButton(Button):  # 元素按鈕
         def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
@@ -458,21 +462,26 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.user_characters, self.user, self.db, self.bot)
-            await i.response.send_message(view=view, ephemeral=True)
+                self.index, self.user_characters, self.user, self.db, self.bot, i.user)
+            embed = defaultEmbed('請選擇角色')
+            await i.response.edit_message(embed=embed, view=view)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, bot, user: Member = None, user_characters: dict = None):
+        def __init__(self, db: aiosqlite.Connection, bot, author: Member, user: Member = None, user_characters: dict = None):
             super().__init__(timeout=None)
+            self.author = author
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
                     i, user_characters, user, db, bot))
 
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
+
     # /build
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
     async def build(self, i: Interaction):
-        view = GenshinCog.ElementChooseView(self.bot.db, self.bot)
-        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', '如果你沒有用`/cookie`註冊過, 僅會顯示等級前8的角色'), view=view, ephemeral=True)
+        view = GenshinCog.ElementChooseView(self.bot.db, self.bot, i.user)
+        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
 
     # /characters
     @app_commands.command(name='characters', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
@@ -485,8 +494,10 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=user_characters)
             return
         view = GenshinCog.ElementChooseView(
-            self.bot.db, self.bot, member, user_characters)
-        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素', ''), view=view, ephemeral=True)
+            self.bot.db, self.bot, i.user, member, user_characters)
+        embed = defaultEmbed('請選擇想查看角色的元素', '如果你沒有用`/cookie`註冊過, 只會顯示等級前8的角色')
+        embed.set_author(name=member, icon_url=member.avatar)
+        await i.response.send_message(embed=embed, view=view)
 
 # /rate
 
