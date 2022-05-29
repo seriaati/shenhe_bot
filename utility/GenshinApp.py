@@ -77,7 +77,7 @@ class GenshinApp:
     async def claimDailyReward(self, user_id: int):
         await self.bot.log.send(log(False, False, 'Claim', f'{user_id}'))
         client, uid, only_uid = await self.getUserCookie(user_id)
-        if only_uid == True:
+        if only_uid:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
@@ -104,7 +104,7 @@ class GenshinApp:
     async def getRealTimeNotes(self, user_id: int, check_resin_excess=False):
         await self.bot.log.send(log(False, False, 'Notes', user_id))
         client, uid, only_uid = await self.getUserCookie(user_id)
-        if only_uid == True:
+        if only_uid:
             result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             return result
         try:
@@ -129,7 +129,7 @@ class GenshinApp:
             )
             return result
         else:
-            if check_resin_excess == True:
+            if check_resin_excess:
                 return notes.current_resin
             else:
                 if notes.current_resin == notes.max_resin:
@@ -304,7 +304,7 @@ class GenshinApp:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
             await self.bot.log.send(log(False, True, 'Notes', f'{user_id}: {e}'))
-            result = errEmbed('你的資料並不是公開的!', '請輸入`!stuck`來取得更多資訊')
+            result = errEmbed('你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
         except genshin.errors.GenshinException as e:
             await self.bot.log.send(log(False, True, 'Notes', f'{user_id}: {e}'))
             result = errEmbed(
@@ -400,7 +400,6 @@ class GenshinApp:
 
     async def getToday(self, user_id: int):
         await self.bot.log.send(log(False, False, 'Notes', user_id))
-        check, msg = await self.checkUserData(user_id)
         client, uid, only_uid = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
