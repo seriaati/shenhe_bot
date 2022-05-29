@@ -105,7 +105,7 @@ class RollCog(commands.Cog):
             super().__init__(timeout=None)
             self.db = db
             self.flow_app = FlowApp(self.db, bot)
-            self.roll_app = RollApp(self.db)
+            self.roll_app = RollApp(self.db, bot)
             self.author = author
             self.banner = banner
             self.ten_pull = is_ten_pull
