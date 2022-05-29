@@ -111,7 +111,8 @@ class GiveAwayCog(commands.Cog):
             await self.db.commit()
 
         async def update_gv_msg(self, gv_msg_id: int, interaction: Interaction):
-            channel = interaction.client.get_channel(self.gv_channel_id)
+            gv_channel_id = 965517075508498452 if not self.bot.debug_toggle else 909595117952856084
+            channel = interaction.client.get_channel(gv_channel_id)
             gv_msg = await channel.fetch_message(gv_msg_id)
             embed = await GiveAwayCog.GiveAwayView.generate_gv_embed(self, gv_msg_id, interaction)
             await gv_msg.edit(embed=embed)
