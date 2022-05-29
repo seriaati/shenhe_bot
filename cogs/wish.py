@@ -39,7 +39,7 @@ class WishCog(commands.Cog):
         async def on_submit(self, i: discord.Interaction):
             client = genshin.Client()
             await i.response.defer()
-            client, uid, only_uid = await self.getUserCookie(i.user.id)
+            client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
             if only_uid:
                 result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
                 return result
