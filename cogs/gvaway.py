@@ -67,6 +67,7 @@ class GiveAwayCog(commands.Cog):
             self.db = db
             self.interaction = i
             self.flow_app = FlowApp(self.db, bot)
+            self.bot = bot
             super().__init__(timeout=None)
 
         async def generate_gv_embed(self, gv_msg_id: int, i: Interaction):
