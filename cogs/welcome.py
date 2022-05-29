@@ -34,9 +34,12 @@ class WelcomeCog(commands.Cog):
         g: Guild = self.bot.get_guild(916838066117824553)
         r = g.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
-            await self.bot.log.send(log(True, False, 'New Traveller', after.id))
+            await self.bot.log.send(log(True, False, 'New Traveler', after.id))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
+            try:
+                await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
+            except:
+                await self.bot.log.send(log(True, True, 'New Traveler', f'{after.id} already in flow_accounts'))
             await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (after.id,))
             result = await c.fetchone()
             if result is None:
