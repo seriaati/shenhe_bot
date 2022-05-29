@@ -39,10 +39,10 @@ class WishCog(commands.Cog):
         async def on_submit(self, i: discord.Interaction):
             client = genshin.Client()
             await i.response.defer()
-            check, msg = await self.genshin_app.checkUserData(i.user.id)
-            if check == False:
-                await i.followup.send(embed=errEmbed('設置失敗', '請先使用`/cookie`來設置自己的原神cookie'), ephemeral=True)
-                return
+            client, uid, only_uid = await self.getUserCookie(i.user.id)
+            if only_uid:
+                result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
+                return result
             url = self.url.value
             await self.bot.log.send(log(True, False, 'Wish Setkey',
                       f'{i.user.id}(url={url})'))
