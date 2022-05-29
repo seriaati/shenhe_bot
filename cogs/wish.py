@@ -242,7 +242,7 @@ class WishCog(commands.Cog):
         await self.bot.log.send(log(False, False, 'Wish History', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
@@ -276,7 +276,7 @@ class WishCog(commands.Cog):
         await self.bot.log.send(log(False, False, 'Wish Luck', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
@@ -306,7 +306,7 @@ class WishCog(commands.Cog):
         await self.bot.log.send(log(False, False, 'Wish Character', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
@@ -376,7 +376,7 @@ class WishCog(commands.Cog):
         await self.bot.log.send(log(False, False, 'Wish Weapon', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (member.id,))
@@ -430,7 +430,7 @@ class WishCog(commands.Cog):
         await self.bot.log.send(log(False, False, 'Wish Overview', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         overview = await self.wish_overview_calc(member.id)
