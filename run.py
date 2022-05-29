@@ -72,11 +72,6 @@ class ShenheBot(commands.Bot):
     async def on_message(self, message):
         await self.process_commands(message)
 
-    async def on_command_error(self, ctx: commands.Context, error):
-        await self.log.send(log(True, True, 'On Command Error', error))
-        if isinstance(error, commands.CommandNotFound):
-            pass
-
     async def close(self) -> None:
         await self.db.close()
         return await super().close()
