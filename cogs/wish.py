@@ -57,7 +57,7 @@ class WishCog(commands.Cog):
                 await c.execute('DELETE FROM wish_history WHERE user_id = ?', (i.user.id,))
             async for wish in client.wish_history():
                 wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
-                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type) VALUES (?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type))
+                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type) VALUES (?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type))
             await self.db.commit()
             await i.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功'), ephemeral=True)
 
