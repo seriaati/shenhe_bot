@@ -45,7 +45,7 @@ class WishCog(commands.Cog):
                 result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
                 return result
             url = self.url.value
-            await self.bot.log.send(log(True, False, 'Wish Setkey',f'{i.user.id}(url={url})'))
+            print(log(True, False, 'Wish Setkey',f'{i.user.id}(url={url})'))
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
