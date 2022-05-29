@@ -15,9 +15,9 @@ gold_sleep = 5.3
 
 
 class RollApp:
-    def __init__(self, db: aiosqlite.Connection) -> None:
+    def __init__(self, db: aiosqlite.Connection, bot) -> None:
         self.db = db
-        self.flow_app = FlowApp(self.db, self.bot)
+        self.flow_app = FlowApp(self.db, bot)
 
     async def get_banner_big_prize(self, banner: str):
         c = await self.db.cursor()
@@ -116,8 +116,6 @@ class RollApp:
                 '有人抽到大獎了!',
                 f'ID: {user_id}\n'
                 '按ctrl+k並貼上ID即可查看使用者')
-            await self.bot.log.send(log(True, False, 'Roll',
-                  f'{user_id} got big_prize in {banner}'))
             return True, msg
         else:
             return False, None

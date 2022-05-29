@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord import ButtonStyle, Interaction, app_commands
 from discord.ui import button, Button
 from utility.FlowApp import FlowApp
-from utility.utils import errEmbed, defaultEmbed
+from utility.utils import errEmbed, defaultEmbed, log
 from utility.RollApp import RollApp
 
 global one_pull_price
@@ -128,8 +128,9 @@ class RollCog(commands.Cog):
             luluR = i.client.get_user(665092644883398671)
             check, msg = await self.roll_app.check_big_prize(
                 i.user.id, prize, self.banner)
-            if check == True:
+            if check:
                 await luluR.send(embed=msg)
+                await self.bot.log.send(log(True, False, 'Roll', f'{i.user.id} got big prize'))
                 public_channel = i.client.get_channel(916951131022843964) if not self.debug_toggle else i.client.get_channel(909595117952856084)
                 await public_channel.send(f'🎉 恭喜 {i.user.mention} 抽到 **{self.banner}** 的大獎！！ 🎉')
             gif, sleep_time = await self.roll_app.animation_chooser(prize, self.banner)
