@@ -467,14 +467,6 @@ class WishCog(commands.Cog):
             f'• 距離保底**{90-overview[1][1]}**抽',
             inline=False
         )
-        embed.add_field(
-            name='新手池',
-            value=f'• 共**{overview[0][0]}**抽 (**{160*overview[0][0]}**原石)\n'
-            f'• 5☆ **{overview[0][2]}**\n'
-            f'• 4☆ **{overview[0][3]}**\n'
-            f'• 距離保底**{20-overview[0][1]}**抽',
-            inline=False
-        )
         embed.set_author(name=member, icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
