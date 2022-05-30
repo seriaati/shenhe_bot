@@ -31,8 +31,9 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: Member, after: Member):
-        g: Guild = self.bot.get_guild(916838066117824553)
-        r = g.get_role(978532779098796042)
+        if self.bot.debug_toggle:
+            return
+        r =  before.guild.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
             await self.bot.log.send(log(True, False, 'New Traveler', after.id))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
