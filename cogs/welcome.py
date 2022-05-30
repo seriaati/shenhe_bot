@@ -1,17 +1,40 @@
 import random
+from re import findall
+
 import aiosqlite
-from discord import ButtonStyle, Guild, Interaction, Member, app_commands
+from discord import ButtonStyle, Interaction, Member, Message, app_commands
 from discord.ext import commands
 from discord.ui import Button, View, button
 from utility.FlowApp import FlowApp
-from utility.utils import defaultEmbed, log
 from utility.TutorialPaginator import TutorialPaginator
+from utility.utils import defaultEmbed, errEmbed, log
 
 
 class WelcomeCog(commands.Cog):
     def __init__(self, bot) -> None:
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.flow_app = FlowApp(self.bot.db, self.bot)
+
+    @commands.Cog.listener()
+    async def on_message(self, message: Message):
+        if message.channel.id == 978871680019628032:
+            num = findall(r'\d+', message)
+            uid = int(num[0])
+            if len(str(uid)) != 9:
+                await message.channel.send(content=message.author.mention, embed=errEmbed('請輸入長度為9的UID!'), delete_after=3)
+                return
+            if uid//100000000 != 9:
+                await message.channel.send(content=message.author.mention, embed=errEmbed('你似乎不是台港澳服玩家!', '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n為保群友的遊戲質量, 我們無法接受你的入群申請\n你的確可以繞過這個檢查\n但我們相信如果你的主帳號不是台港澳服的話\n你在這個群內是無法找到一同遊玩的夥伴的\n我們真心認為其他群組對你來說可能是個更好的去處 🙏'), delete_after=10)
+                return
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (message.author.id,))
+            result = await c.fetchone()
+            if result is None:
+                await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (message.author.id, uid))
+            else:
+                await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, message.author.id))
+            await self.db.commit()
+            await message.channel.send(content=message.author.mention, embed=defaultEmbed('✅ UID設置成功', f'UID: {uid}'))
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
@@ -33,7 +56,7 @@ class WelcomeCog(commands.Cog):
     async def on_member_update(self, before: Member, after: Member):
         if self.bot.debug_toggle:
             return
-        r =  before.guild.get_role(978532779098796042)
+        r = before.guild.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
             await self.bot.log.send(log(True, False, 'New Traveler', after.id))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -110,11 +133,11 @@ class WelcomeCog(commands.Cog):
         @button(label='開始!', style=ButtonStyle.blurple, custom_id='start_tutorial_button')
         async def start_tutorial(self, i: Interaction, button: Button):
             embeds = []
+            uid_channel = i.client.get_channel(978871680019628032)
             embed = defaultEmbed(
                 '原神系統',
                 '先從輸入你的原神 UID 開始吧!\n'
-                '請輸入`/setuid`指令來設置 UID\n'
-                '**是用/setuid指令設定UID, 不是直接輸入**'
+                f'請至 {uid_channel.mention} 輸入你的原神 UID'
             )
             embeds.append(embed)
             factory = i.client.get_channel(957268464928718918)
