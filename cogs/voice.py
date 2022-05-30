@@ -2,7 +2,7 @@ from discord import Member, VoiceChannel, app_commands, VoiceState
 from discord.ext import commands
 
 
-class ReactionRoles(commands.Cog):
+class VoiceChannel(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
 
@@ -19,4 +19,4 @@ class ReactionRoles(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(ReactionRoles(bot))
+    await bot.add_cog(VoiceChannel(bot))
