@@ -476,6 +476,7 @@ class FlowCog(commands.Cog):
         def __init__(self, db: aiosqlite.Connection, bot):
             self.db = db
             self.flow_app = FlowApp(self.db, bot)
+            self.bot = bot
             super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:
