@@ -24,10 +24,9 @@ class WelcomeCog(commands.Cog):
             return
         if message.channel.id == uid_channel_id:
             num = re.findall(r'\d+', str(message.content))
-            uid = int(num[0])
-            print(uid)
-            if len(str(uid)) != 9:
+            if len(num) == 0:
                 return
+            uid = int(num[0])
             result, success = await self.genshin_app.setUID(message.author.id, uid)
             result.set_author(name=message.author, icon_url=message.author.avatar)
             if not success:
