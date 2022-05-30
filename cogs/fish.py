@@ -194,7 +194,7 @@ class FishCog(commands.Cog):
     async def on_message(self, message):  # 機率放魚
         if message.author == self.bot.user:
             return
-        random_number = randint(1, 100) if not self.debug_toggle else 1
+        random_number = randint(1, 100)
         if random_number == 1 and not isinstance(message.channel, Thread):
             index = randint(0, len(fish_list)-1)
             touch_fish_view = FishCog.TouchFish(index, self.bot.db, self.bot)
