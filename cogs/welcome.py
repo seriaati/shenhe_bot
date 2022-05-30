@@ -107,12 +107,6 @@ class WelcomeCog(commands.Cog):
                 f'{self.member.name} 歡迎歡迎~', '<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
             embed.set_author(name=i.user.name, icon_url=i.user.avatar)
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
-            uid = await c.fetchone()
-            if uid is not None:
-                await i.response.send_message(embed=defaultEmbed('你已經做過入群導引啦', '不需要再做囉'), ephemeral=True)
-                return
             await i.response.send_message(embed=embed)
 
     class AcceptRules(View):
@@ -128,6 +122,12 @@ class WelcomeCog(commands.Cog):
                 '請有耐心的做完唷~ <:penguin_hug:978250194779000892>'
             )
             view = WelcomeCog.StartTutorial(self.db)
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
+            uid = await c.fetchone()
+            if uid is not None:
+                await i.response.send_message(embed=defaultEmbed('你已經做過入群導引啦', '不需要再做囉'), ephemeral=True)
+                return
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
 
     class StartTutorial(View):
