@@ -1,11 +1,12 @@
 import random
-from re import findall
+import re
 
 import aiosqlite
-from discord import ButtonStyle, Embed, Interaction, Member, Message, app_commands
+from discord import ButtonStyle, Interaction, Member, Message, app_commands
 from discord.ext import commands
 from discord.ui import Button, View, button
 from utility.FlowApp import FlowApp
+from utility.GenshinApp import GenshinApp
 from utility.TutorialPaginator import TutorialPaginator
 from utility.utils import defaultEmbed, errEmbed, log
 
@@ -14,11 +15,12 @@ class WelcomeCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot: commands.Bot = bot
         self.flow_app = FlowApp(self.bot.db, self.bot)
+        self.genshin_app = GenshinApp(self.db, self.bot)
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):
         if message.channel.id == 978871680019628032:
-            num = findall(r'\d+', str(message))
+            num = re.findall(r'\d+', str(message))
             uid = int(num[0])
             result, success = await self.genshin_app.setUID(message.author.id, uid)
             result.set_author(name=message.author, icon_url=message.author.avatar)
