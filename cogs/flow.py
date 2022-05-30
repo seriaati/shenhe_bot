@@ -4,6 +4,7 @@ from typing import Any, List
 
 import aiosqlite
 import discord
+import calendar
 from dateutil import parser
 from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
@@ -93,8 +94,7 @@ class FlowCog(commands.Cog):
             elif "晚" in message.content:
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=18, minute=0, second=0, microsecond=0)
-                end = datetime(year=now.year, month=now.month, day=now.day +
-                               1, hour=4, minute=59, second=0, microsecond=0)
+                end = datetime(year=now.year, month=now.month, day=1 if now.day==calendar.monthrange(now.year, now.month)[1] else now.day+1, hour=4, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     await c.execute('SELECT night FROM flow_accounts WHERE user_id = ?', (user_id,))
                     night = await c.fetchone()
@@ -469,11 +469,11 @@ class FlowCog(commands.Cog):
             embedDM.set_author(name=author, icon_url=author.avatar)
             view = FlowCog.ConfirmView(self.db, self.bot)
             confirm_message = await thread.send(embed=embedDM, view=view)
-            await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ?', (confirm_message.id, i.user.id))
+            await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ? WHERE msg_ID = ?', (confirm_message.id, i.user.id, i.message.id))
             await self.db.commit()
 
     class ConfirmView(discord.ui.View):
-        def __init__(self, db: aiosqlite.Connection, bot):
+        def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
             self.db = db
             self.flow_app = FlowApp(self.db, bot)
             self.bot = bot
