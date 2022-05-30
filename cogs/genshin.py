@@ -101,7 +101,7 @@ class GenshinCog(commands.Cog):
 
         cookie = discord.ui.TextInput(
             label='Cookie',
-            placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 "/cookie"',
+            placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 /cookie',
             style=discord.TextStyle.long,
             required=True,
             min_length=100,
@@ -640,22 +640,22 @@ class GenshinCog(commands.Cog):
     class LevelModal(Modal):
         chara = TextInput(
             label='角色目標等級',
-            placeholder='輸入目標等級',
+            placeholder='例如: 90',
         )
 
         attack = TextInput(
             label='普攻目標等級',
-            placeholder='輸入普攻目標等級',
+            placeholder='例如: 10',
         )
 
         skill = TextInput(
             label='元素戰技(E)目標等級',
-            placeholder='輸入元素戰技目標等級',
+            placeholder='例如: 8',
         )
 
         burst = TextInput(
             label='元素爆發(Q)目標等級',
-            placeholder='輸入元素爆發目標等級',
+            placeholder='例如: 9',
         )
 
         def __init__(self) -> None:
@@ -819,9 +819,6 @@ class GenshinCog(commands.Cog):
                     value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
         await i.edit_original_message(embed=embed, view=None)
-
-    # @app_commands.command(name='todo', description='查看自身代辦清單')
-    # async def todo(self, i: Interaction):
 
 
 async def setup(bot: commands.Bot) -> None:
