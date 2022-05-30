@@ -19,13 +19,19 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):
-        if message.channel.id == 978871680019628032:
-            num = re.findall(r'\d+', str(message))
+        uid_channel_id = 978871680019628032 if not self.bot.debug_toggle else 909595117952856084
+        if message.author.id == self.bot.user.id:
+            return
+        if message.channel.id == uid_channel_id:
+            num = re.findall(r'\d+', str(message.content))
             uid = int(num[0])
+            print(uid)
+            if len(str(uid)) != 9:
+                return
             result, success = await self.genshin_app.setUID(message.author.id, uid)
             result.set_author(name=message.author, icon_url=message.author.avatar)
             if not success:
-                await message.channel.send(content=message.author.mention, embed=result, delete_after=10)
+                await message.channel.send(content=message.author.mention, embed=result, delete_after=5)
             else:
                 await message.channel.send(content=message.author.mention, embed=result)
 
