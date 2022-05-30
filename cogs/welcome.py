@@ -122,7 +122,7 @@ class WelcomeCog(commands.Cog):
                 '請有耐心的做完唷~ <:penguin_hug:978250194779000892>'
             )
             view = WelcomeCog.StartTutorial(self.db)
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            c: aiosqlite.Cursor = await self.db.cursor()
             await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
             uid = await c.fetchone()
             if uid is not None:
