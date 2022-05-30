@@ -2,7 +2,7 @@ import random
 from re import findall
 
 import aiosqlite
-from discord import ButtonStyle, Interaction, Member, Message, app_commands
+from discord import ButtonStyle, Embed, Interaction, Member, Message, app_commands
 from discord.ext import commands
 from discord.ui import Button, View, button
 from utility.FlowApp import FlowApp
@@ -18,23 +18,14 @@ class WelcomeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: Message):
         if message.channel.id == 978871680019628032:
-            num = findall(r'\d+', message)
+            num = findall(r'\d+', str(message))
             uid = int(num[0])
-            if len(str(uid)) != 9:
-                await message.channel.send(content=message.author.mention, embed=errEmbed('請輸入長度為9的UID!'), delete_after=3)
-                return
-            if uid//100000000 != 9:
-                await message.channel.send(content=message.author.mention, embed=errEmbed('你似乎不是台港澳服玩家!', '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n為保群友的遊戲質量, 我們無法接受你的入群申請\n你的確可以繞過這個檢查\n但我們相信如果你的主帳號不是台港澳服的話\n你在這個群內是無法找到一同遊玩的夥伴的\n我們真心認為其他群組對你來說可能是個更好的去處 🙏'), delete_after=10)
-                return
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (message.author.id,))
-            result = await c.fetchone()
-            if result is None:
-                await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (message.author.id, uid))
+            result, success = await self.genshin_app.setUID(message.author.id, uid)
+            result.set_author(name=message.author, icon_url=message.author.avatar)
+            if not success:
+                await message.channel.send(content=message.author.mention, embed=result, delete_after=10)
             else:
-                await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, message.author.id))
-            await self.db.commit()
-            await message.channel.send(content=message.author.mention, embed=defaultEmbed('✅ UID設置成功', f'UID: {uid}'))
+                await message.channel.send(content=message.author.mention, embed=result)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):

@@ -65,6 +65,18 @@ class GenshinApp:
     async def setUID(self, user_id: int, uid: int) -> str:
         await self.bot.log.send(log(False, False, 'setUID', f'{user_id}: (uid = {uid})'))
         c: aiosqlite.Cursor = await self.db.cursor()
+        if len(str(uid)) != 9:
+            return errEmbed('請輸入長度為9的UID!'), False
+        if uid//100000000 != 9:
+            embed = errEmbed(
+                '你似乎不是台港澳服玩家!',
+                '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n'
+                '為保群友的遊戲質量, 我們無法接受你的入群申請\n'
+                '你的確可以繞過這個檢查\n'
+                '但我們相信如果你的主帳號不在台港澳服的話\n'
+                '你在這個群內是無法找到一同遊玩的夥伴的\n'
+                '我們真心認為其他群組對你來說可能是個更好的去處 🙏')
+            return embed, False
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
         if result is None:
