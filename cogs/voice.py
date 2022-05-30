@@ -8,13 +8,13 @@ class VoiceChannel(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: Member, before: VoiceState, after: VoiceState):
-        vc: VoiceChannel = self.bot.get_channel(980771331777916958)
+        vc: VoiceChannel = self.bot.get_channel(980771791406501898)
         old_channel: VoiceChannel = before.channel
         new_channel: VoiceChannel = after.channel
         if new_channel == vc:
             member_vc = await member.guild.create_voice_channel(name=f'{member.name}的語音台', category=vc.category)
             await member.move_to(member_vc)
-        if len(old_channel.members) == 0 and old_channel is not None: 
+        if len(old_channel.members) == 0: 
             await old_channel.delete()
 
 
