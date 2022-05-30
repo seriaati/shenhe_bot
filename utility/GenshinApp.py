@@ -72,9 +72,6 @@ class GenshinApp:
                 '你似乎不是台港澳服玩家!',
                 '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n'
                 '為保群友的遊戲質量, 我們無法接受你的入群申請\n'
-                '你的確可以繞過這個檢查\n'
-                '但我們相信如果你的主帳號不在台港澳服的話\n'
-                '你在這個群內是無法找到一同遊玩的夥伴的\n'
                 '我們真心認為其他群組對你來說可能是個更好的去處 🙏')
             return embed, False
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
@@ -84,7 +81,7 @@ class GenshinApp:
         else:
             await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
         await self.db.commit()
-        return defaultEmbed('✅ UID設置成功', f'uid: {uid}'), True
+        return defaultEmbed('✅ UID設置成功', f'UID: {uid}'), True
 
     async def claimDailyReward(self, user_id: int):
         await self.bot.log.send(log(False, False, 'Claim', f'{user_id}'))
