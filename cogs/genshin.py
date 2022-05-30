@@ -1,15 +1,15 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 
 import aiosqlite
 import discord
 import yaml
 from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption,
-                     TextChannel, User, app_commands)
+                     User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from discord.ui import Button, Select, View, Modal, TextInput
+from discord.ui import Button, Modal, Select, TextInput, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
@@ -392,22 +392,47 @@ class GenshinCog(commands.Cog):
                 f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
         await interaction.response.send_message(embed=embedFarm)
 
-    class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
-        def __init__(self, index: int, db: aiosqlite.Connection, bot):
-            self.genshin_app = GenshinApp(db, bot)
-            elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
-            elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
-            with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
-                self.build_dict = yaml.full_load(f)
-            options = []
-            for character, value in self.build_dict.items():
-                options.append(SelectOption(label=character, value=character))
-            super().__init__(
-                placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
+    class ElementChooseView(View):  # 選擇元素按鈕的view
+        def __init__(self, db: aiosqlite.Connection, bot, author: Member, user: Member = None, user_characters: dict = None):
+            super().__init__(timeout=None)
+            self.author = author
+            for i in range(0, 6):
+                self.add_item(GenshinCog.ElementButton(
+                    i, user_characters, user, db, bot))
 
-        async def callback(self, interaction: Interaction):
-            result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
-            await interaction.response.edit_message(embed=result, view=None)
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
+
+    class ElementButton(Button):  # 元素按鈕
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
+            elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
+            self.index = index
+            self.user_characters = user_characters
+            self.user = user
+            self.db = db
+            self.bot = bot
+            super().__init__(
+                label=f'{elemenet_chinese[index]}元素', style=ButtonStyle.blurple, row=index % 2)
+
+        async def callback(self, i: Interaction):
+            view = GenshinCog.CharactersDropdownView(
+                self.index, self.user_characters, self.user, self.db, self.bot, i.user)
+            embed = defaultEmbed('請選擇角色')
+            await i.response.edit_message(embed=embed, view=view)
+
+    class CharactersDropdownView(View):  # 角色配置下拉選單的view
+        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot, author):
+            super().__init__(timeout=None)
+            self.author = author
+            if user_characters is None:
+                self.add_item(
+                    GenshinCog.BuildCharactersDropdown(index, db, bot))
+            else:
+                self.add_item(GenshinCog.UserCharactersDropdown(
+                    index, user_characters, user, db, bot))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
 
     class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
         def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
@@ -431,47 +456,22 @@ class GenshinCog(commands.Cog):
         async def callback(self, interaction: Interaction):
             await interaction.response.edit_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user), view=None)
 
-    class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot, author):
-            super().__init__(timeout=None)
-            self.author = author
-            if user_characters is None:
-                self.add_item(
-                    GenshinCog.BuildCharactersDropdown(index, db, bot))
-            else:
-                self.add_item(GenshinCog.UserCharactersDropdown(
-                    index, user_characters, user, db, bot))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            return interaction.user.id == self.author.id
-
-    class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, bot):
+    class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
+        def __init__(self, index: int, db: aiosqlite.Connection, bot):
+            self.genshin_app = GenshinApp(db, bot)
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
-            self.index = index
-            self.user_characters = user_characters
-            self.user = user
-            self.db = db
-            self.bot = bot
+            elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
+            with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
+                self.build_dict = yaml.full_load(f)
+            options = []
+            for character, value in self.build_dict.items():
+                options.append(SelectOption(label=character, value=character))
             super().__init__(
-                label=f'{elemenet_chinese[index]}元素', style=ButtonStyle.blurple, row=index % 2)
+                placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
-        async def callback(self, i: Interaction):
-            view = GenshinCog.CharactersDropdownView(
-                self.index, self.user_characters, self.user, self.db, self.bot, i.user)
-            embed = defaultEmbed('請選擇角色')
-            await i.response.edit_message(embed=embed, view=view)
-
-    class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, bot, author: Member, user: Member = None, user_characters: dict = None):
-            super().__init__(timeout=None)
-            self.author = author
-            for i in range(0, 6):
-                self.add_item(GenshinCog.ElementButton(
-                    i, user_characters, user, db, bot))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            return interaction.user.id == self.author.id
+        async def callback(self, interaction: Interaction):
+            result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
+            await interaction.response.edit_message(embed=result, view=None)
 
     # /build
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
@@ -576,28 +576,54 @@ class GenshinCog(commands.Cog):
         embed.set_author(name=player, icon_url=player.avatar)
         await i.response.send_message(embed=embed)
 
-    def chunks(self, lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i:i + n]
-
-    class CalculatorItems(View):
-        def __init__(self, items, type, author: Member):
+    class CalcultorElementButtonView(View):
+        def __init__(self, author: Member, chara_list: List, item_type: str):
             super().__init__(timeout=None)
             self.author = author
-            divided_lists = GenshinCog.chunks(GenshinCog, items, 25)
-            for individual_list in divided_lists:
-                self.add_item(GenshinCog.CalculatorItemSelect(
-                    individual_list, type))
+            for i in range(0, 6):
+                self.add_item(GenshinCog.CalcultorElementButton(
+                    i, chara_list, item_type))
+
+        async def interaction_check(self, i: Interaction) -> bool:
+            return i.user.id == self.author.id
+
+    class CalcultorElementButton(Button):
+        def __init__(self, index: int, chara_list: List, item_type: str):
+            elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
+            self.element_name_list = ['Anemo', 'Cryo',
+                                      'Electro', 'Geo', 'Hydro', 'Pyro']
+            self.index = index
+            self.chara_list = chara_list
+            self.item_type = item_type
+            super().__init__(
+                label=f'{elemenet_chinese[index]}元素', style=ButtonStyle.blurple, row=index % 2)
+
+        async def callback(self, i: Interaction):
+            element_chara_list = []
+            for chara in self.chara_list:
+                if chara[2] == self.element_name_list[self.index]:
+                    element_chara_list.append(chara)
+            self.view.element_chara_list = element_chara_list
+            self.view.item_type = self.item_type
+            await i.response.defer()
+            self.view.stop()
+
+    class CalculatorItems(View):
+        def __init__(self, author: Member, item_list: List, item_type: str):
+            super().__init__(timeout=None)
+            self.author = author
+            self.add_item(GenshinCog.CalculatorItemSelect(
+                item_list, item_type))
 
         async def interaction_check(self, i: Interaction) -> bool:
             return self.author.id == i.user.id
 
     class CalculatorItemSelect(Select):
-        def __init__(self, items, type):
+        def __init__(self, items, item_type):
             options = []
             for item in items:
                 options.append(SelectOption(label=item[0], value=item[1]))
-            super().__init__(placeholder=f'選擇你想要計算的{type}',
+            super().__init__(placeholder=f'選擇{item_type}',
                              min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction):
@@ -610,8 +636,6 @@ class GenshinCog(commands.Cog):
             self.view.q = int(modal.burst.value)
             self.view.value = self.values[0]
             self.view.stop()
-
-    calc = app_commands.Group(name="calc", description="原神養成計算機")
 
     class LevelModal(Modal):
         chara = TextInput(
@@ -652,24 +676,31 @@ class GenshinCog(commands.Cog):
         else:
             return True, None
 
+    calc = app_commands.Group(name="calc", description="原神養成計算機")
+
     @calc.command(name='notown', description='計算一個自己不擁有的角色所需的素材')
     async def calc_notown(self, i: Interaction):
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         charas = await client.get_calculator_characters()
         chara_list = []
         for chara in charas:
-            chara_list.append([chara.name, chara.id])
-        view = GenshinCog.CalculatorItems(chara_list, '角色', i.user)
-        await i.response.send_message(view=view)
-        await view.wait()
+            chara_list.append([chara.name, chara.id, chara.element])
+        button_view = GenshinCog.CalcultorElementButtonView(
+            i.user, chara_list, '角色')
+        await i.response.send_message(view=button_view)
+        await button_view.wait()
+        select_view = GenshinCog.CalculatorItems(
+            i.user, button_view.element_chara_list, button_view.item_type)
+        await i.edit_original_message(view=select_view)
+        await select_view.wait()
         valid, error_msg = self.check_level_validity(
-            view.target, view.a, view.e, view.q)
+            select_view.target, select_view.a, select_view.e, select_view.q)
         if not valid:
             await i.followup.send(embed=error_msg, ephemeral=True)
             return
         chara_name = ''
         for chara in chara_list:
-            if int(view.value) == int(chara[1]):
+            if int(select_view.value) == int(chara[1]):
                 chara_name = chara[0]
         character = await client.get_calculator_characters(query=chara_name)
         character = character[0]
@@ -677,17 +708,23 @@ class GenshinCog(commands.Cog):
         embed.set_thumbnail(url=character.icon)
         embed.add_field(
             name='計算內容',
-            value=f'角色等級 0 ▸ {view.target}\n'
-            f'普攻等級 1 ▸ {view.a}\n'
-            f'元素戰技(E)等級 1 ▸ {view.e}\n'
-            f'元素爆發(Q)等級 1 ▸ {view.q}',
+            value=f'角色等級 1 ▸ {select_view.target}\n'
+            f'普攻等級 1 ▸ {select_view.a}\n'
+            f'元素戰技(E)等級 1 ▸ {select_view.e}\n'
+            f'元素爆發(Q)等級 1 ▸ {select_view.q}',
             inline=False
         )
-        cost = await (
-            client.calculator()
-            .set_character(view.value, current=1, target=view.target)
-            .add_talent()
-        )
+        talents = await client.get_character_talents(select_view.value)
+        builder = client.calculator()
+        builder.set_character(select_view.value, current=1,
+                              target=select_view.target)
+        builder.add_talent(talents[0].group_id,
+                           current=1, target=select_view.a)
+        builder.add_talent(talents[1].group_id,
+                           current=1, target=select_view.e)
+        builder.add_talent(talents[2].group_id,
+                           current=1, target=select_view.q)
+        cost = await builder.calculate()
         for index, tuple in enumerate(cost):
             if tuple[0] == 'character':
                 value = ''
@@ -712,7 +749,7 @@ class GenshinCog(commands.Cog):
         if only_uid:
             embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             await i.followup.send(embed=embed)
-            return 
+            return
         try:
             charas = await client.get_calculator_characters(sync=True)
         except:
@@ -729,20 +766,25 @@ class GenshinCog(commands.Cog):
             return
         chara_list = []
         for chara in charas:
-            chara_list.append([chara.name, chara.id])
-        view = GenshinCog.CalculatorItems(chara_list, '角色', i.user)
-        await i.response.send_message(view=view)
-        await view.wait()
+            chara_list.append([chara.name, chara.id, chara.element])
+        button_view = GenshinCog.CalcultorElementButtonView(
+            i.user, chara_list, '角色')
+        await i.response.send_message(view=button_view)
+        await button_view.wait()
+        select_view = GenshinCog.CalculatorItems(
+            i.user, button_view.element_chara_list, button_view.item_type)
+        await i.edit_original_message(view=select_view)
+        await select_view.wait()
         valid, error_msg = self.check_level_validity(
-            view.target, view.a, view.e, view.q)
+            select_view.target, select_view.a, select_view.e, select_view.q)
         if not valid:
             await i.followup.send(embed=error_msg, ephemeral=True)
             return
         chara_name = ''
         for chara in chara_list:
-            if int(view.value) == int(chara[1]):
+            if int(select_view.value) == int(chara[1]):
                 chara_name = chara[0]
-        details = await client.get_character_details(view.value)
+        details = await client.get_character_details(select_view.value)
         character = await client.get_calculator_characters(query=chara_name, sync=True)
         character = character[0]
         embed = defaultEmbed('計算結果')
@@ -750,16 +792,16 @@ class GenshinCog(commands.Cog):
         value = ''
         for index, tuple in enumerate(details):
             if tuple[0] == 'talents':
-                value += f'角色等級 {character.level} ▸ {view.target}\n'
-                value += f'普攻等級 {tuple[1][0].level} ▸ {view.a}\n'
-                value += f'元素戰技(E)等級 {tuple[1][1].level} ▸ {view.e}\n'
-                value += f'元素爆發(Q)等級 {tuple[1][2].level} ▸ {view.q}\n'
+                value += f'角色等級 {character.level} ▸ {select_view.target}\n'
+                value += f'普攻等級 {tuple[1][0].level} ▸ {select_view.a}\n'
+                value += f'元素戰技(E)等級 {tuple[1][1].level} ▸ {select_view.e}\n'
+                value += f'元素爆發(Q)等級 {tuple[1][2].level} ▸ {select_view.q}\n'
                 break
         embed.add_field(name='計算內容', value=value, inline=False)
         cost = await (
             client.calculator()
-            .set_character(view.value, current=character.level, target=view.target)
-            .with_current_talents(attack=view.a, skill=view.e, burst=view.q)
+            .set_character(select_view.value, current=character.level, target=select_view.target)
+            .with_current_talents(attack=select_view.a, skill=select_view.e, burst=select_view.q)
         )
         for index, tuple in enumerate(cost):
             if tuple[0] == 'character':
@@ -780,7 +822,6 @@ class GenshinCog(commands.Cog):
 
     # @app_commands.command(name='todo', description='查看自身代辦清單')
     # async def todo(self, i: Interaction):
-
 
 
 async def setup(bot: commands.Bot) -> None:
