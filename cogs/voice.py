@@ -14,7 +14,7 @@ class VoiceChannel(commands.Cog):
         if new_channel is None and len(old_channel.members) == 0: 
             await old_channel.delete()
         if new_channel == vc:
-            member_vc = await member.guild.create_voice_channel(name=member.name, category=vc.category)
+            member_vc = await member.guild.create_voice_channel(name=f'{member.name}的語音台', category=vc.category)
             await member.move_to(member_vc)
 
 
