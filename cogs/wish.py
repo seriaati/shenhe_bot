@@ -45,7 +45,7 @@ class WishCog(commands.Cog):
                 result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
                 return result
             url = self.url.value
-            print(log(True, False, 'Wish Setkey',f'{i.user.id}(url={url})'))
+            print(log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})'))
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
@@ -352,9 +352,13 @@ class WishCog(commands.Cog):
             self.stop()
 
     class WantOrNot(discord.ui.View):
-        def __init__(self):
+        def __init__(self, author: Member):
             super().__init__(timeout=None)
             self.value = None
+            self.author = author
+
+        async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            return interaction.user.id == self.author.id
 
         @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)
         async def want(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -395,13 +399,13 @@ class WishCog(commands.Cog):
             f'你最後一次抽到的五星武器是:\n'
             f'**{last_name}**\n'
             '請問這是一把限定UP還是常駐武器?'),
-            view=up_or_std_view, ephemeral=True)
+            view=up_or_std_view)
         await up_or_std_view.wait()
         if up_or_std_view.value:  # 是UP
             want_or_not_view = WishCog.WantOrNot()
-            await i.followup.send(embed=defaultEmbed(
-                '是想要的UP還是不想要的?', ''),
-                view=want_or_not_view, ephemeral=True)
+            await i.edit_original_message(
+                embed=defaultEmbed('是想要的UP還是不想要的?'),
+                view=want_or_not_view)
             await want_or_not_view.wait()
             if want_or_not_view.value:  # 是想要的UP
                 up_guarantee = 0
@@ -420,7 +424,7 @@ class WishCog(commands.Cog):
             f'• 抽中想要UP的機率為: **{str(round(100*result, 2))}%**'
         )
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.followup.send(embed=embed)
+        await i.edit_original_message(embed=embed)
 
     @wish.command(name='overview', description='祈願紀錄總覽')
     @app_commands.rename(member='其他人')
