@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import aiosqlite
-import discord
+from discord import Message, Intents, Status, Game
 from discord.ext import commands
 
 from cogs.flow import FlowCog
@@ -12,6 +12,7 @@ from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from utility.config import config
 from utility.utils import log
+from utility.db_utils import DbUtils
 
 print("main or dev?")
 user = input()
@@ -29,7 +30,7 @@ else:
     debug_toggle = True
 
 # 前綴, token, intents
-intents = discord.Intents.default()
+intents = Intents.default()
 intents.members = True
 intents.reactions = True
 intents.message_content = True
@@ -46,12 +47,16 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
+        db_utils = DbUtils(self.db)
         self.debug_toggle = debug_toggle
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
             print(log(True, False, 'Cog', f'Loaded {cog_name}'))
+        check, cursor = await db_utils.table_exists('todo')
+        if not check:
+            await cursor.execute('CREATE TABLE todo(user_id INTEGER, item TEXT, count INTEGER)')
         self.add_view(FlowCog.AcceptView(self.db, self))
         self.add_view(FlowCog.ConfirmView(self.db, self))
         self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
@@ -63,13 +68,15 @@ class ShenheBot(commands.Bot):
 
     async def on_ready(self):
         await self.change_presence(
-            status=discord.Status.online,
-            activity=discord.Game(name=f'/help')
+            status=Status.online,
+            activity=Game(name=f'/help')
         )
         self.log = self.get_channel(979359912855482388) if not self.debug_toggle else self.get_channel(979541650474934282)#log 台
         await self.log.send(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
-    async def on_message(self, message):
+    async def on_message(self, message: Message):
+        if message.author.id == self.user.id:
+            return
         await self.process_commands(message)
 
     async def close(self) -> None:
