@@ -8,7 +8,7 @@ from discord.ui import Button, View, button
 from utility.FlowApp import FlowApp
 from utility.GenshinApp import GenshinApp
 from utility.TutorialPaginator import TutorialPaginator
-from utility.utils import defaultEmbed, errEmbed, log
+from utility.utils import defaultEmbed, log
 
 
 class WelcomeCog(commands.Cog):
@@ -28,7 +28,8 @@ class WelcomeCog(commands.Cog):
                 return
             uid = int(num[0])
             result, success = await self.genshin_app.setUID(message.author.id, uid)
-            result.set_author(name=message.author, icon_url=message.author.avatar)
+            result.set_author(name=message.author,
+                              icon_url=message.author.avatar)
             if not success:
                 await message.channel.send(content=message.author.mention, embed=result, delete_after=5)
             else:
@@ -106,6 +107,12 @@ class WelcomeCog(commands.Cog):
                 f'{self.member.name} 歡迎歡迎~', '<:penguin_hug:978250194779000892>')
             embed.set_thumbnail(url=image_url)
             embed.set_author(name=i.user.name, icon_url=i.user.avatar)
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
+            uid = await c.fetchone()
+            if uid is not None:
+                await i.response.send_message(embed=defaultEmbed('你已經做過入群導引啦', '不需要再做囉'), ephemeral=True)
+                return
             await i.response.send_message(embed=embed)
 
     class AcceptRules(View):
