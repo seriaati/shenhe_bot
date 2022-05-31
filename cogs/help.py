@@ -84,6 +84,21 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
+                name='`/build`',
+                value='查看角色的推薦配置',
+                inline=False
+            )
+            embed.add_field(
+                name='`/calc notown`',
+                value='計算一個自己不擁有的角色所需養成素材',
+                inline=False
+            )
+            embed.add_field(
+                name='`/calc character`',
+                value='計算一個自己而擁有的角色所需養成素材',
+                inline=False
+            )
+            embed.add_field(
                 name='`/remind`',
                 value='設置樹脂提醒功能',
                 inline=False
@@ -205,6 +220,16 @@ class Dropdown(discord.ui.Select):
             embed = defaultEmbed(
                 '其他指令',
                 ''
+            )
+            embed.add_field(
+                name='`/help`',
+                value='獲得幫助',
+                inline=False
+            )
+            embed.add_field(
+                name='`/tutorial`',
+                value='群組系統教學',
+                inline=False
             )
             embed.add_field(
                 name='`/ping`',
