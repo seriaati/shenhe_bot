@@ -241,7 +241,7 @@ class GiveAwayCog(commands.Cog):
             goal = goal[0]
             await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(self.values[0])))
             await self.db.commit()
-            await GiveAwayCog.GiveAwayView.check_gv_finish(self, self.values[0], i)
+            await GiveAwayCog.GiveAwayView.check_gv_finish(GiveAwayCog, self.values[0], i)
             await i.response.send_message(embed=defaultEmbed('✨ 強制結束抽獎成功'), ephemeral=True)
 
     class GiveawayDropdownView(View):
