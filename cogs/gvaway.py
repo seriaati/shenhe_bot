@@ -230,8 +230,6 @@ class GiveAwayCog(commands.Cog):
                 super().__init__(placeholder='選擇要結束的抽獎', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction):
-            await self.bot.log.send(log(False, False, 'End Giveaway',
-                  f'{i.user.id}: (gv_msg_id = {self.values[0]})'))
             c = await self.db.cursor()
             await c.execute('SELECT * FROM giveaway_members WHERE msg_id = ?', (self.values[0],))
             members = await c.fetchone()
