@@ -50,6 +50,8 @@ class VoiceChannel(commands.Cog):
     @app_commands.rename(new='新名稱')
     @app_commands.describe(new='新的語音台名稱')
     async def vc_rename(self, i: Interaction, new: str):
+        if i.user.voice is None:
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -60,6 +62,8 @@ class VoiceChannel(commands.Cog):
 
     @vc.command(name='lock', description='鎖上語音台')
     async def vc_lock(self, i: Interaction):
+        if i.user.voice is None:
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -74,6 +78,8 @@ class VoiceChannel(commands.Cog):
 
     @vc.command(name='unlock', description='解鎖語音台')
     async def vc_unlock(self, i: Interaction):
+        if i.user.voice is None:
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -81,13 +87,15 @@ class VoiceChannel(commands.Cog):
             return
         traveler = i.guild.get_role(
             978532779098796042) if not self.bot.debug_toggle else i.guild.default_role
-        await current_vc.set_permissions(traveler, connect=True)
+        await current_vc.set_permissions(traveler, connect=True, overwrite=True)
         await i.response.send_message(embed=defaultEmbed(f'<a:penguin_run:978257189686898748> {current_vc.name}的封印被解除了'))
 
     @vc.command(name='transfer', description='移交房主權')
     @app_commands.rename(new='新房主')
     @app_commands.describe(new='新的房主')
     async def vc_unlock(self, i: Interaction, new: Member):
+        if i.user.voice is None:
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
