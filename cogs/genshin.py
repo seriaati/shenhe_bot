@@ -467,7 +467,25 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, interaction: Interaction):
             result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
-            await interaction.response.edit_message(embed=result, view=None)
+            view = GenshinCog.BuildSelectView(len(result), result)
+            await interaction.response.edit_message(embed=result[0][0], view=view)
+    
+    class BuildSelectView(View):
+        def __init__(self, total: int, build_embeds: List):
+            super().__init__(timeout=None)
+            self.add_item(GenshinCog.BuildSelect(total, build_embeds))
+    
+    class BuildSelect(Select):
+        def __init__(self, total: int, build_embeds: List):
+            options = []
+            self.embeds = build_embeds
+            for i in range(1, total+1):
+                options.append(SelectOption(label=f'配置{i} - {build_embeds[i-1][1]}', value=i))
+            super().__init__(
+                placeholder=f'選擇配置', min_values=1, max_values=1, options=options)
+
+        async def callback(self, interaction: Interaction) -> Any:
+            await interaction.response.edit_message(embed=self.embeds[int(self.values[0])-1][0])
 
     # /build
     @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')

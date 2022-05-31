@@ -504,17 +504,16 @@ class GenshinApp:
         if chara_name not in charas:
             return errEmbed('找不到該角色的配置', '')
         else:
+            result = []
             name = chara_name
-            element = charas[chara_name]['element']
-            result = defaultEmbed(name, f'元素: {element}')
             count = 1
             for build in charas[chara_name]['builds']:
                 statStr = ''
                 for stat, value in build['stats'].items():
                     statStr += f'{stat} ➜ {value}\n'
-                result.add_field(
-                    name=f'配置{count}',
-                    value=f"武器 • {build['weapon']}\n"
+                embed = defaultEmbed(
+                    f'{name} - 配置{count}',
+                    f"武器 • {build['weapon']}\n"
                     f"聖遺物 • {build['artifacts']}\n"
                     f"主詞條 • {build['main_stats']}\n"
                     f"天賦 • {build['talents']}\n"
@@ -522,11 +521,12 @@ class GenshinApp:
                     f"屬性面版\n{statStr}"
                 )
                 count += 1
-            result.set_thumbnail(
-                url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
-            result.set_footer(
-                text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
-        return result
+                embed.set_thumbnail(
+                    url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
+                embed.set_footer(
+                    text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
+                result.append([embed, build['weapon']])
+            return result
 
     async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int):
         await self.bot.log.send(log(False, False, 'Remind',
