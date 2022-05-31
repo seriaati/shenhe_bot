@@ -14,6 +14,7 @@ from utility.utils import defaultEmbed, errEmbed, log
 class GiveAwayCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.db = self.bot.db
         self.debug_toggle = self.bot.debug_toggle
         self.gv_channel_id = 965517075508498452 if not self.debug_toggle else 909595117952856084
 
