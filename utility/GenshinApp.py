@@ -518,7 +518,10 @@ class GenshinApp:
                     f"主詞條 • {build['main_stats']}\n"
                     f"天賦 • {build['talents']}\n"
                     f"{build['move']} • {build['dmg']}\n\n"
-                    f"屬性面版\n{statStr}"
+                )
+                embed.add_field(
+                    name=f"屬性面版",
+                    value=statStr
                 )
                 count += 1
                 embed.set_thumbnail(
