@@ -13,7 +13,7 @@ class Dropdown(discord.ui.Select):
             SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
             SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
-            SelectOption(label='語音台', description='語音台', emoji='🎙️'),
+            SelectOption(label='語音台', description='語音台相關指令', emoji='🎙️'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?',
                          min_values=1, max_values=1, options=options)
