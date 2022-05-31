@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import aiosqlite
 import discord
@@ -9,7 +9,7 @@ from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption,
                      User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from discord.ui import Button, Modal, Select, TextInput, View
+from discord.ui import Button, Modal, Select, TextInput, View, button
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
@@ -672,6 +672,34 @@ class GenshinCog(commands.Cog):
         else:
             return True, None
 
+    class AddMaterialsView(View):
+        def __init__(self, db: aiosqlite.Connection, disabled: bool, author: Member, materials):
+            super().__init__(timeout=None)
+            self.add_item(GenshinCog.AddTodoButton(disabled, db, materials))
+            self.author = author
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
+
+    class AddTodoButton(Button):
+        def __init__(self, disabled: bool, db: aiosqlite.Connection, materials):
+            super().__init__(style=ButtonStyle.blurple, label='新增到代辦清單', disabled=disabled)
+            self.db = db
+            self.materials = materials
+
+        async def callback(self, i: Interaction) -> Any:
+            c = await self.db.cursor()
+            for item_data in self.materials:
+                await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, item_data[0]))
+                count = await c.fetchone()
+                if count is None:
+                    await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, item_data[0], item_data[1]))
+                else:
+                    count = count[0]
+                    await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+int(item_data[1]), i.user.id, item_data[0]))
+            await self.db.commit()
+            await i.response.send_message(embed=defaultEmbed('✅ 代辦事項新增成功', '使用`/todo`指令來查看你的代辦事項'), ephemeral=True)
+
     calc = app_commands.Group(name="calc", description="原神養成計算機")
 
     @calc.command(name='notown', description='計算一個自己不擁有的角色所需的素材')
@@ -721,11 +749,13 @@ class GenshinCog(commands.Cog):
         builder.add_talent(talents[2].group_id,
                            current=1, target=select_view.q)
         cost = await builder.calculate()
+        materials = []
         for index, tuple in enumerate(cost):
             if tuple[0] == 'character':
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                    materials.append([item.name, item.amount])
                 if value == '':
                     value = '不需要任何素材'
                 embed.add_field(name='角色所需素材', value=value, inline=False)
@@ -733,10 +763,15 @@ class GenshinCog(commands.Cog):
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                    materials.append([item.name, item.amount])
                 if value == '':
                     value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
-        await i.edit_original_message(embed=embed, view=None)
+        if len(materials) == 0:
+            view = GenshinCog.AddMaterialsView(self.bot.db, True, i.user, materials)
+        else:
+            view = GenshinCog.AddMaterialsView(self.bot.db, False, i.user, materials)
+        await i.edit_original_message(embed=embed, view=view)
 
     @calc.command(name='character', description='個別計算一個角色所需的素材')
     async def calc_character(self, i: Interaction):
@@ -799,11 +834,13 @@ class GenshinCog(commands.Cog):
             .set_character(select_view.value, current=character.level, target=select_view.target)
             .with_current_talents(attack=select_view.a, skill=select_view.e, burst=select_view.q)
         )
+        materials = []
         for index, tuple in enumerate(cost):
             if tuple[0] == 'character':
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                    materials.append([item.name, item.amount])
                 if value == '':
                     value = '不需要任何素材'
                 embed.add_field(name='角色所需素材', value=value, inline=False)
@@ -811,10 +848,15 @@ class GenshinCog(commands.Cog):
                 value = ''
                 for item in tuple[1]:
                     value += f'{item.name}  x{item.amount}\n'
+                    materials.append([item.name, item.amount])
                 if value == '':
                     value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
-        await i.edit_original_message(embed=embed, view=None)
+        if len(materials) == 0:
+            view = GenshinCog.AddMaterialsView(self.bot.db, True, i.user, materials)
+        else:
+            view = GenshinCog.AddMaterialsView(self.bot.db, False, i.user, materials)
+        await i.edit_original_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
