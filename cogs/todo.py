@@ -21,7 +21,11 @@ class Todo(commands.Cog):
         await c.execute('SELECT item, count FROM todo WHERE user_id = ?', (user.id,))
         todo = await c.fetchone()
         if todo is None:
-            embed = defaultEmbed('代辦事項', '太好了, 沒有需要蒐集的素材ˋ( ° ▽、° ) \n使用 `/calc` 指令來計算角色素材\n或是使用下方的按鈕來新增素材')
+            embed = defaultEmbed(
+                '代辦事項',
+                '太好了, 沒有需要蒐集的素材ˋ( ° ▽、° ) \n'
+                '使用 `/calc` 指令來計算角色素材\n'
+                '或是使用下方的按鈕來新增素材')
             embed.set_author(name=user, icon_url=user.avatar)
             return embed
         await c.execute('SELECT item, count FROM todo WHERE user_id = ?', (user.id,))
@@ -39,16 +43,17 @@ class Todo(commands.Cog):
         return embed
 
     class TodoListView(View):
-        def __init__(self, db: aiosqlite.Connection, empty: bool):
+        def __init__(self, db: aiosqlite.Connection, empty: bool, author: Member):
             super().__init__(timeout=None)
             self.db = db
+            self.author = author
+            disabled = True if empty else False
             self.add_item(Todo.AddTodoButton(db))
-            if empty:
-                self.add_item(Todo.RemoveTodoButton(True, db))
-                self.add_item(Todo.ClearTodoButton(True, db))
-            else:
-                self.add_item(Todo.RemoveTodoButton(False, db))
-                self.add_item(Todo.ClearTodoButton(False, db))
+            self.add_item(Todo.RemoveTodoButton(disabled, db))
+            self.add_item(Todo.ClearTodoButton(disabled, db))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return self.author.id == interaction.user.id
 
     class AddTodoButton(Button):
         def __init__(self, db):
@@ -71,10 +76,10 @@ class Todo(commands.Cog):
             embed = await Todo.get_todo_embed(self.db, i.user)
             await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
             count = await c.fetchone()
+            disabled = False
             if count is None:
-                view = Todo.TodoListView(self.db, True)
-            else:
-                view = Todo.TodoListView(self.db, False)
+                disabled = True
+            view = Todo.TodoListView(self.db, disabled, i.user)
             await i.edit_original_message(embed=embed, view=view)
 
     class RemoveTodoButton(Button):
@@ -101,10 +106,10 @@ class Todo(commands.Cog):
             embed = await Todo.get_todo_embed(self.db, i.user)
             await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
             count = await c.fetchone()
+            disabled = False
             if count is None:
-                view = Todo.TodoListView(self.db, True)
-            else:
-                view = Todo.TodoListView(self.db, False)
+                disabled = True
+            view = Todo.TodoListView(self.db, disabled, i.user)
             await i.edit_original_message(embed=embed, view=view)
 
     class ClearTodoButton(Button):
@@ -116,7 +121,7 @@ class Todo(commands.Cog):
             c: aiosqlite.Cursor = await self.db.cursor()
             await c.execute('DELETE FROM todo WHERE user_id = ?', (i.user.id,))
             await self.db.commit()
-            view = Todo.TodoListView(self.db, True)
+            view = Todo.TodoListView(self.db, True, i.user)
             embed = await Todo.get_todo_embed(self.db, i.user)
             await i.response.edit_message(embed=embed, view=view)
 
@@ -161,10 +166,10 @@ class Todo(commands.Cog):
         c = await self.bot.db.cursor()
         await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
         count = await c.fetchone()
+        disabled = False
         if count is None:
-            view = Todo.TodoListView(self.bot.db, True)
-        else:
-            view = Todo.TodoListView(self.bot.db, False)
+            disabled = True
+        view = Todo.TodoListView(self.db, disabled, i.user)
         embed = await Todo.get_todo_embed(self.bot.db, i.user)
         await i.response.send_message(embed=embed, view=view)
 
