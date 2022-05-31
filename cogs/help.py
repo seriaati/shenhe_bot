@@ -13,6 +13,7 @@ class Dropdown(discord.ui.Select):
             SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
             SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
+            SelectOption(label='語音台', description='語音台', emoji='🎙️'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?',
                          min_values=1, max_values=1, options=options)
@@ -104,10 +105,7 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
         elif self.values[0] == '原神':
-            embed = defaultEmbed(
-                '原神相關',
-                ''
-            )
+            embed = defaultEmbed('原神相關')
             embed.add_field(
                 name='`/farm`',
                 value='查看原神今日可刷素材',
@@ -127,8 +125,7 @@ class Dropdown(discord.ui.Select):
         elif self.values[0] == '原神祈願':
             embed = defaultEmbed(
                 '原神祈願',
-                ''
-            )
+                '需要使用`/cookie`設定帳號\n加上`/wish setkey`設定紀錄')
             embed.add_field(
                 name='`/wish setkey`',
                 value='設置祈願紀錄',
@@ -161,10 +158,7 @@ class Dropdown(discord.ui.Select):
             )
 
         elif self.values[0] == '呼叫相關':
-            embed = defaultEmbed(
-                '呼叫相關',
-                ''
-            )
+            embed = defaultEmbed('呼叫相關')
             embed.add_field(
                 name='`/call`',
                 value='呼叫群裡的某個人',
@@ -267,8 +261,35 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
+                name='`/rolemembers`',
+                value='查看身份組總人數',
+                inline=False
+            )
+            embed.add_field(
                 name='`/say`',
                 value='讓申鶴幫你說話',
+                inline=False
+            )
+        elif self.values[0] == '語音台':
+            embed = defaultEmbed('語音台指令')
+            embed.add_field(
+                name='/vc rename',
+                value='重新命名語音台',
+                inline=False
+            )
+            embed.add_field(
+                name='/vc lock',
+                value='鎖上語音台',
+                inline=False
+            )
+            embed.add_field(
+                name='/vc unlock',
+                value='解鎖語音台',
+                inline=False
+            )
+            embed.add_field(
+                name='/vc transfer',
+                value='移交房主權',
                 inline=False
             )
         await interaction.response.send_message(embed=embed, ephemeral=True)
