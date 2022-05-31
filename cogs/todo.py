@@ -169,7 +169,7 @@ class Todo(commands.Cog):
         disabled = False
         if count is None:
             disabled = True
-        view = Todo.TodoListView(self.db, disabled, i.user)
+        view = Todo.TodoListView(self.bot.db, disabled, i.user)
         embed = await Todo.get_todo_embed(self.bot.db, i.user)
         await i.response.send_message(embed=embed, view=view)
 
