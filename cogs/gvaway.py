@@ -119,7 +119,7 @@ class GiveAwayCog(commands.Cog):
             await gv_msg.edit(embed=embed)
 
         async def check_gv_finish(self, gv_msg_id: int, i: Interaction):
-            c = await self.db.cursor()
+            c = await self.bot.db.cursor()
             await c.execute('SELECT goal FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
             goal = await c.fetchone()
             goal = goal[0]
@@ -217,6 +217,11 @@ class GiveAwayCog(commands.Cog):
             await interaction.response.send_message(embed=defaultEmbed(f'<a:HutaoByebye:957675381891158016> 退出抽獎成功', f'你的flow幣 {-int(ticket[0])}'), ephemeral=True)
             await self.update_gv_msg(msg.id, interaction)
 
+    class GiveawayDropdownView(View):
+        def __init__(self, giveaways: dict, db: aiosqlite.Connection):
+            super().__init__(timeout=None)
+            self.add_item(GiveAwayCog.GiveawayDropdown(giveaways, db))
+    
     class GiveawayDropdown(Select):
         def __init__(self, gv_dict: dict, db: aiosqlite.Connection):
             self.db = db
@@ -231,28 +236,13 @@ class GiveAwayCog(commands.Cog):
                 super().__init__(placeholder='選擇要結束的抽獎', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction):
-            c = await self.db.cursor()
-            await c.execute('SELECT * FROM giveaway_members WHERE msg_id = ?', (self.values[0],))
-            members = await c.fetchone()
-            if members is None:
-                await i.response.send_message(embed=defaultEmbed('🥲 強制結束失敗', '還沒有人參加過這個抽獎'), ephemeral=True)
-                return
-            await c.execute('SELECT goal FROM giveaway WHERE msg_id = ?', (int(self.values[0]),))
-            goal = await c.fetchone()
-            goal = goal[0]
-            await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(self.values[0])))
-            await self.db.commit()
-            await GiveAwayCog.GiveAwayView.check_gv_finish(GiveAwayCog, self.values[0], i)
-            await i.response.send_message(embed=defaultEmbed('✨ 強制結束抽獎成功'), ephemeral=True)
-
-    class GiveawayDropdownView(View):
-        def __init__(self, giveaways: dict, db: aiosqlite.Connection):
-            super().__init__(timeout=None)
-            self.add_item(GiveAwayCog.GiveawayDropdown(giveaways, db))
+            self.view.value = self.values[0]
+            await i.response.defer()
+            self.view.stop()
 
     @app_commands.command(name='endgiveaway', description='強制結束抽獎並選出得獎者')
     @app_commands.checks.has_role('小雪團隊')
-    async def end_giveaway(self, interaction: Interaction):
+    async def end_giveaway(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT msg_id, prize_name FROM giveaway')
         giveaways = await c.fetchall()
@@ -260,7 +250,20 @@ class GiveAwayCog(commands.Cog):
         for index, tuple in enumerate(giveaways):
             giveaway_dict[tuple[0]] = tuple[1]
         view = self.GiveawayDropdownView(giveaway_dict, self.bot.db)
-        await interaction.response.send_message(view=view, ephemeral=True)
+        await i.response.send_message(view=view, ephemeral=True)
+        await view.wait()
+        c = await self.bot.db.cursor()
+        await c.execute('SELECT * FROM giveaway_members WHERE msg_id = ?', (view.value,))
+        members = await c.fetchone()
+        if members is None:
+            await i.followup.send(embed=defaultEmbed('🥲 強制結束失敗', '還沒有人參加過這個抽獎'), ephemeral=True)
+            return
+        await c.execute('SELECT goal FROM giveaway WHERE msg_id = ?', (int(view.value),))
+        goal = await c.fetchone()
+        goal = goal[0]
+        await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(view.value)))
+        await self.bot.db.commit()
+        await self.GiveAwayView.check_gv_finish(self,view.value, i)
 
     @end_giveaway.error
     async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
