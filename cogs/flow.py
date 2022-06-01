@@ -599,7 +599,7 @@ class FlowCog(commands.Cog):
             )
         elif type == 2:
             embed = defaultEmbed(
-                f'請求幫助: {title}',
+                f'需要素材: {title}',
                 f'發布者: {i.user.mention}\n'
                 f'flow幣: {flow}\n'
                 f'世界等級: {role_str}\n'
