@@ -122,10 +122,8 @@ class WelcomeCog(commands.Cog):
                 '請有耐心的做完唷~ <:penguin_hug:978250194779000892>'
             )
             view = WelcomeCog.StartTutorial(self.db)
-            c: aiosqlite.Cursor = await self.db.cursor()
-            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
-            uid = await c.fetchone()
-            if uid is not None:
+            traveler = i.guild.get_role(978532779098796042)
+            if traveler in i.user.roles:
                 await i.response.send_message(embed=defaultEmbed('你已經做過入群導引啦', '不需要再做囉'), ephemeral=True)
                 return
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
