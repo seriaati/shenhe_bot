@@ -569,7 +569,7 @@ class GenshinApp:
         seria_id = 224441463897849856
         await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        if result is None:
+        if result[0] is None:
             await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (seria_id,))
             ltuid = await c.fetchone()
             ltuid = ltuid[0]
@@ -587,11 +587,9 @@ class GenshinApp:
             client.uids[genshin.Game.GENSHIN] = uid
             only_uid = True
         else:
-            await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            ltuid = await c.fetchone()
             await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (user_id,))
             ltoken = await c.fetchone()
-            cookies = {"ltuid": ltuid[0],
+            cookies = {"ltuid": result[0],
                        "ltoken": ltoken[0]}
             await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
             uid = await c.fetchone()
