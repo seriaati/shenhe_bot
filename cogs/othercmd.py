@@ -1,8 +1,8 @@
 from random import randint
 
 from discord import Interaction, Member, Message, Role, app_commands
-from discord.app_commands import Choice
 from discord.ext import commands
+from discord.ui import View, Button, button
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, log
 
@@ -150,6 +150,15 @@ class OtherCMDCog(commands.Cog):
             memberStr += f'{count}. {member}\n'
         embed = defaultEmbed(role.name, memberStr)
         await i.response.send_message(embed=embed)
+
+    @app_commands.command(name='avatar', description='查看一個用戶的頭像(並且偷偷下載)')
+    @app_commands.rename(member='使用者')
+    async def avatar(self, i: Interaction, member: Member):
+        embed = defaultEmbed(member)
+        view = View()
+        view.add_item(Button(label="下載頭像", url=member.avatar.url))
+        embed.set_image(url=member.avatar)
+        await i.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
