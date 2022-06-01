@@ -1,12 +1,13 @@
 import asyncio
+
 import aiosqlite
 import discord
-from discord.ext import commands
 from discord import ButtonStyle, Interaction, app_commands
-from discord.ui import button, Button
+from discord.ext import commands
+from discord.ui import Button, button
 from utility.FlowApp import FlowApp
-from utility.utils import errEmbed, defaultEmbed, log
 from utility.RollApp import RollApp
+from utility.utils import defaultEmbed, errEmbed, log
 
 global one_pull_price
 one_pull_price = 10
@@ -86,7 +87,8 @@ class RollCog(commands.Cog):
                     '你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = RollCog.Confirm(i.user, False, self.banner, self.db, self.bot)
+            confirm = RollCog.Confirm(
+                i.user, False, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)
 
         @button(label='祈願10次', style=ButtonStyle.blurple)
@@ -97,7 +99,8 @@ class RollCog(commands.Cog):
                     '你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
-            confirm = RollCog.Confirm(i.user, True, self.banner, self.db, self.bot)
+            confirm = RollCog.Confirm(
+                i.user, True, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)
 
     class Confirm(discord.ui.View):
@@ -130,8 +133,9 @@ class RollCog(commands.Cog):
                 i.user.id, prize, self.banner)
             if check:
                 await luluR.send(embed=msg)
-                await self.bot.log.send(log(True, False, 'Roll', f'{i.user.id} got big prize'))
-                public_channel = i.client.get_channel(916951131022843964) if not self.debug_toggle else i.client.get_channel(909595117952856084)
+                log(True, False, 'Roll', f'{i.user.id} got big prize')
+                public_channel = i.client.get_channel(
+                    916951131022843964) if not self.debug_toggle else i.client.get_channel(909595117952856084)
                 await public_channel.send(f'🎉 恭喜 {i.user.mention} 抽到 **{self.banner}** 的大獎！！ 🎉')
             gif, sleep_time = await self.roll_app.animation_chooser(prize, self.banner)
             result = await self.roll_app.write_history_and_gu(

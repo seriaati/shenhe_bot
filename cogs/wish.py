@@ -239,7 +239,6 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
         member = member or i.user
-        await self.bot.log.send(log(False, False, 'Wish History', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -273,7 +272,6 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
         member = member or i.user
-        await self.bot.log.send(log(False, False, 'Wish Luck', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -303,7 +301,6 @@ class WishCog(commands.Cog):
     @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
         member = member or i.user
-        await self.bot.log.send(log(False, False, 'Wish Character', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -377,7 +374,6 @@ class WishCog(commands.Cog):
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?', calc_pull='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
     async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
         member = member or i.user
-        await self.bot.log.send(log(False, False, 'Wish Weapon', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
@@ -431,7 +427,6 @@ class WishCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        await self.bot.log.send(log(False, False, 'Wish Overview', member.id))
         check, msg = await self.wish_history_exists(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)

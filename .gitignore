@@ -146,3 +146,4 @@ cython_debug/
 config.yaml
 data/*
 main.db
+log.txt

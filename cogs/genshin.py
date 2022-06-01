@@ -5,8 +5,8 @@ from typing import Any, List, Optional
 import aiosqlite
 import discord
 import yaml
-from discord import (ButtonStyle, Guild, Interaction, Member, SelectOption,
-                     User, app_commands)
+from discord import (ButtonStyle, Embed, Guild, Interaction, Member,
+                     SelectOption, User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from discord.ui import Button, Modal, Select, TextInput, View, button
@@ -29,7 +29,6 @@ class GenshinCog(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        await self.bot.log.send(log(True, False, 'Task loop', 'Auto claim started'))
         count = 0
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id FROM genshin_accounts')
@@ -40,12 +39,9 @@ class GenshinCog(commands.Cog):
             await self.genshin_app.claimDailyReward(user_id)
             count += 1
             await asyncio.sleep(3.0)
-        await self.bot.log.send(log(True, False, 'Schedule',
-                                    f'Auto claim finished, {count} in total'))
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
-        await self.bot.log.send(log(True, False, 'Task loop', 'Resin check started'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif FROM genshin_accounts WHERE resin_notification_toggle = 1')
         users = await c.fetchall()
@@ -56,10 +52,8 @@ class GenshinCog(commands.Cog):
             current_notif = tuple[2]
             max_notif = tuple[3]
             resin = await self.genshin_app.getRealTimeNotes(user_id, True)
-            await self.bot.log.send(log(True, False, 'Resin Check',
-                                        f'user_id = {user_id}, resin = {resin}'))
             count += 1
-            if resin >= resin_threshold and current_notif < max_notif:
+            if resin is not Embed and resin >= resin_threshold and current_notif < max_notif:
                 guild: Guild = self.bot.get_guild(
                     778804551972159489) if self.debug_toggle else self.bot.get_guild(916838066117824553)
                 thread = guild.get_thread(
@@ -76,8 +70,6 @@ class GenshinCog(commands.Cog):
             if resin < resin_threshold:
                 await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
-        await self.bot.log.send(log(True, False, 'Task loop',
-                                    f'Resin check finished {count} in total'))
         await self.bot.db.commit()
 
     @claim_reward.before_loop
@@ -275,7 +267,6 @@ class GenshinCog(commands.Cog):
         description='查看所有已註冊原神帳號'
     )
     async def users(self, interaction: Interaction):
-        await self.bot.log.send(log(False, False, 'Users', interaction.user.id))
         user_dict = self.genshin_app.getUserData()
         userStr = ""
         count = 0
@@ -370,7 +361,6 @@ class GenshinCog(commands.Cog):
         description='查看原神今日可刷素材'
     )
     async def farm(self, interaction: Interaction):
-        await self.bot.log.send(log(False, False, 'Farm', interaction.user.id))
         weekdayGet = datetime.today().weekday()
         embedFarm = defaultEmbed(
             f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")
@@ -469,18 +459,19 @@ class GenshinCog(commands.Cog):
             result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
             view = GenshinCog.BuildSelectView(len(result), result)
             await interaction.response.edit_message(embed=result[0][0], view=view)
-    
+
     class BuildSelectView(View):
         def __init__(self, total: int, build_embeds: List):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.BuildSelect(total, build_embeds))
-    
+
     class BuildSelect(Select):
         def __init__(self, total: int, build_embeds: List):
             options = []
             self.embeds = build_embeds
             for i in range(1, total+1):
-                options.append(SelectOption(label=f'配置{i} - {build_embeds[i-1][1]}', value=i))
+                options.append(SelectOption(
+                    label=f'配置{i} - {build_embeds[i-1][1]}', value=i))
             super().__init__(
                 placeholder=f'選擇配置', min_values=1, max_values=1, options=options)
 
@@ -786,14 +777,15 @@ class GenshinCog(commands.Cog):
                     value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
         if len(materials) == 0:
-            view = GenshinCog.AddMaterialsView(self.bot.db, True, i.user, materials)
+            view = GenshinCog.AddMaterialsView(
+                self.bot.db, True, i.user, materials)
         else:
-            view = GenshinCog.AddMaterialsView(self.bot.db, False, i.user, materials)
+            view = GenshinCog.AddMaterialsView(
+                self.bot.db, False, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
 
     @calc.command(name='character', description='個別計算一個角色所需的素材')
     async def calc_character(self, i: Interaction):
-        await self.bot.log.send(log(False, False, 'Calc Character', i.user.id))
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         if only_uid:
             embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
@@ -871,9 +863,11 @@ class GenshinCog(commands.Cog):
                     value = '不需要任何素材'
                 embed.add_field(name='天賦所需素材', value=value, inline=False)
         if len(materials) == 0:
-            view = GenshinCog.AddMaterialsView(self.bot.db, True, i.user, materials)
+            view = GenshinCog.AddMaterialsView(
+                self.bot.db, True, i.user, materials)
         else:
-            view = GenshinCog.AddMaterialsView(self.bot.db, False, i.user, materials)
+            view = GenshinCog.AddMaterialsView(
+                self.bot.db, False, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
 
 

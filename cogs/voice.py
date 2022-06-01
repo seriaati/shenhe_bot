@@ -1,7 +1,6 @@
 import aiosqlite
-from discord import Interaction, Member, VoiceChannel, app_commands, VoiceState
+from discord import Interaction, Member, VoiceChannel, VoiceState, app_commands
 from discord.ext import commands
-
 from utility.utils import defaultEmbed, errEmbed
 
 
@@ -51,7 +50,7 @@ class VoiceChannel(commands.Cog):
     @app_commands.describe(new='新的語音台名稱')
     async def vc_rename(self, i: Interaction, new: str):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -63,7 +62,7 @@ class VoiceChannel(commands.Cog):
     @vc.command(name='lock', description='鎖上語音台')
     async def vc_lock(self, i: Interaction):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -79,7 +78,7 @@ class VoiceChannel(commands.Cog):
     @vc.command(name='unlock', description='解鎖語音台')
     async def vc_unlock(self, i: Interaction):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -95,7 +94,7 @@ class VoiceChannel(commands.Cog):
     @app_commands.describe(new='新的房主')
     async def vc_unlock(self, i: Interaction, new: Member):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!','你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:

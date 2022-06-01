@@ -36,14 +36,8 @@ class WelcomeCog(commands.Cog):
                 await message.channel.send(content=message.author.mention, embed=result)
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: Member):
-        await self.bot.log.send(log(True, False, 'On Member Join', member.id))
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (member.id,))
-
-    @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
-        await self.bot.log.send(log(True, False, 'On Member Remove', member.id))
+        log(True, False, 'On Member Remove', member.id)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (member.id,))
         result = await c.fetchone()
@@ -57,12 +51,14 @@ class WelcomeCog(commands.Cog):
             return
         r = before.guild.get_role(978532779098796042)
         if r not in before.roles and r in after.roles:
-            await self.bot.log.send(log(True, False, 'New Traveler', after.id))
+            log(True, False, 'New Traveler', after.id)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (after.id,))
             try:
                 await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
             except:
-                await self.bot.log.send(log(True, True, 'New Traveler', f'{after.id} already in flow_accounts'))
+                log(True, True, 'New Traveler',
+                    f'{after.id} already in flow_accounts')
             await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (after.id,))
             result = await c.fetchone()
             if result is None:

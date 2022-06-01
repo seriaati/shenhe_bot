@@ -34,8 +34,6 @@ class GiveAwayCog(commands.Cog):
     async def create_giveaway(
             self, i: Interaction,
             prize: str, goal: int, ticket: int, role: Optional[Role] = None, refund_mode: int = 0):
-        await self.bot.log.send(log(False, False, 'giveaway',
-              f'{i.user.id}: (prize={prize}, goal={goal}, ticket={ticket}, role={role}, refund_mode={refund_mode})'))
         channel = i.client.get_channel(self.gv_channel_id)
         role_exclusive = f'此抽獎專屬於: {role.mention} 成員' if role is not None else '任何人都可以參加這個抽獎'
         refund_str = '(會退款)' if refund_mode == 1 else '(不會退款)'
@@ -98,8 +96,8 @@ class GiveAwayCog(commands.Cog):
                 return True, None
 
         async def join_giveaway(self, user_id: int, ticket: int, gv_msg_id: int):
-            await self.bot.log.send(log(True, False, 'join giveaway',
-                  f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})'))
+            log(True, False, 'join giveaway',
+                f'(user_id={user_id}, ticket={ticket}, gv_msg_id={gv_msg_id})')
             await self.flow_app.transaction(user_id, -int(ticket))
             c = await self.db.cursor()
             await c.execute('SELECT current FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
@@ -151,8 +149,8 @@ class GiveAwayCog(commands.Cog):
                     if winner_id != user_id:  # 如果該ID不是得獎者
                         # 退款入場費/2
                         await self.flow_app.transaction(user_id, int(ticket)/2)
-            await self.bot.log.send(log(True, False, 'Giveaway Ended',
-                      f'(gv_msg_id={gv_msg_id}, winner={winner_id})'))
+            log(True, False, 'Giveaway Ended',
+                f'(gv_msg_id={gv_msg_id}, winner={winner_id})')
             await c.execute('DELETE FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
             await c.execute('DELETE FROM giveaway_members WHERE msg_id = ?', (gv_msg_id,))
             await self.db.commit()
@@ -221,7 +219,7 @@ class GiveAwayCog(commands.Cog):
         def __init__(self, giveaways: dict, db: aiosqlite.Connection):
             super().__init__(timeout=None)
             self.add_item(GiveAwayCog.GiveawayDropdown(giveaways, db))
-    
+
     class GiveawayDropdown(Select):
         def __init__(self, gv_dict: dict, db: aiosqlite.Connection):
             self.db = db
@@ -263,7 +261,7 @@ class GiveAwayCog(commands.Cog):
         goal = goal[0]
         await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(view.value)))
         await self.bot.db.commit()
-        await self.GiveAwayView.check_gv_finish(self,view.value, i)
+        await self.GiveAwayView.check_gv_finish(self, view.value, i)
 
     @end_giveaway.error
     async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):

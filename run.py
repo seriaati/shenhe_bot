@@ -24,7 +24,7 @@ if user == "main":
     debug_toggle = False
 else:
     token = config.dev
-    prefix = ['%']
+    prefix = ['!']
     guild = 778804551972159489
     application_id = 957621570128449626
     debug_toggle = True
@@ -42,21 +42,19 @@ class ShenheBot(commands.Bot):
             command_prefix=prefix,
             intents=intents,
             application_id=application_id,
-            owner_ids=[289597294075183114, 410036441129943050]
+            owner_ids=[289597294075183114, 410036441129943050, 831883841417248778]
         )
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
-        db_utils = DbUtils(self.db)
         self.debug_toggle = debug_toggle
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
+            # if cog_name == 'fish':
+            #     pass
             await self.load_extension(f'cogs.{cog_name}')
             print(log(True, False, 'Cog', f'Loaded {cog_name}'))
-        check, cursor = await db_utils.table_exists('todo')
-        if not check:
-            await cursor.execute('CREATE TABLE todo(user_id INTEGER, item TEXT, count INTEGER)')
         self.add_view(FlowCog.AcceptView(self.db, self))
         self.add_view(FlowCog.ConfirmView(self.db, self))
         self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
@@ -71,8 +69,7 @@ class ShenheBot(commands.Bot):
             status=Status.online,
             activity=Game(name=f'/help')
         )
-        self.log = self.get_channel(979359912855482388) if not self.debug_toggle else self.get_channel(979541650474934282)#log 台
-        await self.log.send(log(True, False, 'Bot', f'Logged in as {self.user}'))
+        print(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
     async def on_message(self, message: Message):
         if message.author.id == self.user.id:

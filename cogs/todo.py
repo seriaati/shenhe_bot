@@ -116,7 +116,7 @@ class Todo(commands.Cog):
         def __init__(self, disabled: bool, db: aiosqlite.Connection):
             super().__init__(label='清空', style=ButtonStyle.gray, disabled=disabled)
             self.db = db
-        
+
         async def callback(self, i: Interaction):
             c: aiosqlite.Cursor = await self.db.cursor()
             await c.execute('DELETE FROM todo WHERE user_id = ?', (i.user.id,))
