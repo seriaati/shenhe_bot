@@ -32,9 +32,7 @@ class WishCog(commands.Cog):
             label='Auth Key URL',
             placeholder='請ctrl+v貼上複製的連結',
             style=discord.TextStyle.long,
-            required=True,
-            min_length=0,
-            max_length=3000
+            required=True
         )
 
         async def on_submit(self, i: discord.Interaction):
