@@ -38,6 +38,27 @@ class GenshinApp:
             await self.db.commit()
         return result
 
+    async def setUID(self, user_id: int, uid: int) -> str:
+        log(False, False, 'setUID', f'{user_id}: (uid = {uid})')
+        c: aiosqlite.Cursor = await self.db.cursor()
+        if len(str(uid)) != 9:
+            return errEmbed('請輸入長度為9的UID!'), False
+        if uid//100000000 != 9:
+            embed = errEmbed(
+                '你似乎不是台港澳服玩家!',
+                '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n'
+                '為保群友的遊戲質量, 我們無法接受你的入群申請\n'
+                '我們真心認為其他群組對你來說可能是個更好的去處 🙏')
+            return embed, False
+        await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
+        result = await c.fetchone()
+        if result is None:
+            await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (user_id, uid))
+        else:
+            await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
+        await self.db.commit()
+        return defaultEmbed('✅ UID設置成功', f'UID: {uid}'), True
+
     async def claimDailyReward(self, user_id: int):
         client, uid, only_uid = await self.getUserCookie(user_id)
         if only_uid:
