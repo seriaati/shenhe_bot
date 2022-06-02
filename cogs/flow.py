@@ -480,6 +480,8 @@ class FlowCog(commands.Cog):
             await c.execute('SELECT author_id FROM find WHERE msg_id = ?', (i.message.id,))
             author_id = await c.fetchone()
             author_id = author_id[0]
+            if i.user.id != author_id:
+                await i.response.send_message(embed=errEmbed('你不是這個委託的發布者!'), ephemeral=True)
             return i.user.id == author_id
 
         @discord.ui.button(label='OK', style=discord.ButtonStyle.blurple, custom_id='ok_confirm_button')
