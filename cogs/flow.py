@@ -1,10 +1,10 @@
+import calendar
 import uuid
 from datetime import datetime, timedelta
 from typing import Any, List
 
 import aiosqlite
 import discord
-import calendar
 from dateutil import parser
 from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
@@ -235,10 +235,11 @@ class FlowCog(commands.Cog):
         Choice(name='小於 100 flow', value=0),
         Choice(name='100~200 flow', value=1),
         Choice(name='200~300 flow', value=2),
-        Choice(name='大於 300 flow', value=3)])
+        Choice(name='大於 300 flow', value=3),
+        Choice(name='總覽', value=4)])
     async def flows(self, i: Interaction, category: int):
         category_list = ['小於 100 flow', '100~200 flow',
-                         '200~300 flow', '大於 300 flow']
+                         '200~300 flow', '大於 300 flow', '總覽']
         result_list = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         if category == 0:
@@ -259,12 +260,19 @@ class FlowCog(commands.Cog):
             for index, tuple in enumerate(result):
                 result_list.append(
                     f'{i.client.get_user(tuple[0])}: {tuple[1]}')
-        else:
+        elif category == 3:
             await c.execute('SELECT user_id, flow FROM flow_accounts WHERE flow>300')
             result = await c.fetchall()
             for index, tuple in enumerate(result):
                 result_list.append(
                     f'{i.client.get_user(tuple[0])}: {tuple[1]}')
+        elif category == 4:
+            await c.execute('SELECT user_id, flow FROM flow_accounts')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                result_list.append(
+                    f'{i.client.get_user(tuple[0])}: {tuple[1]}'
+                )
         if len(result_list) == 0:
             await i.response.send_message(embed=errEmbed('此範圍還沒有任何 flow帳號'), ephemeral=True)
         else:
