@@ -96,9 +96,7 @@ class GenshinCog(commands.Cog):
             label='Cookie',
             placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 /cookie',
             style=discord.TextStyle.long,
-            required=True,
-            min_length=100,
-            max_length=1500
+            required=True
         )
 
         async def on_submit(self, interaction: Interaction):
@@ -106,7 +104,7 @@ class GenshinCog(commands.Cog):
             await interaction.response.send_message(result, ephemeral=True)
 
         async def on_error(self, error: Exception, interaction: Interaction):
-            await interaction.response.send_message('發生未知錯誤', ephemeral=True)
+            await interaction.response.send_message(f'發生未知錯誤```{error}```', ephemeral=True)
 # Cookie Submission
 
     @app_commands.command(
