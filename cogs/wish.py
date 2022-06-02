@@ -48,6 +48,10 @@ class WishCog(commands.Cog):
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
             await i.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+            try:
+                wish_history = await client.wish_history()
+            except Exception as e:
+                await i.followup.send(embed=errEmbed('出現錯誤', f'請告知小雪\n```{e}```'), ephemeral=True)
             c = await self.db.cursor()
             await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (i.user.id,))
             result = await c.fetchone()
