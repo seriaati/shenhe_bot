@@ -583,12 +583,17 @@ class FlowCog(commands.Cog):
                     role_str = role_name
                 else:
                     role_str = f'<= {role_name}'
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
+        uid = await c.fetchone()
+        uid = uid[0]
         if type == 1:
             embed = defaultEmbed(
                 f'請求幫助: {title}',
                 f'發布者: {i.user.mention}\n'
                 f'flow幣: {flow}\n'
                 f'世界等級: {role_str}\n'
+                f'發布者 UID: {uid}'
             )
         elif type == 2:
             embed = defaultEmbed(
@@ -596,6 +601,7 @@ class FlowCog(commands.Cog):
                 f'發布者: {i.user.mention}\n'
                 f'flow幣: {flow}\n'
                 f'世界等級: {role_str}\n'
+                f'發布者 UID: {uid}'
             )
         elif type == 3:
             embed = defaultEmbed(
@@ -609,6 +615,7 @@ class FlowCog(commands.Cog):
                 f'發布者: {i.user.mention}\n'
                 f'flow幣: {flow}\n'
                 f'發布者世界等級: {role_name}\n'
+                f'發布者 UID: {uid}'
             )
         if tag == 1:
             g = self.bot.get_guild(916838066117824553)  # 緣神有你

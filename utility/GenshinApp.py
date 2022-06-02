@@ -32,46 +32,11 @@ class GenshinApp:
             ltuid = int(
                 re.search(r'\d+', ltuid_str).group())
             c: aiosqlite.Cursor = await self.db.cursor()
-            await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            result = await c.fetchone()
-            if result is None:
-                await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken) VALUES (?, ?, ?)', (user_id, ltuid, ltoken))
-            else:
-                await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ? WHERE user_id = ?', (ltuid, ltoken, user_id))
+            await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ? WHERE user_id = ?', (ltuid, ltoken, user_id))
             log(False, False, 'setCookie', f'{user_id} set cookie success')
-            if len(accounts) == 1 and len(str(accounts[0].uid)) == 9:
-                log(False, False, 'setUID',
-                    f'{user_id}: (uid = {accounts[0].uid})')
-                await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (int(accounts[0].uid), user_id))
-                result = f'Cookie已設定完成, 角色UID: {accounts[0].uid} 已保存！'
-            else:
-                result = f'帳號內共有{len(accounts)}個角色\n```'
-                for account in accounts:
-                    result += f'UID:{account.uid} 等級:{account.level} 角色名字:{account.nickname}\n'
-                result += f'```\n請用 `/setuid` 指定要保存原神的角色(例: `/setuid 901211014`)'
+            result = f'🍪 Cookie 設定完成'
             await self.db.commit()
         return result
-
-    async def setUID(self, user_id: int, uid: int) -> str:
-        log(False, False, 'setUID', f'{user_id}: (uid = {uid})')
-        c: aiosqlite.Cursor = await self.db.cursor()
-        if len(str(uid)) != 9:
-            return errEmbed('請輸入長度為9的UID!'), False
-        if uid//100000000 != 9:
-            embed = errEmbed(
-                '你似乎不是台港澳服玩家!',
-                '非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n'
-                '為保群友的遊戲質量, 我們無法接受你的入群申請\n'
-                '我們真心認為其他群組對你來說可能是個更好的去處 🙏')
-            return embed, False
-        await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
-        result = await c.fetchone()
-        if result is None:
-            await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (user_id, uid))
-        else:
-            await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
-        await self.db.commit()
-        return defaultEmbed('✅ UID設置成功', f'UID: {uid}'), True
 
     async def claimDailyReward(self, user_id: int):
         client, uid, only_uid = await self.getUserCookie(user_id)

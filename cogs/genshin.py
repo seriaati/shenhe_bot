@@ -11,6 +11,7 @@ from discord.app_commands import Choice
 from discord.ext import commands, tasks
 from discord.ui import Button, Modal, Select, TextInput, View, button
 from utility.AbyssPaginator import AbyssPaginator
+from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
 
@@ -132,17 +133,6 @@ class GenshinCog(commands.Cog):
             await interaction.followup.send(content=code_msg)
         elif option == 1:
             await interaction.response.send_modal(GenshinCog.CookieModal(self.bot.db, self.bot))
-# /setuid
-
-    @app_commands.command(
-        name='setuid',
-        description='設定原神UID')
-    @app_commands.describe(uid='請輸入要保存的原神UID')
-    async def slash_uid(self, interaction: Interaction, uid: int):
-        result, success = await self.genshin_app.setUID(interaction.user.id, uid)
-        if not success:
-            await interaction.response.send_message(embed=result, ephemeral=True)
-        await interaction.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(
         name='check',
@@ -202,7 +192,7 @@ class GenshinCog(commands.Cog):
         if all == 1:
             await interaction.response.send_message(embed=defaultEmbed('⏳ 全員簽到中'))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('SELECT user_id FROM genshin_accounts')
+            await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
             users = await c.fetchall()
             count = 0
             for index, tuple in enumerate(users):
@@ -260,23 +250,7 @@ class GenshinCog(commands.Cog):
         embed = result[data_type]
         result.set_author(name=member, icon_url=member.avatar)
         await interaction.response.send_message(embed=embed)
-# /users
 
-    @app_commands.command(
-        name='users',
-        description='查看所有已註冊原神帳號'
-    )
-    async def users(self, interaction: Interaction):
-        user_dict = self.genshin_app.getUserData()
-        userStr = ""
-        count = 0
-        for user_id, value in user_dict.items():
-            count += 1
-            name = self.bot.get_user(user_id)
-            userStr = userStr + \
-                f"{count}. {name} - {value['uid']}\n"
-        embed = defaultEmbed("所有帳號", userStr)
-        await interaction.response.send_message(embed=embed)
 # /today
 
     @app_commands.command(
@@ -356,27 +330,54 @@ class GenshinCog(commands.Cog):
 
 # /farm
 
+    def get_farm_image(day: int):
+        if day == 0 or day == 3:
+            url = "https://i.imgur.com/Jr5tlUs.png"
+        elif day == 1 or day == 4:
+            url = "https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png"
+        elif day == 2 or day == 5:
+            url = "https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png"
+        else:
+            url = "https://i.imgur.com/MPI5uwW.png"
+        return url
+
+    class ChooseDay(View):
+        def __init__(self):
+            super().__init__(timeout=None)
+            for i in range(0, 4):
+                self.add_item(GenshinCog.DayButton(i))
+
+    class DayButton(Button):
+        def __init__(self, day: int):
+            self.day = day
+            if day == 0:
+                label = '週一、週四'
+            elif day == 1:
+                label = '週二、週五'
+            elif day == 2:
+                label = '週三、週六'
+            else:
+                label = '週日'
+                self.day = 6
+            super().__init__(label=label, style=ButtonStyle.blurple)
+
+        async def callback(self, i: Interaction) -> Any:
+            day_str = f'{getWeekdayName(self.day)}、{getWeekdayName(self.day+3)}' if self.day != 6 else '週日'
+            embed = defaultEmbed(f"{day_str}可以刷的副本材料")
+            embed.set_image(url=GenshinCog.get_farm_image(self.day))
+            await i.response.edit_message(embed=embed)
+
     @app_commands.command(
         name='farm',
         description='查看原神今日可刷素材'
     )
     async def farm(self, interaction: Interaction):
-        weekdayGet = datetime.today().weekday()
-        embedFarm = defaultEmbed(
-            f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", " ")
-        if weekdayGet == 0 or weekdayGet == 3:
-            embedFarm.set_image(
-                url="https://media.discordapp.net/attachments/823440627127287839/958862746349346896/73268cfab4b4a112.png")
-        elif weekdayGet == 1 or weekdayGet == 4:
-            embedFarm.set_image(
-                url="https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png")
-        elif weekdayGet == 2 or weekdayGet == 5:
-            embedFarm.set_image(
-                url="https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png")
-        elif weekdayGet == 6:
-            embedFarm = defaultEmbed(
-                f"今天({getWeekdayName(weekdayGet)})可以刷的副本材料", "禮拜日可以刷所有素材 (❁´◡`❁)")
-        await interaction.response.send_message(embed=embedFarm)
+        day = datetime.today().weekday()
+        embed = defaultEmbed(
+            f"今日 ({getWeekdayName(day)}) 可以刷的副本材料")
+        embed.set_image(url=GenshinCog.get_farm_image(day))
+        view = GenshinCog.ChooseDay()
+        await interaction.response.send_message(embed=embed, view=view)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
         def __init__(self, db: aiosqlite.Connection, bot, author: Member, user: Member = None, user_characters: dict = None):
@@ -869,6 +870,38 @@ class GenshinCog(commands.Cog):
             view = GenshinCog.AddMaterialsView(
                 self.bot.db, False, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
+
+    def oculi_emebd_style(element: str, url: str):
+        embed = defaultEmbed(f'{element}神瞳位置')
+        embed.set_image(url=url)
+        embed.set_footer(text='單純功能搬運, 圖源並非來自我')
+        return embed
+
+    def get_oculi_embeds(area: int):
+        embeds = []
+        if area == 0:
+            for i in range(1, 5):
+                url = f'https://fortoffans.github.io/Maps/Oculus/Anemoculus/Map_Anemoculus_{i}.jpg?width=831&height=554'
+                embeds.append(GenshinCog.oculi_emebd_style('風', url))
+        elif area == 1:
+            for i in range(1, 6):
+                url = f'https://images-ext-1.discordapp.net/external/Gm5I4dqqanZEksPk7pggWfwoqW5UOiKPJP8Rt-uYQ5E/https/fortoffans.github.io/Maps/Oculus/Geoculus/Map_Geoculus_{i}.jpg?width=831&height=554'
+                embeds.append(GenshinCog.oculi_emebd_style('岩', url))
+        elif area == 2:
+            for i in range(1, 7):
+                url = f'https://images-ext-1.discordapp.net/external/u6qgVi5Fk28_wwEuu3OS9blTzC-7JQpridJiWv0vI5s/https/fortoffans.github.io/Maps/Oculus/Electroculus/Map_Electroculus_{i}.jpg?width=831&height=554'
+                embeds.append(GenshinCog.oculi_emebd_style('雷', url))
+        return embeds
+
+    @app_commands.command(name='oculi', description='查看不同地區的神瞳位置')
+    @app_commands.rename(area='地區')
+    @app_commands.choices(area=[
+        Choice(name='蒙德', value=0),
+        Choice(name='璃月', value=1),
+        Choice(name='稻妻', value=2)])
+    async def oculi(self, i: Interaction, area: int):
+        embeds = GenshinCog.get_oculi_embeds(area)
+        await GeneralPaginator(i, embeds).start(embeded=True)
 
 
 async def setup(bot: commands.Bot) -> None:

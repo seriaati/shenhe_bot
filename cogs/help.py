@@ -65,11 +65,6 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/users`',
-                value='查看所有已註冊原神帳號',
-                inline=False
-            )
-            embed.add_field(
                 name='`/today`',
                 value='查看今日原石與摩拉收入',
                 inline=False
@@ -82,16 +77,6 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/characters`',
                 value='查看已擁有角色資訊',
-                inline=False
-            )
-            embed.add_field(
-                name='`/build`',
-                value='查看角色的推薦配置',
-                inline=False
-            )
-            embed.add_field(
-                name='`/calc notown`',
-                value='計算一個自己不擁有的角色所需養成素材',
                 inline=False
             )
             embed.add_field(
@@ -119,6 +104,16 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/rate`',
                 value='(僅供參考用)非常不穩定的聖遺物評分器',
+                inline=False
+            )
+            embed.add_field(
+                name='`/calc notown`',
+                value='計算一個自己不擁有的角色所需養成素材',
+                inline=False
+            )
+            embed.add_field(
+                name='`/oculi`',
+                value='查看不同地區的神瞳位置',
                 inline=False
             )
 
