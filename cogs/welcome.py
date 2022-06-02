@@ -53,7 +53,7 @@ class WelcomeCog(commands.Cog):
         if r not in before.roles and r in after.roles:
             log(True, False, 'New Traveler', after.id)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('INSERT INTO guild_members (user_id) VALUES (?)', (after.id,))
+            await c.execute('INSERT INTO guild_members (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?', (after.id, after.id))
             try:
                 await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
             except:
