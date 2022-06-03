@@ -1,22 +1,23 @@
-import asyncio
-from datetime import datetime, timedelta
+
+from datetime import datetime
 from typing import Any, List, Optional
 
 import aiohttp
 import aiosqlite
 import discord
 import yaml
-from discord import (ButtonStyle, Embed, Emoji, Guild, Interaction, Member,
-                     SelectOption, User, app_commands)
+from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
+                     SelectOption, app_commands)
 from discord.app_commands import Choice
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
-from utility.utils import (defaultEmbed, errEmbed, getArtifactNames, getCharacterIcon,
-                           getCharacterNameWithID, getStatEmoji,
-                           getTalentNames, getWeaponName, getWeekdayName)
+from utility.utils import (defaultEmbed, errEmbed, getArtifactNames,
+                           getCharacterIcon, getCharacterNameWithID,
+                           getStatEmoji, getTalentNames, getWeaponName,
+                           getWeekdayName)
 
 
 class GenshinCog(commands.Cog):
@@ -24,71 +25,10 @@ class GenshinCog(commands.Cog):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db)
         self.debug_toggle = self.bot.debug_toggle
-        self.claim_reward.start()
-        self.resin_notification.start()
 
-    def cog_unload(self):
-        self.claim_reward.cancel()
-        self.resin_notification.cancel()
-
-    @tasks.loop(hours=24)
-    async def claim_reward(self):
-        count = 0
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id FROM genshin_accounts')
-        users = await c.fetchall()
-        count = 0
-        for index, tuple in enumerate(users):
-            user_id = tuple[0]
-            await self.genshin_app.claimDailyReward(user_id)
-            count += 1
-            await asyncio.sleep(3.0)
-
-    @tasks.loop(hours=2)
-    async def resin_notification(self):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif FROM genshin_accounts WHERE resin_notification_toggle = 1')
-        users = await c.fetchall()
-        count = 0
-        for index, tuple in enumerate(users):
-            user_id = tuple[0]
-            resin_threshold = tuple[1]
-            current_notif = tuple[2]
-            max_notif = tuple[3]
-            resin = await self.genshin_app.getRealTimeNotes(user_id, True)
-            count += 1
-            if resin is not Embed and resin >= resin_threshold and current_notif < max_notif:
-                guild: Guild = self.bot.get_guild(
-                    778804551972159489) if self.debug_toggle else self.bot.get_guild(916838066117824553)
-                thread = guild.get_thread(
-                    978092463749234748) if self.debug_toggle else guild.get_thread(978092252154982460)
-                user: User = self.bot.get_user(user_id)
-                embed = defaultEmbed(
-                    '<:PaimonSeria:958341967698337854> 樹脂要滿出來啦',
-                    f'目前樹脂: {resin}/160\n'
-                    f'目前設定閥值: {resin_threshold}\n'
-                    f'目前最大提醒值: {max_notif}\n\n'
-                    '輸入`/remind`來更改設定')
-                await thread.send(content=user.mention, embed=embed)
-                await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
-            if resin < resin_threshold:
-                await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
-            await asyncio.sleep(3.0)
-        await self.bot.db.commit()
-
-    @claim_reward.before_loop
-    async def before_claiming_reward(self):
-        now = datetime.now().astimezone()
-        next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await discord.utils.sleep_until(next_run)
-
-    @resin_notification.before_loop
-    async def before_check(self):
-        await self.bot.wait_until_ready()
 
 # cookie
+
 
     class CookieModal(discord.ui.Modal):
         def __init__(self, db: aiosqlite.Connection):
@@ -384,7 +324,7 @@ class GenshinCog(commands.Cog):
     class ElementChooseView(View):  # 選擇元素按鈕的view
         def __init__(self, db: aiosqlite.Connection, author: Member, emojis: List, user: Member = None, user_characters: dict = None):
             super().__init__(timeout=None)
-            self.author = author 
+            self.author = author
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
                     i, user_characters, user, db, emojis[i]))
@@ -982,7 +922,7 @@ class GenshinCog(commands.Cog):
             await i.edit_original_message(embed=embed, view=self.view)
 
     @app_commands.command(name='profile', description='透過 enka API 查看各式原神數據')
-    @app_commands.rename(member='其他人', custom_uid='custom_uid')
+    @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他人的資料', custom_uid='使用 UID 查閱')
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))

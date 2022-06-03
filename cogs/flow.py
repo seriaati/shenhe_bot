@@ -1,6 +1,6 @@
 import calendar
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, List
 
 import aiosqlite
@@ -8,7 +8,7 @@ import discord
 from dateutil import parser
 from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ui import Select, View
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
@@ -19,33 +19,6 @@ class FlowCog(commands.Cog):
         self.bot = bot
         self.flow_app = FlowApp(self.bot.db, self.bot)
         self.debug_toggle = self.bot.debug_toggle
-        self.remove_flow_acc.start()
-
-    def cog_unload(self) -> None:
-        self.remove_flow_acc.cancel()
-
-    @tasks.loop(hours=24)
-    async def remove_flow_acc(self):
-        log(True, False, 'Remove Flow Acc', 'task start')
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id, last_trans FROM flow_accounts')
-        result = await c.fetchall()
-        now = datetime.now()
-        for index, tuple in enumerate(result):
-            flow = await self.flow_app.get_user_flow(tuple[0])
-            delta = now-parser.parse(tuple[1])
-            if delta.days > 7 and flow <= 100:
-                await self.flow_app.transaction(
-                    tuple[0], flow, is_removing_account=True)
-        log(True, False, 'Remove Flow Acc', 'task finished')
-
-    @remove_flow_acc.before_loop
-    async def before_loop(self):
-        now = datetime.now().astimezone()
-        next_run = now.replace(hour=1, minute=30, second=0)  # 等待到早上1點30
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await discord.utils.sleep_until(next_run)
 
     @commands.Cog.listener()
     async def on_message(self, message):

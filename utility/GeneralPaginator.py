@@ -46,7 +46,7 @@ class _view(View):
 
         await self.update_children(interaction)
 
-    @button(label=">>", style=ButtonStyle.gray, row=1)
+    @button(label='>>', style=ButtonStyle.gray, row=1)
     async def last(self, interaction: Interaction, button: Button):
         self.current_page = len(self.pages) - 1
 
