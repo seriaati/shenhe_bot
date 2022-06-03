@@ -86,7 +86,7 @@ class VoiceChannel(commands.Cog):
             return
         traveler = i.guild.get_role(
             978532779098796042) if not self.bot.debug_toggle else i.guild.default_role
-        await current_vc.set_permissions(traveler, connect=True, overwrite=True)
+        await current_vc.set_permissions(traveler, connect=True)
         await i.response.send_message(embed=defaultEmbed(f'<a:penguin_run:978257189686898748> {current_vc.name}的封印被解除了'))
 
     @vc.command(name='transfer', description='移交房主權')
