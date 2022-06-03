@@ -930,6 +930,9 @@ class GenshinCog(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
+        if uid is None:
+            uid_c = i.guild.get_channel(978871680019628032)
+            await i.edit_original_message(embed=errEmbed('找不到 UID!',f'請先至 {uid_c.mention} 設置 UID!'))
         uid = uid[0]
         uid = custom_uid if custom_uid is not None else uid
         async with aiohttp.ClientSession() as cs:
