@@ -975,15 +975,16 @@ class GenshinCog(commands.Cog):
             await i.edit_original_message(embed=embed, view=self.view)
 
     @app_commands.command(name='profile', description='透過 enka API 查看各式原神數據')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他人的資料')
-    async def profile(self, i: Interaction, member: Member = None):
+    @app_commands.rename(member='其他人', custom_uid='custom_uid')
+    @app_commands.describe(member='查看其他人的資料', custom_uid='使用 UID 查閱')
+    async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
         uid = uid[0]
+        uid = custom_uid if custom_uid is not None else uid
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f'https://enka.shinshin.moe/u/{uid}/__data.json') as r:
                 data = await r.json()
@@ -1018,6 +1019,8 @@ class GenshinCog(commands.Cog):
             talent_levels = chara['skillLevelMap']
             chara_talents = await getTalentNames(chara['avatarId'])
             talent_str = ''
+            const = 0 if 'talentIdList' not in chara else len(
+                chara['talentIdList'])
             for id, level in talent_levels.items():
                 talent_str += f'{chara_talents[int(id)]} - Lvl. {level}\n'
             equipments = chara['equipList']
@@ -1034,8 +1037,6 @@ class GenshinCog(commands.Cog):
                     symbol = GenshinCog.percent_symbol(propId)
                     weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
                     break
-            const = 0 if 'talentIdList' not in chara else len(
-                chara['talentIdList'])
             embed = defaultEmbed(
                 f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
                 f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
