@@ -959,15 +959,15 @@ class GenshinCog(commands.Cog):
                     artifact_name = await getArtifactNames(e['itemId'])
                     main = e["flat"]["reliquaryMainstat"]
                     symbol = GenshinCog.percent_symbol(main['mainPropId'])
-                    artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name} ({getStatEmoji(main["mainPropId"])} {main["statValue"]}{symbol})'
+                    artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name}  +{int(e["reliquary"]["level"])-1}'
                     value = ''
+                    value += f'**主詞條 {getStatEmoji(main["mainPropId"])} {main["statValue"]}{symbol}**\n'
                     for sub in e['flat']['reliquarySubstats']:
                         symbol = GenshinCog.percent_symbol(sub['appendPropId'])
                         value += f'{getStatEmoji(sub["appendPropId"])} {sub["statValue"]}{symbol}\n'
                     embed.add_field(
                         name=artifact_str,
-                        value=value,
-                        inline=False
+                        value=value
                     )
             url = await getCharacterIcon(int(self.id))
             embed.set_thumbnail(url=url)
