@@ -927,7 +927,7 @@ class GenshinCog(commands.Cog):
         async def callback(self, i: Interaction) -> Any:
             value = self.values[0].split()
             disabled = False if int(value[0]) != 0 else True
-            chara_id = 0 if len(value)==1 else value[1]
+            chara_id = 0 if len(value) == 1 else value[1]
             view = GenshinCog.EnkaPageView(
                 self.embeds, self.charas, self.equip_dict, chara_id, disabled)
             await i.response.edit_message(embed=self.embeds[int(value[0])], view=view)
@@ -935,7 +935,7 @@ class GenshinCog(commands.Cog):
     def percent_symbol(propId: str):
         symbol = '%' if 'PERCENT' in propId or 'CRITICAL' in propId or 'CHARGE' in propId or 'HEAL' in propId or 'HURT' in propId else ''
         return symbol
-    
+
     class EnkaArtifactButton(Button):
         def __init__(self, equip_dict: dict, id: int, disabled: bool):
             self.equipments = equip_dict
@@ -995,9 +995,10 @@ class GenshinCog(commands.Cog):
             return
         player = data['playerInfo']
         embeds = []
+        sig = player['signature'] if 'signature' in player else '(空)'
         overview = defaultEmbed(
             f'{player["nickname"]}',
-            f"「{player['signature']}」\n"
+            f"「{sig}」\n"
             f"玩家等級: Lvl. {player['level']}\n"
             f"世界等級: W{player['worldLevel']}\n"
             f"完成成就: {player['finishAchievementNum']}\n"
@@ -1033,7 +1034,8 @@ class GenshinCog(commands.Cog):
                     symbol = GenshinCog.percent_symbol(propId)
                     weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
                     break
-            const = 0 if 'talentIdList' not in chara else len(chara['talentIdList'])
+            const = 0 if 'talentIdList' not in chara else len(
+                chara['talentIdList'])
             embed = defaultEmbed(
                 f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
                 f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
