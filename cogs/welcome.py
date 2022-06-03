@@ -15,7 +15,7 @@ class WelcomeCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot: commands.Bot = bot
         self.flow_app = FlowApp(self.bot.db, self.bot)
-        self.genshin_app = GenshinApp(self.bot.db, self.bot)
+        self.genshin_app = GenshinApp(self.bot.db)
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):

@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import aiosqlite
 import genshin
@@ -10,9 +10,8 @@ from utility.utils import (defaultEmbed, errEmbed, getCharacterName, getCharacte
 
 
 class GenshinApp:
-    def __init__(self, db: aiosqlite.Connection, bot) -> None:
+    def __init__(self, db: aiosqlite.Connection) -> None:
         self.db = db
-        self.bot = bot
 
     async def setCookie(self, user_id: int, cookie: str) -> str:
         log(False, False, 'setCookie', f'{user_id} (cookie = {cookie})')

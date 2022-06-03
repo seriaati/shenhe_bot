@@ -18,14 +18,13 @@ import genshin
 class WishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.genshin_app = GenshinApp(self.bot.db, self.bot)
+        self.genshin_app = GenshinApp(self.bot.db)
 
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
     class AuthKeyModal(Modal):
-        def __init__(self, db: aiosqlite.Connection, bot):
-            self.genshin_app = GenshinApp(db, bot)
-            self.bot = bot
+        def __init__(self, db: aiosqlite.Connection):
+            self.genshin_app = GenshinApp(db)
             self.db = db
             super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
         url = discord.ui.TextInput(
@@ -43,7 +42,7 @@ class WishCog(commands.Cog):
                 result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
                 return result
             url = self.url.value
-            print(log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})'))
+            log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})')
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
@@ -148,7 +147,7 @@ class WishCog(commands.Cog):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db, self.bot))
+            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
 
     async def wish_history_exists(self, user_id: int) -> Embed:
         c: aiosqlite.Cursor = await self.bot.db.cursor()
