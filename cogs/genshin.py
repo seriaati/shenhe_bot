@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import Any, List, Optional
 
+import aiohttp
 import aiosqlite
 import discord
 import yaml
@@ -9,11 +10,13 @@ from discord import (ButtonStyle, Embed, Guild, Interaction, Member,
                      SelectOption, User, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from discord.ui import Button, Modal, Select, TextInput, View, button
+from discord.ui import Button, Modal, Select, TextInput, View
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, errEmbed, getWeekdayName, log
+from utility.utils import (defaultEmbed, errEmbed, getArtifactNames, getCharacterIcon,
+                           getCharacterNameWithID, getStatEmoji,
+                           getTalentNames, getWeaponName, getWeekdayName)
 
 
 class GenshinCog(commands.Cog):
@@ -141,10 +144,11 @@ class GenshinCog(commands.Cog):
     async def check(self, interaction: Interaction,
                     member: Optional[Member] = None
                     ):
+        await interaction.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or interaction.user
         result = await self.genshin_app.getRealTimeNotes(member.id, False)
         result.set_author(name=member, icon_url=member.avatar)
-        await interaction.response.send_message(embed=result)
+        await interaction.edit_original_message(embed=result)
 # /stats
 
     @app_commands.command(
@@ -188,7 +192,7 @@ class GenshinCog(commands.Cog):
         Choice(name='否', value=0)])
     async def claim(self, interaction: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
         if all == 1:
-            await interaction.response.send_message(embed=defaultEmbed('⏳ 全員簽到中'))
+            await interaction.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 全員簽到中'))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
             users = await c.fetchall()
@@ -197,7 +201,7 @@ class GenshinCog(commands.Cog):
                 user_id = tuple[0]
                 await self.genshin_app.claimDailyReward(user_id)
                 count += 1
-            await interaction.followup.send(embed=defaultEmbed(f'✅ 全員簽到完成 ({count})'))
+            await interaction.followup.send(embed=defaultEmbed(f'<:TICK:982124759070441492> 全員簽到完成 ({count})'))
         else:
             member = member or interaction.user
             result = await self.genshin_app.claimDailyReward(member.id)
@@ -706,7 +710,7 @@ class GenshinCog(commands.Cog):
                     count = count[0]
                     await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+int(item_data[1]), i.user.id, item_data[0]))
             await self.db.commit()
-            await i.response.send_message(embed=defaultEmbed('✅ 代辦事項新增成功', '使用`/todo`指令來查看你的代辦事項'), ephemeral=True)
+            await i.response.send_message(embed=defaultEmbed('<:TICK:982124759070441492> 代辦事項新增成功', '使用`/todo`指令來查看你的代辦事項'), ephemeral=True)
 
     calc = app_commands.Group(name="calc", description="原神養成計算機")
 
@@ -900,6 +904,160 @@ class GenshinCog(commands.Cog):
     async def oculi(self, i: Interaction, area: int):
         embeds = GenshinCog.get_oculi_embeds(area)
         await GeneralPaginator(i, embeds).start(embeded=True)
+
+    class EnkaPageView(View):
+        def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, id: int, disabled: bool):
+            super().__init__(timeout=None)
+            self.add_item(GenshinCog.EnkaArtifactButton(
+                equip_dict, id, disabled))
+            self.add_item(GenshinCog.EnkaPageSelect(
+                embeds, charas, equip_dict))
+
+    class EnkaPageSelect(Select):
+        def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict):
+            options = [SelectOption(label='總覽', value=0)]
+            self.embeds = embeds
+            self.equip_dict = equip_dict
+            self.charas = charas
+            for chara in charas:
+                options.append(SelectOption(
+                    label=f"{chara[0]} {chara[1]}", value=f'{charas.index(chara)+1} {chara[2]}'))
+            super().__init__(placeholder='選擇分頁', min_values=1, max_values=1, options=options)
+
+        async def callback(self, i: Interaction) -> Any:
+            value = self.values[0].split()
+            disabled = False if int(value[0]) != 0 else True
+            chara_id = 0 if len(value)==1 else value[1]
+            view = GenshinCog.EnkaPageView(
+                self.embeds, self.charas, self.equip_dict, chara_id, disabled)
+            await i.response.edit_message(embed=self.embeds[int(value[0])], view=view)
+
+    def percent_symbol(propId: str):
+        symbol = '%' if 'PERCENT' in propId or 'CRITICAL' in propId or 'CHARGE' in propId or 'HEAL' in propId or 'HURT' in propId else ''
+        return symbol
+    
+    class EnkaArtifactButton(Button):
+        def __init__(self, equip_dict: dict, id: int, disabled: bool):
+            self.equipments = equip_dict
+            self.name = ''
+            self.id = id
+            for e, val in equip_dict.items():
+                if int(e) == int(id):
+                    self.name = val['name']
+                    self.chara_equipments = val['equipments']
+            super().__init__(style=ButtonStyle.blurple, label=f'聖遺物', disabled=disabled)
+
+        async def callback(self, i: Interaction) -> Any:
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
+            artifact_emojis = [
+                '<:Flower_of_Life:982167959717945374>', '<:Plume_of_Death:982167959915077643>',
+                '<:Sands_of_Eon:982167959881547877>', '<:Goblet_of_Eonothem:982167959835402240>',
+                '<:Circlet_of_Logos:982167959692787802>']
+            embed = defaultEmbed(f'{self.name} - 聖遺物')
+            for e in self.chara_equipments:
+                if 'weapon' not in e:
+                    artifact_name = await getArtifactNames(e['itemId'])
+                    main = e["flat"]["reliquaryMainstat"]
+                    symbol = GenshinCog.percent_symbol(main['mainPropId'])
+                    artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name} ({getStatEmoji(main["mainPropId"])} {main["statValue"]}{symbol})'
+                    value = ''
+                    for sub in e['flat']['reliquarySubstats']:
+                        symbol = GenshinCog.percent_symbol(sub['appendPropId'])
+                        value += f'{getStatEmoji(sub["appendPropId"])} {sub["statValue"]}{symbol}\n'
+                    embed.add_field(
+                        name=artifact_str,
+                        value=value,
+                        inline=False
+                    )
+            url = await getCharacterIcon(int(self.id))
+            embed.set_thumbnail(url=url)
+            self.disabled = True
+            await i.edit_original_message(embed=embed, view=self.view)
+
+    @app_commands.command(name='profile', description='透過 enka API 查看各式原神數據')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他人的資料')
+    async def profile(self, i: Interaction, member: Member = None):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
+        member = member or i.user
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
+        uid = await c.fetchone()
+        uid = uid[0]
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://enka.shinshin.moe/u/{uid}/__data.json') as r:
+                data = await r.json()
+        if 'avatarInfoList' not in data:
+            embed = defaultEmbed(
+                '<:CROSS:982124359525228594> 修但幾類!', '請在遊戲中打開「顯示角色詳情」')
+            embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
+            await i.edit_original_message(embed=embed)
+            return
+        player = data['playerInfo']
+        embeds = []
+        overview = defaultEmbed(
+            f'{player["nickname"]}',
+            f"「{player['signature']}」\n"
+            f"玩家等級: Lvl. {player['level']}\n"
+            f"世界等級: W{player['worldLevel']}\n"
+            f"完成成就: {player['finishAchievementNum']}\n"
+            f"深淵已達: {player['towerFloorIndex']}-{player['towerLevelIndex']}")
+        overview.set_author(name=member, icon_url=member.avatar.url)
+        overview.set_image(
+            url='https://cdn.discordapp.com/attachments/971472744820650035/971482996572057600/Frame_4905.png')
+        embeds.append(overview)
+        charas = []
+        for chara in player['showAvatarInfoList']:
+            charas.append([getCharacterNameWithID(
+                chara['avatarId']), f"Lvl. {chara['level']}", chara['avatarId']])
+        info = data['avatarInfoList']
+        equipt_dict = {}
+        for chara in info:
+            prop = chara['fightPropMap']
+            talent_levels = chara['skillLevelMap']
+            chara_talents = await getTalentNames(chara['avatarId'])
+            talent_str = ''
+            for id, level in talent_levels.items():
+                talent_str += f'{chara_talents[int(id)]} - Lvl. {level}\n'
+            equipments = chara['equipList']
+            equipt_dict[chara['avatarId']] = {
+                'name': getCharacterNameWithID(chara["avatarId"]),
+                'equipments': equipments
+            }
+            weapon_str = ''
+            for e in equipments:
+                if 'weapon' in e:
+                    weapon_name = await getWeaponName(e['itemId'])
+                    weapon_str += f"{weapon_name} - Lvl. {e['weapon']['level']} - R{int(list(e['weapon']['affixMap'].values())[0])+1}\n"
+                    propId = e['flat']['weaponStats'][1]['appendPropId']
+                    symbol = GenshinCog.percent_symbol(propId)
+                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
+                    break
+            const = 0 if 'talentIdList' not in chara else len(chara['talentIdList'])
+            embed = defaultEmbed(
+                f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
+                f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
+                f"<:ATTACK:982138214305390632> 攻擊力 - {round(prop['2001'])} ({round(prop['4'])}/{round(prop['2001'])-round(prop['4'])})\n"
+                f"<:DEFENSE:982068463566721064> 防禦力 - {round(prop['2002'])} ({round(prop['7'])}/{round(prop['2002'])-round(prop['7'])})\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {round(prop['28'])}\n"
+                f"<:CRITICAL:982068460731392040> 暴擊率 - {round(prop['20']*100, 1)}%\n"
+                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {round(prop['22']*100, 1)}%\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {round(prop['20']*100, 1)}%\n")
+            embed.add_field(
+                name='天賦',
+                value=talent_str,
+                inline=False
+            )
+            embed.add_field(
+                name='武器',
+                value=weapon_str,
+                inline=False
+            )
+            url = await getCharacterIcon(chara['avatarId'])
+            embed.set_thumbnail(url=url)
+            embeds.append(embed)
+        view = GenshinCog.EnkaPageView(embeds, charas, equipt_dict, 0, True)
+        await i.edit_original_message(embed=overview, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:

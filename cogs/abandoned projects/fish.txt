@@ -1,0 +1,296 @@
+async def generate_fishing_embed(db: aiosqlite.Connection, fishing: bool, area: str):
+        c: aiosqlite.Cursor = await db.cursor()
+        await c.execute('SELECT url FROM fishing_areas WHERE name = ?', (area,))
+        result = await c.fetchone()
+        image_url = result[0] if not fishing else 'https://c.tenor.com/q_v2D9_1p1kAAAAC/fishing-genshin.gif'
+        t = time.strftime("%I:%M %p")
+        embed = defaultEmbed(f'{t} ({area})')
+        embed.set_image(url=image_url)
+        return embed
+
+    class FishingView(View):
+        def __init__(self, author: Member, area: str, rod: str, db: aiosqlite.Connection, rods: dict):
+            super().__init__(timeout=None)
+            self.author = author
+            self.area = area
+            self.rod = rod
+            self.db = db
+            self.add_item(FishCog.RodSelect(rods, area))
+            self.add_item(FishCog.RodDisplayButton(rod))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return interaction.user.id == self.author.id
+
+        def random_fish(self, item_dic, total_weight):
+            score = randint(1, total_weight)
+            range_max = 0
+            for item_key, weight in item_dic.items():
+                range_max += weight
+                if score <= range_max:
+                    return item_key
+
+        def get_fish(self, item_dic):
+            total_weight = 0
+            for value in item_dic.values():
+                total_weight += value
+            return self.random_fish(self, item_dic, total_weight)
+
+        @button(label='釣魚', style=ButtonStyle.blurple)
+        async def get_fish(self, i: Interaction, button: Button):
+            button.disabled = True
+            self.open_area_select.disabled = True
+            embed = await FishCog.generate_fishing_embed(self.db, True, self.area)
+            await i.response.edit_message(embed=embed, view=self)
+            await asyncio.sleep(2.0)
+            c = await self.db.cursor()
+            await c.execute(f"SELECT name, weight FROM fish WHERE areas LIKE '%{self.area}%'")
+            fish = await c.fetchall()
+            fish_dict = {}
+            for index, tuple in enumerate(fish):
+                fish_dict[tuple[0]] = tuple[1]
+            pull_fish = self.get_fish(FishCog, fish_dict)
+            put_fish_view = FishCog.PutFishView(pull_fish)
+            c = await self.db.cursor()
+            await c.execute('SELECT exp FROM fish WHERE name = ?', (pull_fish))
+            fish_exp = await c.fetchone()
+            fish_exp = fish_exp[0]
+            pull_fish_exp = int(
+                fish_exp)*1.1 if self.rod == '冰霜釣竿' and self.area == '寒冰雪山' else int(fish_exp)
+            await c.execute('SELECT exp FROM fishing_data WHERE user_id = ?', (i.user.id,))
+            user_exp = await c.fetchone()
+            if user_exp is None:
+                await c.execute('INSERT INTO fishing_data (user_id) VALUES (?)', (i.user.id,))
+            await c.execute('UPDATE fishing_data SET exp = ? WHERE user_id = ?', (user_exp[0]+fish_exp, i.user.id))
+            await self.db.commit()
+            await i.followup.send(embed=defaultEmbed(f'釣到了 {pull_fish}', f'獲得**{round(pull_fish_exp, 1)}**點經驗值'), view=put_fish_view, ephemeral=True)
+            button.disabled = False
+            self.open_area_select.disabled = False
+            embed = await FishCog.generate_fishing_embed(self.db, False, self.area)
+            await i.edit_original_message(embed=embed, view=self)
+
+        @button(label='開船', style=ButtonStyle.blurple)
+        async def open_area_select(self, i: Interaction, button: Button):
+            view = FishCog.AreaSelectView(self.areas, self.rod, i.message)
+            await i.response.send_message(view=view, ephemeral=True)
+
+    class PutFishView(View):
+        def __init__(self, fish: str, db: aiosqlite.Connection):
+            super().__init__(timeout=None)
+            self.fish = fish
+            self.db = db
+
+        @button(label='放進魚塘', style=ButtonStyle.blurple)
+        async def put_to_pond(self, i: Interaction, button: Button):
+            c = await self.db.cursor()
+            await c.execute("SELECT count FROM fish_places WHERE user_id = ? AND name = ? AND place = 'pond'", (i.user.id, self.fish))
+            count = await c.fetchone()
+            if count is None:
+                await c.execute('INSERT INTO fish_places (user_id, name, count, place) VALUES (?, ?, ?, ?)', (i.user.id, self.fish, 1, 'pond'))
+            else:
+                await c.execute("UPDATE fish_places SET count = ? WHERE user_id = ? AND name = ? AND place = 'pond'", (count[0]+1, i.user.id, self.fish))
+            await self.db.commit()
+            await i.response.send_message(embed=defaultEmbed(f'{self.fish} 已放入魚塘', '輸入`/fish pond`即可查看'), ephemeral=True)
+
+        @button(label='收進背包', style=ButtonStyle.blurple)
+        async def put_to_inventory(self, i: Interaction, button: Button):
+            c = await self.db.cursor()
+            await c.execute("SELECT count FROM fish_places WHERE user_id = ? AND name = ? AND place = 'bag'", (i.user.id, self.fish))
+            count = await c.fetchone()
+            if count is None:
+                await c.execute('INSERT INTO fish_places (user_id, name, count, place) VALUES (?, ?, ?, ?)', (i.user.id, self.fish, 1, 'bag'))
+            else:
+                await c.execute("UPDATE fish_places SET count = ? WHERE user_id = ? AND name = ? AND place = 'bag'", (count[0]+1, i.user.id, self.fish))
+            await self.db.commit()
+            await i.response.send_message(embed=defaultEmbed(f'{self.fish} 已放入背包', '輸入`/fish bag`即可查看'), ephemeral=True)
+
+    class RodDisplayButton(Button):
+        def __init__(self, rod: str):
+            super().__init__(label=f'正在使用 {rod}', disabled=True)
+
+    class AreaSelectView(View):
+        def __init__(self, area_dict: dict, rod: str, original_message: Message):
+            self.area_dict = area_dict
+            self.rod = rod
+            self.original_message = original_message
+            super().__init__(timeout=None)
+            self.add_item(FishCog.AreaSelect(
+                self.area_dict, self.rod, self.original_message))
+
+    class AreaSelect(Select):
+        def __init__(self, db: aiosqlite.Connection, area_dict: dict, rod: str, original_message: Message):
+            self.rod = rod
+            self.db = db
+            options = []
+            self.original_message = original_message
+            for area_name, value in area_dict.items():
+                options.append(SelectOption(label=area_name, value=area_name))
+            super().__init__(placeholder='要前往的區域', options=options)
+
+        async def callback(self, i: Interaction):
+            embed = await FishCog.generate_fishing_embed(self.db, False, self.values[0])
+            await self.original_message.edit(embed=embed, view=FishCog.FishingView(i.user, self.values[0], self.rod))
+            await i.response.defer()
+
+    class RodSelect(Select):
+        def __init__(self, db: aiosqlite.Connection, rod_dict: dict, area: str):
+            self.area = area
+            self.db = db
+            options = []
+            for rod, effect in rod_dict.items():
+                options.append(SelectOption(
+                    label=rod, description=effect, value=rod))
+            super().__init__(placeholder='選擇要使用的釣竿', options=options)
+
+        async def callback(self, i: Interaction):
+            embed = await FishCog.generate_fishing_embed(self.db, False, self.area)
+            await i.response.edit_message(embed=embed, view=FishCog.FishingView(i.user, self.area, self.values[0]))
+
+    @app_commands.command(name='fishing', description='釣魚')
+    async def fishing(self, i: Interaction):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT name FROM fishing_areas')
+        area = await c.fetchone()
+        await c.execute("SELECT name FROM fishing_items WHERE user_id = ? AND category = '釣竿'", (i.user.id,))
+        rod = await c.fetchone()
+        view = FishCog.FishingView(i.user, area[0], rod[0])
+        embed = await FishCog.generate_fishing_embed(self.bot.db, False, area[0])
+        await i.response.send_message(embed=embed, view=view)
+
+    fish = app_commands.Group(name="fish", description="flow魚系統")
+
+    @fish.command(name='bag', description='查看背包')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他人的背包')
+    async def fish_bag(self, i: Interaction, member: Member = None):
+        member = member or i.user
+        inventory = FishCog.create_inventory(member.id)
+        embed = defaultEmbed('背包')
+        for category, items in inventory[member.id].items():
+            item_str = ''
+            for item, count in items.items():
+                item_str += f'• {item} x{count}\n'
+            embed.add_field(name=category, value=item_str, inline=False)
+        embed.set_author(name=member, icon_url=member.avatar)
+        await i.response.send_message(embed=embed)
+
+    async def generate_item_embeds(db: aiosqlite.Connection, category: str):
+        c = await db.cursor()
+        await c.execute('SELECT name, desc, effect FROM fishing_items WHERE category = ? AND user_id = ?', (category, 0))
+        items = await c.fetchall()
+        embeds = []
+        for index, tuple in enumerate(items):
+            embed = defaultEmbed(tuple[0], f'「{tuple[1]}」')
+            embed.add_field(name='效果', value=tuple[2])
+            embeds.append(embed)
+        return embeds
+
+    class ItemCategoryView(View):
+        def __init__(self, db: aiosqlite.Connection, items_dict: dict):
+            super().__init__(timeout=None)
+            self.add_item(FishCog.ItemCategorySelect(db, items_dict))
+
+    class ItemCategorySelect(Select):
+        def __init__(self, db: aiosqlite.Connection, items_dict: dict):
+            options = []
+            self.db = db
+            for category, items in items_dict.items():
+                options.append(SelectOption(label=category, value=category))
+            super().__init__(placeholder='選擇要查看的物品分類', options=options)
+
+        async def callback(self, i: Interaction):
+            embeds = await FishCog.generate_item_embeds(self.db, self.values[0])
+            await GeneralPaginator(i, FishCog.generate_item_embeds(self.values[0])).start(embeded=True)
+
+    @fish.command(name='items', description='查看所有可以取得的物品')
+    async def fish_items(self, i: Interaction):
+        view = FishCog.ItemCategoryView(self.bot.db, all_items)
+        await i.response.send_message(view=view)
+
+    def generate_fish_detail_embed(rarity_input: int):
+        all_fish = openFile('fish/all_fish')
+        fish_exp = openFile('fish/fish_exp')
+        fish_str = ''
+        for rarity, fish in all_fish.items():
+            if int(rarity) == int(rarity_input):
+                for f in fish:
+                    fish_str += f'• {f} ({fish_exp[f]}exp.)\n'
+        embed = defaultEmbed(f'{rarity_input}★魚', fish_str)
+        return embed
+
+    class FishRarityView(View):
+        def __init__(self, fish_dict: dict):
+            super().__init__(timeout=None)
+            self.add_item(FishCog.FishRaritySelect(fish_dict))
+
+    class FishRaritySelect(Select):
+        def __init__(self, fish_dict: dict):
+            options = []
+            for rarity, fish in fish_dict.items():
+                options.append(SelectOption(
+                    label=f'{rarity}★魚 ({len(fish)})', value=rarity))
+            super().__init__(placeholder='選擇要查看的稀有度', options=options)
+
+        async def callback(self, i: Interaction):
+            await i.response.edit_message(embed=FishCog.generate_fish_detail_embed(self.values[0]))
+
+    @fish.command(name='all', description='查看魚類圖鑑')
+    async def fish_all(self, i: Interaction):
+        all_fish = openFile('fish/all_fish')
+        view = FishCog.FishRarityView(all_fish)
+        await i.response.send_message(view=view)
+
+    def create_user_stats(user_id: int):
+        user_stats = openFile('fish/user_stats')
+        if user_id not in user_stats:
+            user_stats[user_id] = {
+                'exp': 0,
+                '1': 0,
+                '2': 0,
+                '3': 0,
+                '4': 0,
+                '5': 0
+            }
+        saveFile(user_stats, 'fish/user_stats')
+        return user_stats
+
+    def calculate_level(exp: int):
+        level = 0
+        level_max_exp = 10
+        while exp >= level_max_exp:
+            exp -= level_max_exp
+            level += 1
+            level_max_exp *= 1.2
+        return level, exp, level_max_exp
+
+    @fish.command(name='stats', description='查看釣魚數據')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他人的釣魚數據')
+    async def fish_stats(self, i: Interaction, member: Member = None):
+        member = member or i.user
+        user_stats = FishCog.create_user_stats(member.id)
+        user_level, remaining_exp, level_max_exp = FishCog.calculate_level(
+            int(user_stats[member.id]["exp"]))
+        fish_rarity_str = ''
+        for rarity in range(1, 6):
+            fish_rarity_str += f'{rarity}★: {user_stats[member.id][f"{rarity}"]}\n'
+        embed = defaultEmbed(
+            '釣魚數據',
+            f'目前等級: {user_level} ({int(remaining_exp)}/{int(level_max_exp)})\n{fish_rarity_str}'
+        )
+        embed.set_author(name=member, icon_url=member.avatar)
+        await i.response.send_message(embed=embed)
+
+    @fish.command(name='pond', description='查看魚塘')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他人的魚塘')
+    async def fish_pond(self, i: Interaction, member: Member = None):
+        member = member or i.user
+        fish_pond = FishCog.create_fish_pond(member.id)
+        fish_str = ''
+        for fish, fish_count in fish_pond[member.id].items():
+            fish_str += f'• {fish} x{fish_count}\n'
+        embed = defaultEmbed(f'{member}的魚塘')
+        embed.set_image(url='https://i.imgur.com/5UGJ70T.gif')
+        await i.response.send_message(embed=embed)
+        embed = defaultEmbed('魚塘裡的魚', fish_str)
+        await i.followup.send(embed=embed)

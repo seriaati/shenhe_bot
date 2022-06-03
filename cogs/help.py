@@ -1,13 +1,13 @@
 import discord
 from discord import SelectOption, app_commands
 from discord.ext import commands
-from utility.utils import defaultEmbed, log
+from utility.utils import defaultEmbed
 
 
 class Dropdown(discord.ui.Select):
     def __init__(self):
         options = [
-            SelectOption(label='原神資料', description='需先註冊帳號後方可使用', emoji='✨'),
+            SelectOption(label='原神資料', description='需先/cookie註冊帳號後方可使用', emoji='✨'),
             SelectOption(label='原神', description='不須註冊帳號即可使用', emoji='🌟'),
             SelectOption(label='原神祈願', description='需註冊+設置祈願紀錄', emoji='🌠'),
             SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
@@ -114,6 +114,11 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/oculi`',
                 value='查看不同地區的神瞳位置',
+                inline=False
+            )
+            embed.add_field(
+                name='`/profile`',
+                value='透過 enka API 查看各式原神數據',
                 inline=False
             )
 

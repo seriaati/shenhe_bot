@@ -47,7 +47,7 @@ class WishCog(commands.Cog):
             authkey = genshin.utility.extract_authkey(url)
             client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
-            await i.followup.send(embed=defaultEmbed('⏳ 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+            await i.followup.send(embed=defaultEmbed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
             try:
                 wish_history = await client.wish_history()
             except Exception as e:
@@ -61,7 +61,7 @@ class WishCog(commands.Cog):
                 wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
                 await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type) VALUES (?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type))
             await self.db.commit()
-            await i.followup.send(embed=defaultEmbed('✅ 抽卡紀錄設置成功'), ephemeral=True)
+            await i.followup.send(embed=defaultEmbed('<:TICK:982124759070441492> 抽卡紀錄設置成功'), ephemeral=True)
 
     class ChoosePlatform(View):
         def __init__(self):

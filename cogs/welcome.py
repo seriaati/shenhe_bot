@@ -19,7 +19,7 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):
-        uid_channel_id = 978871680019628032 if not self.bot.debug_toggle else 909595117952856084
+        uid_channel_id = 978871680019628032 if not self.bot.debug_toggle else 982046953057693786
         if message.author.id == self.bot.user.id:
             return
         if message.channel.id == uid_channel_id:

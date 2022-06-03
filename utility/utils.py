@@ -5,6 +5,7 @@ import discord
 import genshin
 
 from utility.character_name import character_names
+from utility.stat_emojis import stat_emojis
 
 
 def defaultEmbed(title: str, message: str = ''):
@@ -40,6 +41,54 @@ def getCharacterName(character: genshin.models.BaseCharacter) -> str:
     chinese_name = character_names.get(character.id)
     return chinese_name if chinese_name != None else character.name
 
+def getCharacterNameWithID(id: int) -> str:
+    chinese_name = character_names.get(id)
+    return chinese_name
+
+async def getCharacterIcon(id: int):
+    client = getClient()
+    charas = await client.get_calculator_characters()
+    for c in charas:
+        if c.id == id:
+            return c.icon
+
+async def getTalentNames(id: int):
+    client = getClient()
+    talents = await client.get_character_talents(id)
+    result = {}
+    for t in talents:
+        result[t.id] = t.name
+    return result
+
+async def getWeaponName(id: int):
+    client = getClient()
+    weapons = await client.get_calculator_weapons()
+    for w in weapons:
+        if w.id == id:
+            return w.name
+
+async def getArtifactNames(id: int):
+    client = getClient()
+    if (id//10)%10 == 5:
+        artifacts = await client.get_complete_artifact_set((id//10)-1)
+    else:
+        artifacts = await client.get_complete_artifact_set((id//10)+1)
+    for artifact in artifacts:
+        if artifact.id == id//10:
+            result = artifact.name
+    return result
+
+def getStatEmoji(propid: str):
+    emoji = stat_emojis.get(propid)
+    return emoji if emoji != None else propid
+
+def getClient():
+    cookies = {"ltuid": 7368957, "ltoken": 'X5VJAbNxdKpMp96s7VGpyIBhSnEJr556d5fFMcT5'}
+    client = genshin.Client(cookies)
+    client.lang = "zh-tw"
+    client.default_game = genshin.Game.GENSHIN
+    client.uids[genshin.Game.GENSHIN] = 901211014
+    return client
 
 def trimCookie(cookie: str) -> str:
     try:

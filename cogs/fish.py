@@ -1,12 +1,17 @@
+import asyncio
+import time
 from random import randint
-import aiosqlite
 
-from discord import ButtonStyle, Interaction, app_commands, Thread
+import aiosqlite
+from discord import (ButtonStyle, Interaction, Member, Message, SelectOption, Thread,
+                     app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, View
+from discord.ui import Button, Select, View, button
 from utility.FlowApp import FlowApp
-from utility.utils import ayaakaaEmbed, log
+from utility.GeneralPaginator import GeneralPaginator
+from utility.utils import ayaakaaEmbed, defaultEmbed
+
 
 class FishCog(commands.Cog):
     def __init__(self, bot):
@@ -14,7 +19,8 @@ class FishCog(commands.Cog):
         self.debug_toggle = self.bot.debug_toggle
 
     global fish_list, fish_flow_list, fish_image_list
-    fish_flow_list = ['1', '2', '2', '2', '2', '5', '5', '7', '10', '20', '15', '20', '3', '3']
+    fish_flow_list = ['1', '2', '2', '2', '2', '5',
+                      '5', '7', '10', '20', '15', '20', '3', '3']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
                  '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '大象', '抹香鯨', '企鵝', '兔兔']
     fish_image_list = [
@@ -29,8 +35,8 @@ class FishCog(commands.Cog):
         'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg',
         'https://c.tenor.com/blHN79J-floAAAAd/ducktaglia-duck.gif',
         'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg',
-        'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg', 
-        'https://i.pinimg.com/originals/f2/38/ce/f238ce8da599e3beb5e3f85441083ea2.gif', 
+        'https://i.natgeofe.com/n/8084965e-1dfc-47eb-b0c5-e4f86ee65c82/sperm-whale_thumb.jpg',
+        'https://i.pinimg.com/originals/f2/38/ce/f238ce8da599e3beb5e3f85441083ea2.gif',
         'https://i.pinimg.com/236x/f6/de/7f/f6de7f2ec162913fa46704ccf9cb0bd6.jpg'
     ]
 
@@ -136,7 +142,7 @@ class FishCog(commands.Cog):
                     await self.flow_app.transaction(interaction.user.id, -20)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**偷襲，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 被達達利鴨偷襲，損失了 20 flow幣 qwq
-            
+
              # 摸大象有機率獲得或損失 15 flow幣
             elif self.index == 10:  # [10] 大象
                 if value <= 50:  # 50% Chance of increasing flow amount by 15
@@ -147,7 +153,7 @@ class FishCog(commands.Cog):
                     await self.flow_app.transaction(interaction.user.id, -15)
                     await interaction.followup.send(f'被**{fish_list[self.index]}**踩到了，損失了 15 flow幣 qwq', ephemeral=True)
                     # e.g. 被大象踩到了，損失了 15 flow幣 qwq
-            
+
              # 摸抹香鯨有機率獲得或損失 20 flow幣
             elif self.index == 11:  # [11] 抹香鯨
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
@@ -156,9 +162,9 @@ class FishCog(commands.Cog):
                     # e.g. 摸抹香鯨摸到 20 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, -20)
-                    await interaction.followup.send(f'**{fish_list[self.index]}**抹香鯨 鯨爆了，損失了 20 flow幣 qwq', ephemeral=True)
+                    await interaction.followup.send(f'**{fish_list[self.index]}**爆了，損失了 20 flow幣 qwq', ephemeral=True)
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
-            
+
             if self.index == 12:  # [12] 企鵝
                 if value <= 70:  # 70% Chance of increasing flow amount by 3
                     await self.flow_app.transaction(interaction.user.id, 3)
@@ -170,7 +176,7 @@ class FishCog(commands.Cog):
                         await interaction.followup.send(f'被企鵝噴了一臉奇怪的白色液體, 沒有摸到flow幣 qwq', ephemeral=True)
                     else:
                         await interaction.followup.send(f'被企鵝噴了一臉茶, 沒有摸到flow幣 qwq', ephemeral=True)
-            
+
             if self.index == 13:  # [13] 兔兔
                 if value <= 70:  # 70% Chance of increasing flow amount by 3
                     await self.flow_app.transaction(interaction.user.id, 3)
@@ -200,14 +206,13 @@ class FishCog(commands.Cog):
             touch_fish_view = FishCog.TouchFish(index, self.bot.db, self.bot)
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
-   # /fish
-    @app_commands.command(name='fish', description='緊急放出一條魚讓人摸')
+   # /releasefish
+    @app_commands.command(name='releasefish', description='緊急放出一條魚讓人摸')
     @app_commands.rename(fish_type='魚種')
     @app_commands.describe(fish_type='選擇要放出的魚種')
     @app_commands.choices(fish_type=get_fish_choices())
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i: Interaction, fish_type: int):
-        await self.bot.log.send(log(False, False, 'Release Fish', i.user.id))
         touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db, self.bot)
         await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 

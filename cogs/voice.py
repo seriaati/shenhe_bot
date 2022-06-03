@@ -43,26 +43,26 @@ class VoiceChannel(commands.Cog):
         if user_id == owner_id:
             return True, None
         else:
-            return False, errEmbed('<:penguin_cry:978840927474946078> 不行', '你不是這個語音台的擁有者')
+            return False, errEmbed('<:CROSS:982124359525228594> 不行', '你不是這個語音台的擁有者')
 
     @vc.command(name='rename', description='重新命名語音台')
     @app_commands.rename(new='新名稱')
     @app_commands.describe(new='新的語音台名稱')
     async def vc_rename(self, i: Interaction, new: str):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:CROSS:982124359525228594> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
             await i.response.send_message(embed=err_msg, ephemeral=True)
             return
         await current_vc.edit(name=new)
-        await i.response.send_message(embed=defaultEmbed('<a:penguin_run:978257189686898748> 語音台名稱更改成功', f'新名稱: {new}'))
+        await i.response.send_message(embed=defaultEmbed('<:TICK:982124759070441492> 語音台名稱更改成功', f'新名稱: {new}'))
 
     @vc.command(name='lock', description='鎖上語音台')
     async def vc_lock(self, i: Interaction):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:CROSS:982124359525228594> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -73,12 +73,12 @@ class VoiceChannel(commands.Cog):
         traveler = i.guild.get_role(
             978532779098796042) if not self.bot.debug_toggle else i.guild.default_role
         await current_vc.set_permissions(traveler, connect=False)
-        await i.response.send_message(embed=defaultEmbed(f'<a:penguin_run:978257189686898748> {current_vc.name}被鎖上了'))
+        await i.response.send_message(embed=defaultEmbed(f'<:TICK:982124759070441492> {current_vc.name}被鎖上了'))
 
     @vc.command(name='unlock', description='解鎖語音台')
     async def vc_unlock(self, i: Interaction):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:CROSS:982124359525228594> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -94,7 +94,7 @@ class VoiceChannel(commands.Cog):
     @app_commands.describe(new='新的房主')
     async def vc_unlock(self, i: Interaction, new: Member):
         if i.user.voice is None:
-            await i.response.send_message(embed=errEmbed('<:angry_fbk:981195991137013830> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<:CROSS:982124359525228594> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
