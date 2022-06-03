@@ -13,7 +13,7 @@ def defaultEmbed(title: str, message: str = ''):
 
 
 def ayaakaaEmbed(title: str, message: str = ''):
-    return discord.Embed(title=title, description=message, color=0xCBD9EB)
+    return discord.Embed(title=title, description=message, color=0xADC6E5)
 
 
 def errEmbed(title: str, message: str = ''):
