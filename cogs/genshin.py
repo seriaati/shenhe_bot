@@ -989,7 +989,7 @@ class GenshinCog(commands.Cog):
                 data = await r.json()
         if 'avatarInfoList' not in data:
             embed = defaultEmbed(
-                '<:CROSS:982124359525228594> 修但幾類!', '請在遊戲中打開「顯示角色詳情」')
+                '<:CROSS:982124359525228594> 修但幾類!', '請在遊戲中打開「顯示角色詳情」\n\n有時候申鶴會判斷錯誤\n如果你很確定你已經打開了的話\n再輸入一次指令吧！')
             embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
             await i.edit_original_message(embed=embed)
             return
