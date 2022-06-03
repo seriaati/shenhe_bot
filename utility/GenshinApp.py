@@ -144,14 +144,14 @@ class GenshinApp:
                 result.add_field(
                     name='樹脂',
                     value=f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
-                    f"樹脂回滿時間: {resin_recover_time}\n"
-                    f'週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
+                    f"<:placeholder:982425507503165470> 樹脂回滿時間: {resin_recover_time}\n"
+                    f'<:placeholder:982425507503165470> 週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
                     inline=False
                 )
                 result.add_field(
                     name='塵歌壺',
                     value=f"<:realm:956384011750613112> 目前洞天寶錢數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-                    f'寶錢全部恢復時間: {realm_recover_time}',
+                    f'<:placeholder:982425507503165470> 寶錢全部恢復時間: {realm_recover_time}',
                     inline=False
                 )
                 exped_finished = 0
@@ -219,12 +219,25 @@ class GenshinApp:
         else:
             explorations = genshinUser.explorations
             exploreStr = ""
+            exploreStrNonLevel = ""
+            locationType = 0
             for exploration in explorations:
-                exploreStr += f"{exploration.name}: {exploration.explored}% • Lvl.{exploration.level}\n"
-            result = defaultEmbed(
-                f"探索度",
-                exploreStr
-            )
+                if str(exploration.name) == "層岩巨淵" or str(exploration.name) == "淵下宮":
+                    exploreStrNonLevel += f"{exploration.name}: {exploration.explored}%\n"
+                    locationType = 1
+                else:    
+                    exploreStr += f"{exploration.name}: {exploration.explored}% • Lvl.{exploration.level}\n"
+                    locationType = 2
+            if int(locationType) == 1:
+                result = defaultEmbed(
+                    f"探索度",
+                    exploreStrNonLevel
+                )
+            elif int(locationType) == 2:
+                result = defaultEmbed(
+                    f"探索度",
+                    exploreStr
+                )    
         return result
 
     async def getDiary(self, user_id: int, month: int):
