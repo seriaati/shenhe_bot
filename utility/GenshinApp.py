@@ -124,23 +124,23 @@ class GenshinApp:
                         notes.realm_currency_recovery_time.weekday())
                     realm_recover_time = f'{weekday_msg} {notes.realm_currency_recovery_time.strftime("%H:%M")}'
                 if notes.transformer_recovery_time != None:
-                    if notes.remaining_transformer_recovery_time < 10:
-                        t_recover = '已可使用'
+                    t = notes.remaining_transformer_recovery_time
+                    if t.days > 0:
+                        recover_time = f'剩餘 {t.days} 天'
+                    elif t.hours > 0:
+                        recover_time = f'剩餘 {t.hours} 小時'
+                    elif t.minutes > 0:
+                        recover_time = f'剩餘 {t.minutes} 分'
+                    elif t.seconds > 0:
+                        recover_time = f'剩餘 {t.seconds} 秒'
                     else:
-                        t = timedelta(
-                            seconds=notes.remaining_transformer_recovery_time+10)
-                        if t.days > 0:
-                            t_recover = f'{t.days} 天'
-                        elif t.seconds > 3600:
-                            t_recover = f'{round(t.seconds/3600)} 小時'
-                        else:
-                            t_recover = f'{round(t.seconds/60)} 分'
+                        recover_time = '可使用'
                 else:
-                    t_recover = '質變儀不存在'
+                    recover_time = '質變儀不存在'
                 result = defaultEmbed(
                     f"即時便籤",
                     f"<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n"
-                    f"<:transformer:966156330089971732> 質變儀剩餘時間: {t_recover}"
+                    f"<:transformer:966156330089971732> 質變儀剩餘時間: {recover_time}"
                 )
                 result.add_field(
                     name='樹脂',
