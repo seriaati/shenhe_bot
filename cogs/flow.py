@@ -51,7 +51,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(morning[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='morning')
-                        await message.add_reaction('⛅')
+                        await message.add_reaction('<:morning:982608491426508810>')
             elif "午" in message.content:
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=12, minute=0, second=0, microsecond=0)
@@ -63,7 +63,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(noon[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='noon')
-                        await message.add_reaction('☀️')
+                        await message.add_reaction('<:noon:982608493313929246>')
             elif "晚" in message.content:
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=18, minute=0, second=0, microsecond=0)
@@ -75,7 +75,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(night[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='night')
-                        await message.add_reaction('🌙')
+                        await message.add_reaction('<:night:982608497290125366>')
 
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
@@ -112,28 +112,28 @@ class FlowCog(commands.Cog):
         if member.id == i.user.id:
             await i.response.send_message(
                 embed=errEmbed(
-                    '<:CROSS:982124359525228594> 不可以自己給自己flow幣',
+                    '<a:error_animated:982579472060547092> 不可以自己給自己flow幣',
                     '<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!'),
                 ephemeral=True)
             return
         if flow < 0:
             await i.response.send_message(
                 embed=errEmbed(
-                    '<:CROSS:982124359525228594> 不可以給負數flow幣',
+                    '<a:error_animated:982579472060547092> 不可以給負數flow幣',
                     '<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!'),
                 ephemeral=True)
             return
         user_flow = await self.flow_app.get_user_flow(i.user.id)
         if user_flow < flow:
             embed = errEmbed(
-                "<:CROSS:982124359525228594> 交易失敗",
+                "<a:error_animated:982579472060547092> 交易失敗",
                 "你的 flow幣數量不足已承擔這筆交易")
             await i.response.send_message(embed=embed, ephemeral=True)
             return
         await self.flow_app.transaction(i.user.id, -flow)
         await self.flow_app.transaction(member.id, flow)
         embed = defaultEmbed(
-            "<:TICK:982124759070441492> 交易成功",
+            "<a:check_animated:982579879239352370> 交易成功",
             f"{self.bot.get_user(i.user.id).mention} **- {flow}** flow幣\n"
             f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣")
         await i.response.send_message(content=f'{i.user.mention}{member.mention}', embed=embed)
@@ -151,7 +151,7 @@ class FlowCog(commands.Cog):
             return
         await self.flow_app.transaction(member.id, -flow)
         embed = defaultEmbed(
-            "<:TICK:982124759070441492> 已成功施展「反」摩拉克斯的力量",
+            "<a:check_animated:982579879239352370> 已成功施展「反」摩拉克斯的力量",
             f"{i.user.mention} 從 {self.bot.get_user(member.id).mention} 的帳戶裡拿走了**{flow}**枚flow幣"
         )
         ephemeral_toggler = True if private == 0 else False
@@ -176,7 +176,7 @@ class FlowCog(commands.Cog):
         await self.flow_app.transaction(member.id, int(flow))
         acceptor = self.bot.get_user(member.id)
         embed = defaultEmbed(
-            "<:TICK:982124759070441492> 已成功施展摩拉克斯的力量",
+            "<a:check_animated:982579879239352370> 已成功施展摩拉克斯的力量",
             f"{i.user.mention} 給了 {acceptor.mention} {flow} 枚flow幣"
         )
         ephemeral_toggler = True if private == 0 else False
@@ -422,7 +422,7 @@ class FlowCog(commands.Cog):
             action_str = ['委託', '素材委託', '委託', '幫助']
             for index in range(1, 5):
                 if type == index:
-                    await i.followup.send(f"<:TICK:982124759070441492> {confirmer.mention} 已接受 {author.mention} 的 **{title}** {action_str[index-1]}")
+                    await i.followup.send(f"<a:check_animated:982579879239352370> {confirmer.mention} 已接受 {author.mention} 的 **{title}** {action_str[index-1]}")
             if type == 4:
                 embedDM = defaultEmbed(
                     f"結算單",

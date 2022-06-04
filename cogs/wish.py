@@ -1,4 +1,4 @@
-from scipy.signal import find_peaks
+
 from typing import Optional
 
 import aiosqlite
@@ -8,9 +8,9 @@ from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Modal, View
-from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, errEmbed, log
+from utility.WishPaginator import WishPaginator
 
 import genshin
 
@@ -153,7 +153,7 @@ class WishCog(commands.Cog):
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
         embed = errEmbed(
-            '<:wish:982419859117838386> 你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
+            '<a:error_animated:982579472060547092> 你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
         member = self.bot.get_user(user_id)
         embed.set_author(name=member, icon_url=member.avatar)
         if result is None:
@@ -239,10 +239,11 @@ class WishCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
+            await i.edit_original_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
@@ -266,22 +267,23 @@ class WishCog(commands.Cog):
             for w in l:
                 embed_str += f'{w}\n'
             embeds.append(defaultEmbed('詳細祈願紀錄', embed_str))
-        await GeneralPaginator(i, embeds).start(embeded=True)
+        await WishPaginator(i, embeds).start(embeded=True)
 
     @wish.command(name='luck', description='限定祈願歐氣值分析')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
+            await i.edit_original_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             member.id)
@@ -295,21 +297,22 @@ class WishCog(commands.Cog):
             f'• 墊了**{left_pull}**抽\n'
             f'• {gu_str}')
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.response.send_message(embed=embed)
+        await i.edit_original_message(embed=embed)
 
     @wish.command(name='character', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量')
     @app_commands.describe(num='想要抽到幾個5星UP角色?')
     async def wish_char(self, i: Interaction, num: int):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
+            await i.edit_original_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             i.user.id)
@@ -327,7 +330,7 @@ class WishCog(commands.Cog):
             f'• {gu_str}\n'
             f'• 預計**{result}**抽後出 UP')
         embed.set_author(name=i.user, icon_url=i.user.avatar)
-        await i.response.send_message(embed=embed)
+        await i.edit_original_message(embed=embed)
 
     class UpOrStd(discord.ui.View):
         def __init__(self, author: Member):
@@ -375,23 +378,24 @@ class WishCog(commands.Cog):
     @app_commands.rename(item_num='up武器數量')
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
     async def wish_weapon(self, i: Interaction, item_num: int):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
+            await i.edit_original_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed(
-                '你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            await i.edit_original_message(embed=errEmbed(
+                '<a:error_animated:982579472060547092> 你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
             return
         last_name, pull_state = await self.weapon_banner_calc(i.user.id)
         if last_name == '':
-            await i.response.send_message(embed=errEmbed('你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'), ephemeral=True)
+            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'))
             return
         up_or_std_view = WishCog.UpOrStd(i.user)
-        await i.response.send_message(embed=defaultEmbed(
+        await i.edit_original_message(embed=defaultEmbed(
             '限定UP還是常駐?',
             f'你最後一次抽到的五星武器是:\n'
             f'**{last_name}**\n'
@@ -429,10 +433,11 @@ class WishCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
+            await i.edit_original_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         overview = await self.wish_overview_calc(member.id)
@@ -459,7 +464,7 @@ class WishCog(commands.Cog):
                 inline=False
             )
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.response.send_message(embed=embed)
+        await i.edit_original_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

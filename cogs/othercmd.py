@@ -39,7 +39,7 @@ class OtherCMDCog(commands.Cog):
             channel = self.bot.get_channel(payload.channel_id)
             emoji = self.bot.get_emoji(payload.emoji.id)
             await msg.remove_reaction(emoji, member)
-            await channel.send(f"<:TICK:982124759070441492> 語錄擷取成功", delete_after=3)
+            await channel.send(f"<a:check_animated:982579879239352370> 語錄擷取成功", delete_after=3)
             embed = defaultEmbed(
                 f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
             embed.set_thumbnail(url=str(msg.author.avatar))
@@ -96,7 +96,7 @@ class OtherCMDCog(commands.Cog):
             f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
         embed.set_thumbnail(url=str(msg.author.avatar))
         channel = self.bot.get_channel(966549110540877875)
-        await ctx.send("<:TICK:982124759070441492> 語錄擷取成功", delete_after=3)
+        await ctx.send("<a:check_animated:982579879239352370> 語錄擷取成功", delete_after=3)
         await channel.send(embed=embed)
 
     @app_commands.command(
@@ -133,7 +133,7 @@ class OtherCMDCog(commands.Cog):
             f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
         embed.set_thumbnail(url=str(msg.author.avatar))
         channel = self.bot.get_channel(966549110540877875)
-        await i.response.send_message("<:TICK:982124759070441492> 語錄擷取成功", ephemeral=True)
+        await i.response.send_message("<a:check_animated:982579879239352370> 語錄擷取成功", ephemeral=True)
         await channel.send(embed=embed)
 
     @app_commands.command(name='rolemembers', description='查看一個身份組內的所有成員')

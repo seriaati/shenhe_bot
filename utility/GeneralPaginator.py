@@ -28,25 +28,25 @@ class _view(View):
 
         await interaction.response.edit_message(**kwargs)
 
-    @button(label="<<", style=ButtonStyle.gray, row=1)
+    @button(emoji="<:double_left:982588991461281833>", style=ButtonStyle.gray, row=1)
     async def first(self, interaction: Interaction, button: Button):
         self.current_page = 0
 
         await self.update_children(interaction)
 
-    @button(label="<", style=ButtonStyle.blurple, row=1)
+    @button(emoji='<:left:982588994778972171>', style=ButtonStyle.blurple, row=1)
     async def previous(self, interaction: Interaction, button: Button):
         self.current_page -= 1
 
         await self.update_children(interaction)
 
-    @button(label=">", style=ButtonStyle.blurple, row=1)
+    @button(emoji="<:right:982588993122238524>", style=ButtonStyle.blurple, row=1)
     async def next(self, interaction: Interaction, button: Button):
         self.current_page += 1
 
         await self.update_children(interaction)
 
-    @button(label='>>', style=ButtonStyle.gray, row=1)
+    @button(emoji='<:double_right:982588990223958047>', style=ButtonStyle.gray, row=1)
     async def last(self, interaction: Interaction, button: Button):
         self.current_page = len(self.pages) - 1
 

@@ -76,7 +76,7 @@ class RollCog(commands.Cog):
                 history_num = tuple[1]
                 result += f'{prize_name} • {history_num}次\n'
             embed = defaultEmbed(
-                f'祈願紀錄(目前距離保底{90-guarantee_sum}抽)', f'總共{pull_sum}抽\n{result}')
+                f'<:wish:982419859117838386> 祈願紀錄(目前距離保底{90-guarantee_sum}抽)', f'總共{pull_sum}抽\n{result}')
             await i.response.send_message(embed=embed, ephemeral=True)
 
         @button(label='祈願1次', style=ButtonStyle.blurple)
@@ -84,7 +84,7 @@ class RollCog(commands.Cog):
             user_flow = await self.flow_app.get_user_flow(i.user.id)
             if user_flow < one_pull_price:
                 embed = errEmbed(
-                    '你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
+                    '<a:error_animated:982579472060547092>  你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = RollCog.Confirm(
@@ -96,7 +96,7 @@ class RollCog(commands.Cog):
             user_flow = await self.flow_app.get_user_flow(i.user.id)
             if user_flow < int(one_pull_price)*10:
                 embed = errEmbed(
-                    '你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
+                    '<a:error_animated:982579472060547092>  你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
                 await i.response.send_message(embed=embed, ephemeral=True)
                 return
             confirm = RollCog.Confirm(
