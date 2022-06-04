@@ -51,7 +51,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(morning[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='morning')
-                        await message.add_reaction('⛅')
+                        await message.add_reaction('<:morning:982608491426508810>')
             elif "午" in message.content:
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=12, minute=0, second=0, microsecond=0)
@@ -63,7 +63,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(noon[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='noon')
-                        await message.add_reaction('☀️')
+                        await message.add_reaction('<:noon:982608493313929246>')
             elif "晚" in message.content:
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=18, minute=0, second=0, microsecond=0)
@@ -75,7 +75,7 @@ class FlowCog(commands.Cog):
                     if parser.parse(night[0]).day != now.day:
                         await self.flow_app.transaction(
                             user_id, 1, time_state='night')
-                        await message.add_reaction('🌙')
+                        await message.add_reaction('<:night:982608497290125366>')
 
     @app_commands.command(name='acc', description='查看flow帳號')
     @app_commands.rename(member='其他人')
