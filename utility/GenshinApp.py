@@ -144,14 +144,14 @@ class GenshinApp:
                 result.add_field(
                     name='樹脂',
                     value=f"<:resin:956377956115157022> 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
-                    f"樹脂回滿時間: {resin_recover_time}\n"
-                    f'週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
+                    f"<:placeholder:982425507503165470> 樹脂回滿時間: {resin_recover_time}\n"
+                    f'<:placeholder:982425507503165470> 週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
                     inline=False
                 )
                 result.add_field(
                     name='塵歌壺',
                     value=f"<:realm:956384011750613112> 目前洞天寶錢數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-                    f'寶錢全部恢復時間: {realm_recover_time}',
+                    f'<:placeholder:982425507503165470> 寶錢全部恢復時間: {realm_recover_time}',
                     inline=False
                 )
                 exped_finished = 0
