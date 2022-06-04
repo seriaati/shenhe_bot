@@ -445,30 +445,19 @@ class WishCog(commands.Cog):
         )
         # [100, 200, 301, 302]
         # [total, left_pull, five_star, four_star]
-        embed.add_field(
-            name='角色池',
-            value=f'• 共**{overview[2][0]}**抽 (**{overview[2][0]*160}**原石)\n'
-            f'• 5☆ **{overview[2][2]}**\n'
-            f'• 4☆ **{overview[2][3]}**\n'
-            f'• 距離保底**{90-overview[2][1]}**抽',
-            inline=False
-        )
-        embed.add_field(
-            name='武器池',
-            value=f'• 共**{overview[3][0]}**抽 (**{160*overview[3][0]}**原石)\n'
-            f'• 5☆ **{overview[3][2]}**\n'
-            f'• 4☆ **{overview[3][3]}**\n'
-            f'• 距離保底**{90-overview[3][1]}**抽',
-            inline=False
-        )
-        embed.add_field(
-            name='常駐池',
-            value=f'• 共**{overview[1][0]}**抽 (**{160*overview[1][0]}**原石)\n'
-            f'• 5☆ **{overview[1][2]}**\n'
-            f'• 4☆ **{overview[1][3]}**\n'
-            f'• 距離保底**{90-overview[1][1]}**抽',
-            inline=False
-        )
+        banner_names = ['新手池', '角色池', '武器池', '常駐池']
+        for index in range(1, 4):
+            avg = 0 if overview[index][2] == 0 else int(
+                int(overview[index][0])/int(overview[index][2]))
+            embed.add_field(
+                name=f'{banner_names[index]}',
+                value=f'• 共**{overview[index][0]}**抽 (**{overview[index][0]*160}**原石)\n'
+                f'• 5☆ **{overview[index][2]}**\n'
+                f'• 4☆ **{overview[index][3]}**\n'
+                f'• 平均 **{avg}** 抽出一金'
+                f'• 距離保底**{90-overview[index][1]}**抽',
+                inline=False
+            )
         embed.set_author(name=member, icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
