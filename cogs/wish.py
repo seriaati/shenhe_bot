@@ -255,10 +255,10 @@ class WishCog(commands.Cog):
             wish_type = tuple[3]
             if wish_rarity == 5 or wish_rarity == 4:
                 user_wishes.append(
-                    f"[{wish_time}: {wish_name} ({wish_rarity}☆ {wish_type})](https://github.com/seriaati/shenhe_bot)")
+                    f"[{wish_time}: {wish_name} ({wish_rarity}<:white_star:982456919224615002> {wish_type})](https://github.com/seriaati/shenhe_bot)")
             else:
                 user_wishes.append(
-                    f"{wish_time}: {wish_name} ({wish_rarity}☆ {wish_type})")
+                    f"{wish_time}: {wish_name} ({wish_rarity}<:white_star:982456919224615002> {wish_type})")
         first_twenty_wishes = list(WishCog.divide_chunks(user_wishes, 20))
         embeds = []
         for l in first_twenty_wishes:
@@ -452,8 +452,8 @@ class WishCog(commands.Cog):
             embed.add_field(
                 name=f'{banner_names[index]}',
                 value=f'• 共**{overview[index][0]}**抽 (**{overview[index][0]*160}**原石)\n'
-                f'• 5☆ **{overview[index][2]}**\n'
-                f'• 4☆ **{overview[index][3]}**\n'
+                f'• 5<:white_star:982456919224615002> **{overview[index][2]}**\n'
+                f'• 4<:white_star:982456919224615002> **{overview[index][3]}**\n'
                 f'• 平均 **{avg}** 抽出一金'
                 f'• 距離保底**{90-overview[index][1]}**抽',
                 inline=False

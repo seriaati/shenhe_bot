@@ -347,13 +347,13 @@ class GenshinApp:
                     f'C{const}R{refinement} {character_name}', '')
                 embed.add_field(
                     name='角色',
-                    value=f'{character_rarity}☆\n'
+                    value=f'{character_rarity}<:white_star:982456919224615002>\n'
                     f'Lvl. {character_level}\n'
                     f'好感度: {friendship}'
                 )
                 embed.add_field(
                     name='武器',
-                    value=f'{weapon_rarity}☆\n'
+                    value=f'{weapon_rarity}<:white_star:982456919224615002>\n'
                     f'{weapon}\n'
                     f'Lvl. {weapon_level}\n',
                     inline=False)
