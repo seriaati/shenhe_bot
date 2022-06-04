@@ -1,4 +1,4 @@
-import os
+from scipy.signal import find_peaks
 from typing import Optional
 
 import aiosqlite
@@ -36,21 +36,20 @@ class WishCog(commands.Cog):
 
         async def on_submit(self, i: discord.Interaction):
             client = genshin.Client()
-            await i.response.defer()
             client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
             if only_uid:
-                result = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
-                return result
+                embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
+                await i.response.send_message(embed=embed)
+                return
             url = self.url.value
             log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})')
             authkey = genshin.utility.extract_authkey(url)
-            client, uid, check = await self.genshin_app.getUserCookie(i.user.id)
             client.authkey = authkey
-            await i.followup.send(embed=defaultEmbed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
             try:
                 wish_history = await client.wish_history()
             except Exception as e:
-                await i.followup.send(embed=errEmbed('出現錯誤', f'請告知小雪\n```{e}```'), ephemeral=True)
+                await i.edit_original_message(embed=errEmbed('出現錯誤', f'請告知小雪\n```{e}```'))
             c = await self.db.cursor()
             await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (i.user.id,))
             result = await c.fetchone()
@@ -60,7 +59,7 @@ class WishCog(commands.Cog):
                 wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
                 await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type) VALUES (?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type))
             await self.db.commit()
-            await i.followup.send(embed=defaultEmbed('<:TICK:982124759070441492> 抽卡紀錄設置成功'), ephemeral=True)
+            await i.edit_original_message(embed=defaultEmbed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
 
     class ChoosePlatform(View):
         def __init__(self):
@@ -153,7 +152,8 @@ class WishCog(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed('你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
+        embed = errEmbed(
+            '<:wish:982419859117838386> 你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
         member = self.bot.get_user(user_id)
         embed.set_author(name=member, icon_url=member.avatar)
         if result is None:
@@ -288,7 +288,7 @@ class WishCog(commands.Cog):
         player = GGanalysislib.Up5starCharacter()
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         embed = defaultEmbed(
-            '限定祈願歐氣值分析',
+            '<:wish:982419859117838386> 限定祈願歐氣值分析',
             f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull, up_guarantee=up_guarantee), 2))}%的玩家\n'
             f'• 共**{use_pull}**抽\n'
             f'• 出了**{get_num}**個UP\n'
@@ -298,34 +298,35 @@ class WishCog(commands.Cog):
         await i.response.send_message(embed=embed)
 
     @wish.command(name='character', description='預測抽到角色的機率')
-    @app_commands.rename(num='up角色數量', pull_num='祈願次數', member='其他人')
-    @app_commands.describe(num='想要抽到幾個5星UP角色?', pull_num='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
-    async def wish_char(self, i: Interaction, num: int, pull_num: int, member: Optional[Member] = None):
-        member = member or i.user
-        check, msg = await self.wish_history_exists(member.id)
+    @app_commands.rename(num='up角色數量')
+    @app_commands.describe(num='想要抽到幾個5星UP角色?')
+    async def wish_char(self, i: Interaction, num: int):
+        check, msg = await self.wish_history_exists(i.user.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
         result = await c.fetchone()
         if result is None:
             await i.response.send_message(embed=errEmbed('你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
-            member.id)
+            i.user.id)
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
-        result = player.get_p(item_num=num, calc_pull=pull_num,
-                              pull_state=left_pull, up_guarantee=up_guarantee)
+        result = 180
+        for index in range(1, 181):
+            if 100*player.get_p(item_num=num, calc_pull=index, pull_state=left_pull, up_guarantee=up_guarantee) >= 80:
+                result = index
+                break
         embed = defaultEmbed(
-            '祈願機率預測',
+            '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想要抽出**{num}**個5星UP角色\n'
-            f'• 預計抽**{pull_num}**次 (**{pull_num*160}**原石)\n'
             f'• 墊了**{left_pull}**抽\n'
             f'• {gu_str}\n'
-            f'• 機率為: **{str(round(100*result, 2))}%**')
-        embed.set_author(name=member, icon_url=member.avatar)
+            f'• 預計**{result}**抽後出 UP')
+        embed.set_author(name=i.user, icon_url=i.user.avatar)
         await i.response.send_message(embed=embed)
 
     class UpOrStd(discord.ui.View):
@@ -371,22 +372,21 @@ class WishCog(commands.Cog):
             self.stop()
 
     @wish.command(name='weapon', description='預測抽到想要的UP武器的機率')
-    @app_commands.rename(item_num='up武器數量', calc_pull='祈願次數', member='其他人')
-    @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?', calc_pull='預計抽幾抽? (目前原石數量/160=最大可抽數)', member='查看其他群友的資料')
-    async def wish_weapon(self, i: Interaction, item_num: int, calc_pull: int, member: Optional[Member] = None):
-        member = member or i.user
-        check, msg = await self.wish_history_exists(member.id)
+    @app_commands.rename(item_num='up武器數量')
+    @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
+    async def wish_weapon(self, i: Interaction, item_num: int):
+        check, msg = await self.wish_history_exists(i.user.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (member.id,))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (i.user.id,))
         result = await c.fetchone()
         if result is None:
             await i.response.send_message(embed=errEmbed(
                 '你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
             return
-        last_name, pull_state = await self.weapon_banner_calc(member.id)
+        last_name, pull_state = await self.weapon_banner_calc(i.user.id)
         if last_name == '':
             await i.response.send_message(embed=errEmbed('你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'), ephemeral=True)
             return
@@ -411,16 +411,18 @@ class WishCog(commands.Cog):
         else:  # 是常駐
             up_guarantee = 2
         player = GGanalysislib.Up5starWeaponEP()
-        result = player.get_p(item_num=item_num, calc_pull=calc_pull,
-                              pull_state=pull_state, up_guarantee=up_guarantee)
+        result = 180
+        for index in range(1, 181):
+            if 100*player.get_p(item_num=item_num, calc_pull=index, pull_state=pull_state, up_guarantee=up_guarantee) >= 80:
+                result = index
+                break
         embed = defaultEmbed(
-            '武器機率預測',
+            '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想抽出**{item_num}**把想要的UP\n'
-            f'• 預計抽**{calc_pull}**抽\n'
             f'• 已經墊了**{pull_state}**抽\n'
-            f'• 抽中想要UP的機率為: **{str(round(100*result, 2))}%**'
+            f'• 預計 **{result}** 抽後出 UP'
         )
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(name=i.user, icon_url=i.user.avatar)
         await i.edit_original_message(embed=embed)
 
     @wish.command(name='overview', description='祈願紀錄總覽')
@@ -437,7 +439,7 @@ class WishCog(commands.Cog):
         total_wish = overview[0][0] + overview[1][0] + \
             overview[2][0] + overview[3][0]
         embed = defaultEmbed(
-            '祈願總覽',
+            '<:wish:982419859117838386> 祈願總覽',
             f'共**{total_wish}**抽\n'
             f'即**{160*int(total_wish)}**原石'
         )

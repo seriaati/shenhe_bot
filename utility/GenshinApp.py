@@ -203,6 +203,19 @@ class GenshinApp:
                              f"珍貴寶箱: {genshinUser.stats.luxurious_chests}", inline=False)
         return result
 
+    def getAreaEmoji(area_name: str):
+        emoji_dict = {
+            '蒙德': '<:Emblem_Mondstadt:982449412938809354>',
+            '璃月': '<:Emblem_Liyue:982449411047165992>',
+            '稻妻': '<:Emblem_Inazuma:982449409117806674>',
+            '層岩巨淵': '<:Emblem_Chasm:982449404076249138>',
+            '層岩巨淵·地下礦區': '<:Emblem_Chasm:982449404076249138>',
+            '淵下宮': '<:Emblem_Enkanomiya:982449407469441045>',
+            '龍脊雪山': '<:Emblem_Dragonspine:982449405883977749>'
+        }
+        emoji = emoji_dict.get(area_name)
+        return emoji if emoji is not None else ''
+
     async def getArea(self, user_id: int):
         client, uid, only_uid = await self.getUserCookie(user_id)
         try:
@@ -221,7 +234,8 @@ class GenshinApp:
             explore_str = ""
             for exploration in reversed(explorations):
                 level_str = '' if exploration.name == '淵下宮' or exploration.name == '層岩巨淵' else f'- Lvl. {exploration.level}'
-                explore_str += f"{exploration.name}: {exploration.explored}% {level_str}\n"
+                emoji_name = GenshinApp.getAreaEmoji(exploration.name)
+                explore_str += f"{emoji_name} {exploration.name} {exploration.explored}% {level_str}\n"
             result = defaultEmbed(f"探索度", explore_str)
         return result
 
@@ -489,7 +503,7 @@ class GenshinApp:
         await self.db.commit()
         toggle_str = '開' if resin_notification_toggle == 1 else '關'
         embed = defaultEmbed(
-            '🌙 樹脂提醒設定更新成功',
+            '<:resin:982423477371953172> 樹脂提醒設定更新成功',
             f'目前開關: {toggle_str}\n'
             f'樹脂提醒閥值: {resin_threshold}\n'
             f'最大提醒數量: {max_notif}'
