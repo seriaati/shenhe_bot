@@ -459,7 +459,7 @@ class WishCog(commands.Cog):
                 value=f'• 共**{overview[index][0]}**抽 (**{overview[index][0]*160}**原石)\n'
                 f'• 5<:white_star:982456919224615002> **{overview[index][2]}**\n'
                 f'• 4<:white_star:982456919224615002> **{overview[index][3]}**\n'
-                f'• 平均 **{avg}** 抽出一金'
+                f'• 平均 **{avg}** 抽出一金\n'
                 f'• 距離保底**{90-overview[index][1]}**抽',
                 inline=False
             )
