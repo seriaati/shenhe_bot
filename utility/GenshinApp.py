@@ -218,13 +218,11 @@ class GenshinApp:
             )
         else:
             explorations = genshinUser.explorations
-            exploreStr = ""
+            explore_str = ""
             for exploration in explorations:
-                exploreStr += f"{exploration.name}: {exploration.explored}% • Lvl.{exploration.level}\n"
-            result = defaultEmbed(
-                f"探索度",
-                exploreStr
-            )
+                level_str = '' if exploration.name == '淵下宮' or exploration.name == '層岩巨淵' else f'Lvl. {exploration.level}'
+                explore_str += f"{exploration.name}: {exploration.explored}% - {level_str}\n"
+            result = defaultEmbed(f"探索度", explore_str)
         return result
 
     async def getDiary(self, user_id: int, month: int):
