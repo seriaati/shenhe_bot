@@ -5,6 +5,7 @@ import aiosqlite
 from discord import Embed, Guild, User
 from discord.ext import commands, tasks
 from discord.utils import sleep_until
+from utility.FlowApp import FlowApp
 from utility.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, log
 
@@ -13,6 +14,7 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db)
+        self.flow_app = FlowApp(self.bot.db, self.bot)
         self.debug_toggle = self.bot.debug_toggle
         self.claim_reward.start()
         self.resin_notification.start()
