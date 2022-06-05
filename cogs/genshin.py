@@ -831,6 +831,7 @@ class GenshinCog(commands.Cog):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.EnkaArtifactButton(
                 equip_dict, id, disabled))
+            self.add_item(GenshinCog.EnkaEmojiList())
             self.add_item(GenshinCog.EnkaPageSelect(
                 embeds, charas, equip_dict))
 
@@ -892,8 +893,37 @@ class GenshinCog(commands.Cog):
                     )
             url = await getCharacterIcon(int(self.id))
             embed.set_thumbnail(url=url)
-            self.disabled = True
+            self.disabled = False
             await i.edit_original_message(embed=embed, view=self.view)
+
+    class EnkaEmojiList(Button):
+        def __init__(self):
+            super().__init__(label='對照表', style=ButtonStyle.gray)
+        
+        async def callback(self, i: Interaction) -> Any:
+            embed = defaultEmbed(
+                '符號對照表',
+                '<:HP:982068466410463272> 血量\n'
+                '<:HP_PERCENT:982138227450347553> 血量%\n'
+                '<:ATTACK:982138214305390632> 攻擊\n'
+                '<:ATTACK_PERCENT:982138215832117308> 攻擊%\n'
+                '<:ELEMENT_MASTERY:982068464938270730> 元素精通\n'
+                '<:CHARGE_EFFICIENCY:982068459179503646> 充能效率\n'
+                '<:CRITICAL:982068460731392040> 暴擊率\n'
+                '<:CRITICAL_HURT:982068462081933352> 暴擊傷害\n'
+                '<:DEFENSE:982068463566721064> 防禦力\n'
+                '<:DEFENSE_PERCENT:982138218822639626> 防禦%\n'
+                '<:HEAL_ADD:982138224170401853> 治療加成\n'
+                '<:ICE_ADD_HURT:982138229140635648> 冰元素傷害加成\n'
+                '<:FIRE_ADD_HURT:982138221569900585> 火元素傷害加成\n'
+                '<:ELEC_ADD_HURT:982138220248711178> 雷元素傷害加成\n'
+                '<:GRASS_ADD_HURT:982138222891110432> 草元素傷害加成\n'
+                '<:ROCK_ADD_HURT:982138232391237632> 岩元素傷害加成\n'
+                '<:WATER_ADD_HURT:982138233813098556> 水元素傷害加成\n'
+                '<:WIND_ADD_HURT:982138235239137290> 風元素傷害加成\n'
+                '<:PHYSICAL_ADD_HURT:982138230923231242> 物理傷害加成'
+            )
+            await i.response.edit_message(embed=embed, view=self.view)
 
     @app_commands.command(name='profile', description='透過 enka API 查看各式原神數據')
     @app_commands.rename(member='其他人', custom_uid='uid')
