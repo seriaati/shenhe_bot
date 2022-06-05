@@ -963,9 +963,12 @@ class GenshinCog(commands.Cog):
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
                     weapon_str += f"{weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
-                    propId = e['flat']['weaponStats'][1]['appendPropId']
-                    symbol = GenshinCog.percent_symbol(propId)
-                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
+                    weapon_sub_str = ''
+                    if len(e['flat']['weaponStats']) == 2:
+                        propId = e['flat']['weaponStats'][1]['appendPropId']
+                        symbol = GenshinCog.percent_symbol(propId)
+                        weapon_sub_str = f"{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
+                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\{weapon_sub_str}"
                     break
             embed = defaultEmbed(
                 f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
