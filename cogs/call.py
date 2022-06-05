@@ -13,7 +13,7 @@ class CallCog(commands.Cog):
     @app_commands.rename(person='某人')
     @app_commands.describe(person='要呼叫誰呢?')
     @app_commands.choices(person=[
-        Choice(name='turtle', value=0),
+        Choice(name='律律', value=0),
         Choice(name='rabbit', value=1),
         Choice(name='小雪', value=2),
         Choice(name='綾霞', value=3),
