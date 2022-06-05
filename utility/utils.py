@@ -54,7 +54,7 @@ async def getCharacterIcon(id: int):
 
 async def getTalentNames(id: int):
     client = getClient()
-    talents = await client.get_character_talents(id)
+    talents = await client.get_character_talents(int(id))
     result = {}
     for t in talents:
         result[t.id] = t.name
