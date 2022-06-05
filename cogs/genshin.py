@@ -941,7 +941,10 @@ class GenshinCog(commands.Cog):
         for chara in info:
             prop = chara['fightPropMap']
             talent_levels = chara['skillLevelMap']
-            chara_talents = await getTalentNames(chara['avatarId'])
+            try:
+                chara_talents = await getTalentNames(chara['avatarId'])
+            except Exception as e:
+                print(f"[{e}] {chara['avatarId']}")
             talent_str = ''
             const = 0 if 'talentIdList' not in chara else len(
                 chara['talentIdList'])
@@ -956,7 +959,10 @@ class GenshinCog(commands.Cog):
             for e in equipments:
                 if 'weapon' in e:
                     weapon_name = await getWeaponName(e['itemId'])
-                    weapon_str += f"{weapon_name} - Lvl. {e['weapon']['level']} - R{int(list(e['weapon']['affixMap'].values())[0])+1}\n"
+                    refinment_str = ''
+                    if 'affixMap' in e['weapon']:
+                        refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
+                    weapon_str += f"{weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
                     propId = e['flat']['weaponStats'][1]['appendPropId']
                     symbol = GenshinCog.percent_symbol(propId)
                     weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
