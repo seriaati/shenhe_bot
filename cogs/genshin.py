@@ -968,7 +968,7 @@ class GenshinCog(commands.Cog):
                         propId = e['flat']['weaponStats'][1]['appendPropId']
                         symbol = GenshinCog.percent_symbol(propId)
                         weapon_sub_str = f"{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
-                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\{weapon_sub_str}"
+                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{weapon_sub_str}"
                     break
             embed = defaultEmbed(
                 f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
