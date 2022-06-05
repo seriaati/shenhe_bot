@@ -934,17 +934,21 @@ class GenshinCog(commands.Cog):
         embeds.append(overview)
         charas = []
         for chara in player['showAvatarInfoList']:
+            if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
+                continue
             charas.append([getCharacterNameWithID(
                 chara['avatarId']), f"Lvl. {chara['level']}", chara['avatarId']])
         info = data['avatarInfoList']
         equipt_dict = {}
         for chara in info:
+            if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
+                continue
             prop = chara['fightPropMap']
             talent_levels = chara['skillLevelMap']
             try:
                 chara_talents = await getTalentNames(chara['avatarId'])
             except Exception as e:
-                print(f"[{e}] {chara['avatarId']}")
+                await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', f"{e} {chara['avatarId']}"))
             talent_str = ''
             const = 0 if 'talentIdList' not in chara else len(
                 chara['talentIdList'])
