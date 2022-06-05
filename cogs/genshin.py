@@ -1012,7 +1012,8 @@ class GenshinCog(commands.Cog):
                 f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {round(prop['28'])}\n"
                 f"<:CRITICAL:982068460731392040> 暴擊率 - {round(prop['20']*100, 1)}%\n"
                 f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {round(prop['22']*100, 1)}%\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {round(prop['20']*100, 1)}%\n")
+                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {round(prop['23']*100, 1)}%\n"
+                f"<:FRIENDSHIP:982843487697379391> 好感度 - {chara['fetterInfo']['expLevel']}")
             embed.add_field(
                 name='天賦',
                 value=talent_str,
