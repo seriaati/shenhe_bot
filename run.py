@@ -13,6 +13,7 @@ from cogs.welcome import WelcomeCog
 from utility.config import config
 from utility.utils import log
 from utility.db_utils import DbUtils
+from pyppeteer import launch
 
 print("main or dev?")
 user = input()
@@ -47,6 +48,7 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
+        self.browser = await launch({"args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox']})
         self.debug_toggle = debug_toggle
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
@@ -78,6 +80,7 @@ class ShenheBot(commands.Bot):
 
     async def close(self) -> None:
         await self.db.close()
+        await self.browser.close()
         return await super().close()
 
 

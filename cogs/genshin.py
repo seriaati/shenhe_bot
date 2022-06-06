@@ -1,7 +1,8 @@
-
+import asyncio
 from datetime import datetime
+import re
 from typing import Any, List, Optional
-from genshin.models import WikiPageType
+
 import aiohttp
 import aiosqlite
 import discord
@@ -10,7 +11,7 @@ from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, View
+from discord.ui import Button, Modal, Select, TextInput, View, select
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
@@ -18,6 +19,8 @@ from utility.utils import (defaultEmbed, errEmbed, getArtifactNames,
                            getCharacterIcon, getCharacterNameWithID, getClient,
                            getStatEmoji, getTalentNames, getWeaponName,
                            getWeekdayName)
+
+from genshin.models import WikiPageType
 
 
 class GenshinCog(commands.Cog):
@@ -423,69 +426,191 @@ class GenshinCog(commands.Cog):
 
 # /rate
 
-    @app_commands.command(name='rate', description='聖遺物評分計算(根據副詞條)')
-    @app_commands.rename(type='聖遺物類型', crit_dmg='暴傷', crit_rate='暴擊率', atk='攻擊百分比')
-    @app_commands.choices(type=[
-        Choice(name='生之花', value=0),
-        Choice(name='死之羽', value=1),
-        # Choice(name='時之沙', value=2),
-        Choice(name='空之杯', value=3)])
-    # Choice(name='理之冠', value=4)])
-    async def rate(self, interaction: Interaction, type: int, crit_dmg: float, crit_rate: float, atk: float):
-        score = crit_rate*2 + atk*1.3 + crit_dmg*1
-        typeStr = ''
-        if type == 0:
-            typeStr = '生之花'
-        elif type == 1:
-            typeStr = '死之羽'
-        elif type == 2:
-            typeStr = '時之沙'
-        elif type == 3:
-            typeStr = '空之杯'
-        else:
-            typeStr = '理之冠'
-        if type == 0 or type == 1:
-            if score >= 40:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-s.png'
-                desc = '極品聖遺物, 足以用到關服'
-            elif score >= 30:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-a.png'
-                desc = '良品, 追求強度的人的目標'
-            elif score >= 20:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-b.png'
-                desc = '及格, 可以用了'
+    class ArtifactStatView(View):
+        def __init__(self, browser, art_type: str, author: Member):
+            super().__init__(timeout=None)
+            self.author = author
+            self.add_item(GenshinCog.AritfactMainStat(art_type))
+            for i in range(1, 5):
+                self.add_item(GenshinCog.ArtifactSubStat(browser, i))
+            self.art_type = art_type
+            self.main_stat = None
+            self.sub_stat = []
+            self.sub_stat_label = []
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            return self.author.id == interaction.user.id
+
+    class AritfactMainStat(Select):
+        def __init__(self, art_type: str):
+            disabled = False
+            placeholder = '選擇主詞條屬性'
+            if art_type == 'Flower':
+                disabled = True
+                options = [SelectOption(label='生命值')]
+                placeholder = '主詞條: 生命值'
+            elif art_type == 'Feather':
+                disabled = True
+                options = [SelectOption(label='攻擊力')]
+                placeholder = '主詞條: 攻擊力'
+            elif art_type == 'Sands':
+                options = [
+                    SelectOption(label='攻擊力%', value='POWER_PERCENTAGE'),
+                    SelectOption(label='充能效率', value='ELEMENTS_CHARGE'),
+                    SelectOption(label='生命值%', value='HP_PERCENTAGE'),
+                    SelectOption(label='防禦力%', value='DEFENSE_PERCENTAGE'),
+                    SelectOption(label='元素精通', value='ELEMENTS_KNOWLEDGE')
+                ]
+            elif art_type == 'Globlet':
+                options = [
+                    SelectOption(label='元素傷害加成', value='ELEMENTS_DAMAGE'),
+                    SelectOption(label='物理傷害加成', value='PHYSICAL_DAMAGE'),
+                    SelectOption(label='攻擊力%', value='POWER_PERCENTAGE'),
+                    SelectOption(label='生命值%', value='HP_PERCENTAGE'),
+                    SelectOption(label='防禦力%', value='DEFENSE_PERCENTAGE'),
+                    SelectOption(label='元素精通', value='ELEMENTS_KNOWLEDGE')
+                ]
+            elif art_type == 'Circlet':
+                options = [
+                    SelectOption(label='暴擊傷害', value='CRITICAL_DAMAGE'),
+                    SelectOption(label='暴擊率', value='CRITICAL_PERCENTAGE'),
+                    SelectOption(label='攻擊力%', value='POWER_PERCENTAGE'),
+                    SelectOption(label='生命值%', value='HP_PERCENTAGE'),
+                    SelectOption(label='防禦力%', value='DEFENSE_PERCENTAGE'),
+                    SelectOption(label='元素精通', value='ELEMENTS_KNOWLEDGE'),
+                    SelectOption(label='治療加成', value='HEALING_DAMAGE'),
+                ]
+            super().__init__(placeholder=placeholder, options=options, disabled=disabled)
+
+        async def callback(self, i: Interaction) -> Any:
+            self.view.main_stat = self.values[0]
+            await i.response.defer()
+
+    class ArtifactSubStat(Select):
+        def __init__(self, browser, index: int):
+            self.browser = browser
+            options = [
+                SelectOption(label='無', value='none'),
+                SelectOption(label='暴擊傷害', value='CRITICAL_DAMAGE'),
+                SelectOption(label='暴擊率', value='CRITICAL_PERCENTAGE'),
+                SelectOption(label='攻擊力%', value='POWER_PERCENTAGE'),
+                SelectOption(label='攻擊力', value='POWER_FIXED'),
+                SelectOption(label='生命值%', value='HP_PERCENTAGE'),
+                SelectOption(label='生命值', value='HP_FIXED'),
+                SelectOption(label='防禦力%', value='DEFENSE_PERCENTAGE'),
+                SelectOption(label='防禦力', value='DEFENSE_FIXED'),
+                SelectOption(label='元素精通', value='ELEMENTS_KNOWLEDGE'),
+                SelectOption(label='充能效率', value='ELEMENTS_CHARGE')]
+            super().__init__(placeholder=f'選擇第{index}個副詞條', options=options)
+
+        async def callback(self, i: Interaction) -> Any:
+            sub_stat_dict = {
+                'CRITICAL_DAMAGE': '暴擊傷害',
+                'CRITICAL_PERCENTAGE': '暴擊率',
+                'POWER_PERCENTAGE': '攻擊力%',
+                'POWER_FIXED': '攻擊力',
+                'HP_PERCENTAGE': '生命值%',
+                'HP_FIXED': '生命值',
+                'DEFENSE_PERCENTAGE': '防禦力%',
+                'DEFENSE_FIXED': '防禦力',
+                'ELEMENTS_KNOWLEDGE': '元素精通',
+                'ELEMENTS_CHARGE': '充能效率'
+            }
+            self.view.sub_stat.append(self.values[0])
+            self.view.sub_stat_label.append(sub_stat_dict.get(self.values[0]))
+            if (self.view.main_stat is not None or (self.view.art_type == 'Flower' or self.view.art_type == 'Feather')) and len(self.view.sub_stat) == 4:
+                modal = GenshinCog.ArtifactSubStatVal(self.view.sub_stat_label)
+                await i.response.send_modal(modal)
+                await modal.wait()
+                await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算評分中'), view=None)
+                main_stat = self.view.main_stat
+                subs = self.view.sub_stat
+                sub_stats = [
+                    modal.sub_one_val.value,
+                    modal.sub_two_val.value,
+                    modal.sub_three_val.value,
+                    modal.sub_four_val.value]
+                page = await self.browser.newPage()
+                await page.setViewport({"width": 1440, "height": 900})
+                await page.goto("https://gamewith.net/genshin-impact/article/show/30567", {'waitUntil': 'domcontentloaded'})
+                await page.waitForSelector('select.w-gensin-relic-type-selector')
+                await page.select('.w-gensin-relic-type-selector', self.view.art_type)
+                if main_stat is not None:
+                    await page.select('div.w-gensin-main-option-type-selector>select', main_stat)
+                await page.select('.w-gensin-level-selector', 'lv-20')
+                for s in subs:
+                    await page.select(f'.w-gensin-sub-option:nth-child({subs.index(s)+3})>select', s)
+                    await page.type(f'.w-gensin-sub-option:nth-child({subs.index(s)+3})>input[type=number]', sub_stats[subs.index(s)])
+                score = await (await (await page.querySelector('div.w-gensin-result-score>span')).getProperty("textContent")).jsonValue()
+                rate = await (await (await page.querySelector('div.w-gensin-result-rank>span')).getProperty("textContent")).jsonValue()
+                url = ''
+                if rate == 'SS':
+                    url = 'https://www.expertwm.com/static/images/badges/badge-s+.png'
+                elif rate == 'S':
+                    url = 'https://www.expertwm.com/static/images/badges/badge-s.png'
+                elif rate == 'A':
+                    url = 'https://www.expertwm.com/static/images/badges/badge-a.png'
+                elif rate == 'B':
+                    url = 'https://www.expertwm.com/static/images/badges/badge-b.png'
+                main_stat_names = {
+                    'Flower': '生之花',
+                    'Feather': '死之羽',
+                    'Sands': '時之沙',
+                    'Goblet': '空之杯',
+                    'Circlet': '理之冠'}
+                artifact_emojis = {
+                    'Flower': '<:Flower_of_Life:982167959717945374>',
+                    'Feather': '<:Plume_of_Death:982167959915077643>',
+                    'Sands': '<:Sands_of_Eon:982167959881547877>',
+                    'Goblet': '<:Goblet_of_Eonothem:982167959835402240>',
+                    'Circlet': '<:Circlet_of_Logos:982167959692787802>'}
+                embed = defaultEmbed(
+                    f'得分: {score}',
+                    f'{artifact_emojis.get(self.view.art_type)} {main_stat_names.get(self.view.art_type)}'
+                )
+                sub_stat_str = ''
+                for index in range(0, 4):
+                    sub_stat_str += f'{self.view.sub_stat_label[index]} - {sub_stats[index]}\n'
+                if main_stat is None:
+                    main_stat_str = '生命值' if self.view.art_type == 'Flower' else '攻擊力'
+                else:
+                    main_stat_str = sub_stat_dict.get(main_stat)
+                embed.add_field(
+                    name=f'主詞條: {main_stat_str}',
+                    value=sub_stat_str
+                )
+                embed.set_thumbnail(url=url)
+                await i.edit_original_message(embed=embed)
             else:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-c.png'
-                desc = '過渡用, 繼續刷'
-        else:
-            if score >= 50:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-s.png'
-                desc = '極品聖遺物, 足以用到關服'
-            elif score >= 40:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-a.png'
-                desc = '良品, 追求強度的人的目標'
-            elif score >= 30:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-b.png'
-                desc = '及格, 可以用了'
-            else:
-                tier_url = 'https://www.expertwm.com/static/images/badges/badge-c.png'
-                desc = '過渡用, 繼續刷'
-        result = defaultEmbed(
-            '聖遺物評分結果',
-            f'總分: {round(score,2)}\n'
-            f'「{desc}」'
-        )
-        result.add_field(
-            name='詳情',
-            value=f'類型: {typeStr}\n'
-            f'暴傷: {crit_dmg}%\n'
-            f'暴擊率: {crit_rate}%\n'
-            f'攻擊百分比: {atk}%'
-        )
-        result.set_thumbnail(url=tier_url)
-        result.set_footer(
-            text='[來源](https://forum.gamer.com.tw/C.php?bsn=36730&snA=11316)')
-        await interaction.response.send_message(embed=result)
+                await i.response.defer()
+
+    class ArtifactSubStatVal(Modal):
+        sub_one_val = TextInput(label='副詞條1')
+        sub_two_val = TextInput(label='副詞條2')
+        sub_three_val = TextInput(label='副詞條3')
+        sub_four_val = TextInput(label='副詞條4', required=False)
+
+        def __init__(self, labels: List[str]) -> None:
+            self.sub_one_val.placeholder = f'輸入{labels[0]}的數值'
+            self.sub_two_val.placeholder = f'輸入{labels[1]}的數值'
+            self.sub_three_val.placeholder = f'輸入{labels[2]}的數值'
+            self.sub_four_val.placeholder = f'輸入{labels[3]}的數值'
+            super().__init__(title='輸入聖遺物資料', timeout=None)
+
+        async def on_submit(self, i: Interaction) -> None:
+            await i.response.defer()
+
+    @app_commands.command(name='rate', description='聖遺物評分計算')
+    @app_commands.rename(art_type='聖遺物類型')
+    @app_commands.choices(art_type=[
+        Choice(name='生之花', value='Flower'),
+        Choice(name='死之羽', value='Feather'),
+        Choice(name='時之沙', value='Sands'),
+        Choice(name='空之杯', value='Goblet'),
+        Choice(name='理之冠', value='Circlet')])
+    async def rate(self, i: Interaction, art_type: str):
+        view = GenshinCog.ArtifactStatView(self.bot.browser, art_type, i.user)
+        await i.response.send_message(view=view)
 
     @app_commands.command(name='uid', description='查詢特定使用者的原神UID')
     @app_commands.rename(player='使用者')
@@ -644,7 +769,7 @@ class GenshinCog(commands.Cog):
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
         embed = defaultEmbed('選擇角色的元素')
-        await i.response.send_message(embed=embed,view=button_view)
+        await i.response.send_message(embed=embed, view=button_view)
         await button_view.wait()
         select_view = GenshinCog.CalculatorItems(
             i.user, button_view.element_chara_list, button_view.item_type)
@@ -734,7 +859,7 @@ class GenshinCog(commands.Cog):
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
         embed = defaultEmbed('選擇角色的元素')
-        await i.edit_original_message(embed=embed,view=button_view)
+        await i.edit_original_message(embed=embed, view=button_view)
         await button_view.wait()
         select_view = GenshinCog.CalculatorItems(
             i.user, button_view.element_chara_list, button_view.item_type)
@@ -899,7 +1024,7 @@ class GenshinCog(commands.Cog):
     class EnkaEmojiList(Button):
         def __init__(self):
             super().__init__(label='對照表', style=ButtonStyle.gray)
-        
+
         async def callback(self, i: Interaction) -> Any:
             embed = defaultEmbed(
                 '符號對照表',
@@ -945,7 +1070,7 @@ class GenshinCog(commands.Cog):
                 data = await r.json()
         if 'avatarInfoList' not in data:
             embed = defaultEmbed(
-                '<a:error_animated:982579472060547092> 修但幾類!', '請在遊戲中打開「顯示角色詳情」\n\n有時候申鶴會判斷錯誤\n如果你很確定你已經打開了的話\n再輸入一次指令吧！')
+                '<a:error_animated:982579472060547092> 錯誤', '請在遊戲中打開「顯示角色詳情」\n\n有時候申鶴會判斷錯誤\n如果你很確定你已經打開了的話\n再輸入一次指令吧！')
             embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
             await i.edit_original_message(embed=embed)
             return
