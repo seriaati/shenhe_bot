@@ -259,11 +259,6 @@ class WelcomeCog(commands.Cog):
         view = WelcomeCog.AcceptRules(self.bot.db)
         await i.response.send_message(content=content, embed=rules, view=view)
 
-    @welcome.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(WelcomeCog(bot))

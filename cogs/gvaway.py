@@ -56,11 +56,6 @@ class GiveAwayCog(commands.Cog):
             await channel.send(role.mention)
         await self.bot.db.commit()
 
-    @create_giveaway.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
     class GiveAwayView(View):
         def __init__(self, db: aiosqlite.Connection, bot, i: Interaction = None):
             self.db = db
@@ -262,11 +257,6 @@ class GiveAwayCog(commands.Cog):
         await c.execute('UPDATE giveaway SET current = ? WHERE msg_id = ?', (goal, int(view.value)))
         await self.bot.db.commit()
         await self.GiveAwayView.check_gv_finish(self, view.value, i)
-
-    @end_giveaway.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

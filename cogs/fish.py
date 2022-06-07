@@ -216,11 +216,6 @@ class FishCog(commands.Cog):
         touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db, self.bot)
         await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
 
-    @release_fish.error
-    async def err_handle(self, interaction: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await interaction.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(FishCog(bot))
