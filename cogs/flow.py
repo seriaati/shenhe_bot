@@ -157,11 +157,6 @@ class FlowCog(commands.Cog):
         ephemeral_toggler = True if private == 0 else False
         await i.response.send_message(embed=embed, ephemeral=ephemeral_toggler)
 
-    @take.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
     @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息')
     @app_commands.choices(private=[
@@ -181,11 +176,6 @@ class FlowCog(commands.Cog):
         )
         ephemeral_toggler = True if private == 0 else False
         await i.response.send_message(embed=embed, ephemeral=ephemeral_toggler)
-
-    @make.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @app_commands.command(name='total', description='查看目前群組帳號及銀行flow幣分配情況')
     async def total(self, i: Interaction):
@@ -277,11 +267,6 @@ class FlowCog(commands.Cog):
         await self.bot.db.commit()
         await i.response.send_message(f"商品**{item}**新增成功", ephemeral=True)
 
-    @newitem.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
-
     class ShopItemView(View):
         def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
@@ -346,11 +331,6 @@ class FlowCog(commands.Cog):
         view = FlowCog.ShopItemView(
             item_names, 'remove', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
-
-    @removeitem.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        if isinstance(e, app_commands.errors.MissingRole):
-            await i.response.send_message('你不是小雪團隊的一員!', ephemeral=True)
 
     @shop.command(name='buy', description='購買商品')
     async def buy(self, i: Interaction):
