@@ -3,7 +3,7 @@ import aiohttp
 from utility.utils import getName
 
 
-async def enkaToGOOD(uid: int):
+async def convert(uid: int):
     async with aiohttp.ClientSession() as cs:
         async with cs.get(f'https://enka.shinshin.moe/u/{uid}/__data.json') as r:
             data = await r.json()
