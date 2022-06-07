@@ -475,7 +475,7 @@ class GenshinApp:
                     url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
                 embed.set_footer(
                     text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
-                result.append([embed, build['weapon']])
+                result.append([embed, build['weapon']], build['artifacts'])
         return result
 
     async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int):
