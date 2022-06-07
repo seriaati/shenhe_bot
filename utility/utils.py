@@ -4,8 +4,31 @@ from datetime import datetime
 import discord
 import genshin
 import yaml
+import json
 
 from utility.stat_emojis import stat_emojis
+
+
+class GetName():
+    def __init__(self) -> None:
+        with open(f"GenshinData/EN_simple_textMap.yaml", "r") as file:
+            self.en = yaml.full_load(file)
+        with open(f"GenshinData/TW_simple_textMap.yaml", "r") as file:
+            self.tw = yaml.full_load(file)
+        with open(f"GenshinData/EN_full_textMap.json", "r") as file:
+            self.full_en = json.load(file)
+        with open(f"GenshinData/TW_full_textMap.json", "r") as file:
+            self.full_tw = json.load(file)
+
+    def getName(self, id: int, eng: bool = False) -> str:
+        textMap = self.en if eng else self.tw
+        return textMap.get(id) or id
+
+    def getNameTextHash(self, text_hash: int, eng: bool = False) -> str:
+        textMap = self.full_en if eng else self.full_tw
+        return textMap.get(text_hash) or text_hash
+
+get_name = GetName()
 
 
 def defaultEmbed(title: str, message: str = ''):
@@ -41,13 +64,6 @@ def getCharacterIcon(id: int):
     with open("GenshinData/chara_icon.yaml", "r") as file:
         chara_icon = yaml.full_load(file)
     return chara_icon.get(id)
-
-
-def getName(id: int, eng: bool = False):
-    lang = 'EN' if eng else 'TW'
-    with open(f"GenshinData/{lang}_simple_textMap.yaml", "r") as file:
-        textMap = yaml.full_load(file)
-    return textMap.get(id) or id
 
 
 def getStatEmoji(propid: str):

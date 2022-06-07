@@ -2,11 +2,10 @@ import asyncio
 import re
 from datetime import datetime
 from typing import Any, List, Optional
-
+import traceback
 import aiohttp
 import aiosqlite
 import discord
-import pyppeteer
 import yaml
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
@@ -16,8 +15,9 @@ from discord.ui import Button, Modal, Select, TextInput, View, select
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
-from utility.utils import (defaultEmbed, errEmbed, getCharacterIcon, getName,
+from utility.utils import (defaultEmbed, errEmbed, getCharacterIcon,
                            getStatEmoji, getWeekdayName)
+from utility.utils import get_name
 
 from genshin.models import WikiPageType
 
@@ -1004,7 +1004,7 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed(f'{self.name} - 聖遺物')
             for e in self.chara_equipments:
                 if 'weapon' not in e:
-                    artifact_name = getName(e['itemId'])
+                    artifact_name = get_name.getNameTextHash(e['flat']['setNameTextMapHash'])
                     main = e["flat"]["reliquaryMainstat"]
                     symbol = GenshinCog.percent_symbol(main['mainPropId'])
                     artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name}  +{int(e["reliquary"]["level"])-1}'
@@ -1060,7 +1060,7 @@ class GenshinCog(commands.Cog):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
         if uid is None:
-            uid_c = i.user.guild.get_channel(978871680019628032)
+            uid_c = i.guild.get_channel(978871680019628032)
             await i.edit_original_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'))
             return
         uid = uid[0]
@@ -1084,7 +1084,7 @@ class GenshinCog(commands.Cog):
             f"世界等級: W{player['worldLevel']}\n"
             f"完成成就: {player['finishAchievementNum']}\n"
             f"深淵已達: {player['towerFloorIndex']}-{player['towerLevelIndex']}")
-        overview.set_author(name=member, icon_url=member.avatar.url)
+        overview.set_author(name=member, icon_url=member.avatar)
         overview.set_image(
             url='https://cdn.discordapp.com/attachments/971472744820650035/971482996572057600/Frame_4905.png')
         embeds.append(overview)
@@ -1092,7 +1092,7 @@ class GenshinCog(commands.Cog):
         for chara in player['showAvatarInfoList']:
             if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
                 continue
-            charas.append([getName(chara['avatarId']),
+            charas.append([get_name.getName(chara['avatarId']),
                           f"Lvl. {chara['level']}", chara['avatarId']])
         info = data['avatarInfoList']
         equipt_dict = {}
@@ -1105,16 +1105,16 @@ class GenshinCog(commands.Cog):
             const = 0 if 'talentIdList' not in chara else len(
                 chara['talentIdList'])
             for id, level in talent_levels.items():
-                talent_str += f'{getName[int(id)]} - Lvl. {level}\n'
+                talent_str += f'{get_name.getName(int(id))} - Lvl. {level}\n'
             equipments = chara['equipList']
             equipt_dict[chara['avatarId']] = {
-                'name': getName(chara["avatarId"]),
+                'name': get_name.getName(chara["avatarId"]),
                 'equipments': equipments
             }
             weapon_str = ''
             for e in equipments:
                 if 'weapon' in e:
-                    weapon_name = getName(e['itemId'])
+                    weapon_name = get_name.getName(e['itemId'])
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
@@ -1141,7 +1141,7 @@ class GenshinCog(commands.Cog):
             else:
                 max_level = 90
             embed = defaultEmbed(
-                f"{getName(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
+                f"{get_name.getName(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
                 f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
                 f"<:ATTACK:982138214305390632> 攻擊力 - {round(prop['2001'])} ({round(prop['4'])}/{round(prop['2001'])-round(prop['4'])})\n"
                 f"<:DEFENSE:982068463566721064> 防禦力 - {round(prop['2002'])} ({round(prop['7'])}/{round(prop['2002'])-round(prop['7'])})\n"
@@ -1165,6 +1165,10 @@ class GenshinCog(commands.Cog):
 
         view = GenshinCog.EnkaPageView(embeds, charas, equipt_dict, 0, True)
         await i.edit_original_message(embed=overview, view=view)
+
+    @profile.error
+    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
+        await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```{traceback.format_exc()}```'))
 
     # @app_commands.command(name='wiki', description='查看原神維基百科')
     # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])

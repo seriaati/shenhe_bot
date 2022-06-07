@@ -1,6 +1,6 @@
 import aiohttp
 
-from utility.utils import getName
+from utility.utils import get_name
 
 
 async def convert(uid: int):
@@ -19,7 +19,7 @@ async def convert(uid: int):
     art_id = 0
     for chara in data['avatarInfoList']:
         id = chara['avatarId']
-        chara_key = (getName(id)).replace(' ', '') or chara_key
+        chara_key = (get_name.getName(id, True)).replace(' ', '') or chara_key
         level = chara['propMap']['4001']['val']
         constellation = 0 if 'talentIdList' not in chara else len(
             chara['talentIdList'])
@@ -55,7 +55,7 @@ async def convert(uid: int):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = ((getName(e['itemId'])).replace(' ', '')).replace(
+                key = ((get_name.getName(e['itemId'], True)).replace(' ', '')).replace(
                     "'", '') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascention = e['weapon']['promoteLevel']
@@ -101,8 +101,7 @@ async def convert(uid: int):
                     'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
                     'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
                 }
-                setKey = (getName(e['itemId']).replace(' ', '')).replace(
-                    "'", '') or e['flat']['setNameTextMapHash']
+                setKey = (get_name.getNameTextHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '')) or e['flat']['setNameTextMapHash']
                 slotKey = artifact_pos.get(e['flat']['equipType'])
                 rarity = e['flat']['rankLevel']
                 mainStatKey = stats.get(
