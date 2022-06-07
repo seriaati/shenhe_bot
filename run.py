@@ -53,8 +53,6 @@ class ShenheBot(commands.Bot):
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
-            # if cog_name == 'fish':
-            #     pass
             await self.load_extension(f'cogs.{cog_name}')
             print(log(True, False, 'Cog', f'Loaded {cog_name}'))
         self.add_view(FlowCog.AcceptView(self.db, self))
