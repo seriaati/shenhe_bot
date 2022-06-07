@@ -354,7 +354,7 @@ class GenshinCog(commands.Cog):
             self.embeds = build_embeds
             for i in range(1, total+1):
                 options.append(SelectOption(
-                    label=f'配置{i} - {build_embeds[i-1][1]}', value=i))
+                    label=f'配置{i} - {build_embeds[i-1][1]} - {build_embeds[i-1][2]}', value=i))
             super().__init__(
                 placeholder=f'選擇配置', min_values=1, max_values=1, options=options)
 
