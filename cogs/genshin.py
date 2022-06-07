@@ -11,7 +11,7 @@ from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, View, select
+from discord.ui import Button, Modal, Select, TextInput, View, select, button
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
@@ -294,15 +294,11 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, author: Member, emojis: List):
+        def __init__(self, db: aiosqlite.Connection, emojis: List):
             super().__init__(timeout=None)
-            self.author = author
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
                     i, db, emojis[i]))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            return interaction.user.id == self.author.id
 
     class ElementButton(Button):  # 元素按鈕
         def __init__(self, index: int, db: aiosqlite.Connection, emoji: Emoji):
@@ -312,22 +308,31 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.db, i.user)
+                self.index, self.db)
             embed = defaultEmbed('請選擇角色')
             await i.response.edit_message(embed=embed, view=view)
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, db: aiosqlite.Connection, author: Member):
+        def __init__(self, index: int, db: aiosqlite.Connection):
             super().__init__(timeout=None)
-            self.author = author
+            self.db = db
             self.add_item(GenshinCog.BuildCharactersDropdown(index, db))
 
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            return interaction.user.id == self.author.id
+        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
+        async def back(self, i: Interaction, button: Button):
+            emojis = []
+            ids = [982138235239137290, 982138229140635648, 982138220248711178,
+                   982138232391237632, 982138233813098556, 982138221569900585]
+            for id in ids:
+                emojis.append(i.client.get_emoji(id))
+            view = GenshinCog.ElementChooseView(self.db, emojis)
+            await i.response.edit_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
 
     class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
         def __init__(self, index: int, db: aiosqlite.Connection):
             self.genshin_app = GenshinApp(db)
+            self.index = index
+            self.db = db
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
             with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
@@ -340,13 +345,23 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, interaction: Interaction):
             result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
-            view = GenshinCog.BuildSelectView(len(result), result)
+            view = GenshinCog.BuildSelectView(
+                len(result), result, self.index, self.db)
             await interaction.response.edit_message(embed=result[0][0], view=view)
 
     class BuildSelectView(View):
-        def __init__(self, total: int, build_embeds: List):
+        def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection):
             super().__init__(timeout=None)
+            self.index = index
+            self.db = db
             self.add_item(GenshinCog.BuildSelect(total, build_embeds))
+
+        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
+        async def back(self, i: Interaction, button: Button):
+            view = GenshinCog.CharactersDropdownView(
+                self.index, self.db)
+            embed = defaultEmbed('請選擇角色')
+            await i.response.edit_message(embed=embed, view=view)
 
     class BuildSelect(Select):
         def __init__(self, total: int, build_embeds: List):
@@ -369,7 +384,7 @@ class GenshinCog(commands.Cog):
                982138232391237632, 982138233813098556, 982138221569900585]
         for id in ids:
             emojis.append(self.bot.get_emoji(id))
-        view = GenshinCog.ElementChooseView(self.bot.db, i.user, emojis)
+        view = GenshinCog.ElementChooseView(self.bot.db, emojis)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
 
 # /rate
