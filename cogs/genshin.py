@@ -1,11 +1,12 @@
 import asyncio
-from datetime import datetime
 import re
+from datetime import datetime
 from typing import Any, List, Optional
 
 import aiohttp
 import aiosqlite
 import discord
+import pyppeteer
 import yaml
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
@@ -15,10 +16,8 @@ from discord.ui import Button, Modal, Select, TextInput, View, select
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
-from utility.utils import (defaultEmbed, errEmbed, getArtifactNames,
-                           getCharacterIcon, getCharacterNameWithID, getClient,
-                           getStatEmoji, getTalentNames, getWeaponName,
-                           getWeekdayName)
+from utility.utils import (defaultEmbed, errEmbed, getCharacterIcon, getName,
+                           getStatEmoji, getWeekdayName)
 
 from genshin.models import WikiPageType
 
@@ -31,6 +30,7 @@ class GenshinCog(commands.Cog):
 
 
 # cookie
+
 
     class CookieModal(discord.ui.Modal):
         def __init__(self, db: aiosqlite.Connection):
@@ -543,6 +543,7 @@ class GenshinCog(commands.Cog):
                     await page.type(f'.w-gensin-sub-option:nth-child({subs.index(s)+3})>input[type=number]', sub_stats[subs.index(s)])
                 score = await (await (await page.querySelector('div.w-gensin-result-score>span')).getProperty("textContent")).jsonValue()
                 rate = await (await (await page.querySelector('div.w-gensin-result-rank>span')).getProperty("textContent")).jsonValue()
+                await page.close()
                 url = ''
                 if rate == 'SS':
                     url = 'https://www.expertwm.com/static/images/badges/badge-s+.png'
@@ -1003,7 +1004,7 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed(f'{self.name} - 聖遺物')
             for e in self.chara_equipments:
                 if 'weapon' not in e:
-                    artifact_name = await getArtifactNames(e['itemId'])
+                    artifact_name = getName(e['itemId'])
                     main = e["flat"]["reliquaryMainstat"]
                     symbol = GenshinCog.percent_symbol(main['mainPropId'])
                     artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name}  +{int(e["reliquary"]["level"])-1}'
@@ -1016,8 +1017,7 @@ class GenshinCog(commands.Cog):
                         name=artifact_str,
                         value=value
                     )
-            url = await getCharacterIcon(int(self.id))
-            embed.set_thumbnail(url=url)
+            embed.set_thumbnail(url=getCharacterIcon(int(self.id)))
             self.disabled = False
             await i.edit_original_message(embed=embed, view=self.view)
 
@@ -1092,8 +1092,8 @@ class GenshinCog(commands.Cog):
         for chara in player['showAvatarInfoList']:
             if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
                 continue
-            charas.append([getCharacterNameWithID(
-                chara['avatarId']), f"Lvl. {chara['level']}", chara['avatarId']])
+            charas.append([getName(chara['avatarId']),
+                          f"Lvl. {chara['level']}", chara['avatarId']])
         info = data['avatarInfoList']
         equipt_dict = {}
         for chara in info:
@@ -1101,24 +1101,20 @@ class GenshinCog(commands.Cog):
                 continue
             prop = chara['fightPropMap']
             talent_levels = chara['skillLevelMap']
-            try:
-                chara_talents = await getTalentNames(chara['avatarId'])
-            except Exception as e:
-                await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', f"{e} {chara['avatarId']}"))
             talent_str = ''
             const = 0 if 'talentIdList' not in chara else len(
                 chara['talentIdList'])
             for id, level in talent_levels.items():
-                talent_str += f'{chara_talents[int(id)]} - Lvl. {level}\n'
+                talent_str += f'{getName[int(id)]} - Lvl. {level}\n'
             equipments = chara['equipList']
             equipt_dict[chara['avatarId']] = {
-                'name': getCharacterNameWithID(chara["avatarId"]),
+                'name': getName(chara["avatarId"]),
                 'equipments': equipments
             }
             weapon_str = ''
             for e in equipments:
                 if 'weapon' in e:
-                    weapon_name = await getWeaponName(e['itemId'])
+                    weapon_name = getName(e['itemId'])
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
@@ -1130,8 +1126,22 @@ class GenshinCog(commands.Cog):
                         weapon_sub_str = f"{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
                     weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{weapon_sub_str}"
                     break
+            max_level = 0
+            ascention = chara['propMap']['1002']['val']
+            if ascention == 1:
+                max_level = 30
+            elif ascention == 2:
+                max_level = 50
+            elif ascention == 3:
+                max_level = 60
+            elif ascention == 4:
+                max_level = 70
+            elif ascention == 5:
+                max_level = 80
+            else:
+                max_level = 90
             embed = defaultEmbed(
-                f"{getCharacterNameWithID(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['ival']}/{chara['propMap']['4001']['val']})",
+                f"{getName(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
                 f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
                 f"<:ATTACK:982138214305390632> 攻擊力 - {round(prop['2001'])} ({round(prop['4'])}/{round(prop['2001'])-round(prop['4'])})\n"
                 f"<:DEFENSE:982068463566721064> 防禦力 - {round(prop['2002'])} ({round(prop['7'])}/{round(prop['2002'])-round(prop['7'])})\n"
@@ -1150,9 +1160,9 @@ class GenshinCog(commands.Cog):
                 value=weapon_str,
                 inline=False
             )
-            url = await getCharacterIcon(chara['avatarId'])
-            embed.set_thumbnail(url=url)
+            embed.set_thumbnail(url=getCharacterIcon(chara['avatarId']))
             embeds.append(embed)
+
         view = GenshinCog.EnkaPageView(embeds, charas, equipt_dict, 0, True)
         await i.edit_original_message(embed=overview, view=view)
 

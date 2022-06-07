@@ -5,7 +5,7 @@ import aiosqlite
 import genshin
 from discord import Member
 
-from utility.utils import (defaultEmbed, errEmbed, getCharacterName,
+from utility.utils import (defaultEmbed, errEmbed, getName,
                            getWeekdayName, log, trimCookie)
 
 
@@ -157,7 +157,7 @@ class GenshinApp:
                     total_exped = 0
                 for expedition in notes.expeditions:
                     total_exped = len(notes.expeditions)
-                    exped_msg += f'• {getCharacterName(expedition.character)}'
+                    exped_msg += f'• {getName(expedition.character.id)}'
                     if expedition.finished:
                         exped_finished += 1
                         exped_msg += ': 已完成\n'
@@ -413,11 +413,11 @@ class GenshinApp:
             )
             embed.add_field(
                 name="戰績",
-                value=f"單次最高傷害 • {getCharacterName(rank.strongest_strike[0])} • {rank.strongest_strike[0].value}\n"
-                f"擊殺王 • {getCharacterName(rank.most_kills[0])} • {rank.most_kills[0].value}次擊殺\n"
-                f"最常使用角色 • {getCharacterName(rank.most_played[0])} • {rank.most_played[0].value}次\n"
-                f"最多Q使用角色 • {getCharacterName(rank.most_bursts_used[0])} • {rank.most_bursts_used[0].value}次\n"
-                f"最多E使用角色 • {getCharacterName(rank.most_skills_used[0])} • {rank.most_skills_used[0].value}次"
+                value=f"單次最高傷害 • {getName(rank.strongest_strike[0].id)} • {rank.strongest_strike[0].value}\n"
+                f"擊殺王 • {getName(rank.most_kills[0].id)} • {rank.most_kills[0].value}次擊殺\n"
+                f"最常使用角色 • {getName(rank.most_played[0].id)} • {rank.most_played[0].value}次\n"
+                f"最多Q使用角色 • {getName(rank.most_bursts_used[0].id)} • {rank.most_bursts_used[0].value}次\n"
+                f"最多E使用角色 • {getName(rank.most_skills_used[0].id)} • {rank.most_skills_used[0].value}次"
             )
             result.append(embed)
             for floor in abyss.floors:
@@ -428,7 +428,7 @@ class GenshinApp:
                     chara_list = [[], []]
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
-                            chara_list[i].append(getCharacterName(chara))
+                            chara_list[i].append(getName(chara.id))
                     topStr = ''
                     bottomStr = ''
                     for top_char in chara_list[0]:
