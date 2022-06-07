@@ -86,6 +86,9 @@ class ShenheBot(commands.Bot):
 bot = ShenheBot()
 tree = bot.tree 
 @tree.error
-async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-    await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```{traceback.format_exc()}```'))
+async def err_handle(i: Interaction, e: app_commands.AppCommandError):
+    if isinstance(e, app_commands.errors.MissingRole):
+        await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你不是小雪團隊的一員'), ephemeral=True)
+    else:
+        await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```py{traceback.format_exc()}```'))
 bot.run(token)
