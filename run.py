@@ -1,9 +1,10 @@
 # shenhe-bot by seria
 
 from pathlib import Path
+import traceback
 
 import aiosqlite
-from discord import Message, Intents, Status, Game
+from discord import Interaction, Message, Intents, Status, Game, app_commands
 from discord.ext import commands
 
 from cogs.flow import FlowCog
@@ -11,7 +12,7 @@ from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from utility.config import config
-from utility.utils import log
+from utility.utils import errEmbed, log
 from utility.db_utils import DbUtils
 from pyppeteer import launch
 
@@ -83,4 +84,8 @@ class ShenheBot(commands.Bot):
 
 
 bot = ShenheBot()
+tree = bot.tree 
+@tree.error
+async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
+    await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```{traceback.format_exc()}```'))
 bot.run(token)
