@@ -1126,8 +1126,8 @@ class GenshinCog(commands.Cog):
                         weapon_sub_str = f"{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
                     weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{weapon_sub_str}"
                     break
-            max_level = 0
-            ascention = chara['propMap']['1002']['val']
+            max_level = 20
+            ascention = chara['propMap']['1002']['ival']
             if ascention == 1:
                 max_level = 30
             elif ascention == 2:
@@ -1165,10 +1165,6 @@ class GenshinCog(commands.Cog):
 
         view = GenshinCog.EnkaPageView(embeds, charas, equipt_dict, 0, True)
         await i.edit_original_message(embed=overview, view=view)
-
-    @profile.error
-    async def err_handle(self, i: Interaction, e: app_commands.AppCommandError):
-        await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```{traceback.format_exc()}```'))
 
     # @app_commands.command(name='wiki', description='查看原神維基百科')
     # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
