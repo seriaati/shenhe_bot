@@ -31,7 +31,6 @@ class GenshinCog(commands.Cog):
 
 # cookie
 
-
     class CookieModal(discord.ui.Modal):
         def __init__(self, db: aiosqlite.Connection):
             self.genshin_app = GenshinApp(db)
@@ -295,65 +294,36 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
     class ElementChooseView(View):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, author: Member, emojis: List, user: Member = None, user_characters: dict = None):
+        def __init__(self, db: aiosqlite.Connection, author: Member, emojis: List):
             super().__init__(timeout=None)
             self.author = author
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
-                    i, user_characters, user, db, emojis[i]))
+                    i, db, emojis[i]))
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             return interaction.user.id == self.author.id
 
     class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, emoji: Emoji):
+        def __init__(self, index: int, db: aiosqlite.Connection, emoji: Emoji):
             self.index = index
-            self.user_characters = user_characters
-            self.user = user
             self.db = db
             super().__init__(style=ButtonStyle.gray, row=index % 2, emoji=emoji)
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.user_characters, self.user, self.db, i.user)
+                self.index, self.db, i.user)
             embed = defaultEmbed('請選擇角色')
             await i.response.edit_message(embed=embed, view=view)
 
     class CharactersDropdownView(View):  # 角色配置下拉選單的view
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection, author: Member):
+        def __init__(self, index: int, db: aiosqlite.Connection, author: Member):
             super().__init__(timeout=None)
             self.author = author
-            if user_characters is None:
-                self.add_item(
-                    GenshinCog.BuildCharactersDropdown(index, db))
-            else:
-                self.add_item(GenshinCog.UserCharactersDropdown(
-                    index, user_characters, user, db))
+            self.add_item(GenshinCog.BuildCharactersDropdown(index, db))
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             return interaction.user.id == self.author.id
-
-    class UserCharactersDropdown(Select):  # 使用者角色下拉選單(依元素分類)
-        def __init__(self, index: int, user_characters: dict, user: Member, db: aiosqlite.Connection):
-            elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
-            elements = ['Anemo', 'Cryo', 'Electro', 'Geo', 'Hydro', 'Pyro']
-            options = []
-            self.user_characters = user_characters
-            self.user = user
-            self.genshin_app = GenshinApp(db)
-            for character in user_characters:
-                if character.element == elements[index]:
-                    options.append(SelectOption(
-                        label=f'C{character.constellation}R{character.weapon.refinement} {character.name}', value=character.name))
-            if not options:
-                super().__init__(
-                    placeholder=f'該元素沒有任何角色', min_values=1, max_values=1, options=[SelectOption(label='disabled')], disabled=True)
-            else:
-                super().__init__(
-                    placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
-
-        async def callback(self, interaction: Interaction):
-            await interaction.response.edit_message(embed=self.genshin_app.parseCharacter(self.user_characters, self.values[0], self.user), view=None)
 
     class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
         def __init__(self, index: int, db: aiosqlite.Connection):
@@ -401,28 +371,6 @@ class GenshinCog(commands.Cog):
             emojis.append(self.bot.get_emoji(id))
         view = GenshinCog.ElementChooseView(self.bot.db, i.user, emojis)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
-
-    # /characters
-    @app_commands.command(name='characters', description='查看已擁有角色資訊, 如命座、親密度、聖遺物')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def characters(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
-        member = member or i.user
-        user_characters = await self.genshin_app.getUserCharacters(user_id=member.id)
-        if type(user_characters) is discord.Embed:
-            await i.edit_original_message(embed=user_characters)
-            return
-        emojis = []
-        ids = [982138235239137290, 982138229140635648, 982138220248711178,
-               982138232391237632, 982138233813098556, 982138221569900585]
-        for id in ids:
-            emojis.append(self.bot.get_emoji(id))
-        view = GenshinCog.ElementChooseView(
-            self.bot.db, i.user, emojis, member, user_characters)
-        embed = defaultEmbed('請選擇想查看角色的元素', '如果你沒有用`/cookie`註冊過, 只會顯示等級前8的角色')
-        embed.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=embed, view=view)
 
 # /rate
 
@@ -1004,7 +952,8 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed(f'{self.name} - 聖遺物')
             for e in self.chara_equipments:
                 if 'weapon' not in e:
-                    artifact_name = get_name.getNameTextHash(e['flat']['setNameTextMapHash'])
+                    artifact_name = get_name.getNameTextHash(
+                        e['flat']['setNameTextMapHash'])
                     main = e["flat"]["reliquaryMainstat"]
                     symbol = GenshinCog.percent_symbol(main['mainPropId'])
                     artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name}  +{int(e["reliquary"]["level"])-1}'
