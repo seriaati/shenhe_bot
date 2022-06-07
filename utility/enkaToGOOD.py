@@ -1,5 +1,3 @@
-import json
-
 import aiohttp
 
 from utility.utils import getName
@@ -129,6 +127,4 @@ async def enkaToGOOD(uid: int):
                         'id': art_id
                     }
                 )
-    with open("good.json", "w+") as write_file:
-        json.dump(good_dict, write_file)
     return good_dict
