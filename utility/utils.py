@@ -103,7 +103,9 @@ def calculateArtifactScore(substats: dict):
 
 
 async def calculateDamage(enka_data, chara_name: str, browser):
-    talent_to_calculate = ['Normal Atk.', 'Charged Atk.', 'Plunging Atk.', 'Ele. Skill', 'Ele. Burst']
+    print(f'calculating damage for {chara_name}')
+    talent_to_calculate = ['Normal Atk.', 'Charged Atk.',
+                           'Plunging Atk.', 'Ele. Skill', 'Ele. Burst']
     # browser = await launch({"headless": True, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
@@ -120,6 +122,7 @@ async def calculateDamage(enka_data, chara_name: str, browser):
     await page.click('li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(n+2)')
     await page.goto(f"https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip")
     await page.waitForSelector('span.css-t3oe3b')
+    # Ele. Skill
     labels = await page.querySelectorAll('h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     label_vals = []
     for l in labels:
@@ -129,11 +132,12 @@ async def calculateDamage(enka_data, chara_name: str, browser):
     normal_attack_name = '<普通攻擊名稱>'
     dmg_type = ['avgHit', 'hit', 'critHit']
     for dmg in range(0, 3):
-        await page.click(f'button[value="{dmg_type[dmg]}"]')
+        await page.click(f'button[value="{dmg_type[dmg]}"]')  # Avg. DMG
         for t in talent_to_calculate:
-            index = label_vals.index(t)
-            talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({index})>div.MuiCardHeader-root.css-faujvq>div.MuiCardHeader-content.css-11qjisw')
+            card_index = label_vals.index(t)
+            talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
             talent_name = await (await talent_name.getProperty("textContent")).jsonValue()
+            # print(talent_name)
             if talent_to_calculate.index(t) == 0:
                 normal_attack_name = talent_name
                 talent_name = f'普攻'
@@ -143,16 +147,18 @@ async def calculateDamage(enka_data, chara_name: str, browser):
                 talent_name = f'下落攻擊'
             if dmg == 0:
                 result[talent_name] = {}
-            talent_labels = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({index})>div.MuiCardContent-root.css-nph2fg>div.MuiBox-root.css-1tvhq2w>p.MuiTypography-root.MuiTypography-body1:nth-child(1)')
-            talent_numbers = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({index})>div.MuiCardContent-root.css-nph2fg>div.MuiBox-root.css-1tvhq2w>p.MuiTypography-root.MuiTypography-body1:nth-child(2)')
-            for i in range(0, len(talent_labels)):
-                label = await (await talent_labels[i].getProperty("textContent")).jsonValue()
-                damage = await (await talent_numbers[i].getProperty("textContent")).jsonValue()
+            talent_rows = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > ul.MuiList-root.MuiList-padding.css-1jrq055 > li.MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.MuiBox-root.css-1n74xce')
+            for row in talent_rows:
+                # 天星3020.3
+                row = await (await row.getProperty("textContent")).jsonValue()
+                split_row = re.split(
+                    '([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[eE]([+-]?\d+))?', row)
+                talent_label = split_row[0]  # 天星
+                talent_damage = split_row[1]  # 3020.3
                 if dmg == 0:
-                    result[talent_name][label] = []
-                result[talent_name][label].append(damage)
+                    result[talent_name][talent_label] = []
+                result[talent_name][talent_label].append(talent_damage)
     await page.close()
-    # await browser.close()
     return result, normal_attack_name
 
 
