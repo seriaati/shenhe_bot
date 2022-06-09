@@ -400,7 +400,7 @@ class WishCog(commands.Cog):
             view=up_or_std_view)
         await up_or_std_view.wait()
         if up_or_std_view.value:  # 是UP
-            want_or_not_view = WishCog.WantOrNot()
+            want_or_not_view = WishCog.WantOrNot(i.user)
             await i.edit_original_message(
                 embed=defaultEmbed('是想要的UP還是不想要的?'),
                 view=want_or_not_view)
