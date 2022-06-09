@@ -35,8 +35,9 @@ class GenshinApp:
             ltuid_str = re.search('ltuid=[0-9]{3,}', cookie).group()
             ltuid = int(
                 re.search(r'\d+', ltuid_str).group())
+            cookie_token = (re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group())[13:]
             c: aiosqlite.Cursor = await self.db.cursor()
-            await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ? WHERE user_id = ?', (ltuid, ltoken, user_id))
+            await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE user_id = ?', (ltuid, ltoken, cookie_token, user_id))
             log(False, False, 'setCookie', f'{user_id} set cookie success')
             result = defaultEmbed(
                 f'<a:check_animated:982579879239352370> cookie 設定完成')
@@ -506,6 +507,38 @@ class GenshinApp:
             )
         return result
 
+    async def redeemCode(self, user_id: int, code: str):
+        client, uid, only_uid = await self.getUserCookie(user_id)
+        if only_uid:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> 你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
+            return result
+        try:
+            await client.redeem_code(code)
+        except genshin.errors.InvalidCookies:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> 錯誤',
+                '你還沒有設置過 cookie token!\n'
+                '輸入 `/cookie` 來設置吧!\n'
+                '(之前註冊過的用戶需要再次註冊, 真的非常抱歉)'
+            )
+        except genshin.errors.RedemptionClaimed:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> 錯誤',
+                '你已經兌換過這個兌換碼了!'
+            )
+        except genshin.errors.GenshinException:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> 錯誤',
+                '兌換碼無效'
+            )
+        else:
+            result = defaultEmbed(
+                '<a:check_animated:982579879239352370> 兌換成功',
+                f'兌換碼: {code}'
+            )
+        return result
+
     async def getUserCookie(self, user_id: int):
         c: aiosqlite.Cursor = await self.db.cursor()
         seria_id = 224441463897849856
@@ -513,30 +546,30 @@ class GenshinApp:
         result = await c.fetchone()
         if result[0] is None or result is None:
             await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (seria_id,))
-            ltuid = await c.fetchone()
-            ltuid = ltuid[0]
+            ltuid = (await c.fetchone())[0]
             await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (seria_id,))
-            ltoken = await c.fetchone()
-            ltoken = ltoken[0]
-            cookies = {"ltuid": ltuid,
-                       "ltoken": ltoken}
+            ltoken = (await c.fetchone())[0]
+            await c.execute('SELECT cookie_token FROM genshin_accounts WHERE user_id = ?', (seria_id,))
+            cookie_token = (await c.fetchone())[0]
             await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
             uid = await c.fetchone()
             uid = uid[0]
-            client = genshin.Client(cookies)
+            client = genshin.Client()
+            client.set_cookies(ltuid=ltuid, ltoken=ltoken, account_id=ltuid ,cookie_token=cookie_token)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid
             only_uid = True
         else:
             await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            ltoken = await c.fetchone()
-            cookies = {"ltuid": result[0],
-                       "ltoken": ltoken[0]}
+            ltoken = (await c.fetchone())[0]
+            await c.execute('SELECT cookie_token FROM genshin_accounts WHERE user_id = ?', (user_id,))
+            cookie_token = (await c.fetchone())[0]
             await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
             uid = await c.fetchone()
             uid = uid[0]
-            client = genshin.Client(cookies)
+            client = genshin.Client()
+            client.set_cookies(ltuid=result[0], ltoken=ltoken, account_id=result[0] ,cookie_token=cookie_token)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid

@@ -2,23 +2,24 @@
 
 from pathlib import Path
 import traceback
+import getpass
 
 import aiosqlite
-from discord import Interaction, Message, Intents, Status, Game, app_commands
+from discord import ButtonStyle, Interaction, Message, Intents, Status, Game, app_commands
 from discord.ext import commands
+from discord.ui import View, Button, button
 
 from cogs.flow import FlowCog
 from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from utility.config import config
-from utility.utils import errEmbed, log
+from utility.utils import defaultEmbed, errEmbed, log
 from utility.db_utils import DbUtils
 from pyppeteer import launch
 
-print("main or dev?")
-user = input()
-if user == "main":
+user_name = getpass.getuser()
+if user_name == "alice":
     token = config.main
     prefix = ['!', '！']
     guild = 778804551972159489
@@ -44,12 +45,13 @@ class ShenheBot(commands.Bot):
             command_prefix=prefix,
             intents=intents,
             application_id=application_id,
-            owner_ids=[289597294075183114, 410036441129943050, 831883841417248778]
+            owner_ids=[289597294075183114,
+                       410036441129943050, 831883841417248778]
         )
 
     async def setup_hook(self) -> None:
         self.db = await aiosqlite.connect('main.db')
-        self.browser = await launch({"args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox']})
+        self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug_toggle = debug_toggle
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
@@ -83,11 +85,39 @@ class ShenheBot(commands.Bot):
 
 
 bot = ShenheBot()
-tree = bot.tree 
+tree = bot.tree
+
+
+class Debug(View):
+    def __init__(self, traceback):
+        self.tb = traceback
+        super().__init__(timeout=None)
+
+    @button(label='顯示除錯用訊息', style=ButtonStyle.gray)
+    async def show_debug_msg(self, i: Interaction, button: Button):
+        try:
+            await i.response.send_message(embed=errEmbed(f'除錯用訊息',f'```py\n{self.tb}\n```'), ephemeral=True)
+        except:
+            await i.response.send_message(embed=defaultEmbed('錯誤訊息過長','已 print 在 console 裡'), ephemeral=True)
+            print(self.tb)
+
+
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     if isinstance(e, app_commands.errors.MissingRole):
-        await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你不是小雪團隊的一員'), ephemeral=True)
+        embed = errEmbed(
+            '<a:error_animated:982579472060547092> 錯誤', '你不是小雪團隊的一員')
+        if i.response._responded:
+            await i.edit_original_message(embed=embed)
+        else:
+            await i.response.send_message(embed=embed, ephemeral=True)
     else:
-        await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤',f'請通報小雪\n```py{traceback.format_exc()}```'))
+        seria = i.client.get_user(410036441129943050)
+        view = Debug(traceback.format_exc())
+        embed = errEmbed(
+            '<a:error_animated:982579472060547092> 未知錯誤', f'```{e}```')
+        if i.response._responded:
+            await i.edit_original_message(content=seria.mention, embed=embed, view=view)
+        else:
+            await i.response.send_message(content=seria.mention, embed=embed, view=view)
 bot.run(token)

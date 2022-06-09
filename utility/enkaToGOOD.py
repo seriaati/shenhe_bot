@@ -1,12 +1,5 @@
-import aiohttp
-
-from utility.utils import get_name
-
-
-async def convert(uid: int):
-    async with aiohttp.ClientSession() as cs:
-        async with cs.get(f'https://enka.shinshin.moe/u/{uid}/__data.json') as r:
-            data = await r.json()
+import utility.utils
+async def convert(enka_data):
     good_dict = {
         'format': 'GOOD',
         'version': 1,
@@ -17,9 +10,9 @@ async def convert(uid: int):
     }
     weapon_id = 0
     art_id = 0
-    for chara in data['avatarInfoList']:
+    for chara in enka_data['avatarInfoList']:
         id = chara['avatarId']
-        chara_key = (get_name.getName(id, True)).replace(' ', '') or chara_key
+        chara_key = (utility.utils.get_name.getName(id, True)).replace(' ', '') or chara_key
         level = chara['propMap']['4001']['val']
         constellation = 0 if 'talentIdList' not in chara else len(
             chara['talentIdList'])
@@ -55,7 +48,7 @@ async def convert(uid: int):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = ((get_name.getName(e['itemId'], True)).replace(' ', '')).replace(
+                key = ((utility.utils.get_name.getName(e['itemId'], True)).replace(' ', '')).replace(
                     "'", '') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascention = e['weapon']['promoteLevel']
@@ -101,7 +94,7 @@ async def convert(uid: int):
                     'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
                     'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
                 }
-                setKey = (get_name.getNameTextHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '')) or e['flat']['setNameTextMapHash']
+                setKey = (utility.utils.get_name.getNameTextHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '')) or e['flat']['setNameTextMapHash']
                 slotKey = artifact_pos.get(e['flat']['equipType'])
                 rarity = e['flat']['rankLevel']
                 mainStatKey = stats.get(
