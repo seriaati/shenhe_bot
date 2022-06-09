@@ -769,7 +769,6 @@ class GenshinCog(commands.Cog):
             self.equip_dict = equip_dict
             self.embed_index = embed_index
             self.member = member
-            print(self.index)
             for i in range(0, 3):
                 style = ButtonStyle.blurple if i==index else ButtonStyle.gray
                 self.add_item(GenshinCog.DamageTypeButton(enka_data, chara_id, member, i, bot, style, self.equip_dict, self.charas, self.disabled, self.embeds, embed_index))
