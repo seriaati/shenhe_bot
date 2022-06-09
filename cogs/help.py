@@ -70,11 +70,6 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/characters`',
-                value='查看已擁有角色資訊',
-                inline=False
-            )
-            embed.add_field(
                 name='`/calc character`',
                 value='計算一個自己而擁有的角色所需養成素材',
                 inline=False
