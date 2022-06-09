@@ -439,7 +439,6 @@ class WishCog(commands.Cog):
         if not check:
             await i.edit_original_message(embed=msg)
             return
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
         overview = await self.wish_overview_calc(member.id)
         total_wish = overview[0][0] + overview[1][0] + \
             overview[2][0] + overview[3][0]
@@ -450,7 +449,7 @@ class WishCog(commands.Cog):
         )
         # [100, 200, 301, 302]
         # [total, left_pull, five_star, four_star]
-        banner_names = ['新手池', '角色池', '武器池', '常駐池']
+        banner_names = ['新手池', '常駐池', '角色池', '武器池']
         for index in range(1, 4):
             avg = 0 if overview[index][2] == 0 else int(
                 int(overview[index][0])/int(overview[index][2]))
