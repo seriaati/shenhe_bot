@@ -51,7 +51,7 @@ async def convert(enka_data):
                 key = ((utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace(' ', '')).replace(
                     "'", '') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
-                ascention = e['weapon']['promoteLevel']
+                ascention = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
                 refinement = list(e['weapon']['affixMap'].values())[0]+1
                 location = chara_key
                 good_dict['weapons'].append(
