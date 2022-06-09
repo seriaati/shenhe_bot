@@ -144,10 +144,10 @@ class WelcomeCog(commands.Cog):
                 '原神系統',
                 '申鶴有許多原神相關的方便功能\n'
                 '`/farm` 今天能刷的原神素材\n'
+                '`/profile` 角色屬性、聖遺物評分、傷害計算'
                 '`/build` 不同角色的配置方式\n'
                 '`/check` 目前樹脂\n'
                 '`/abyss` 深淵數據\n'
-                '`/today` 今天獲得的原石及摩拉數量\n'
                 '`/remind` 樹脂溢出提醒\n'
                 f'有興趣的話, 可以至 {factory.mention} 使用`/cookie`設置帳號'
             )
@@ -157,7 +157,7 @@ class WelcomeCog(commands.Cog):
                 '本群擁有專屬的經濟系統\n'
                 '可以幫助你獲得免費原神月卡等好物\n'
                 '有興趣的話\n'
-                f'可以至使用`/tutorial`指令'
+                f'可以至 {factory.mention} 使用`/tutorial`指令'
             )
             embeds.append(embed)
             role = i.client.get_channel(962311051683192842)

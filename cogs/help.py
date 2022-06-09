@@ -30,11 +30,6 @@ class Dropdown(discord.ui.Select):
                 inline=False
             )
             embed.add_field(
-                name='`/setuid`',
-                value='設置原神UID',
-                inline=False
-            )
-            embed.add_field(
                 name='`/check`',
                 value='查看即時便籤, 例如樹脂、洞天寶錢、探索派遣',
                 inline=False
@@ -89,8 +84,13 @@ class Dropdown(discord.ui.Select):
                 value='設置樹脂提醒功能',
                 inline=False
             )
+            embed.add_field(
+                name='`/redeem`',
+                value='兌換禮物碼',
+                inline=False
+            )
         elif self.values[0] == '原神':
-            embed = defaultEmbed('原神相關')
+            embed = defaultEmbed('原神相關','不須註冊即可使用')
             embed.add_field(
                 name='`/farm`',
                 value='查看原神今日可刷素材',
@@ -99,11 +99,6 @@ class Dropdown(discord.ui.Select):
             embed.add_field(
                 name='`/build`',
                 value='查看角色推薦主詞條、畢業面板、不同配置等',
-                inline=False
-            )
-            embed.add_field(
-                name='`/rate`',
-                value='(僅供參考用)非常不穩定的聖遺物評分器',
                 inline=False
             )
             embed.add_field(
