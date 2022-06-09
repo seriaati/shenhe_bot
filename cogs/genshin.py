@@ -915,7 +915,7 @@ class GenshinCog(commands.Cog):
             embed.set_thumbnail(url=getCharacterIcon(int(self.id)))
             embed.set_author(name=self.member, icon_url=self.member.avatar)
             self.disabled = False
-            await i.response.send_message(embed=embed, view=self.view)
+            await i.response.edit_message(embed=embed, view=self.view)
 
     class EnkaEmojiList(Button):
         def __init__(self):
