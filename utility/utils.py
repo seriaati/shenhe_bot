@@ -14,11 +14,11 @@ class GetName():
     def __init__(self) -> None:
         with open(f"GenshinData/EN_simple_textMap.yaml", "r") as file:
             self.en = yaml.full_load(file)
-        with open(f"GenshinData/TW_simple_textMap.yaml", "r") as file:
+        with open(f"GenshinData/TW_simple_textMap.yaml", "r", encoding="utf-8") as file:
             self.tw = yaml.full_load(file)
         with open(f"GenshinData/EN_full_textMap.json", "r") as file:
             self.full_en = json.load(file)
-        with open(f"GenshinData/TW_full_textMap.json", "r") as file:
+        with open(f"GenshinData/TW_full_textMap.json", "r", encoding="utf-8") as file:
             self.full_tw = json.load(file)
 
     def getName(self, id: int, eng: bool = False) -> str:
