@@ -795,7 +795,7 @@ class GenshinCog(commands.Cog):
             self.embed_index = embed_index
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled, self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, self.index, self.bot)
