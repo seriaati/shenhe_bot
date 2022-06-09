@@ -885,7 +885,9 @@ class GenshinCog(commands.Cog):
                 '追憶之注連': '追憶',
                 '絕緣之旗印': '絕緣',
                 '平息鳴雷的尊者': '平雷',
-                '如雷的盛怒': '如雷'
+                '如雷的盛怒': '如雷',
+                '華館夢醒形骸記': '華館',
+                '千岩牢固': '千岩'
             }
             embed = defaultEmbed(f'{self.name} - 聖遺物')
             for e in self.chara_equipments:
@@ -1010,7 +1012,7 @@ class GenshinCog(commands.Cog):
             weapon_str = ''
             for e in equipments:
                 if 'weapon' in e:
-                    weapon_name = get_name.getName(e['itemId'])
+                    weapon_name = get_name.getNameTextHash(e['flat']['nameTextMapHash'])
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
