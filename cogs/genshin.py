@@ -795,9 +795,9 @@ class GenshinCog(commands.Cog):
             self.embed_index = embed_index
 
         async def callback(self, i: Interaction) -> Any:
+            await i.response(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled, self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
-            await i.response.edit_message(view=view)
-            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, self.index, self.bot)
             await i.edit_original_message(embed=embed)
     
@@ -851,9 +851,9 @@ class GenshinCog(commands.Cog):
             self.equip_dict = equip_dict
 
         async def callback(self, i: Interaction) -> Any:
+            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled, 0, self.bot, self.charas, self.equip_dict, self.member, self.index)
-            await i.response.edit_message(view=view)
-            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 0, self.bot)
             await i.edit_original_message(embed=embed)
 
