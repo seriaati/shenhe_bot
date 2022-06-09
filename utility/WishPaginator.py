@@ -87,7 +87,7 @@ class WishPaginator:
 		kwargs = {'content': self.pages[view.current_page]} if not (embeded) else {'embed': self.pages[view.current_page]}
 		kwargs['view'] = view
 
-		await self.interaction.edit_original_message(**kwargs)
+		await self.interaction.response.send_message(**kwargs)
 
 		await view.wait()
 		
