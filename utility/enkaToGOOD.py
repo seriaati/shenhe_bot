@@ -48,7 +48,7 @@ async def convert(enka_data):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = ((utility.utils.get_name.getName(e['itemId'], True)).replace(' ', '')).replace(
+                key = ((utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace(' ', '')).replace(
                     "'", '') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascention = e['weapon']['promoteLevel']
