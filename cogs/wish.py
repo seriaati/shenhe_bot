@@ -239,11 +239,10 @@ class WishCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.edit_original_message(embed=msg)
+            await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
@@ -273,17 +272,16 @@ class WishCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.edit_original_message(embed=msg)
+            await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             member.id)
@@ -297,40 +295,40 @@ class WishCog(commands.Cog):
             f'• 墊了**{left_pull}**抽\n'
             f'• {gu_str}')
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=embed)
+        await i.response.send_message(embed=embed)
 
     @wish.command(name='character', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量')
     @app_commands.describe(num='想要抽到幾個5星UP角色?')
     async def wish_char(self, i: Interaction, num: int):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.edit_original_message(embed=msg)
+            await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
+            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
             return
-        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
-            i.user.id)
+        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(i.user.id)
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
-        result = 180
-        for index in range(1, 181):
-            if 100*player.get_p(item_num=num, calc_pull=index, pull_state=left_pull, up_guarantee=up_guarantee) >= 80:
-                result = index
-                break
+        calc_pull = 1
+        p = 0
+        while(p < 80):
+            p = 100*player.get_p(
+                item_num=num, calc_pull=calc_pull,
+                pull_state=left_pull, up_guarantee=up_guarantee)
+            calc_pull += 1
         embed = defaultEmbed(
             '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想要抽出**{num}**個5星UP角色\n'
             f'• 墊了**{left_pull}**抽\n'
             f'• {gu_str}\n'
-            f'• 預計**{result}**抽後出 UP')
+            f'• 預計**{calc_pull}**抽後結束')
         embed.set_author(name=i.user, icon_url=i.user.avatar)
-        await i.edit_original_message(embed=embed)
+        await i.response.send_message(embed=embed)
 
     class UpOrStd(discord.ui.View):
         def __init__(self, author: Member):
@@ -378,24 +376,23 @@ class WishCog(commands.Cog):
     @app_commands.rename(item_num='up武器數量')
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
     async def wish_weapon(self, i: Interaction, item_num: int):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.edit_original_message(embed=msg)
+            await i.response.send_message(embed=msg)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.edit_original_message(embed=errEmbed(
+            await i.response.send_message(embed=errEmbed(
                 '<a:error_animated:982579472060547092> 你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
             return
         last_name, pull_state = await self.weapon_banner_calc(i.user.id)
         if last_name == '':
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'))
+            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'))
             return
         up_or_std_view = WishCog.UpOrStd(i.user)
-        await i.edit_original_message(embed=defaultEmbed(
+        await i.response.send_message(embed=defaultEmbed(
             '限定UP還是常駐?',
             f'你最後一次抽到的五星武器是:\n'
             f'**{last_name}**\n'
@@ -415,16 +412,16 @@ class WishCog(commands.Cog):
         else:  # 是常駐
             up_guarantee = 2
         player = GGanalysislib.Up5starWeaponEP()
-        result = 180
-        for index in range(1, 181):
-            if 100*player.get_p(item_num=item_num, calc_pull=index, pull_state=pull_state, up_guarantee=up_guarantee) >= 80:
-                result = index
-                break
+        calc_pull = 1
+        p = 0
+        while(p<80):
+            p = 100*player.get_p(item_num=item_num, calc_pull=calc_pull, pull_state=pull_state, up_guarantee=up_guarantee)
+            calc_pull += 1
         embed = defaultEmbed(
             '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想抽出**{item_num}**把想要的UP\n'
             f'• 已經墊了**{pull_state}**抽\n'
-            f'• 預計 **{result}** 抽後出 UP'
+            f'• 預計 **{calc_pull}** 抽後結束'
         )
         embed.set_author(name=i.user, icon_url=i.user.avatar)
         await i.edit_original_message(embed=embed)
@@ -433,11 +430,10 @@ class WishCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.edit_original_message(embed=msg)
+            await i.response(embed=msg)
             return
         overview = await self.wish_overview_calc(member.id)
         total_wish = overview[0][0] + overview[1][0] + \
@@ -460,10 +456,9 @@ class WishCog(commands.Cog):
                 f'• 4<:white_star:982456919224615002> **{overview[index][3]}**\n'
                 f'• 平均 **{avg}** 抽出一金\n'
                 f'• 距離保底**{90-overview[index][1]}**抽',
-                inline=False
             )
         embed.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=embed)
+        await i.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
