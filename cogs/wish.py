@@ -424,7 +424,7 @@ class WishCog(commands.Cog):
             f'• 預計 **{calc_pull}** 抽後結束'
         )
         embed.set_author(name=i.user, icon_url=i.user.avatar)
-        await i.edit_original_message(embed=embed)
+        await i.edit_original_message(embed=embed, view=None)
 
     @wish.command(name='overview', description='祈願紀錄總覽')
     @app_commands.rename(member='其他人')
