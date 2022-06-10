@@ -794,7 +794,10 @@ class GenshinCog(commands.Cog):
 
     async def parse_damage_embed(chara_id: int, enka_data, member: Member, dmg_type: int, bot: commands.Bot):
         chara_name = get_name.getName(int(chara_id), True)
-        result, normal_attack_name = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
+        result, normal_attack_name, success = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
+        if not success:
+            embed = errEmbed('<a:error_animated:982579472060547092> 計算失敗', f'傷害計算器卡 bug 了\n這不是你的問題\n小雪目前還在尋找修復辦法\n```py{normal_attack_name}\n```')
+            return embed
         result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
         embed = defaultEmbed(f'{get_name.getName(int(chara_id))} - 傷害')
         dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']

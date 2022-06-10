@@ -184,9 +184,12 @@ async def calculateDamage(enka_data, chara_name: str, browser):
                 talent_damage = split_row[1]  # 3020.3
                 if dmg == 0:
                     result[talent_name][talent_label] = []
-                result[talent_name][talent_label].append(talent_damage)
+                try:
+                    result[talent_name][talent_label].append(talent_damage)
+                except Exception as e:
+                    return None, e, False
     await page.close()
-    return result, normal_attack_name
+    return result, normal_attack_name, True
 
 
 def trimCookie(cookie: str) -> str:
