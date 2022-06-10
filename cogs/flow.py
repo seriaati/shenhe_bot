@@ -455,6 +455,8 @@ class FlowCog(commands.Cog):
             author_free_trial = result[0]
             await c.execute('SELECT find_free_trial FROM flow_accounts WHERE user_id = ?', (confirmer_id,))
             result = await c.fetchone()
+            if result is None:
+                await self.flow_app.register(confirmer_id)
             confirmer_free_trial = result[0]
             if type == 4:
                 new_flow = flow

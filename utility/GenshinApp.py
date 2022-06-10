@@ -188,7 +188,7 @@ class GenshinApp:
                         day_msg = '今天' if expedition.completion_time.day == datetime.now().day else '明天'
                         exped_msg += f' 完成時間: {day_msg} {expedition.completion_time.strftime("%H:%M")}\n'
                 result.add_field(
-                    name=f'探索派遣 ({exped_finished}/{total_exped})',
+                    name=f'<:pin:984677478490570762> 探索派遣 ({exped_finished}/{total_exped})',
                     value=exped_msg,
                     inline=False
                 )

@@ -750,8 +750,8 @@ class GenshinCog(commands.Cog):
             super().__init__(timeout=None)
             self.enka_data = enka_data
             self.chara_id = chara_id
-            self.embeds= embeds
-            self.disabled = disabled 
+            self.embeds = embeds
+            self.disabled = disabled
             self.index = index
             self.bot = bot
             self.charas = charas
@@ -759,8 +759,9 @@ class GenshinCog(commands.Cog):
             self.embed_index = embed_index
             self.member = member
             for i in range(0, 3):
-                style = ButtonStyle.blurple if i==index else ButtonStyle.gray
-                self.add_item(GenshinCog.DamageTypeButton(enka_data, chara_id, member, i, bot, style, self.equip_dict, self.charas, self.disabled, self.embeds, embed_index))
+                style = ButtonStyle.blurple if i == index else ButtonStyle.gray
+                self.add_item(GenshinCog.DamageTypeButton(enka_data, chara_id, member, i, bot,
+                              style, self.equip_dict, self.charas, self.disabled, self.embeds, embed_index))
 
         @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray)
         async def go_back(self, i: Interaction, button: Button):
@@ -785,11 +786,12 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
-            view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled, self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
+            view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
+                                               self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, self.index, self.bot)
             await i.edit_original_message(embed=embed)
-    
+
     async def parse_damage_embed(chara_id: int, enka_data, member: Member, dmg_type: int, bot: commands.Bot):
         chara_name = get_name.getName(int(chara_id), True)
         result, normal_attack_name = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
@@ -799,10 +801,12 @@ class GenshinCog(commands.Cog):
         name = f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg_type]}'
         if chara_name == 'Xiao':
             name += ' (開Q狀態下)'
-        elif chara_name == 'RaidenShogun':
+        elif chara_name == 'Raiden Shogun':
             name += ' (開E+願力50層)'
-        elif chara_name == 'KamisatoAyaka':
+        elif chara_name == 'Kamisato Ayaka':
             name += ' (開E+被動碰到敵人)'
+        elif chara_name == 'Hu Tao':
+            name += '(開E+50%以下生命值)'
         embed.add_field(
             name=name,
             value=f'**{normal_attack_name}**',
@@ -831,7 +835,7 @@ class GenshinCog(commands.Cog):
         embed.set_author(name=member, icon_url=member.avatar)
         embed.set_thumbnail(url=getCharacterIcon(int(chara_id)))
         return embed
-    
+
     class DamageCalculator(Button):
         def __init__(self, enka_data: dict, chara_id: int, disabled: bool, member: Member, embeds: List[Embed], index: int, bot: commands.Bot, charas, equip_dict: dict):
             super().__init__(style=ButtonStyle.blurple, label='傷害計算', disabled=disabled)
@@ -840,7 +844,7 @@ class GenshinCog(commands.Cog):
             self.member = member
             self.enka_data = enka_data
             self.embeds = embeds
-            self.button_disabled = disabled 
+            self.button_disabled = disabled
             self.index = index
             self.bot = bot
             self.charas = charas
@@ -848,7 +852,8 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
-            view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled, 0, self.bot, self.charas, self.equip_dict, self.member, self.index)
+            view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
+                                               0, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 0, self.bot)
             await i.edit_original_message(embed=embed)
@@ -1008,7 +1013,8 @@ class GenshinCog(commands.Cog):
             weapon_str = ''
             for e in equipments:
                 if 'weapon' in e:
-                    weapon_name = get_name.getNameTextHash(e['flat']['nameTextMapHash'])
+                    weapon_name = get_name.getNameTextHash(
+                        e['flat']['nameTextMapHash'])
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"

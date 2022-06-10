@@ -48,7 +48,7 @@ async def convert(enka_data):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = (utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','')
+                key = (utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
                 refinement = list(e['weapon']['affixMap'].values())[0]+1
@@ -93,7 +93,7 @@ async def convert(enka_data):
                     'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
                     'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
                 }
-                setKey = (utility.utils.get_name.getNameTextHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '')) or e['flat']['setNameTextMapHash']
+                setKey = utility.utils.get_name.getNameTextHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '').replace('-','') or e['flat']['setNameTextMapHash']
                 slotKey = artifact_pos.get(e['flat']['equipType'])
                 rarity = e['flat']['rankLevel']
                 mainStatKey = stats.get(
