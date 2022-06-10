@@ -29,20 +29,41 @@ class GenshinApp:
             result = errEmbed(
                 '<a:error_animated:982579472060547092> 帳號內沒有任何角色', '已取消設定 cookie')
             return result
-        else:
-            ltoken = re.search(
-                '[0-9A-Za-z]{20,}', cookie).group()
-            ltuid_str = re.search('ltuid=[0-9]{3,}', cookie).group()
-            ltuid = int(
-                re.search(r'\d+', ltuid_str).group())
-            cookie_token = (re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group())[13:]
-            c: aiosqlite.Cursor = await self.db.cursor()
-            await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE user_id = ?', (ltuid, ltoken, cookie_token, user_id))
-            log(False, False, 'setCookie', f'{user_id} set cookie success')
-            result = defaultEmbed(
-                f'<a:check_animated:982579879239352370> cookie 設定完成')
-            await self.db.commit()
+        c: aiosqlite.Cursor = await self.db.cursor()
+        uid = await c.fetchone(await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,)))
+        if uid is None:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> 找不到 UID',
+                '請至 <#978871680019628032> 註冊 UID'
+            )
             return result
+        uid = uid[0]
+        uid_found = False
+        for account in accounts:
+            if account.uid == uid:
+                uid_found = True
+                break
+        if not uid_found:
+            result = errEmbed(
+                '<a:error_animated:982579472060547092> UID 錯誤',
+                '你在 <#978871680019628032> 輸入的 UID 與你在遊戲內的 UID 不符\n'
+                '請在確認過後至 <#978871680019628032> 重新註冊 UID'
+            )
+            return result
+        ltoken = re.search(
+            '[0-9A-Za-z]{20,}', cookie).group()
+        ltuid_str = re.search('ltuid=[0-9]{3,}', cookie).group()
+        ltuid = int(
+            re.search(r'\d+', ltuid_str).group())
+        cookie_token = (
+            re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group())[13:]
+        c: aiosqlite.Cursor = await self.db.cursor()
+        await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE user_id = ?', (ltuid, ltoken, cookie_token, user_id))
+        log(False, False, 'setCookie', f'{user_id} set cookie success')
+        result = defaultEmbed(
+            f'<a:check_animated:982579879239352370> cookie 設定完成')
+        await self.db.commit()
+        return result
 
     async def setUID(self, user_id: int, uid: int) -> str:
         log(False, False, 'setUID', f'{user_id}: (uid = {uid})')
@@ -264,12 +285,12 @@ class GenshinApp:
             d = diary.data
             result = defaultEmbed(
                 f'旅行者日記 • {month}月',
-                f'<:primo:958555698596290570> 原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
-                f'<:mora:958577933650362468> 摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
+                f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
+                f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
             )
             result.add_field(
                 name='本月共獲得',
-                value=f'<:primo:958555698596290570> {d.current_primogems} • 上個月: {d.last_primogems}\n'
+                value=f'<:primo:958555698596290570> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • 上個月: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
                 f'<:mora:958577933650362468> {d.current_mora} • 上個月: {d.last_mora}',
                 inline=False
             )
@@ -555,7 +576,8 @@ class GenshinApp:
             uid = await c.fetchone()
             uid = uid[0]
             client = genshin.Client()
-            client.set_cookies(ltuid=ltuid, ltoken=ltoken, account_id=ltuid ,cookie_token=cookie_token)
+            client.set_cookies(ltuid=ltuid, ltoken=ltoken,
+                               account_id=ltuid, cookie_token=cookie_token)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid
@@ -569,7 +591,8 @@ class GenshinApp:
             uid = await c.fetchone()
             uid = uid[0]
             client = genshin.Client()
-            client.set_cookies(ltuid=result[0], ltoken=ltoken, account_id=result[0] ,cookie_token=cookie_token)
+            client.set_cookies(
+                ltuid=result[0], ltoken=ltoken, account_id=result[0], cookie_token=cookie_token)
             client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid

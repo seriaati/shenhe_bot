@@ -82,33 +82,30 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def check(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         result = await self.genshin_app.getRealTimeNotes(member.id, False)
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 # /stats
 
     @app_commands.command(name='stats', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def stats(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         result = await self.genshin_app.getUserStats(member.id)
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 # /area
 
     @app_commands.command(name='area', description='查看區域探索度')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def area(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         result = await self.genshin_app.getArea(member.id)
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 # /claim
 
     @app_commands.command(name='claim', description='領取hoyolab登入獎勵')
@@ -119,7 +116,6 @@ class GenshinCog(commands.Cog):
         Choice(name='否', value=0)])
     async def claim(self, i: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
         if all == 1:
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 全員簽到中'))
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
             users = await c.fetchall()
@@ -128,13 +124,12 @@ class GenshinCog(commands.Cog):
                 user_id = tuple[0]
                 await self.genshin_app.claimDailyReward(user_id)
                 count += 1
-            await i.edit_original_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 全員簽到完成 ({count})'))
+            await i.response.send_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 全員簽到完成 ({count})'))
         else:
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
             member = member or i.user
             result = await self.genshin_app.claimDailyReward(member.id)
             result.set_author(name=member, icon_url=member.avatar)
-            await i.edit_original_message(embed=result)
+            await i.response.send_message(embed=result)
 # /diary
 
     @app_commands.command(name='diary', description='查看旅行者日記')
@@ -145,13 +140,12 @@ class GenshinCog(commands.Cog):
         app_commands.Choice(name='上個月', value=-1),
         app_commands.Choice(name='上上個月', value=-2)])
     async def diary(self, i: Interaction, month: int, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result = await self.genshin_app.getDiary(member.id, month)
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 # /log
 
     @app_commands.command(name='log', description='查看最近25筆原石或摩拉收入紀錄')
@@ -161,15 +155,14 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(data_type='類別', member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def log(self, i: Interaction, data_type: int, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         result = await self.genshin_app.getDiaryLog(member.id)
         if type(result) is Embed:
-            await i.edit_original_message(embed=result)
+            await i.response.send_message(embed=result, ephemeral=True)
             return
         result = result[data_type]
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 
 # /today
 
@@ -177,11 +170,10 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def today(self, i: Interaction, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         result = await self.genshin_app.getToday(member.id)
         result.set_author(name=member, icon_url=member.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 # /abyss
 
     @app_commands.command(name='abyss', description='深淵資料查詢')
@@ -197,7 +189,6 @@ class GenshinCog(commands.Cog):
                Choice(name='最後一層', value=1)]
     )
     async def abyss(self, i: Interaction, check_type: int, season: int = 1, floor: int = 0, member: Optional[Member] = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         member = member or i.user
         previous = True if season == 0 else False
         result = await self.genshin_app.getAbyss(member.id, previous)
@@ -207,13 +198,13 @@ class GenshinCog(commands.Cog):
             for embed in result:
                 embed.set_author(name=member, icon_url=member.avatar)
         if type(result) == discord.Embed:
-            await i.edit_original_message(embed=result)
+            await i.response.send_message(embed=result)
             return
         if check_type == 0:
-            await i.edit_original_message(embed=result[0])
+            await i.response.send_message(embed=result[0])
         else:
             if floor == 1:
-                await i.edit_original_message(embed=result[-1])
+                await i.response.send_message(embed=result[-1])
             else:
                 await AbyssPaginator(i, result[1:]).start(embeded=True)
 # /stuck
@@ -388,17 +379,16 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 查無此用戶!', '這個使用者還沒有註冊過UID'))
+            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 查無此用戶!', '這個使用者還沒有註冊過UID\n請至 <#978871680019628032> 註冊 UID'), ephemeral=True)
             return
         uid = uid[0]
         embed = defaultEmbed(f'UID查詢', uid)
         embed.set_author(name=player, icon_url=player.avatar)
-        await i.edit_original_message(embed=embed)
+        await i.response.send_message(embed=embed)
 
     class CalcultorElementButtonView(View):
         def __init__(self, author: Member, chara_list: List, item_type: str):
@@ -607,11 +597,10 @@ class GenshinCog(commands.Cog):
 
     @calc.command(name='character', description='個別計算一個角色所需的素材')
     async def calc_character(self, i: Interaction):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         if only_uid:
             embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
-            await i.edit_original_message(embed=embed)
+            await i.response.send_message(embed=embed, ephemeral=True)
             return
         try:
             charas = await client.get_calculator_characters(sync=True)
@@ -623,7 +612,7 @@ class GenshinCog(commands.Cog):
                 '所以以下操作只能在手機上用 APP 進行 <:penguin_dead:978841159147343962>\n'
                 'APP 下載連結: [IOS](https://apps.apple.com/us/app/hoyolab/id1559483982) [Android](https://play.google.com/store/apps/details?id=com.mihoyo.hoyolab&hl=en&gl=US)')
             embed.set_image(url='https://i.imgur.com/GiYbVwU.gif')
-            await i.edit_original_message(embed=embed)
+            await i.response.send_message(embed=embed, ephemeral=True)
             return
         chara_list = []
         for chara in charas:
@@ -631,7 +620,7 @@ class GenshinCog(commands.Cog):
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
         embed = defaultEmbed('選擇角色的元素')
-        await i.edit_original_message(embed=embed, view=button_view)
+        await i.response.send_message(embed=embed, view=button_view)
         await button_view.wait()
         select_view = GenshinCog.CalculatorItems(
             i.user, button_view.element_chara_list, button_view.item_type)
@@ -1076,10 +1065,9 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='redeem', description='兌換禮物碼')
     @app_commands.rename(code='兌換碼')
     async def redeem(self, i: Interaction, code: str):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
         result = await self.genshin_app.redeemCode(i.user.id, code)
         result.set_author(name=i.user, url=i.user.avatar)
-        await i.edit_original_message(embed=result)
+        await i.response.send_message(embed=result)
 
     # @app_commands.command(name='wiki', description='查看原神維基百科')
     # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
