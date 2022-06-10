@@ -255,10 +255,10 @@ class WishCog(commands.Cog):
             wish_type = tuple[3]
             if wish_rarity == 5 or wish_rarity == 4:
                 user_wishes.append(
-                    f"[{wish_time}: {wish_name} ({wish_rarity}<:white_star:982456919224615002> {wish_type})](https://github.com/seriaati/shenhe_bot)")
+                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://github.com/seriaati/shenhe_bot)")
             else:
                 user_wishes.append(
-                    f"{wish_time}: {wish_name} ({wish_rarity}<:white_star:982456919224615002> {wish_type})")
+                    f"{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})")
         first_twenty_wishes = list(WishCog.divide_chunks(user_wishes, 20))
         embeds = []
         for l in first_twenty_wishes:
