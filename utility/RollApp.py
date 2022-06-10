@@ -94,7 +94,10 @@ class RollApp:
         c = await self.db.cursor()
         await c.execute('SELECT SUM(guarantee) FROM user_roll_data WHERE user_id = ? AND banner_name = ? AND history IS NULL', (user_id, banner))
         sum = await c.fetchone()
-        sum = sum[0]
+        if sum is None:
+            sum = 0
+        else:
+            sum = sum[0]
         if sum < 70:
             prize = await self.pull_card(is_ten_pull, 0, banner)
         elif 70 <= sum < 80:
