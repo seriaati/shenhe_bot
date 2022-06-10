@@ -393,7 +393,7 @@ class GenshinCog(commands.Cog):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 查無此用戶!', '這個使用者似乎還沒有註冊過UID\n輸入`/setuid`來設置uid'))
+            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 查無此用戶!', '這個使用者還沒有註冊過UID'))
             return
         uid = uid[0]
         embed = defaultEmbed(f'UID查詢', uid)

@@ -117,7 +117,7 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
         embed = errEmbed(
             '<a:error_animated:982579472060547092> 未知錯誤', f'```{e}```')
         if i.response._responded:
-            await i.edit_original_message(content=seria.mention, embed=embed, view=view)
+            await i.edit_original_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
         else:
-            await i.response.send_message(content=seria.mention, embed=embed, view=view)
+            await i.response.send_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
 bot.run(token)

@@ -544,7 +544,7 @@ class GenshinApp:
         seria_id = 224441463897849856
         await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        if result[0] is None or result is None:
+        if result is None or result[0] is None:
             await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (seria_id,))
             ltuid = (await c.fetchone())[0]
             await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (seria_id,))
