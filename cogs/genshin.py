@@ -795,7 +795,7 @@ class GenshinCog(commands.Cog):
             self.embed_index = embed_index
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled, self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, self.index, self.bot)
@@ -807,8 +807,15 @@ class GenshinCog(commands.Cog):
         result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
         embed = defaultEmbed(f'{get_name.getName(int(chara_id))} - 傷害')
         dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
+        name = f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg_type]}'
+        if chara_name == 'Xiao':
+            name += ' (開Q狀態下)'
+        elif chara_name == 'RaidenShogun':
+            name += ' (開E+願力50層)'
+        elif chara_name == 'KamisatoAyaka':
+            name += ' (開E+被動碰到敵人)'
         embed.add_field(
-            name=f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg_type]}',
+            name=name,
             value=f'**{normal_attack_name}**',
             inline=False
         )
@@ -851,7 +858,7 @@ class GenshinCog(commands.Cog):
             self.equip_dict = equip_dict
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled, 0, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)
             embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 0, self.bot)

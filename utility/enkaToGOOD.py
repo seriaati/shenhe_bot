@@ -48,17 +48,16 @@ async def convert(enka_data):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = ((utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace(' ', '')).replace(
-                    "'", '') or e['flat']['nameTextMapHash']
+                key = (utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','')
                 level = e['weapon']['level']
-                ascention = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
+                ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
                 refinement = list(e['weapon']['affixMap'].values())[0]+1
                 location = chara_key
                 good_dict['weapons'].append(
                     {
                         'key': key,
                         'level': level,
-                        'ascention': ascention,
+                        'ascension': ascension,
                         'refinement': refinement,
                         'location': location,
                         'id': weapon_id
