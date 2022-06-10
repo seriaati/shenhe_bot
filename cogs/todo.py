@@ -4,7 +4,8 @@ import aiosqlite
 from discord import (ButtonStyle, Interaction, Member, SelectOption,
                      app_commands)
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, View
+from discord.ui import Button, Modal, Select, TextInput
+from debug import DefaultView
 from utility.utils import defaultEmbed
 
 
@@ -42,7 +43,7 @@ class Todo(commands.Cog):
         embed.set_author(name=user, icon_url=user.avatar)
         return embed
 
-    class TodoListView(View):
+    class TodoListView(DefaultView):
         def __init__(self, db: aiosqlite.Connection, empty: bool, author: Member):
             super().__init__(timeout=None)
             self.db = db

@@ -5,6 +5,7 @@ import discord
 from discord import ButtonStyle, Interaction, app_commands
 from discord.ext import commands
 from discord.ui import Button, button
+from debug import DefaultView
 from utility.FlowApp import FlowApp
 from utility.RollApp import RollApp
 from utility.utils import defaultEmbed, errEmbed, log
@@ -19,7 +20,7 @@ class RollCog(commands.Cog):
         self.debug_toggle = self.bot.debug_toggle
         self.flow_app = FlowApp(self.bot.db, self.bot)
 
-    class Menu(discord.ui.View):
+    class Menu(DefaultView):
         def __init__(self, author: discord.Member, banner: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db

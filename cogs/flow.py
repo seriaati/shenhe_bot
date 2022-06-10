@@ -6,12 +6,14 @@ from typing import Any, List
 import aiosqlite
 import discord
 from dateutil import parser
+from debug import DefaultView
 from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Select, View
+from discord.ui import Select
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
+
 
 
 class FlowCog(commands.Cog):
@@ -267,7 +269,7 @@ class FlowCog(commands.Cog):
         await self.bot.db.commit()
         await i.response.send_message(f"商品**{item}**新增成功", ephemeral=True)
 
-    class ShopItemView(View):
+    class ShopItemView(DefaultView):
         def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.add_item(FlowCog.ShopItemSelect(item_names, action, db, bot))
@@ -369,7 +371,7 @@ class FlowCog(commands.Cog):
         else:
             return True, None
 
-    class AcceptView(discord.ui.View):
+    class AcceptView(DefaultView):
         def __init__(self, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.db = db
@@ -421,7 +423,7 @@ class FlowCog(commands.Cog):
             await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ? WHERE msg_ID = ?', (confirm_message.id, i.user.id, i.message.id))
             await self.db.commit()
 
-    class ConfirmView(discord.ui.View):
+    class ConfirmView(DefaultView):
         def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
             self.db = db
             self.flow_app = FlowApp(self.db, bot)

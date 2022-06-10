@@ -17,6 +17,7 @@ from utility.config import config
 from utility.utils import defaultEmbed, errEmbed, log
 from utility.db_utils import DbUtils
 from pyppeteer import launch
+from debug import DebugView
 
 user_name = getpass.getuser()
 if user_name == "alice":
@@ -88,20 +89,6 @@ bot = ShenheBot()
 tree = bot.tree
 
 
-class Debug(View):
-    def __init__(self, traceback):
-        self.tb = traceback
-        super().__init__(timeout=None)
-
-    @button(label='顯示除錯用訊息', style=ButtonStyle.gray)
-    async def show_debug_msg(self, i: Interaction, button: Button):
-        try:
-            await i.response.send_message(embed=errEmbed(f'除錯用訊息',f'```py\n{self.tb}\n```'), ephemeral=True)
-        except:
-            await i.response.send_message(embed=defaultEmbed('錯誤訊息過長','已 print 在 console 裡'), ephemeral=True)
-            print(self.tb)
-
-
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     if isinstance(e, app_commands.errors.MissingRole):
@@ -113,9 +100,9 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
             await i.response.send_message(embed=embed, ephemeral=True)
     else:
         seria = i.client.get_user(410036441129943050)
-        view = Debug(traceback.format_exc())
+        view = DebugView(traceback.format_exc())
         embed = errEmbed(
-            '<a:error_animated:982579472060547092> 未知錯誤', f'```{e}```')
+            '<a:error_animated:982579472060547092> 未知錯誤', f'```py\n{e}\n```')
         if i.response._responded:
             await i.edit_original_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
         else:

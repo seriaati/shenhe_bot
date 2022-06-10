@@ -1,10 +1,11 @@
-import discord
-from discord import SelectOption, app_commands
+from discord.ui import Select
+from discord import SelectOption, app_commands, Interaction
 from discord.ext import commands
+from debug import DefaultView
 from utility.utils import defaultEmbed
 
 
-class Dropdown(discord.ui.Select):
+class Dropdown(Select):
     def __init__(self):
         options = [
             SelectOption(label='原神資料', description='需先/cookie註冊帳號後方可使用', emoji='✨'),
@@ -18,7 +19,7 @@ class Dropdown(discord.ui.Select):
         super().__init__(placeholder='你想要什麼樣的幫助呢?',
                          min_values=1, max_values=1, options=options)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: Interaction):
         if self.values[0] == '原神資料':
             embed = defaultEmbed(
                 '原神資料相關',
@@ -285,7 +286,7 @@ class Dropdown(discord.ui.Select):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-class DropdownView(discord.ui.View):
+class DropdownView(DefaultView):
     def __init__(self):
         super().__init__()
         self.add_item(Dropdown())
@@ -296,7 +297,7 @@ class HelpCog(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name='help', description='獲得幫助')
-    async def help(self, interaction: discord.Interaction):
+    async def help(self, interaction: Interaction):
         view = DropdownView()
         await interaction.response.send_message(view=view)
 

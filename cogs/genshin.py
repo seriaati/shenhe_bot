@@ -9,7 +9,8 @@ from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, View, button, select
+from discord.ui import Button, Modal, Select, TextInput, button, select
+from debug import DefaultView
 from utility.AbyssPaginator import AbyssPaginator
 from utility.GeneralPaginator import GeneralPaginator
 from utility.GenshinApp import GenshinApp
@@ -246,7 +247,7 @@ class GenshinCog(commands.Cog):
             url = "https://i.imgur.com/MPI5uwW.png"
         return url
 
-    class ChooseDay(View):
+    class ChooseDay(DefaultView):
         def __init__(self):
             super().__init__(timeout=None)
             for i in range(0, 4):
@@ -281,7 +282,7 @@ class GenshinCog(commands.Cog):
         view = GenshinCog.ChooseDay()
         await interaction.response.send_message(embed=embed, view=view)
 
-    class ElementChooseView(View):  # 選擇元素按鈕的view
+    class ElementChooseView(DefaultView):  # 選擇元素按鈕的view
         def __init__(self, db: aiosqlite.Connection, emojis: List):
             super().__init__(timeout=None)
             for i in range(0, 6):
@@ -300,7 +301,7 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed('請選擇角色')
             await i.response.edit_message(embed=embed, view=view)
 
-    class CharactersDropdownView(View):  # 角色配置下拉選單的view
+    class CharactersDropdownView(DefaultView):  # 角色配置下拉選單的view
         def __init__(self, index: int, db: aiosqlite.Connection):
             super().__init__(timeout=None)
             self.db = db
@@ -337,7 +338,7 @@ class GenshinCog(commands.Cog):
                 len(result), result, self.index, self.db)
             await interaction.response.edit_message(embed=result[0][0], view=view)
 
-    class BuildSelectView(View):
+    class BuildSelectView(DefaultView):
         def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection):
             super().__init__(timeout=None)
             self.index = index
@@ -390,7 +391,7 @@ class GenshinCog(commands.Cog):
         embed.set_author(name=player, icon_url=player.avatar)
         await i.response.send_message(embed=embed)
 
-    class CalcultorElementButtonView(View):
+    class CalcultorElementButtonView(DefaultView):
         def __init__(self, author: Member, chara_list: List, item_type: str):
             super().__init__(timeout=None)
             self.author = author
@@ -423,7 +424,7 @@ class GenshinCog(commands.Cog):
             await i.response.defer()
             self.view.stop()
 
-    class CalculatorItems(View):
+    class CalculatorItems(DefaultView):
         def __init__(self, author: Member, item_list: List, item_type: str):
             super().__init__(timeout=None)
             self.author = author
@@ -491,7 +492,7 @@ class GenshinCog(commands.Cog):
         else:
             return True, None
 
-    class AddMaterialsView(View):
+    class AddMaterialsView(DefaultView):
         def __init__(self, db: aiosqlite.Connection, disabled: bool, author: Member, materials):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.AddTodoButton(disabled, db, materials))
@@ -712,7 +713,7 @@ class GenshinCog(commands.Cog):
         embeds = GenshinCog.get_oculi_embeds(area)
         await GeneralPaginator(i, embeds).start(embeded=True)
 
-    class EnkaPageView(View):
+    class EnkaPageView(DefaultView):
         def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, id: int, disabled: bool, member: Member, enka_data, index: int, bot: commands.Bot):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.EnkaArtifactButton(
@@ -745,7 +746,7 @@ class GenshinCog(commands.Cog):
                 self.embeds, self.charas, self.equip_dict, chara_id, disabled, self.member, self.enka_data, int(value[0]), self.bot)
             await i.response.edit_message(embed=self.embeds[int(value[0])], view=view)
 
-    class DamageTypeChoose(View):
+    class DamageTypeChoose(DefaultView):
         def __init__(self, enka_data: dict, chara_id: int, embeds: List[Embed], disabled: bool, index: int, bot: commands.Bot, charas, equip_dict: dict, member: Member, embed_index: int):
             super().__init__(timeout=None)
             self.enka_data = enka_data
@@ -785,7 +786,7 @@ class GenshinCog(commands.Cog):
             self.embed_index = embed_index
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需8至10秒'))
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
                                                self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
@@ -854,7 +855,7 @@ class GenshinCog(commands.Cog):
             self.equip_dict = equip_dict
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需8至10秒'))
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
                                                0, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)

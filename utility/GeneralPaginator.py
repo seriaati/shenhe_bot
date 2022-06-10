@@ -2,11 +2,13 @@ __all__ = ['GeneralPaginator']
 
 
 from discord import Interaction, SelectOption, User, ButtonStyle
-from discord.ui import View, Select, button, Button
+from discord.ui import Select, button, Button
 from typing import Optional, List, Union
 
+from debug import DefaultView
 
-class _view(View):
+
+class _view(DefaultView):
     def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
         super().__init__()
         self.author = author

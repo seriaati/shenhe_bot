@@ -2,7 +2,8 @@ from random import randint
 
 from discord import Interaction, Member, Message, Role, app_commands
 from discord.ext import commands
-from discord.ui import View, Button, button
+from discord.ui import Button
+from debug import DefaultView
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, log
 
@@ -155,7 +156,7 @@ class OtherCMDCog(commands.Cog):
     @app_commands.rename(member='使用者')
     async def avatar(self, i: Interaction, member: Member):
         embed = defaultEmbed(member)
-        view = View()
+        view = DefaultView()
         view.add_item(Button(label="下載頭像", url=member.avatar.url))
         embed.set_image(url=member.avatar)
         await i.response.send_message(embed=embed, view=view)

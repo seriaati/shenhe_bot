@@ -6,7 +6,8 @@ import discord
 from discord import Interaction, Message, Role, SelectOption, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Select, View
+from discord.ui import Select
+from debug import DefaultView
 from utility.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
@@ -56,7 +57,7 @@ class GiveAwayCog(commands.Cog):
             await channel.send(role.mention)
         await self.bot.db.commit()
 
-    class GiveAwayView(View):
+    class GiveAwayView(DefaultView):
         def __init__(self, db: aiosqlite.Connection, bot, i: Interaction = None):
             self.db = db
             self.interaction = i
@@ -210,7 +211,7 @@ class GiveAwayCog(commands.Cog):
             await interaction.response.send_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 退出抽獎成功', f'你的flow幣 {-int(ticket[0])}'), ephemeral=True)
             await self.update_gv_msg(msg.id, interaction)
 
-    class GiveawayDropdownView(View):
+    class GiveawayDropdownView(DefaultView):
         def __init__(self, giveaways: dict, db: aiosqlite.Connection):
             super().__init__(timeout=None)
             self.add_item(GiveAwayCog.GiveawayDropdown(giveaways, db))

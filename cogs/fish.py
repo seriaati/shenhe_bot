@@ -1,16 +1,13 @@
-import asyncio
-import time
 from random import randint
 
 import aiosqlite
-from discord import (ButtonStyle, Interaction, Member, Message, SelectOption, Thread,
-                     app_commands)
+from debug import DefaultView
+from discord import ButtonStyle, Interaction, Thread, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Select, View, button
+from discord.ui import Button
 from utility.FlowApp import FlowApp
-from utility.GeneralPaginator import GeneralPaginator
-from utility.utils import ayaakaaEmbed, defaultEmbed
+from utility.utils import ayaakaaEmbed
 
 
 class FishCog(commands.Cog):
@@ -185,7 +182,7 @@ class FishCog(commands.Cog):
                 else:
                     await interaction.followup.send(f'兔兔逃走了, 沒有摸到flow幣 qwq', ephemeral=True)
 
-    class TouchFish(View):  # 摸魚view
+    class TouchFish(DefaultView):  # 摸魚view
         def __init__(self, index: str, db: aiosqlite.Connection, bot):
             super().__init__(timeout=None)
             self.add_item(FishCog.TouchFishButton(index, db, bot))

@@ -1,7 +1,8 @@
 from discord import ButtonStyle, Interaction, SelectOption, app_commands
 from discord.ext import commands
-from discord.ui import Button, Select, View, button, select
+from discord.ui import Button, Select, button, select
 from discord.utils import get
+from debug import DefaultView
 from utility.utils import defaultEmbed, errEmbed
 
 
@@ -9,11 +10,11 @@ class ReactionRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    class RoleSelection(View):
+    class RoleSelection(DefaultView):
         def __init__(self):
             super().__init__(timeout=None)
 
-        class ButtonChoices(View):
+        class ButtonChoices(DefaultView):
             def __init__(self, role):
                 super().__init__(timeout=None)
                 self.role = role
@@ -44,7 +45,7 @@ class ReactionRoles(commands.Cog):
                 role_list.append(SelectOption(label=role))
             return role_list
 
-        class WorldLevelView(View):
+        class WorldLevelView(DefaultView):
             def __init__(self):
                 super().__init__(timeout=None)
                 for x in range(1, 9):
