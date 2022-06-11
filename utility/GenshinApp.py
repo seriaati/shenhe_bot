@@ -406,7 +406,7 @@ class GenshinApp:
             )
         return result
 
-    async def getAbyss(self, user_id: int, previous: bool):
+    async def getAbyss(self, user_id: int, previous: bool, overview: bool):
         client, uid, only_uid = await self.getUserCookie(user_id)
         if only_uid:
             result = errEmbed(
@@ -423,18 +423,19 @@ class GenshinApp:
                 f'```{e}```')
         else:
             rank = abyss.ranks
-            if not rank.most_played:
+            if len(rank.most_kills) == 0:
                 result = errEmbed(
-                    '<a:error_animated:982579472060547092> 找不到深淵資料!', '可能是因為你還沒打本期的深淵, 請輸入`/stats`來確認\n深淵資料需最多1小時來接收, 剛打完就來看的得稍等一會')
+                    '<a:error_animated:982579472060547092> 找不到深淵資料!',
+                    '建議輸入 `/stats` 來刷新資料\n'
+                    '(深淵資料需最多1小時來接收)')
                 return result
-            result = []
-            embed = defaultEmbed(
+            result = defaultEmbed(
                 f"第{abyss.season}期深淵",
                 f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n"
                 f"達到{abyss.max_floor}層\n"
-                f"共{abyss.total_stars}★"
+                f"共{abyss.total_stars} ✦"
             )
-            embed.add_field(
+            result.add_field(
                 name="戰績",
                 value=f"單次最高傷害 • {get_name.getName(rank.strongest_strike[0].id)} • {rank.strongest_strike[0].value}\n"
                 f"擊殺王 • {get_name.getName(rank.most_kills[0].id)} • {rank.most_kills[0].value}次擊殺\n"
@@ -442,12 +443,14 @@ class GenshinApp:
                 f"最多Q使用角色 • {get_name.getName(rank.most_bursts_used[0].id)} • {rank.most_bursts_used[0].value}次\n"
                 f"最多E使用角色 • {get_name.getName(rank.most_skills_used[0].id)} • {rank.most_skills_used[0].value}次"
             )
-            result.append(embed)
+            if overview:
+                return result
+            result = []
             for floor in abyss.floors:
                 embed = defaultEmbed(
-                    f"第{floor.floor}層 (共{floor.stars}★)", f" ")
+                    f"第{floor.floor}層 (共{floor.stars} ✦)", f" ")
                 for chamber in floor.chambers:
-                    name = f'第{chamber.chamber}間 {chamber.stars}★'
+                    name = f'第{chamber.chamber}間 {chamber.stars} ✦'
                     chara_list = [[], []]
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
@@ -460,8 +463,8 @@ class GenshinApp:
                         bottomStr += f"• {bottom_char} "
                     embed.add_field(
                         name=name,
-                        value=f"【上半】{topStr}\n\n"
-                        f"【下半】{bottomStr}",
+                        value=f"[上半] {topStr}\n\n"
+                        f"[下半] {bottomStr}",
                         inline=False
                     )
                 result.append(embed)

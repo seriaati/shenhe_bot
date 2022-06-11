@@ -186,10 +186,10 @@ async def calculateDamage(enka_data, chara_name: str, browser):
                     result[talent_name][talent_label] = []
                 try:
                     result[talent_name][talent_label].append(talent_damage)
-                except Exception as e:
-                    return None, e, False
+                except:
+                    pass
     await page.close()
-    return result, normal_attack_name, True
+    return result, normal_attack_name
 
 
 def trimCookie(cookie: str) -> str:

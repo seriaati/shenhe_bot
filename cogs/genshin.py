@@ -1,10 +1,12 @@
 from datetime import datetime
+import json
 from typing import Any, List, Optional
-
+from utility.utils import getClient
 import aiohttp
 import aiosqlite
 import discord
 import yaml
+import urllib.parse
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
@@ -178,36 +180,28 @@ class GenshinCog(commands.Cog):
 # /abyss
 
     @app_commands.command(name='abyss', description='深淵資料查詢')
-    @app_commands.rename(check_type='類別', season='期別', floor='層數', member='其他人')
-    @app_commands.describe(check_type='想要查看的資料類別',
-                           season='這期還是上期?', floor='欲查閱的層數', member='查看其他群友的資料')
+    @app_commands.rename(overview='類別', previous='期別', member='其他人')
+    @app_commands.describe(overview='想要查看的資料類別',
+                           previous='這期還是上期?', member='查看其他群友的資料')
     @app_commands.choices(
-        check_type=[Choice(name='總覽', value=0),
-                    Choice(name='詳細', value=1)],
-        season=[Choice(name='上期紀錄', value=0),
-                Choice(name='本期紀錄', value=1)],
-        floor=[Choice(name='所有樓層', value=0),
-               Choice(name='最後一層', value=1)]
+        overview=[Choice(name='詳細', value=0),
+                  Choice(name='總覽', value=1)],
+        previous=[Choice(name='本期紀錄', value=0),
+                  Choice(name='上期紀錄', value=1)]
     )
-    async def abyss(self, i: Interaction, check_type: int, season: int = 1, floor: int = 0, member: Optional[Member] = None):
+    async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: Member = None):
         member = member or i.user
-        previous = True if season == 0 else False
-        result = await self.genshin_app.getAbyss(member.id, previous)
+        previous = True if previous == 1 else False
+        overview = True if overview == 1 else False
+        result = await self.genshin_app.getAbyss(member.id, previous, overview)
         if type(result) is not list:
-            result.set_author(name=member, icon_url=member.avatar)
-        else:
-            for embed in result:
-                embed.set_author(name=member, icon_url=member.avatar)
-        if type(result) == discord.Embed:
             await i.response.send_message(embed=result)
             return
-        if check_type == 0:
-            await i.response.send_message(embed=result[0])
+        if overview:
+            await i.response.send_message(embed=result)
         else:
-            if floor == 1:
-                await i.response.send_message(embed=result[-1])
-            else:
-                await AbyssPaginator(i, result[1:]).start(embeded=True)
+            await AbyssPaginator(i, result).start(embeded=True)
+
 # /stuck
 
     @app_commands.command(name='stuck', description='找不到資料?')
@@ -795,10 +789,10 @@ class GenshinCog(commands.Cog):
 
     async def parse_damage_embed(chara_id: int, enka_data, member: Member, dmg_type: int, bot: commands.Bot):
         chara_name = get_name.getName(int(chara_id), True)
-        result, normal_attack_name, success = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
-        if not success:
-            embed = errEmbed('<a:error_animated:982579472060547092> 計算失敗', f'傷害計算器卡 bug 了\n這不是你的問題\n小雪目前還在尋找修復辦法\n```py{normal_attack_name}\n```')
-            return embed
+        result, normal_attack_name = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
+        # if not success:
+        #     embed = errEmbed('<a:error_animated:982579472060547092> 計算失敗', f'傷害計算器卡 bug 了, 這不是你的問題\n小雪目前還在尋找修復辦法, 按下方的返回鍵並再按一次計算就可以了')
+        #     return embed
         result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
         embed = defaultEmbed(f'{get_name.getName(int(chara_id))} - 傷害')
         dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
@@ -857,9 +851,9 @@ class GenshinCog(commands.Cog):
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需8至10秒'))
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
-                                               0, self.bot, self.charas, self.equip_dict, self.member, self.index)
+                                               2, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)
-            embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 0, self.bot)
+            embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 2, self.bot)
             await i.edit_original_message(embed=embed)
 
     def percent_symbol(propId: str):
@@ -1079,21 +1073,74 @@ class GenshinCog(commands.Cog):
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
-    # @app_commands.command(name='wiki', description='查看原神維基百科')
-    # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
-    # @app_commands.rename(wikiType='類別', query='關鍵詞')
-    # @app_commands.describe(wikiType='要查看的維基百科分頁類別')
-    # async def wiki(self, i: Interaction, wikiType: int, query: str):
-    #     client = getClient()
-    #     if wikiType == 0:
-    #         previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-    #         for p in previews:
-    #             d = await client.get_wiki_page(p.id)
-    #             d = d.modules
-    #             for item in d['屬性']['list']:
-    #                 if item['key'] == '名字' and query in item['value']:
-    #                     print(d)
-    #                     break
+    @app_commands.command(name='wiki', description='查看原神維基百科')
+    @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
+    @app_commands.rename(wikiType='類別', query='關鍵詞')
+    @app_commands.describe(wikiType='要查看的維基百科分頁類別')
+    async def wiki(self, i: Interaction, wikiType: int, query: str):
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在搜尋維基百科'))
+        with open('GenshinData/wiki_materials.yaml', 'r', encoding='utf-8') as f:
+            wiki_materials = yaml.full_load(f)
+        span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
+                       '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
+        client = getClient()
+        found = False
+        if wikiType == 0:
+            previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
+            for p in previews:
+                d = (await client.get_wiki_page(p.id)).modules
+                for item in d['屬性']['list']:
+                    if item['key'] == '名字' and query in item['value']:
+                        found = True
+                        wiki = d
+                        break
+        if not found:
+            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
+            return
+        embeds = []
+        embed = defaultEmbed('搜尋結果')
+        name = '屬性'
+        value = ''
+        for property in wiki['屬性']['list']:
+            value += f"{property['key']} - {property['value'][0]}\n"
+        embed.add_field(name=name, value=value)
+        embeds.append(embed)
+        embed = defaultEmbed('突破後屬性')
+        for level in wiki['突破']['list'][:-1]:
+            value = ''
+            for combat in level['combatList'][1:]:
+                value += f"{combat['key']} - {combat['values'][1]}\n"
+            embed.add_field(name=level['key'], value=value)
+        embeds.append(embed)
+        embed = defaultEmbed('突破素材')
+        for level in wiki['突破']['list'][1:-1]:
+            value = ''
+            for mat in level['materials']:
+                mat = json.loads(mat.replace('$', ''))
+                value += f"{(wiki_materials.get(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
+            embed.add_field(name=level['key'], value=value)
+        embeds.append(embed)
+        embed = defaultEmbed('全圖')
+        embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
+        embeds.append(embed)
+        for art in wiki['畫廊']['list']:
+            embed = defaultEmbed(art['key'])
+            embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
+            embed.set_footer(text=art['imgDesc'])
+            embeds.append(embed)
+        for talent in wiki['天賦']['list']:
+            talent_desc = talent['desc'].replace(
+                '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
+            for style in span_styles:
+                if style in talent_desc:
+                    talent_desc = talent_desc.replace(style, '')
+            embed = defaultEmbed(talent['title'], talent_desc)
+            embed.set_thumbnail(url=urllib.parse.quote(
+                talent['icon_url'], safe=':/'))
+            embed.set_image(url=urllib.parse.quote(
+                talent['talent_img'], safe=':/'))
+            embeds.append(embed)
+        await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -4,7 +4,41 @@ import re
 import aiohttp
 from pyppeteer import launch
 import yaml
-import utility.enkaToGOOD
+# import utility.enkaToGOOD
+import yaml
+from utility.utils import getClient
+from genshin.models import WikiPageType
+
+async def genshin():
+    result = {}
+    browser = await launch({"headless": True, "args": ["--start-maximized"]})
+    page = await browser.newPage()
+    await page.setViewport({"width": 1440, "height": 900})
+    await page.goto('https://wiki.hoyolab.com/pc/genshin/entry/757')
+    await page.waitForSelector('body > div#__nuxt:nth-child(1) > div#__layout > div.app-pc > div.genshin-entry:nth-child(2) > div.nav-bar-pc:nth-child(2) > div.nav-bar-pc-fixed:nth-child(1) > div.nav-bar-pc-right:nth-child(4) > div.c-selector.language-selector:nth-child(2) > div.c-selector-btn.pc.hasSelected:nth-child(2)')
+    await page.click('body > div#__nuxt:nth-child(1) > div#__layout > div.app-pc > div.genshin-entry:nth-child(2) > div.nav-bar-pc:nth-child(2) > div.nav-bar-pc-fixed:nth-child(1) > div.nav-bar-pc-right:nth-child(4) > div.c-selector.language-selector:nth-child(2) > div.c-selector-btn.pc.hasSelected:nth-child(2)')
+    await page.click('body > div#__nuxt:nth-child(1) > div#__layout > div.app-pc > div.genshin-entry:nth-child(2) > div.nav-bar-pc:nth-child(2) > div.nav-bar-pc-fixed:nth-child(1) > div.nav-bar-pc-right:nth-child(4) > div.c-selector.language-selector:nth-child(2) > span:nth-child(1) > ul.c-selector-list.pc.language-selector-list > li:nth-child(2) > div.c-selector-list-item')
+    client = getClient()
+    previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
+    for p in previews:
+        d = (await client.get_wiki_page(p.id)).modules
+        for item in d['突破']['list']:
+            if item['materials'] is None:
+                continue
+            for mat in item['materials']:
+                mat = json.loads(mat.replace('$',''))
+                ep_id = mat[0]['ep_id']
+                if ep_id in result:
+                    continue 
+                await page.goto(f"https://wiki.hoyolab.com/pc/genshin/entry/{ep_id}")
+                await page.waitFor(1000)
+                mat_name = await page.querySelector('body > div#__nuxt:nth-child(1) > div#__layout > div.app-pc > div.genshin-entry:nth-child(2) > div.genshin-entry-page:nth-child(4) > div.genshin-entry-child-page:nth-child(2) > div.detail-header:nth-child(1) > div.detail-header-common > div.detail-header-common-right:nth-child(2) > div.detail-header-common-name:nth-child(1) > span')
+                mat_name = await (await mat_name.getProperty("textContent")).jsonValue()
+                print(ep_id)
+                print(mat_name)
+                result[ep_id] = mat_name 
+    with open('GenshinData/wiki_materials.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(result, f)
 
 async def main(chara_name: str):
     print(f'calculating damage for {chara_name}')
@@ -97,5 +131,5 @@ async def data():
         yaml.dump(tw, f)
 
 print('starting...')
-asyncio.run(main('Shenhe'))
+asyncio.run(genshin())
 print('finished.')
