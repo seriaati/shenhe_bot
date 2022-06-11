@@ -58,12 +58,13 @@ class ShenheBot(commands.Bot):
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
+        g = self.get_guild(916838066117824553)
         self.add_view(FlowCog.AcceptView(self.db, self))
         self.add_view(FlowCog.ConfirmView(self.db, self))
         self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
         self.add_view(ReactionRoles.RoleSelection())
         self.add_view(ReactionRoles.RoleSelection.WorldLevelView())
-        self.add_view(ReactionRoles.NationalityChooser())
+        self.add_view(ReactionRoles.NationalityChooser([len(g.get_role(954684157831823361).members), len(g.get_role(938981834883227689).members), len(g.get_role(946992082092982314).members)]))
         self.add_view(WelcomeCog.AcceptRules(self.db))
         self.add_view(WelcomeCog.StartTutorial(self.db))
         self.add_view(WelcomeCog.Welcome(None))
