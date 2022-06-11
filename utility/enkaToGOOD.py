@@ -13,10 +13,10 @@ async def convert(enka_data):
     for chara in enka_data['avatarInfoList']:
         id = chara['avatarId']
         chara_key = (utility.utils.get_name.getName(id, True)).replace(' ', '') or chara_key
-        level = chara['propMap']['4001']['val']
+        level = chara['propMap']['4001']['ival']
         constellation = 0 if 'talentIdList' not in chara else len(
             chara['talentIdList'])
-        ascention = chara['propMap']['1002']['val']
+        ascention = chara['propMap']['1002']['ival']
         talents = chara['skillLevelMap']
         if id == 10000002:  # 神里綾華
             talent = {
@@ -48,7 +48,7 @@ async def convert(enka_data):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = (utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','') or e['flat']['nameTextMapHash']
+                key = (utility.utils.get_name.getNameTextHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','').replace('-','') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
                 refinement = list(e['weapon']['affixMap'].values())[0]+1
