@@ -119,7 +119,7 @@ class ReactionRoles(commands.Cog):
             for r in roles:
                 if r in i.user.roles:
                     await i.user.remove_roles(r)
-            await i.user.add_roles(roles[self.values[0]])
+            await i.user.add_roles(roles[int(self.values[0])])
             view = ReactionRoles.NationalityChooser(
                 [len(roles[0].members), len(roles[1].members), len(roles[2].members)])
             await i.response.edit_message(view=view)
