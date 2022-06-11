@@ -973,10 +973,10 @@ class GenshinCog(commands.Cog):
             return
         player = data['playerInfo']
         embeds = []
-        sig = player['signature'] if 'signature' in player else '(空)'
+        sig = f"「{player['signature']}」" if 'signature' in player else '(該玩家沒有簽名)'
         overview = defaultEmbed(
             f'{player["nickname"]}',
-            f"「{sig}」\n"
+            f"{sig}\n"
             f"玩家等級: Lvl. {player['level']}\n"
             f"世界等級: W{player['worldLevel']}\n"
             f"完成成就: {player['finishAchievementNum']}\n"
