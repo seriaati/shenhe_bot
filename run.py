@@ -63,7 +63,7 @@ class ShenheBot(commands.Bot):
         self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
         self.add_view(ReactionRoles.RoleSelection())
         self.add_view(ReactionRoles.RoleSelection.WorldLevelView())
-        self.add_view(ReactionRoles.NationalityChooser([]))
+        self.add_view(ReactionRoles.NationalityChooser([1, 2, 3]))
         self.add_view(WelcomeCog.AcceptRules(self.db))
         self.add_view(WelcomeCog.StartTutorial(self.db))
         self.add_view(WelcomeCog.Welcome(None))
