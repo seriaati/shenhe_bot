@@ -110,7 +110,7 @@ class ReactionRoles(commands.Cog):
                              description=f'目前人數: {num[2]}'),
                 SelectOption(label='清除國籍', emoji='🗑️', value=3)])
 
-        async def callback(self, i: Interaction, select: Select):
+        async def callback(self, i: Interaction):
             roles = [
                 i.guild.get_role(954684157831823361),
                 i.guild.get_role(938981834883227689),
