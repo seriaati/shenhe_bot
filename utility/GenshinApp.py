@@ -30,7 +30,8 @@ class GenshinApp:
                 '<a:error_animated:982579472060547092> 帳號內沒有任何角色', '已取消設定 cookie')
             return result
         c: aiosqlite.Cursor = await self.db.cursor()
-        uid = await c.fetchone(await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,)))
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
+        uid = await c.fetchone()
         if uid is None:
             result = errEmbed(
                 '<a:error_animated:982579472060547092> 找不到 UID',
