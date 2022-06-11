@@ -119,7 +119,7 @@ class ReactionRoles(commands.Cog):
             for r in roles:
                 if r in i.user.roles:
                     await i.user.remove_roles(r)
-            if self.values[0] == 3:
+            if self.values[0] == '3':
                 pass
             else:
                 await i.user.add_roles(roles[int(self.values[0])])

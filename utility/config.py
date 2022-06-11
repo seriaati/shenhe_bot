@@ -11,6 +11,7 @@ class Config:
 
         self.main = config['main']
         self.dev = config['dev']
+        self.lavalink = config['lavalink']
 
 
 config = Config()
