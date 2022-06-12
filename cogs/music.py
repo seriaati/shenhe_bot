@@ -30,11 +30,8 @@ class MusicCog(commands.Cog):
     async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
         if not player.queue.is_empty:
             await player.play(player.queue.get())
-
-        def check(player: wavelink.Player, track: wavelink.Track):
-            return player.guild == player.guild
         try:
-            await self.bot.wait_for("wavelink_track_start", check=check, timeout=180)
+            await self.bot.wait_for("wavelink_track_start", timeout=180)
         except asyncio.TimeoutError:
             await player.disconnect()
 
