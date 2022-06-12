@@ -218,3 +218,7 @@ weekday_dict = {0: '週一', 1: '週二', 2: '週三', 3: '週四', 4: '週五',
 
 def getWeekdayName(n: int) -> str:
     return weekday_dict.get(n)
+
+def divide_chunks(l, n):
+    for i in range(0, len(l), n):
+        yield l[i:i + n]

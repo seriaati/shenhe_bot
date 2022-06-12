@@ -15,6 +15,7 @@ class Dropdown(Select):
             SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
             SelectOption(label='語音台', description='語音台相關指令', emoji='🎙️'),
+            SelectOption(label='音樂系統', description='音樂系統相關指令', emoji='🎵'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?',
                          min_values=1, max_values=1, options=options)
@@ -281,6 +282,53 @@ class Dropdown(Select):
             embed.add_field(
                 name='/vc transfer',
                 value='移交房主權',
+                inline=False
+            )
+        elif self.values[0] == '音樂系統':
+            embed = defaultEmbed('音樂系統指令')
+            embed.add_field(
+                name='/play',
+                value='播放音樂',
+                inline=False
+            )
+            embed.add_field(
+                name='/stop',
+                value='停止播放器並清除待播放清單',
+                inline=False
+            )
+            embed.add_field(
+                name='/pause',
+                value='暫停播放器',
+                inline=False
+            )
+            embed.add_field(
+                name='/resume',
+                value='取消暫停',
+                inline=False
+            )
+            embed.add_field(
+                name='/disconnect',
+                value='讓申鶴悄悄的離開目前所在的語音台',
+                inline=False
+            )
+            embed.add_field(
+                name='/player',
+                value='查看目前播放狀況',
+                inline=False
+            )
+            embed.add_field(
+                name='/queue',
+                value='查看目前待播放清單',
+                inline=False
+            )
+            embed.add_field(
+                name='/skip',
+                value='跳過目前正在播放的歌曲',
+                inline=False
+            )
+            embed.add_field(
+                name='/clear',
+                value='清除目前的待播放清單',
                 inline=False
             )
         await interaction.response.send_message(embed=embed, ephemeral=True)

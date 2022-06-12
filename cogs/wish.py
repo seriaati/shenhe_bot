@@ -9,7 +9,7 @@ from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Modal, View
 from utility.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, errEmbed, log
+from utility.utils import defaultEmbed, divide_chunks, errEmbed, getClient, log
 from utility.WishPaginator import WishPaginator
 
 import genshin
@@ -35,12 +35,7 @@ class WishCog(commands.Cog):
         )
 
         async def on_submit(self, i: discord.Interaction):
-            client = genshin.Client()
-            client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
-            if only_uid:
-                embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
-                await i.response.send_message(embed=embed)
-                return
+            client = getClient()
             url = self.url.value
             log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})')
             authkey = genshin.utility.extract_authkey(url)
@@ -230,10 +225,6 @@ class WishCog(commands.Cog):
             result.append([total_wish, left_pull, five_star, four_star])
         return result
 
-    def divide_chunks(l, n):  # 分割祈願紀錄的helper function
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
     # /wish history
     @wish.command(name='history', description='祈願歷史紀錄查詢')
     @app_commands.rename(member='其他人')
@@ -259,7 +250,7 @@ class WishCog(commands.Cog):
             else:
                 user_wishes.append(
                     f"{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})")
-        first_twenty_wishes = list(WishCog.divide_chunks(user_wishes, 20))
+        first_twenty_wishes = list(divide_chunks(user_wishes, 20))
         embeds = []
         for l in first_twenty_wishes:
             embed_str = ''
