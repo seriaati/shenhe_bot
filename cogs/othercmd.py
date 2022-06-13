@@ -33,6 +33,8 @@ class OtherCMDCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
+            if payload.channel_id == 965842415913152522:
+                return await self.bot.get_channel(payload.channel_id).send('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', delete_after=3)
             log(True, False, 'Quote', payload.user_id)
             member = self.bot.get_user(payload.user_id)
             channel = self.bot.get_channel(payload.channel_id)
@@ -90,6 +92,8 @@ class OtherCMDCog(commands.Cog):
 
     @commands.command(aliases=['q'])
     async def quote(self, ctx):
+        if ctx.message.channel.id == 965842415913152522:
+            return await ctx.send('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', delete_after=3)
         log(True, False, 'Quote', ctx.author.id)
         await ctx.message.delete()
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
@@ -129,6 +133,8 @@ class OtherCMDCog(commands.Cog):
         await i.response.send_message(embed=defaultEmbed('群組總人數', f'目前共 {len(g.members)} 人'))
 
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
+        if msg.channel.id == 965842415913152522:
+            return await i.response.send_message('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', ephemeral=True)
         log(True, False, 'Quote', i.user.id)
         embed = defaultEmbed(
             f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
