@@ -424,7 +424,7 @@ class WishCog(commands.Cog):
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response(embed=msg)
+            await i.response.send_message(embed=msg)
             return
         overview = await self.wish_overview_calc(member.id)
         total_wish = overview[0][0] + overview[1][0] + \
