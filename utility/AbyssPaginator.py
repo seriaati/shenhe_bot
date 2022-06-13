@@ -1,11 +1,10 @@
 __all__ = ['AbyssPaginator']
 
 
-from discord import Interaction, SelectOption, User
-from discord.ui import Select, Button
-from typing import Optional, List, Union
+from typing import List, Optional, Union
 
-from debug import DefaultView
+from discord import Interaction, SelectOption, User
+from discord.ui import Button, Select, View
 
 
 class _select(Select):
@@ -19,7 +18,7 @@ class _select(Select):
 		await self.view.update_children(interaction)
 
 
-class _view(DefaultView):
+class _view(View):
 	def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
 		super().__init__()
 		self.author = author

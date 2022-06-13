@@ -3,14 +3,13 @@ __all__ = ['TutorialPaginator']
 
 import aiosqlite
 from discord import Interaction, SelectOption, User, ButtonStyle
-from discord.ui import Select, button, Button
+from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
-from debug import DefaultView
 
 from utility.utils import errEmbed
 
 
-class _view(DefaultView):
+class _view(View):
     def __init__(self, author: User, pages: List[SelectOption], embeded: bool, db: aiosqlite.Connection):
         super().__init__()
         self.author = author

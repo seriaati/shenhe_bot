@@ -2,10 +2,8 @@ __all__ = ['WishPaginator']
 
 
 from discord import Interaction, SelectOption, User, ButtonStyle
-from discord.ui import Select, button, Button
+from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
-
-from debug import DefaultView
 
 
 class _select(Select):
@@ -19,7 +17,7 @@ class _select(Select):
 		await self.view.update_children(interaction)
 
 
-class _view(DefaultView):
+class _view(View):
 	def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
 		super().__init__()
 		self.author = author
