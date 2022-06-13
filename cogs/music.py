@@ -216,9 +216,8 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 後面沒有歌了', '輸入 `/play` 來新增歌曲'), ephemeral=True)
-        next_track = vc.queue.get()
-        await vc.play(next_track)
-        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {next_track}'))
+        await vc.stop()
+        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {vc.queue[0]}'))
 
     @app_commands.command(name='clear', description='清除目前的待播放清單')
     async def music_clear(self, i: Interaction):
