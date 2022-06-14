@@ -775,28 +775,28 @@ class GenshinCog(commands.Cog):
             self.bot = bot
             self.equip_dict = equip_dict
             self.charas = charas
-            self.disabeld = disabled
+            self.disabled = disabled
             self.embeds = embeds
             self.embed_index = embed_index
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需8至10秒'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
                                                self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
-            embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, self.index, self.bot)
+            async for result in calculateDamage(self.enka_data, get_name.getName(int(self.id), True).replace(' ', ''), self.bot.browser, self.index):
+                if isinstance(result, Embed):
+                    await i.edit_original_message(embed=result)
+                else:
+                    embed = GenshinCog.parse_damage_embed(self.id, result[0], i.user, self.index, result[1])
             await i.edit_original_message(embed=embed)
 
-    async def parse_damage_embed(chara_id: int, enka_data, member: Member, dmg_type: int, bot: commands.Bot):
+    def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
         chara_name = get_name.getName(int(chara_id), True)
-        result, normal_attack_name = await calculateDamage(enka_data, chara_name.replace(' ', ''), bot.browser)
-        # if not success:
-        #     embed = errEmbed('<a:error_animated:982579472060547092> 計算失敗', f'傷害計算器卡 bug 了, 這不是你的問題\n小雪目前還在尋找修復辦法, 按下方的返回鍵並再按一次計算就可以了')
-        #     return embed
         result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
         embed = defaultEmbed(f'{get_name.getName(int(chara_id))} - 傷害')
         dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-        name = f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg_type]}'
+        name = f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg]}'
         if chara_name == 'Xiao':
             name += ' (開Q狀態下)'
         elif chara_name == 'Raiden Shogun':
@@ -819,7 +819,7 @@ class GenshinCog(commands.Cog):
                     label = '低空墜地傷害'
                 elif label == '高空墜地衝擊傷害':
                     label = '高空墜地傷害'
-                value += f'{label} - {label_damages[dmg_type]}\n'
+                value += f'{label} - {label_damages[0]}\n'
             inline = False if field_count == 4 else True
             if talent == '重擊':
                 talent = '下落攻擊'
@@ -849,11 +849,15 @@ class GenshinCog(commands.Cog):
             self.equip_dict = equip_dict
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需8至10秒'))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
                                                2, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)
-            embed = await GenshinCog.parse_damage_embed(self.id, self.enka_data, self.member, 2, self.bot)
+            async for result in calculateDamage(self.enka_data, get_name.getName(int(self.id), True).replace(' ', ''), self.bot.browser, 2):
+                if isinstance(result, Embed):
+                    await i.edit_original_message(embed=result)
+                else:
+                    embed = GenshinCog.parse_damage_embed(self.id, result[0], i.user, 2, result[1])
             await i.edit_original_message(embed=embed)
 
     def percent_symbol(propId: str):
@@ -1078,15 +1082,14 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(wikiType='類別', query='關鍵詞')
     @app_commands.describe(wikiType='要查看的維基百科分頁類別')
     async def wiki(self, i: Interaction, wikiType: int, query: str):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在搜尋維基百科'))
-        with open('GenshinData/wiki_materials.yaml', 'r', encoding='utf-8') as f:
-            wiki_materials = yaml.full_load(f)
+        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在獲取原神百科資料'))
         span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
                        '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
         client = getClient()
         found = False
         if wikiType == 0:
             previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
+            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取成功, 正在搜尋關鍵字'))
             for p in previews:
                 d = (await client.get_wiki_page(p.id)).modules
                 for item in d['屬性']['list']:
@@ -1117,7 +1120,7 @@ class GenshinCog(commands.Cog):
             value = ''
             for mat in level['materials']:
                 mat = json.loads(mat.replace('$', ''))
-                value += f"{(wiki_materials.get(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
+                value += f"{(get_name.getWikiMaterialName.get(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
             embed.add_field(name=level['key'], value=value)
         embeds.append(embed)
         embed = defaultEmbed('全圖')

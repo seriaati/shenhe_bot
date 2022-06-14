@@ -1,4 +1,6 @@
 import utility.utils
+import json 
+
 async def convert(enka_data):
     good_dict = {
         'format': 'GOOD',
