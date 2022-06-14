@@ -14,8 +14,8 @@ class MusicCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-        bot.loop.create_task(self.connect_nodes())
+        if not self.bot.debug_toggle:
+            bot.loop.create_task(self.connect_nodes())
 
     async def connect_nodes(self):
         await self.bot.wait_until_ready()
@@ -46,12 +46,11 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = i.guild.voice_client
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))
         regex = re.compile(
-            r'^(?:http|ftp)s?://'  # http:// or https://
-            # domain...
+            r'^(?:http|ftp)s?://'
             r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-            r'localhost|'  # localhost...
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
-            r'(?::\d+)?'  # optional port
+            r'localhost|'
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            r'(?::\d+)?'
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         is_url = (re.match(regex, search) is not None)
         is_playlist = False
@@ -68,7 +67,7 @@ class MusicCog(commands.Cog):
                     vc.queue.put(t)
             elif 'playlist' in search and 'spotify' in search:
                 emoji = '<:spotify:985539937053061190>'
-                is_playlist = True 
+                is_playlist = True
                 is_spotify = True
                 first = True
                 try:
