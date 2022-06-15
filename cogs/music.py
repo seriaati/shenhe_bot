@@ -14,8 +14,8 @@ class MusicCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        if not self.bot.debug_toggle:
-            bot.loop.create_task(self.connect_nodes())
+        # if not self.bot.debug_toggle:
+        bot.loop.create_task(self.connect_nodes())
 
     async def connect_nodes(self):
         await self.bot.wait_until_ready()
@@ -82,8 +82,12 @@ class MusicCog(commands.Cog):
                 emoji = '<:yt:985540703323058196>'
                 track: wavelink.YouTubeTrack = await wavelink.NodePool.get_node().get_tracks(wavelink.YouTubeTrack, search)
             elif 'spotify' in search:
+                is_spotify = True
                 emoji = '<:spotify:985539937053061190>'
-                track: spotify.SpotifyTrack = await spotify.SpotifyTrack.search(query=search, return_first=True)
+                try:
+                    track: spotify.SpotifyTrack = await spotify.SpotifyTrack.search(query=search, return_first=True)
+                except wavelink.ext.spotify.SpotifyRequestError:
+                    return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 該連結找不到對應 spotify 歌曲'))
             if not is_playlist and not is_spotify:
                 try:
                     track = track[0]
@@ -110,9 +114,9 @@ class MusicCog(commands.Cog):
             embed = defaultEmbed(
                 f'{emoji} {track.title}',
                 f'{verb}\n'
-                f'🕒 {datetime.timedelta(seconds=track.length)}\n'
-                f'✏️ {track.author}\n'
-                f'🔗 {track.uri}')
+                f'<:CLOCK:985902088691277904> {datetime.timedelta(seconds=track.length)}\n'
+                f'<:MIC:985902267418955776> {track.author}\n'
+                f'<:LINK:985902086262759484> {track.uri}')
             embed.set_image(url=track.thumb)
         await i.edit_original_message(embed=embed)
 
@@ -174,9 +178,9 @@ class MusicCog(commands.Cog):
         track: wavelink.abc.Playable = vc.track
         embed = defaultEmbed(
             track.info['title'],
-            f'🕒 {datetime.timedelta(seconds=int(vc.position))}/{datetime.timedelta(seconds=track.length)}\n'
-            f"✏️ {track.info['author']}\n"
-            f"🔗 {track.info['uri']}"
+            f'<:CLOCK:985902088691277904> {datetime.timedelta(seconds=int(vc.position))}/{datetime.timedelta(seconds=track.length)}\n'
+            f"<:MIC:985902267418955776> {track.info['author']}\n"
+            f"<:LINK:985902086262759484> {track.info['uri']}"
         )
         embed.set_image(url=track.thumb)
         await i.response.send_message(embed=embed)
