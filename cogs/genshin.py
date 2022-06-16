@@ -788,7 +788,7 @@ class GenshinCog(commands.Cog):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
-                    embed = GenshinCog.parse_damage_embed(self.id, result[0], i.user, self.index, result[1])
+                    embed = GenshinCog.parse_damage_embed(self.id, result[0], self.member, self.index, result[1])
             await i.edit_original_message(embed=embed)
 
     def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
@@ -857,7 +857,7 @@ class GenshinCog(commands.Cog):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
-                    embed = GenshinCog.parse_damage_embed(self.id, result[0], i.user, 2, result[1])
+                    embed = GenshinCog.parse_damage_embed(self.id, result[0], self.member, 2, result[1])
             await i.edit_original_message(embed=embed)
 
     def percent_symbol(propId: str):
