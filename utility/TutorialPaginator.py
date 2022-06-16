@@ -82,4 +82,4 @@ class TutorialPaginator:
             embeded) else {'embed': self.pages[view.current_page]}
         kwargs['view'] = view
 
-        await self.interaction.response.edit_message(**kwargs, ephemeral=True)
+        await self.interaction.response.edit_message(**kwargs)
