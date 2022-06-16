@@ -135,6 +135,9 @@ class MusicCog(commands.Cog):
 
         @button(label='贊成', style=ButtonStyle.green)
         async def callback(self, i: Interaction, button: Button):
+            vc_role = i.guild.get_role(980774103344640000)
+            if vc_role not in i.user.roles:
+                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你沒有在語音台中'), ephemeral=True)
             c = await self.db.cursor()
             await c.execute('SELECT * FROM music WHERE user_id = ? AND channel_id = ?', (i.user.id, self.vc.channel.id))
             result = (await c.fetchone())
