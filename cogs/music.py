@@ -171,7 +171,7 @@ class MusicCog(commands.Cog):
                 await i.response.edit_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'), view=None)
-        if len(vc.channel.members)-1 == 1:
+        if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -204,7 +204,7 @@ class MusicCog(commands.Cog):
                 await i.response.edit_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'), view=None)
-        if len(vc.channel.members)-1 == 1:
+        if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -237,7 +237,7 @@ class MusicCog(commands.Cog):
                 await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已繼續'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已繼續'), view=None)
-        if len(vc.channel.members)-1 == 1:
+        if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -319,7 +319,7 @@ class MusicCog(commands.Cog):
                 await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {vc.queue[0]}'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {vc.queue[0]}'), view=None)
-        if len(vc.channel.members)-1 == 1:
+        if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -352,7 +352,7 @@ class MusicCog(commands.Cog):
                 await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 待播放清單清除成功'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 待播放清單清除成功'), view=None)
-        if len(vc.channel.members)-1 == 1:
+        if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
