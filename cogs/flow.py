@@ -70,7 +70,7 @@ class FlowCog(commands.Cog):
                 start = datetime(year=now.year, month=now.month, day=now.day,
                                  hour=18, minute=0, second=0, microsecond=0)
                 end = datetime(year=now.year, month=now.month+1 if now.day == calendar.monthrange(now.year, now.month)[
-                               1] else now.month, day=1 if now.day == calendar.monthrange(now.year, now.month)[1] else now.day, hour=4, minute=59, second=0, microsecond=0)
+                               1] else now.month, day=1 if now.day == calendar.monthrange(now.year, now.month)[1] else now.day+1, hour=4, minute=59, second=0, microsecond=0)
                 if start <= now <= end:
                     await c.execute('SELECT night FROM flow_accounts WHERE user_id = ?', (user_id,))
                     night = await c.fetchone()
