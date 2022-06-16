@@ -123,7 +123,7 @@ class WelcomeCog(commands.Cog):
             if traveler in i.user.roles:
                 await i.response.send_message(embed=defaultEmbed('你已經做過入群導引啦', '不需要再做囉'), ephemeral=True)
                 return
-            await i.response.send_message(embed=embed, view=view, ephemeral=True)
+            await i.response.edit_message(embed=embed, view=view, ephemeral=True)
 
     class StartTutorial(DefaultView):
         def __init__(self, db: aiosqlite.Connection):

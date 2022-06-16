@@ -94,7 +94,7 @@ tree = bot.tree
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     if isinstance(e, app_commands.errors.MissingRole):
         embed = errEmbed(
-            '<a:error_animated:982579472060547092> 錯誤', '你不是小雪團隊的一員')
+            '<a:error_animated:982579472060547092> 權限不足', '你不是小雪團隊的一員')
         if i.response._responded:
             await i.edit_original_message(embed=embed)
         else:
