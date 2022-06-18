@@ -17,6 +17,8 @@ class VoiceChannel(commands.Cog):
         old_channel: VoiceChannel = before.channel
         new_channel: VoiceChannel = after.channel
         c: aiosqlite.Cursor = await self.bot.db.cursor()
+        if new_channel is not None:
+            await member.add_roles(vc_role)
         if new_channel == vc:
             member_vc = await member.guild.create_voice_channel(name=f'{member.name}的語音台', category=vc.category)
             await member.move_to(member_vc)
