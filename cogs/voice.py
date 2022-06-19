@@ -35,7 +35,7 @@ class VoiceChannel(commands.Cog):
             await c.execute('DELETE FROM voice WHERE channel_id = ?', (old_channel.id,))
         await self.bot.db.commit()
 
-    vc = app_commands.Group(name="vc", description="語音台指令")
+    vc = app_commands.Group(name="vc語音台", description="語音台指令")
 
     async def check_owner(self, channel_id: int, user_id: int):
         c: aiosqlite.Cursor = await self.bot.db.cursor()

@@ -514,7 +514,7 @@ class GenshinCog(commands.Cog):
             await self.db.commit()
             await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 代辦事項新增成功', '使用`/todo`指令來查看你的代辦事項'), ephemeral=True)
 
-    calc = app_commands.Group(name="calc", description="原神養成計算機")
+    calc = app_commands.Group(name="calc養成計算", description="原神養成計算機")
 
     @calc.command(name='notown所有角色', description='計算一個自己不擁有的角色所需的素材')
     async def calc_notown(self, i: Interaction):
