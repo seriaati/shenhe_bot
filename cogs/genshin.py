@@ -54,7 +54,7 @@ class GenshinCog(commands.Cog):
 # Cookie Submission
 
     @app_commands.command(
-        name='cookie',
+        name='cookie設定',
         description='設定Cookie')
     @app_commands.rename(option='選項')
     @app_commands.choices(option=[
@@ -79,7 +79,7 @@ class GenshinCog(commands.Cog):
             await i.response.send_modal(GenshinCog.CookieModal(self.bot.db))
 
     @app_commands.command(
-        name='check',
+        name='check即時便籤',
         description='查看即時便籤, 例如樹脂、洞天寶錢、探索派遣'
     )
     @app_commands.rename(member='其他人')
