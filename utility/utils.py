@@ -169,7 +169,7 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
             await page.waitForSelector(selector)
             await page.click(selector)
             break
-        elif w['key'] == 'StaffOfHoma' and w['location'] == 'HuTao':
+        elif w['key'] == 'StaffOfHoma' and w['location'] == 'HuTao' and chara_name == 'HuTao':
             # Reckless Cinnabar, HP less than 50%
             selector = 'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiBox-root.css-1821gv5:nth-child(5) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-xl-3.css-gew0gq:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-md-6.MuiGrid-grid-lg-4.css-170ukis:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-nph2fg > div.MuiBox-root.css-1821gv5 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw'
             await page.waitForSelector(selector)
