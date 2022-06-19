@@ -37,7 +37,7 @@ class MusicCog(commands.Cog):
         except asyncio.TimeoutError:
             await player.disconnect()
 
-    @app_commands.command(name="play", description="播放音樂")
+    @app_commands.command(name="play播放", description="播放音樂")
     @app_commands.rename(search='關鍵詞或連結')
     async def music_play(self, i: Interaction, search: str):
         if i.user.voice is None:
@@ -154,7 +154,7 @@ class MusicCog(commands.Cog):
                 return self.stop()
             await i.response.edit_message(embed=defaultEmbed(self.action, f'贊成人數: {count}/{self.requirement}'))
 
-    @app_commands.command(name='stop', description='停止播放器並清除待播放清單')
+    @app_commands.command(name='stop停止', description='停止播放器並清除待播放清單')
     async def music_stop(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -188,7 +188,7 @@ class MusicCog(commands.Cog):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='pause', description='暫停播放器')
+    @app_commands.command(name='pause暫停', description='暫停播放器')
     async def music_pause(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -221,7 +221,7 @@ class MusicCog(commands.Cog):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='resume', description='取消暫停')
+    @app_commands.command(name='resume繼續', description='取消暫停')
     async def music_resume(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -254,7 +254,7 @@ class MusicCog(commands.Cog):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='disconnect', description='讓申鶴悄悄的離開目前所在的語音台')
+    @app_commands.command(name='disconnect斷線', description='讓申鶴悄悄的離開目前所在的語音台')
     @app_commands.checks.has_role('小雪團隊')
     async def music_disconnect(self, i: Interaction):
         if not i.guild.voice_client:
@@ -265,7 +265,7 @@ class MusicCog(commands.Cog):
         await vc.disconnect()
         await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 申鶴已離開'))
 
-    @app_commands.command(name='player', description='查看目前播放狀況')
+    @app_commands.command(name='player播放狀態', description='查看目前播放狀態')
     async def music_player(self, i: Interaction):
         if not i.guild.voice_client:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
@@ -282,7 +282,7 @@ class MusicCog(commands.Cog):
         embed.set_image(url=track.thumb)
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='queue', description='查看目前待播放清單')
+    @app_commands.command(name='queue待播清單', description='查看目前待播放清單')
     async def music_queue(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -303,7 +303,7 @@ class MusicCog(commands.Cog):
             embeds.append(defaultEmbed('待播放清單', value))
         await GeneralPaginator(i, embeds).start(embeded=True)
 
-    @app_commands.command(name='skip', description='跳過目前正在播放的歌曲')
+    @app_commands.command(name='skip跳過', description='跳過目前正在播放的歌曲')
     async def music_skip(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -336,7 +336,7 @@ class MusicCog(commands.Cog):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='clear', description='清除目前的待播放清單')
+    @app_commands.command(name='clear清除', description='清除目前的待播放清單')
     async def music_clear(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
@@ -369,7 +369,7 @@ class MusicCog(commands.Cog):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='seek', description='往前跳一段距離')
+    @app_commands.command(name='seek跳前', description='往前跳一段距離')
     @app_commands.rename(position='秒數')
     @app_commands.describe(position='要跳過的秒數')
     async def music_seek(self, i: Interaction, position: int):

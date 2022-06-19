@@ -19,7 +19,7 @@ class GiveAwayCog(commands.Cog):
         self.debug_toggle = self.bot.debug_toggle
         self.gv_channel_id = 965517075508498452 if not self.debug_toggle else 909595117952856084
 
-    @app_commands.command(name='giveaway', description='設置抽獎')
+    @app_commands.command(name='giveaway設置抽獎', description='設置抽獎')
     @app_commands.checks.has_role('小雪團隊')
     @app_commands.rename(prize='獎品', goal='目標', ticket='參與金額', role='指定國籍', refund_mode='退款模式')
     @app_commands.describe(
@@ -234,7 +234,7 @@ class GiveAwayCog(commands.Cog):
             await i.response.defer()
             self.view.stop()
 
-    @app_commands.command(name='endgiveaway', description='強制結束抽獎並選出得獎者')
+    @app_commands.command(name='endgiveaway結束抽獎', description='強制結束抽獎並選出得獎者')
     @app_commands.checks.has_role('小雪團隊')
     async def end_giveaway(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()

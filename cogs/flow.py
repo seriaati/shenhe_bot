@@ -79,7 +79,7 @@ class FlowCog(commands.Cog):
                             user_id, 1, time_state='night')
                         await message.add_reaction('<:night:982608497290125366>')
 
-    @app_commands.command(name='acc', description='查看flow帳號')
+    @app_commands.command(name='acc帳號', description='查看flow帳號')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的flow帳號')
     async def acc(self, i: Interaction, member: Member = None):
@@ -107,7 +107,7 @@ class FlowCog(commands.Cog):
         embed.set_author(name=member, icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='give', description='給其他人flow幣')
+    @app_commands.command(name='give給錢', description='給其他人flow幣')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
     async def give(self, i: Interaction, member: Member, flow: int):
         log(False, False, 'Give', f'{i.user.id} give {flow} to {member.id}')
@@ -140,7 +140,7 @@ class FlowCog(commands.Cog):
             f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣")
         await i.response.send_message(content=f'{i.user.mention}{member.mention}', embed=embed)
 
-    @app_commands.command(name='take', description='將某人的flow幣轉回銀行')
+    @app_commands.command(name='take收錢', description='將某人的flow幣轉回銀行')
     @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息')
     @app_commands.choices(private=[
         Choice(name='是', value=0),
@@ -159,7 +159,7 @@ class FlowCog(commands.Cog):
         ephemeral_toggler = True if private == 0 else False
         await i.response.send_message(embed=embed, ephemeral=ephemeral_toggler)
 
-    @app_commands.command(name='make', description='從銀行轉出flow幣給某人')
+    @app_commands.command(name='make送錢', description='從銀行轉出flow幣給某人')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量', private='私人訊息')
     @app_commands.choices(private=[
         Choice(name='是', value=0),
@@ -179,7 +179,7 @@ class FlowCog(commands.Cog):
         ephemeral_toggler = True if private == 0 else False
         await i.response.send_message(embed=embed, ephemeral=ephemeral_toggler)
 
-    @app_commands.command(name='total', description='查看目前群組帳號及銀行flow幣分配情況')
+    @app_commands.command(name='total總額', description='查看目前群組帳號及銀行flow幣分配情況')
     async def total(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT SUM(flow) FROM flow_accounts')
@@ -193,7 +193,7 @@ class FlowCog(commands.Cog):
         )
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='flows', description='查看群組內所有flow帳號')
+    @app_commands.command(name='flows所有帳號', description='查看群組內所有flow帳號')
     @app_commands.rename(category='範圍')
     @app_commands.describe(category='選擇要查看的flow幣範圍')
     @app_commands.choices(category=[
@@ -494,7 +494,7 @@ class FlowCog(commands.Cog):
             await c.execute('DELETE FROM find WHERE msg_id = ?', (i.message.id,))
             await self.db.commit()
 
-    @app_commands.command(name='find', description='發布委託')
+    @app_commands.command(name='find發布委託', description='發布委託')
     @app_commands.rename(type='委託類型', title='幫助名稱', flow='flow幣數量', tag='tag人開關')
     @app_commands.describe(title='需要什麼幫助?', flow='這個幫助值多少flow幣?', tag='是否要tag委託通知?')
     @app_commands.choices(type=[

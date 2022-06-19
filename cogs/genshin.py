@@ -91,7 +91,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 # /stats
 
-    @app_commands.command(name='stats', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量')
+    @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def stats(self, i: Interaction, member: Optional[Member] = None):
@@ -101,7 +101,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 # /area
 
-    @app_commands.command(name='area', description='查看區域探索度')
+    @app_commands.command(name='area探索度', description='查看區域探索度')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def area(self, i: Interaction, member: Optional[Member] = None):
@@ -111,7 +111,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 # /claim
 
-    @app_commands.command(name='claim', description='領取hoyolab登入獎勵')
+    @app_commands.command(name='claim登入獎勵', description='領取hoyolab登入獎勵')
     @app_commands.rename(all='全部人', member='其他人')
     @app_commands.describe(all='是否要幫全部已註冊的使用者領取獎勵', member='查看其他群友的資料')
     @app_commands.choices(all=[
@@ -135,7 +135,7 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=result)
 # /diary
 
-    @app_commands.command(name='diary', description='查看旅行者日記')
+    @app_commands.command(name='diary旅行者日記', description='查看旅行者日記')
     @app_commands.rename(month='月份', member='其他人')
     @app_commands.describe(month='要查詢的月份', member='查看其他群友的資料')
     @app_commands.choices(month=[
@@ -151,7 +151,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 # /log
 
-    @app_commands.command(name='log', description='查看最近25筆原石或摩拉收入紀錄')
+    @app_commands.command(name='log收入紀錄', description='查看最近25筆原石或摩拉收入紀錄')
     @app_commands.choices(data_type=[
         app_commands.Choice(name='原石', value=0),
         app_commands.Choice(name='摩拉', value=1)])
@@ -169,7 +169,7 @@ class GenshinCog(commands.Cog):
 
 # /today
 
-    @app_commands.command(name='today', description='查看今日原石與摩拉收入')
+    @app_commands.command(name='today今日收入', description='查看今日原石與摩拉收入')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def today(self, i: Interaction, member: Optional[Member] = None):
@@ -179,7 +179,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 # /abyss
 
-    @app_commands.command(name='abyss', description='深淵資料查詢')
+    @app_commands.command(name='abyss深淵', description='深淵資料查詢')
     @app_commands.rename(overview='類別', previous='期別', member='其他人')
     @app_commands.describe(overview='想要查看的資料類別',
                            previous='這期還是上期?', member='查看其他群友的資料')
@@ -219,7 +219,7 @@ class GenshinCog(commands.Cog):
         embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='remind', description='設置樹脂提醒')
+    @app_commands.command(name='remind提醒', description='設置樹脂提醒')
     @app_commands.rename(toggle='開關', resin_threshold='樹脂閥值', max_notif='最大提醒數量')
     @app_commands.describe(toggle='要開啟或關閉樹脂提醒功能', resin_threshold='在超過此樹脂量時, 申鶴會tag你進行提醒', max_notif='申鶴每一小時提醒一次, 超過這個數字就會停止提醒')
     @app_commands.choices(toggle=[Choice(name='開', value=1),
@@ -267,7 +267,7 @@ class GenshinCog(commands.Cog):
             embed.set_image(url=GenshinCog.get_farm_image(self.day))
             await i.response.edit_message(embed=embed)
 
-    @app_commands.command(name='farm', description='查看原神今日可刷素材')
+    @app_commands.command(name='farm刷素材', description='查看原神今日可刷素材')
     async def farm(self, interaction: Interaction):
         day = datetime.today().weekday()
         embed = defaultEmbed(
@@ -360,7 +360,7 @@ class GenshinCog(commands.Cog):
             await interaction.response.edit_message(embed=self.embeds[int(self.values[0])-1][0])
 
     # /build
-    @app_commands.command(name='build', description='查看角色推薦主詞條、畢業面板、不同配置等')
+    @app_commands.command(name='build角色配置', description='查看角色推薦主詞條、畢業面板、不同配置等')
     async def build(self, i: Interaction):
         emojis = []
         ids = [982138235239137290, 982138229140635648, 982138220248711178,
@@ -370,7 +370,7 @@ class GenshinCog(commands.Cog):
         view = GenshinCog.ElementChooseView(self.bot.db, emojis)
         await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
 
-    @app_commands.command(name='uid', description='查詢特定使用者的原神UID')
+    @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
@@ -697,7 +697,7 @@ class GenshinCog(commands.Cog):
                 embeds.append(GenshinCog.oculi_emebd_style('雷', url))
         return embeds
 
-    @app_commands.command(name='oculi', description='查看不同地區的神瞳位置')
+    @app_commands.command(name='oculi神瞳', description='查看不同地區的神瞳位置')
     @app_commands.rename(area='地區')
     @app_commands.choices(area=[
         Choice(name='蒙德', value=0),
@@ -951,7 +951,7 @@ class GenshinCog(commands.Cog):
             )
             await i.response.edit_message(embed=embed, view=self.view)
 
-    @app_commands.command(name='profile', description='透過 enka API 查看各式原神數據')
+    @app_commands.command(name='profile角色展示', description='透過 enka API 查看各式原神數據')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他人的資料', custom_uid='使用 UID 查閱')
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
@@ -1070,13 +1070,15 @@ class GenshinCog(commands.Cog):
             embeds, charas, equipt_dict, 0, True, member, data, 0, self.bot)
         await i.edit_original_message(embed=overview, view=view)
 
-    @app_commands.command(name='redeem', description='兌換禮物碼')
+    @app_commands.command(name='redeem兌換', description='兌換禮物碼')
     @app_commands.rename(code='兌換碼')
     async def redeem(self, i: Interaction, code: str):
         result = await self.genshin_app.redeemCode(i.user.id, code)
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
+    
+    
     @app_commands.command(name='wiki', description='查看原神維基百科')
     @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
     @app_commands.rename(wikiType='類別', query='關鍵詞')
@@ -1089,7 +1091,7 @@ class GenshinCog(commands.Cog):
         found = False
         if wikiType == 0:
             previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取成功, 正在搜尋關鍵字'))
+            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取成功, 正在搜尋關鍵字'))
             for p in previews:
                 d = (await client.get_wiki_page(p.id)).modules
                 for item in d['屬性']['list']:
@@ -1100,37 +1102,37 @@ class GenshinCog(commands.Cog):
         if not found:
             await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
             return
-        embeds = []
+        result = [[],[],[]]
         embed = defaultEmbed('搜尋結果')
         name = '屬性'
         value = ''
         for property in wiki['屬性']['list']:
             value += f"{property['key']} - {property['value'][0]}\n"
         embed.add_field(name=name, value=value)
-        embeds.append(embed)
+        result[0].append(embed)
         embed = defaultEmbed('突破後屬性')
         for level in wiki['突破']['list'][:-1]:
             value = ''
             for combat in level['combatList'][1:]:
                 value += f"{combat['key']} - {combat['values'][1]}\n"
             embed.add_field(name=level['key'], value=value)
-        embeds.append(embed)
+        result[0].append(embed)
         embed = defaultEmbed('突破素材')
         for level in wiki['突破']['list'][1:-1]:
             value = ''
             for mat in level['materials']:
                 mat = json.loads(mat.replace('$', ''))
-                value += f"{(get_name.getWikiMaterialName.get(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
+                value += f"{(get_name.getWikiMaterialName(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
             embed.add_field(name=level['key'], value=value)
-        embeds.append(embed)
+        result[0].append(embed)
         embed = defaultEmbed('全圖')
         embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
-        embeds.append(embed)
+        result[1].append(embed)
         for art in wiki['畫廊']['list']:
             embed = defaultEmbed(art['key'])
             embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
             embed.set_footer(text=art['imgDesc'])
-            embeds.append(embed)
+            result[1].append(embed)
         for talent in wiki['天賦']['list']:
             talent_desc = talent['desc'].replace(
                 '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
@@ -1142,8 +1144,8 @@ class GenshinCog(commands.Cog):
                 talent['icon_url'], safe=':/'))
             embed.set_image(url=urllib.parse.quote(
                 talent['talent_img'], safe=':/'))
-            embeds.append(embed)
-        await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+            result[2].append(embed)
+        await GeneralPaginator(i, result[0]).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:

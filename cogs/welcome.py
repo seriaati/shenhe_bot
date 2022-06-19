@@ -186,7 +186,7 @@ class WelcomeCog(commands.Cog):
             embeds.append(embed)
             await TutorialPaginator(i, embeds).start(db=self.db, embeded=True)
 
-    @app_commands.command(name='tutorial', description='進行flow幣系統教學')
+    @app_commands.command(name='tutorial使用教學', description='進行flow幣系統教學')
     async def flow_tutorial(self, i: Interaction):
         embeds = []
         embed = defaultEmbed(

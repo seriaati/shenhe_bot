@@ -162,7 +162,7 @@ class Todo(commands.Cog):
         async def on_submit(self, interaction: Interaction) -> None:
             await interaction.response.defer()
 
-    @app_commands.command(name='todo', description='查看代辦清單')
+    @app_commands.command(name='todo代辦清單', description='查看代辦清單')
     async def todo_list(self, i: Interaction):
         c = await self.bot.db.cursor()
         await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))

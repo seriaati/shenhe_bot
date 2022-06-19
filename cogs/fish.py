@@ -204,7 +204,7 @@ class FishCog(commands.Cog):
             await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
 
    # /releasefish
-    @app_commands.command(name='releasefish', description='緊急放出一條魚讓人摸')
+    @app_commands.command(name='releasefish放魚', description='緊急放出一條魚讓人摸')
     @app_commands.rename(fish_type='魚種')
     @app_commands.describe(fish_type='選擇要放出的魚種')
     @app_commands.choices(fish_type=get_fish_choices())

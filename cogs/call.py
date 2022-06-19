@@ -9,7 +9,7 @@ class CallCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='call', description='呼叫某個群友')
+    @app_commands.command(name='call呼叫', description='呼叫某個群友')
     @app_commands.rename(person='某人')
     @app_commands.describe(person='要呼叫誰呢?')
     @app_commands.choices(person=[
@@ -42,11 +42,11 @@ class CallCog(commands.Cog):
         elif person == 8:
             await interaction.response.send_message("可愛的小羽！")
 
-    @app_commands.command(name='snow', description='小雪國萬歲!')
+    @app_commands.command(name='snow小雪國萬歲', description='小雪國萬歲!')
     async def snow(self, interaction: discord.Interaction):
         await interaction.response.send_message("❄ 小雪國萬歲！")
 
-    @app_commands.command(name='rabbit', description='兔兔島萬歲!')
+    @app_commands.command(name='rabbit兔兔島萬歲', description='兔兔島萬歲!')
     async def rabbit(self, interaction: discord.Interaction):
         await interaction.response.send_message("🐰 兔兔島萬歲！")
 

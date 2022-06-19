@@ -160,7 +160,7 @@ class RollCog(commands.Cog):
             menu = RollCog.Menu(i.user, self.banner, self.db, self.bot)
             await i.response.edit_message(view=menu)
 
-    @app_commands.command(name='roll', description='flow幣祈願系統')
+    @app_commands.command(name='roll祈願', description='flow幣祈願系統')
     async def roll(self, i: Interaction):
         check, msg = await self.flow_app.checkFlowAccount(i.user.id)
         if check == False:

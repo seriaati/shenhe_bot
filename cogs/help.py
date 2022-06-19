@@ -344,7 +344,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='help', description='獲得幫助')
+    @app_commands.command(name='help幫助', description='獲得幫助')
     async def help(self, interaction: Interaction):
         view = DropdownView()
         await interaction.response.send_message(view=view)
