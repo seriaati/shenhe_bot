@@ -516,7 +516,7 @@ class GenshinCog(commands.Cog):
 
     calc = app_commands.Group(name="calc", description="原神養成計算機")
 
-    @calc.command(name='notown', description='計算一個自己不擁有的角色所需的素材')
+    @calc.command(name='notown所有角色', description='計算一個自己不擁有的角色所需的素材')
     async def calc_notown(self, i: Interaction):
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         charas = await client.get_calculator_characters()
@@ -590,7 +590,7 @@ class GenshinCog(commands.Cog):
                 self.bot.db, False, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
 
-    @calc.command(name='character', description='個別計算一個角色所需的素材')
+    @calc.command(name='character自己有的角色', description='個別計算一個角色所需的素材')
     async def calc_character(self, i: Interaction):
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         if only_uid:

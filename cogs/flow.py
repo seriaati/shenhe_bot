@@ -248,7 +248,7 @@ class FlowCog(commands.Cog):
 
     shop = app_commands.Group(name="shop", description="flow商店")
 
-    @shop.command(name='show', description='顯示商店')
+    @shop.command(name='show商店', description='顯示商店')
     async def show(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT name, flow, current, max FROM flow_shop')
@@ -259,7 +259,7 @@ class FlowCog(commands.Cog):
         embed = defaultEmbed("🛒 flow商店", item_str)
         await i.response.send_message(embed=embed)
 
-    @shop.command(name='newitem', description='新增商品')
+    @shop.command(name='newitem新增商品', description='新增商品')
     @app_commands.rename(item='商品名稱', flow='價格', max='最大購買次數')
     @app_commands.checks.has_role('小雪團隊')
     async def newitem(self, i: Interaction, item: str, flow: int, max: int):
@@ -321,7 +321,7 @@ class FlowCog(commands.Cog):
                     f"價格: {flow}")
                 await thread.send(embed=embed)
 
-    @shop.command(name='removeitem', description='刪除商品')
+    @shop.command(name='removeitem移除商品', description='刪除商品')
     @app_commands.checks.has_role('小雪團隊')
     async def removeitem(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -334,7 +334,7 @@ class FlowCog(commands.Cog):
             item_names, 'remove', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
 
-    @shop.command(name='buy', description='購買商品')
+    @shop.command(name='buy購買', description='購買商品')
     async def buy(self, i: Interaction):
         log(False, False, 'shop buy', i.user.id)
         check, msg = await self.flow_app.checkFlowAccount(i.user.id)
