@@ -16,8 +16,8 @@ class MusicCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        if not self.bot.debug_toggle:
-            bot.loop.create_task(self.connect_nodes())
+        # if not self.bot.debug_toggle:
+        bot.loop.create_task(self.connect_nodes())
 
     async def connect_nodes(self):
         await self.bot.wait_until_ready()
@@ -46,6 +46,9 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = i.guild.voice_client
+        if i.guild.voice_client.channel != i.user.voice.channel:
+            await vc.disconnect()
+            vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))
         regex = re.compile(
             r'^(?:http|ftp)s?://'
