@@ -22,9 +22,12 @@ class SeseCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
         if payload.cached_message is not None:
+            if payload.cached_message.author.id == 956049912699715634:
+                return
+            attachment_str = '(含有附件)' if len(payload.cached_message.attachments) != 0 else ''
             embed = defaultEmbed(
                 '偵測到訊息刪除',
-                f'「{payload.cached_message.content}」\n\n'
+                f'「{payload.cached_message.content} {attachment_str}」\n\n'
                 f'用戶: {payload.cached_message.author.mention}\n'
                 f'頻道: {payload.cached_message.channel.mention}\n'
                 f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}'
@@ -33,6 +36,9 @@ class SeseCog(commands.Cog):
             embed.set_author(name=payload.cached_message.author, icon_url=payload.cached_message.author.avatar)
             c = self.bot.get_channel(988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
             await c.send(embed=embed)
+            if len(payload.cached_message.attachments) != 0:
+                for a in payload.cached_message.attachments:
+                    await c.send(file=await a.to_file(use_cached=True))
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(SeseCog(bot))
