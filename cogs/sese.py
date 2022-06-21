@@ -30,7 +30,8 @@ class SeseCog(commands.Cog):
                 f'「{payload.cached_message.content} {attachment_str}」\n\n'
                 f'用戶: {payload.cached_message.author.mention}\n'
                 f'頻道: {payload.cached_message.channel.mention}\n'
-                f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}'
+                f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
+                f'附近訊息: {payload.cached_message.jump_url}'
             )
             embed.set_footer(text=f'用戶 ID: {payload.cached_message.author.id}\n')
             embed.set_author(name=payload.cached_message.author, icon_url=payload.cached_message.author.avatar)
