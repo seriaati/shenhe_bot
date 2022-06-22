@@ -514,7 +514,7 @@ class GenshinCog(commands.Cog):
             await self.db.commit()
             await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 代辦事項新增成功', '使用`/todo`指令來查看你的代辦事項'), ephemeral=True)
 
-    calc = app_commands.Group(name="calc養成計算", description="原神養成計算機")
+    calc = app_commands.Group(name="calc", description="原神養成計算機")
 
     @calc.command(name='notown所有角色', description='計算一個自己不擁有的角色所需的素材')
     async def calc_notown(self, i: Interaction):
@@ -1084,14 +1084,13 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(wikiType='類別', query='關鍵詞')
     @app_commands.describe(wikiType='要查看的維基百科分頁類別')
     async def wiki(self, i: Interaction, wikiType: int, query: str):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在獲取原神百科資料'))
         span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
                        '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
         client = getClient()
         found = False
         if wikiType == 0:
             previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取成功, 正在搜尋關鍵字'))
+            await i.edit_original_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字'))
             for p in previews:
                 d = (await client.get_wiki_page(p.id)).modules
                 for item in d['屬性']['list']:
@@ -1100,8 +1099,7 @@ class GenshinCog(commands.Cog):
                         wiki = d
                         break
         if not found:
-            await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
-            return
+            return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
         result = [[],[],[]]
         embed = defaultEmbed('搜尋結果')
         name = '屬性'

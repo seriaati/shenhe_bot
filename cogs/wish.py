@@ -20,7 +20,7 @@ class WishCog(commands.Cog):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db)
 
-    wish = app_commands.Group(name='wish原神祈願', description='原神祈願系統相關')
+    wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
     class AuthKeyModal(Modal):
         def __init__(self, db: aiosqlite.Connection):

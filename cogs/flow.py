@@ -246,7 +246,7 @@ class FlowCog(commands.Cog):
                 value_str += f'{user_str}\n'
             await i.response.send_message(embed=defaultEmbed(category_list[category], value_str))
 
-    shop = app_commands.Group(name="shop商店", description="flow商店")
+    shop = app_commands.Group(name="shop", description="flow商店")
 
     @shop.command(name='show商店', description='顯示商店')
     async def show(self, i: Interaction):
