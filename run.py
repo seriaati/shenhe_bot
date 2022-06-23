@@ -3,6 +3,7 @@
 from pathlib import Path
 import traceback
 import getpass
+import aiohttp
 
 import aiosqlite
 from discord import ButtonStyle, Interaction, Message, Intents, Status, Game, app_commands
@@ -51,6 +52,7 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
+        self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('main.db')
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug_toggle = debug_toggle

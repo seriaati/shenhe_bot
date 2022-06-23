@@ -968,9 +968,8 @@ class GenshinCog(commands.Cog):
             return
         uid = uid[0]
         uid = custom_uid if custom_uid is not None else uid
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
-                data = await r.json()
+        async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
+            data = await r.json()
         if 'avatarInfoList' not in data:
             embed = defaultEmbed(
                 '<a:error_animated:982579472060547092> 錯誤', '請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(資料最多需要10分鐘更新)')
