@@ -6,7 +6,7 @@ from discord import (ButtonStyle, Interaction, Member, SelectOption,
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput
 from debug import DefaultView
-from utility.utils import defaultEmbed
+from utility.utils import defaultEmbed, errEmbed
 
 
 class Todo(commands.Cog):
@@ -54,6 +54,8 @@ class Todo(commands.Cog):
             self.add_item(Todo.ClearTodoButton(disabled, db))
 
         async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed('這不是你的代辦清單','輸入 `/todo` 來開啟一個'), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class AddTodoButton(Button):
@@ -101,7 +103,8 @@ class Todo(commands.Cog):
             await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, modal.item.values[0]))
             count = await c.fetchone()
             count = count[0]
-            await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count-int(modal.count.value), i.user.id, modal.item.values[0]))
+            modal_count_value = modal.count.value or count
+            await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count-int(modal_count_value), i.user.id, modal.item.values[0]))
             await c.execute('DELETE FROM todo WHERE count = 0 AND user_id = ?', (i.user.id,))
             await self.db.commit()
             embed = await Todo.get_todo_embed(self.db, i.user)
@@ -152,7 +155,8 @@ class Todo(commands.Cog):
 
         count = TextInput(
             label='數量',
-            placeholder='例如: 96',
+            placeholder='例如: 28 (如留空則清空該素材)',
+            required=False
         )
 
         def __init__(self, options) -> None:

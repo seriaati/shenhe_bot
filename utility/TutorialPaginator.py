@@ -19,6 +19,8 @@ class _view(View):
         self.current_page = 0
 
     async def interaction_check(self, interaction: Interaction) -> bool:
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message(embed=errEmbed('你不是這個指令的使用者'), ephemeral=True)
         return (interaction.user.id == self.author.id)
 
     async def update_children(self, interaction: Interaction):

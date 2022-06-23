@@ -132,7 +132,7 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
     await page.click('button#dropdownbtn')
     await page.waitForSelector('ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a')
     await page.click('li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(n+2)')
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在確認有無特殊天賦 (3/6)'))
+    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在調整天賦 (3/6)'))
     if chara_name == 'Xiao':
         await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/Xiao/talent')
         await page.waitForSelector('div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')
@@ -157,7 +157,7 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
     yield(defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中 (4/6)'))
     await page.goto(f"https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip")
     await page.waitForSelector('span.css-t3oe3b')
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在確認有無特殊武器 (5/6)'))
+    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在調整武器 (5/6)'))
     for w in good_format['weapons']:
         if w['key'] == 'MistsplitterReforged' and w['location'] == chara_name:
             # Mistsplitter's Edge

@@ -493,6 +493,8 @@ class GenshinCog(commands.Cog):
             self.author = author
 
         async def interaction_check(self, interaction: Interaction) -> bool:
+            if interaction.user.id != self.author.id:
+                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗', '輸入 `/calc` 來計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
     class AddTodoButton(Button):

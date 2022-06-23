@@ -5,6 +5,8 @@ from discord import Interaction, SelectOption, User, ButtonStyle
 from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
 
+from utility.utils import errEmbed
+
 
 class _select(Select):
 	def __init__(self, pages: List[str]):
@@ -27,6 +29,8 @@ class _view(View):
 		self.current_page = 0
 
 	async def interaction_check(self, interaction: Interaction) -> bool:
+		if interaction.user.id != self.author.id:
+			await interaction.response.send_message(embed=errEmbed('你不是這個指令的使用者'), ephemeral=True)
 		return (interaction.user.id == self.author.id)
 
 

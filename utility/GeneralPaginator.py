@@ -5,6 +5,8 @@ from discord import Interaction, SelectOption, User, ButtonStyle
 from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
 
+from utility.utils import errEmbed
+
 
 class _view(View):
     def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
@@ -16,6 +18,8 @@ class _view(View):
         self.current_page = 0
 
     async def interaction_check(self, interaction: Interaction) -> bool:
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message(embed=errEmbed('你不是這個指令的使用者'), ephemeral=True)
         return (interaction.user.id == self.author.id)
 
     async def update_children(self, interaction: Interaction):
@@ -59,7 +63,7 @@ class GeneralPaginator:
         self.interaction = interaction
         self.pages = pages
 
-    async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True, edit_original_message: bool = False) -> None:
+    async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True, edit_original_message: bool = False, follow_up: bool = False) -> None:
         if not (self.pages):
             raise ValueError("Missing pages")
 
@@ -82,10 +86,11 @@ class GeneralPaginator:
         kwargs = {'content': self.pages[view.current_page]} if not (
             embeded) else {'embed': self.pages[view.current_page]}
         kwargs['view'] = view
-        
 
         if edit_original_message:
             await self.interaction.edit_original_message(**kwargs)
+        elif follow_up:
+            await self.interaction.followup.send(**kwargs)
         else:
             await self.interaction.response.send_message(**kwargs)
 

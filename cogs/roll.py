@@ -30,6 +30,8 @@ class RollCog(commands.Cog):
             self.bot = bot
 
         async def interaction_check(self, i: Interaction) -> bool:
+            if i.user.id != self.author.id:
+                await i.response.send_message(embed=errEmbed('這不是你的遊戲視窗','輸入 `/roll` 來開啟一個'), ephemeral=True)
             return i.user.id == self.author.id
 
         @button(label='詳情', style=ButtonStyle.gray)
@@ -116,6 +118,8 @@ class RollCog(commands.Cog):
             self.bot = bot
 
         async def interaction_check(self, i: Interaction) -> bool:
+            if i.user.id != self.author.id:
+                await i.response.send_message(embed=errEmbed('這不是你的遊戲視窗','輸入 `/roll` 來開啟一個'), ephemeral=True)
             return i.user.id == self.author.id
 
         @button(label='確認', style=ButtonStyle.green, row=0)

@@ -52,7 +52,7 @@ class VoiceChannel(commands.Cog):
     @app_commands.describe(new='新的語音台名稱')
     async def vc_rename(self, i: Interaction, new: str):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -63,7 +63,7 @@ class VoiceChannel(commands.Cog):
     @vc.command(name='lock鎖上', description='鎖上語音台')
     async def vc_lock(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -78,7 +78,7 @@ class VoiceChannel(commands.Cog):
     @vc.command(name='unlock解鎖', description='解鎖語音台')
     async def vc_unlock(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -93,7 +93,7 @@ class VoiceChannel(commands.Cog):
     @app_commands.describe(new='新的房主')
     async def vc_unlock(self, i: Interaction, new: Member):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         current_vc = i.user.voice.channel
         owner, err_msg = await self.check_owner(current_vc.id, i.user.id)
         if not owner:
@@ -106,7 +106,7 @@ class VoiceChannel(commands.Cog):
     @vc.command(name='youtube播放器', description='為當前的語音台創建一個 youtube 播放器')
     async def vc_activity(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> dame!', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
         vc = i.user.voice.channel
         invite = await vc.create_invite( 
             max_age=0, 
@@ -114,7 +114,20 @@ class VoiceChannel(commands.Cog):
             target_application_id=880218394199220334,
             target_type=InviteTarget.embedded_application
         )
-        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已創建',f'{invite}\n\n點擊連結來加入\n再按一次即退出'))
+        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
+
+    @vc.command(name='chess西洋棋', description='為當前的語音台創建一個西洋棋遊戲視窗')
+    async def vc_chess(self, i: Interaction):
+        if i.user.voice is None:
+            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '你必須在語音台裡才能用這個指令'), ephemeral=True)
+        vc = i.user.voice.channel
+        invite = await vc.create_invite( 
+            max_age=0, 
+            max_uses=0, 
+            target_application_id=832012774040141894,
+            target_type=InviteTarget.embedded_application
+        )
+        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 西洋棋遊戲已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(VoiceChannel(bot))

@@ -328,6 +328,8 @@ class WishCog(commands.Cog):
             self.author = author
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            if interaction.user.id != self.author.id:
+                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗','輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='UP', style=discord.ButtonStyle.blurple)
@@ -349,6 +351,8 @@ class WishCog(commands.Cog):
             self.author = author
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
+            if interaction.user.id != self.author.id:
+                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗','輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)

@@ -63,6 +63,7 @@ class Schedule(commands.Cog):
                     f'目前設定閥值: {resin_threshold}\n'
                     f'目前最大提醒值: {max_notif}\n\n'
                     '輸入`/remind`來更改設定')
+                embed.set_author(icon_url=user.avatar)
                 await thread.send(content=user.mention, embed=embed)
                 await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
             if resin < resin_threshold:
