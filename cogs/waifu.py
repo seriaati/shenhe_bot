@@ -1,3 +1,4 @@
+from ast import ExceptHandler
 import io
 from typing import Any, List
 import aiohttp
@@ -5,10 +6,11 @@ from discord.ext import commands
 from discord import ButtonStyle, Interaction, SelectOption, app_commands, File
 from discord.app_commands import Choice
 from discord.ui import Select, select, Button
+import waifuim
 from waifuim import WaifuAioClient
 from debug import DefaultView
 from utility.GeneralPaginator import GeneralPaginator
-
+import utility.global_vars as emoji
 from utility.utils import defaultEmbed, errEmbed
 
 
@@ -34,7 +36,7 @@ class WaifuCog(commands.Cog):
     class TagSelector(Select):
         def __init__(self, choices: List) -> None:
             super().__init__(placeholder='選擇你想要查詢的標籤', min_values=1,
-                             max_values=1, options=choices)
+                             max_values=len(choices), options=choices)
 
         async def callback(self, interaction: Interaction) -> Any:
             await interaction.response.defer()
@@ -57,9 +59,15 @@ class WaifuCog(commands.Cog):
                 await view.wait()
             if many == 0:
                 if tags == 1:
-                    image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
+                    try:
+                        image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
+                    except waifuim.exceptions.APIException:
+                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆','您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
                 else:
-                    image = await wf.random(is_nsfw=[is_nsfw])
+                    try:
+                        image = await wf.random(is_nsfw=[is_nsfw])
+                    except waifuim.exceptions.APIException:
+                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆','您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
                 if sese == 1:
                     if tags == 0:
                         await i.response.defer()
@@ -70,7 +78,7 @@ class WaifuCog(commands.Cog):
                     if tags == 1:
                         await i.edit_original_message(content='您的老婆已送達', attachments=[file], view=None)
                     else:
-                        await i.followup.send(content='您的老婆已送達', file=file)
+                        await i.followup.send(content='您的老婆已送達', file=file )
                 else:
                     embed = defaultEmbed('您的老婆已送達')
                     embed.set_image(url=image)
@@ -83,9 +91,15 @@ class WaifuCog(commands.Cog):
                 if sese == 1:
                     return await i.response.send_message(embed=errEmbed('色色模式暫時不能與多情模式同時開啟','太多照片了\bAPI 會爆炸'), ephemeral=True)
                 if tags == 1:
-                    images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
+                    try:
+                        images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
+                    except waifuim.exceptions.APIException:
+                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆','您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
                 else:
-                    images = await wf.random(is_nsfw=[is_nsfw], many=True)
+                    try:
+                        images = await wf.random(is_nsfw=[is_nsfw], many=True)
+                    except waifuim.exceptions.APIException:
+                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆','您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
                 many = True if many == 1 else False
                 embeds = []
                 count = 0

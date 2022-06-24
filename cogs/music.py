@@ -46,7 +46,7 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = i.guild.voice_client
-        if i.guild.voice_client.channel != i.user.voice.channel:
+        if i.guild.voice_client.channel != i.user.voice.channel and not vc.is_playing():
             await vc.disconnect()
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))
@@ -167,15 +167,15 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = i.guild.voice_client
         if not vc.is_playing():
             return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 現在沒有正在播放的歌曲', '輸入 `/play` 來播放歌曲'), ephemeral=True)
-        async def action(one_person: bool):
+        async def action(one_person: bool, i: Interaction):
             await vc.stop()
             vc.queue.clear()
             if one_person:
-                await i.response.edit_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'))
+                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'), view=None)
         if len(vc.channel.members)-1 <= 2:
-            await action(True)
+            await action(True, i)
         else:
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute('SELECT msg_id FROM music WHERE channel_id = ?', (vc.channel.id,))
@@ -189,7 +189,7 @@ class MusicCog(commands.Cog):
             msg = await i.original_message()
             await c.execute('INSERT INTO music (user_id, channel_id, msg_id) VALUES (?, ?, ?)', (i.user.id, vc.channel.id, msg.id))
             await view.wait()
-            await action(False)
+            await action(False, i)
 
     @app_commands.command(name='pause暫停', description='暫停播放器')
     async def music_pause(self, i: Interaction):
@@ -204,7 +204,7 @@ class MusicCog(commands.Cog):
         async def action(one_person: bool):
             await vc.pause()
             if one_person:
-                await i.response.edit_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'))
+                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'), view=None)
         if len(vc.channel.members)-1 <= 2:

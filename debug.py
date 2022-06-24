@@ -4,6 +4,7 @@ from discord import ButtonStyle, Interaction
 from discord.ui import Button, View, button
 
 from utility.utils import defaultEmbed, errEmbed
+import utility.global_vars as emoji
 
 
 class DebugView(View):
@@ -25,7 +26,7 @@ class DefaultView(View):
         seria = i.client.get_user(410036441129943050)
         view = DebugView(traceback.format_exc())
         embed = errEmbed(
-            '<a:error_animated:982579472060547092> 未知錯誤', f'```py\n{e}\n```\n```{item}\n```')
+            f'{emoji.error} 未知錯誤', f'```py\n{e}\n```\n```{item}\n```')
         if i.response._responded:
             await i.edit_original_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
         else:
