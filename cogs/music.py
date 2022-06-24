@@ -67,7 +67,10 @@ class MusicCog(commands.Cog):
             if 'list' in search and 'spotify' not in search:
                 emoji = '<:yt:985540703323058196>'
                 is_playlist = True
-                playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
+                try:
+                    playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
+                except wavelink.errors.LoadTrackError:
+                    return await i.edit_original_message(embed=errEmbed(f'{shenhe_emoji.error} 錯誤', '找不到該播放清單'))
                 track: wavelink.YouTubeTrack = playlist.tracks[
                     0] if playlist.selected_track is None else playlist.tracks[playlist.selected_track]
                 playlist.tracks.remove(track)
