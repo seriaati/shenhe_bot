@@ -240,3 +240,14 @@ def getWeekdayName(n: int) -> str:
 def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
+def getElementEmoji(element: str):
+    element_emojis = {
+        'Anemo': '<:WIND_ADD_HURT:982138235239137290>',
+        'Cryo': '<:ICE_ADD_HURT:982138229140635648>',
+        'Electro': '<:ELEC_ADD_HURT:982138220248711178>',
+        'Geo': '<:ROCK_ADD_HURT:982138232391237632>',
+        'Hydro': '<:WATER_ADD_HURT:982138233813098556>',
+        'Pyro': '<:FIRE_ADD_HURT:982138221569900585>'
+    }
+    return element_emojis.get(element) or element

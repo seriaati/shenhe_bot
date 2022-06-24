@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from typing import Any, List, Optional
-from utility.utils import getClient
+from utility.utils import getClient, getElementEmoji
 import aiohttp
 import aiosqlite
 import discord
@@ -19,7 +19,8 @@ from utility.GenshinApp import GenshinApp
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, errEmbed, get_name, getCharacterIcon,
                            getStatEmoji, getWeekdayName)
-
+from data.game.namecard_map import namecards_map
+from data.game.character_map import characters_map
 from genshin.models import WikiPageType
 
 
@@ -722,7 +723,7 @@ class GenshinCog(commands.Cog):
 
     class EnkaPageSelect(Select):
         def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, member: Member, enka_data, bot: commands.Bot):
-            options = [SelectOption(label='總覽', value=0)]
+            options = [SelectOption(label='總覽', value=0, emoji='<:SCORE:983948729293897779>')]
             self.embeds = embeds
             self.equip_dict = equip_dict
             self.charas = charas
@@ -731,7 +732,7 @@ class GenshinCog(commands.Cog):
             self.bot = bot
             for chara in charas:
                 options.append(SelectOption(
-                    label=f"{chara[0]} {chara[1]}", value=f'{charas.index(chara)+1} {chara[2]}'))
+                    label=f"{characters_map.get(str(chara[2]))['rarity']}★ {chara[0]} {chara[1]}", value=f'{charas.index(chara)+1} {chara[2]}', emoji=getElementEmoji(characters_map.get(str(chara[2]))['element'])))
             super().__init__(placeholder='選擇分頁', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction) -> Any:
@@ -988,7 +989,7 @@ class GenshinCog(commands.Cog):
             f"深淵已達: {player['towerFloorIndex']}-{player['towerLevelIndex']}")
         overview.set_author(name=member, icon_url=member.avatar)
         overview.set_image(
-            url='https://cdn.discordapp.com/attachments/971472744820650035/971482996572057600/Frame_4905.png')
+            url=f"https://enka.shinshin.moe/ui/{namecards_map.get(int(player['nameCardId']))['Card']}.png")
         embeds.append(overview)
         charas = []
         for chara in player['showAvatarInfoList']:

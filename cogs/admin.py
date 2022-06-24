@@ -24,6 +24,8 @@ class AdminCog(commands.Cog):
         if payload.cached_message is not None:
             if payload.cached_message.author.id == self.bot.user.id:
                 return
+            if payload.cached_message.content == '!q':
+                return
             attachment_str = '(含有附件)' if len(payload.cached_message.attachments) != 0 else ''
             embed = defaultEmbed(
                 '訊息刪除',
