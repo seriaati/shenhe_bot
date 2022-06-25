@@ -1,5 +1,5 @@
 from datetime import datetime
-from discord import Member, Message, RawMessageDeleteEvent
+from discord import Member, Message, RawMessageDeleteEvent, TextChannel, VoiceChannel, VoiceState
 from discord.ext import commands
 
 from utility.utils import defaultEmbed, errEmbed
@@ -7,6 +7,7 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.debug: bool = self.bot.debug_toggle
+        self.c: TextChannel = self.bot.get_channel(988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):
@@ -37,11 +38,21 @@ class AdminCog(commands.Cog):
             )
             embed.set_footer(text=f'用戶 ID: {payload.cached_message.author.id}\n')
             embed.set_author(name=payload.cached_message.author, icon_url=payload.cached_message.author.avatar)
-            c = self.bot.get_channel(988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
-            await c.send(embed=embed)
+            await self.c.send(embed=embed)
             if len(payload.cached_message.attachments) != 0:
                 for a in payload.cached_message.attachments:
-                    await c.send(file=await a.to_file(use_cached=True))
+                    await self.c.send(file=await a.to_file(use_cached=True))
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member: Member):
+        embed = defaultEmbed(
+            '進群',
+            f'用戶: {member.mention}\n'
+            f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
+        )
+        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_footer(text=f'用戶 ID: {member.id}')
+        await self.c.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
@@ -51,9 +62,21 @@ class AdminCog(commands.Cog):
             f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
         )
         embed.set_author(name=member, icon_url=member.avatar)
-        embed.set_footer(text=f'用戶 ID: {member.id}\n')
-        c = self.bot.get_channel(988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
-        await c.send(embed=embed)
+        embed.set_footer(text=f'用戶 ID: {member.id}')
+        await self.c.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member: Member, before: VoiceState, after: VoiceState):
+        embed = defaultEmbed(
+            '語音狀態變更',
+            f'用戶: {member.mention}\n'
+            f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
+            f'原語音台: {before.channel.mention if before.channel is not None else "不在語音台"}\n'
+            f'新語音台: {after.channel.mention if after.chanenl is not None else "不在語音台"}'
+        )
+        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(text=f'用戶 ID: {member.id}')
+        await self.c.send(embed=embed)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(AdminCog(bot))

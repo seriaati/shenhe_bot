@@ -11,7 +11,7 @@ from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Select
-from utility.FlowApp import FlowApp
+from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 

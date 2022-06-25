@@ -247,7 +247,7 @@
         生命值: 31294
       move: 長E盾值
       dmg: 12717
-羅莎莉亞:
+蘿莎莉亞:
   element: 冰
   icon: Rosaria
   builds:
@@ -260,7 +260,7 @@
         暴率/暴傷: 70/101
       move: Q每段
       dmg: 7661
-埃洛伊:
+亞蘿伊:
   element: 冰
   icon: Aloy
   builds:

@@ -4,10 +4,8 @@ from datetime import datetime
 import aiosqlite
 import genshin
 from discord import Member
-
-from utility.utils import (defaultEmbed, errEmbed, getWeekdayName, log,
-                           trimCookie)
-from utility.utils import get_name
+from utility.utils import (defaultEmbed, errEmbed, get_name, getCharacterIcon,
+                           getCharaIdWithName, getWeekdayName, log, trimCookie)
 
 
 class GenshinApp:
@@ -157,7 +155,7 @@ class GenshinApp:
                 else:
                     recover_time = '質變儀不存在'
                 result = defaultEmbed(
-                    f"即時便籤",
+                    f"",
                     f"<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n"
                     f"<:transformer:966156330089971732> 質變儀剩餘時間: {recover_time}"
                 )
@@ -209,7 +207,7 @@ class GenshinApp:
                 f'```{e}```')
         else:
             characters = await client.get_calculator_characters()
-            result = defaultEmbed(f"統計數據")
+            result = defaultEmbed()
             result.add_field(
                 name='綜合',
                 value=f"📅 活躍天數: {genshinUser.stats.days_active}\n"
@@ -262,7 +260,7 @@ class GenshinApp:
                 level_str = '' if exploration.name == '淵下宮' or exploration.name == '層岩巨淵' else f'- Lvl. {exploration.level}'
                 emoji_name = GenshinApp.getAreaEmoji(exploration.name)
                 explore_str += f"{emoji_name} {exploration.name} {exploration.explored}% {level_str}\n"
-            result = defaultEmbed(f"探索度", explore_str)
+            result = defaultEmbed(message=explore_str)
         return result
 
     async def getDiary(self, user_id: int, month: int):
@@ -285,7 +283,7 @@ class GenshinApp:
         else:
             d = diary.data
             result = defaultEmbed(
-                f'旅行者日記 • {month}月',
+                f'{month}月',
                 f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
                 f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
             )
@@ -321,90 +319,10 @@ class GenshinApp:
                     f"{action.action} - {action.amount} 原石"+"\n"
             async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
                 moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
-            embed = defaultEmbed(
-                f"<:primo:958555698596290570> 最近25筆原石紀錄",
-                f"{primoLog}"
-            )
+            embed = defaultEmbed(message=f"{primoLog}")
             result.append(embed)
-            embed = defaultEmbed(
-                f"<:mora:958577933650362468> 最近25筆摩拉紀錄",
-                f"{moraLog}"
-            )
+            embed = defaultEmbed(message=f"{moraLog}")
             result.append(embed)
-        return result
-
-    async def getUserCharacters(self, user_id: int):
-        client, uid, only_uid = await self.getUserCookie(user_id)
-        try:
-            result = await client.get_genshin_characters(uid)
-        except genshin.errors.DataNotPublic:
-            result = errEmbed(
-                '<a:error_animated:982579472060547092> 你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
-            return result
-        except Exception as e:
-            result = errEmbed(
-                '<a:error_animated:982579472060547092> 錯誤',
-                f'```{e}```')
-        else:
-            return result
-
-    def parseCharacter(self, user_characters: dict, character_name: str, user: Member):
-        for character in user_characters:
-            if character.name == character_name:
-                const = character.constellation
-                refinement = character.weapon.refinement
-                character_level = character.level
-                character_rarity = character.rarity
-                friendship = character.friendship
-                weapon = character.weapon.name
-                weapon_level = character.weapon.level
-                weapon_rarity = character.weapon.rarity
-                icon = character.icon
-                artifact_str = '該角色沒有裝配任何聖遺物'
-                if len(character.artifacts) > 0:
-                    artifact_str = ''
-                    for artifact in character.artifacts:
-                        artifact_str += f'{artifact.pos_name}: {artifact.name} ({artifact.set.name})\n'
-                result = defaultEmbed(
-                    f'C{const}R{refinement} {character_name}', '')
-                result.add_field(
-                    name='角色',
-                    value=f'{character_rarity}<:white_star:982456919224615002>\n'
-                    f'Lvl. {character_level}\n'
-                    f'好感度: {friendship}'
-                )
-                result.add_field(
-                    name='武器',
-                    value=f'{weapon_rarity}<:white_star:982456919224615002>\n'
-                    f'{weapon}\n'
-                    f'Lvl. {weapon_level}\n',
-                    inline=False)
-                result.add_field(
-                    name='聖遺物',
-                    value=artifact_str
-                )
-                result.set_thumbnail(url=icon)
-                result.set_author(name=user, icon_url=user.avatar)
-                return result
-
-    async def getToday(self, user_id: int):
-        client, uid, only_uid = await self.getUserCookie(user_id)
-        try:
-            diary = await client.get_diary()
-        except genshin.errors.DataNotPublic:
-            result = errEmbed(
-                '<a:error_animated:982579472060547092> 你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
-            return result
-        except Exception as e:
-            result = errEmbed(
-                '<a:error_animated:982579472060547092> 錯誤',
-                f'```{e}```')
-        else:
-            result = defaultEmbed(
-                f"今日收入",
-                f"<:primo:958555698596290570> {diary.day_data.current_primogems}原石\n"
-                f"<:mora:958577933650362468> {diary.day_data.current_mora}摩拉"
-            )
         return result
 
     async def getAbyss(self, user_id: int, previous: bool, overview: bool):
@@ -418,17 +336,17 @@ class GenshinApp:
         except genshin.errors.DataNotPublic:
             result = errEmbed(
                 '<a:error_animated:982579472060547092> 你的資料並不是公開的!', '請輸入`/stuck`來取得更多資訊')
+            return result
         except Exception as e:
             result = errEmbed(
                 '<a:error_animated:982579472060547092> 錯誤',
                 f'```{e}```')
+            return result
         else:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
-                result = errEmbed(
-                    '<a:error_animated:982579472060547092> 找不到深淵資料!',
-                    '建議輸入 `/stats` 來刷新資料\n'
-                    '(深淵資料需最多1小時來接收)')
+                result = errEmbed(message='建議輸入 `/stats` 來刷新資料\n'
+                                  '(深淵資料需最多1小時來接收)')
                 return result
             result = defaultEmbed(
                 f"第{abyss.season}期深淵",
@@ -445,7 +363,7 @@ class GenshinApp:
                 f"最多E使用角色 • {get_name.getName(rank.most_skills_used[0].id)} • {rank.most_skills_used[0].value}次"
             )
             if overview:
-                return result
+                return [result]
             result = []
             for floor in abyss.floors:
                 embed = defaultEmbed(
@@ -498,7 +416,7 @@ class GenshinApp:
                 )
                 count += 1
                 embed.set_thumbnail(
-                    url=f"https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_{charas[chara_name]['icon']}.png")
+                    url=getCharacterIcon(getCharaIdWithName(name)))
                 embed.set_footer(
                     text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
                 result.append([embed, build['weapon'], build['artifacts']])
@@ -521,15 +439,18 @@ class GenshinApp:
                 '<a:error_animated:982579472060547092> 錯誤',
                 f'```{e}```')
         else:
-            await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?', (resin_notification_toggle, resin_threshold, max_notif, user_id))
+            if resin_notification_toggle == 0:
+                await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
+                result = defaultEmbed()
+            else:
+                await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?', (resin_notification_toggle, resin_threshold, max_notif, user_id))
+                toggle_str = '開' if resin_notification_toggle == 1 else '關'
+                result = defaultEmbed(
+                    message=f'目前開關: {toggle_str}\n'
+                    f'樹脂提醒閥值: {resin_threshold}\n'
+                    f'最大提醒數量: {max_notif}'
+                )
             await self.db.commit()
-            toggle_str = '開' if resin_notification_toggle == 1 else '關'
-            result = defaultEmbed(
-                '<a:check_animated:982579879239352370> 樹脂提醒設定更新成功',
-                f'目前開關: {toggle_str}\n'
-                f'樹脂提醒閥值: {resin_threshold}\n'
-                f'最大提醒數量: {max_notif}'
-            )
         return result
 
     async def redeemCode(self, user_id: int, code: str):

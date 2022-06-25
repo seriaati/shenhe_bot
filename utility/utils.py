@@ -7,7 +7,9 @@ import yaml
 import json
 from pyppeteer import launch
 from utility.enkaToGOOD import convert
-from utility.stat_emojis import stat_emojis
+from data.game.stat_emojis import stat_emojis
+from data.game.characters_map import characters_map
+from data.game.character_emoji import character_emoji
 
 
 class GetName():
@@ -38,15 +40,15 @@ class GetName():
 get_name = GetName()
 
 
-def defaultEmbed(title: str, message: str = ''):
+def defaultEmbed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xa68bd3)
 
 
-def ayaakaaEmbed(title: str, message: str = ''):
+def ayaakaaEmbed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xADC6E5)
 
 
-def errEmbed(title: str, message: str = ''):
+def errEmbed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xfc5165)
 
 
@@ -68,9 +70,10 @@ def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
 
 
 def getCharacterIcon(id: int):
-    with open("GenshinData/chara_icon.yaml", "r") as file:
-        chara_icon = yaml.full_load(file)
-    return chara_icon.get(id)
+    for chara_id, chara_info in characters_map.items():
+        if chara_id == id:
+            return chara_info['icon']
+    return 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png'
 
 
 def getStatEmoji(propid: str):
@@ -251,3 +254,15 @@ def getElementEmoji(element: str):
         'Pyro': '<:FIRE_ADD_HURT:982138221569900585>'
     }
     return element_emojis.get(element) or element
+
+def getCharaIdWithName(name: str):
+    for chara_id, character_info in characters_map.items():
+        if character_info['name'] == name:
+            return chara_id
+    return name
+
+def getCharaEmojiWithId(id: int):
+    for chara_id, emoji in character_emoji.items():
+        if id == chara_id:
+            return emoji 
+    return "<a:error_animated:982579472060547092>"

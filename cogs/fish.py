@@ -6,7 +6,7 @@ from discord import ButtonStyle, Interaction, Thread, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button
-from utility.FlowApp import FlowApp
+from utility.apps.FlowApp import FlowApp
 from utility.utils import ayaakaaEmbed
 
 

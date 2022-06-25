@@ -6,8 +6,8 @@ from discord import ButtonStyle, Interaction, app_commands
 from discord.ext import commands
 from discord.ui import Button, button
 from debug import DefaultView
-from utility.FlowApp import FlowApp
-from utility.RollApp import RollApp
+from utility.apps.FlowApp import FlowApp
+from utility.apps.RollApp import RollApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 global one_pull_price

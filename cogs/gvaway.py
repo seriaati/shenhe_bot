@@ -8,7 +8,7 @@ from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Select
 from debug import DefaultView
-from utility.FlowApp import FlowApp
+from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 

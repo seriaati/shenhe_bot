@@ -8,9 +8,9 @@ from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Modal, View
-from utility.GenshinApp import GenshinApp
+from utility.apps.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, divide_chunks, errEmbed, getClient, log
-from utility.WishPaginator import WishPaginator
+from utility.paginators.WishPaginator import WishPaginator
 
 import genshin
 

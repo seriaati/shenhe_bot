@@ -1,5 +1,4 @@
-import typing
-stat_emojis: typing.Mapping[int, str] = {
+stat_emojis = {
     'FIGHT_PROP_HP': '<:HP:982068466410463272>',
     'FIGHT_PROP_ATTACK_PERCENT': '<:ATTACK_PERCENT:982138215832117308>',
     'FIGHT_PROP_HP_PERCENT': '<:HP_PERCENT:982138227450347553>',

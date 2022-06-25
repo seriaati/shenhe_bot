@@ -6,9 +6,9 @@ from discord import ButtonStyle, Interaction, Member, Message, app_commands
 from discord.ext import commands
 from discord.ui import Button, button
 from debug import DefaultView
-from utility.FlowApp import FlowApp
-from utility.GenshinApp import GenshinApp
-from utility.TutorialPaginator import TutorialPaginator
+from utility.apps.FlowApp import FlowApp
+from utility.apps.GenshinApp import GenshinApp
+from utility.paginators.TutorialPaginator import TutorialPaginator
 from utility.utils import defaultEmbed, log
 
 

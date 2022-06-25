@@ -1,7 +1,7 @@
 import random
 
 import aiosqlite
-from utility.FlowApp import FlowApp
+from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, log
 
 global blue_gif, purple_gif, gold_gif, air, blue_sleep, purple_sleep, gold_sleep, big_prize

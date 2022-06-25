@@ -4,7 +4,7 @@ from discord import Interaction, Member, Message, Role, app_commands
 from discord.ext import commands
 from discord.ui import Button
 from debug import DefaultView
-from utility.FlowApp import FlowApp
+from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, log
 
 

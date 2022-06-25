@@ -9,7 +9,7 @@ from discord.ui import Select, select, Button
 import waifuim
 from waifuim import WaifuAioClient
 from debug import DefaultView
-from utility.GeneralPaginator import GeneralPaginator
+from utility.paginators.GeneralPaginator import GeneralPaginator
 import utility.global_vars as emoji
 from utility.utils import defaultEmbed, errEmbed
 

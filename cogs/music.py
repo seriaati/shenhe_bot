@@ -10,7 +10,7 @@ from wavelink.ext import spotify
 import datetime
 import asyncio
 import re
-from utility.GeneralPaginator import GeneralPaginator
+from utility.paginators.GeneralPaginator import GeneralPaginator
 
 
 class MusicCog(commands.Cog):

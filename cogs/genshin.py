@@ -1,26 +1,30 @@
-from datetime import datetime
+import ast
 import json
+import urllib.parse
+from datetime import datetime
 from typing import Any, List, Optional
-from utility.utils import getClient, getElementEmoji
-import aiohttp
+
 import aiosqlite
 import discord
+import utility.global_vars as shenhe_emoji
 import yaml
-import urllib.parse
-from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
+from data.game.characters_map import characters_map
+from data.game.namecards_map import namecards_map
+from data.game.talents import talents
+from debug import DefaultView
+from discord import (ButtonStyle, Embed, Emoji, Guild, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput, button, select
-from debug import DefaultView
-from utility.AbyssPaginator import AbyssPaginator
-from utility.GeneralPaginator import GeneralPaginator
-from utility.GenshinApp import GenshinApp
+from utility.apps.GenshinApp import GenshinApp
+from utility.paginators.AbyssPaginator import AbyssPaginator
+from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, errEmbed, get_name, getCharacterIcon,
-                           getStatEmoji, getWeekdayName)
-from data.game.namecard_map import namecards_map
-from data.game.character_map import characters_map
+                           getCharaEmojiWithId, getCharaIdWithName, getClient,
+                           getElementEmoji, getStatEmoji, getWeekdayName)
+
 from genshin.models import WikiPageType
 
 
@@ -88,7 +92,7 @@ class GenshinCog(commands.Cog):
     async def check(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
         result = await self.genshin_app.getRealTimeNotes(member.id, False)
-        result.set_author(name=member, icon_url=member.avatar)
+        result.set_author(name='即時便籤', icon_url=member.avatar)
         await i.response.send_message(embed=result)
 # /stats
 
@@ -98,7 +102,7 @@ class GenshinCog(commands.Cog):
     async def stats(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
         result = await self.genshin_app.getUserStats(member.id)
-        result.set_author(name=member, icon_url=member.avatar)
+        result.set_author(name='原神數據', icon_url=member.avatar)
         await i.response.send_message(embed=result)
 # /area
 
@@ -108,7 +112,7 @@ class GenshinCog(commands.Cog):
     async def area(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
         result = await self.genshin_app.getArea(member.id)
-        result.set_author(name=member, icon_url=member.avatar)
+        result.set_author(name='區域探索度', icon_url=member.avatar)
         await i.response.send_message(embed=result)
 # /claim
 
@@ -148,7 +152,7 @@ class GenshinCog(commands.Cog):
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result = await self.genshin_app.getDiary(member.id, month)
-        result.set_author(name=member, icon_url=member.avatar)
+        result.set_author(name='旅行者日記', icon_url=member.avatar)
         await i.response.send_message(embed=result)
 # /log
 
@@ -165,19 +169,14 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=result, ephemeral=True)
             return
         result = result[data_type]
-        result.set_author(name=member, icon_url=member.avatar)
+        if data_type == 0:
+            result.set_author(
+                name='<:primo:958555698596290570> 最近25筆原石紀錄', icon_url=member.avatar)
+        elif data_type == 1:
+            result.set_author(
+                name='<:mora:958577933650362468> 最近25筆摩拉紀錄', icon_url=member.avatar)
         await i.response.send_message(embed=result)
 
-# /today
-
-    @app_commands.command(name='today今日收入', description='查看今日原石與摩拉收入')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def today(self, i: Interaction, member: Optional[Member] = None):
-        member = member or i.user
-        result = await self.genshin_app.getToday(member.id)
-        result.set_author(name=member, icon_url=member.avatar)
-        await i.response.send_message(embed=result)
 # /abyss
 
     @app_commands.command(name='abyss深淵', description='深淵資料查詢')
@@ -194,13 +193,17 @@ class GenshinCog(commands.Cog):
         member = member or i.user
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
-        result = await self.genshin_app.getAbyss(member.id, previous, overview)
+        result= await self.genshin_app.getAbyss(member.id, previous, overview)
         if type(result) is not list:
-            await i.response.send_message(embed=result)
-            return
+            result.set_author(name='找不到深淵資料', icon_url=i.user.avatar)
+            return await i.response.send_message(embed=result)
         if overview:
+            result = result[0]
+            result.set_author(name='深淵總覽', icon_url=i.user.avatar)
             await i.response.send_message(embed=result)
         else:
+            for r in result:
+                r.set_author(name='深淵詳細', icon_url=i.user.avatar)
             await AbyssPaginator(i, result).start(embeded=True)
 
 # /stuck
@@ -218,16 +221,151 @@ class GenshinCog(commands.Cog):
             '4. 設定齒輪\n'
             '5. 三個選項都打開')
         embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
-        await i.response.send_message(embed=embed)
+        await i.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name='remind提醒', description='設置樹脂提醒')
-    @app_commands.rename(toggle='開關', resin_threshold='樹脂閥值', max_notif='最大提醒數量')
-    @app_commands.describe(toggle='要開啟或關閉樹脂提醒功能', resin_threshold='在超過此樹脂量時, 申鶴會tag你進行提醒', max_notif='申鶴每一小時提醒一次, 超過這個數字就會停止提醒')
-    @app_commands.choices(toggle=[Choice(name='開', value=1),
-                                  Choice(name='關', value=0)])
-    async def resin_remind(self, i: Interaction, toggle: int, resin_threshold: int = 140, max_notif: int = 3):
-        result = await self.genshin_app.setResinNotification(i.user.id, toggle, resin_threshold, max_notif)
-        await i.response.send_message(embed=result)
+    class ResinNotifModal(Modal, title='樹脂提醒設定'):
+        resin_threshold = TextInput(
+            label='樹脂閥值', placeholder='例如: 140 (不得大於 160)')
+        max_notif = TextInput(label='最大提醒值', placeholder='例如: 5')
+
+        async def on_submit(self, interaction: Interaction) -> None:
+            await interaction.response.defer()
+            self.stop()
+
+    class TalentElementChooser(DefaultView):
+        def __init__(self, author: Member, db: aiosqlite.Connection):
+            super().__init__(timeout=None)
+            self.author = author
+            elements = ['Anemo', 'Cryo', 'Electro', 'Pyro', 'Hydro', 'Geo']
+            for index in range(0, 6):
+                self.add_item(GenshinCog.TalentElementButton(
+                    elements[index], index//3, db))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(emebd=errEmbed(f'{shenhe_emoji.error} 這不是你的操作視窗', '輸入 `/remind` 來設置自己的提醒功能'), ephemeral=True)
+            return self.author.id == interaction.user.id
+
+    class TalentElementButton(Button):
+        def __init__(self, element: str, row: int, db: aiosqlite.Connection):
+            super().__init__(emoji=getElementEmoji(element), row=row)
+            self.element = element
+            self.db = db
+
+        async def callback(self, interaction: Interaction) -> Any:
+            embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
+            embed.set_author(name='選擇角色', icon_url=interaction.user.avatar)
+            c = await self.db.cursor()
+            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
+            user_chara_list: list = (await c.fetchone())[0]
+            if user_chara_list == '':
+                talent_notif_chara_list = []
+            else:
+                talent_notif_chara_list: list = ast.literal_eval(user_chara_list)
+            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.db, talent_notif_chara_list))
+
+    class TalentCharaChooserView(DefaultView):
+        def __init__(self, element: str, author: Member, db: aiosqlite.Connection, talent_notif_chara_list: list):
+            super().__init__(timeout=None)
+            self.add_item(GenshinCog.TalentCharaChooser(element, db, talent_notif_chara_list, author))
+            self.author = author
+            self.db = db
+
+        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=2)
+        async def go_back(self, i: Interaction, button: Button):
+            embed = defaultEmbed('')
+            embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
+            await i.response.edit_message(embed=embed, view=GenshinCog.TalentElementChooser(i.user, self.db))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(emebd=errEmbed(f'{shenhe_emoji.error} 這不是你的操作視窗', '輸入 `/remind` 來設置自己的提醒功能'), ephemeral=True)
+            return self.author.id == interaction.user.id
+
+    class TalentCharaChooser(Select):
+        def __init__(self, element: str, db: aiosqlite.Connection, talent_notif_chara_list: list, author: Member):
+            options = []
+            self.db = db
+            self.author = author 
+            self.element = element
+            for week_day, books in talents.items():
+                for book_name, characters in books.items():
+                    for character_name, element_name in characters.items():
+                        if element == element_name:
+                            desc = f'{week_day} - 「{book_name}」'
+                            if character_name in talent_notif_chara_list:
+                                desc = '已設置過此角色, 再次選擇將會移除'
+                            options.append(SelectOption(
+                                label=character_name, description=desc, emoji=getCharaEmojiWithId(getCharaIdWithName(character_name))))
+            super().__init__(options=options, placeholder='選擇角色', max_values=len(options))
+
+        async def callback(self, interaction: Interaction) -> Any:
+            c = await self.db.cursor()
+            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
+            chara_list = (await c.fetchone())[0]
+            if chara_list == '':
+                chara_list = self.values
+            else:
+                chara_list: list = ast.literal_eval(chara_list)
+                for chara in self.values:
+                    if chara in chara_list:
+                        chara_list.remove(chara)
+                    else:
+                        chara_list.append(chara)
+            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 1, talent_notif_chara_list = ? WHERE user_id = ?', (str(chara_list), interaction.user.id))
+            await self.db.commit()
+            embed = defaultEmbed(message='還想要設置其他元素的角色嗎? 視窗還在上面!')
+            embed.set_author(name='天賦提醒設置成功', icon_url=interaction.user.avatar)
+            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
+            chara_list = ast.literal_eval((await c.fetchone())[0])
+            chara_str = ''
+            for chara in chara_list:
+                chara_str += f'• {chara}\n'
+            chara_str = '(空)' if chara_str == '' else chara_str
+            embed.add_field(name='目前已設置角色', value=chara_str)
+            prev_embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
+            prev_embed.set_author(name='選擇角色', icon_url=interaction.user.avatar)
+            c = await self.db.cursor()
+            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
+            user_chara_list: list = (await c.fetchone())[0]
+            if user_chara_list == '':
+                talent_notif_chara_list = []
+            else:
+                talent_notif_chara_list: list = ast.literal_eval(user_chara_list)
+            await interaction.response.edit_message(embed=prev_embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, talent_notif_chara_list))
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
+    @app_commands.command(name='remind提醒', description='設置提醒功能')
+    @app_commands.rename(function='功能', toggle='開關')
+    @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
+    @app_commands.choices(function=[Choice(name='樹脂提醒', value=0), Choice(name='天賦素材提醒', value=1)],
+                          toggle=[Choice(name='開', value=1), Choice(name='關', value=0)])
+    async def resin_remind(self, i: Interaction, function: int, toggle: int):
+        if function == 0:
+            if toggle == 0:
+                result = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
+                result.set_author(name='樹脂提醒功能已關閉', icon_url=i.user.avatar)
+                await i.response.send_message(embed=result)
+            else:
+                modal = GenshinCog.ResinNotifModal()
+                await i.response.send_modal(modal)
+                await modal.wait()
+                result = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value)
+                result.set_author(name='樹脂提醒設定成功', icon_url=i.user.avatar)
+                await i.followup.send(embed=result)
+        elif function == 1:
+            if toggle == 0:
+                c: aiosqlite.Cursor = await self.bot.db.cursor()
+                await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (i.user.id,))
+                await self.bot.db.commit()
+                embed = defaultEmbed()
+                embed.set_author(name='天賦提醒功能已關閉', icon_url=i.user.avatar)
+                await i.response.send_message(embed=embed)
+            else:
+                embed = defaultEmbed()
+                embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
+                view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
+                await i.response.send_message(embed=embed, view=view)
 
 # /farm
 
@@ -310,7 +448,9 @@ class GenshinCog(commands.Cog):
             for id in ids:
                 emojis.append(i.client.get_emoji(id))
             view = GenshinCog.ElementChooseView(self.db, emojis)
-            await i.response.edit_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
+            embed = defaultEmbed()
+            embed.set_author(name='選擇想查看角色的元素', icon_url=i.user.avatar)
+            await i.response.edit_message(embed=embed, view=view)
 
     class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
         def __init__(self, index: int, db: aiosqlite.Connection):
@@ -323,7 +463,8 @@ class GenshinCog(commands.Cog):
                 self.build_dict = yaml.full_load(f)
             options = []
             for character, value in self.build_dict.items():
-                options.append(SelectOption(label=character, value=character))
+                options.append(SelectOption(label=character, value=character,
+                               emoji=getCharaEmojiWithId(getCharaIdWithName(character))))
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
@@ -382,8 +523,8 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 查無此用戶!', '這個使用者還沒有註冊過UID\n請至 <#978871680019628032> 註冊 UID'), ephemeral=True)
             return
         uid = uid[0]
-        embed = defaultEmbed(f'UID查詢', uid)
-        embed.set_author(name=player, icon_url=player.avatar)
+        embed = defaultEmbed()
+        embed.set_author(name=uid, icon_url=player.avatar)
         await i.response.send_message(embed=embed)
 
     class CalcultorElementButtonView(DefaultView):
@@ -433,7 +574,8 @@ class GenshinCog(commands.Cog):
         def __init__(self, items, item_type):
             options = []
             for item in items:
-                options.append(SelectOption(label=item[0], value=item[1]))
+                options.append(SelectOption(
+                    label=item[0], value=item[1], emoji=getCharaEmojiWithId(getCharaIdWithName(item[0]))))
             super().__init__(placeholder=f'選擇{item_type}',
                              min_values=1, max_values=1, options=options)
 
@@ -528,7 +670,8 @@ class GenshinCog(commands.Cog):
             chara_list.append([chara.name, chara.id, chara.element])
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
-        embed = defaultEmbed('選擇角色的元素')
+        embed = defaultEmbed()
+        embed.set_author(name='選擇角色的元素', icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=button_view)
         await button_view.wait()
         select_view = GenshinCog.CalculatorItems(
@@ -546,7 +689,8 @@ class GenshinCog(commands.Cog):
                 chara_name = chara[0]
         character = await client.get_calculator_characters(query=chara_name)
         character = character[0]
-        embed = defaultEmbed('計算結果')
+        embed = defaultEmbed()
+        embed.set_author(name='計算結果', icon_url=i.user.avatar)
         embed.set_thumbnail(url=character.icon)
         embed.add_field(
             name='計算內容',
@@ -723,7 +867,8 @@ class GenshinCog(commands.Cog):
 
     class EnkaPageSelect(Select):
         def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, member: Member, enka_data, bot: commands.Bot):
-            options = [SelectOption(label='總覽', value=0, emoji='<:SCORE:983948729293897779>')]
+            options = [SelectOption(
+                label='總覽', value=0, emoji='<:SCORE:983948729293897779>')]
             self.embeds = embeds
             self.equip_dict = equip_dict
             self.charas = charas
@@ -791,7 +936,8 @@ class GenshinCog(commands.Cog):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
-                    embed = GenshinCog.parse_damage_embed(self.id, result[0], self.member, self.index, result[1])
+                    embed = GenshinCog.parse_damage_embed(
+                        self.id, result[0], self.member, self.index, result[1])
             await i.edit_original_message(embed=embed)
 
     def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
@@ -860,7 +1006,8 @@ class GenshinCog(commands.Cog):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
-                    embed = GenshinCog.parse_damage_embed(self.id, result[0], self.member, 2, result[1])
+                    embed = GenshinCog.parse_damage_embed(
+                        self.id, result[0], self.member, 2, result[1])
             await i.edit_original_message(embed=embed)
 
     def percent_symbol(propId: str):
@@ -972,10 +1119,13 @@ class GenshinCog(commands.Cog):
         async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
             data = await r.json()
         if 'avatarInfoList' not in data:
+            embed = errEmbed(message='請照下方的指示操作')
+            embed.set_author(name='找不到資料', icon_url=i.user.avatar)
+            await i.edit_original_message(embed=embed)
             embed = defaultEmbed(
                 '<a:error_animated:982579472060547092> 錯誤', '請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(資料最多需要10分鐘更新)')
             embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
-            await i.edit_original_message(embed=embed)
+            await i.followup.send(embed=embed, ephemeral=True)
             return
         player = data['playerInfo']
         embeds = []
@@ -1079,8 +1229,6 @@ class GenshinCog(commands.Cog):
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
-    
-    
     @app_commands.command(name='wiki', description='查看原神維基百科')
     @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
     @app_commands.rename(wikiType='類別', query='關鍵詞')
@@ -1102,7 +1250,7 @@ class GenshinCog(commands.Cog):
                         break
         if not found:
             return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
-        result = [[],[],[]]
+        result = [[], [], []]
         embed = defaultEmbed('搜尋結果')
         name = '屬性'
         value = ''
