@@ -35,6 +35,7 @@ class ReactionRoles(commands.Cog):
                 r = get(g.roles, name=self.role)
                 if r not in interaction.user.roles:
                     await interaction.response.edit_message(embed=errEmbed('<a:error_animated:982579472060547092> 你本來就沒有這個身份組!'))
+                    return
                 await interaction.user.remove_roles(r)
                 await interaction.response.edit_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 已撤回 {r} 身份組'))
 
