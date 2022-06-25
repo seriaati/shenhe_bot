@@ -140,6 +140,11 @@ class Schedule(commands.Cog):
     @talent_notification.before_loop
     async def before_notif(self):
         await self.bot.wait_until_ready()
+        now = datetime.now().astimezone()
+        next_run = now.replace(hour=1, minute=20, second=0)  # 等待到早上1點20
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await sleep_until(next_run)
 
 
 async def setup(bot: commands.Bot) -> None:
