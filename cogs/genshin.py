@@ -877,7 +877,7 @@ class GenshinCog(commands.Cog):
             self.bot = bot
             for chara in charas:
                 options.append(SelectOption(
-                    label=f"{characters_map.get(str(chara[2]))['rarity']}★ {chara[0]} {chara[1]}", value=f'{charas.index(chara)+1} {chara[2]}', emoji=getElementEmoji(characters_map.get(str(chara[2]))['element'])))
+                    label=f"{chara[0]}", description=f'{characters_map.get(str(chara[2]))["rarity"]}★ {chara[1]}', value=f'{charas.index(chara)+1} {chara[2]}', emoji=getCharaEmojiWithId(str(chara[2]))))
             super().__init__(placeholder='選擇分頁', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction) -> Any:
@@ -1067,7 +1067,7 @@ class GenshinCog(commands.Cog):
                         value=value
                     )
                     embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
-            embed.set_thumbnail(url=getCharacterIcon(int(self.id)))
+            embed.set_thumbnail(url=getCharacterIcon(str(self.id)))
             embed.set_author(name=self.member, icon_url=self.member.avatar)
             self.disabled = False
             await i.response.edit_message(embed=embed, view=self.view)

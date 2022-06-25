@@ -69,9 +69,9 @@ def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
     return log_str
 
 
-def getCharacterIcon(id: int):
+def getCharacterIcon(id: str):
     for chara_id, chara_info in characters_map.items():
-        if chara_id == id:
+        if chara_id == str(id):
             return chara_info['icon']
     return 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png'
 
