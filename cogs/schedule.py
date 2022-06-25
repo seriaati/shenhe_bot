@@ -78,29 +78,40 @@ class Schedule(commands.Cog):
         remind_channel = self.bot.get_channel(
                     990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         weekday = datetime.today().weekday()
-        weekday_dict = {
-            0: '週一、週四',
-            1: '週二、週五',
-            2: '週三、週六',
-            3: '週一、週四',
-            4: '週二、週五',
-            5: '週三、週六'
-        }
-        
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
-        data = await c.fetchall()
-        for index, tuple in enumerate(data):
-            user_id = tuple[0]
-            chara_list = ast.literal_eval(tuple[1])
-            for chara in chara_list:
-                for book_name, characters in talents[weekday_dict[weekday]].items():
-                    for character_name, element_name in characters.items():
-                        if character_name == chara:
-                            embed = defaultEmbed(message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                            embed.set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara)))
-                            embed.set_author(name=f'刷本啦!', icon_url=(self.bot.get_user(user_id)).avatar)
-                            await remind_channel.send(content=(self.bot.get_user(user_id).mention),embed=embed)
+        if weekday == 6:
+            await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
+            data = await c.fetchall()
+            for index, tuple in enumerate(data):
+                user_id = tuple[0]
+                chara_list = ast.literal_eval(tuple[1])
+                for chara in chara_list:
+                    embed = defaultEmbed(message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
+                    embed.set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara)))
+                    embed.set_author(name=f'刷本啦!', icon_url=(self.bot.get_user(user_id)).avatar)
+                    await remind_channel.send(content=(self.bot.get_user(user_id).mention),embed=embed)
+        else:
+            weekday_dict = {
+                0: '週一、週四',
+                1: '週二、週五',
+                2: '週三、週六',
+                3: '週一、週四',
+                4: '週二、週五',
+                5: '週三、週六'
+            }
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
+            data = await c.fetchall()
+            for index, tuple in enumerate(data):
+                user_id = tuple[0]
+                chara_list = ast.literal_eval(tuple[1])
+                for chara in chara_list:
+                    for book_name, characters in talents[weekday_dict[weekday]].items():
+                        for character_name, element_name in characters.items():
+                            if character_name == chara:
+                                embed = defaultEmbed(message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
+                                embed.set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara)))
+                                embed.set_author(name=f'刷本啦!', icon_url=(self.bot.get_user(user_id)).avatar)
+                                await remind_channel.send(content=(self.bot.get_user(user_id).mention),embed=embed)
 
     @tasks.loop(hours=24)
     async def remove_flow_acc(self):

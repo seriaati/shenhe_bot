@@ -977,7 +977,7 @@ class GenshinCog(commands.Cog):
             embed.add_field(
                 name=talent,
                 value=value,
-                inline=inline
+                inline=True
             )
         embed.set_author(name=member, icon_url=member.avatar)
         embed.set_thumbnail(url=getCharacterIcon(int(chara_id)))
