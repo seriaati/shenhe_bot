@@ -8,9 +8,9 @@ from utility.utils import defaultEmbed
 class Dropdown(Select):
     def __init__(self):
         options = [
-            SelectOption(label='原神資料', description='需先/cookie註冊帳號後方可使用', emoji='✨'),
+            SelectOption(label='原神(註冊專屬功能)', description='需先/cookie註冊帳號後方可使用', emoji='✨'),
             SelectOption(label='原神', description='不須註冊帳號即可使用', emoji='🌟'),
-            SelectOption(label='原神祈願', description='需註冊+設置祈願紀錄', emoji='🌠'),
+            SelectOption(label='原神祈願(需註冊)', description='需註冊+設置祈願紀錄', emoji='🌠'),
             SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
             SelectOption(label='flow系統', description='交易方式, 發布委託等', emoji='🌊'),
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
@@ -21,10 +21,10 @@ class Dropdown(Select):
                          min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: Interaction):
-        if self.values[0] == '原神資料':
+        if self.values[0] == '原神(註冊專屬功能)':
             embed = defaultEmbed(
-                '原神資料相關',
-                '需要使用/cookie來設定帳號'
+                '原神相關',
+                '需要使用 `/cookie` 來設定帳號'
             )
             embed.add_field(
                 name='`/cookie`',
@@ -62,11 +62,6 @@ class Dropdown(Select):
                 inline=False
             )
             embed.add_field(
-                name='`/today`',
-                value='查看今日原石與摩拉收入',
-                inline=False
-            )
-            embed.add_field(
                 name='`/abyss`',
                 value='查看深境螺旋資料',
                 inline=False
@@ -77,7 +72,7 @@ class Dropdown(Select):
                 inline=False
             )
             embed.add_field(
-                name='`/remind`',
+                name='`/remind 樹脂提醒`',
                 value='設置樹脂提醒功能',
                 inline=False
             )
@@ -113,11 +108,16 @@ class Dropdown(Select):
                 value='透過 enka API 查看各式原神數據',
                 inline=False
             )
+            embed.add_field(
+                name='/remind 天賦素材提醒',
+                value='設置角色天賦素材提醒',
+                inline=False
+            )
 
         elif self.values[0] == '原神祈願':
             embed = defaultEmbed(
                 '原神祈願',
-                '需要使用`/cookie`設定帳號\n加上`/wish setkey`設定紀錄')
+                '需要使用 `/cookie` 設定帳號\n加上 `/wish setkey` 設定紀錄')
             embed.add_field(
                 name='`/wish setkey`',
                 value='設置祈願紀錄',
@@ -257,77 +257,82 @@ class Dropdown(Select):
                 value='查看身份組總人數',
                 inline=False
             )
-            embed.add_field(
-                name='`/say`',
-                value='讓申鶴幫你說話',
-                inline=False
-            )
         elif self.values[0] == '語音台':
             embed = defaultEmbed('語音台指令')
             embed.add_field(
-                name='/vc rename',
+                name='`/vc rename`',
                 value='重新命名語音台',
                 inline=False
             )
             embed.add_field(
-                name='/vc lock',
+                name='`/vc lock`',
                 value='鎖上語音台',
                 inline=False
             )
             embed.add_field(
-                name='/vc unlock',
+                name='`/vc unlock`',
                 value='解鎖語音台',
                 inline=False
             )
             embed.add_field(
-                name='/vc transfer',
+                name='`/vc transfer`',
                 value='移交房主權',
+                inline=False
+            )
+            embed.add_field(
+                name='`/vc youtube`',
+                value='為當前的語音台創建一個 youtube 播放器',
+                inline=False
+            )
+            embed.add_field(
+                name='`/vc chess`',
+                value='為當前的語音台創建一個西洋棋遊戲',
                 inline=False
             )
         elif self.values[0] == '音樂系統':
             embed = defaultEmbed('音樂系統指令')
             embed.add_field(
-                name='/play',
+                name='`/play`',
                 value='播放音樂',
                 inline=False
             )
             embed.add_field(
-                name='/stop',
+                name='`/stop`',
                 value='停止播放器並清除待播放清單',
                 inline=False
             )
             embed.add_field(
-                name='/pause',
+                name='`/pause`',
                 value='暫停播放器',
                 inline=False
             )
             embed.add_field(
-                name='/resume',
+                name='`/resume`',
                 value='取消暫停',
                 inline=False
             )
             embed.add_field(
-                name='/disconnect',
+                name='`/disconnect`',
                 value='讓申鶴悄悄的離開目前所在的語音台',
                 inline=False
             )
             embed.add_field(
-                name='/player',
+                name='`/player`',
                 value='查看目前播放狀況',
                 inline=False
             )
             embed.add_field(
-                name='/queue',
+                name='`/queue`',
                 value='查看目前待播放清單',
                 inline=False
             )
             embed.add_field(
-                name='/skip',
+                name='`/skip`',
                 value='跳過目前正在播放的歌曲',
                 inline=False
             )
             embed.add_field(
-                name='/clear',
+                name='`/clear`',
                 value='清除目前的待播放清單',
                 inline=False
             )
