@@ -23,7 +23,9 @@ from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, errEmbed, get_name, getCharacterIcon,
                            getCharaEmojiWithId, getCharaIdWithName, getClient,
-                           getElementEmoji, getStatEmoji, getWeekdayName)
+                           getElementEmoji, getStatEmoji, getWeaponEmojiWithId,
+                           getWeaponIconWithId, getWeaponIdWithName,
+                           getWeaponNameWithId, getWeekdayName)
 
 from genshin.models import WikiPageType
 
@@ -36,7 +38,7 @@ class GenshinCog(commands.Cog):
 
 # cookie
 
-    class CookieModal(discord.ui.Modal):
+    class CookieModal(Modal):
         def __init__(self, db: aiosqlite.Connection):
             self.genshin_app = GenshinApp(db)
             super().__init__(title='提交cookie', timeout=None, custom_id='cookie_modal')
@@ -193,7 +195,7 @@ class GenshinCog(commands.Cog):
         member = member or i.user
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
-        result= await self.genshin_app.getAbyss(member.id, previous, overview)
+        result = await self.genshin_app.getAbyss(member.id, previous, overview)
         if type(result) is not list:
             result.set_author(name='找不到深淵資料', icon_url=i.user.avatar)
             return await i.response.send_message(embed=result)
@@ -261,13 +263,15 @@ class GenshinCog(commands.Cog):
             if user_chara_list == '':
                 talent_notif_chara_list = []
             else:
-                talent_notif_chara_list: list = ast.literal_eval(user_chara_list)
+                talent_notif_chara_list: list = ast.literal_eval(
+                    user_chara_list)
             await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.db, talent_notif_chara_list))
 
     class TalentCharaChooserView(DefaultView):
         def __init__(self, element: str, author: Member, db: aiosqlite.Connection, talent_notif_chara_list: list):
             super().__init__(timeout=None)
-            self.add_item(GenshinCog.TalentCharaChooser(element, db, talent_notif_chara_list, author))
+            self.add_item(GenshinCog.TalentCharaChooser(
+                element, db, talent_notif_chara_list, author))
             self.author = author
             self.db = db
 
@@ -286,7 +290,7 @@ class GenshinCog(commands.Cog):
         def __init__(self, element: str, db: aiosqlite.Connection, talent_notif_chara_list: list, author: Member):
             options = []
             self.db = db
-            self.author = author 
+            self.author = author
             self.element = element
             for week_day, books in talents.items():
                 for book_name, characters in books.items():
@@ -324,14 +328,16 @@ class GenshinCog(commands.Cog):
             chara_str = '(空)' if chara_str == '' else chara_str
             embed.add_field(name='目前已設置角色', value=chara_str)
             prev_embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
-            prev_embed.set_author(name='選擇角色', icon_url=interaction.user.avatar)
+            prev_embed.set_author(
+                name='選擇角色', icon_url=interaction.user.avatar)
             c = await self.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
             user_chara_list: list = (await c.fetchone())[0]
             if user_chara_list == '':
                 talent_notif_chara_list = []
             else:
-                talent_notif_chara_list: list = ast.literal_eval(user_chara_list)
+                talent_notif_chara_list: list = ast.literal_eval(
+                    user_chara_list)
             await interaction.response.edit_message(embed=prev_embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, talent_notif_chara_list))
             await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -363,7 +369,8 @@ class GenshinCog(commands.Cog):
                 await i.response.send_message(embed=embed)
             else:
                 embed = defaultEmbed()
-                embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
+                embed.set_author(name='選擇想要設置提醒功能的角色元素',
+                                 icon_url=i.user.avatar)
                 view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
                 await i.response.send_message(embed=embed, view=view)
 
@@ -416,29 +423,43 @@ class GenshinCog(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
     class ElementChooseView(DefaultView):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, emojis: List):
+        def __init__(self, db: aiosqlite.Connection, emojis: List, author: Member):
             super().__init__(timeout=None)
+            self.author = author
             for i in range(0, 6):
                 self.add_item(GenshinCog.ElementButton(
-                    i, db, emojis[i]))
+                    i, db, emojis[i], author))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
 
     class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, db: aiosqlite.Connection, emoji: Emoji):
+        def __init__(self, index: int, db: aiosqlite.Connection, emoji: Emoji, author: Member):
             self.index = index
             self.db = db
+            self.author = author
             super().__init__(style=ButtonStyle.gray, row=index % 2, emoji=emoji)
 
         async def callback(self, i: Interaction):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.db)
-            embed = defaultEmbed('請選擇角色')
+                self.index, self.db, self.author)
+            embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=view)
 
     class CharactersDropdownView(DefaultView):  # 角色配置下拉選單的view
-        def __init__(self, index: int, db: aiosqlite.Connection):
+        def __init__(self, index: int, db: aiosqlite.Connection, author: Member):
             super().__init__(timeout=None)
             self.db = db
-            self.add_item(GenshinCog.BuildCharactersDropdown(index, db))
+            self.author = author
+            self.add_item(
+                GenshinCog.BuildCharactersDropdown(index, db, author))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
 
         @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
         async def back(self, i: Interaction, button: Button):
@@ -447,16 +468,16 @@ class GenshinCog(commands.Cog):
                    982138232391237632, 982138233813098556, 982138221569900585]
             for id in ids:
                 emojis.append(i.client.get_emoji(id))
-            view = GenshinCog.ElementChooseView(self.db, emojis)
-            embed = defaultEmbed()
-            embed.set_author(name='選擇想查看角色的元素', icon_url=i.user.avatar)
+            view = GenshinCog.ElementChooseView(self.db, emojis, self.author)
+            embed = defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=view)
 
     class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
-        def __init__(self, index: int, db: aiosqlite.Connection):
+        def __init__(self, index: int, db: aiosqlite.Connection, author: Member):
             self.genshin_app = GenshinApp(db)
             self.index = index
             self.db = db
+            self.author = author
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
             with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
@@ -471,20 +492,26 @@ class GenshinCog(commands.Cog):
         async def callback(self, interaction: Interaction):
             result = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
             view = GenshinCog.BuildSelectView(
-                len(result), result, self.index, self.db)
+                len(result), result, self.index, self.db, self.author)
             await interaction.response.edit_message(embed=result[0][0], view=view)
 
     class BuildSelectView(DefaultView):
-        def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection):
+        def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection, author: Member):
             super().__init__(timeout=None)
             self.index = index
             self.db = db
+            self.author = author
             self.add_item(GenshinCog.BuildSelect(total, build_embeds))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
 
         @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
         async def back(self, i: Interaction, button: Button):
             view = GenshinCog.CharactersDropdownView(
-                self.index, self.db)
+                self.index, self.db, self.author)
             embed = defaultEmbed('請選擇角色')
             await i.response.edit_message(embed=embed, view=view)
 
@@ -509,8 +536,8 @@ class GenshinCog(commands.Cog):
                982138232391237632, 982138233813098556, 982138221569900585]
         for id in ids:
             emojis.append(self.bot.get_emoji(id))
-        view = GenshinCog.ElementChooseView(self.bot.db, emojis)
-        await i.response.send_message(embed=defaultEmbed('請選擇想查看角色的元素'), view=view)
+        view = GenshinCog.ElementChooseView(self.bot.db, emojis, i.user)
+        await i.response.send_message(embed=defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar), view=view)
 
     @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
     @app_commands.rename(player='使用者')
@@ -663,20 +690,20 @@ class GenshinCog(commands.Cog):
 
     @calc.command(name='notown所有角色', description='計算一個自己不擁有的角色所需的素材')
     async def calc_notown(self, i: Interaction):
-        client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
+        client = getClient()
         charas = await client.get_calculator_characters()
         chara_list = []
         for chara in charas:
             chara_list.append([chara.name, chara.id, chara.element])
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
-        embed = defaultEmbed()
-        embed.set_author(name='選擇角色的元素', icon_url=i.user.avatar)
+        embed = defaultEmbed().set_author(name='選擇角色的元素', icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=button_view)
         await button_view.wait()
         select_view = GenshinCog.CalculatorItems(
             i.user, button_view.element_chara_list, button_view.item_type)
-        await i.edit_original_message(view=select_view)
+        embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
+        await i.edit_original_message(embed=embed, view=select_view)
         await select_view.wait()
         valid, error_msg = self.check_level_validity(
             select_view.target, select_view.a, select_view.e, select_view.q)
@@ -712,32 +739,26 @@ class GenshinCog(commands.Cog):
                            current=1, target=select_view.q)
         cost = await builder.calculate()
         materials = []
-        for index, tuple in enumerate(cost):
-            if tuple[0] == 'character':
-                value = ''
-                for item in tuple[1]:
-                    value += f'{item.name}  x{item.amount}\n'
-                    materials.append([item.name, item.amount])
-                if value == '':
-                    value = '不需要任何素材'
-                embed.add_field(name='角色所需素材', value=value, inline=False)
-            if tuple[0] == 'talents':
-                value = ''
-                for item in tuple[1]:
-                    value += f'{item.name}  x{item.amount}\n'
-                    materials.append([item.name, item.amount])
-                if value == '':
-                    value = '不需要任何素材'
-                embed.add_field(name='天賦所需素材', value=value, inline=False)
-        if len(materials) == 0:
-            view = GenshinCog.AddMaterialsView(
-                self.bot.db, True, i.user, materials)
-        else:
-            view = GenshinCog.AddMaterialsView(
-                self.bot.db, False, i.user, materials)
+        value = ''
+        for consumable in cost.character:
+            value += f'{consumable.name}  x{consumable.amount}\n'
+            materials.append([consumable.name, consumable.amount])
+        if value == '':
+            value = '不需要任何素材'
+        embed.add_field(name='角色所需素材', value=value, inline=False)
+        value = ''
+        for consumable in cost.talents:
+            value += f'{consumable.name}  x{consumable.amount}\n'
+            materials.append([consumable.name, consumable.amount])
+        if value == '':
+            value = '不需要任何素材'
+        embed.add_field(name='天賦所需素材', value=value, inline=False)
+        disabled = True if len(materials) == 0 else False
+        view = GenshinCog.AddMaterialsView(
+            self.bot.db, disabled, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
 
-    @calc.command(name='character自己有的角色', description='個別計算一個角色所需的素材')
+    @calc.command(name='character擁有角色', description='個別計算一個自己擁有的角色所需的素材')
     async def calc_character(self, i: Interaction):
         client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
         if only_uid:
@@ -761,35 +782,37 @@ class GenshinCog(commands.Cog):
             chara_list.append([chara.name, chara.id, chara.element])
         button_view = GenshinCog.CalcultorElementButtonView(
             i.user, chara_list, '角色')
-        embed = defaultEmbed('選擇角色的元素')
+        embed = defaultEmbed().set_author(name='選擇角色的元素', icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=button_view)
         await button_view.wait()
+        embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
         select_view = GenshinCog.CalculatorItems(
             i.user, button_view.element_chara_list, button_view.item_type)
-        await i.edit_original_message(view=select_view)
+        await i.edit_original_message(embed=embed, view=select_view)
         await select_view.wait()
         valid, error_msg = self.check_level_validity(
             select_view.target, select_view.a, select_view.e, select_view.q)
         if not valid:
-            await i.followup.send(embed=error_msg, ephemeral=True)
-            return
+            return await i.followup.send(embed=error_msg, ephemeral=True)
         chara_name = ''
         for chara in chara_list:
             if int(select_view.value) == int(chara[1]):
                 chara_name = chara[0]
         details = await client.get_character_details(select_view.value)
-        character = await client.get_calculator_characters(query=chara_name, sync=True)
-        character = character[0]
-        embed = defaultEmbed('計算結果')
+        character = (await client.get_calculator_characters(query=chara_name, sync=True))[0]
+        if character.level > select_view.target:
+            return await i.followup.send(embed=errEmbed().set_author(name='目前等級大於目標等級', icon_url=i.user.avatar))
+        talent_targets = [select_view.a, select_view.e, select_view.q]
+        for index in range(0, 3):
+            if details.talents[index].level > talent_targets[index]:
+                return await i.followup.send(embed=errEmbed().set_author(name='目前等級大於目標等級', icon_url=i.user.avatar))
+        embed = defaultEmbed().set_author(name='計算結果', icon_url=i.user.avatar)
         embed.set_thumbnail(url=character.icon)
         value = ''
-        for index, tuple in enumerate(details):
-            if tuple[0] == 'talents':
-                value += f'角色等級 {character.level} ▸ {select_view.target}\n'
-                value += f'普攻等級 {tuple[1][0].level} ▸ {select_view.a}\n'
-                value += f'元素戰技(E)等級 {tuple[1][1].level} ▸ {select_view.e}\n'
-                value += f'元素爆發(Q)等級 {tuple[1][2].level} ▸ {select_view.q}\n'
-                break
+        value += f'角色等級 {character.level} ▸ {select_view.target}\n'
+        value += f'普攻等級 {details.talents[0].level} ▸ {select_view.a}\n'
+        value += f'元素戰技(E)等級 {details.talents[1].level} ▸ {select_view.e}\n'
+        value += f'元素爆發(Q)等級 {details.talents[2].level} ▸ {select_view.q}\n'
         embed.add_field(name='計算內容', value=value, inline=False)
         cost = await (
             client.calculator()
@@ -797,30 +820,107 @@ class GenshinCog(commands.Cog):
             .with_current_talents(attack=select_view.a, skill=select_view.e, burst=select_view.q)
         )
         materials = []
-        for index, tuple in enumerate(cost):
-            if tuple[0] == 'character':
-                value = ''
-                for item in tuple[1]:
-                    value += f'{item.name}  x{item.amount}\n'
-                    materials.append([item.name, item.amount])
-                if value == '':
-                    value = '不需要任何素材'
-                embed.add_field(name='角色所需素材', value=value, inline=False)
-            if tuple[0] == 'talents':
-                value = ''
-                for item in tuple[1]:
-                    value += f'{item.name}  x{item.amount}\n'
-                    materials.append([item.name, item.amount])
-                if value == '':
-                    value = '不需要任何素材'
-                embed.add_field(name='天賦所需素材', value=value, inline=False)
-        if len(materials) == 0:
-            view = GenshinCog.AddMaterialsView(
-                self.bot.db, True, i.user, materials)
-        else:
-            view = GenshinCog.AddMaterialsView(
-                self.bot.db, False, i.user, materials)
+        value = ''
+        for consumable in cost.character:
+            value += f'{consumable.name}  x{consumable.amount}\n'
+            materials.append([consumable.name, consumable.amount])
+        if value == '':
+            value = '不需要任何素材'
+        embed.add_field(name='角色所需素材', value=value, inline=False)
+        value = ''
+        for consumable in cost.talents:
+            value += f'{consumable.name}  x{consumable.amount}\n'
+            materials.append([consumable.name, consumable.amount])
+        if value == '':
+            value = '不需要任何素材'
+        embed.add_field(name='天賦所需素材', value=value, inline=False)
+        disabled = True if len(materials) == 0 else False
+        view = GenshinCog.AddMaterialsView(
+            self.bot.db, disabled, i.user, materials)
         await i.edit_original_message(embed=embed, view=view)
+
+    class CalcWeaponView(DefaultView):
+        def __init__(self, weapons, author: Member, db: aiosqlite.Connection):
+            super().__init__(timeout=None)
+            self.author = author
+            self.add_item(GenshinCog.CalcWeaponSelect(weapons, db))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/calc weapon` 來計算武器所需素材').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar))
+            return self.author.id == interaction.user.id
+
+    class CalcWeaponSelect(Select):
+        def __init__(self, weapons, db: aiosqlite.Connection):
+            options = []
+            for w in weapons:
+                options.append(SelectOption(
+                    label=w.name, value=w.id, emoji=getWeaponEmojiWithId(w.id)))
+            super().__init__(placeholder='選擇武器', options=options)
+            self.weapons = weapons
+            self.db = db
+
+        async def callback(self, interaction: Interaction) -> Any:
+            await interaction.response.send_modal(GenshinCog.CalcWeaponModal(self.values[0], self.db))
+
+    class CalcWeaponModal(Modal):
+        current = TextInput(
+            label='目前等級', placeholder='例如: 1')
+        target = TextInput(label='目標等級', placeholder='例如: 90')
+
+        def __init__(self, chosen_weapon: str, db: aiosqlite.Connection) -> None:
+            super().__init__(
+                title=f'設置{getWeaponNameWithId(chosen_weapon)}要計算的等級', timeout=None)
+            self.chosen_weapon = chosen_weapon
+            self.db = db
+
+        async def on_submit(self, interaction: Interaction) -> None:
+            if int(self.current.value) < 1 or int(self.target.value) < 1:
+                return await interaction.response.send_message(embed=errEmbed().set_author(name='等級不可小於1', icon_url=interaction.user.avatar), ephemeral=True)
+            if int(self.target.value) > 90 or int(self.current.value) > 90:
+                return await interaction.response.send_message(embed=errEmbed().set_author(name='等級不可大於90', icon_url=interaction.user.avatar), ephemeral=True)
+            client = getClient()
+            cost = await (
+                client.calculator()
+                .set_weapon(self.chosen_weapon, current=int(self.current.value), target=int(self.target.value))
+            )
+            embed = defaultEmbed().set_author(name='計算結果', icon_url=interaction.user.avatar)
+            embed.add_field(
+                name='計算內容', value=f'武器: {getWeaponNameWithId(self.chosen_weapon)}\n等級: {self.current.value} ▸ {self.target.value}', inline=False)
+            materials = []
+            value = ''
+            for consumable in cost.weapon:
+                value += f'{consumable.name}  x{consumable.amount}\n'
+                materials.append([consumable.name, consumable.amount])
+            if value == '':
+                value = '不需要任何素材'
+            embed.add_field(name='武器所需素材', value=value, inline=False)
+            embed.set_thumbnail(url=getWeaponIconWithId(self.chosen_weapon))
+            disabled = True if len(materials) == 0 else False
+            view = GenshinCog.AddMaterialsView(
+                self.db, disabled, interaction.user, materials)
+            await interaction.response.edit_message(embed=embed, view=view)
+
+    @calc.command(name='weapon武器', description='計算武器所需的素材')
+    @app_commands.rename(types='武器類別', rarities='稀有度')
+    @app_commands.describe(types='要計算的武器的類別', rarities='武器的稀有度')
+    @app_commands.choices(
+        types=[
+            Choice(name='單手劍', value=1),
+            Choice(name='法器', value=10),
+            Choice(name='大劍', value=11),
+            Choice(name='弓箭', value=12),
+            Choice(name='長槍', value=13)],
+        rarities=[
+            Choice(name='★★★★★', value=5),
+            Choice(name='★★★★', value=4),
+            Choice(name='★★★', value=3),
+            Choice(name='★★', value=2),
+            Choice(name='★', value=1)])
+    async def calc_weapon(self, i: Interaction, types: int, rarities: int):
+        client = getClient()
+        weapons = await client.get_calculator_weapons(types=[types], rarities=[rarities])
+        await i.response.send_message(view=GenshinCog.CalcWeaponView(weapons, i.user, self.bot.db))
 
     def oculi_emebd_style(element: str, url: str):
         embed = defaultEmbed(f'{element}神瞳位置')
@@ -1123,7 +1223,7 @@ class GenshinCog(commands.Cog):
             embed.set_author(name='找不到資料', icon_url=i.user.avatar)
             await i.edit_original_message(embed=embed)
             embed = defaultEmbed(
-                '<a:error_animated:982579472060547092> 錯誤', '請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(資料最多需要10分鐘更新)')
+                '<a:error_animated:982579472060547092> 錯誤', '請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)')
             embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
             await i.followup.send(embed=embed, ephemeral=True)
             return
@@ -1172,7 +1272,7 @@ class GenshinCog(commands.Cog):
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
-                    weapon_str += f"{weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
+                    weapon_str += f"{getWeaponEmojiWithId(getWeaponIdWithName(weapon_name))} {weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
                     weapon_sub_str = ''
                     if len(e['flat']['weaponStats']) == 2:
                         propId = e['flat']['weaponStats'][1]['appendPropId']
@@ -1210,7 +1310,7 @@ class GenshinCog(commands.Cog):
                 inline=False
             )
             embed.add_field(
-                name='武器',
+                name=f'武器',
                 value=weapon_str,
                 inline=False
             )
@@ -1229,6 +1329,8 @@ class GenshinCog(commands.Cog):
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
+    
+    
     @app_commands.command(name='wiki', description='查看原神維基百科')
     @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
     @app_commands.rename(wikiType='類別', query='關鍵詞')
@@ -1238,33 +1340,35 @@ class GenshinCog(commands.Cog):
                        '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
         client = getClient()
         found = False
+        chara_name = ''
         if wikiType == 0:
             previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-            await i.edit_original_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字'))
+            await i.response.send_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字: {query}'))
             for p in previews:
                 d = (await client.get_wiki_page(p.id)).modules
                 for item in d['屬性']['list']:
-                    if item['key'] == '名字' and query in item['value']:
+                    if item['key'] == '名字' and query in item['value'][0]:
+                        chara_name = item['value'][0]
                         found = True
                         wiki = d
                         break
         if not found:
-            return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 找不到該維基百科頁面', '請重新檢查關鍵詞是否輸入錯誤'))
-        result = [[], [], []]
-        embed = defaultEmbed('搜尋結果')
+            return await i.edit_original_message(embed=errEmbed(message='請重新檢查關鍵詞是否輸入錯誤').set_author(name='找不到該維基百科頁面', icon_url=i.user.avatar))
+        result = []
+        embed = defaultEmbed().set_author(name='搜尋結果', icon_url=i.user.avatar)
         name = '屬性'
         value = ''
         for property in wiki['屬性']['list']:
             value += f"{property['key']} - {property['value'][0]}\n"
         embed.add_field(name=name, value=value)
-        result[0].append(embed)
+        result.append(embed)
         embed = defaultEmbed('突破後屬性')
         for level in wiki['突破']['list'][:-1]:
             value = ''
             for combat in level['combatList'][1:]:
                 value += f"{combat['key']} - {combat['values'][1]}\n"
             embed.add_field(name=level['key'], value=value)
-        result[0].append(embed)
+        result.append(embed)
         embed = defaultEmbed('突破素材')
         for level in wiki['突破']['list'][1:-1]:
             value = ''
@@ -1272,15 +1376,15 @@ class GenshinCog(commands.Cog):
                 mat = json.loads(mat.replace('$', ''))
                 value += f"{(get_name.getWikiMaterialName(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
             embed.add_field(name=level['key'], value=value)
-        result[0].append(embed)
+        result.append(embed)
         embed = defaultEmbed('全圖')
         embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
-        result[1].append(embed)
+        result.append(embed)
         for art in wiki['畫廊']['list']:
             embed = defaultEmbed(art['key'])
             embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
             embed.set_footer(text=art['imgDesc'])
-            result[1].append(embed)
+            result.append(embed)
         for talent in wiki['天賦']['list']:
             talent_desc = talent['desc'].replace(
                 '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
@@ -1292,8 +1396,9 @@ class GenshinCog(commands.Cog):
                 talent['icon_url'], safe=':/'))
             embed.set_image(url=urllib.parse.quote(
                 talent['talent_img'], safe=':/'))
-            result[2].append(embed)
-        await GeneralPaginator(i, result[0]).start(embeded=True, edit_original_message=True)
+            result.append(embed)
+        result[0].set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara_name)))
+        await GeneralPaginator(i, result).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:

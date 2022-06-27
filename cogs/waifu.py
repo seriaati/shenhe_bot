@@ -22,9 +22,11 @@ class WaifuCog(commands.Cog):
         async with bot.session.get('https://api.waifu.im/tags/?full=on') as r:
             tags = await r.json()
         choices = []
-        nsfw_toggle = 'nsfw' if sese == 1 else 'versatile'
-        for tag in tags[nsfw_toggle]:
+        for tag in tags['versatile']:
             choices.append(SelectOption(label=tag['name']))
+        if sese == 1:
+            for tag in tags['nsfw']:
+                choices.append(SelectOption(label=tag['name']))
         return choices
 
     class TagSelectorView(DefaultView):

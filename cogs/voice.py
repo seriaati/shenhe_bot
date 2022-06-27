@@ -2,6 +2,7 @@ import aiosqlite
 from discord import Interaction, Member, VoiceChannel, VoiceState, app_commands, InviteTarget
 from discord.ext import commands
 from utility.utils import defaultEmbed, errEmbed
+import wavelink
 
 
 class VoiceChannel(commands.Cog):
@@ -17,6 +18,11 @@ class VoiceChannel(commands.Cog):
         old_channel: VoiceChannel = before.channel
         new_channel: VoiceChannel = after.channel
         c: aiosqlite.Cursor = await self.bot.db.cursor()
+        if new_channel is None and old_channel is not None and len(old_channel.members) == 1 and old_channel.members[0].id == self.bot.user.id:
+            vc: wavelink.Player = member.guild.voice_client
+            vc.queue.clear()
+            await vc.stop()
+            await vc.disconnect()
         if new_channel is not None:
             await member.add_roles(vc_role)
         if new_channel == vc:

@@ -39,8 +39,8 @@ class Todo(commands.Cog):
         desc = ''
         for todo_item in todo_list:
             desc += f'{todo_item}\n'
-        embed = defaultEmbed('代辦事項', desc)
-        embed.set_author(name=user, icon_url=user.avatar)
+        embed = defaultEmbed(message=desc)
+        embed.set_author(name='代辦事項', icon_url=user.avatar)
         return embed
 
     class TodoListView(DefaultView):

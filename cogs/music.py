@@ -17,8 +17,8 @@ class MusicCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        # if not self.bot.debug_toggle:
-        bot.loop.create_task(self.connect_nodes())
+        if not self.bot.debug_toggle:
+            bot.loop.create_task(self.connect_nodes())
 
     async def connect_nodes(self):
         await self.bot.wait_until_ready()
@@ -49,7 +49,7 @@ class MusicCog(commands.Cog):
             vc: wavelink.Player = i.guild.voice_client
         if i.guild.voice_client.channel != i.user.voice.channel:
             if vc.is_playing():
-                return await i.response.send_message(embed=errEmbed(f'{shenhe_emoji.error} 錯誤', '你跟目前申鶴所在的語音台不同,\n且申鶴目前正在為那邊的使用者播歌\n請等待至對方播放完畢'))
+                return await i.response.send_message(embed=errEmbed(f'{shenhe_emoji.error} 錯誤', '你跟目前申鶴所在的語音台不同,\n且申鶴目前正在為那邊的使用者播歌\n請等待至對方播放完畢'), ephemeral=True)
             await vc.disconnect()
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))

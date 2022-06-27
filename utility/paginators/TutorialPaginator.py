@@ -11,7 +11,7 @@ from utility.utils import errEmbed
 
 class _view(View):
     def __init__(self, author: User, pages: List[SelectOption], embeded: bool, db: aiosqlite.Connection):
-        super().__init__()
+        super().__init__(timeout=None)
         self.author = author
         self.pages = pages
         self.embeded = embeded

@@ -10,6 +10,8 @@ from utility.enkaToGOOD import convert
 from data.game.stat_emojis import stat_emojis
 from data.game.characters_map import characters_map
 from data.game.character_emoji import character_emoji
+from data.game.weapon_emoji import weapon_emoji
+from data.game.weapons_map import weapons_map
 
 
 class GetName():
@@ -257,7 +259,7 @@ def getElementEmoji(element: str):
 
 def getCharaIdWithName(name: str):
     for chara_id, character_info in characters_map.items():
-        if character_info['name'] == name:
+        if character_info['name'] == str(name):
             return chara_id
     return name
 
@@ -266,3 +268,27 @@ def getCharaEmojiWithId(id: int):
         if id == chara_id:
             return emoji 
     return "<a:error_animated:982579472060547092>"
+
+def getWeaponEmojiWithId(id: int):
+    for weapon_id, emoji in weapon_emoji.items():
+        if str(id) == weapon_id:
+            return emoji 
+    return "<a:error_animated:982579472060547092>"
+
+def getWeaponIdWithName(name: str):
+    for weapon_id, weapon_info in weapons_map.items():
+        if weapon_info['name'] == str(name):
+            return weapon_id 
+    return 000
+
+def getWeaponNameWithId(id: int):
+    for weapon_id, weapon_info in weapons_map.items():
+        if weapon_id == str(id):
+            return weapon_info['name']
+    return '找唔武器名'
+
+def getWeaponIconWithId(id: int):
+    for weapon_id, weapon_info in weapons_map.items():
+        if weapon_id == str(id):
+            return weapon_info['icon']
+    return 'https://uploadstatic-sea.hoyoverse.com/hk4e/e20200928calculate/item_icon_u68dmc/0197a8b97b33e541c6fcde73b189bf21.png'
