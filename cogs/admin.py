@@ -72,7 +72,7 @@ class AdminCog(commands.Cog):
             f'用戶: {member.mention}\n'
             f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
             f'原語音台: {before.channel.mention if before.channel is not None else "不在語音台"}\n'
-            f'新語音台: {after.channel.mention if after.chanenl is not None else "不在語音台"}'
+            f'新語音台: {after.channel.mention if after.channel is not None else "不在語音台"}'
         )
         embed.set_author(name=member, icon_url=member.avatar)
         embed.set_author(text=f'用戶 ID: {member.id}')
