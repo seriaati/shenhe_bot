@@ -71,10 +71,10 @@ class Todo(commands.Cog):
             await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, modal.item.value))
             count = await c.fetchone()
             if count is None:
-                await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, modal.item.value, modal.count.value))
+                await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, modal.item.value, int((modal.count.value).replace(',', ''))))
             else:
                 count = count[0]
-                await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+int(modal.count.value), i.user.id, modal.item.value))
+                await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+int((modal.count.value).replace(',', '')), i.user.id, modal.item.value))
             await self.db.commit()
             embed = await Todo.get_todo_embed(self.db, i.user)
             await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))

@@ -1329,76 +1329,74 @@ class GenshinCog(commands.Cog):
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
-    
-    
-    @app_commands.command(name='wiki', description='查看原神維基百科')
-    @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
-    @app_commands.rename(wikiType='類別', query='關鍵詞')
-    @app_commands.describe(wikiType='要查看的維基百科分頁類別')
-    async def wiki(self, i: Interaction, wikiType: int, query: str):
-        span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
-                       '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
-        client = getClient()
-        found = False
-        chara_name = ''
-        if wikiType == 0:
-            previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-            await i.response.send_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字: {query}'))
-            for p in previews:
-                d = (await client.get_wiki_page(p.id)).modules
-                for item in d['屬性']['list']:
-                    if item['key'] == '名字' and query in item['value'][0]:
-                        chara_name = item['value'][0]
-                        found = True
-                        wiki = d
-                        break
-        if not found:
-            return await i.edit_original_message(embed=errEmbed(message='請重新檢查關鍵詞是否輸入錯誤').set_author(name='找不到該維基百科頁面', icon_url=i.user.avatar))
-        result = []
-        embed = defaultEmbed().set_author(name='搜尋結果', icon_url=i.user.avatar)
-        name = '屬性'
-        value = ''
-        for property in wiki['屬性']['list']:
-            value += f"{property['key']} - {property['value'][0]}\n"
-        embed.add_field(name=name, value=value)
-        result.append(embed)
-        embed = defaultEmbed('突破後屬性')
-        for level in wiki['突破']['list'][:-1]:
-            value = ''
-            for combat in level['combatList'][1:]:
-                value += f"{combat['key']} - {combat['values'][1]}\n"
-            embed.add_field(name=level['key'], value=value)
-        result.append(embed)
-        embed = defaultEmbed('突破素材')
-        for level in wiki['突破']['list'][1:-1]:
-            value = ''
-            for mat in level['materials']:
-                mat = json.loads(mat.replace('$', ''))
-                value += f"{(get_name.getWikiMaterialName(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
-            embed.add_field(name=level['key'], value=value)
-        result.append(embed)
-        embed = defaultEmbed('全圖')
-        embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
-        result.append(embed)
-        for art in wiki['畫廊']['list']:
-            embed = defaultEmbed(art['key'])
-            embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
-            embed.set_footer(text=art['imgDesc'])
-            result.append(embed)
-        for talent in wiki['天賦']['list']:
-            talent_desc = talent['desc'].replace(
-                '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
-            for style in span_styles:
-                if style in talent_desc:
-                    talent_desc = talent_desc.replace(style, '')
-            embed = defaultEmbed(talent['title'], talent_desc)
-            embed.set_thumbnail(url=urllib.parse.quote(
-                talent['icon_url'], safe=':/'))
-            embed.set_image(url=urllib.parse.quote(
-                talent['talent_img'], safe=':/'))
-            result.append(embed)
-        result[0].set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara_name)))
-        await GeneralPaginator(i, result).start(embeded=True, edit_original_message=True)
+    # @app_commands.command(name='wiki', description='查看原神維基百科')
+    # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
+    # @app_commands.rename(wikiType='類別', query='關鍵詞')
+    # @app_commands.describe(wikiType='要查看的維基百科分頁類別')
+    # async def wiki(self, i: Interaction, wikiType: int, query: str):
+    #     span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
+    #                    '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
+    #     client = getClient()
+    #     found = False
+    #     chara_name = ''
+    #     if wikiType == 0:
+    #         previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
+    #         await i.response.send_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字: {query}'))
+    #         for p in previews:
+    #             d = (await client.get_wiki_page(p.id)).modules
+    #             for item in d['屬性']['list']:
+    #                 if item['key'] == '名字' and query in item['value'][0]:
+    #                     chara_name = item['value'][0]
+    #                     found = True
+    #                     wiki = d
+    #                     break
+    #     if not found:
+    #         return await i.edit_original_message(embed=errEmbed(message='請重新檢查關鍵詞是否輸入錯誤').set_author(name='找不到該維基百科頁面', icon_url=i.user.avatar))
+    #     result = []
+    #     embed = defaultEmbed().set_author(name='搜尋結果', icon_url=i.user.avatar)
+    #     name = '屬性'
+    #     value = ''
+    #     for property in wiki['屬性']['list']:
+    #         value += f"{property['key']} - {property['value'][0]}\n"
+    #     embed.add_field(name=name, value=value)
+    #     result.append(embed)
+    #     embed = defaultEmbed('突破後屬性')
+    #     for level in wiki['突破']['list'][:-1]:
+    #         value = ''
+    #         for combat in level['combatList'][1:]:
+    #             value += f"{combat['key']} - {combat['values'][1]}\n"
+    #         embed.add_field(name=level['key'], value=value)
+    #     result.append(embed)
+    #     embed = defaultEmbed('突破素材')
+    #     for level in wiki['突破']['list'][1:-1]:
+    #         value = ''
+    #         for mat in level['materials']:
+    #             mat = json.loads(mat.replace('$', ''))
+    #             value += f"{(get_name.getWikiMaterialName(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
+    #         embed.add_field(name=level['key'], value=value)
+    #     result.append(embed)
+    #     embed = defaultEmbed('全圖')
+    #     embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
+    #     result.append(embed)
+    #     for art in wiki['畫廊']['list']:
+    #         embed = defaultEmbed(art['key'])
+    #         embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
+    #         embed.set_footer(text=art['imgDesc'])
+    #         result.append(embed)
+    #     for talent in wiki['天賦']['list']:
+    #         talent_desc = talent['desc'].replace(
+    #             '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
+    #         for style in span_styles:
+    #             if style in talent_desc:
+    #                 talent_desc = talent_desc.replace(style, '')
+    #         embed = defaultEmbed(talent['title'], talent_desc)
+    #         embed.set_thumbnail(url=urllib.parse.quote(
+    #             talent['icon_url'], safe=':/'))
+    #         embed.set_image(url=urllib.parse.quote(
+    #             talent['talent_img'], safe=':/'))
+    #         result.append(embed)
+    #     result[0].set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara_name)))
+    #     await GeneralPaginator(i, result).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:
