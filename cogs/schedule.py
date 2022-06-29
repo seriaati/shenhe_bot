@@ -76,19 +76,52 @@ class Schedule(commands.Cog):
     @tasks.loop(hours=24)
     async def talent_notification(self):
         remind_channel = self.bot.get_channel(
-                    990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
+            990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         weekday = datetime.today().weekday()
+        talent_book_icon = {
+            '自由': 'https://static.wikia.nocookie.net/genshin-impact/images/d/dc/%E3%80%8C%E8%87%AA%E7%94%B1%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest?cb=20201020014319&path-prefix=zh-tw',
+            '繁榮': 'https://static.wikia.nocookie.net/genshin-impact/images/7/7b/%E3%80%8C%E7%B9%81%E6%A6%AE%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014317&path-prefix=zh-tw',
+            '抗爭': 'https://static.wikia.nocookie.net/genshin-impact/images/9/9a/%E3%80%8C%E6%8A%97%E7%88%AD%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014321&path-prefix=zh-tw',
+            '詩文': 'https://static.wikia.nocookie.net/genshin-impact/images/e/eb/%E3%80%8C%E8%A9%A9%E6%96%87%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014327&path-prefix=zh-tw',
+            '勤勞': 'https://static.wikia.nocookie.net/genshin-impact/images/2/2c/%E3%80%8C%E5%8B%A4%E5%8B%9E%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014325&path-prefix=zh-tw',
+            '風雅': 'https://static.wikia.nocookie.net/genshin-impact/images/f/f5/%E3%80%8C%E9%A2%A8%E9%9B%85%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008100225&path-prefix=zh-tw',
+            '天光': 'https://static.wikia.nocookie.net/genshin-impact/images/4/4e/%E3%80%8C%E5%A4%A9%E5%85%89%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008100529&path-prefix=zh-tw',
+            '浮世': 'https://static.wikia.nocookie.net/genshin-impact/images/8/8a/%E3%80%8C%E6%B5%AE%E4%B8%96%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008095854&path-prefix=zh-tw',
+            '黃金': 'https://static.wikia.nocookie.net/genshin-impact/images/3/3f/%E3%80%8C%E9%BB%83%E9%87%91%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014322&path-prefix=zh-tw'
+        }
         if weekday == 6:
+            talent_book_list = [
+                '自由', '繁榮', '浮世',
+                '風雅', '抗爭', '勤勞',
+                '詩文', '黃金', '天光'
+            ]
             await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
             data = await c.fetchall()
             for index, tuple in enumerate(data):
                 user_id = tuple[0]
                 chara_list = ast.literal_eval(tuple[1])
                 for chara in chara_list:
-                    embed = defaultEmbed(message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                    embed.set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara)))
-                    embed.set_author(name=f'刷本啦!', icon_url=(self.bot.get_user(user_id)).avatar)
-                    await remind_channel.send(content=(self.bot.get_user(user_id).mention),embed=embed)
+                    embed = defaultEmbed(
+                        message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
+                    embed.set_thumbnail(url=getCharacterIcon(
+                        getCharaIdWithName(chara)))
+                    embed.set_author(name=f'刷本啦!', icon_url=(
+                        self.bot.get_user(user_id)).avatar)
+                    await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+            await c.execute('SELECT user_id, item FROM todo')
+            data = await c.fetchall()
+            mentioned = {}
+            for index, item in enumerate(data):
+                user_id = item[0]
+                if user_id not in mentioned:
+                    mentioned[user_id] = []
+                for talent_book in talent_book_list:
+                    if talent_book in str(item[1]) and talent_book not in mentioned[user_id]:
+                        mentioned[user_id].append(talent_book)
+                        embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
+                            name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
+                        embed.set_thumbnail(url=talent_book_icon[talent_book])
+                        await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
         else:
             weekday_dict = {
                 0: '週一、週四',
@@ -97,6 +130,14 @@ class Schedule(commands.Cog):
                 3: '週一、週四',
                 4: '週二、週五',
                 5: '週三、週六'
+            }
+            talent_book_list = {
+                0: ['自由', '繁榮', '浮世'],
+                1: ['風雅', '抗爭', '勤勞'],
+                2: ['詩文', '黃金', '天光'],
+                3: ['自由', '繁榮', '浮世'],
+                4: ['風雅', '抗爭', '勤勞'],
+                5: ['詩文', '黃金', '天光']
             }
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
@@ -108,10 +149,27 @@ class Schedule(commands.Cog):
                     for book_name, characters in talents[weekday_dict[weekday]].items():
                         for character_name, element_name in characters.items():
                             if character_name == chara:
-                                embed = defaultEmbed(message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                                embed.set_thumbnail(url=getCharacterIcon(getCharaIdWithName(chara)))
-                                embed.set_author(name=f'刷本啦!', icon_url=(self.bot.get_user(user_id)).avatar)
-                                await remind_channel.send(content=(self.bot.get_user(user_id).mention),embed=embed)
+                                embed = defaultEmbed(
+                                    message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
+                                embed.set_thumbnail(url=getCharacterIcon(
+                                    getCharaIdWithName(chara)))
+                                embed.set_author(name=f'刷本啦!', icon_url=(
+                                    self.bot.get_user(user_id)).avatar)
+                                await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+            await c.execute('SELECT user_id, item FROM todo')
+            data = await c.fetchall()
+            mentioned = {}
+            for index, item in enumerate(data):
+                user_id = item[0]
+                if user_id not in mentioned:
+                    mentioned[user_id] = []
+                for talent_book in talent_book_list[weekday]:
+                    if talent_book in str(item[1]) and talent_book not in mentioned[user_id]:
+                        mentioned[user_id].append(talent_book)
+                        embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
+                            name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
+                        embed.set_thumbnail(url=talent_book_icon[talent_book])
+                        await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
 
     @tasks.loop(hours=24)
     async def remove_flow_acc(self):

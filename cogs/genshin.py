@@ -22,7 +22,7 @@ from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, errEmbed, get_name, getCharacterIcon,
-                           getCharaEmojiWithId, getCharaIdWithName, getClient,
+                           getCharaEmojiWithId, getCharaIdWithName, getClient, getConsumableEmojiWithId, getConsumableIdWithName,
                            getElementEmoji, getStatEmoji, getWeaponEmojiWithId,
                            getWeaponIconWithId, getWeaponIdWithName,
                            getWeaponNameWithId, getWeekdayName)
@@ -283,7 +283,7 @@ class GenshinCog(commands.Cog):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(emebd=errEmbed(f'{shenhe_emoji.error} 這不是你的操作視窗', '輸入 `/remind` 來設置自己的提醒功能'), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed(f'{shenhe_emoji.error} 這不是你的操作視窗', '輸入 `/remind` 來設置自己的提醒功能'), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class TalentCharaChooser(Select):
@@ -512,7 +512,7 @@ class GenshinCog(commands.Cog):
         async def back(self, i: Interaction, button: Button):
             view = GenshinCog.CharactersDropdownView(
                 self.index, self.db, self.author)
-            embed = defaultEmbed('請選擇角色')
+            embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=view)
 
     class BuildSelect(Select):
@@ -741,14 +741,14 @@ class GenshinCog(commands.Cog):
         materials = []
         value = ''
         for consumable in cost.character:
-            value += f'{consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
         embed.add_field(name='角色所需素材', value=value, inline=False)
         value = ''
         for consumable in cost.talents:
-            value += f'{consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
@@ -822,14 +822,14 @@ class GenshinCog(commands.Cog):
         materials = []
         value = ''
         for consumable in cost.character:
-            value += f'{consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
         embed.add_field(name='角色所需素材', value=value, inline=False)
         value = ''
         for consumable in cost.talents:
-            value += f'{consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
@@ -890,7 +890,7 @@ class GenshinCog(commands.Cog):
             materials = []
             value = ''
             for consumable in cost.weapon:
-                value += f'{consumable.name}  x{consumable.amount}\n'
+                value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
                 materials.append([consumable.name, consumable.amount])
             if value == '':
                 value = '不需要任何素材'

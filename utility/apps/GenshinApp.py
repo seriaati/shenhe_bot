@@ -5,7 +5,7 @@ import aiosqlite
 import genshin
 from discord import Member
 from utility.utils import (defaultEmbed, errEmbed, get_name, getCharacterIcon,
-                           getCharaIdWithName, getWeekdayName, log, trimCookie)
+                           getCharaIdWithName, getWeaponEmojiWithId, getWeaponIdWithName, getWeekdayName, log, trimCookie)
 
 
 class GenshinApp:
@@ -404,7 +404,7 @@ class GenshinApp:
                     statStr += f'{stat} ➜ {value}\n'
                 embed = defaultEmbed(
                     f'{name} - 配置{count}',
-                    f"武器 • {build['weapon']}\n"
+                    f"武器 • {getWeaponEmojiWithId(getWeaponIdWithName(build['weapon']))} {build['weapon']}\n"
                     f"聖遺物 • {build['artifacts']}\n"
                     f"主詞條 • {build['main_stats']}\n"
                     f"天賦 • {build['talents']}\n"

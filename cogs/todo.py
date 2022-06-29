@@ -6,7 +6,7 @@ from discord import (ButtonStyle, Interaction, Member, SelectOption,
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput
 from debug import DefaultView
-from utility.utils import defaultEmbed, errEmbed
+from utility.utils import defaultEmbed, errEmbed, getConsumableEmojiWithId, getConsumableIdWithName
 
 
 class Todo(commands.Cog):
@@ -35,7 +35,7 @@ class Todo(commands.Cog):
         for index, tuple in enumerate(todo):
             item = tuple[0]
             count = tuple[1]
-            todo_list.append(f'{item} x{count}')
+            todo_list.append(f'{getConsumableEmojiWithId(getConsumableIdWithName(item))} {item} x{count}')
         desc = ''
         for todo_item in todo_list:
             desc += f'{todo_item}\n'

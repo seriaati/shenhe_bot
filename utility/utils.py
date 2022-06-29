@@ -12,7 +12,7 @@ from data.game.characters_map import characters_map
 from data.game.character_emoji import character_emoji
 from data.game.weapon_emoji import weapon_emoji
 from data.game.weapons_map import weapons_map
-
+from data.game.consumable_emoji import consumable_emoji
 
 class GetName():
     def __init__(self) -> None:
@@ -292,3 +292,15 @@ def getWeaponIconWithId(id: int):
         if weapon_id == str(id):
             return weapon_info['icon']
     return 'https://uploadstatic-sea.hoyoverse.com/hk4e/e20200928calculate/item_icon_u68dmc/0197a8b97b33e541c6fcde73b189bf21.png'
+
+def getConsumableEmojiWithId(id: int):
+    for consumable_id, consumable_info in consumable_emoji.items():
+        if consumable_id == str(id):
+            return consumable_info['emoji']
+    return '<:white_star:982456919224615002>'
+
+def getConsumableIdWithName(name: str):
+    for consumable_id, consumable_info in consumable_emoji.items():
+        if consumable_info['name'] == str(name):
+            return consumable_id
+    return 000
