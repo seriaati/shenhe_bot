@@ -60,7 +60,7 @@ talent_books = {
     "黃金": {
       "北斗": "Electro",
       "行秋": "Hydro",
-      "辛炎": "Pyro",
+      "辛焱": "Pyro",
       "煙緋": "Pyro",
       "鍾離": "Geo"
     },
