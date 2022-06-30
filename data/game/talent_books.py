@@ -3,7 +3,7 @@ talent_books = {
     "自由": {
       "亞蘿伊": "Cryo",
       "安珀": "Pyro",
-      "芭芭菈": "Hydro",
+      "芭芭拉": "Hydro",
       "迪奧娜": "Cryo",
       "可莉": "Pyro",
       "砂糖": "Anemo",
