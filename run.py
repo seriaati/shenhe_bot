@@ -59,15 +59,16 @@ class ShenheBot(commands.Bot):
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
-        self.add_view(FlowCog.AcceptView(self.db, self))
-        self.add_view(FlowCog.ConfirmView(self.db, self))
-        self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
-        self.add_view(ReactionRoles.WorldLevelView())
-        self.add_view(ReactionRoles.RoleView(self))
-        self.add_view(ReactionRoles.NationalityChooser([1, 2, 3]))
-        self.add_view(WelcomeCog.AcceptRules(self.db))
-        self.add_view(WelcomeCog.StartTutorial(self.db))
-        self.add_view(WelcomeCog.Welcome(None))
+        if not self.debug_toggle:
+            self.add_view(FlowCog.AcceptView(self.db, self))
+            self.add_view(FlowCog.ConfirmView(self.db, self))
+            self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
+            self.add_view(ReactionRoles.WorldLevelView())
+            self.add_view(ReactionRoles.RoleView(self))
+            self.add_view(ReactionRoles.NationalityChooser([1, 2, 3]))
+            self.add_view(WelcomeCog.AcceptRules(self.db))
+            self.add_view(WelcomeCog.StartTutorial(self.db))
+            self.add_view(WelcomeCog.Welcome(None))
 
     async def on_ready(self):
         await self.change_presence(
