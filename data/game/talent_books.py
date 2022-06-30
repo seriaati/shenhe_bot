@@ -17,7 +17,7 @@ talent_books = {
       "夜蘭": "Hydro"
     },
     "浮世": {
-      "心海": "Hydro",
+      "珊瑚宮心海": "Hydro",
       "托馬": "Pyro",
       "宵宮": "Pyro"
     }
