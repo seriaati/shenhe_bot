@@ -256,11 +256,16 @@ class GenshinCog(commands.Cog):
             c = await self.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
             user_chara_list: list = (await c.fetchone())[0]
+            chara_str = ''
             if user_chara_list == '':
                 talent_notif_chara_list = []
+                chara_str = '目前尚未設置任何角色'
             else:
                 talent_notif_chara_list: list = ast.literal_eval(
                     user_chara_list)
+                for chara in talent_notif_chara_list:
+                    chara_str += f'• {chara}\n'
+            embed.add_field(name='目前已設置角色', value=chara_str)
             await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.db, talent_notif_chara_list))
 
     class TalentCharaChooserView(DefaultView):
@@ -321,18 +326,16 @@ class GenshinCog(commands.Cog):
                         chara_list.append(chara)
             await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 1, talent_notif_chara_list = ? WHERE user_id = ?', (str(chara_list), interaction.user.id))
             await self.db.commit()
-            embed = defaultEmbed(message='還想要設置其他元素的角色嗎? 視窗還在上面!')
-            embed.set_author(name='天賦提醒設置成功', icon_url=interaction.user.avatar)
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
             chara_list = ast.literal_eval((await c.fetchone())[0])
             chara_str = ''
             for chara in chara_list:
                 chara_str += f'• {chara}\n'
-            chara_str = '(空)' if chara_str == '' else chara_str
-            embed.add_field(name='目前已設置角色', value=chara_str)
-            prev_embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
-            prev_embed.set_author(
+            chara_str = '目前尚未設置任何角色' if chara_str == '' else chara_str
+            embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
+            embed.set_author(
                 name='選擇角色', icon_url=interaction.user.avatar)
+            embed.add_field(name='目前已設置角色', value=chara_str)
             c = await self.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
             user_chara_list: list = (await c.fetchone())[0]
@@ -341,8 +344,7 @@ class GenshinCog(commands.Cog):
             else:
                 talent_notif_chara_list: list = ast.literal_eval(
                     user_chara_list)
-            await interaction.response.edit_message(embed=prev_embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, talent_notif_chara_list))
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, talent_notif_chara_list))
 
     @app_commands.command(name='remind提醒', description='設置提醒功能')
     @app_commands.rename(function='功能', toggle='開關')
