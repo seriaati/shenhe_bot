@@ -240,28 +240,28 @@ def getElementEmoji(element: str):
     return element_emojis.get(element) or element
 
 
-def getCharacter(id: int = None, name: str = None):
+def getCharacter(id: int = '', name: str = ''):
     for character_id, character_info in characters_map.items():
         if character_id == str(id) or character_info['name'] == name:
             return character_info
     raise ValueError(f'未知角色: {id}{name}')
 
 
-def getWeapon(id: int = None, name: str = None):
+def getWeapon(id: int = '', name: str = ''):
     for weapon_id, weapon_info in weapons_map.items():
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
     raise ValueError(f'未知武器: {id}{name}')
 
 
-def getConsumable(id: int = None, name: str = None):
+def getConsumable(id: int = '', name: str = ''):
     for consumable_id, consumable_info in consumables_map.items():
         if consumable_id == str(id) or consumable_info['name'] == name:
             return consumable_info
     return {'name': '自訂素材', 'emoji': '<:white_star:982456919224615002>'}
 
 
-def getTalent(id: int = None, name: str = None):
+def getTalent(id: int = '', name: str = ''):
     for talent_id, talent_info in talents_map.items():
         if talent_id == str(id) or talent_info['name'] == name:
             return talent_info
