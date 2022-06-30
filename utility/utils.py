@@ -1,45 +1,34 @@
+import json
 import re
 from datetime import datetime
 
 import discord
 import genshin
 import yaml
-import json
-from pyppeteer import launch
-from utility.enkaToGOOD import convert
+from data.game.characters import characters_map
+from data.game.consumables import consumables_map
 from data.game.stat_emojis import stat_emojis
-from data.game.characters_map import characters_map
-from data.game.character_emoji import character_emoji
-from data.game.weapon_emoji import weapon_emoji
-from data.game.weapons_map import weapons_map
-from data.game.consumable_emoji import consumable_emoji
+from data.game.talents import talents_map
+from data.game.weapons import weapons_map
+from pyppeteer import launch
 
-class GetName():
+
+class GetNameTextMapHash():
     def __init__(self) -> None:
-        with open(f"GenshinData/EN_simple_textMap.yaml", "r", encoding="utf-8") as file:
-            self.en = yaml.full_load(file)
-        with open(f"GenshinData/TW_simple_textMap.yaml", "r", encoding="utf-8") as file:
-            self.tw = yaml.full_load(file)
         with open(f"GenshinData/EN_full_textMap.json", "r", encoding="utf-8") as file:
-            self.full_en = json.load(file)
+            self.en = json.load(file)
         with open(f"GenshinData/TW_full_textMap.json", "r", encoding="utf-8") as file:
-            self.full_tw = json.load(file)
-        with open('GenshinData/wiki_materials.yaml', 'r', encoding='utf-8') as f:
-            self.wiki_materials = yaml.full_load(f)
+            self.tw = json.load(file)
 
-    def getName(self, id: int, eng: bool = False) -> str:
+    def getNameTextMapHash(self, textMapHash: int, eng: bool = False) -> str:
         textMap = self.en if eng else self.tw
-        return textMap.get(id) or id
-
-    def getNameTextHash(self, text_hash: int, eng: bool = False) -> str:
-        textMap = self.full_en if eng else self.full_tw
-        return textMap.get(text_hash) or text_hash
-
-    def getWikiMaterialName(self, id: int) -> str:
-        return self.wiki_materials.get(id) or id
+        if textMap.get(textMapHash) is not None:
+            return textMap.get(textMapHash)
+        else:
+            raise ValueError(f'找不到 {textMapHash} 的 textMapHash')
 
 
-get_name = GetName()
+get_name_text_map_hash = GetNameTextMapHash()
 
 
 def defaultEmbed(title: str = '', message: str = ''):
@@ -69,13 +58,6 @@ def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
     with open('log.txt', 'a+', encoding='utf-8') as f:
         f.write(f'{log_str}\n')
     return log_str
-
-
-def getCharacterIcon(id: str):
-    for chara_id, chara_info in characters_map.items():
-        if chara_id == str(id):
-            return chara_info['icon']
-    return 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png'
 
 
 def getStatEmoji(propid: str):
@@ -129,7 +111,7 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
     yield(defaultEmbed('<a:LOADER:982128111904776242> 正在匯入角色資料 (2/6)'))
     await page.waitForSelector('div.MuiCardContent-root')
     await page.click('button.MuiButton-root.MuiButton-contained.MuiButton-containedError.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.css-1312m7x')
-    good_format = await convert(enka_data)
+    good_format = await enkaToGOOD(enka_data)
     good_json = json.dumps(good_format)
     await page.focus('textarea.MuiBox-root')
     await page.keyboard.sendCharacter(str(good_json))
@@ -235,16 +217,16 @@ def trimCookie(cookie: str) -> str:
     return new_cookie
 
 
-weekday_dict = {0: '週一', 1: '週二', 2: '週三', 3: '週四', 4: '週五', 5: '週六', 6: '週日'}
-
-
 def getWeekdayName(n: int) -> str:
+    weekday_dict = {0: '週一', 1: '週二', 2: '週三',
+                    3: '週四', 4: '週五', 5: '週六', 6: '週日'}
     return weekday_dict.get(n)
 
 
 def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
 
 def getElementEmoji(element: str):
     element_emojis = {
@@ -257,50 +239,151 @@ def getElementEmoji(element: str):
     }
     return element_emojis.get(element) or element
 
-def getCharaIdWithName(name: str):
-    for chara_id, character_info in characters_map.items():
-        if character_info['name'] == str(name):
-            return chara_id
-    return name
 
-def getCharaEmojiWithId(id: int):
-    for chara_id, emoji in character_emoji.items():
-        if id == chara_id:
-            return emoji 
-    return "<a:error_animated:982579472060547092>"
+def getCharacter(id: int = None, name: str = None):
+    for character_id, character_info in characters_map.items():
+        if character_id == str(id) or character_info['name'] == name:
+            return character_info
+    raise ValueError(f'未知角色: {id}{name}')
 
-def getWeaponEmojiWithId(id: int):
-    for weapon_id, emoji in weapon_emoji.items():
-        if str(id) == weapon_id:
-            return emoji 
-    return "<a:error_animated:982579472060547092>"
 
-def getWeaponIdWithName(name: str):
+def getWeapon(id: int = None, name: str = None):
     for weapon_id, weapon_info in weapons_map.items():
-        if weapon_info['name'] == str(name):
-            return weapon_id 
-    return 000
+        if weapon_id == str(id) or weapon_info['name'] == name:
+            return weapon_info
+    raise ValueError(f'未知武器: {id}{name}')
 
-def getWeaponNameWithId(id: int):
-    for weapon_id, weapon_info in weapons_map.items():
-        if weapon_id == str(id):
-            return weapon_info['name']
-    return '找唔武器名'
 
-def getWeaponIconWithId(id: int):
-    for weapon_id, weapon_info in weapons_map.items():
-        if weapon_id == str(id):
-            return weapon_info['icon']
-    return 'https://uploadstatic-sea.hoyoverse.com/hk4e/e20200928calculate/item_icon_u68dmc/0197a8b97b33e541c6fcde73b189bf21.png'
+def getConsumable(id: int = None, name: str = None):
+    for consumable_id, consumable_info in consumables_map.items():
+        if consumable_id == str(id) or consumable_info['name'] == name:
+            return consumable_info
+    return {'name': '自訂素材', 'emoji': '<:white_star:982456919224615002>'}
 
-def getConsumableEmojiWithId(id: int):
-    for consumable_id, consumable_info in consumable_emoji.items():
-        if consumable_id == str(id):
-            return consumable_info['emoji']
-    return '<:white_star:982456919224615002>'
 
-def getConsumableIdWithName(name: str):
-    for consumable_id, consumable_info in consumable_emoji.items():
-        if consumable_info['name'] == str(name):
-            return consumable_id
-    return 000
+def getTalent(id: int = None, name: str = None):
+    for talent_id, talent_info in talents_map.items():
+        if talent_id == str(id) or talent_info['name'] == name:
+            return talent_info
+    raise ValueError(f'未知角色: {id}{name}')
+
+async def enkaToGOOD(enka_data):
+    good_dict = {
+        'format': 'GOOD',
+        'version': 1,
+        'source': '申鶴 • 忘玄',
+        'weapons': [],
+        'artifacts': [],
+        'characters': []
+    }
+    weapon_id = 0
+    art_id = 0
+    for chara in enka_data['avatarInfoList']:
+        id = chara['avatarId']
+        chara_key = (getCharacter(id)['eng']).replace(' ', '') or chara_key
+        level = chara['propMap']['4001']['ival']
+        constellation = 0 if 'talentIdList' not in chara else len(
+            chara['talentIdList'])
+        ascention = chara['propMap']['1002']['ival']
+        talents = chara['skillLevelMap']
+        if id == 10000002:  # 神里綾華
+            talent = {
+                'auto': int(talents['10024']),
+                'skill': int(talents['10018']),
+                'burst': int(talents['10019'])
+            }
+        elif id == 10000041:  # 莫娜
+            talent = {
+                'auto': int(talents['10411']),
+                'skill': int(talents['10412']),
+                'burst': int(talents['10415'])
+            }
+        else:
+            talent = {
+                'auto': int(list(talents.values())[0]),
+                'skill': int(list(talents.values())[1]),
+                'burst': int(list(talents.values())[2]),
+            }
+        good_dict['characters'].append(
+            {
+                'key': chara_key,
+                'level': int(level),
+                'constellation': int(constellation),
+                'ascention': int(ascention),
+                'talent': talent
+            }
+        )
+        for e in chara['equipList']:
+            if 'weapon' in e:
+                weapon_id += 1
+                key = (get_name_text_map_hash.getNameTextMapHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','').replace('-','') or e['flat']['nameTextMapHash']
+                level = e['weapon']['level']
+                ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
+                refinement = list(e['weapon']['affixMap'].values())[0]+1 if 'affixMap' in e['weapon'] else 0
+                location = chara_key
+                good_dict['weapons'].append(
+                    {
+                        'key': key,
+                        'level': level,
+                        'ascension': ascension,
+                        'refinement': refinement,
+                        'location': location,
+                        'id': weapon_id
+                    }
+                )
+            else:
+                art_id += 1
+                artifact_pos = {
+                    'EQUIP_BRACER': 'flower',
+                    'EQUIP_NECKLACE': 'plume',
+                    'EQUIP_SHOES': 'sands',
+                    'EQUIP_RING': 'goblet',
+                    'EQUIP_DRESS': 'circlet'
+                }
+                stats = {
+                    'FIGHT_PROP_HP': 'hp',
+                    'FIGHT_PROP_HP_PERCENT': 'hp_',
+                    'FIGHT_PROP_ATTACK': 'atk',
+                    'FIGHT_PROP_ATTACK_PERCENT': 'atk_',
+                    'FIGHT_PROP_DEFENSE': 'def',
+                    'FIGHT_PROP_DEFENSE_PERCENT': 'def_',
+                    'FIGHT_PROP_CHARGE_EFFICIENCY': 'enerRech_',
+                    'FIGHT_PROP_ELEMENT_MASTERY': 'eleMas',
+                    'FIGHT_PROP_CRITICAL': 'critRate_',
+                    'FIGHT_PROP_CRITICAL_HURT': 'critDMG_',
+                    'FIGHT_PROP_HEAL_ADD': 'heal_',
+                    'FIGHT_PROP_FIRE_ADD_HURT': 'pyro_dmg_',
+                    'FIGHT_PROP_ELEC_ADD_HURT': 'electro_dmg_',
+                    'FIGHT_PROP_ICE_ADD_HURT': 'cryo_dmg_',
+                    'FIGHT_PROP_WATER_ADD_HURT': 'hydro_dmg_',
+                    'FIGHT_PROP_WIND_ADD_HURT': 'anemo_dmg_',
+                    'FIGHT_PROP_ROCK_ADD_HURT': 'geo_dmg_',
+                    'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
+                    'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
+                }
+                setKey = get_name_text_map_hash.getNameTextMapHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '').replace('-','') or e['flat']['setNameTextMapHash']
+                slotKey = artifact_pos.get(e['flat']['equipType'])
+                rarity = e['flat']['rankLevel']
+                mainStatKey = stats.get(
+                    e['flat']['reliquaryMainstat']['mainPropId'])
+                level = e['reliquary']['level']-1
+                substats = []
+                for sub_stat in e['flat']['reliquarySubstats']:
+                    substats.append({
+                        'key': stats.get(sub_stat['appendPropId']),
+                        'value': sub_stat['statValue']
+                    })
+                good_dict['artifacts'].append(
+                    {
+                        'setKey': setKey,
+                        'slotKey': slotKey,
+                        'rarity': rarity,
+                        'mainStatKey': mainStatKey,
+                        'level': level,
+                        'substats': substats,
+                        'location': chara_key,
+                        'lock': True,
+                        'id': art_id
+                    }
+                )
+    return good_dict

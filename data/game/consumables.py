@@ -1,4 +1,4 @@
-consumable_emoji = {
+consumables_map = {
     "202":{
         "name":"摩拉",
         "emoji":"<:202:991561579218878515>"

@@ -4,8 +4,7 @@ from datetime import datetime
 import aiosqlite
 import genshin
 from discord import Member
-from utility.utils import (defaultEmbed, errEmbed, get_name, getCharacterIcon,
-                           getCharaIdWithName, getWeaponEmojiWithId, getWeaponIdWithName, getWeekdayName, log, trimCookie)
+from utility.utils import (defaultEmbed, errEmbed, getCharacter, getWeapon, getWeekdayName, log, trimCookie)
 
 
 class GenshinApp:
@@ -179,7 +178,7 @@ class GenshinApp:
                     total_exped = 0
                 for expedition in notes.expeditions:
                     total_exped = len(notes.expeditions)
-                    exped_msg += f'• {get_name.getName(expedition.character.id)}'
+                    exped_msg += f'• {getCharacter(expedition.character.id)["name"]}'
                     if expedition.finished:
                         exped_finished += 1
                         exped_msg += ': 已完成\n'
@@ -356,11 +355,11 @@ class GenshinApp:
             )
             result.add_field(
                 name="戰績",
-                value=f"單次最高傷害 • {get_name.getName(rank.strongest_strike[0].id)} • {rank.strongest_strike[0].value}\n"
-                f"擊殺王 • {get_name.getName(rank.most_kills[0].id)} • {rank.most_kills[0].value}次擊殺\n"
-                f"最常使用角色 • {get_name.getName(rank.most_played[0].id)} • {rank.most_played[0].value}次\n"
-                f"最多Q使用角色 • {get_name.getName(rank.most_bursts_used[0].id)} • {rank.most_bursts_used[0].value}次\n"
-                f"最多E使用角色 • {get_name.getName(rank.most_skills_used[0].id)} • {rank.most_skills_used[0].value}次"
+                value=f"單次最高傷害 • {getCharacter(rank.strongest_strike[0].id)['name']} • {rank.strongest_strike[0].value}\n"
+                f"擊殺王 • {getCharacter(rank.most_kills[0].id)['name']} • {rank.most_kills[0].value}次擊殺\n"
+                f"最常使用角色 • {getCharacter(rank.most_played[0].id)['name']} • {rank.most_played[0].value}次\n"
+                f"最多Q使用角色 • {getCharacter(rank.most_bursts_used[0].id)['name']} • {rank.most_bursts_used[0].value}次\n"
+                f"最多E使用角色 • {getCharacter(rank.most_skills_used[0].id)['name']} • {rank.most_skills_used[0].value}次"
             )
             if overview:
                 return [result]
@@ -373,7 +372,7 @@ class GenshinApp:
                     chara_list = [[], []]
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
-                            chara_list[i].append(get_name.getName(chara.id))
+                            chara_list[i].append(getCharacter(chara.id)['name'])
                     topStr = ''
                     bottomStr = ''
                     for top_char in chara_list[0]:
@@ -404,7 +403,7 @@ class GenshinApp:
                     statStr += f'{stat} ➜ {value}\n'
                 embed = defaultEmbed(
                     f'{name} - 配置{count}',
-                    f"武器 • {getWeaponEmojiWithId(getWeaponIdWithName(build['weapon']))} {build['weapon']}\n"
+                    f"武器 • {getWeapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
                     f"聖遺物 • {build['artifacts']}\n"
                     f"主詞條 • {build['main_stats']}\n"
                     f"天賦 • {build['talents']}\n"
@@ -416,7 +415,7 @@ class GenshinApp:
                 )
                 count += 1
                 embed.set_thumbnail(
-                    url=getCharacterIcon(getCharaIdWithName(name)))
+                    url=getCharacter(name=name)["icon"])
                 embed.set_footer(
                     text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
                 result.append([embed, build['weapon'], build['artifacts']])

@@ -8,9 +8,9 @@ import aiosqlite
 import discord
 import utility.global_vars as shenhe_emoji
 import yaml
-from data.game.characters_map import characters_map
-from data.game.namecards_map import namecards_map
-from data.game.talents import talents
+from data.game.characters import characters_map
+from data.game.namecards import namecards_map
+from data.game.talent_books import talent_books
 from debug import DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Guild, Interaction, Member,
                      SelectOption, app_commands)
@@ -21,13 +21,9 @@ from utility.apps.GenshinApp import GenshinApp
 from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
-                           defaultEmbed, errEmbed, get_name, getCharacterIcon,
-                           getCharaEmojiWithId, getCharaIdWithName, getClient, getConsumableEmojiWithId, getConsumableIdWithName,
-                           getElementEmoji, getStatEmoji, getWeaponEmojiWithId,
-                           getWeaponIconWithId, getWeaponIdWithName,
-                           getWeaponNameWithId, getWeekdayName)
-
-from genshin.models import WikiPageType
+                           defaultEmbed, errEmbed, getCharacter, getClient, getConsumable,
+                           getElementEmoji, getStatEmoji, getTalent, getWeapon,
+                           getWeekdayName, get_name_text_map_hash)
 
 
 class GenshinCog(commands.Cog):
@@ -272,12 +268,16 @@ class GenshinCog(commands.Cog):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.TalentCharaChooser(
                 element, db, talent_notif_chara_list, author))
+            self.talent_notif_chara_list = talent_notif_chara_list
             self.author = author
             self.db = db
 
         @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=2)
         async def go_back(self, i: Interaction, button: Button):
-            embed = defaultEmbed('')
+            message = ''
+            for chara in self.talent_notif_chara_list:
+                message += f'• {chara}\n'
+            embed = defaultEmbed('已設置角色', message)
             embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=GenshinCog.TalentElementChooser(i.user, self.db))
 
@@ -292,7 +292,7 @@ class GenshinCog(commands.Cog):
             self.db = db
             self.author = author
             self.element = element
-            for week_day, books in talents.items():
+            for week_day, books in talent_books.items():
                 for book_name, characters in books.items():
                     for character_name, element_name in characters.items():
                         if element == element_name:
@@ -300,7 +300,7 @@ class GenshinCog(commands.Cog):
                             if character_name in talent_notif_chara_list:
                                 desc = '已設置過此角色, 再次選擇將會移除'
                             options.append(SelectOption(
-                                label=character_name, description=desc, emoji=getCharaEmojiWithId(getCharaIdWithName(character_name))))
+                                label=character_name, description=desc, emoji=getCharacter(name=character_name)['emoji']))
             super().__init__(options=options, placeholder='選擇角色', max_values=len(options))
 
         async def callback(self, interaction: Interaction) -> Any:
@@ -368,7 +368,10 @@ class GenshinCog(commands.Cog):
                 embed.set_author(name='天賦提醒功能已關閉', icon_url=i.user.avatar)
                 await i.response.send_message(embed=embed)
             else:
-                embed = defaultEmbed()
+                message = ''
+                for chara in self.talent_notif_chara_list:
+                    message += f'• {chara}\n'
+                embed = defaultEmbed('已設置角色', message)
                 embed.set_author(name='選擇想要設置提醒功能的角色元素',
                                  icon_url=i.user.avatar)
                 view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
@@ -485,7 +488,7 @@ class GenshinCog(commands.Cog):
             options = []
             for character, value in self.build_dict.items():
                 options.append(SelectOption(label=character, value=character,
-                               emoji=getCharaEmojiWithId(getCharaIdWithName(character))))
+                               emoji=getCharacter(name=character)['emoji']))
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
@@ -602,7 +605,7 @@ class GenshinCog(commands.Cog):
             options = []
             for item in items:
                 options.append(SelectOption(
-                    label=item[0], value=item[1], emoji=getCharaEmojiWithId(getCharaIdWithName(item[0]))))
+                    label=item[0], value=item[1], emoji=getCharacter(name=item[0])['emoji']))
             super().__init__(placeholder=f'選擇{item_type}',
                              min_values=1, max_values=1, options=options)
 
@@ -741,14 +744,14 @@ class GenshinCog(commands.Cog):
         materials = []
         value = ''
         for consumable in cost.character:
-            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumable(consumable.id)["emoji"]} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
         embed.add_field(name='角色所需素材', value=value, inline=False)
         value = ''
         for consumable in cost.talents:
-            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumable(consumable.id)["emoji"]} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
@@ -822,14 +825,14 @@ class GenshinCog(commands.Cog):
         materials = []
         value = ''
         for consumable in cost.character:
-            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumable(consumable.id)["emoji"]} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
         embed.add_field(name='角色所需素材', value=value, inline=False)
         value = ''
         for consumable in cost.talents:
-            value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
+            value += f'{getConsumable(consumable.id)["emoji"]} {consumable.name}  x{consumable.amount}\n'
             materials.append([consumable.name, consumable.amount])
         if value == '':
             value = '不需要任何素材'
@@ -855,7 +858,7 @@ class GenshinCog(commands.Cog):
             options = []
             for w in weapons:
                 options.append(SelectOption(
-                    label=w.name, value=w.id, emoji=getWeaponEmojiWithId(w.id)))
+                    label=w.name, value=w.id, emoji=getWeapon(w.id)['emoji']))
             super().__init__(placeholder='選擇武器', options=options)
             self.weapons = weapons
             self.db = db
@@ -870,7 +873,7 @@ class GenshinCog(commands.Cog):
 
         def __init__(self, chosen_weapon: str, db: aiosqlite.Connection) -> None:
             super().__init__(
-                title=f'設置{getWeaponNameWithId(chosen_weapon)}要計算的等級', timeout=None)
+                title=f'設置{getWeapon(chosen_weapon)["name"]}要計算的等級', timeout=None)
             self.chosen_weapon = chosen_weapon
             self.db = db
 
@@ -886,16 +889,16 @@ class GenshinCog(commands.Cog):
             )
             embed = defaultEmbed().set_author(name='計算結果', icon_url=interaction.user.avatar)
             embed.add_field(
-                name='計算內容', value=f'武器: {getWeaponNameWithId(self.chosen_weapon)}\n等級: {self.current.value} ▸ {self.target.value}', inline=False)
+                name='計算內容', value=f'武器: {getWeapon(self.chosen_weapon)["name"]}\n等級: {self.current.value} ▸ {self.target.value}', inline=False)
             materials = []
             value = ''
             for consumable in cost.weapon:
-                value += f'{getConsumableEmojiWithId(consumable.id)} {consumable.name}  x{consumable.amount}\n'
+                value += f'{getConsumable(consumable.id)["emoji"]} {consumable.name}  x{consumable.amount}\n'
                 materials.append([consumable.name, consumable.amount])
             if value == '':
                 value = '不需要任何素材'
             embed.add_field(name='武器所需素材', value=value, inline=False)
-            embed.set_thumbnail(url=getWeaponIconWithId(self.chosen_weapon))
+            embed.set_thumbnail(url=getWeapon(self.chosen_weapon)["icon"])
             disabled = True if len(materials) == 0 else False
             view = GenshinCog.AddMaterialsView(
                 self.db, disabled, interaction.user, materials)
@@ -977,7 +980,7 @@ class GenshinCog(commands.Cog):
             self.bot = bot
             for chara in charas:
                 options.append(SelectOption(
-                    label=f"{chara[0]}", description=f'{characters_map.get(str(chara[2]))["rarity"]}★ {chara[1]}', value=f'{charas.index(chara)+1} {chara[2]}', emoji=getCharaEmojiWithId(str(chara[2]))))
+                    label=f"{chara[0]}", description=f'{characters_map.get(str(chara[2]))["rarity"]}★ {chara[1]}', value=f'{charas.index(chara)+1} {chara[2]}', emoji=getCharacter(chara[2])["emoji"]))
             super().__init__(placeholder='選擇分頁', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction) -> Any:
@@ -1032,7 +1035,7 @@ class GenshinCog(commands.Cog):
             view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
                                                self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
             await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, get_name.getName(int(self.id), True).replace(' ', ''), self.bot.browser, self.index):
+            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, self.index):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
@@ -1041,11 +1044,11 @@ class GenshinCog(commands.Cog):
             await i.edit_original_message(embed=embed)
 
     def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
-        chara_name = get_name.getName(int(chara_id), True)
+        chara_name = getCharacter(chara_id)['eng']
         result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
-        embed = defaultEmbed(f'{get_name.getName(int(chara_id))} - 傷害')
+        embed = defaultEmbed(f"{getCharacter(chara_id)['name']} - 傷害")
         dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-        name = f'{get_name.getName(int(chara_id))} - {dmg_type_str[dmg]}'
+        name = f"{getCharacter(chara_id)['name']} - {dmg_type_str[dmg]}"
         if chara_name == 'Xiao':
             name += ' (開Q狀態下)'
         elif chara_name == 'Raiden Shogun':
@@ -1080,7 +1083,7 @@ class GenshinCog(commands.Cog):
                 inline=True
             )
         embed.set_author(name=member, icon_url=member.avatar)
-        embed.set_thumbnail(url=getCharacterIcon(int(chara_id)))
+        embed.set_thumbnail(url=getCharacter(chara_id)["icon"])
         return embed
 
     class DamageCalculator(Button):
@@ -1102,7 +1105,7 @@ class GenshinCog(commands.Cog):
             view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
                                                2, self.bot, self.charas, self.equip_dict, self.member, self.index)
             await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, get_name.getName(int(self.id), True).replace(' ', ''), self.bot.browser, 2):
+            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, 2):
                 if isinstance(result, Embed):
                     await i.edit_original_message(embed=result)
                 else:
@@ -1145,7 +1148,7 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed(f'{self.name} - 聖遺物')
             for e in self.chara_equipments:
                 if 'weapon' not in e:
-                    artifact_name = get_name.getNameTextHash(
+                    artifact_name = get_name_text_map_hash.getNameTextMapHash(
                         e['flat']['setNameTextMapHash'])
                     artifact_name = set_name_simplify.get(
                         artifact_name) or artifact_name
@@ -1167,7 +1170,7 @@ class GenshinCog(commands.Cog):
                         value=value
                     )
                     embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
-            embed.set_thumbnail(url=getCharacterIcon(str(self.id)))
+            embed.set_thumbnail(url=getCharacter(self.id)["icon"])
             embed.set_author(name=self.member, icon_url=self.member.avatar)
             self.disabled = False
             await i.response.edit_message(embed=embed, view=self.view)
@@ -1245,8 +1248,11 @@ class GenshinCog(commands.Cog):
         for chara in player['showAvatarInfoList']:
             if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
                 continue
-            charas.append([get_name.getName(chara['avatarId']),
-                          f"Lvl. {chara['level']}", chara['avatarId']])
+            charas.append([
+                getCharacter(chara['avatarId'])['name'],
+                f"Lvl. {chara['level']}",
+                chara['avatarId']
+            ])
         info = data['avatarInfoList']
         equipt_dict = {}
         for chara in info:
@@ -1258,21 +1264,21 @@ class GenshinCog(commands.Cog):
             const = 0 if 'talentIdList' not in chara else len(
                 chara['talentIdList'])
             for id, level in talent_levels.items():
-                talent_str += f'{get_name.getName(int(id))} - Lvl. {level}\n'
+                talent_str += f'{getTalent(id)["name"]} - Lvl. {level}\n'
             equipments = chara['equipList']
             equipt_dict[chara['avatarId']] = {
-                'name': get_name.getName(chara["avatarId"]),
+                'name': getCharacter(chara["avatarId"])['name'],
                 'equipments': equipments
             }
             weapon_str = ''
             for e in equipments:
                 if 'weapon' in e:
-                    weapon_name = get_name.getNameTextHash(
+                    weapon_name = get_name_text_map_hash.getNameTextMapHash(
                         e['flat']['nameTextMapHash'])
                     refinment_str = ''
                     if 'affixMap' in e['weapon']:
                         refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
-                    weapon_str += f"{getWeaponEmojiWithId(getWeaponIdWithName(weapon_name))} {weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
+                    weapon_str += f"{getWeapon(name=weapon_name)['emoji']} {weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
                     weapon_sub_str = ''
                     if len(e['flat']['weaponStats']) == 2:
                         propId = e['flat']['weaponStats'][1]['appendPropId']
@@ -1295,7 +1301,7 @@ class GenshinCog(commands.Cog):
             else:
                 max_level = 90
             embed = defaultEmbed(
-                f"{get_name.getName(chara['avatarId'])} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
+                f"{getCharacter(chara['avatarId'])['name']} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
                 f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
                 f"<:ATTACK:982138214305390632> 攻擊力 - {round(prop['2001'])} ({round(prop['4'])}/{round(prop['2001'])-round(prop['4'])})\n"
                 f"<:DEFENSE:982068463566721064> 防禦力 - {round(prop['2002'])} ({round(prop['7'])}/{round(prop['2002'])-round(prop['7'])})\n"
@@ -1314,7 +1320,7 @@ class GenshinCog(commands.Cog):
                 value=weapon_str,
                 inline=False
             )
-            embed.set_thumbnail(url=getCharacterIcon(chara['avatarId']))
+            embed.set_thumbnail(url=getCharacter(chara['avatarId'])["icon"])
             embed.set_author(name=member, icon_url=member.avatar)
             embeds.append(embed)
 

@@ -3,14 +3,14 @@ import asyncio
 from datetime import datetime, timedelta
 
 import aiosqlite
-from data.game.talents import talents
+from data.game.talent_books import talent_books
 from dateutil import parser
 from discord import Embed, User
 from discord.ext import commands, tasks
 from discord.utils import sleep_until
 from utility.apps.FlowApp import FlowApp
 from utility.apps.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, getCharaIdWithName, getCharacterIcon, log
+from utility.utils import defaultEmbed, getCharacter, log
 
 
 class Schedule(commands.Cog):
@@ -103,8 +103,7 @@ class Schedule(commands.Cog):
                 for chara in chara_list:
                     embed = defaultEmbed(
                         message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                    embed.set_thumbnail(url=getCharacterIcon(
-                        getCharaIdWithName(chara)))
+                    embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
                     embed.set_author(name=f'刷本啦!', icon_url=(
                         self.bot.get_user(user_id)).avatar)
                     await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
@@ -146,13 +145,12 @@ class Schedule(commands.Cog):
                 user_id = tuple[0]
                 chara_list = ast.literal_eval(tuple[1])
                 for chara in chara_list:
-                    for book_name, characters in talents[weekday_dict[weekday]].items():
+                    for book_name, characters in talent_books[weekday_dict[weekday]].items():
                         for character_name, element_name in characters.items():
                             if character_name == chara:
                                 embed = defaultEmbed(
                                     message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                                embed.set_thumbnail(url=getCharacterIcon(
-                                    getCharaIdWithName(chara)))
+                                embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
                                 embed.set_author(name=f'刷本啦!', icon_url=(
                                     self.bot.get_user(user_id)).avatar)
                                 await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
