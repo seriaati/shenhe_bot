@@ -51,7 +51,7 @@ class ReactionRoles(commands.Cog):
 
     class RoleButton(Button):
         def __init__(self, label, row, emoji):
-            super().__init__(style=ButtonStyle.blurple, label=label, row=row, emoji=emoji)
+            super().__init__(style=ButtonStyle.blurple, label=label, row=row, emoji=emoji, custom_id=f'RoleButton{label}')
             self.label = label
 
         async def callback(self, i: Interaction):
