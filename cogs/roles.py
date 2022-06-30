@@ -51,7 +51,8 @@ class ReactionRoles(commands.Cog):
 
     class RoleButton(Button):
         def __init__(self, label, row, emoji):
-            super().__init__(style=ButtonStyle.blurple, label=label, row=row, emoji=emoji, custom_id=f'RoleButton{label}')
+            super().__init__(style=ButtonStyle.gray, label=label,
+                             row=row, emoji=emoji, custom_id=f'RoleButton{label}')
             self.label = label
 
         async def callback(self, i: Interaction):
@@ -60,13 +61,26 @@ class ReactionRoles(commands.Cog):
                 await i.user.remove_roles(role)
             else:
                 await i.user.add_roles(role)
-            await i.response.defer()
+            embed = defaultEmbed(
+                '選擇身份組',
+                f'按一次會給予, 再按一次會移除\n\n'
+                f'委託通知: {len(get(i.guild.roles, name="委託通知")).members}\n'
+                f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知")).members}\n'
+                f'活動通知: {len(get(i.guild.roles, name="活動通知")).members}\n'
+                f'小雪通知: {len(get(i.guild.roles, name="小雪通知")).members}')
+            await i.response.edit_message(embed=embed)
 
     @app_commands.command(name='role', description='身份組')
     @app_commands.checks.has_role('小雪團隊')
     async def get_role(self, i: Interaction):
         view = ReactionRoles.RoleView(self.bot)
-        embed = defaultEmbed('選擇身份組')
+        embed = defaultEmbed(
+            '選擇身份組',
+            f'按一次會給予, 再按一次會移除\n\n'
+            f'委託通知: {len(get(i.guild.roles, name="委託通知")).members}\n'
+            f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知")).members}\n'
+            f'活動通知: {len(get(i.guild.roles, name="活動通知")).members}\n'
+            f'小雪通知: {len(get(i.guild.roles, name="小雪通知")).members}')
         await i.response.send_message(embed=embed, view=view)
 
     @app_commands.command(name='wrrole', description='世界等級身份組')
