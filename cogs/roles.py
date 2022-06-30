@@ -47,18 +47,19 @@ class ReactionRoles(commands.Cog):
             guild = bot.get_guild(916838066117824553)
             for index in range(0, 4):
                 self.add_item(ReactionRoles.RoleButton(
-                    roles[index], 0, emojis[index], guild.get_role(role_ids[index])))
+                    roles[index], 0, emojis[index]))
 
     class RoleButton(Button):
-        def __init__(self, label, row, emoji, role):
+        def __init__(self, label, row, emoji):
             super().__init__(style=ButtonStyle.blurple, label=label, row=row, emoji=emoji)
-            self.role = role
+            self.label = label
 
         async def callback(self, i: Interaction):
-            if self.role in i.user.roles:
-                await i.user.remove_roles(self.role)
+            role = get(i.guild.roles, name=self.label)
+            if role in i.user.roles:
+                await i.user.remove_roles(role)
             else:
-                await i.user.add_roles(self.role)
+                await i.user.add_roles(role)
             await i.response.defer()
 
     @app_commands.command(name='role', description='身份組')
