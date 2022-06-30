@@ -82,7 +82,7 @@ class AdminCog(commands.Cog):
             f'新語音台: {after.channel.mention if after.channel is not None else "不在語音台"}'
         )
         embed.set_author(name=member, icon_url=member.avatar)
-        embed.set_author(text=f'用戶 ID: {member.id}')
+        embed.set_author(name=f'用戶 ID: {member.id}')
         await self.c.send(embed=embed)
 
 
