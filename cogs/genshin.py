@@ -277,7 +277,10 @@ class GenshinCog(commands.Cog):
             message = ''
             for chara in self.talent_notif_chara_list:
                 message += f'• {chara}\n'
-            embed = defaultEmbed('已設置角色', message)
+            if message == '':
+                message = '目前尚未設置任何角色'
+            embed = defaultEmbed()
+            embed.add_field(name='已設置角色', value=message)
             embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=GenshinCog.TalentElementChooser(i.user, self.db))
 
@@ -345,8 +348,8 @@ class GenshinCog(commands.Cog):
     @app_commands.rename(function='功能', toggle='開關')
     @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
     @app_commands.choices(function=[Choice(name='樹脂提醒', value=0), Choice(name='天賦素材提醒', value=1)],
-                          toggle=[Choice(name='開', value=1), Choice(name='關', value=0)])
-    async def resin_remind(self, i: Interaction, function: int, toggle: int):
+                          toggle=[Choice(name='開 (調整設定)', value=1), Choice(name='關', value=0)])
+    async def remind(self, i: Interaction, function: int, toggle: int):
         if function == 0:
             if toggle == 0:
                 result = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
@@ -368,10 +371,20 @@ class GenshinCog(commands.Cog):
                 embed.set_author(name='天賦提醒功能已關閉', icon_url=i.user.avatar)
                 await i.response.send_message(embed=embed)
             else:
+                c: aiosqlite.Cursor = await self.bot.db.cursor()
                 message = ''
-                for chara in self.talent_notif_chara_list:
+                await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
+                talent_notif_chara_list: list = (await c.fetchone())[0]
+                if talent_notif_chara_list == '':
+                    talent_notif_chara_list = []
+                else:
+                    talent_notif_chara_list: list = ast.literal_eval(talent_notif_chara_list)
+                for chara in talent_notif_chara_list:
                     message += f'• {chara}\n'
-                embed = defaultEmbed('已設置角色', message)
+                if message == '':
+                    message = '目前尚未設置任何角色'
+                embed = defaultEmbed()
+                embed.add_field(name='已設置角色', value=message)
                 embed.set_author(name='選擇想要設置提醒功能的角色元素',
                                  icon_url=i.user.avatar)
                 view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
