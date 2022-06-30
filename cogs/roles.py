@@ -64,10 +64,10 @@ class ReactionRoles(commands.Cog):
             embed = defaultEmbed(
                 '選擇身份組',
                 f'按一次會給予, 再按一次會移除\n\n'
-                f'委託通知: {len(get(i.guild.roles, name="委託通知")).members}\n'
-                f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知")).members}\n'
-                f'活動通知: {len(get(i.guild.roles, name="活動通知")).members}\n'
-                f'小雪通知: {len(get(i.guild.roles, name="小雪通知")).members}')
+                f'委託通知: {len(get(i.guild.roles, name="委託通知").members)}\n'
+                f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知").members)}\n'
+                f'活動通知: {len(get(i.guild.roles, name="活動通知").members)}\n'
+                f'小雪通知: {len(get(i.guild.roles, name="小雪通知").members)}')
             await i.response.edit_message(embed=embed)
 
     @app_commands.command(name='role', description='身份組')
@@ -77,10 +77,10 @@ class ReactionRoles(commands.Cog):
         embed = defaultEmbed(
             '選擇身份組',
             f'按一次會給予, 再按一次會移除\n\n'
-            f'委託通知: {len(get(i.guild.roles, name="委託通知")).members}\n'
-            f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知")).members}\n'
-            f'活動通知: {len(get(i.guild.roles, name="活動通知")).members}\n'
-            f'小雪通知: {len(get(i.guild.roles, name="小雪通知")).members}')
+            f'委託通知: {len(get(i.guild.roles, name="委託通知").members)}\n'
+            f'抽獎通知: {len(get(i.guild.roles, name="抽獎通知").members)}\n'
+            f'活動通知: {len(get(i.guild.roles, name="活動通知").members)}\n'
+            f'小雪通知: {len(get(i.guild.roles, name="小雪通知").members)}')
         await i.response.send_message(embed=embed, view=view)
 
     @app_commands.command(name='wrrole', description='世界等級身份組')
