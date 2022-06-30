@@ -2,7 +2,7 @@ talent_books = {
   "週一、週四": {
     "自由": {
       "亞蘿伊": "Cryo",
-      "安珀": "Pyro",
+      "安柏": "Pyro",
       "芭芭拉": "Hydro",
       "迪奧娜": "Cryo",
       "可莉": "Pyro",
@@ -14,7 +14,8 @@ talent_books = {
       "凝光": "Geo",
       "七七": "Cryo",
       "魈": "Anemo",
-      "夜蘭": "Hydro"
+      "夜蘭": "Hydro",
+      "申鶴": "Cryo"
     },
     "浮世": {
       "珊瑚宮心海": "Hydro",
