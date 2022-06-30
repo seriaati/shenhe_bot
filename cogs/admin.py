@@ -74,16 +74,17 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: Member, before: VoiceState, after: VoiceState):
-        embed = defaultEmbed(
-            '語音狀態變更',
-            f'用戶: {member.mention}\n'
-            f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
-            f'原語音台: {before.channel.mention if before.channel is not None else "不在語音台"}\n'
-            f'新語音台: {after.channel.mention if after.channel is not None else "不在語音台"}'
-        )
-        embed.set_author(name=member, icon_url=member.avatar)
-        embed.set_author(name=f'用戶 ID: {member.id}')
-        await self.c.send(embed=embed)
+        if before.channel != after.channel:
+            embed = defaultEmbed(
+                '語音狀態變更',
+                f'用戶: {member.mention}\n'
+                f'時間: {datetime.now().strftime("%m/%d/%Y %H:%M:%S")}\n'
+                f'原語音台: {before.channel.mention if before.channel is not None else "不在語音台"}\n'
+                f'新語音台: {after.channel.mention if after.channel is not None else "不在語音台"}'
+            )
+            embed.set_author(name=member, icon_url=member.avatar)
+            embed.set_footer(text=f'用戶 ID: {member.id}')
+            await self.c.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
