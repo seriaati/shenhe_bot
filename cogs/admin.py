@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from discord import (Member, Message, RawMessageDeleteEvent, TextChannel,
-                     VoiceChannel, VoiceState)
+from discord import (Member, Message, RawMessageDeleteEvent, TextChannel)
 from discord.ext import commands
 from utility.utils import defaultEmbed, errEmbed
 
