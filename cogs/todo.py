@@ -67,14 +67,18 @@ class Todo(commands.Cog):
             modal = Todo.AddTodoModal()
             await i.response.send_modal(modal)
             await modal.wait()
+            try:
+                count_value = int(modal.count.value)
+            except ValueError:
+                return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
             c = await self.db.cursor()
             await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, modal.item.value))
             count = await c.fetchone()
             if count is None:
-                await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, modal.item.value, int((modal.count.value).replace(',', ''))))
+                await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, modal.item.value, count_value))
             else:
                 count = count[0]
-                await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+int((modal.count.value).replace(',', '')), i.user.id, modal.item.value))
+                await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+count_value), i.user.id, modal.item.value)
             await self.db.commit()
             embed = await Todo.get_todo_embed(self.db, i.user)
             await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
@@ -104,6 +108,12 @@ class Todo(commands.Cog):
             count = await c.fetchone()
             count = count[0]
             modal_count_value = modal.count.value or count
+            if modal_count_value > count:
+                return await i.followup.send(embed=errEmbed().set_author(name='不可輸入大於目前素材數量的數字', icon_url=i.user.avatar), ephemeral=True)
+            try:
+                modal_count_value = int(modal_count_value)
+            except ValueError:
+                return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
             await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count-int(modal_count_value), i.user.id, modal.item.values[0]))
             await c.execute('DELETE FROM todo WHERE count = 0 AND user_id = ?', (i.user.id,))
             await self.db.commit()
