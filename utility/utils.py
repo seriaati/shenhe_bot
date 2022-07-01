@@ -244,14 +244,14 @@ def getCharacter(id: int = '', name: str = ''):
     for character_id, character_info in characters_map.items():
         if character_id == str(id) or character_info['name'] == name:
             return character_info
-    raise ValueError(f'未知角色: {id}{name}')
+    return {'name': f'{id}{name}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
 
 
 def getWeapon(id: int = '', name: str = ''):
     for weapon_id, weapon_info in weapons_map.items():
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
-    raise ValueError(f'未知武器: {id}{name}')
+    return {'name': f'{id}{name}', 'emoji': '<:WARNING:992552271378386944>', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
 
 
 def getConsumable(id: int = '', name: str = ''):
@@ -265,7 +265,8 @@ def getTalent(id: int = '', name: str = ''):
     for talent_id, talent_info in talents_map.items():
         if talent_id == str(id) or talent_info['name'] == name:
             return talent_info
-    raise ValueError(f'未知角色: {id}{name}')
+    return {'name': f'{id}{name}'}
+
 
 async def enkaToGOOD(enka_data):
     good_dict = {
@@ -316,10 +317,12 @@ async def enkaToGOOD(enka_data):
         for e in chara['equipList']:
             if 'weapon' in e:
                 weapon_id += 1
-                key = (get_name_text_map_hash.getNameTextMapHash(e['flat']['nameTextMapHash'], True)).replace("'", '').title().replace(' ','').replace('-','') or e['flat']['nameTextMapHash']
+                key = (get_name_text_map_hash.getNameTextMapHash(e['flat']['nameTextMapHash'], True)).replace(
+                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['nameTextMapHash']
                 level = e['weapon']['level']
                 ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
-                refinement = list(e['weapon']['affixMap'].values())[0]+1 if 'affixMap' in e['weapon'] else 0
+                refinement = list(e['weapon']['affixMap'].values())[
+                    0]+1 if 'affixMap' in e['weapon'] else 0
                 location = chara_key
                 good_dict['weapons'].append(
                     {
@@ -361,7 +364,8 @@ async def enkaToGOOD(enka_data):
                     'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
                     'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
                 }
-                setKey = get_name_text_map_hash.getNameTextMapHash(e['flat']['setNameTextMapHash'], True).replace("'", '').title().replace(' ', '').replace('-','') or e['flat']['setNameTextMapHash']
+                setKey = get_name_text_map_hash.getNameTextMapHash(e['flat']['setNameTextMapHash'], True).replace(
+                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['setNameTextMapHash']
                 slotKey = artifact_pos.get(e['flat']['equipType'])
                 rarity = e['flat']['rankLevel']
                 mainStatKey = stats.get(
