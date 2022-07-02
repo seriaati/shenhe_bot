@@ -15,6 +15,7 @@ class FlowApp:
     async def register(self, user_id: int):
         log(True, False, 'Register', user_id)
         await self.transaction(user_id, 20, is_new_account=True)
+        return 20
 
     async def transaction(self, user_id: int, flow_for_user: int, time_state: str = None, is_new_account: bool = False, is_removing_account: bool = False):
         now = datetime.now()
@@ -38,7 +39,10 @@ class FlowApp:
                 await c.execute(f'UPDATE flow_accounts SET {time} = ? WHERE user_id = ?', (default_time, user_id))
             await self.db.commit()
         c = await self.db.cursor()
-        user_flow = await self.get_user_flow(user_id)
+        try:
+            user_flow = await self.get_user_flow(user_id)
+        except:
+            user_flow = await self.register(user_id)
         await c.execute('UPDATE flow_accounts SET flow = ? WHERE user_id = ?', (user_flow+flow_for_user, user_id))
         bank_flow = await self.get_bank_flow()
         await c.execute(f'UPDATE bank SET flow = ?', (bank_flow-flow_for_user,))
