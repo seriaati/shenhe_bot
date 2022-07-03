@@ -14,3 +14,5 @@
 自製祈願遊戲
 ![Animation](https://user-images.githubusercontent.com/61446626/177044929-e0752995-67cb-4b01-8e4b-f3d51de97561.gif)  
 音樂播放系統
+![Animation](https://user-images.githubusercontent.com/61446626/177045123-f3ba77c6-e7d5-42d1-bdc8-99b3579934e6.gif)  
+二次元老婆生產器
