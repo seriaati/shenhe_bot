@@ -29,8 +29,6 @@ class WelcomeCog(commands.Cog):
                 return
             uid = int(num[0])
             result, success = await self.genshin_app.setUID(message.author.id, uid)
-            result.set_author(name=message.author,
-                              icon_url=message.author.avatar)
             if not success:
                 await message.channel.send(content=message.author.mention, embed=result, delete_after=5)
             else:
