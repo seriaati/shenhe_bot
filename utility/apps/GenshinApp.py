@@ -108,7 +108,7 @@ class GenshinApp:
     async def getRealTimeNotes(self, user_id: int, check_resin_excess=False):
         client, uid, only_uid, user = await self.getUserCookie(user_id)
         if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar),
+            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
