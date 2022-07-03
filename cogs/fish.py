@@ -15,11 +15,22 @@ class FishCog(commands.Cog):
         self.bot = bot
         self.debug_toggle = self.bot.debug_toggle
 
-    global fish_list, fish_flow_list, fish_image_list
+    global fish_list, fish_flow_list, fish_image_list, cute_fish_list, adj_list, fish_adj, fish_type
     fish_flow_list = ['1', '2', '2', '2', '2', '5',
                       '5', '7', '10', '20', '15', '20', '3', '3']
     fish_list = ['虱目魚', '鮭魚', '鱈魚', '鮪魚', '鰻魚',
                  '龍蝦', '螃蟹', '心海', '大白鯊', '達達利鴨', '大象', '抹香鯨', '企鵝', '兔兔']
+    
+    cute_fish_list = ['0', '1', '2', '3', '4', '12', '13']
+    
+    fish_flow_chance_list = [
+        '50', '40', '35', '35', '35', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', '20', '20' 
+    ]
+    
+    adj_list = ['可愛','奇怪','神奇','變態','色色']
+    
+    fish_verb_list = ['N/A','N/A','N/A','N/A','N/A','鉗到了','鉗到了','打飛了','咬到了','踢了幾腳','踩到了','鯨爆了','N/A','N/A']
+
     fish_image_list = [
         'https://www.ocean-treasure.com/wp-content/uploads/2021/06/Milkfish.jpg',
         'https://cdn-fgbal.nitrocdn.com/KhVbtyNBpSvxGKkBoxbcDIRslLpQdgCA/assets/static/optimized/wp-content/uploads/2021/08/1daf341ee1fca75bef8327e080fa5b21.Salmon-Fillet-1-1-1536x1536.jpg',
@@ -38,29 +49,34 @@ class FishCog(commands.Cog):
     ]
 
     def generate_fish_embed(self, index: int):  # 製造摸魚embed
-        if index >= 0 and index <= 4 or index == 7 or index == 12 or index == 13:
-            result = ayaakaaEmbed(
+        random_adj_index == randint(0, len(adj_list)-1)
+        for fish in cute_fish_list:
+            if index == int(fish):
+              fish_adj == adj_list[random_adj_index]  
+              fish_type = 0 
+              result = ayaakaaEmbed(
                 fish_list[index],
-                f'是可愛的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得 {fish_flow_list[index]} flow幣'
+                f'是{fish_adj}的**{fish_list[index]}**！要摸摸看嗎?\n'
+                f'摸**{fish_adj}的**{fish_list[index]}**有機率獲得 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是可愛的鮭魚！要摸摸看嗎?
-            #     摸鮭魚有機率獲得 2 flow幣
-        else:
-            result = ayaakaaEmbed(
+            #     摸鮭魚有機率獲得 2 flow幣   
+            else:
+                fish_type = 1
+                result = ayaakaaEmbed(
                 fish_list[index],
-                f'是野生的**{fish_list[index]}**！要摸摸看嗎?\n'
-                f'摸**{fish_list[index]}**有機率獲得或損失 {fish_flow_list[index]} flow幣'
+                f'是{fish_adj}的**{fish_list[index]}**！要摸摸看嗎?\n'
+                f'摸{fish_adj}的**{fish_list[index]}**有機率獲得或損失 {fish_flow_list[index]} flow幣'
             )
             # e.g. 是野生的達達利鴨！要摸摸看嗎?
-            #     摸達達利鴨有機率獲得或損失 20 flow幣
+            #     摸達達利鴨有機率獲得或損失 20 flow幣 
         result.set_thumbnail(url=fish_image_list[index])
         return result
 
     class TouchFishButton(Button):  # 摸魚按鈕
         def __init__(self, index: int, db: aiosqlite.Connection, bot):
             super().__init__(style=ButtonStyle.blurple,
-                             label=f'撫摸可愛的{fish_list[index]}')
+                             label=f'撫摸{fish_adj}的{fish_list[index]}')
             self.index = index
             self.flow_app = FlowApp(db, bot)
 
@@ -69,13 +85,71 @@ class FishCog(commands.Cog):
             self.disabled = True
             await interaction.response.edit_message(view=self.view)
 
-            await interaction.channel.send(f'{interaction.user.mention} 摸到**{fish_list[self.index]}**了！')
+            await interaction.channel.send(f'{interaction.user.mention} 摸到{fish_adj}的**{fish_list[self.index]}**了！')
             # e.g. @綾霞 摸到虱目魚了！
 
             value = randint(1, 100)  # Picks a random number from 1 - 100
 
             # 摸虱目魚有機率獲得 1 flow幣
+            
+            if fish_type == 0:
+                if value <= 50:  # 50% Chance of increasing flow amount by 20
+                    await self.flow_app.transaction(interaction.user.id, int(fish_flow_list[self.index]))
+                    await interaction.followup.send(f'摸{fish_adj}的**{fish_list[self.index]}**摸到 {fish_flow_list[self.index]} flow幣!', ephemeral=True)
+                    # e.g. 摸抹香鯨摸到 20 flow幣!
+                else:  # 50% Chance of decreasing flow amount by 20
+                    await self.flow_app.transaction(interaction.user.id, int(-fish_flow_list[self.index]))
+                    await interaction.followup.send(f'被{fish_adj}的**{fish_list[self.index]}**{fish_verb_list[self.index]}，損失了 {fish_flow_list[self.index]} flow幣 qwq', ephemeral=True)
+                    # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
+            else:
+                if value <= fish_flow_chance_list[self.index]:  # e.g. 60% Chance of increasing flow amount by 1
+                    await self.flow_app.transaction(interaction.user.id, int(fish_flow_list[self.index]))
+                    await interaction.followup.send(f'摸{fish_adj}的**{fish_list[self.index]}**摸到 {fish_flow_list[self.index]} flow幣!', ephemeral=True)
+                     # e.g. 摸虱目魚摸到 1 flow幣!
+                else:
+                    await interaction.followup.send(f'單純的摸魚而已, 沒有摸到flow幣 qwq', ephemeral=True)
+
+    class TouchFish(DefaultView):  # 摸魚view
+        def __init__(self, index: str, db: aiosqlite.Connection, bot):
+            super().__init__(timeout=None)
+            self.add_item(FishCog.TouchFishButton(index, db, bot))
+
+    def get_fish_choices():  # 取得所有魚種
+        choices = []
+        for fish in fish_list:
+            choices.append(Choice(name=fish, value=fish_list.index(fish)))
+        return choices
+
+    @commands.Cog.listener()
+    async def on_message(self, message):  # 機率放魚
+        if message.author == self.bot.user:
+            return
+        random_number = randint(1, 100)
+        if random_number == 1 and not isinstance(message.channel, Thread):
+            index = randint(0, len(fish_list)-1)
+            touch_fish_view = FishCog.TouchFish(index, self.bot.db, self.bot)
+            await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
+
+   # /releasefish
+    @app_commands.command(name='releasefish放魚', description='緊急放出一條魚讓人摸')
+    @app_commands.rename(fish_type='魚種')
+    @app_commands.describe(fish_type='選擇要放出的魚種')
+    @app_commands.choices(fish_type=get_fish_choices())
+    @app_commands.checks.has_role('小雪團隊')
+    async def release_fish(self, i: Interaction, fish_type: int):
+        touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db, self.bot)
+        await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
+
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(FishCog(bot))
+    
+    
+
+    
+#Old Code
+'''
             if self.index == 0:  # [0] 虱目魚
                 if value <= 60:  # 60% Chance of increasing flow amount by 1
                     await self.flow_app.transaction(interaction.user.id, 1)
@@ -168,7 +242,7 @@ class FishCog(commands.Cog):
                     await interaction.followup.send(f'撫摸**{fish_list[self.index]}**摸到 3 flow幣!', ephemeral=True)
                     # e.g. 撫摸企鵝摸到 3 flow幣!
                 else:
-                    penguin_random_number = randint(1, 100)
+                    penguin_random_number = randint(1, 20)
                     if penguin_random_number == 1:
                         await interaction.followup.send(f'被企鵝噴了一臉奇怪的白色液體, 沒有摸到flow幣 qwq', ephemeral=True)
                     else:
@@ -180,39 +254,5 @@ class FishCog(commands.Cog):
                     await interaction.followup.send(f'撫摸**{fish_list[self.index]}**摸到 3 flow幣!', ephemeral=True)
                     # e.g. 撫摸兔兔摸到 3 flow幣!
                 else:
-                    await interaction.followup.send(f'兔兔逃走了, 沒有摸到flow幣 qwq', ephemeral=True)
-
-    class TouchFish(DefaultView):  # 摸魚view
-        def __init__(self, index: str, db: aiosqlite.Connection, bot):
-            super().__init__(timeout=None)
-            self.add_item(FishCog.TouchFishButton(index, db, bot))
-
-    def get_fish_choices():  # 取得所有魚種
-        choices = []
-        for fish in fish_list:
-            choices.append(Choice(name=fish, value=fish_list.index(fish)))
-        return choices
-
-    @commands.Cog.listener()
-    async def on_message(self, message):  # 機率放魚
-        if message.author == self.bot.user:
-            return
-        random_number = randint(1, 100)
-        if random_number == 1 and not isinstance(message.channel, Thread):
-            index = randint(0, len(fish_list)-1)
-            touch_fish_view = FishCog.TouchFish(index, self.bot.db, self.bot)
-            await message.channel.send(embed=self.generate_fish_embed(index), view=touch_fish_view)
-
-   # /releasefish
-    @app_commands.command(name='releasefish放魚', description='緊急放出一條魚讓人摸')
-    @app_commands.rename(fish_type='魚種')
-    @app_commands.describe(fish_type='選擇要放出的魚種')
-    @app_commands.choices(fish_type=get_fish_choices())
-    @app_commands.checks.has_role('小雪團隊')
-    async def release_fish(self, i: Interaction, fish_type: int):
-        touch_fish_view = FishCog.TouchFish(fish_type, self.bot.db, self.bot)
-        await i.response.send_message(embed=self.generate_fish_embed(fish_type), view=touch_fish_view)
-
-
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(FishCog(bot))
+                    await interaction.followup.send(f'兔兔逃走了, 沒有摸到flow幣 qwq', ephemeral=True)    
+'''
