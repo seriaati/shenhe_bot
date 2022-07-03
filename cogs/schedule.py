@@ -92,6 +92,7 @@ class Schedule(commands.Cog):
             '黃金': 'https://static.wikia.nocookie.net/genshin-impact/images/3/3f/%E3%80%8C%E9%BB%83%E9%87%91%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014322&path-prefix=zh-tw'
         }
         if weekday == 6:
+            c: aiosqlite = await self.bot.db.cursor()
             talent_book_list = [
                 '自由', '繁榮', '浮世',
                 '風雅', '抗爭', '勤勞',
