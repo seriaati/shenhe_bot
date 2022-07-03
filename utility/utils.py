@@ -267,6 +267,19 @@ def getTalent(id: int = '', name: str = ''):
             return talent_info
     return {'name': f'{id}{name}'}
 
+def getAreaEmoji(area_name: str):
+    emoji_dict = {
+        '蒙德': '<:Emblem_Mondstadt:982449412938809354>',
+        '璃月': '<:Emblem_Liyue:982449411047165992>',
+        '稻妻': '<:Emblem_Inazuma:982449409117806674>',
+        '層岩巨淵': '<:Emblem_Chasm:982449404076249138>',
+        '層岩巨淵·地下礦區': '<:Emblem_Chasm:982449404076249138>',
+        '淵下宮': '<:Emblem_Enkanomiya:982449407469441045>',
+        '龍脊雪山': '<:Emblem_Dragonspine:982449405883977749>'
+    }
+    emoji = emoji_dict.get(area_name)
+    return emoji or ''
+
 
 async def enkaToGOOD(enka_data):
     good_dict = {

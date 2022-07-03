@@ -16,7 +16,7 @@ from utility.utils import defaultEmbed, getCharacter, log
 class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.genshin_app = GenshinApp(self.bot.db)
+        self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.flow_app = FlowApp(self.bot.db, self.bot)
         self.debug_toggle = self.bot.debug_toggle
         self.claim_reward.start()
@@ -54,7 +54,9 @@ class Schedule(commands.Cog):
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
-            resin = await self.genshin_app.getRealTimeNotes(user_id, True)
+            resin, success = await self.genshin_app.getRealTimeNotes(user_id, True)
+            if not success:
+                await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
             count += 1
             if resin is not Embed and resin >= resin_threshold and current_notif < max_notif:
                 remind_channel = self.bot.get_channel(

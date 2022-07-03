@@ -5,7 +5,6 @@ from discord import ButtonStyle, Interaction, app_commands
 from discord.ui import View, button, Button
 from utility.config import config
 from utility.utils import defaultEmbed, divide_chunks, errEmbed
-import utility.global_vars as shenhe_emoji
 from wavelink.ext import spotify
 import datetime
 import asyncio
@@ -42,14 +41,14 @@ class MusicCog(commands.Cog):
     @app_commands.rename(search='關鍵詞或連結')
     async def music_play(self, i: Interaction, search: str):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if i.guild.voice_client.channel != i.user.voice.channel:
             if vc.is_playing():
-                return await i.response.send_message(embed=errEmbed(f'{shenhe_emoji.error} 錯誤', '你跟目前申鶴所在的語音台不同,\n且申鶴目前正在為那邊的使用者播歌\n請等待至對方播放完畢'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message='你跟目前申鶴所在的語音台不同,\n且申鶴目前正在為那邊的使用者播歌\n請等待至對方播放完畢').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
             await vc.disconnect()
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
         await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))
@@ -70,7 +69,7 @@ class MusicCog(commands.Cog):
                 try:
                     playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
                 except wavelink.errors.LoadTrackError:
-                    return await i.edit_original_message(embed=errEmbed(f'{shenhe_emoji.error} 錯誤', '找不到該播放清單'))
+                    return await i.edit_original_message(embed=errEmbed().set_author(name='無效的播放清單', icon_url=i.user.avatar), ephemeral=True)
                 track: wavelink.YouTubeTrack = playlist.tracks[
                     0] if playlist.selected_track is None else playlist.tracks[playlist.selected_track]
                 playlist.tracks.remove(track)
@@ -89,7 +88,7 @@ class MusicCog(commands.Cog):
                             first = False
                         vc.queue.put(partial)
                 except wavelink.ext.spotify.SpotifyRequestError:
-                    return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 該連結找不到對應 spotify 播放清單'))
+                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應 spotify 播放清單', icon_url=i.user.avatar), ephemeral=True)
             elif 'youtu.be' in search or 'youtube' in search:
                 emoji = '<:yt:985540703323058196>'
                 track: wavelink.YouTubeTrack = await wavelink.NodePool.get_node().get_tracks(wavelink.YouTubeTrack, search)
@@ -99,12 +98,12 @@ class MusicCog(commands.Cog):
                 try:
                     track: spotify.SpotifyTrack = await spotify.SpotifyTrack.search(query=search, return_first=True)
                 except wavelink.ext.spotify.SpotifyRequestError:
-                    return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 該連結找不到對應 spotify 歌曲'))
+                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應 spotify 歌曲', icon_url=i.user.avatar), ephemeral=True)
             if not is_playlist and not is_spotify:
                 try:
                     track = track[0]
                 except IndexError:
-                    return await i.edit_original_message(embed=errEmbed('<a:error_animated:982579472060547092> 該連結找不到對應歌曲'))
+                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應歌曲', icon_url=i.user.avatar), ephemeral=True)
         else:
             emoji = '<:yt:985540703323058196>'
             track: wavelink.YouTubeTrack = await wavelink.YouTubeTrack.search(search, return_first=True)
@@ -146,7 +145,7 @@ class MusicCog(commands.Cog):
         async def callback(self, i: Interaction, button: Button):
             vc_role = i.guild.get_role(980774103344640000)
             if vc_role not in i.user.roles:
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你沒有在語音台中'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed().set_author(name='你不在語音台中', icon_url=i.user.avatar), ephemeral=True)
             c = await self.db.cursor()
             await c.execute('SELECT * FROM music WHERE user_id = ? AND channel_id = ?', (i.user.id, self.vc.channel.id))
             result = (await c.fetchone())
@@ -154,7 +153,7 @@ class MusicCog(commands.Cog):
                 await c.execute('INSERT INTO music (user_id, channel_id, msg_id) VALUES (?, ?, ?)', (i.user.id, self.vc.channel.id, i.message.id))
                 await self.db.commit()
             else:
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你投過票囉'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed().set_author(name='你投過票囉', icon_url=i.user.avatar), ephemeral=True)
             await c.execute('SELECT COUNT (user_id) FROM music WHERE channel_id = ?', (self.vc.channel.id,))
             count = (await c.fetchone())[0]
             if count == self.requirement:
@@ -166,20 +165,20 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='stop停止', description='停止播放器並清除待播放清單')
     async def music_stop(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if not vc.is_playing():
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 現在沒有正在播放的歌曲', '輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='現在沒有正在播放的歌曲', icon_url=i.user.avatar), ephemeral=True)
         async def action(one_person: bool, i: Interaction):
             await vc.stop()
             vc.queue.clear()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'))
+                await i.response.send_message(embed=defaultEmbed('播放器已停止'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已停止'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('播放器已停止'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True, i)
         else:
@@ -188,7 +187,7 @@ class MusicCog(commands.Cog):
             result = await c.fetchone()
             if result is not None:
                 url = i.channel.get_partial_message(result[0]).jump_url
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 此投票已經創建過', f'[連結]({url})'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
                 (len(vc.channel.members)-1)/2), vc, '要停止播放器嗎?')
             await i.response.send_message(embed=defaultEmbed('要停止播放器嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
@@ -200,19 +199,19 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='pause暫停', description='暫停播放器')
     async def music_pause(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if vc.is_paused():
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器已經被暫停了'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='播放器已經被暫停了', icon_url=i.user.avatar), ephemeral=True)
         async def action(one_person: bool):
             await vc.pause()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'))
+                await i.response.send_message(embed=defaultEmbed('播放器已暫停'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已暫停'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('播放器已暫停'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
@@ -221,7 +220,7 @@ class MusicCog(commands.Cog):
             result = await c.fetchone()
             if result is not None:
                 url = i.channel.get_partial_message(result[0]).jump_url
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 此投票已經創建過', f'[連結]({url})'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
                 (len(vc.channel.members)-1)/2), vc, '要暫停播放器嗎?')
             await i.response.send_message(embed=defaultEmbed('要暫停播放器嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
@@ -233,19 +232,19 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='resume繼續', description='取消暫停')
     async def music_resume(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if not vc.is_paused():
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 無法繼續', '目前的音樂沒有被暫停'))
+            return await i.response.send_message(embed=errEmbed().set_author(name='目前的音樂沒有被暫停', icon_url=i.user.avatar), ephemeral=True)
         async def action(one_person: bool):
             await vc.resume()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已繼續'))
+                await i.response.send_message(embed=defaultEmbed('播放器已繼續'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 播放器已繼續'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('播放器已繼續'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
@@ -254,7 +253,7 @@ class MusicCog(commands.Cog):
             result = await c.fetchone()
             if result is not None:
                 url = i.channel.get_partial_message(result[0]).jump_url
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 此投票已經創建過', f'[連結]({url})'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
                 (len(vc.channel.members)-1)/2), vc, '要取消播放器暫停嗎?')
             await i.response.send_message(embed=defaultEmbed('要取消播放器暫停嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
@@ -267,17 +266,17 @@ class MusicCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def music_disconnect(self, i: Interaction):
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         vc: wavelink.Player = i.guild.voice_client
         if not vc.is_connected():
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '申鶴沒有在任何一個語音台中'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='申鶴沒有在任何一個語音台中', icon_url=i.user.avatar), ephemeral=True)
         await vc.disconnect()
-        await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 申鶴已離開'))
+        await i.response.send_message(embed=defaultEmbed('申鶴已離開'))
 
     @app_commands.command(name='player播放狀態', description='查看目前播放狀態')
     async def music_player(self, i: Interaction):
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         vc: wavelink.Player = i.guild.voice_client
         if not vc.is_playing():
             return await i.response.send_message(embed=defaultEmbed('播放器是空的', '輸入 `/play` 來播放歌曲'))
@@ -294,9 +293,9 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='queue待播清單', description='查看目前待播放清單')
     async def music_queue(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
@@ -315,19 +314,19 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='skip跳過', description='跳過目前正在播放的歌曲')
     async def music_skip(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 後面沒有歌了', '輸入 `/play` 來新增歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='後面沒有歌了', icon_url=i.user.avatar), ephemeral=True)
         async def action(one_person: bool):
             await vc.stop()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {vc.queue[0]}'))
+                await i.response.send_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0]}'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 跳過成功', f'正在播放: {vc.queue[0]}'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0]}'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
@@ -336,7 +335,7 @@ class MusicCog(commands.Cog):
             result = await c.fetchone()
             if result is not None:
                 url = i.channel.get_partial_message(result[0]).jump_url
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 此投票已經創建過', f'[連結]({url})'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
                 (len(vc.channel.members)-1)/2), vc, '要跳過這一首歌嗎?')
             await i.response.send_message(embed=defaultEmbed('要跳過這一首歌嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
@@ -348,19 +347,19 @@ class MusicCog(commands.Cog):
     @app_commands.command(name='clear清除', description='清除目前的待播放清單')
     async def music_clear(self, i: Interaction):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '待播放清單已經沒有歌了'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='待播放清單已經沒有歌了', icon_url=i.user.avatar), ephemeral=True)
         async def action(one_person: bool):
             vc.queue.clear()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 待播放清單清除成功'))
+                await i.response.send_message(embed=defaultEmbed('待播放清單清除成功'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('<a:check_animated:982579879239352370> 待播放清單清除成功'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('待播放清單清除成功'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
@@ -369,7 +368,7 @@ class MusicCog(commands.Cog):
             result = await c.fetchone()
             if result is not None:
                 url = i.channel.get_partial_message(result[0]).jump_url
-                return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 此投票已經創建過', f'[連結]({url})'), ephemeral=True)
+                return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
                 (len(vc.channel.members)-1)/2), vc, '要清除待播放清單嗎?')
             await i.response.send_message(embed=defaultEmbed('要清除待播放清單嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
@@ -383,15 +382,15 @@ class MusicCog(commands.Cog):
     @app_commands.describe(position='要跳過的秒數')
     async def music_seek(self, i: Interaction, position: int):
         if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 人呢!', '請在語音台中使用此指令'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
         if not i.guild.voice_client:
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 錯誤', '播放器不存在\n輸入 `/play` 來播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
         if not vc.is_playing():
-            return await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 沒有任何歌正在播放', '輸入 `/play` 播放歌曲'), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='沒有任何歌正在播放', icon_url=i.user.avatar), ephemeral=True)
         await vc.seek(position*1000)
-        await i.response.send_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 已往前 {position} 秒'))
+        await i.response.send_message(embed=defaultEmbed(f'已往前 {position} 秒'))
 
 
 async def setup(bot: commands.Bot) -> None:

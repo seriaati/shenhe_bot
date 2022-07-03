@@ -18,13 +18,11 @@ import genshin
 class WishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.genshin_app = GenshinApp(self.bot.db)
 
     wish = app_commands.Group(name='wish', description='原神祈願系統相關')
 
     class AuthKeyModal(Modal):
-        def __init__(self, db: aiosqlite.Connection):
-            self.genshin_app = GenshinApp(db)
+        def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
             self.db = db
             super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
         url = discord.ui.TextInput(
@@ -141,14 +139,13 @@ class WishCog(commands.Cog):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
+            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db, self.bot))
 
     async def wish_history_exists(self, user_id: int) -> Embed:
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed(
-            '<a:error_animated:982579472060547092> 你還沒有設置過祈願紀錄!', '請使用`/wish setkey`指令')
+        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(name='查無祈願紀錄')
         member = self.bot.get_user(user_id)
         embed.set_author(name=member, icon_url=member.avatar)
         if result is None:
@@ -233,7 +230,7 @@ class WishCog(commands.Cog):
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
@@ -266,13 +263,13 @@ class WishCog(commands.Cog):
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'), ephemeral=True)
+            await i.response.send_message(embed=errEmbed(message='請在限定池中進行祈願\n再使用 `/wish setkey` 更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             member.id)
@@ -294,14 +291,13 @@ class WishCog(commands.Cog):
     async def wish_char(self, i: Interaction, num: int):
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
-            return
+            return await i.response.send_message(embed=errEmbed(message='請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(i.user.id)
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
@@ -373,19 +369,15 @@ class WishCog(commands.Cog):
     async def wish_weapon(self, i: Interaction, item_num: int):
         check, msg = await self.wish_history_exists(i.user.id)
         if not check:
-            await i.response.send_message(embed=msg)
-            return
+            return await i.response.send_message(embed=msg, ephemeral=True)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed(
-                '<a:error_animated:982579472060547092> 你不能使用這個功能', '請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄'))
-            return
+            return await i.response.send_message(embed=errEmbed(message='請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         last_name, pull_state = await self.weapon_banner_calc(i.user.id)
         if last_name == '':
-            await i.response.send_message(embed=errEmbed('<a:error_animated:982579472060547092> 你不能使用這個功能', '你還沒有在限定武器池抽中過五星武器'))
-            return
+            return await i.response.send_message(embed=errEmbed(message='你還沒有在限定武器池抽中過五星武器').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         up_or_std_view = WishCog.UpOrStd(i.user)
         await i.response.send_message(embed=defaultEmbed(
             '限定UP還是常駐?',
@@ -428,7 +420,7 @@ class WishCog(commands.Cog):
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg)
+            await i.response.send_message(embed=msg, ephemeral=True)
             return
         overview = await self.wish_overview_calc(member.id)
         total_wish = overview[0][0] + overview[1][0] + \

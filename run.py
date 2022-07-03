@@ -95,8 +95,7 @@ tree = bot.tree
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     if isinstance(e, app_commands.errors.MissingRole):
-        embed = errEmbed(
-            '<a:error_animated:982579472060547092> 權限不足', '你不是小雪團隊的一員')
+        embed = errEmbed(message='你不是小雪團隊的一員').set_author(name='權限不足', icon_url=i.user.avatar)
         if i.response._responded:
             await i.edit_original_message(embed=embed)
         else:
@@ -104,8 +103,7 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     else:
         seria = i.client.get_user(410036441129943050)
         view = DebugView(traceback.format_exc())
-        embed = errEmbed(
-            '<a:error_animated:982579472060547092> 未知錯誤', f'```py\n{e}\n```')
+        embed = errEmbed(message=f'```py\n{e}\n```').set_author(name='未知錯誤', icon_url=i.user.avatar)
         if i.response._responded:
             await i.edit_original_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
         else:

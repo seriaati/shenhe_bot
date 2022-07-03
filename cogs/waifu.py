@@ -10,7 +10,6 @@ import waifuim
 from waifuim import WaifuAioClient
 from debug import DefaultView
 from utility.paginators.GeneralPaginator import GeneralPaginator
-import utility.global_vars as emoji
 from utility.utils import defaultEmbed, errEmbed
 
 
@@ -38,7 +37,7 @@ class WaifuCog(commands.Cog):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(f'{emoji.error} 這不是你的操控視窗', '輸入 `/waifu` 來自行選擇標籤'), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/waifu` 來自行選擇標籤').set_author(name='這不是你的操控視窗', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class TagSelector(Select):
@@ -60,7 +59,7 @@ class WaifuCog(commands.Cog):
         async with WaifuAioClient() as wf:
             sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
             if i.channel.id != sese_id and sese == 1:
-                return await i.followup.send(embed=errEmbed(f'{emoji.error} 只能在色色台開啟色色模式哦'), ephemeral=True)
+                return await i.followup.send(embed=errEmbed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
             is_nsfw = 'True' if sese == 1 else 'False'
             if tags == 1:
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
@@ -71,7 +70,7 @@ class WaifuCog(commands.Cog):
                     try:
                         image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆', '您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
+                        return await i.edit_original_message(embed=errEmbed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     image = await wf.random(is_nsfw=[is_nsfw])
                 if sese == 1:
@@ -96,7 +95,7 @@ class WaifuCog(commands.Cog):
                     try:
                         images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=errEmbed(f'{emoji.error} 找不到老婆', '您所指定的老婆條件要求太高\n請試試別的標籤'), view=None)
+                        return await i.edit_original_message(embed=errEmbed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:

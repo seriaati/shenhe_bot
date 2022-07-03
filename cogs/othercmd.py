@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ui import Button
 from debug import DefaultView
 from utility.apps.FlowApp import FlowApp
-from utility.utils import defaultEmbed, log
+from utility.utils import defaultEmbed, errEmbed, log
 
 
 class OtherCMDCog(commands.Cog):
@@ -34,7 +34,7 @@ class OtherCMDCog(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         if payload.emoji.name == "QuoteTimeWakuWaku":
             if payload.channel_id == 965842415913152522:
-                return await self.bot.get_channel(payload.channel_id).send('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', delete_after=3)
+                return await self.bot.get_channel(payload.channel_id).send(embed=errEmbed().set_author(name='不可以在色色台語錄唷'), delete_after=3)
             log(True, False, 'Quote', payload.user_id)
             member = self.bot.get_user(payload.user_id)
             channel = self.bot.get_channel(payload.channel_id)
@@ -82,7 +82,7 @@ class OtherCMDCog(commands.Cog):
     @commands.command(aliases=['q'])
     async def quote(self, ctx):
         if ctx.message.channel.id == 965842415913152522:
-            return await ctx.send('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', delete_after=3)
+            return await ctx.send(embed=errEmbed().set_author(name='不可以在色色台語錄唷'), delete_after=3)
         log(True, False, 'Quote', ctx.author.id)
         await ctx.message.delete()
         msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
@@ -123,13 +123,13 @@ class OtherCMDCog(commands.Cog):
 
     async def quote_context_menu(self, i: Interaction, msg: Message) -> None:
         if msg.channel.id == 965842415913152522:
-            return await i.response.send_message('<a:error_animated:982579472060547092> 不可以在色色台語錄唷', ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='不可以在色色台語錄唷'), ephemeral=True)
         log(True, False, 'Quote', i.user.id)
         embed = defaultEmbed(
             f"語錄", f"「{msg.content}」\n  -{msg.author.mention}\n\n[點我回到該訊息]({msg.jump_url})")
         embed.set_thumbnail(url=str(msg.author.avatar))
         channel = self.bot.get_channel(966549110540877875)
-        await i.response.send_message("<a:check_animated:982579879239352370> 語錄擷取成功", ephemeral=True)
+        await i.response.send_message(embed=defaultEmbed().set_author(name="語錄擷取成功", icon_url=i.user.avatar), ephemeral=True)
         await channel.send(embed=embed)
 
     @app_commands.command(name='rolemembers身份組人數', description='查看一個身份組內的所有成員')

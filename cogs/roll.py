@@ -86,10 +86,7 @@ class RollCog(commands.Cog):
         async def one_pull_button(self, i: Interaction, button: Button):
             user_flow = await self.flow_app.get_user_flow(i.user.id)
             if user_flow < one_pull_price:
-                embed = errEmbed(
-                    '<a:error_animated:982579472060547092>  你的flow幣不足!', f'1次祈願需花費{one_pull_price} flow幣')
-                await i.response.send_message(embed=embed, ephemeral=True)
-                return
+                return await i.response.send_message(embed=errEmbed(message=f'1 次祈願需花費{one_pull_price} flow幣').set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
             confirm = RollCog.Confirm(
                 i.user, False, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)
@@ -98,10 +95,7 @@ class RollCog(commands.Cog):
         async def ten_pull_button(self, i: Interaction, button: Button):
             user_flow = await self.flow_app.get_user_flow(i.user.id)
             if user_flow < int(one_pull_price)*10:
-                embed = errEmbed(
-                    '<a:error_animated:982579472060547092>  你的flow幣不足!', f'10次祈願共需花費{int(one_pull_price)*10} flow幣')
-                await i.response.send_message(embed=embed, ephemeral=True)
-                return
+                return await i.response.send_message(embed=errEmbed(message=f'10 次祈願需花費{int(one_pull_price)*10} flow幣').set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
             confirm = RollCog.Confirm(
                 i.user, True, self.banner, self.db, self.bot)
             await i.response.edit_message(view=confirm)

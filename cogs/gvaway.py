@@ -192,7 +192,7 @@ class GiveAwayCog(commands.Cog):
                     '非常抱歉', f'你不是{r.mention}的一員, 不能參加這個抽獎'), ephemeral=True)
                 return
             await self.join_giveaway(interaction.user.id, ticket, msg.id)
-            await interaction.response.send_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 參加抽獎成功', f'flow幣 **-{ticket}**'), ephemeral=True)
+            await interaction.response.send_message(embed=defaultEmbed(f'flow幣 **-{ticket}**').set_author(name='成功參加抽獎'), ephemeral=True)
             await self.update_gv_msg(msg.id, interaction)
             await self.check_gv_finish(msg.id, interaction)
 
@@ -208,7 +208,7 @@ class GiveAwayCog(commands.Cog):
                 await interaction.response.send_message(embed=check_msg, ephemeral=True)
                 return
             await self.join_giveaway(interaction.user.id, -int(ticket[0]), msg.id)
-            await interaction.response.send_message(embed=defaultEmbed(f'<a:check_animated:982579879239352370> 退出抽獎成功', f'你的flow幣 {-int(ticket[0])}'), ephemeral=True)
+            await interaction.response.send_message(embed=defaultEmbed(message=f'你的flow幣 {-int(ticket[0])}').set_author(name='成功退出抽獎'), ephemeral=True)
             await self.update_gv_msg(msg.id, interaction)
 
     class GiveawayDropdownView(DefaultView):

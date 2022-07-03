@@ -15,7 +15,6 @@ from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 
-
 class FlowCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -112,32 +111,23 @@ class FlowCog(commands.Cog):
     async def give(self, i: Interaction, member: Member, flow: int):
         log(False, False, 'Give', f'{i.user.id} give {flow} to {member.id}')
         if member.id == i.user.id:
-            await i.response.send_message(
-                embed=errEmbed(
-                    '<a:error_animated:982579472060547092> 不可以自己給自己flow幣',
-                    '<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!'),
+            return await i.response.send_message(
+                embed=errEmbed(message='<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!').set_author(
+                    name='不可以自己給自己flow幣', icon_url=i.user.avatar),
                 ephemeral=True)
-            return
         if flow < 0:
-            await i.response.send_message(
-                embed=errEmbed(
-                    '<a:error_animated:982579472060547092> 不可以給負數flow幣',
-                    '<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!'),
+            return await i.response.send_message(
+                embed=errEmbed(message='<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!').set_author(
+                    name='不可以給負數flow幣', icon_url=i.user.avatar),
                 ephemeral=True)
-            return
         user_flow = await self.flow_app.get_user_flow(i.user.id)
         if user_flow < flow:
-            embed = errEmbed(
-                "<a:error_animated:982579472060547092> 交易失敗",
-                "你的 flow幣數量不足已承擔這筆交易")
-            await i.response.send_message(embed=embed, ephemeral=True)
-            return
+            return await i.response.send_message(embed=errEmbed(f'需要至少: {flow} flow').set_author(name="flow 幣不足", icon_url=i.user.avatar), ephemeral=True)
         await self.flow_app.transaction(i.user.id, -flow)
         await self.flow_app.transaction(member.id, flow)
-        embed = defaultEmbed(
-            "<a:check_animated:982579879239352370> 交易成功",
+        embed = defaultEmbed(message=
             f"{self.bot.get_user(i.user.id).mention} **- {flow}** flow幣\n"
-            f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣")
+            f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣").set_author(name='交易成功', icon_url=i.user.avatar)
         await i.response.send_message(content=f'{i.user.mention}{member.mention}', embed=embed)
 
     @app_commands.command(name='take收錢', description='將某人的flow幣轉回銀行')
@@ -153,7 +143,7 @@ class FlowCog(commands.Cog):
             return
         await self.flow_app.transaction(member.id, -flow)
         embed = defaultEmbed(
-            "<a:check_animated:982579879239352370> 已成功施展「反」摩拉克斯的力量",
+            "已成功施展「反」摩拉克斯的力量",
             f"{i.user.mention} 從 {self.bot.get_user(member.id).mention} 的帳戶裡拿走了**{flow}**枚flow幣"
         )
         ephemeral_toggler = True if private == 0 else False
@@ -173,7 +163,7 @@ class FlowCog(commands.Cog):
         await self.flow_app.transaction(member.id, int(flow))
         acceptor = self.bot.get_user(member.id)
         embed = defaultEmbed(
-            "<a:check_animated:982579879239352370> 已成功施展摩拉克斯的力量",
+            "已成功施展摩拉克斯的力量",
             f"{i.user.mention} 給了 {acceptor.mention} {flow} 枚flow幣"
         )
         ephemeral_toggler = True if private == 0 else False
@@ -406,7 +396,7 @@ class FlowCog(commands.Cog):
             action_str = ['委託', '素材委託', '委託', '幫助']
             for index in range(1, 5):
                 if type == index:
-                    await i.followup.send(f"<a:check_animated:982579879239352370> {confirmer.mention} 已接受 {author.mention} 的 **{title}** {action_str[index-1]}")
+                    await i.followup.send(embed=defaultEmbed(message=f"{confirmer.mention} 已接受 {author.mention} 的 **{title}** {action_str[index-1]}").set_author(name='委託接受', icon_url=confirmer.avatar))
             if type == 4:
                 embedDM = defaultEmbed(
                     f"結算單",
