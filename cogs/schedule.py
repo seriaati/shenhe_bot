@@ -58,7 +58,7 @@ class Schedule(commands.Cog):
             if not success:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
             count += 1
-            if resin is not Embed and resin >= resin_threshold and current_notif < max_notif:
+            if not isinstance(resin, Embed) and resin >= resin_threshold and current_notif < max_notif:
                 remind_channel = self.bot.get_channel(
                     990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
                 user: User = self.bot.get_user(user_id)

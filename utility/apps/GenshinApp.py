@@ -83,6 +83,8 @@ class GenshinApp:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.AccountNotFound:
             return errEmbed(message='請檢查有無輸入錯誤').set_author(name='無效的 UID', icon_url=user.avatar), False
+        except:
+            pass
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
         if result is None:
