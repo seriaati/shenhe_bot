@@ -305,8 +305,8 @@ class FishCog(commands.Cog):
 
     def get_fish_choices():  # 取得所有魚種
         choices = []
-        for fish in fish_list:
-            choices.append(Choice(name=fish, value=fish_list.index(fish)))
+        for fish in fish_name_list:
+            choices.append(Choice(name=fish, value=fish_name_list.index(fish)))
         return choices
 
     @commands.Cog.listener()
