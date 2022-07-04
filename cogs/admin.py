@@ -9,8 +9,6 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.debug: bool = self.bot.debug_toggle
-        self.c: TextChannel = self.bot.get_channel(
-            988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
 
     @commands.Cog.listener()
     async def on_message(self, message: Message):
@@ -26,6 +24,8 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
+        c: TextChannel = self.bot.get_channel(
+            988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         if payload.cached_message is not None:
             if payload.cached_message.author.id == self.bot.user.id:
                 return
@@ -45,13 +45,15 @@ class AdminCog(commands.Cog):
                 text=f'用戶 ID: {payload.cached_message.author.id}\n')
             embed.set_author(name=payload.cached_message.author,
                              icon_url=payload.cached_message.author.avatar)
-            await self.c.send(embed=embed)
+            await c.send(embed=embed)
             if len(payload.cached_message.attachments) != 0:
                 for a in payload.cached_message.attachments:
-                    await self.c.send(file=await a.to_file(use_cached=True))
+                    await c.send(file=await a.to_file(use_cached=True))
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
+        c: TextChannel = self.bot.get_channel(
+            988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         embed = defaultEmbed(
             '進群',
             f'用戶: {member.mention}\n'
@@ -59,10 +61,12 @@ class AdminCog(commands.Cog):
         )
         embed.set_author(name=member, icon_url=member.avatar)
         embed.set_footer(text=f'用戶 ID: {member.id}')
-        await self.c.send(embed=embed)
+        await c.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
+        c: TextChannel = self.bot.get_channel(
+            988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         embed = defaultEmbed(
             '退群',
             f'用戶: {member.mention}\n'
@@ -70,7 +74,7 @@ class AdminCog(commands.Cog):
         )
         embed.set_author(name=member, icon_url=member.avatar)
         embed.set_footer(text=f'用戶 ID: {member.id}')
-        await self.c.send(embed=embed)
+        await c.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -1,5 +1,5 @@
 from debug import DefaultView
-from discord import ButtonStyle, Guild, Interaction, SelectOption, app_commands
+from discord import ButtonStyle, Interaction, SelectOption, app_commands
 from discord.ext import commands
 from discord.ui import Button, Select
 from discord.utils import get
@@ -28,23 +28,21 @@ class ReactionRoles(commands.Cog):
             r = get(g.roles, name=f'W{self.number}')
             if r in interaction.user.roles:
                 await interaction.user.remove_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed().set_author(name=f'已撤回世界等級{self.number}身份組'), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed().set_author(name=f'已撤回世界等級{self.number}身份組', icon_url=interaction.user.avatar), ephemeral=True)
             else:
                 for index in range(1, 9):
                     r = get(g.roles, name=f'W{index}')
                     if r in interaction.user.roles:
                         return await interaction.response.send_message(embed=errEmbed(message='請先按該數字撤回身份組再選擇新的').set_author(name=f'你已經擁有世界等級{index}身份組了', icon_url=interaction.user.avatar), ephemeral=True)
+                r = get(g.roles, name=f'W{self.number}')
                 await interaction.user.add_roles(r)
-                await interaction.response.send_message(embed=defaultEmbed().set_author(name=f'已給予世界等級{self.number}身份組'), ephemeral=True)
+                await interaction.response.send_message(embed=defaultEmbed().set_author(name=f'已給予世界等級{self.number}身份組', icon_url=interaction.user.avatar), ephemeral=True)
 
     class RoleView(DefaultView):
-        def __init__(self, bot: commands.Bot):
+        def __init__(self):
             super().__init__(timeout=None)
             roles = ['委託通知', '抽獎通知', '活動通知', '小雪通知']
             emojis = ['<:daily:956383830070140938>', '🎉', '📅', '❄️']
-            role_ids = [965141973700857876, 967035645610573834,
-                        967595411936272404, 968728104430338089]
-            guild = bot.get_guild(916838066117824553)
             for index in range(0, 4):
                 self.add_item(ReactionRoles.RoleButton(
                     roles[index], 0, emojis[index]))
@@ -73,7 +71,7 @@ class ReactionRoles(commands.Cog):
     @app_commands.command(name='role', description='身份組')
     @app_commands.checks.has_role('小雪團隊')
     async def get_role(self, i: Interaction):
-        view = ReactionRoles.RoleView(self.bot)
+        view = ReactionRoles.RoleView()
         embed = defaultEmbed(
             '選擇身份組',
             f'按一次會給予, 再按一次會移除\n\n'

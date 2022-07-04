@@ -390,26 +390,28 @@ class FlowCog(commands.Cog):
             author_id = result[4]
             author = i.client.get_user(author_id)
             confirmer = i.client.get_user(i.user.id)
+            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (confirmer.id,))
+            uid = (await c.fetchone())[0]
             thread = await msg.create_thread(name=f"{author.name} • {title}")
             await thread.add_user(author)
             await thread.add_user(confirmer)
+            if type == 2:
+                await thread.send(embed=defaultEmbed(message=uid).set_author(name='接受人 uid', icon_url=confirmer.avatar))
             action_str = ['委託', '素材委託', '委託', '幫助']
             for index in range(1, 5):
                 if type == index:
                     await i.followup.send(embed=defaultEmbed(message=f"{confirmer.mention} 已接受 {author.mention} 的 **{title}** {action_str[index-1]}").set_author(name='委託接受', icon_url=confirmer.avatar))
             if type == 4:
-                embedDM = defaultEmbed(
-                    f"結算單",
+                embedDM = defaultEmbed(message=
                     f"當{confirmer.mention}完成幫忙的內容時, 請按OK來結算flow幣\n"
                     f"按下後, 你的flow幣將會 **-{flow}**\n"
                     f"對方則會 **+{flow}**")
             else:
-                embedDM = defaultEmbed(
-                    f"結算單",
+                embedDM = defaultEmbed(message=
                     f"當{confirmer.mention}完成委託的內容時, 請按OK來結算flow幣\n"
                     f"按下後, 你的flow幣將會 **-{flow}**\n"
                     f"對方則會 **+{flow}**")
-            embedDM.set_author(name=author, icon_url=author.avatar)
+            embedDM.set_author(name='結算單', icon_url=author.avatar)
             view = FlowCog.ConfirmView(self.db, self.bot)
             confirm_message = await thread.send(embed=embedDM, view=view)
             await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ? WHERE msg_ID = ?', (confirm_message.id, i.user.id, i.message.id))
