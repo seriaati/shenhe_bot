@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ui import Button
 from utility.apps.FlowApp import FlowApp
 from utility.utils import ayaakaaEmbed
-from data.fish_data import fish_data
+from data.fish.fish_data import fish_data
 
 
 class FishCog(commands.Cog):
