@@ -1,4 +1,4 @@
-fish_data = fish = {
+fish_data = {
     '虱目魚': {
         'flow': 1,
         'flow_chance': 50,
@@ -92,7 +92,7 @@ fish_data = fish = {
         'flow_chance': None,
         'type_0': False,
         'cute': False,
-        'verb': '咬到了',
+        'verb': '咬了幾口',
         'image_url': 'https://static01.nyt.com/images/2020/08/12/multimedia/00xp-shark/00xp-shark-mediumSquareAt3X.jpg'
     },
     '大象': {
@@ -100,7 +100,7 @@ fish_data = fish = {
         'flow_chance': None,
         'type_0': False,
         'cute': False,
-        'verb': '踩到了',
+        'verb': '踩了幾腳',
         'image_url': 'https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/2-african-elephant-closeup-square-susan-schmitz.jpg'
     },
     '達達利鴨': {
@@ -125,7 +125,7 @@ fish_data = fish = {
         'type_0': False,
         'cute': False,
         'verb': '鉗到了',
-        'image_url': 'https://imgur.com/a/HHuKY9w'
+        'image_url': 'https://i.imgur.com/f7Qz3CN.png'
     },
     '狗勾': {
         'flow': 25,
@@ -165,7 +165,6 @@ fish_data = fish = {
         'type_0': False,
         'cute': True,
         'verb': '調教了',
-        'image_url': 'https://p.favim.com/orig/2018/12/11/02-kawaii-animw-Favim.com-6640354.jpg'
+        'image_url': 'https://i.imgur.com/4V1gKTJ.jpg'
     },
 }
-#
