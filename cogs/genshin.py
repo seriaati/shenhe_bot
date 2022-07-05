@@ -129,7 +129,7 @@ class GenshinCog(commands.Cog):
                 user_id = tuple[0]
                 embed, success = await self.genshin_app.claimDailyReward(user_id)
                 await asyncio.sleep(3.0)
-            await i.response.send_message(embed=defaultEmbed().set_author(name=f'全員簽到完成 ({count})', icon_url=i.user.avatar))
+            await i.followup.send(embed=defaultEmbed().set_author(name=f'全員簽到完成 ({count})', icon_url=i.user.avatar))
         else:
             member = member or i.user
             result, success = await self.genshin_app.claimDailyReward(member.id)
