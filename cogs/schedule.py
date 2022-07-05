@@ -32,6 +32,8 @@ class Schedule(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
+        control_channel = self.bot.get_channel(979935065175904286)
+        await control_channel.send(log(True, False, 'Claim Reward', 'Start'))
         count = 0
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id FROM genshin_accounts')
@@ -39,9 +41,11 @@ class Schedule(commands.Cog):
         count = 0
         for index, tuple in enumerate(users):
             user_id = tuple[0]
-            await self.genshin_app.claimDailyReward(user_id)
-            count += 1
+            embed, success = await self.genshin_app.claimDailyReward(user_id)
+            if success:
+                count += 1
             await asyncio.sleep(3.0)
+        await control_channel.send(log(True, False, 'Claim Reward', f'Ended, {count} success'))
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
