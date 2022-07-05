@@ -71,19 +71,19 @@ class FishCog(commands.Cog):
             if fish['type_0']:
                 if value <= int(fish['flow_chance']):
                     await self.flow_app.transaction(interaction.user.id, int(flow))
-                    await interaction.followup.send(f'摸**{self.fish_adj}的{self.fish}**摸到 {flow} flow幣!', ephemeral=True)
+                    await interaction.followup.send(f'摸**{self.fish_adj}的{self.fish}**摸到 {flow} flow幣!\n目前 flow 幣: {self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
                     # e.g. 摸虱目魚摸到 1 flow幣!
                 else:
-                    await interaction.followup.send(f'單純的摸**{self.fish_adj}的{self.fish}**而已, 沒有摸到flow幣 qwq', ephemeral=True)
+                    await interaction.followup.send(f'單純的摸**{self.fish_adj}的{self.fish}**而已, 沒有摸到flow幣 qwq\n目前 flow 幣: {self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
             else:
                 verb = fish['verb']
                 if value <= 50:  # 50% Chance of increasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, int(flow))
-                    await interaction.followup.send(f'摸**{self.fish_adj}的{self.fish}**摸到 {flow} flow幣!', ephemeral=True)
+                    await interaction.followup.send(f'摸**{self.fish_adj}的{self.fish}**摸到 {flow} flow幣!\n目前 flow 幣: {self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
                     # e.g. 摸抹香鯨摸到 20 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, -int(flow))
-                    await interaction.followup.send(f'被**{self.fish_adj}的{self.fish}**{verb}，損失了 {flow} flow幣 qwq', ephemeral=True)
+                    await interaction.followup.send(f'被**{self.fish_adj}的{self.fish}**{verb}，損失了 {flow} flow幣 qwq\n目前 flow 幣: {self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
     class TouchFish(DefaultView):  # 摸魚view
