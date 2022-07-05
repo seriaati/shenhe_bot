@@ -1,4 +1,5 @@
 import ast
+import asyncio
 import json
 import urllib.parse
 from datetime import datetime
@@ -118,14 +119,16 @@ class GenshinCog(commands.Cog):
         Choice(name='否', value=0)])
     async def claim(self, i: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
         if all == 1:
+            await i.response.defer()
+            count = 0
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
             users = await c.fetchall()
-            count = 0
             for index, tuple in enumerate(users):
-                user_id = tuple[0]
-                await self.genshin_app.claimDailyReward(user_id)
                 count += 1
+                user_id = tuple[0]
+                embed, success = await self.genshin_app.claimDailyReward(user_id)
+                await asyncio.sleep(3.0)
             await i.response.send_message(embed=defaultEmbed().set_author(name=f'全員簽到完成 ({count})', icon_url=i.user.avatar))
         else:
             member = member or i.user

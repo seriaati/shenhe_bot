@@ -36,9 +36,8 @@ class Schedule(commands.Cog):
         await control_channel.send(log(True, False, 'Claim Reward', 'Start'))
         count = 0
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id FROM genshin_accounts')
+        await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
         users = await c.fetchall()
-        count = 0
         for index, tuple in enumerate(users):
             user_id = tuple[0]
             embed, success = await self.genshin_app.claimDailyReward(user_id)

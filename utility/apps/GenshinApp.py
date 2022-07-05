@@ -443,7 +443,7 @@ class GenshinApp:
             return defaultEmbed(message=f'兌換碼: {code}').set_author(name='兌換成功', icon_url=user.avatar), True
 
     async def getUserCookie(self, user_id: int):
-        user = self.bot.get_user(user_id)
+        user = self.bot.get_user(user_id) or self.bot.get_user(410036441129943050)
         c: aiosqlite.Cursor = await self.db.cursor()
         seria_id = 224441463897849856
         await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
