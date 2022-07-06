@@ -1,7 +1,7 @@
 import ast
 import asyncio
 from datetime import datetime, timedelta
-
+import genshin
 import aiosqlite
 from data.game.talent_books import talent_books
 from dateutil import parser
@@ -35,13 +35,21 @@ class Schedule(commands.Cog):
         control_channel = self.bot.get_channel(979935065175904286)
         await control_channel.send(log(True, False, 'Claim Reward', 'Start'))
         count = 0
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
         users = await c.fetchall()
         for index, tuple in enumerate(users):
             user_id = tuple[0]
-            embed, success = await self.genshin_app.claimDailyReward(user_id)
-            if success:
+            client, uid, only_uid, user = await self.genshin_app.getUserCookie(user_id)
+            try:
+                await client.claim_daily_reward()
+            except genshin.errors.AlreadyClaimed:
+                count += 1
+            except genshin.errors.InvalidCookies:
+                await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
+            except:
+                continue
+            else:
                 count += 1
             await asyncio.sleep(3.0)
         await control_channel.send(log(True, False, 'Claim Reward', f'Ended, {count} success'))
@@ -57,24 +65,30 @@ class Schedule(commands.Cog):
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
-            resin, success = await self.genshin_app.getRealTimeNotes(user_id, True)
-            if not success:
+            client, uid, only_uid, user = await self.genshin_app.getUserCookie(user_id)
+            try:
+                notes = await client.get_notes(uid)
+            except genshin.errors.InvalidCookies:
+                await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
+            except:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
-            count += 1
-            if not isinstance(resin, Embed) and resin >= resin_threshold and current_notif < max_notif:
-                remind_channel = self.bot.get_channel(
-                    990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
-                user: User = self.bot.get_user(user_id)
-                embed = defaultEmbed(
-                    message=f'目前樹脂: {resin}/160\n'
-                    f'目前設定閥值: {resin_threshold}\n'
-                    f'目前最大提醒值: {max_notif}\n\n'
-                    '輸入`/remind`來更改設定')
-                embed.set_author(name='樹脂要滿出來了啦!!', icon_url=user.avatar)
-                await remind_channel.send(content=user.mention, embed=embed)
-                await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
-            if resin < resin_threshold:
-                await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
+            else:
+                resin = notes.current_resin
+                count += 1
+                if not resin >= resin_threshold and current_notif < max_notif:
+                    remind_channel = self.bot.get_channel(
+                        990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
+                    user: User = self.bot.get_user(user_id)
+                    embed = defaultEmbed(
+                        message=f'目前樹脂: {resin}/160\n'
+                        f'目前設定閥值: {resin_threshold}\n'
+                        f'目前最大提醒值: {max_notif}\n\n'
+                        '輸入`/remind`來更改設定')
+                    embed.set_author(name='樹脂要滿出來啦!!', icon_url=user.avatar)
+                    await remind_channel.send(content=user.mention, embed=embed)
+                    await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
+                if resin < resin_threshold:
+                    await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
         await self.bot.db.commit()
 

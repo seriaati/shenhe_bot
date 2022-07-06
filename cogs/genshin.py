@@ -112,28 +112,12 @@ class GenshinCog(commands.Cog):
 # /claim
 
     @app_commands.command(name='claim登入獎勵', description='領取hoyolab登入獎勵')
-    @app_commands.rename(all='全部人', member='其他人')
-    @app_commands.describe(all='是否要幫全部已註冊的使用者領取獎勵', member='查看其他群友的資料')
-    @app_commands.choices(all=[
-        Choice(name='是', value=1),
-        Choice(name='否', value=0)])
-    async def claim(self, i: Interaction, all: Optional[int] = 0, member: Optional[Member] = None):
-        if all == 1:
-            await i.response.defer()
-            count = 0
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
-            users = await c.fetchall()
-            for index, tuple in enumerate(users):
-                count += 1
-                user_id = tuple[0]
-                embed, success = await self.genshin_app.claimDailyReward(user_id)
-                await asyncio.sleep(3.0)
-            await i.followup.send(embed=defaultEmbed().set_author(name=f'全員簽到完成 ({count})', icon_url=i.user.avatar))
-        else:
-            member = member or i.user
-            result, success = await self.genshin_app.claimDailyReward(member.id)
-            await i.response.send_message(embed=result, ephemeral=not success)
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def claim(self, i: Interaction, member: Member = None):
+        member = member or i.user
+        result, success = await self.genshin_app.claimDailyReward(member.id)
+        await i.response.send_message(embed=result, ephemeral=not success)
 # /diary
 
     @app_commands.command(name='diary旅行者日記', description='查看旅行者日記')
