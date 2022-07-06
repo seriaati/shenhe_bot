@@ -75,7 +75,7 @@ class Schedule(commands.Cog):
             else:
                 resin = notes.current_resin
                 count += 1
-                if not resin >= resin_threshold and current_notif < max_notif:
+                if resin >= resin_threshold and current_notif < max_notif:
                     remind_channel = self.bot.get_channel(
                         990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
                     user: User = self.bot.get_user(user_id)
