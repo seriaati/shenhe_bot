@@ -1,16 +1,18 @@
 import ast
 import asyncio
 from datetime import datetime, timedelta
-import genshin
+
 import aiosqlite
 from data.game.talent_books import talent_books
 from dateutil import parser
-from discord import Embed, User
+from discord import Forbidden, User
 from discord.ext import commands, tasks
 from discord.utils import sleep_until
 from utility.apps.FlowApp import FlowApp
 from utility.apps.GenshinApp import GenshinApp
 from utility.utils import defaultEmbed, getCharacter, log
+
+import genshin
 
 
 class Schedule(commands.Cog):
@@ -35,7 +37,7 @@ class Schedule(commands.Cog):
         control_channel = self.bot.get_channel(979935065175904286)
         await control_channel.send(log(True, False, 'Claim Reward', 'Start'))
         count = 0
-        c: aiosqlite.Cursor = await self.db.cursor()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
         users = await c.fetchall()
         for index, tuple in enumerate(users):
@@ -85,7 +87,10 @@ class Schedule(commands.Cog):
                         f'目前最大提醒值: {max_notif}\n\n'
                         '輸入`/remind`來更改設定')
                     embed.set_author(name='樹脂要滿出來啦!!', icon_url=user.avatar)
-                    await remind_channel.send(content=user.mention, embed=embed)
+                    try:
+                        await user.send(emebd=embed)
+                    except Forbidden:
+                        await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
                     await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
                 if resin < resin_threshold:
                     await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
@@ -119,6 +124,9 @@ class Schedule(commands.Cog):
             data = await c.fetchall()
             for index, tuple in enumerate(data):
                 user_id = tuple[0]
+                user = self.bot.get_user(user_id)
+                if user is None:
+                    continue
                 chara_list = ast.literal_eval(tuple[1])
                 for chara in chara_list:
                     embed = defaultEmbed(
@@ -126,12 +134,18 @@ class Schedule(commands.Cog):
                     embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
                     embed.set_author(name=f'刷本啦!', icon_url=(
                         self.bot.get_user(user_id)).avatar)
-                    await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+                    try:
+                        await user.send(embed=embed)
+                    except Forbidden:
+                        await remind_channel.send(content=(user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門'), embed=embed)
             await c.execute('SELECT user_id, item FROM todo')
             data = await c.fetchall()
             mentioned = {}
             for index, item in enumerate(data):
                 user_id = item[0]
+                user = self.bot.get_user(user_id)
+                if user is None:
+                    continue
                 if user_id not in mentioned:
                     mentioned[user_id] = []
                 for talent_book in talent_book_list:
@@ -140,7 +154,10 @@ class Schedule(commands.Cog):
                         embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
                             name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
                         embed.set_thumbnail(url=talent_book_icon[talent_book])
-                        await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+                        try:
+                            await user.send(embed=embed)
+                        except Forbidden:
+                            await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
         else:
             weekday_dict = {
                 0: '週一、週四',
@@ -163,6 +180,9 @@ class Schedule(commands.Cog):
             data = await c.fetchall()
             for index, tuple in enumerate(data):
                 user_id = tuple[0]
+                user = self.bot.get_user(user_id)
+                if user is None:
+                    continue
                 chara_list = ast.literal_eval(tuple[1])
                 for chara in chara_list:
                     for book_name, characters in talent_books[weekday_dict[weekday]].items():
@@ -170,15 +190,22 @@ class Schedule(commands.Cog):
                             if character_name == chara:
                                 embed = defaultEmbed(
                                     message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                                embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
+                                embed.set_thumbnail(
+                                    url=getCharacter(name=chara)['icon'])
                                 embed.set_author(name=f'刷本啦!', icon_url=(
                                     self.bot.get_user(user_id)).avatar)
-                                await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+                                try:
+                                    await user.send(embed=embed)
+                                except Forbidden:
+                                    await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
             await c.execute('SELECT user_id, item FROM todo')
             data = await c.fetchall()
             mentioned = {}
             for index, item in enumerate(data):
                 user_id = item[0]
+                user = self.bot.get_user(user_id)
+                if user is None:
+                    continue
                 if user_id not in mentioned:
                     mentioned[user_id] = []
                 for talent_book in talent_book_list[weekday]:
@@ -187,7 +214,10 @@ class Schedule(commands.Cog):
                         embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
                             name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
                         embed.set_thumbnail(url=talent_book_icon[talent_book])
-                        await remind_channel.send(content=(self.bot.get_user(user_id).mention), embed=embed)
+                        try:
+                            await user.send(embed=embed)
+                        except Forbidden:
+                            await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
 
     @tasks.loop(hours=24)
     async def remove_flow_acc(self):

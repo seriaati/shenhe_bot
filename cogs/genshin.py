@@ -52,7 +52,8 @@ class GenshinCog(commands.Cog):
             await i.response.send_message(embed=result, ephemeral=not success)
 
         async def on_error(self, error: Exception, i: Interaction):
-            embed = errEmbed(message=f'```{error}```').set_author(name='未知錯誤', icon_url=i.user.avatar)
+            embed = errEmbed(message=f'```{error}```').set_author(
+                name='未知錯誤', icon_url=i.user.avatar)
             await i.response.send_message(embed=embed, ephemeral=True)
 # Cookie Submission
 
@@ -319,9 +320,9 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='remind提醒', description='設置提醒功能')
     @app_commands.rename(function='功能', toggle='開關')
     @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
-    @app_commands.choices(function=[Choice(name='樹脂提醒', value=0), Choice(name='天賦素材提醒', value=1)],
+    @app_commands.choices(function=[Choice(name='樹脂提醒', value=0), Choice(name='天賦素材提醒', value=1), Choice(name='隱私設定', value=2)],
                           toggle=[Choice(name='開 (調整設定)', value=1), Choice(name='關', value=0)])
-    async def remind(self, i: Interaction, function: int, toggle: int):
+    async def remind(self, i: Interaction, function: int, toggle: int = 1):
         if function == 0:
             if toggle == 0:
                 result = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
@@ -361,6 +362,11 @@ class GenshinCog(commands.Cog):
                                  icon_url=i.user.avatar)
                 view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
                 await i.response.send_message(embed=embed, view=view)
+        elif function == 2:
+            embed = defaultEmbed(message='1. 右鍵「緣神有你」\n2. 點擊「隱私設定」\n3. 將開關打開')
+            embed.set_author(name='如何讓申鶴進入你的私訊?', icon_url=i.user.avatar)
+            embed.set_image(url='https://i.imgur.com/sYg4SpD.gif')
+            await i.response.send_message(embed=embed, ephemeral=True)
 
 # /farm
 
@@ -458,7 +464,8 @@ class GenshinCog(commands.Cog):
                    982138232391237632, 982138233813098556, 982138221569900585]
             for id in ids:
                 emojis.append(i.client.get_emoji(id))
-            view = GenshinCog.ElementChooseView(self.db, emojis, self.author, self.bot)
+            view = GenshinCog.ElementChooseView(
+                self.db, emojis, self.author, self.bot)
             embed = defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar)
             await i.response.edit_message(embed=embed, view=view)
 
@@ -532,7 +539,8 @@ class GenshinCog(commands.Cog):
                982138232391237632, 982138233813098556, 982138221569900585]
         for id in ids:
             emojis.append(self.bot.get_emoji(id))
-        view = GenshinCog.ElementChooseView(self.bot.db, emojis, i.user, self.bot)
+        view = GenshinCog.ElementChooseView(
+            self.bot.db, emojis, i.user, self.bot)
         await i.response.send_message(embed=defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar), view=view)
 
     @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
@@ -1217,7 +1225,8 @@ class GenshinCog(commands.Cog):
             embed = errEmbed(message='請照下方的指示操作')
             embed.set_author(name='找不到資料', icon_url=i.user.avatar)
             await i.edit_original_message(embed=embed)
-            embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(name='找不到資料', icon_url=i.user.avatar)
+            embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(
+                name='找不到資料', icon_url=i.user.avatar)
             embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
             return await i.followup.send(embed=embed, ephemeral=True)
         player = data['playerInfo']
