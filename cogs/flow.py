@@ -97,13 +97,12 @@ class FlowCog(commands.Cog):
         result = await c.fetchone()
         flow = await self.flow_app.get_user_flow(member.id)
         time_state_str = ''
-        time_coin_list = ['早安幣', '午安幣', '晚安幣']
+        time_coin_list = ['<:morning:982608491426508810>', '<:noon:982608493313929246>', '<:night:982608497290125366>']
         for index in range(0, 3):
-            time_state_str += f'{time_coin_list[index]} {result[index]}\n'
-        embed = defaultEmbed(
-            f"flow帳號",
-            f"flow幣: {flow}\n{time_state_str}")
-        embed.set_author(name=member, icon_url=member.avatar)
+            new_time = (parser.parse(result[index])).strftime("%Y-%m-%d %H:%M:%S")
+            time_state_str += f'{time_coin_list[index]} {new_time}\n'
+        embed = defaultEmbed(message=time_state_str)
+        embed.set_author(name=f'{flow} flow', icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
     @app_commands.command(name='give給錢', description='給其他人flow幣')
