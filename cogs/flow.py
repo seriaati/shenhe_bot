@@ -235,33 +235,16 @@ class FlowCog(commands.Cog):
                 value_str += f'{user_str}\n'
             await i.response.send_message(embed=defaultEmbed(category_list[category], value_str))
 
-    shop = app_commands.Group(name="shop", description="flow商店")
-
-    @shop.command(name='show商店', description='顯示商店')
-    async def show(self, i: Interaction):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT name, flow, current, max FROM flow_shop')
-        result = await c.fetchall()
-        item_str = ''
-        for index, tuple in enumerate(result):
-            item_str += f'• {tuple[0]} - **{tuple[1]}** flow ({tuple[2]}/{tuple[3]})\n\n'
-        embed = defaultEmbed("🛒 flow商店", item_str)
-        await i.response.send_message(embed=embed)
-
-    @shop.command(name='newitem新增商品', description='新增商品')
-    @app_commands.rename(item='商品名稱', flow='價格', max='最大購買次數')
-    @app_commands.checks.has_role('小雪團隊')
-    async def newitem(self, i: Interaction, item: str, flow: int, max: int):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('INSERT INTO flow_shop(name) values(?)', (item,))
-        await c.execute('UPDATE flow_shop SET flow = ?, current = 0, max = ? WHERE name = ?', (flow, max, item))
-        await self.bot.db.commit()
-        await i.response.send_message(f"商品**{item}**新增成功", ephemeral=True)
-
     class ShopItemView(DefaultView):
-        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
+        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot: commands.Bot, author: Member):
             super().__init__(timeout=None)
+            self.author = author
             self.add_item(FlowCog.ShopItemSelect(item_names, action, db, bot))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 `/shop` 來打開你的商店', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
 
     class ShopItemSelect(Select):
         def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
@@ -277,7 +260,6 @@ class FlowCog(commands.Cog):
             c = await self.db.cursor()
             if self.action == 'remove':
                 await c.execute('DELETE FROM flow_shop WHERE name = ?', (self.values[0],))
-                await self.db.commit()
                 await i.response.send_message(f'商品**{self.values[0]}**移除成功', ephemeral=True)
             elif self.action == 'buy':
                 await c.execute('SELECT flow, current, max FROM flow_shop WHERE name= ?', (self.values[0],))
@@ -287,16 +269,15 @@ class FlowCog(commands.Cog):
                 max: int = result[2]
                 user_flow = await self.flow_app.get_user_flow(i.user.id)
                 if user_flow < flow:
-                    await i.response.send_message(embed=errEmbed("你的flow幣不足夠購買這項商品"), ephemeral=True)
-                    return
+                    return await i.response.send_message(embed=errEmbed().set_author(name="你的flow幣不足夠購買這項商品", icon_url=i.user.avatar), ephemeral=True)
                 if current == max:
-                    await i.response.send_message(embed=errEmbed("這個商品已經售罄了"), ephemeral=True)
-                    return
+                    return await i.response.send_message(embed=errEmbed().set_author(name="這個商品已經售罄了", icon_url=i.user.avatar), ephemeral=True)
                 log_uuid = str(uuid.uuid4())
+                await c.execute('UPDATE flow_shop SET current = ? WHERE name = ?', (current+1, self.values[0]))
                 await c.execute('INSERT INTO flow_shop_log (log_uuid) VALUES (?)', (log_uuid,))
                 await c.execute('UPDATE flow_shop_log SET flow = ?, item = ?, buyer_id = ? WHERE log_uuid = ?', (int(flow), self.values[0], int(i.user.id), str(log_uuid)))
                 await self.flow_app.transaction(i.user.id, -int(flow))
-                await i.response.send_message(f"✨ {i.user.mention} 商品 **{self.values[0]}** 購買成功, 詳情請查看私訊")
+                await i.response.send_message(f"<:wish:982419859117838386> {i.user.mention} 商品 **{self.values[0]}** 購買成功, 詳情請查看私訊")
                 msg = await i.original_message()
                 thread = await msg.create_thread(name=f'{i.user} • {self.values[0]} 購買討論串')
                 await thread.add_user(i.user)
@@ -309,8 +290,37 @@ class FlowCog(commands.Cog):
                     f"收據UUID: {log_uuid}\n"
                     f"價格: {flow}")
                 await thread.send(embed=embed)
+                log(False, False, 'shop buy', i.user.id)
+            await self.db.commit()
+    
+    @app_commands.command(name='shop', description='顯示 flow 商店')
+    async def show(self, i: Interaction):
+        check, msg = await self.flow_app.checkFlowAccount(i.user.id)
+        if check == False:
+            return await i.response.send_message(embed=msg, ephemeral=True)
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT name, flow, current, max FROM flow_shop')
+        result = await c.fetchall()
+        item_str = ''
+        item_names = []
+        for index, tuple in enumerate(result):
+            item_names.append(tuple[0])
+            item_str += f'• {tuple[0]} - **{tuple[1]}** flow ({tuple[2]}/{tuple[3]})\n\n'
+        embed = defaultEmbed("🛒 flow商店", item_str)
+        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db, self.bot, i.user)
+        await i.response.send_message(embed=embed, view=view)
 
-    @shop.command(name='removeitem移除商品', description='刪除商品')
+    @app_commands.command(name='additem', description='新增商品')
+    @app_commands.rename(item='商品名稱', flow='價格', max='最大購買次數')
+    @app_commands.checks.has_role('小雪團隊')
+    async def additem(self, i: Interaction, item: str, flow: int, max: int):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('INSERT INTO flow_shop(name) values(?)', (item,))
+        await c.execute('UPDATE flow_shop SET flow = ?, current = 0, max = ? WHERE name = ?', (flow, max, item))
+        await self.bot.db.commit()
+        await i.response.send_message(f"商品**{item}**新增成功", ephemeral=True)
+
+    @app_commands.command(name='removeitem', description='刪除商品')
     @app_commands.checks.has_role('小雪團隊')
     async def removeitem(self, i: Interaction):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -321,22 +331,6 @@ class FlowCog(commands.Cog):
             item_names.append(tuple[0])
         view = FlowCog.ShopItemView(
             item_names, 'remove', self.bot.db, self.bot)
-        await i.response.send_message(view=view, ephemeral=True)
-
-    @shop.command(name='buy購買', description='購買商品')
-    async def buy(self, i: Interaction):
-        log(False, False, 'shop buy', i.user.id)
-        check, msg = await self.flow_app.checkFlowAccount(i.user.id)
-        if check == False:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
-        item_names = []
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT name FROM flow_shop')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            item_names.append(tuple[0])
-        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db, self.bot)
         await i.response.send_message(view=view, ephemeral=True)
 
     def check_in_find_channel(self, channel_id: int):
