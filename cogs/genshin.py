@@ -212,7 +212,7 @@ class GenshinCog(commands.Cog):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(emebd=errEmbed(message='輸入 `/remind` 來設置自己的提醒功能').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/remind` 來設置自己的提醒功能').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class TalentElementButton(Button):
@@ -925,7 +925,7 @@ class GenshinCog(commands.Cog):
         weapons = await client.get_calculator_weapons(types=[types], rarities=[rarities])
         await i.response.send_message(view=GenshinCog.CalcWeaponView(weapons, i.user, self.bot.db))
 
-    def oculi_emebd_style(element: str, url: str):
+    def oculi_embed_style(element: str, url: str):
         embed = defaultEmbed(f'{element}神瞳位置')
         embed.set_image(url=url)
         embed.set_footer(text='單純功能搬運, 圖源並非來自我')
@@ -936,15 +936,15 @@ class GenshinCog(commands.Cog):
         if area == 0:
             for i in range(1, 5):
                 url = f'https://fortoffans.github.io/Maps/Oculus/Anemoculus/Map_Anemoculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_emebd_style('風', url))
+                embeds.append(GenshinCog.oculi_embed_style('風', url))
         elif area == 1:
             for i in range(1, 6):
                 url = f'https://images-ext-1.discordapp.net/external/Gm5I4dqqanZEksPk7pggWfwoqW5UOiKPJP8Rt-uYQ5E/https/fortoffans.github.io/Maps/Oculus/Geoculus/Map_Geoculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_emebd_style('岩', url))
+                embeds.append(GenshinCog.oculi_embed_style('岩', url))
         elif area == 2:
             for i in range(1, 7):
                 url = f'https://images-ext-1.discordapp.net/external/u6qgVi5Fk28_wwEuu3OS9blTzC-7JQpridJiWv0vI5s/https/fortoffans.github.io/Maps/Oculus/Electroculus/Map_Electroculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_emebd_style('雷', url))
+                embeds.append(GenshinCog.oculi_embed_style('雷', url))
         return embeds
 
     @app_commands.command(name='oculi神瞳', description='查看不同地區的神瞳位置')

@@ -88,7 +88,7 @@ class Schedule(commands.Cog):
                         '輸入`/remind`來更改設定')
                     embed.set_author(name='樹脂要滿出來啦!!', icon_url=user.avatar)
                     try:
-                        await user.send(emebd=embed)
+                        await user.send(embed=embed)
                     except Forbidden:
                         await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
                     await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
