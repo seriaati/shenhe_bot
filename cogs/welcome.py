@@ -231,8 +231,8 @@ class WelcomeCog(commands.Cog):
         embed = defaultEmbed(
             '商店系統',
             '賺到的 **flow幣** 可以在商店進行消費\n'
-            '輸入`/shop show`來看看吧\n'
-            '當你賺到足夠的錢後, 可以用`/shop buy`來購買商品'
+            '輸入`/shop` 來看看吧\n'
+            '當你賺到足夠的錢後, 可以用來購買商品'
         )
         embeds.append(embed)
         await TutorialPaginator(i, embeds).start(db=self.bot.db, embeded=True)

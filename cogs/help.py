@@ -257,6 +257,11 @@ class Dropdown(Select):
                 value='查看身份組總人數',
                 inline=False
             )
+            embed.add_field(
+                name='`/waifu`',
+                value='隨機產生二次元老婆照片',
+                inline=False
+            )
         elif self.values[0] == '語音台':
             embed = defaultEmbed('語音台指令')
             embed.add_field(
