@@ -254,7 +254,7 @@ class FlowCog(commands.Cog):
             options = []
             for item_name in item_names:
                 options.append(SelectOption(label=item_name, value=item_name))
-            super().__init__(placeholder=f'選擇商品', min_values=1, max_values=1, options=options)
+            super().__init__(placeholder=f'選擇要購買的商品', min_values=1, max_values=1, options=options)
 
         async def callback(self, i: Interaction) -> Any:
             c = await self.db.cursor()
