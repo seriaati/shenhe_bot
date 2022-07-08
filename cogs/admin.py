@@ -93,7 +93,7 @@ class AdminCog(commands.Cog):
     @app_commands.rename(member='成員')
     @app_commands.describe(member='要被取消禁言的成員')
     @app_commands.checks.has_any_role('管理員', '台主', '臨時台主(申鶴用途)')
-    async def mute(self, i: Interaction, member: Member):
+    async def unmute(self, i: Interaction, member: Member):
         role = i.guild.get_role(994934185179488337) if not self.bot.debug_toggle else i.guild.get_role(994943569313935370)
         await member.remove_roles(role)
         await i.response.send_message(embed=defaultEmbed(message=f'{i.user.mention} 已取消 {member.mention} 的禁言').set_author(name='取消禁言', icon_url=member.avatar))
