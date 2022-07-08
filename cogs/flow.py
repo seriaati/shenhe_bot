@@ -96,7 +96,8 @@ class FlowCog(commands.Cog):
         for index in range(0, 3):
             new_time = (parser.parse(result[index])).strftime("%Y-%m-%d %H:%M:%S")
             time_state_str += f'{time_coin_list[index]} {new_time}\n'
-        embed = defaultEmbed(message=f'{flow} flow\n{time_state_str}')
+        embed = defaultEmbed()
+        embed.add_field(name=f'{flow} flow',value=time_state_str)
         embed.set_author(name=f'flow 帳號', icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
