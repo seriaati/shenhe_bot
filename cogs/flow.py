@@ -83,14 +83,9 @@ class FlowCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的flow帳號')
     async def acc(self, i: Interaction, member: Member = None):
         member = member or i.user
-        if i.channel.id == 960861105503232030:  # 委託台
-            await i.response.send_message(embed=defaultEmbed('請不要在這裡使用/acc唷'), ephemeral=True)
-            return
-        now = datetime.now()
         check, msg = await self.flow_app.checkFlowAccount(member.id)
         if check == False:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
+            return await i.response.send_message(embed=msg, ephemeral=True)
         db: aiosqlite.Connection = self.bot.db
         c = await db.cursor()
         await c.execute('SELECT morning, noon, night FROM flow_accounts WHERE user_id = ?', (member.id,))
@@ -101,8 +96,8 @@ class FlowCog(commands.Cog):
         for index in range(0, 3):
             new_time = (parser.parse(result[index])).strftime("%Y-%m-%d %H:%M:%S")
             time_state_str += f'{time_coin_list[index]} {new_time}\n'
-        embed = defaultEmbed(message=time_state_str)
-        embed.set_author(name=f'{flow} flow', icon_url=member.avatar)
+        embed = defaultEmbed(message=f'{flow} flow\n{time_state_str}')
+        embed.set_author(name=f'flow 帳號', icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
     @app_commands.command(name='give給錢', description='給其他人flow幣')
