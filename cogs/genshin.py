@@ -21,9 +21,11 @@ from utility.apps.GenshinApp import GenshinApp
 from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
-                           defaultEmbed, errEmbed, getCharacter, getClient, getConsumable,
+                           defaultEmbed, errEmbed, get_name_text_map_hash,
+                           getCharacter, getClient, getConsumable,
                            getElementEmoji, getStatEmoji, getTalent, getWeapon,
-                           getWeekdayName, get_name_text_map_hash)
+                           getWeekdayName)
+
 from genshin.models import WikiPageType
 
 
@@ -119,6 +121,36 @@ class GenshinCog(commands.Cog):
         member = member or i.user
         result, success = await self.genshin_app.claimDailyReward(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
+        
+        
+    class DiaryLogView(DefaultView):
+        def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):
+            super().__init__(timeout=None)
+            self.author = author
+            self.member = member
+            self.genshin_app = GenshinApp(db, bot)
+        
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if interaction.user.id != self.author.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /diary 來打開你的旅行者日記', icon_url=interaction.user.avatar))
+            return self.author.id == interaction.user.id
+    
+        @button(label='原石紀錄', emoji='<:primo:958555698596290570>')
+        async def primo(self, i: Interaction, button: Button):
+            result, success = await self.genshin_app.getDiaryLog(self.member.id)
+            if not success:
+                await i.response.send_message(embed=result, ephemeral=True)
+            result = result[0]
+            await i.response.send_message(embed=result, ephemeral=True)
+        
+        @button(label='摩拉紀錄', emoji='<:mora:958577933650362468>')
+        async def mora(self, i: Interaction, button: Button):
+            result, success = await self.genshin_app.getDiaryLog(self.member.id)
+            if not success:
+                await i.response.send_message(embed=result, ephemeral=True)
+            result = result[1]
+            await i.response.send_message(embed=result, ephemeral=True)
+    
 # /diary
 
     @app_commands.command(name='diary旅行者日記', description='查看旅行者日記')
@@ -133,22 +165,10 @@ class GenshinCog(commands.Cog):
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.getDiary(member.id, month)
-        await i.response.send_message(embed=result, ephemeral=not success)
-# /log
-
-    @app_commands.command(name='log收入紀錄', description='查看最近25筆原石或摩拉收入紀錄')
-    @app_commands.choices(data_type=[
-        app_commands.Choice(name='原石', value=0),
-        app_commands.Choice(name='摩拉', value=1)])
-    @app_commands.rename(data_type='類別', member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def log(self, i: Interaction, data_type: int, member: Optional[Member] = None):
-        member = member or i.user
-        result, success = await self.genshin_app.getDiaryLog(member.id)
         if not success:
-            await i.response.send_message(embed=result, ephemeral=True)
-        result = result[data_type]
-        await i.response.send_message(embed=result)
+            await i.response.send_message(embed=result, ephemeral=not success)
+        else:
+            await i.response.send_message(embed=result, view=GenshinCog.DiaryLogView(i.user, member, self.bot.db, self.bot))
 
 # /abyss
 

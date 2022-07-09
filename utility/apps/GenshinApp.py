@@ -252,8 +252,7 @@ class GenshinApp:
             return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             d = diary.data
-            result = defaultEmbed(
-                f'{month}月',
+            result = defaultEmbed(message=
                 f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
                 f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
             )
@@ -266,8 +265,13 @@ class GenshinApp:
             msg = ''
             for cat in d.categories:
                 msg += f'{cat.name}: {cat.percentage}%\n'
-            result.add_field(name=f'收入分類', value=msg, inline=False)
-        return result.set_author(name='旅行者日記', icon_url=user.avatar), True
+            result.add_field(name=f'原石收入分類', value=msg, inline=False)
+            result.add_field(
+                name='獲取紀錄',
+                value='點按下方的按鈕可以\n查看本月近30筆的摩拉或原石獲取紀錄',
+                inline=False
+            )
+            return result.set_author(name=f'旅行者日記 • {month}月', icon_url=user.avatar), True
 
     async def getDiaryLog(self, user_id: int):
         client, uid, only_uid, user = await self.getUserCookie(user_id)
@@ -281,7 +285,7 @@ class GenshinApp:
         else:
             primoLog = ''
             result = []
-            async for action in client.diary_log(limit=25):
+            async for action in client.diary_log(limit=35):
                 primoLog = primoLog + \
                     f"{action.action} - {action.amount} 原石"+"\n"
             embed = defaultEmbed(message=f"{primoLog}")
