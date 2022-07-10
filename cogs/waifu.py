@@ -36,7 +36,9 @@ class WaifuCog(commands.Cog):
             bytes_obj = io.BytesIO(await resp.read())
             file = File(
                 bytes_obj, filename='waifu_image.jpg', spoiler=True)
-            await sese_channel.send(file=file)
+            msg = await sese_channel.send(file=file)
+            view=WaifuCog.DeleteImageView(msg)
+            await sese_channel.send(view=view)
     
     @random_nsfw.before_loop
     async def before_loop(self):
