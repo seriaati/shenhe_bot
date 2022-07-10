@@ -57,12 +57,6 @@ class FlowApp:
         await self.db.commit()
         log(True, False, 'Transaction',
             f'user({user_id}): {user_log}, bank: {bank_log}')
-        bank_flow = await self.get_bank_flow()
-        await c.execute('SELECT SUM(flow) FROM flow_accounts')
-        sum = await c.fetchone()
-        log(True, False, 'Current',
-            f"user_total: {sum[0]}, bank: {bank_flow}")
-        log(True, False, 'Total', int(sum[0])+bank_flow)
 
     async def checkFlowAccount(self, user_id: int) -> Union[bool, Embed]:
         c = await self.db.cursor()
