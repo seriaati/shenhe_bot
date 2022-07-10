@@ -37,7 +37,7 @@ class WaifuCog(commands.Cog):
             file = File(
                 bytes_obj, filename='waifu_image.jpg', spoiler=True)
             msg = await sese_channel.send(file=file)
-            view=WaifuCog.DeleteImageView(msg)
+            view=WaifuCog.DeleteImageView(msg, None)
             await sese_channel.send(view=view)
     
     @random_nsfw.before_loop
@@ -188,7 +188,7 @@ class WaifuCog(commands.Cog):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
                         bytes_obj, filename='waifu_image.jpg', spoiler=True)
-                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message()))
+                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message(), i.user))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
                 for index in range(0, num):
@@ -199,7 +199,7 @@ class WaifuCog(commands.Cog):
                         file = File(
                             bytes_obj, filename='waifu_image.jpg', spoiler=True)
                     msg = await i.channel.send(file=file)
-                    await i.channel.send(view=WaifuCog.DeleteImageView(msg))
+                    await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
                 await i.delete_original_message()
         else:
             if num == 1:
@@ -237,7 +237,7 @@ class WaifuCog(commands.Cog):
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(
                     bytes_obj, filename='waifu_image.jpg', spoiler=True)
-            await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message()))
+            await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message(), i.user))
         else:
             await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
             for index in range(0, num):
@@ -248,7 +248,7 @@ class WaifuCog(commands.Cog):
                     file = File(
                         bytes_obj, filename='waifu_image.jpg', spoiler=True)
                 msg = await i.channel.send(file=file)
-                await i.channel.send(view=WaifuCog.DeleteImageView(msg))
+                await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
             await i.delete_original_message()
 
     @two_d.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
