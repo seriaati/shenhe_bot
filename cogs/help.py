@@ -16,6 +16,7 @@ class Dropdown(Select):
             SelectOption(label='其他', description='其他指令', emoji='🙂'),
             SelectOption(label='語音台', description='語音台相關指令', emoji='🎙️'),
             SelectOption(label='音樂系統', description='音樂系統相關指令', emoji='🎵'),
+            SelectOption(label='二次元圖片系統', description='香香的', emoji='2️⃣'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?',
                          min_values=1, max_values=1, options=options)
@@ -257,11 +258,6 @@ class Dropdown(Select):
                 value='查看身份組總人數',
                 inline=False
             )
-            embed.add_field(
-                name='`/waifu`',
-                value='隨機產生二次元老婆照片',
-                inline=False
-            )
         elif self.values[0] == '語音台':
             embed = defaultEmbed('語音台指令')
             embed.add_field(
@@ -339,6 +335,28 @@ class Dropdown(Select):
             embed.add_field(
                 name='`/clear`',
                 value='清除目前的待播放清單',
+                inline=False
+            )
+        elif self.values[0] == '二次元圖片系統':
+            embed = defaultEmbed('香香的二次元')
+            embed.add_field(
+                name='/2d nsfw',
+                value='色圖',
+                inline=False
+            )
+            embed.add_field(
+                name='/2d sfw',
+                value='正常圖',
+                inline=False
+            )
+            embed.add_field(
+                name='/2d wallpaper',
+                value='桌布',
+                inline=False
+            )
+            embed.add_field(
+                name='/2d waifu',
+                value='Waifu IM API',
                 inline=False
             )
         await interaction.response.send_message(embed=embed, ephemeral=True)
