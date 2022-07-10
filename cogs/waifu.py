@@ -26,7 +26,7 @@ class WaifuCog(commands.Cog):
     def cog_unload(self):
         self.random_nsfw.cancel()
 
-    @tasks.loop(hours=2)
+    @tasks.loop(hours=3)
     async def random_nsfw(self):
         sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
         sese_channel = self.bot.get_channel(sese_id)
@@ -36,10 +36,10 @@ class WaifuCog(commands.Cog):
             bytes_obj = io.BytesIO(await resp.read())
             file = File(
                 bytes_obj, filename='waifu_image.jpg', spoiler=True)
-            msg = await sese_channel.send(file=file)
-            view=WaifuCog.DeleteImageView(msg, None)
+            msg = await sese_channel.send(content=f'發放精神食糧 (標籤: {result})', file=file)
+            view = WaifuCog.DeleteImageView(msg)
             await sese_channel.send(view=view)
-    
+
     @random_nsfw.before_loop
     async def before_loop(self):
         await self.bot.wait_until_ready()
@@ -142,11 +142,11 @@ class WaifuCog(commands.Cog):
             await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
     class DeleteImageView(DefaultView):
-        def __init__(self, message: Message, author: Member):
+        def __init__(self, message: Message, author: Member = None):
             super().__init__(timeout=None)
             self.msg = message
             self.author = author
-            
+
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author is None:
                 return True
