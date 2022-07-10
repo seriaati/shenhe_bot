@@ -35,7 +35,7 @@ class WaifuCog(commands.Cog):
         async with self.bot.session.get(str(url)) as resp:
             bytes_obj = io.BytesIO(await resp.read())
             file = File(
-                bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                bytes_obj, filename='waifu_image.gif', spoiler=True)
             msg = await sese_channel.send(content=f'隨機色圖', file=file)
             view = WaifuCog.DeleteImageView(msg)
             await sese_channel.send(view=view)
@@ -187,7 +187,7 @@ class WaifuCog(commands.Cog):
                 async with self.bot.session.get(str(url)) as resp:
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
-                        bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                        bytes_obj, filename='waifu_image.gif', spoiler=True)
                 await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message(), i.user))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
@@ -197,7 +197,7 @@ class WaifuCog(commands.Cog):
                     async with self.bot.session.get(str(url)) as resp:
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
-                            bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                            bytes_obj, filename='waifu_image.gif', spoiler=True)
                     msg = await i.channel.send(file=file)
                     await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
                 await i.delete_original_message()
@@ -236,7 +236,7 @@ class WaifuCog(commands.Cog):
             async with self.bot.session.get(str(url)) as resp:
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(
-                    bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                    bytes_obj, filename='waifu_image.gif', spoiler=True)
             await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message(), i.user))
         else:
             await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
@@ -246,7 +246,7 @@ class WaifuCog(commands.Cog):
                 async with self.bot.session.get(str(url)) as resp:
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
-                        bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                        bytes_obj, filename='waifu_image.gif', spoiler=True)
                 msg = await i.channel.send(file=file)
                 await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
             await i.delete_original_message()
@@ -278,7 +278,7 @@ class WaifuCog(commands.Cog):
                     async with self.bot.session.get(str(image)) as resp:
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
-                            bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                            bytes_obj, filename='waifu_image.gif', spoiler=True)
                     if tags == 1:
                         await i.edit_original_message(attachments=[file], view=None)
                     else:
@@ -304,7 +304,7 @@ class WaifuCog(commands.Cog):
                         async with self.bot.session.get(str(images[index])) as resp:
                             bytes_obj = io.BytesIO(await resp.read())
                             file = File(
-                                bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                                bytes_obj, filename='waifu_image.gif', spoiler=True)
                         if index == 0:
                             await (await i.original_message()).delete()
                         await i.channel.send(file=file)
