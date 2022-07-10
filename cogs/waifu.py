@@ -1,7 +1,6 @@
 import ast
 import io
 import random
-from email.policy import default
 from typing import Any, List
 
 import hmtai
@@ -11,7 +10,7 @@ from debug import DefaultView
 from discord import (ButtonStyle, File, Interaction, Member, Message,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands.cooldowns import BucketType
 from discord.ui import Button, Select, button
 from utility.paginators.GeneralPaginator import GeneralPaginator
@@ -22,6 +21,26 @@ from waifuim import WaifuAioClient
 class WaifuCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.random_nsfw.start()
+
+    def cog_unload(self):
+        self.random_nsfw.cancel()
+
+    @tasks.loop(hours=2)
+    async def random_nsfw(self):
+        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
+        sese_channel = self.bot.get_channel(sese_id)
+        result = random.choice(list(nsfw_tags.values()))
+        url = hmtai.get(random.choice(result['libs']), result['value'])
+        async with self.bot.session.get(str(url)) as resp:
+            bytes_obj = io.BytesIO(await resp.read())
+            file = File(
+                bytes_obj, filename='waifu_image.jpg', spoiler=True)
+            await sese_channel.send(file=file)
+    
+    @random_nsfw.before_loop
+    async def before_loop(self):
+        await self.bot.wait_until_ready()
 
     async def waifu_tags(sese: int, bot: commands.Bot):
         async with bot.session.get('https://api.waifu.im/tags/?full=on') as r:
