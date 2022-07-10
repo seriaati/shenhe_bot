@@ -63,7 +63,7 @@ class RollCog(commands.Cog):
             await c.execute('SELECT * FROM user_roll_data WHERE user_id = ? AND banner_name = ?', (i.user.id, self.banner))
             user_history = await c.fetchone()
             if user_history is None:
-                await i.response.send_message(embed=defaultEmbed('你還沒有在這期抽過卡!'))
+                await i.response.send_message(embed=defaultEmbed('你還沒有在這期抽過卡!'), ephemeral=True)
                 return
             await c.execute('SELECT SUM (history) FROM user_roll_data WHERE user_id = ? AND banner_name = ?', (i.user.id, self.banner))
             pull_sum = await c.fetchone()

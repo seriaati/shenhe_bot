@@ -150,9 +150,9 @@ class WaifuCog(commands.Cog):
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author is None:
                 return True
-            if self.author.id != interaction.author.id:
+            if self.author.id != interaction.user.id:
                 await interaction.response.send_message(embed=errEmbed().set_author(name='你不是這個指令的發起人', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.author.id
+            return self.author.id == interaction.user.id
 
         @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.red)
         async def deleteImage(self, i: Interaction, button: Button):
