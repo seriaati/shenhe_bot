@@ -142,9 +142,17 @@ class WaifuCog(commands.Cog):
             await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
     class DeleteImageView(DefaultView):
-        def __init__(self, message: Message):
+        def __init__(self, message: Message, author: Member):
             super().__init__(timeout=None)
             self.msg = message
+            self.author = author
+            
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author is None:
+                return True
+            if self.author.id != interaction.author.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='你不是這個指令的發起人', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.author.id
 
         @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.red)
         async def deleteImage(self, i: Interaction, button: Button):
