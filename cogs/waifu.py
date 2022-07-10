@@ -36,7 +36,7 @@ class WaifuCog(commands.Cog):
             bytes_obj = io.BytesIO(await resp.read())
             file = File(
                 bytes_obj, filename='waifu_image.jpg', spoiler=True)
-            msg = await sese_channel.send(content=f'發放精神食糧 (標籤: {result})', file=file)
+            msg = await sese_channel.send(content=f'隨機色圖', file=file)
             view = WaifuCog.DeleteImageView(msg)
             await sese_channel.send(view=view)
 
