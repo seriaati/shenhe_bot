@@ -43,9 +43,9 @@ class RollCog(commands.Cog):
             big_prize = big_prize[0]
             embed.add_field(
                 name=f'限定 UP - {big_prize}',
-                value="70抽之前: 0.6%\n"
-                "70-79抽: 5%\n"
-                "80-89抽: 10%\n"
+                value="70抽之前: 0.8%\n"
+                "70-79抽: 10%\n"
+                "80-89抽: 30%\n"
                 "90抽: 100%",
                 inline=False
             )

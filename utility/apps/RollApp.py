@@ -69,12 +69,12 @@ class RollApp:
         if state == 0 or state > 2:
             result = self.gacha(prize_pool, times)
         elif state == 1:
-            new_probability = 5
+            new_probability = 10
             prize_pool[big_prize] = new_probability
             prize_pool[air] -= new_probability
             result = self.gacha(prize_pool, times)
         elif state == 2:
-            new_probability = 10
+            new_probability = 30
             prize_pool[big_prize] = new_probability
             prize_pool[air] -= new_probability
             result = self.gacha(prize_pool, times)
@@ -93,11 +93,7 @@ class RollApp:
         big_prize = await self.get_banner_big_prize(banner)
         c = await self.db.cursor()
         await c.execute('SELECT SUM(guarantee) FROM user_roll_data WHERE user_id = ? AND banner_name = ? AND history IS NULL', (user_id, banner))
-        sum = await c.fetchone()
-        if sum is None:
-            sum = 0
-        else:
-            sum = sum[0]
+        sum = (await c.fetchone())[0] or 0
         if sum < 70:
             prize = await self.pull_card(is_ten_pull, 0, banner)
         elif 70 <= sum < 80:
