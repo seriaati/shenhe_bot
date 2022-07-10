@@ -1,16 +1,22 @@
-from ast import ExceptHandler
+import ast
 import io
+import random
+from email.policy import default
 from typing import Any, List
-import aiohttp
-from discord.ext import commands
-from discord import ButtonStyle, Interaction, Member, SelectOption, app_commands, File
-from discord.app_commands import Choice
-from discord.ui import Select, select, Button
+
+import hmtai
 import waifuim
-from waifuim import WaifuAioClient
+from data.waifu.waifu_tags import nsfw_tags, sfw_tags, wallpaper_tags
 from debug import DefaultView
+from discord import (ButtonStyle, File, Interaction, Member, Message,
+                     SelectOption, app_commands)
+from discord.app_commands import Choice
+from discord.ext import commands
+from discord.ext.commands.cooldowns import BucketType
+from discord.ui import Button, Select, button
 from utility.paginators.GeneralPaginator import GeneralPaginator
-from utility.utils import defaultEmbed, errEmbed
+from utility.utils import defaultEmbed, divide_chunks, errEmbed
+from waifuim import WaifuAioClient
 
 
 class WaifuCog(commands.Cog):
@@ -50,7 +56,173 @@ class WaifuCog(commands.Cog):
             self.view.tags.append(self.values)
             self.view.stop()
 
-    @app_commands.command(name='waifu', description='從 waifu API 隨機產生一張老婆的照片(?')
+    class ChooseTagView(DefaultView):
+        def __init__(self, author: Member, type: str):
+            super().__init__(timeout=None)
+            self.author = author
+            self.tag = None
+            options = []
+            if type == 'sfw':
+                for tag_name, tag_info in sfw_tags.items():
+                    options.append(SelectOption(
+                        label=tag_name, value=f'{str(tag_info["libs"])}/{tag_info["value"]}', description=tag_info["description"]))
+            elif type == 'nsfw':
+                for tag_name, tag_info in nsfw_tags.items():
+                    options.append(SelectOption(
+                        label=tag_name, value=f'{str(tag_info["libs"])}/{tag_info["value"]}', description=tag_info["description"]))
+            elif type == 'wallpaper':
+                for tag_name, tag_info in wallpaper_tags.items():
+                    options.append(SelectOption(
+                        label=tag_name, value=f'{str(tag_info["libs"])}/{tag_info["value"]}/{tag_info["nsfw"]}', description=tag_info["description"]))
+            divided = list(divide_chunks(options, 25))
+            first = 1
+            second = len(divided[0])
+            for d in divided:
+                self.add_item(WaifuCog.ChooseTagSelect(d, f'{first}~{second}'))
+                first += 25
+                second = first + len(d)
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /waifu 來尋找你的二次元老婆', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
+
+    class ChooseTagSelect(Select):
+        def __init__(self, options: list, range: str):
+            super().__init__(placeholder=f'選擇標籤 ({range})', options=options)
+
+        async def callback(self, interaction: Interaction) -> Any:
+            await interaction.response.defer()
+            self.view.tag = self.values[0]
+            self.view.stop()
+
+    two_d = app_commands.Group(name='2d', description='二次元')
+
+    @two_d.command(name='sfw', description='正常圖')
+    @app_commands.rename(num='張數')
+    async def gif(self, i: Interaction, num: int = 1):
+        view = WaifuCog.ChooseTagView(i.user, type='sfw')
+        await i.response.send_message(view=view)
+        await view.wait()
+        x = view.tag.split('/')
+        libs = ast.literal_eval(x[0])
+        tag = x[1]
+        lib = random.choice(libs)
+        if num == 1:
+            await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
+        else:
+            embeds = []
+            for index in range(0, num):
+                lib = random.choice(libs)
+                embed = defaultEmbed(f'標籤: {tag}')
+                embed.set_image(url=(hmtai.get(lib, tag)))
+                embed.set_footer(text=f'API: {lib}')
+                embeds.append(embed)
+            await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+
+    class DeleteImageView(DefaultView):
+        def __init__(self, message: Message):
+            super().__init__(timeout=None)
+            self.msg = message
+
+        @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.red)
+        async def deleteImage(self, i: Interaction, button: Button):
+            await i.response.defer()
+            await self.msg.delete()
+            try:
+                await i.delete_original_message()
+            except:
+                pass
+
+    @two_d.command(name='wallpaper', description='桌面背景')
+    @app_commands.rename(num='張數')
+    @app_commands.describe(num='上限 5 張')
+    async def wallpaper(self, i: Interaction, num: int = 1):
+        if num > 5:
+            return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
+        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
+        view = WaifuCog.ChooseTagView(i.user, type='wallpaper')
+        await i.response.send_message(view=view)
+        await view.wait()
+        x = view.tag.split('/')
+        libs = ast.literal_eval(x[0])
+        tag = x[1]
+        lib = random.choice(libs)
+        nsfw = x[2]
+        url = (hmtai.get(lib, tag))
+        if nsfw == 'True' and i.channel.id != sese_id:
+            return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
+        if nsfw == 'True':
+            if num == 1:
+                await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+                async with self.bot.session.get(str(url)) as resp:
+                    bytes_obj = io.BytesIO(await resp.read())
+                    file = File(
+                        bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message()))
+            else:
+                await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+                for index in range(0, num):
+                    lib = random.choice(libs)
+                    url = (hmtai.get(lib, tag))
+                    async with self.bot.session.get(str(url)) as resp:
+                        bytes_obj = io.BytesIO(await resp.read())
+                        file = File(
+                            bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                    msg = await i.channel.send(file=file)
+                    await i.channel.send(view=WaifuCog.DeleteImageView(msg))
+                await i.delete_original_message()
+        else:
+            if num == 1:
+                await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
+            else:
+                embeds = []
+                for index in range(0, num):
+                    lib = random.choice(libs)
+                    embed = defaultEmbed(f'標籤: {tag}')
+                    embed.set_image(url=(hmtai.get(lib, tag)))
+                    embed.set_footer(text=f'API: {lib}')
+                    embeds.append(embed)
+                await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+
+    @two_d.command(name='nsfw', description='色圖', nsfw=True)
+    @app_commands.rename(num='張數')
+    @app_commands.describe(num='上限 5 張')
+    async def gif(self, i: Interaction, num: int = 1):
+        if num > 5:
+            return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
+        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
+        if i.channel.id != sese_id:
+            return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
+        view = WaifuCog.ChooseTagView(i.user, type='nsfw')
+        await i.response.send_message(view=view)
+        await view.wait()
+        x = view.tag.split('/')
+        libs = ast.literal_eval(x[0])
+        tag = x[1]
+        lib = random.choice(libs)
+        url = (hmtai.get(lib, tag))
+        if num == 1:
+            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            async with self.bot.session.get(str(url)) as resp:
+                bytes_obj = io.BytesIO(await resp.read())
+                file = File(
+                    bytes_obj, filename='waifu_image.jpg', spoiler=True)
+            await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message()))
+        else:
+            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            for index in range(0, num):
+                lib = random.choice(libs)
+                url = (hmtai.get(lib, tag))
+                async with self.bot.session.get(str(url)) as resp:
+                    bytes_obj = io.BytesIO(await resp.read())
+                    file = File(
+                        bytes_obj, filename='waifu_image.jpg', spoiler=True)
+                msg = await i.channel.send(file=file)
+                await i.channel.send(view=WaifuCog.DeleteImageView(msg))
+            await i.delete_original_message()
+
+    @two_d.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
     @app_commands.choices(sese=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], many=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], tags=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')
