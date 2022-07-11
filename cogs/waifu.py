@@ -21,28 +21,6 @@ from waifuim import WaifuAioClient
 class WaifuCog(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.random_nsfw.start()
-
-    def cog_unload(self):
-        self.random_nsfw.cancel()
-
-    @tasks.loop(hours=3)
-    async def random_nsfw(self):
-        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
-        sese_channel = self.bot.get_channel(sese_id)
-        result = random.choice(list(nsfw_tags.values()))
-        url = hmtai.get(random.choice(result['libs']), result['value'])
-        async with self.bot.session.get(str(url)) as resp:
-            bytes_obj = io.BytesIO(await resp.read())
-            file = File(
-                bytes_obj, filename='waifu_image.gif', spoiler=True)
-            msg = await sese_channel.send(content=f'隨機色圖', file=file)
-            view = WaifuCog.DeleteImageView(msg)
-            await sese_channel.send(view=view)
-
-    @random_nsfw.before_loop
-    async def before_loop(self):
-        await self.bot.wait_until_ready()
 
     async def waifu_tags(sese: int, bot: commands.Bot):
         async with bot.session.get('https://api.waifu.im/tags/?full=on') as r:
@@ -142,9 +120,8 @@ class WaifuCog(commands.Cog):
             await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
     class DeleteImageView(DefaultView):
-        def __init__(self, message: Message, author: Member = None):
+        def __init__(self, author: Member):
             super().__init__(timeout=None)
-            self.msg = message
             self.author = author
 
         async def interaction_check(self, interaction: Interaction) -> bool:
@@ -154,14 +131,10 @@ class WaifuCog(commands.Cog):
                 await interaction.response.send_message(embed=errEmbed().set_author(name='你不是這個指令的發起人', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
-        @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.red)
+        @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.gray)
         async def deleteImage(self, i: Interaction, button: Button):
             await i.response.defer()
-            await self.msg.delete()
-            try:
-                await i.delete_original_message()
-            except:
-                pass
+            await i.message.delete()
 
     @two_d.command(name='wallpaper', description='桌面背景')
     @app_commands.rename(num='張數')
@@ -188,7 +161,7 @@ class WaifuCog(commands.Cog):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
-                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(await i.original_message(), i.user))
+                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(i.user))
             else:
                 await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
                 for index in range(0, num):
@@ -198,8 +171,7 @@ class WaifuCog(commands.Cog):
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
-                    msg = await i.channel.send(file=file)
-                    await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
+                    await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
                 await i.delete_original_message()
         else:
             if num == 1:
@@ -247,8 +219,7 @@ class WaifuCog(commands.Cog):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
-                msg = await i.channel.send(file=file)
-                await i.channel.send(view=WaifuCog.DeleteImageView(msg, i.user))
+                await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
             await i.delete_original_message()
 
     @two_d.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
