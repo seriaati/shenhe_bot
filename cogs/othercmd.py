@@ -136,16 +136,12 @@ class OtherCMDCog(commands.Cog):
     @app_commands.rename(role='身份組')
     @app_commands.describe(role='請選擇要查看的身份組')
     async def role_members(self, i: Interaction, role: Role):
-        if role is None:
-            await i.response.send_message('找不到該身份組!', ephemeral=True)
-            return
         memberStr = ''
-        count = 0
+        count = 1
         for member in role.members:
+            memberStr += f'{count}. {member.mention}\n'
             count += 1
-            memberStr += f'{count}. {member}\n'
-        embed = defaultEmbed(role.name, memberStr)
-        await i.response.send_message(embed=embed)
+        await i.response.send_message(embed=defaultEmbed(f'{role.name} ({len(role.members)})', memberStr))
 
     @app_commands.command(name='avatar頭像', description='查看一個用戶的頭像(並且偷偷下載)')
     @app_commands.rename(member='使用者')
