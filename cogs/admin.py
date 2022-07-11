@@ -83,20 +83,28 @@ class AdminCog(commands.Cog):
     @app_commands.describe(member='要被禁言的成員', minute='要被禁言的分鐘數')
     @app_commands.checks.has_any_role('管理員', '台主', '臨時台主(申鶴用途)')
     async def mute(self, i: Interaction, member: Member, minute: int):
-        role = i.guild.get_role(994934185179488337) if not self.bot.debug_toggle else i.guild.get_role(994943569313935370)
+        role = i.guild.get_role(
+            994934185179488337) if not self.bot.debug_toggle else i.guild.get_role(994943569313935370)
         await member.add_roles(role)
         await i.response.send_message(embed=defaultEmbed(message=f'{member.mention} 已被 {i.user.mention} 禁言 {minute} 分鐘').set_author(name='禁言', icon_url=member.avatar))
         await asyncio.sleep(minute*60)
         await member.remove_roles(role)
-    
+
     @app_commands.command(name='unmute', description='取消禁言')
     @app_commands.rename(member='成員')
     @app_commands.describe(member='要被取消禁言的成員')
     @app_commands.checks.has_any_role('管理員', '台主', '臨時台主(申鶴用途)')
     async def unmute(self, i: Interaction, member: Member):
-        role = i.guild.get_role(994934185179488337) if not self.bot.debug_toggle else i.guild.get_role(994943569313935370)
+        role = i.guild.get_role(
+            994934185179488337) if not self.bot.debug_toggle else i.guild.get_role(994943569313935370)
         await member.remove_roles(role)
         await i.response.send_message(embed=defaultEmbed(message=f'{i.user.mention} 已取消 {member.mention} 的禁言').set_author(name='取消禁言', icon_url=member.avatar))
+
+    @app_commands.command(name='say', description='用申鶴說話')
+    @app_commands.checks.has_role('小雪團隊')
+    async def say(self, i: Interaction, message: Message):
+        await i.response.send_message('success', ephemeral=True)
+        await i.channel.send(message)
 
 
 async def setup(bot: commands.Bot) -> None:
