@@ -130,7 +130,7 @@ class Schedule(commands.Cog):
                 chara_list = ast.literal_eval(tuple[1])
                 for chara in chara_list:
                     embed = defaultEmbed(
-                        message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
+                        message=f'該為{chara}刷本啦!\n\n輸入 `/remind` 來更改設定')
                     embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
                     embed.set_author(name=f'刷本啦!', icon_url=(
                         self.bot.get_user(user_id)).avatar)
