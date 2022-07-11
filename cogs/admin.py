@@ -102,7 +102,7 @@ class AdminCog(commands.Cog):
 
     @app_commands.command(name='say', description='用申鶴說話')
     @app_commands.checks.has_role('小雪團隊')
-    async def say(self, i: Interaction, message: Message):
+    async def say(self, i: Interaction, message: str):
         await i.response.send_message('success', ephemeral=True)
         await i.channel.send(message)
 
