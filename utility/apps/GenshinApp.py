@@ -414,7 +414,7 @@ class GenshinApp:
         else:
             if resin_notification_toggle == 0:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
-                result = defaultEmbed()
+                result = defaultEmbed().set_author(name='樹脂提醒功能已關閉', icon_url=user.avatar)
             else:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?', (resin_notification_toggle, resin_threshold, max_notif, user_id))
                 toggle_str = '開' if resin_notification_toggle == 1 else '關'

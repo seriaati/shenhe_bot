@@ -130,8 +130,7 @@ class RollApp:
             if result is None:
                 await c.execute('INSERT INTO user_roll_data (user_id, banner_name, prize_name) VALUES (?, ?, ?)', (user_id, banner, item))
             await c.execute('SELECT history FROM user_roll_data WHERE user_id = ? AND banner_name = ? AND prize_name = ? AND guarantee IS NULL', (user_id, banner, item))
-            history = await c.fetchone()
-            history = history[0]
+            history = (await c.fetchone())[0] or 0
             await c.execute('UPDATE user_roll_data SET history = ? WHERE user_id = ? AND banner_name = ? AND prize_name = ? AND guarantee IS NULL', (history+1, user_id, banner, item))
             if item == air:
                 air_count += 1

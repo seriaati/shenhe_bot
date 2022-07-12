@@ -343,15 +343,14 @@ class GenshinCog(commands.Cog):
     async def remind(self, i: Interaction, function: int, toggle: int = 1):
         if function == 0:
             if toggle == 0:
-                result = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
-                result.set_author(name='樹脂提醒功能已關閉', icon_url=i.user.avatar)
-                await i.response.send_message(embed=result)
+                result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
+                await i.response.send_message(embed=result, ephemeral=not success)
             else:
                 modal = GenshinCog.ResinNotifModal()
                 await i.response.send_modal(modal)
                 await modal.wait()
-                result = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value)
-                await i.followup.send(embed=result)
+                result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value)
+                await i.followup.send(embed=result, ephemeral = not success)
         elif function == 1:
             if toggle == 0:
                 c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -1239,6 +1238,8 @@ class GenshinCog(commands.Cog):
         uid = custom_uid if custom_uid is not None else uid
         async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
             data = await r.json()
+        await c.execute('INSERT INTO leaderboard (achievements) VALUES (?)', (int(player['finishAchievementNum']),))
+        await self.bot.db.commit()
         if 'avatarInfoList' not in data:
             embed = errEmbed(message='請照下方的指示操作')
             embed.set_author(name='找不到資料', icon_url=i.user.avatar)
@@ -1363,7 +1364,7 @@ class GenshinCog(commands.Cog):
         description = re.sub(CLEANR, '', description)
         return description
 
-    @app_commands.command(name='events活動', description='查看原神進行中的活動')
+    @app_commands.command(name='events活動', description='查看原神近期的活動')
     async def events(self, i: Interaction):
         async with self.bot.session.get(f'https://api.ambr.top/assets/data/event.json') as r:
             events = await r.json()
@@ -1377,6 +1378,21 @@ class GenshinCog(commands.Cog):
             embed.set_image(url=event['banner']['CHT'])
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
+        
+    @app_commands.command(name='leaderboard排行榜', description='查看原神數據排行榜')
+    @app_commands.rename(type='分類')
+    @app_commands.describe(type='選擇要查看的排行榜分類')
+    @app_commands.choices(type=[Choice(name='成就數量', value=0)])
+    async def leaderboard(self, i: Interaction, type: int):
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT user_id, achievements FROM leaderboard')
+        result = await c.fetchall()
+        data_dict = {}
+        for index, tuple in enumerate(result):
+            user_id = tuple[0]
+            achievements = tuple[1]
+            data_dict[user_id] = achievements
+        
 
 
 async def setup(bot: commands.Bot) -> None:
