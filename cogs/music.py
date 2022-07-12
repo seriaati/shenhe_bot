@@ -69,7 +69,7 @@ class MusicCog(commands.Cog):
                 try:
                     playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
                 except wavelink.errors.LoadTrackError:
-                    return await i.edit_original_message(embed=errEmbed().set_author(name='無效的播放清單', icon_url=i.user.avatar), ephemeral=True)
+                    return await i.edit_original_message(embed=errEmbed().set_author(name='無效的播放清單', icon_url=i.user.avatar))
                 track: wavelink.YouTubeTrack = playlist.tracks[
                     0] if playlist.selected_track is None else playlist.tracks[playlist.selected_track]
                 playlist.tracks.remove(track)
