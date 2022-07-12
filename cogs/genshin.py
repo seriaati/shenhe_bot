@@ -1,7 +1,6 @@
 import ast
-import asyncio
 import json
-import urllib.parse
+import re
 from datetime import datetime
 from typing import Any, List, Optional
 
@@ -12,11 +11,11 @@ from data.game.characters import characters_map
 from data.game.namecards import namecards_map
 from data.game.talent_books import talent_books
 from debug import DefaultView
-from discord import (ButtonStyle, Embed, Emoji, Guild, Interaction, Member,
+from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, button, select
+from discord.ui import Button, Modal, Select, TextInput, button
 from utility.apps.GenshinApp import GenshinApp
 from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
@@ -121,20 +120,19 @@ class GenshinCog(commands.Cog):
         member = member or i.user
         result, success = await self.genshin_app.claimDailyReward(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
-        
-        
+
     class DiaryLogView(DefaultView):
         def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):
             super().__init__(timeout=None)
             self.author = author
             self.member = member
             self.genshin_app = GenshinApp(db, bot)
-        
+
         async def interaction_check(self, interaction: Interaction) -> bool:
             if interaction.user.id != self.author.id:
                 await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /diary 來打開你的旅行者日記', icon_url=interaction.user.avatar))
             return self.author.id == interaction.user.id
-    
+
         @button(label='原石紀錄', emoji='<:primo:958555698596290570>')
         async def primo(self, i: Interaction, button: Button):
             result, success = await self.genshin_app.getDiaryLog(self.member.id)
@@ -142,7 +140,7 @@ class GenshinCog(commands.Cog):
                 await i.response.send_message(embed=result, ephemeral=True)
             result = result[0]
             await i.response.send_message(embed=result, ephemeral=True)
-        
+
         @button(label='摩拉紀錄', emoji='<:mora:958577933650362468>')
         async def mora(self, i: Interaction, button: Button):
             result, success = await self.genshin_app.getDiaryLog(self.member.id)
@@ -150,7 +148,7 @@ class GenshinCog(commands.Cog):
                 await i.response.send_message(embed=result, ephemeral=True)
             result = result[1]
             await i.response.send_message(embed=result, ephemeral=True)
-    
+
 # /diary
 
     @app_commands.command(name='diary旅行者日記', description='查看旅行者日記')
@@ -1354,74 +1352,31 @@ class GenshinCog(commands.Cog):
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
-    # @app_commands.command(name='wiki', description='查看原神維基百科')
-    # @app_commands.choices(wikiType=[Choice(name='角色', value=0)])
-    # @app_commands.rename(wikiType='類別', query='關鍵詞')
-    # @app_commands.describe(wikiType='要查看的維基百科分頁類別')
-    # async def wiki(self, i: Interaction, wikiType: int, query: str):
-    #     span_styles = ['<span style="color:#80FFD7FF">', '<span style="color:#FFD780FF">', '<span style="color:#80C0FFFF">',
-    #                    '<span style="color:#FF9999FF">', '<span style="color:#99FFFFFF">', '<span style="color:#FFACFFFF">', '<span style="color:#FFE699FF">']
-    #     client = getClient()
-    #     found = False
-    #     chara_name = ''
-    #     if wikiType == 0:
-    #         previews = await client.get_wiki_previews(WikiPageType.CHARACTER)
-    #         await i.response.send_message(embed=defaultEmbed(f'<a:LOADER:982128111904776242> 正在搜尋關鍵字: {query}'))
-    #         for p in previews:
-    #             d = (await client.get_wiki_page(p.id)).modules
-    #             for item in d['屬性']['list']:
-    #                 if item['key'] == '名字' and query in item['value'][0]:
-    #                     chara_name = item['value'][0]
-    #                     found = True
-    #                     wiki = d
-    #                     break
-    #     if not found:
-    #         return await i.edit_original_message(embed=errEmbed(message='請重新檢查關鍵詞是否輸入錯誤').set_author(name='找不到該維基百科頁面', icon_url=i.user.avatar))
-    #     result = []
-    #     embed = defaultEmbed().set_author(name='搜尋結果', icon_url=i.user.avatar)
-    #     name = '屬性'
-    #     value = ''
-    #     for property in wiki['屬性']['list']:
-    #         value += f"{property['key']} - {property['value'][0]}\n"
-    #     embed.add_field(name=name, value=value)
-    #     result.append(embed)
-    #     embed = defaultEmbed('突破後屬性')
-    #     for level in wiki['突破']['list'][:-1]:
-    #         value = ''
-    #         for combat in level['combatList'][1:]:
-    #             value += f"{combat['key']} - {combat['values'][1]}\n"
-    #         embed.add_field(name=level['key'], value=value)
-    #     result.append(embed)
-    #     embed = defaultEmbed('突破素材')
-    #     for level in wiki['突破']['list'][1:-1]:
-    #         value = ''
-    #         for mat in level['materials']:
-    #             mat = json.loads(mat.replace('$', ''))
-    #             value += f"{(get_name.getWikiMaterialName(mat[0]['ep_id'])).replace(' ','')} - {mat[0]['amount']}\n"
-    #         embed.add_field(name=level['key'], value=value)
-    #     result.append(embed)
-    #     embed = defaultEmbed('全圖')
-    #     embed.set_image(url=urllib.parse.quote(wiki['畫廊']['pic'], safe=':/'))
-    #     result.append(embed)
-    #     for art in wiki['畫廊']['list']:
-    #         embed = defaultEmbed(art['key'])
-    #         embed.set_image(url=urllib.parse.quote(art['img'], safe=':/'))
-    #         embed.set_footer(text=art['imgDesc'])
-    #         result.append(embed)
-    #     for talent in wiki['天賦']['list']:
-    #         talent_desc = talent['desc'].replace(
-    #             '<br/>', '\n').replace('<i>', '*').replace('</i>', '*').replace('</span>', '')
-    #         for style in span_styles:
-    #             if style in talent_desc:
-    #                 talent_desc = talent_desc.replace(style, '')
-    #         embed = defaultEmbed(talent['title'], talent_desc)
-    #         embed.set_thumbnail(url=urllib.parse.quote(
-    #             talent['icon_url'], safe=':/'))
-    #         embed.set_image(url=urllib.parse.quote(
-    #             talent['talent_img'], safe=':/'))
-    #         result.append(embed)
-    #     result[0].set_thumbnail(url=getCharacter(name=chara_name)['icon'])
-    #     await GeneralPaginator(i, result).start(embeded=True, edit_original_message=True)
+    def parse_event_description(description: str):
+        # replace tags with style attributes
+        description = description.replace('</p>', '\n')
+        description = description.replace('<strong>', '**')
+        description = description.replace('</strong>', '**')
+
+        # remove all HTML tags
+        CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+        description = re.sub(CLEANR, '', description)
+
+        return description
+
+    @app_commands.command(name='events活動', description='查看原神進行中的活動')
+    async def events(self, i: Interaction):
+        async with self.bot.session.get(f'https://api.ambr.top/assets/data/event.json') as r:
+            events = await r.json()
+        embeds = []
+        for event_id, event in events.items():
+            embed = defaultEmbed(
+                event['name']['CHT'], event['nameFull']['CHT'])
+            embed.add_field(name='詳情', value=GenshinCog.parse_event_description(
+                event['description']['CHT']))
+            embed.set_image(url=event['banner']['CHT'])
+            embeds.append(embed)
+        await GeneralPaginator(i, embeds).start(embeded=True)
 
 
 async def setup(bot: commands.Bot) -> None:
