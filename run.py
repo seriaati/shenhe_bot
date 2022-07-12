@@ -40,6 +40,7 @@ intents = Intents.default()
 intents.members = True
 intents.reactions = True
 intents.message_content = True
+intents.presences = True
 
 
 class ShenheBot(commands.Bot):

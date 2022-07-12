@@ -74,6 +74,13 @@ def getClient():
     client.uids[genshin.Game.GENSHIN] = 901211014
     return client
 
+def time_in_range(start, end, x):
+    """Return true if x is in the range [start, end]"""
+    if start <= end:
+        return start <= x <= end
+    else:
+        return start <= x or x <= end
+
 
 def calculateArtifactScore(substats: dict):
     tier_four_val = {
