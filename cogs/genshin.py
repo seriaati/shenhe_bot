@@ -1361,7 +1361,6 @@ class GenshinCog(commands.Cog):
         # remove all HTML tags
         CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
         description = re.sub(CLEANR, '', description)
-
         return description
 
     @app_commands.command(name='events活動', description='查看原神進行中的活動')
@@ -1370,10 +1369,11 @@ class GenshinCog(commands.Cog):
             events = await r.json()
         embeds = []
         for event_id, event in events.items():
-            embed = defaultEmbed(
-                event['name']['CHT'], event['nameFull']['CHT'])
-            embed.add_field(name='詳情', value=GenshinCog.parse_event_description(
-                event['description']['CHT']))
+            if event['name']['CHT'] == '更新內容彙總':
+                continue
+            value = GenshinCog.parse_event_description(event['description']['CHT'])
+            embed = defaultEmbed(event['name']['CHT'], event['nameFull']['CHT'])
+            embed.add_field(name='詳情', value=value)
             embed.set_image(url=event['banner']['CHT'])
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
