@@ -162,6 +162,7 @@ class WishCog(commands.Cog):
         left_pull = 0
         use_pull = len(user_wish_history)
         found_last_five_star = False
+        up_guarantee = 0
         for index, tuple in enumerate(user_wish_history):
             wish_name = tuple[0]
             wish_rarity = tuple[1]
