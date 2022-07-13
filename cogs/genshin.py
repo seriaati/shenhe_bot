@@ -1400,7 +1400,7 @@ class GenshinCog(commands.Cog):
             user_id = tuple[0]
             achievements = tuple[1]
             data_dict[user_id] = achievements
-        sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1]))
+        sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1], reverse=True))
         message = ''
         rank = 1
         for user_id, achievements in sorted_dict.items():
