@@ -1399,7 +1399,12 @@ class GenshinCog(commands.Cog):
         for index, tuple in enumerate(result):
             user_id = tuple[0]
             achievements = tuple[1]
-            data_dict[user_id] = achievements
+            user = self.bot.get_user(user_id)
+            if user is not None:
+                data_dict[user_id] = achievements
+            else:
+                await c.execute('DELETE FROM leaderboard WHERE user_id = ?', (user_id,))
+        await self.bot.db.commit()
         sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1], reverse=True))
         message = []
         rank = 1
