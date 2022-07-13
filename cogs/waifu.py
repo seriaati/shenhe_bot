@@ -170,6 +170,8 @@ class WaifuCog(commands.Cog):
                 for index in range(0, num):
                     lib = random.choice(libs)
                     url = (hmtai.get(lib, tag))
+                    if url is None:
+                        break
                     async with self.bot.session.get(str(url)) as resp:
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
@@ -218,6 +220,8 @@ class WaifuCog(commands.Cog):
             for index in range(0, num):
                 lib = random.choice(libs)
                 url = (hmtai.get(lib, tag))
+                if url is None:
+                    break
                 async with self.bot.session.get(str(url)) as resp:
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
