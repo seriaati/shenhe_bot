@@ -99,7 +99,10 @@ class WaifuCog(commands.Cog):
 
     @two_d.command(name='sfw', description='正常圖')
     @app_commands.rename(num='張數')
-    async def gif(self, i: Interaction, num: int = 1):
+    @app_commands.describe(num='上限 30 張')
+    async def sfw(self, i: Interaction, num: int = 1):
+        if num > 30:
+            return await i.response.send_message(embed=errEmbed().set_author(name='不可大於 30 張', icon_url=i.user.avatar) , ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='sfw')
         await i.response.send_message(view=view)
         await view.wait()
@@ -189,7 +192,7 @@ class WaifuCog(commands.Cog):
     @two_d.command(name='nsfw', description='色圖', nsfw=True)
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')
-    async def gif(self, i: Interaction, num: int = 1):
+    async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
         sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
