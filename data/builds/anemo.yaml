@@ -220,3 +220,33 @@
       dmg: 5829
   thoughts:
     - "風傷有就帶\n攻擊/充能沙、風傷杯、暴擊（暴傷）頭\n副詞條優先順序：\n雙暴（自適應）>攻擊百分比"
+鹿野院平藏:
+  element: 風
+  builds:
+    - weapon: 天空之卷
+      artifacts: 翠綠4件套
+      main_stats: 攻風暴
+      talents: 8/13/11
+      stats:
+        攻擊力: 2196
+        暴率/暴傷: 60/120
+      move: E 滿蓄力
+      dmg: 59601
+    - weapon: 四風原典
+      artifacts: 翠綠4件套
+      main_stats: 攻風暴
+      talents: 8/13/11
+      stats:
+        攻擊力: 1782
+        暴率/暴傷: 76/153
+      move: E 滿蓄力
+      dmg: 55809
+    - weapon: 匣裡日月
+      artifacts: 翠綠4件套
+      main_stats: 攻風暴
+      talents: 8/13/11
+      stats:
+        攻擊力: 1609
+        暴率/暴傷: 74/148
+      move: E 滿蓄力
+      dmg: 55302
