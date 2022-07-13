@@ -130,8 +130,5 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
         view = DebugView(traceback.format_exc())
         embed = errEmbed(message=f'```py\n{e}\n```').set_author(
             name='未知錯誤', icon_url=i.user.avatar)
-        if i.response._responded:
-            await i.edit_original_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
-        else:
-            await i.response.send_message(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
+        await i.channel.send(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
 bot.run(token)
