@@ -412,5 +412,13 @@ characters_map = {
         "icon": "https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_Lisa.png",
         "emoji": "<:10000006:990114643374653460>",
         "eng": "Lisa"
-    }
+    },
+    "10000059":{
+        "name":"鹿野院平藏",
+        "element":"Anemo",
+        "rarity":4,
+        "icon":"https://upload-static.hoyoverse.com/hk4e/e20200928calculate/item_icon_u2a3qc/dd0916cfadaa7b8db9b180bbc490bba0.png",
+        "emoji": "<:10000059:996671191509123073>",
+        "eng":"Shikanoin Heizou"
+    },
 }
