@@ -20,7 +20,7 @@ from utility.apps.GenshinApp import GenshinApp
 from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
-                           defaultEmbed, errEmbed, get_name_text_map_hash,
+                           defaultEmbed, divide_chunks, errEmbed, get_name_text_map_hash,
                            getCharacter, getClient, getConsumable,
                            getElementEmoji, getStatEmoji, getTalent, getWeapon,
                            getWeekdayName)
@@ -1401,13 +1401,20 @@ class GenshinCog(commands.Cog):
             achievements = tuple[1]
             data_dict[user_id] = achievements
         sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1], reverse=True))
-        message = ''
+        message = []
         rank = 1
         for user_id, achievements in sorted_dict.items():
-            message += f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n'
-            rank += 1 
-        embed = defaultEmbed('🏆 排行榜 - 成就數', message)
-        await i.followup.send(embed=embed)
+            message.append(f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n')
+            rank += 1
+        x = divide_chunks(message, 10)
+        embeds = []
+        for y in x:
+            desc= ''
+            for z in y:
+                desc += f'{z}'
+            embed=defaultEmbed(f'🏆 排行榜 - 成就數 (你: #{((list(sorted_dict.keys())).index(i.user.id))+1})', desc)
+            embeds.append(embed)
+        await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
         
     # @app_commands.command(name='wiki', description='原神百科')
     # async def wiki(self, i: Interaction)
