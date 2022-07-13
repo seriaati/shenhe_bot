@@ -1232,14 +1232,11 @@ class GenshinCog(commands.Cog):
         uid = await c.fetchone()
         if uid is None:
             uid_c = i.guild.get_channel(978871680019628032)
-            await i.edit_original_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'))
-            return
+            return await i.edit_original_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'))
         uid = uid[0]
         uid = custom_uid if custom_uid is not None else uid
         async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
             data = await r.json()
-        await c.execute('INSERT INTO leaderboard (achievements) VALUES (?)', (int(player['finishAchievementNum']),))
-        await self.bot.db.commit()
         if 'avatarInfoList' not in data:
             embed = errEmbed(message='請照下方的指示操作')
             embed.set_author(name='找不到資料', icon_url=i.user.avatar)
@@ -1382,9 +1379,20 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='leaderboard排行榜', description='查看原神數據排行榜')
     @app_commands.rename(type='分類')
     @app_commands.describe(type='選擇要查看的排行榜分類')
-    @app_commands.choices(type=[Choice(name='成就數量', value=0)])
+    @app_commands.choices(type=[Choice(name='成就數', value=0)])
     async def leaderboard(self, i: Interaction, type: int):
+        await i.response.defer()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
+        uid = await c.fetchone()
+        if uid is None:
+            return await i.response.send_message(embed=errEmbed().set_author(name='你還沒有註冊過 UID', icon_url=i.user.avatar))
+        uid = uid[0]
+        async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
+            data = await r.json()
+        achievements = int(data['playerInfo']['finishAchievementNum'])
+        await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievements, i.user.id, achievements))
+        await self.bot.db.commit()
         await c.execute('SELECT user_id, achievements FROM leaderboard')
         result = await c.fetchall()
         data_dict = {}
@@ -1392,6 +1400,17 @@ class GenshinCog(commands.Cog):
             user_id = tuple[0]
             achievements = tuple[1]
             data_dict[user_id] = achievements
+        sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1]))
+        message = ''
+        rank = 1
+        for user_id, achievements in sorted_dict.items():
+            message += f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n'
+            rank += 1 
+        embed = defaultEmbed('🏆 排行榜 - 成就數', message)
+        await i.followup.send(embed=embed)
+        
+    # @app_commands.command(name='wiki', description='原神百科')
+    # async def wiki(self, i: Interaction)
         
 
 
