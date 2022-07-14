@@ -1420,7 +1420,7 @@ class GenshinCog(commands.Cog):
         rank = 1
         for user_id, achievements in sorted_dict.items():
             message.append(
-                f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n')
+                f'{rank}. {(self.bot.get_user(user_id)).name} - {achievements}\n')
             rank += 1
         x = divide_chunks(message, 15)
         embeds = []
