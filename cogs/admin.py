@@ -20,7 +20,7 @@ class AdminCog(commands.Cog):
         if before.id != target_id or after.id != target_id:
             return
         now = datetime.now().time()
-        if not time_in_range(time(22, 0, 0), time(7, 0, 0), now):
+        if not time_in_range(time(22, 45, 0), time(7, 0, 0), now):
             return
         channel = self.bot.get_channel(
             909595117952856084) if self.bot.debug_toggle else self.bot.get_channel(976840575254933504)
