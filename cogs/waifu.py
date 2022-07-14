@@ -278,7 +278,10 @@ class WaifuCog(commands.Cog):
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:
-                    for index in range(0, 5):
+                    index = 0
+                    for image in images:
+                        if index > 5:
+                            break
                         async with self.bot.session.get(str(images[index])) as resp:
                             bytes_obj = io.BytesIO(await resp.read())
                             file = File(
