@@ -1,17 +1,18 @@
 import json
+import os
 import re
 from datetime import datetime
 
 import discord
 import genshin
-import yaml
+from dotenv import load_dotenv
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
 from data.game.stat_emojis import stat_emojis
 from data.game.talents import talents_map
 from data.game.weapons import weapons_map
 from pyppeteer import launch
-
+load_dotenv()
 
 class GetNameTextMapHash():
     def __init__(self) -> None:
@@ -66,8 +67,8 @@ def getStatEmoji(propid: str):
 
 
 def getClient():
-    cookies = {"ltuid": 7368957,
-               "ltoken": 'X5VJAbNxdKpMp96s7VGpyIBhSnEJr556d5fFMcT5'}
+    cookies = {"ltuid": os.getenv('ltuid'),
+               "ltoken": os.getenv('ltoken')}
     client = genshin.Client(cookies)
     client.lang = "zh-tw"
     client.default_game = genshin.Game.GENSHIN

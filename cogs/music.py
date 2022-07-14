@@ -3,14 +3,15 @@ import wavelink
 from discord.ext import commands
 from discord import ButtonStyle, Interaction, app_commands
 from discord.ui import View, button, Button
-from utility.config import config
+from dotenv import load_dotenv
 from utility.utils import defaultEmbed, divide_chunks, errEmbed
 from wavelink.ext import spotify
 import datetime
 import asyncio
 import re
+import os
 from utility.paginators.GeneralPaginator import GeneralPaginator
-
+load_dotenv()
 
 class MusicCog(commands.Cog):
 
@@ -25,7 +26,7 @@ class MusicCog(commands.Cog):
             bot=self.bot,
             host='127.0.0.1',
             port=2333,
-            password=config.lavalink,
+            password=os.getenv('lavalink'),
             spotify_client=spotify.SpotifyClient(client_id='5f86059662e84a53b79454457f923fe0', client_secret='30812d67a6ab40419ca7d4d228a956ba'))
 
     @commands.Cog.listener()

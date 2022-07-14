@@ -143,7 +143,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-config.yaml
 main.db
 log.txt
 playground.py

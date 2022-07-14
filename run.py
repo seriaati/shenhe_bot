@@ -17,19 +17,20 @@ from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from debug import DebugView
-from utility.config import config
+import os
+from dotenv import load_dotenv
 from utility.db_utils import DbUtils
 from utility.utils import errEmbed, log
-
+load_dotenv()
 user_name = getpass.getuser()
 if user_name == "alice":
-    token = config.main
+    token = os.getenv('main')
     prefix = ['!', '！']
     guild = 778804551972159489
     application_id = 956049912699715634
     debug_toggle = False
 else:
-    token = config.dev
+    token = os.getenv('dev')
     prefix = ['!']
     guild = 778804551972159489
     application_id = 957621570128449626
