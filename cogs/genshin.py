@@ -1472,6 +1472,17 @@ class GenshinCog(commands.Cog):
             await i.response.defer()
             self.view.avatar_id = self.values[0]
             self.view.stop()
+            
+    class ShowMaterialsView(DefaultView):
+        def __init__(self, embed: Embed,author: Member):
+            super().__init__(timeout=None)
+            self.author = author
+            self.embed = embed
+            
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /wiki 來查看你的維基百科', icon_url=interaction.user.avatar), ephemeral=True)
+            return interaction.user.id == self.author.id
 
     @app_commands.command(name='wiki', description='原神百科')
     @app_commands.rename(type='分類')
@@ -1527,6 +1538,7 @@ class GenshinCog(commands.Cog):
                         value=GenshinCog.parse_event_description(talent_info["description"]),
                         inline=False
                     )
+                    material_embed = defaultEmbed().set_author(name='升級天賦所需素材', icon_url=(getCharacter(view.avatar_id))['icon'])
                     for level, promote_info in talent_info['promote'].items():
                         if level == '1' or int(level) > 10:
                             continue
@@ -1534,7 +1546,7 @@ class GenshinCog(commands.Cog):
                         for item_id, item_count in promote_info['costItems'].items():
                             value += f'{(getConsumable(id=item_id))["emoji"]} x{item_count}\n'
                         value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
-                        embed.add_field(
+                        material_embed.add_field(
                             name=f'升到 lvl.{level}',
                             value=value,
                             inline=True
@@ -1550,15 +1562,17 @@ class GenshinCog(commands.Cog):
                     )
                     embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
+            const_count = 1
             for const_id, const_info in avatar_data['constellation'].items():
-                embed = defaultEmbed().set_author(name='命座', icon_url=(getCharacter(view.avatar_id))['icon'])
+                embed = defaultEmbed().set_author(name=f'命座 {const_count}', icon_url=(getCharacter(view.avatar_id))['icon'])
                 embed.add_field(
                     name=const_info['name'],
                     value=GenshinCog.parse_event_description(const_info['description'])
                 )
                 embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
                 embeds.append(embed)
-            await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+                const_count += 1
+            await GeneralPaginator(i, embeds, material_embed=material_embed).start(embeded=True, edit_original_message=True, materials=True)
 
 
 async def setup(bot: commands.Bot) -> None:
