@@ -14,9 +14,9 @@ class DebugView(View):
     @button(label='顯示除錯用訊息', style=ButtonStyle.gray)
     async def show_debug_msg(self, i: Interaction, button: Button):
         try:
-            await i.channel.send(embed=errEmbed(f'除錯用訊息', f'```py\n{self.tb}\n```'))
+            await i.response.send_message(embed=errEmbed(f'除錯用訊息', f'```py\n{self.tb}\n```'), ephemeral=True)
         except HTTPException:
-            await i.channel.send(content='錯誤訊息過長, 已 print 在 console 裡')
+            await i.response.send_message(content='錯誤訊息過長, 已 print 在 console 裡', ephemeral=True)
             print(self.tb)
 
 
