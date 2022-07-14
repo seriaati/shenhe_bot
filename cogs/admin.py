@@ -1,8 +1,9 @@
 import asyncio
+import io
 from datetime import datetime, time
 
-from discord import (Interaction, Member, Message, RawMessageDeleteEvent, TextChannel,
-                     app_commands, Status)
+from discord import (File, Interaction, Member, Message, RawMessageDeleteEvent,
+                     Status, TextChannel, app_commands)
 from discord.ext import commands
 from utility.utils import defaultEmbed, errEmbed, time_in_range
 
@@ -19,12 +20,13 @@ class AdminCog(commands.Cog):
         if before.id != target_id or after.id != target_id:
             return
         now = datetime.now().time()
-        if not time_in_range(time(22, 0, 0), time(7, 0 , 0), now):
+        if not time_in_range(time(22, 0, 0), time(7, 0, 0), now):
             return
-        channel = self.bot.get_channel(909595117952856084) if self.bot.debug_toggle else self.bot.get_channel(976840575254933504)
+        channel = self.bot.get_channel(
+            909595117952856084) if self.bot.debug_toggle else self.bot.get_channel(976840575254933504)
         if before.status == Status.offline and after.status == Status.online:
             await channel.send(f'{(self.bot.get_user(target_id)).mention} 偷偷起床了')
-            
+
     @commands.Cog.listener()
     async def on_message(self, message: Message):
         if message.author.id == self.bot.user.id:
@@ -34,8 +36,12 @@ class AdminCog(commands.Cog):
         if message.channel == sese_channel and len(message.attachments) != 0:
             for attachment in message.attachments:
                 if not attachment.is_spoiler():
+                    async with self.bot.session.get(attachment.url) as resp:
+                        bytes_obj = io.BytesIO(await resp.read())
+                        file = File(
+                            bytes_obj, filename='waifu_image.gif', spoiler=True)
                     await message.delete()
-                    await message.channel.send(embed=errEmbed('在色色台發圖片請spoiler!'), delete_after=3)
+                    await message.channel.send(content=f'由 <@{message.author.id}> 寄出', file=file)
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
