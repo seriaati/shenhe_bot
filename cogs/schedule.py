@@ -231,7 +231,8 @@ class Schedule(commands.Cog):
             flow = await self.flow_app.get_user_flow(tuple[0])
             delta = now-parser.parse(tuple[1])
             if delta.days > 7 and flow <= 100:
-                await channel.send(content=f'<@{tuple[0]}>', embed=errEmbed(message=f'系統已扣除你帳戶裡的 flow 幣 ({flow})\n如欲取回款項, 請在今天結束前以任何方式聯絡 <@410036441129943050>').set_author(name='超過 7 天沒有進行 flow 幣交易'))
+                if flow != 0:
+                    await channel.send(content=f'<@{tuple[0]}>', embed=errEmbed(message=f'系統已扣除你帳戶裡的 flow 幣 ({flow})\n如欲取回款項, 請在今天結束前以任何方式聯絡 <@410036441129943050>').set_author(name='超過 7 天沒有進行 flow 幣交易'))
                 await self.flow_app.transaction(
                     tuple[0], flow, is_removing_account=True)
         log(True, False, 'Remove Flow Acc', 'task finished')
