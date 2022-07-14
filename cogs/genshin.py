@@ -5,11 +5,13 @@ from datetime import datetime
 from typing import Any, List, Optional
 
 import aiosqlite
+from click import edit
 import discord
 import yaml
 from data.game.characters import characters_map
 from data.game.namecards import namecards_map
 from data.game.talent_books import talent_books
+from data.game.elements import elements
 from debug import DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
@@ -350,7 +352,7 @@ class GenshinCog(commands.Cog):
                 await i.response.send_modal(modal)
                 await modal.wait()
                 result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value)
-                await i.followup.send(embed=result, ephemeral = not success)
+                await i.followup.send(embed=result, ephemeral=not success)
         elif function == 1:
             if toggle == 0:
                 c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -1351,6 +1353,7 @@ class GenshinCog(commands.Cog):
         await i.response.send_message(embed=result)
 
     def parse_event_description(description: str):
+        description = description.replace('\\n', '\n')
         # replace tags with style attributes
         description = description.replace('</p>', '\n')
         description = description.replace('<strong>', '**')
@@ -1367,15 +1370,21 @@ class GenshinCog(commands.Cog):
             events = await r.json()
         embeds = []
         for event_id, event in events.items():
-            if event['name']['CHT'] == '更新內容彙總':
-                continue
-            value = GenshinCog.parse_event_description(event['description']['CHT'])
-            embed = defaultEmbed(event['name']['CHT'], event['nameFull']['CHT'])
-            embed.add_field(name='詳情', value=value)
+            value = GenshinCog.parse_event_description(
+                event['description']['CHT'])
+            embed = defaultEmbed(
+                event['name']['CHT'], event['nameFull']['CHT'])
+            if len(value) < 1024:
+                embed.add_field(name='<:placeholder:982425507503165470>', value=value)
+            else:
+                while len(value) > 1024:
+                    new_value = value[:1024]
+                    value = value[1024:]
+                    embed.add_field(name='<:placeholder:982425507503165470>', value=new_value)
             embed.set_image(url=event['banner']['CHT'])
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
-        
+
     @app_commands.command(name='leaderboard排行榜', description='查看原神數據排行榜')
     @app_commands.rename(type='分類')
     @app_commands.describe(type='選擇要查看的排行榜分類')
@@ -1405,25 +1414,151 @@ class GenshinCog(commands.Cog):
             else:
                 await c.execute('DELETE FROM leaderboard WHERE user_id = ?', (user_id,))
         await self.bot.db.commit()
-        sorted_dict = dict(sorted(data_dict.items(), key=lambda item: item[1], reverse=True))
+        sorted_dict = dict(
+            sorted(data_dict.items(), key=lambda item: item[1], reverse=True))
         message = []
         rank = 1
         for user_id, achievements in sorted_dict.items():
-            message.append(f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n')
+            message.append(
+                f'{rank}. {(self.bot.get_user(user_id)).mention} - {achievements}\n')
             rank += 1
         x = divide_chunks(message, 15)
         embeds = []
         for y in x:
-            desc= ''
+            desc = ''
             for z in y:
                 desc += f'{z}'
-            embed=defaultEmbed(f'🏆 排行榜 - 成就數 (你: #{((list(sorted_dict.keys())).index(i.user.id))+1})', desc)
+            embed = defaultEmbed(
+                f'🏆 排行榜 - 成就數 (你: #{((list(sorted_dict.keys())).index(i.user.id))+1})', desc)
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
-        
-    # @app_commands.command(name='wiki', description='原神百科')
-    # async def wiki(self, i: Interaction)
-        
+
+    class WikiElementChooseView(DefaultView):
+        def __init__(self, data: dict, author: Member):
+            super().__init__(timeout=None)
+            self.author = author
+            for index in range(0, 7):
+                self.add_item(GenshinCog.WikiElementButton(data, index))
+            self.avatar_id = None
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /wiki 來查看你的維基百科', icon_url=interaction.user.avatar), ephemeral=True)
+            return interaction.user.id == self.author.id
+
+    class WikiElementButton(Button):
+        def __init__(self, data: dict, index: int):
+            super().__init__(
+                emoji=(list(elements.values()))[index], row=index//4)
+            self.index = index
+            self.data = data
+
+        async def callback(self, interaction: Interaction) -> Any:
+            self.view.clear_items()
+            self.view.add_item(GenshinCog.WikiElementSelect(
+                self.data, list(elements.keys())[self.index]))
+            await interaction.response.edit_message(view=self.view)
+
+    class WikiElementSelect(Select):
+        def __init__(self, data: dict, element: str):
+            options = []
+            for avatar_id, avatar_info in data['data']['items'].items():
+                if avatar_info['element'] == element:
+                    options.append(SelectOption(label=avatar_info['name'], emoji=(
+                        getCharacter(name=avatar_info['name']))['emoji'], value=avatar_id))
+            super().__init__(placeholder='選擇角色', options=options)
+
+        async def callback(self, i: Interaction):
+            await i.response.defer()
+            self.view.avatar_id = self.values[0]
+            self.view.stop()
+
+    @app_commands.command(name='wiki', description='原神百科')
+    @app_commands.rename(type='分類')
+    @app_commands.describe(type='選擇要查看的維基百科分類')
+    @app_commands.choices(type=[Choice(name='角色', value=0)])
+    async def wiki(self, i: Interaction, type: int):
+        if type == 0:
+            async with self.bot.session.get('https://api.ambr.top/v2/cht/avatar') as resp:
+                data = await resp.json()
+            view = GenshinCog.WikiElementChooseView(data, i.user)
+            await i.response.send_message(view=view)
+            await view.wait()
+            async with self.bot.session.get(f'https://api.ambr.top/v2/cht/avatar/{view.avatar_id}') as resp:
+                avatar = await resp.json()
+            avatar_data = avatar["data"]
+            embeds = []
+            embed = defaultEmbed(
+                f"{elements.get(avatar['data']['element'])} {avatar['data']['name']}")
+            embed.add_field(
+                name='基本資料',
+                value=f'生日: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
+                f'頭銜: {avatar_data["fetter"]["title"]}\n'
+                f'*{avatar_data["fetter"]["detail"]}*\n'
+                f'命座: {avatar_data["fetter"]["constellation"]}\n'
+                f'隸屬於: {avatar_data["native"] if "native" in avatar_data else "???"}\n'
+                f'名片: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n'
+            )
+            embed.set_image(
+                url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
+            embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
+            embeds.append(embed)
+            embed = defaultEmbed().set_author(name='等級突破素材', icon_url=(getCharacter(view.avatar_id))['icon'])
+            for promoteLevel in avatar_data['upgrade']['promote'][1:]:
+                value = ''
+                for item_id, item_count in promoteLevel['costItems'].items():
+                    value += f'{(getConsumable(id=item_id))["emoji"]} x{item_count}\n'
+                value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
+                embed.add_field(
+                    name=f'突破到 lvl.{promoteLevel["unlockMaxLevel"]}',
+                    value=value,
+                    inline=True
+                )
+            embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
+            embeds.append(embed)
+            for talent_id, talent_info in avatar_data["talent"].items():
+                max = 3
+                if view.avatar_id == '10000002' or view.avatar_id == '10000041':
+                    max = 4
+                if int(talent_id) <= max:
+                    embed = defaultEmbed().set_author(name='天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    embed.add_field(
+                        name=talent_info['name'],
+                        value=GenshinCog.parse_event_description(talent_info["description"]),
+                        inline=False
+                    )
+                    for level, promote_info in talent_info['promote'].items():
+                        if level == '1' or int(level) > 10:
+                            continue
+                        value = ''
+                        for item_id, item_count in promote_info['costItems'].items():
+                            value += f'{(getConsumable(id=item_id))["emoji"]} x{item_count}\n'
+                        value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
+                        embed.add_field(
+                            name=f'升到 lvl.{level}',
+                            value=value,
+                            inline=True
+                        )
+                    embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+                    embeds.append(embed)
+                else:
+                    embed = defaultEmbed().set_author(name='固有天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    embed.add_field(
+                        name=talent_info['name'],
+                        value=GenshinCog.parse_event_description(talent_info["description"]),
+                        inline=False
+                    )
+                    embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+                    embeds.append(embed)
+            for const_id, const_info in avatar_data['constellation'].items():
+                embed = defaultEmbed().set_author(name='命座', icon_url=(getCharacter(view.avatar_id))['icon'])
+                embed.add_field(
+                    name=const_info['name'],
+                    value=GenshinCog.parse_event_description(const_info['description'])
+                )
+                embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
+                embeds.append(embed)
+            await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:
