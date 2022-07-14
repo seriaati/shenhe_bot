@@ -10,7 +10,7 @@ from discord.ext import commands, tasks
 from discord.utils import sleep_until
 from utility.apps.FlowApp import FlowApp
 from utility.apps.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, getCharacter, log
+from utility.utils import defaultEmbed, errEmbed, getCharacter, log
 
 import genshin
 
@@ -223,6 +223,7 @@ class Schedule(commands.Cog):
     async def remove_flow_acc(self):
         log(True, False, 'Remove Flow Acc', 'task start')
         c: aiosqlite.Cursor = await self.bot.db.cursor()
+        channel = self.bot.get_channel(957268464928718918)
         await c.execute('SELECT user_id, last_trans FROM flow_accounts')
         result = await c.fetchall()
         now = datetime.now()
@@ -230,6 +231,7 @@ class Schedule(commands.Cog):
             flow = await self.flow_app.get_user_flow(tuple[0])
             delta = now-parser.parse(tuple[1])
             if delta.days > 7 and flow <= 100:
+                await channel.send(content=f'<@{tuple[0]}>', embed=errEmbed(message=f'系統已扣除你帳戶裡的 flow 幣 ({flow})\n如欲取回款項, 請在今天結束前以任何方式聯絡 <@410036441129943050>').set_author(name='超過 7 天沒有進行 flow 幣交易'))
                 await self.flow_app.transaction(
                     tuple[0], flow, is_removing_account=True)
         log(True, False, 'Remove Flow Acc', 'task finished')
