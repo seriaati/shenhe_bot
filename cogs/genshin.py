@@ -782,7 +782,7 @@ class GenshinCog(commands.Cog):
 
     @calc.command(name='character擁有角色', description='個別計算一個自己擁有的角色所需的素材')
     async def calc_character(self, i: Interaction):
-        client, uid, only_uid = await self.genshin_app.getUserCookie(i.user.id)
+        client, uid, only_uid, user = await self.genshin_app.getUserCookie(i.user.id)
         if only_uid:
             embed = errEmbed('你不能使用這項功能!', '請使用`/cookie`的方式註冊後再來試試看')
             await i.response.send_message(embed=embed, ephemeral=True)
