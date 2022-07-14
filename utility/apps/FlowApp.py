@@ -75,6 +75,10 @@ class FlowApp:
         c = await self.db.cursor()
         await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (user_id,))
         flow = await c.fetchone()
+        if flow is None:
+            await self.register(user_id)
+        await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (user_id,))
+        flow = await c.fetchone()
         return flow[0]
 
     async def get_bank_flow(self) -> int:
