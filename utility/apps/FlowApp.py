@@ -12,10 +12,10 @@ class FlowApp:
         self.db = db
         self.bot = bot
 
-    async def register(self, user_id: int):
+    async def register(self, user_id: int, no_20: bool = False):
         log(True, False, 'Register', user_id)
-        await self.transaction(user_id, 20, is_new_account=True)
-        return 20
+        await self.transaction(user_id, 20 if not no_20 else 0, is_new_account=True)
+        return 20 if not no_20 else 0
 
     async def transaction(self, user_id: int, flow_for_user: int, time_state: str = None, is_new_account: bool = False, is_removing_account: bool = False):
         now = datetime.now()

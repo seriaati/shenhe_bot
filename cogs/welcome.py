@@ -52,16 +52,13 @@ class WelcomeCog(commands.Cog):
         if r not in before.roles and r in after.roles:
             log(True, False, 'New Traveler', after.id)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('INSERT INTO guild_members (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?', (after.id, after.id))
-            try:
-                await c.execute('INSERT INTO flow_accounts (user_id) VALUES (?)', (after.id,))
-            except:
-                log(True, True, 'New Traveler',
-                    f'{after.id} already in flow_accounts')
             await c.execute('SELECT * FROM guild_members WHERE user_id = ?', (after.id,))
             result = await c.fetchone()
             if result is None:
                 await self.flow_app.register(after.id)
+            else:
+                await self.flow_app.register(after.id, True)
+            await c.execute('INSERT INTO guild_members (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?', (after.id, after.id))
             public = self.bot.get_channel(916951131022843964)
             view = WelcomeCog.Welcome(after)
             welcome_strs = ['祝你保底不歪十連雙黃',
