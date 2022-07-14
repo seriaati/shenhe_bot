@@ -2,7 +2,7 @@ import asyncio
 import io
 from datetime import datetime, time
 
-from discord import (File, Interaction, Member, Message, RawMessageDeleteEvent,
+from discord import (File, Interaction, Member, Message, NotFound, RawMessageDeleteEvent,
                      Status, TextChannel, app_commands)
 from discord.ext import commands
 from utility.utils import defaultEmbed, errEmbed, time_in_range
@@ -36,12 +36,15 @@ class AdminCog(commands.Cog):
         if message.channel == sese_channel and len(message.attachments) != 0:
             for attachment in message.attachments:
                 if not attachment.is_spoiler():
-                    async with self.bot.session.get(attachment.url) as resp:
+                    try:
+                        await message.delete()
+                    except NotFound:
+                        pass
+                    async with self.bot.session.get(attachment.proxy_url) as resp:
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
-                            bytes_obj, filename='waifu_image.gif', spoiler=True)
+                            bytes_obj, filename=attachment.filename, spoiler=True)
                     await message.channel.send(content=f'由 <@{message.author.id}> 寄出', file=file)
-            await message.delete()
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
