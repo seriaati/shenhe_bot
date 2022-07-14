@@ -40,8 +40,8 @@ class AdminCog(commands.Cog):
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
-                    await message.delete()
                     await message.channel.send(content=f'由 <@{message.author.id}> 寄出', file=file)
+            await message.delete()
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
