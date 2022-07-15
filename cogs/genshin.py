@@ -1462,6 +1462,13 @@ class GenshinCog(commands.Cog):
             user = self.bot.get_user(user_id)
             if user is None or user not in i.guild.members:
                 await c.execute('DELETE FROM substat_leaderboard WHERE user_id = ?', (user_id,))
+        await c.execute('SELECT user_id FROM sese_leaderboard')
+        result = await c.fetchall()
+        for index, tuple in enumerate(result):
+            user_id = tuple[0]
+            user = self.bot.get_user(user_id)
+            if user is None or user not in i.guild.members:
+                await c.execute('DELETE FROM sese_leaderboard WHERE user_id = ?', (user_id,))
         await self.bot.db.commit()
         
         if type == 0:
