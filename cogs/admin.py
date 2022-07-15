@@ -1,6 +1,7 @@
 import asyncio
 import io
 from datetime import datetime, time
+import aiosqlite
 
 from discord import (File, Interaction, Member, Message, NotFound, RawMessageDeleteEvent,
                      Status, TextChannel, app_commands)
@@ -34,6 +35,9 @@ class AdminCog(commands.Cog):
         sese_channel = self.bot.get_channel(
             984792329426714677) if self.debug else self.bot.get_channel(965842415913152522)
         if message.channel == sese_channel and len(message.attachments) != 0:
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (message.author.id, len(message.attachments), len(message.attachments), message.author.id))
+            await self.bot.db.commit()
             for attachment in message.attachments:
                 if not attachment.is_spoiler():
                     try:
