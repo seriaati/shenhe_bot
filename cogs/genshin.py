@@ -1467,7 +1467,7 @@ class GenshinCog(commands.Cog):
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda i: i[1], reverse=True)
+            leaderboard.sort(key=lambda index: index[1], reverse=True)
             leaderboard = divide_chunks(leaderboard, 10)
             embeds = []
             interaction_user_rank = 1
@@ -1491,14 +1491,14 @@ class GenshinCog(commands.Cog):
             await view.wait()
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda i: i[5], reverse=True)
+            leaderboard.sort(key=lambda index: index[5], reverse=True)
             interaction_user_rank = 1
             rank = 1
             for index, tuple in enumerate(leaderboard):
                 if tuple[0] == i.user.id:
                     interaction_user_rank = rank 
-                    rank += 1
                     break
+                rank += 1
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
             embeds = []
@@ -1521,7 +1521,7 @@ class GenshinCog(commands.Cog):
             embeds = []
             await c.execute('SELECT user_id, sese_count FROM sese_leaderboard')
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda i: i[1], reverse=True)
+            leaderboard.sort(key=lambda index: index[1], reverse=True)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
             interaction_user_rank = 1
