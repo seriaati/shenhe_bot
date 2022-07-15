@@ -1452,52 +1452,37 @@ class GenshinCog(commands.Cog):
         await self.bot.db.commit()
 
         # clean up leaderboard
-        await c.execute('SELECT user_id, achievements FROM leaderboard')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            user_id = tuple[0]
-            user = self.bot.get_user(user_id)
-            if user is None or user not in i.guild.members:
-                await c.execute('DELETE FROM leaderboard WHERE user_id = ?', (user_id,))
-        await c.execute('SELECT user_id FROM substat_leaderboard')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            user_id = tuple[0]
-            user = self.bot.get_user(user_id)
-            if user is None or user not in i.guild.members:
-                await c.execute('DELETE FROM substat_leaderboard WHERE user_id = ?', (user_id,))
-        await c.execute('SELECT user_id FROM sese_leaderboard')
-        result = await c.fetchall()
-        for index, tuple in enumerate(result):
-            user_id = tuple[0]
-            user = self.bot.get_user(user_id)
-            if user is None or user not in i.guild.members:
-                await c.execute('DELETE FROM sese_leaderboard WHERE user_id = ?', (user_id,))
+        leaderboards = ['leaderboard',
+                        'substat_leaderboard', 'sese_leaderboard']
+        for leaderboard in leaderboards:
+            await c.execute(f'SELECT user_id FROM {leaderboard}')
+            result = await c.fetchall()
+            for index, tuple in enumerate(result):
+                user_id = tuple[0]
+                user = self.bot.get_user(user_id)
+                if user is None or user not in i.guild.members:
+                    await c.execute(f'DELETE FROM {leaderboard} WHERE user_id = ?', (user_id,))
         await self.bot.db.commit()
 
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda i: i[1], reverse=True)
-            message = []
+            leaderboard = divide_chunks(leaderboard, 10)
+            embeds = []
             interaction_user_rank = 1
             rank = 1
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                achievements = tuple[1]
-                if user_id == i.user.id:
-                    interaction_user_rank = rank
-                message.append(
-                    f'{rank}. {(self.bot.get_user(user_id)).name} - {achievements}')
-                rank += 1
-            message = divide_chunks(message, 15)
-            embeds = []
-            for y in message:
-                desc = ''
-                for z in y:
-                    desc += f'{z}\n'
+            for small_leaderboard in leaderboard:
+                message = ''
+                for index, tuple in enumerate(small_leaderboard):
+                    user_id = tuple[0]
+                    achievements = tuple[1]
+                    if user_id == i.user.id:
+                        interaction_user_rank = rank
+                    message += f'{rank}. {(i.guild.get_member(user_id)).display_name} - {achievements}\n'
+                    rank += 1
                 embed = defaultEmbed(
-                    f'🏆 成就數排行榜 (你: #{interaction_user_rank})', desc)
+                    f'🏆 成就數排行榜 (你: #{interaction_user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
         elif type == 1:
@@ -1524,7 +1509,7 @@ class GenshinCog(commands.Cog):
                     if user_id == i.user.id and not found:
                         interaction_user_rank = rank
                         found = True
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(self.bot.get_user(user_id)).name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{interaction_user_rank})', message)
@@ -1545,10 +1530,10 @@ class GenshinCog(commands.Cog):
                     sese_count = tuple[1]
                     if user_id == i.user.id:
                         interaction_user_rank = rank
-                    message += f'{rank}. {(self.bot.get_user(user_id)).name} - {sese_count}\n'
+                    message += f'{rank}. {(i.guild.get_member(user_id)).display_name} - {sese_count}\n'
                     rank += 1
                 embed = defaultEmbed(
-                        f'🏆 色色榜 (你: #{interaction_user_rank})', message)
+                    f'🏆 色色榜 (你: #{interaction_user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
