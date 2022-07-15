@@ -1377,16 +1377,18 @@ class GenshinCog(commands.Cog):
             embed = defaultEmbed(
                 event['name']['CHT'], event['nameFull']['CHT'])
             if len(value) < 1024:
-                embed.add_field(name='<:placeholder:982425507503165470>', value=value)
+                embed.add_field(
+                    name='<:placeholder:982425507503165470>', value=value)
             else:
                 while len(value) > 1024:
                     new_value = value[:1024]
                     value = value[1024:]
-                    embed.add_field(name='<:placeholder:982425507503165470>', value=new_value)
+                    embed.add_field(
+                        name='<:placeholder:982425507503165470>', value=new_value)
             embed.set_image(url=event['banner']['CHT'])
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
-        
+
     class ArtifactSubStatView(DefaultView):
         def __init__(self, author: Member):
             super().__init__(timeout=None)
@@ -1394,18 +1396,19 @@ class GenshinCog(commands.Cog):
             self.sub_stat = None
             for prop_id, prop_info in fight_prop.items():
                 if prop_info['substat']:
-                    self.add_item(GenshinCog.ArtifactSubStatButton(prop_id, prop_info['name']))
-            
+                    self.add_item(GenshinCog.ArtifactSubStatButton(
+                        prop_id, prop_info['name']))
+
         async def interaction_check(self, interaction: Interaction) -> bool:
             if interaction.user.id != self.author.id:
                 await interaction.response.send_message(embed=errEmbed(message='輸入 `/leaderbaord` 來查看排行榜').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
             return interaction.user.id == self.author.id
-        
+
     class ArtifactSubStatButton(Button):
-        def __init__(self, prop_id :str, prop_name: str):
+        def __init__(self, prop_id: str, prop_name: str):
             super().__init__(label=prop_name, emoji=getStatEmoji(prop_id))
             self.prop_id = prop_id
-            
+
         async def callback(self, interaction: Interaction) -> Any:
             await interaction.response.defer()
             self.view.sub_stat = self.prop_id
@@ -1426,7 +1429,7 @@ class GenshinCog(commands.Cog):
         # get enka data
         async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
             data = await r.json()
-            
+
         # insert enka data into db
         if 'playerInfo' in data and 'finishAchievementNum' in data['playerInfo']:
             achievements = int(data['playerInfo']['finishAchievementNum'])
@@ -1437,7 +1440,8 @@ class GenshinCog(commands.Cog):
                 for equipment in character['equipList']:
                     if 'weapon' in equipment:
                         continue
-                    artifact_name = get_name_text_map_hash.getNameTextMapHash(equipment['flat']['nameTextMapHash'])
+                    artifact_name = get_name_text_map_hash.getNameTextMapHash(
+                        equipment['flat']['nameTextMapHash'])
                     equip_type = equipment['flat']['equipType']
                     if 'reliquarySubstats' not in equipment['flat']:
                         continue
@@ -1446,7 +1450,7 @@ class GenshinCog(commands.Cog):
                         sub_stat_value = substat['statValue']
                         await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, avatar_id, artifact_name, equip_type, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat = ?', (i.user.id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value, i.user.id, avatar_id, artifact_name, equip_type, sub_stat))
         await self.bot.db.commit()
-        
+
         # clean up leaderboard
         await c.execute('SELECT user_id, achievements FROM leaderboard')
         result = await c.fetchall()
@@ -1470,11 +1474,11 @@ class GenshinCog(commands.Cog):
             if user is None or user not in i.guild.members:
                 await c.execute('DELETE FROM sese_leaderboard WHERE user_id = ?', (user_id,))
         await self.bot.db.commit()
-        
+
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda i:i[1], reverse=True)
+            leaderboard.sort(key=lambda i: i[1], reverse=True)
             message = []
             interaction_user_rank = 1
             rank = 1
@@ -1498,11 +1502,11 @@ class GenshinCog(commands.Cog):
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
         elif type == 1:
             view = GenshinCog.ArtifactSubStatView(i.user)
-            await i.followup.send(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar),view=view)
+            await i.followup.send(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
             await view.wait()
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda i:i[5], reverse=True)
+            leaderboard.sort(key=lambda i: i[5], reverse=True)
             leaderboard = divide_chunks(leaderboard, 10)
             interaction_user_rank = 1
             rank = 1
@@ -1522,23 +1526,31 @@ class GenshinCog(commands.Cog):
                         found = True
                     message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(self.bot.get_user(user_id)).name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
                     rank += 1
-                embed = defaultEmbed(f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{interaction_user_rank})', message)
+                embed = defaultEmbed(
+                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{interaction_user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
         elif type == 2:
-            await c.execute('SELECT * FROM sese_leaderboard')
+            embeds = []
+            await c.execute('SELECT user_id, sese_count FROM sese_leaderboard')
             leaderboard = await c.fetchall()
+            leaderboard.sort(key=lambda i: i[1], reverse=True)
+            leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
             message = ''
             interaction_user_rank = 1
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                sese_count = tuple[1]
-                if user_id == i.user.id:
-                    interaction_user_rank = rank
-                message += f'{rank}. {(self.bot.get_user(user_id)).name} - {sese_count}\n'
-                rank += 1
-            await i.followup.send(embed=defaultEmbed(f'🏆 色色榜 (你: #{interaction_user_rank})', message))
+            for small_leaderboard in leaderboard:
+                for index, tuple in enumerate(small_leaderboard):
+                    user_id = tuple[0]
+                    sese_count = tuple[1]
+                    if user_id == i.user.id:
+                        interaction_user_rank = rank
+                    message += f'{rank}. {(self.bot.get_user(user_id)).name} - {sese_count}\n'
+                    rank += 1
+                embed = defaultEmbed(
+                        f'🏆 色色榜 (你: #{interaction_user_rank})', message)
+                embeds.append(embed)
+            await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
     class WikiElementChooseView(DefaultView):
         def __init__(self, data: dict, author: Member):
@@ -1579,13 +1591,13 @@ class GenshinCog(commands.Cog):
             await i.response.defer()
             self.view.avatar_id = self.values[0]
             self.view.stop()
-            
+
     class ShowMaterialsView(DefaultView):
-        def __init__(self, embed: Embed,author: Member):
+        def __init__(self, embed: Embed, author: Member):
             super().__init__(timeout=None)
             self.author = author
             self.embed = embed
-            
+
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /wiki 來查看你的維基百科', icon_url=interaction.user.avatar), ephemeral=True)
@@ -1621,7 +1633,8 @@ class GenshinCog(commands.Cog):
                 url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
             embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
             embeds.append(embed)
-            embed = defaultEmbed().set_author(name='等級突破素材', icon_url=(getCharacter(view.avatar_id))['icon'])
+            embed = defaultEmbed().set_author(
+                name='等級突破素材', icon_url=(getCharacter(view.avatar_id))['icon'])
             for promoteLevel in avatar_data['upgrade']['promote'][1:]:
                 value = ''
                 for item_id, item_count in promoteLevel['costItems'].items():
@@ -1639,13 +1652,16 @@ class GenshinCog(commands.Cog):
                 if view.avatar_id == '10000002' or view.avatar_id == '10000041':
                     max = 4
                 if int(talent_id) <= max:
-                    embed = defaultEmbed().set_author(name='天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    embed = defaultEmbed().set_author(
+                        name='天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
                     embed.add_field(
                         name=talent_info['name'],
-                        value=GenshinCog.parse_event_description(talent_info["description"]),
+                        value=GenshinCog.parse_event_description(
+                            talent_info["description"]),
                         inline=False
                     )
-                    material_embed = defaultEmbed().set_author(name='升級天賦所需素材', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    material_embed = defaultEmbed().set_author(
+                        name='升級天賦所需素材', icon_url=(getCharacter(view.avatar_id))['icon'])
                     for level, promote_info in talent_info['promote'].items():
                         if level == '1' or int(level) > 10:
                             continue
@@ -1658,25 +1674,32 @@ class GenshinCog(commands.Cog):
                             value=value,
                             inline=True
                         )
-                    embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+                    embed.set_thumbnail(
+                        url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
                 else:
-                    embed = defaultEmbed().set_author(name='固有天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    embed = defaultEmbed().set_author(
+                        name='固有天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
                     embed.add_field(
                         name=talent_info['name'],
-                        value=GenshinCog.parse_event_description(talent_info["description"]),
+                        value=GenshinCog.parse_event_description(
+                            talent_info["description"]),
                         inline=False
                     )
-                    embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+                    embed.set_thumbnail(
+                        url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
             const_count = 1
             for const_id, const_info in avatar_data['constellation'].items():
-                embed = defaultEmbed().set_author(name=f'命座 {const_count}', icon_url=(getCharacter(view.avatar_id))['icon'])
+                embed = defaultEmbed().set_author(
+                    name=f'命座 {const_count}', icon_url=(getCharacter(view.avatar_id))['icon'])
                 embed.add_field(
                     name=const_info['name'],
-                    value=GenshinCog.parse_event_description(const_info['description'])
+                    value=GenshinCog.parse_event_description(
+                        const_info['description'])
                 )
-                embed.set_thumbnail(url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
+                embed.set_thumbnail(
+                    url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
                 embeds.append(embed)
                 const_count += 1
             await GeneralPaginator(i, embeds, material_embed=material_embed).start(embeded=True, edit_original_message=True, materials=True)
