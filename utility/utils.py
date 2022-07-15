@@ -5,14 +5,17 @@ from datetime import datetime
 
 import discord
 import genshin
-from dotenv import load_dotenv
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
-from data.game.stat_emojis import stat_emojis
+from data.game.fight_prop import fight_prop
 from data.game.talents import talents_map
 from data.game.weapons import weapons_map
+from data.game.artifacts import artifacts_map
+from dotenv import load_dotenv
 from pyppeteer import launch
+
 load_dotenv()
+
 
 class GetNameTextMapHash():
     def __init__(self) -> None:
@@ -62,8 +65,9 @@ def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
 
 
 def getStatEmoji(propid: str):
-    emoji = stat_emojis.get(propid)
-    return emoji if emoji != None else propid
+    if propid not in fight_prop:
+        raise ValueError(f'{propid} does not exist in fight_prop.py')
+    return fight_prop[propid]['emoji']
 
 
 def getClient():
@@ -74,6 +78,7 @@ def getClient():
     client.default_game = genshin.Game.GENSHIN
     client.uids[genshin.Game.GENSHIN] = 901211014
     return client
+
 
 def time_in_range(start, end, x):
     """Return true if x is in the range [start, end]"""
@@ -274,6 +279,13 @@ def getTalent(id: int = '', name: str = ''):
         if talent_id == str(id) or talent_info['name'] == name:
             return talent_info
     return {'name': f'{id}{name}'}
+
+def getArtifact(id: int = '', name: str = ''):
+    for artifact_id, artifact_info in artifacts_map.items():
+        if artifact_id == str(id) or name in artifact_info['artifacts'] or name == artifact_info['name']:
+            return artifact_info 
+    raise ValueError(f'Unknwon artifact {id}{name}')
+
 
 def getAreaEmoji(area_name: str):
     emoji_dict = {
