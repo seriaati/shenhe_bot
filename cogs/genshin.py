@@ -1522,9 +1522,9 @@ class GenshinCog(commands.Cog):
             leaderboard.sort(key=lambda i: i[1], reverse=True)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
-            message = ''
             interaction_user_rank = 1
             for small_leaderboard in leaderboard:
+                message = ''
                 for index, tuple in enumerate(small_leaderboard):
                     user_id = tuple[0]
                     sese_count = tuple[1]
