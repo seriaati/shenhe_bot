@@ -191,7 +191,6 @@ class GenshinCog(commands.Cog):
         if not success:
             await i.response.send_message(embed=result, ephemeral=True)
         if overview:
-            result = result[0]
             await i.response.send_message(embed=result)
         else:
             await AbyssPaginator(i, result).start(embeded=True)
