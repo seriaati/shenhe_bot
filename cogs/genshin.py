@@ -1492,11 +1492,16 @@ class GenshinCog(commands.Cog):
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda i: i[5], reverse=True)
-            leaderboard = divide_chunks(leaderboard, 10)
             interaction_user_rank = 1
             rank = 1
+            for index, tuple in enumerate(leaderboard):
+                if tuple[0] == i.user.id:
+                    interaction_user_rank = rank 
+                    rank += 1
+                    break
+            leaderboard = divide_chunks(leaderboard, 10)
+            rank = 1
             embeds = []
-            found = False
             for small_leaderboard in leaderboard:
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
@@ -1506,9 +1511,6 @@ class GenshinCog(commands.Cog):
                     equip_type = tuple[3]
                     sub_stat = tuple[4]
                     sub_stat_value = tuple[5]
-                    if user_id == i.user.id and not found:
-                        interaction_user_rank = rank
-                        found = True
                     message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
                     rank += 1
                 embed = defaultEmbed(
