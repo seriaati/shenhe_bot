@@ -947,5 +947,37 @@ artifacts_map = {
             "冒險家尾羽",
             "冒險家金杯"
         ]
-    }
+    },
+    "15009": {
+        "name": "祭火禮冠",
+        "icon": "https://api.ambr.top/assets/UI/reliquary/UI_RelicIcon_15009_3.png",
+        "rarity": 4,
+        "pos": 3,
+        "emoji": "<:15009:997492897228267581>",
+        "attifacts": []
+    },
+    "15011": {
+        "name": "祭雷禮冠",
+        "icon": "https://api.ambr.top/assets/UI/reliquary/UI_RelicIcon_15011_3.png",
+        "rarity": 4,
+        "pos": 3,
+        "emoji": "<:15011:997493405242368110>",
+        "attifacts": []
+    },
+    "15010": {
+        "name": "祭水禮冠",
+        "icon": "https://api.ambr.top/assets/UI/reliquary/UI_RelicIcon_15010_3.png",
+        "rarity": 4,
+        "pos": 3,
+        "emoji": "<:15010:997493160961900657>",
+        "attifacts": []
+    },
+    "15013": {
+        "name": "祭冰禮冠",
+        "icon": "https://api.ambr.top/assets/UI/reliquary/UI_RelicIcon_15013_3.png",
+        "rarity": 4,
+        "pos": 3,
+        "emoji": "<:15012:997493575656935465>",
+        "attifacts": []
+    },
 }
