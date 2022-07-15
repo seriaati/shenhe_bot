@@ -302,7 +302,7 @@ class GenshinApp:
     async def getAbyss(self, user_id: int, previous: bool, overview: bool):
         client, uid, only_uid, user = await self.getUserCookie(user_id)
         if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar),
+            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic:
@@ -314,8 +314,8 @@ class GenshinApp:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
                 result = errEmbed(message='請輸入 `/stats` 來刷新資料\n'
-                                  '(深淵資料需最多1小時來接收)').set_author(name='找不到深淵資料', icon_url=user.avatar), False
-                return result
+                                  '(深淵資料需最多1小時來接收)').set_author(name='找不到深淵資料', icon_url=user.avatar)
+                return result, False
             result = defaultEmbed(
                 f"第{abyss.season}期深淵",
                 f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n"
@@ -332,7 +332,7 @@ class GenshinApp:
             )
             result.set_author(name='深淵總覽', icon_url=user.avatar)
             if overview:
-                return [result], True
+                return result, True
             result = []
             for floor in abyss.floors:
                 embed = defaultEmbed().set_author(name=f"第{floor.floor}層 (共{floor.stars} ✦)")
@@ -356,7 +356,7 @@ class GenshinApp:
                         inline=False
                     )
                 result.append(embed)
-        return result, True
+            return result, True
 
     async def getBuild(self, element_dict: dict, chara_name: str):
         charas = dict(element_dict)

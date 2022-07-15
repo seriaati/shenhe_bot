@@ -1513,7 +1513,7 @@ class GenshinCog(commands.Cog):
                     if user_id == i.user.id and not found:
                         interaction_user_rank = rank
                         found = True
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(self.bot.get_user(user_id)).name} • {sub_stat_value}{GenshinCog.percent_symbol(view.value)}\n\n'
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(self.bot.get_user(user_id)).name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
                     rank += 1
                 embed = defaultEmbed(f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{interaction_user_rank})', message)
                 embeds.append(embed)
@@ -1529,7 +1529,8 @@ class GenshinCog(commands.Cog):
                 sese_count = tuple[1]
                 if user_id == i.user.id:
                     interaction_user_rank = rank
-                message += f'{rank}. {(self.bot.get_user(user_id)).name} - {sese_count}'
+                message += f'{rank}. {(self.bot.get_user(user_id)).name} - {sese_count}\n'
+                rank += 1
             await i.followup.send(embed=defaultEmbed(f'🏆 色色榜 (你: #{interaction_user_rank})', message))
 
     class WikiElementChooseView(DefaultView):
