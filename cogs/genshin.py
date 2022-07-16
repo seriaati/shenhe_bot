@@ -190,11 +190,11 @@ class GenshinCog(commands.Cog):
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.getAbyss(member.id, previous, overview)
         if not success:
-            await i.response.send_message(embed=result, ephemeral=True)
+            return await i.response.send_message(embed=result, ephemeral=True)
         if overview:
-            await i.response.send_message(embed=result)
+            return await i.response.send_message(embed=result)
         else:
-            await AbyssPaginator(i, result).start(embeded=True)
+            return await AbyssPaginator(i, result).start(embeded=True)
 
 # /stuck
 
