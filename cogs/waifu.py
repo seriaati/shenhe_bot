@@ -2,6 +2,7 @@ import ast
 import io
 import random
 from typing import Any, List
+import aiosqlite
 
 import hmtai
 import waifuim
@@ -178,6 +179,9 @@ class WaifuCog(commands.Cog):
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
                     await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
                 await i.delete_original_message()
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, num, num, self.bot.user.id))
+            await self.bot.db.commit()
         else:
             if num == 1:
                 await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
@@ -228,6 +232,9 @@ class WaifuCog(commands.Cog):
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
                 await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
             await i.delete_original_message()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, num, num, self.bot.user.id))
+        await self.bot.db.commit()
 
     @two_d.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
@@ -278,8 +285,7 @@ class WaifuCog(commands.Cog):
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:
-                    index = 0
-                    for image in images:
+                    for index, image in enumerate(images):
                         if index > 5:
                             break
                         async with self.bot.session.get(str(images[index])) as resp:
@@ -289,6 +295,9 @@ class WaifuCog(commands.Cog):
                         if index == 0:
                             await (await i.original_message()).delete()
                         await i.channel.send(file=file)
+                    c: aiosqlite.Cursor = await self.bot.db.cursor()
+                    await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, index+1, index+1, self.bot.user.id))
+                    await self.bot.db.commit()
                 else:
                     embeds = []
                     count = 0
