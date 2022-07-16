@@ -1,6 +1,7 @@
 # shenhe-bot by seria
 
 import getpass
+import os
 import sys
 import traceback
 from pathlib import Path
@@ -10,6 +11,8 @@ import aiosqlite
 from discord import (Game, HTTPException, Intents, Interaction, Message,
                      Status, app_commands)
 from discord.ext import commands
+from dotenv import load_dotenv
+from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
 from cogs.flow import FlowCog
@@ -17,10 +20,9 @@ from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from debug import DebugView
-import os
-from dotenv import load_dotenv
 from utility.db_utils import DbUtils
 from utility.utils import errEmbed, log
+
 load_dotenv()
 user_name = getpass.getuser()
 if user_name == "alice":
@@ -59,6 +61,7 @@ class ShenheBot(commands.Bot):
         self.db = await aiosqlite.connect('main.db')
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug_toggle = debug_toggle
+        self.enka_client = EnkaNetworkAPI(lang="cht")
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem

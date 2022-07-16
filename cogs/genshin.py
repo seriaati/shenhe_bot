@@ -2,8 +2,9 @@ import ast
 import json
 import re
 from datetime import datetime
-from typing import Any, List, Optional
-
+from typing import Any, List, Optional, Tuple
+from enkanetwork import EnkaNetworkResponse, UIDNotFounded
+from enkanetwork.enum import EquipmentsType, DigitType
 import aiosqlite
 import discord
 import yaml
@@ -1413,6 +1414,47 @@ class GenshinCog(commands.Cog):
             await interaction.response.defer()
             self.view.sub_stat = self.prop_id
             self.view.stop()
+            
+    class LeaderboardArtifactGoBack(Button):
+        def __init__(self, c: aiosqlite.Cursor):
+            super().__init__(label='返回副詞條選擇', row=2, style=ButtonStyle.green)
+            self.c = c
+        
+        async def callback(self, i: Interaction):
+            view = GenshinCog.ArtifactSubStatView(i.user)
+            await i.response.edit_message(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
+            await view.wait()
+            await self.c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (fight_prop.get(view.sub_stat)["name"],))
+            leaderboard = await self.c.fetchall()
+            leaderboard.sort(key=lambda index: index[5], reverse=True)
+            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
+            leaderboard = divide_chunks(leaderboard, 10)
+            rank = 1
+            embeds = []
+            for small_leaderboard in leaderboard:
+                message = ''
+                for index, tuple in enumerate(small_leaderboard):
+                    user_id = tuple[0]
+                    avatar_id = tuple[1]
+                    artifact_name = tuple[2]
+                    equip_type = tuple[3]
+                    sub_stat_value = tuple[5]
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}\n\n'
+                    rank += 1
+                embed = defaultEmbed(
+                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
+                embeds.append(embed)
+            await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(self.c)]).start(embeded=True, edit_original_message=True)
+            
+    def rank_user(user_id: int, leaderboard: List[Tuple]):
+        interaction_user_rank = None
+        rank = 1
+        for index, tuple in enumerate(leaderboard):
+            if tuple[0] == user_id:
+                interaction_user_rank = rank
+                break
+            rank += 1
+        return interaction_user_rank
 
     @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
     @app_commands.rename(type='分類')
@@ -1425,31 +1467,23 @@ class GenshinCog(commands.Cog):
         uid = await c.fetchone()
         if uid is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你還沒有註冊過 UID', icon_url=i.user.avatar))
-        uid = uid[0]
-        # get enka data
-        async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
-            data = await r.json()
-
-        # insert enka data into db
-        if 'playerInfo' in data and 'finishAchievementNum' in data['playerInfo']:
-            achievements = int(data['playerInfo']['finishAchievementNum'])
-            await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievements, i.user.id, achievements))
-        if 'avatarInfoList' in data:
-            for character in data['avatarInfoList']:
-                avatar_id = character['avatarId']
-                for equipment in character['equipList']:
-                    if 'weapon' in equipment:
-                        continue
-                    artifact_name = get_name_text_map_hash.getNameTextMapHash(
-                        equipment['flat']['nameTextMapHash'])
-                    equip_type = equipment['flat']['equipType']
-                    if 'reliquarySubstats' not in equipment['flat']:
-                        continue
-                    for substat in equipment['flat']['reliquarySubstats']:
-                        sub_stat = substat['appendPropId']
-                        sub_stat_value = substat['statValue']
-                        await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, avatar_id, artifact_name, equip_type, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat = ?', (i.user.id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value, i.user.id, avatar_id, artifact_name, equip_type, sub_stat))
-        await self.bot.db.commit()
+        try:
+            data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
+        except UIDNotFounded:
+            pass
+        else:
+            achievement = data.player.achievement
+            await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
+            if len(data.characters) != 0:
+                for character in data.characters:
+                    if len(character.equipments) != 0:
+                        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+                            for substat in artifact.detail.substats:
+                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (substat.name,))
+                                sub_stat_value = await c.fetchone()
+                                if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.value))
+            await self.bot.db.commit()
 
         # clean up leaderboard
         leaderboards = ['leaderboard',
@@ -1468,37 +1502,27 @@ class GenshinCog(commands.Cog):
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: index[1], reverse=True)
+            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             embeds = []
-            interaction_user_rank = 1
             rank = 1
             for small_leaderboard in leaderboard:
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
-                    user_id = tuple[0]
-                    achievements = tuple[1]
-                    if user_id == i.user.id:
-                        interaction_user_rank = rank
-                    message += f'{rank}. {(i.guild.get_member(user_id)).display_name} - {achievements}\n'
+                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {tuple[1]}\n'
                     rank += 1
                 embed = defaultEmbed(
-                    f'🏆 成就數排行榜 (你: #{interaction_user_rank})', message)
+                    f'🏆 成就數排行榜 (你: #{user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
         elif type == 1:
             view = GenshinCog.ArtifactSubStatView(i.user)
             await i.followup.send(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
             await view.wait()
-            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
+            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (fight_prop.get(view.sub_stat)["name"],))
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: index[5], reverse=True)
-            interaction_user_rank = 1
-            rank = 1
-            for index, tuple in enumerate(leaderboard):
-                if tuple[0] == i.user.id:
-                    interaction_user_rank = rank 
-                    break
-                rank += 1
+            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
             embeds = []
@@ -1509,33 +1533,28 @@ class GenshinCog(commands.Cog):
                     avatar_id = tuple[1]
                     artifact_name = tuple[2]
                     equip_type = tuple[3]
-                    sub_stat = tuple[4]
                     sub_stat_value = tuple[5]
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}{GenshinCog.percent_symbol(view.sub_stat)}\n\n'
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}\n\n'
                     rank += 1
                 embed = defaultEmbed(
-                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{interaction_user_rank})', message)
+                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
                 embeds.append(embed)
-            await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+            await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(c)]).start(embeded=True, edit_original_message=True)
         elif type == 2:
             embeds = []
             await c.execute('SELECT user_id, sese_count FROM sese_leaderboard')
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: index[1], reverse=True)
+            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
-            interaction_user_rank = 1
             for small_leaderboard in leaderboard:
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
-                    user_id = tuple[0]
-                    sese_count = tuple[1]
-                    if user_id == i.user.id:
-                        interaction_user_rank = rank
-                    message += f'{rank}. {(i.guild.get_member(user_id)).display_name} - {sese_count}\n'
+                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {tuple[1]}\n'
                     rank += 1
                 embed = defaultEmbed(
-                    f'🏆 色色榜 (你: #{interaction_user_rank})', message)
+                    f'🏆 色色榜 (你: #{user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
