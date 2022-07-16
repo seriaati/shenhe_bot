@@ -153,7 +153,7 @@ class WishCog(commands.Cog):
         else:
             return True, None
 
-    async def char_banner_calc(self, user_id: int):
+    async def char_banner_calc(self, user_id: int, luck: bool = False):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute("SELECT wish_name, wish_rarity, wish_type FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
         user_wish_history = await c.fetchall()
@@ -167,8 +167,11 @@ class WishCog(commands.Cog):
             wish_name = tuple[0]
             wish_rarity = tuple[1]
             if wish_rarity == 5:
-                if wish_name not in std_characters:
+                if luck:
                     get_num += 1
+                else:
+                    if wish_name not in std_characters:
+                        get_num += 1
                 if not found_last_five_star:
                     found_last_five_star = True
                     if wish_name not in std_characters:
@@ -178,6 +181,9 @@ class WishCog(commands.Cog):
             else:
                 if not found_last_five_star:
                     left_pull += 1
+        if luck:
+            await c.execute('SELECT COUNT (wish_name) FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, 200))
+            use_pull += (await c.fetchone())[0]
         return get_num, use_pull, left_pull, up_guarantee
 
     async def weapon_banner_calc(self, user_id: int):
@@ -273,16 +279,16 @@ class WishCog(commands.Cog):
             await i.response.send_message(embed=errEmbed(message='請在限定池中進行祈願\n再使用 `/wish setkey` 更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
-            member.id)
+            member.id, True)
         player = GGanalysislib.Up5starCharacter()
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         embed = defaultEmbed(
             '<:wish:982419859117838386> 限定祈願歐氣值分析',
-            f'• 你的運氣擊敗了{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull, up_guarantee=up_guarantee), 2))}%的玩家\n'
+            f'• 你的運氣擊敗了**{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull), 2))}%**的玩家\n'
             f'• 共**{use_pull}**抽\n'
-            f'• 出了**{get_num}**個UP\n'
-            f'• 墊了**{left_pull}**抽\n'
-            f'• {gu_str}')
+            f'• 出了**{get_num}**個5星\n'
+            f'• 墊了**{left_pull}**抽'
+        )
         embed.set_author(name=member, icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
