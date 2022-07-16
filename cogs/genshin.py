@@ -1,4 +1,5 @@
 import ast
+from dis import dis
 import json
 import re
 from datetime import datetime
@@ -8,6 +9,8 @@ from enkanetwork.enum import EquipmentsType, DigitType
 import aiosqlite
 import discord
 import yaml
+import GGanalysislib
+from cogs.wish import WishCog
 from data.game.characters import characters_map
 from data.game.namecards import namecards_map
 from data.game.talent_books import talent_books
@@ -1459,7 +1462,7 @@ class GenshinCog(commands.Cog):
     @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
     @app_commands.rename(type='分類')
     @app_commands.describe(type='選擇要查看的排行榜分類')
-    @app_commands.choices(type=[Choice(name='成就數', value=0), Choice(name='聖遺物副詞條', value=1), Choice(name='色色榜', value=2)])
+    @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='色色榜', value=2), Choice(name='歐氣榜', value=3)])
     async def leaderboard(self, i: Interaction, type: int):
         await i.response.defer()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -1555,6 +1558,30 @@ class GenshinCog(commands.Cog):
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 色色榜 (你: #{user_rank})', message)
+                embeds.append(embed)
+            await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
+        elif type == 3:
+            player = GGanalysislib.PityGacha()
+            await c.execute('SELECT DISTINCT user_id FROM wish_history')
+            result = await c.fetchall()
+            data = {}
+            for index, tuple in enumerate(result):
+                get_num, use_pull, left_pull, up_guarantee = await WishCog.char_banner_calc(self, tuple[0], True)
+                if tuple[0] in data:
+                    continue
+                data[tuple[0]] = 100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull)
+            leaderboard = list(sorted(data.items(), key=lambda item: item[1], reverse=True))
+            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
+            leaderboard = divide_chunks(leaderboard, 10)
+            embeds = []
+            rank = 1
+            for small_leaderboard in leaderboard:
+                message = ''
+                for index, tuple in enumerate(small_leaderboard):
+                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {round(tuple[1], 2)}%\n'
+                    rank += 1 
+                embed = defaultEmbed(
+                    f'🏆 歐氣榜 (你: #{user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
