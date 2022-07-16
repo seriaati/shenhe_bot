@@ -280,7 +280,7 @@ class WishCog(commands.Cog):
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             member.id, True)
-        player = GGanalysislib.Up5starCharacter()
+        player = GGanalysislib.PityGacha()
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         embed = defaultEmbed(
             '<:wish:982419859117838386> 限定祈願歐氣值分析',
