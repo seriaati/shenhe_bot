@@ -48,7 +48,10 @@ class WishCog(commands.Cog):
             c = await self.db.cursor()
             for wish in wish_history:
                 wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
-                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id) VALUES (?, ?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type, wish.id))
+                try:
+                    await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id) VALUES (?, ?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type, wish.id))
+                except sqlite3.IntegrityError:
+                    pass
             await self.db.commit()
             await i.edit_original_message(embed=defaultEmbed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
 
