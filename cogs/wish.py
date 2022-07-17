@@ -1,4 +1,6 @@
 
+from datetime import timedelta
+import sqlite3
 from typing import Optional
 
 import aiosqlite
@@ -35,7 +37,7 @@ class WishCog(commands.Cog):
         async def on_submit(self, i: discord.Interaction):
             client = getClient()
             url = self.url.value
-            log(True, False, 'Wish Setkey', f'{i.user.id}(url={url})')
+            log(True, False, 'Wish Setkey', f'{i.user.id} (url={url})')
             authkey = genshin.utility.extract_authkey(url)
             client.authkey = authkey
             await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
@@ -44,13 +46,9 @@ class WishCog(commands.Cog):
             except Exception as e:
                 await i.edit_original_message(embed=errEmbed('出現錯誤', f'請告知小雪\n```{e}```'))
             c = await self.db.cursor()
-            await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (i.user.id,))
-            result = await c.fetchone()
-            if result is not None:
-                await c.execute('DELETE FROM wish_history WHERE user_id = ?', (i.user.id,))
-            async for wish in client.wish_history():
-                wish_time = f'{wish.time.year}-{wish.time.month}-{wish.time.day}'
-                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type) VALUES (?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type))
+            for wish in wish_history:
+                wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
+                await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id) VALUES (?, ?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type, wish.id))
             await self.db.commit()
             await i.edit_original_message(embed=defaultEmbed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
 
