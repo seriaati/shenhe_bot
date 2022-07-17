@@ -983,15 +983,19 @@ class GenshinCog(commands.Cog):
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     class EnkaPageView(DefaultView):
-        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], options: list[SelectOption], disable_damage_calc_button: bool, character_id: str):
+        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], options: list[SelectOption], disable_damage_calc_button: bool, character_id: str, data: EnkaNetworkResponse, disable_artifact_button: bool):
             super().__init__(timeout=None)
             self.embeds = embeds
             self.artifact_embeds = artifact_embeds
-            self.options = options 
+            self.options = options
             self.disable_damage_calc_button = disable_damage_calc_button
             self.character_id = character_id
+            self.data = data
             self.add_item(GenshinCog.EnkaPageSelect(embeds, options))
-            self.add_item(GenshinCog.EnkaArtifactButton(artifact_embeds, character_id, disable_damage_calc_button))
+            self.add_item(GenshinCog.EnkaArtifactButton(
+                artifact_embeds, character_id, disable_artifact_button))
+            self.add_item(GenshinCog.CalculateDamageButton(
+                data, character_id, disable_damage_calc_button))
 
     class EnkaPageSelect(Select):
         def __init__(self, embeds: dict[int, Embed], options: list[SelectOption]):
@@ -1001,60 +1005,31 @@ class GenshinCog(commands.Cog):
 
         async def callback(self, i: Interaction) -> Any:
             disable = True if self.values[0] == '0' else False
-            view=GenshinCog.EnkaPageView(self.embeds, self.view.artifact_embeds, self.options, disable, self.values[0])
+            view = GenshinCog.EnkaPageView(
+                self.embeds, self.view.artifact_embeds, self.options, False, self.values[0], self.view.data, False)
             await i.response.edit_message(embed=self.embeds[self.values[0]], view=view)
 
-    class DamageTypeChoose(DefaultView):
-        def __init__(self, enka_data: dict, chara_id: int, embeds: List[Embed], disabled: bool, index: int, bot: commands.Bot, charas, equip_dict: dict, member: Member, embed_index: int):
-            super().__init__(timeout=None)
-            self.enka_data = enka_data
-            self.chara_id = chara_id
-            self.embeds = embeds
-            self.disabled = disabled
-            self.index = index
-            self.bot = bot
-            self.charas = charas
-            self.equip_dict = equip_dict
-            self.embed_index = embed_index
-            self.member = member
-            for i in range(0, 3):
-                style = ButtonStyle.blurple if i == index else ButtonStyle.gray
-                self.add_item(GenshinCog.DamageTypeButton(enka_data, chara_id, member, i, bot,
-                              style, self.equip_dict, self.charas, self.disabled, self.embeds, embed_index))
+    class EnkaGoBackButton(Button):
+        def __init__(self, character_id: str):
+            super().__init__(emoji='<:left:982588994778972171>')
+            self.character_id = character_id
 
-        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray)
-        async def go_back(self, i: Interaction, button: Button):
-            view = GenshinCog.EnkaPageView(
-                self.embeds, self.charas, self.equip_dict, self.chara_id, self.disabled, self.member, self.enka_data, self.embed_index, self.bot)
-            await i.response.edit_message(embed=self.embeds[self.embed_index], view=view)
+        async def callback(self, i: Interaction):
+            view = GenshinCog.EnkaPageView(self.view.embeds, self.view.artifact_embeds,
+                                           self.view.options, False, self.character_id, self.view.data, False)
+            await i.response.edit_message(embed=self.view.embeds[self.character_id], view=view)
 
     class DamageTypeButton(Button):
-        def __init__(self, enka_data: dict, chara_id: int, member: Member, index: int, bot: commands.Bot, style, equip_dict, charas, disabled, embeds, embed_index: int):
+        def __init__(self, data: EnkaNetworkResponse, character_id: str, damage_type: int):
             labels = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-            super().__init__(style=style, label=labels[index])
-            self.id = chara_id
-            self.member = member
-            self.enka_data = enka_data
-            self.index = index
-            self.bot = bot
-            self.equip_dict = equip_dict
-            self.charas = charas
-            self.disabled = disabled
-            self.embeds = embeds
-            self.embed_index = embed_index
+            super().__init__(style=ButtonStyle.blurple,
+                             label=labels[damage_type])
+            self.data = data
+            self.character_id = character_id
+            self.damage_type = damage_type
 
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
-            view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
-                                               self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
-            await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, self.index):
-                if isinstance(result, Embed):
-                    await i.edit_original_message(embed=result)
-                else:
-                    embed = GenshinCog.parse_damage_embed(
-                        self.id, result[0], self.member, self.index, result[1])
-            await i.edit_original_message(embed=embed)
 
     def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
         chara_name = getCharacter(chara_id)['eng']
@@ -1099,32 +1074,19 @@ class GenshinCog(commands.Cog):
         embed.set_thumbnail(url=getCharacter(chara_id)["icon"])
         return embed
 
-    class DamageCalculator(Button):
-        def __init__(self, enka_data: dict, chara_id: int, disabled: bool, member: Member, embeds: List[Embed], index: int, bot: commands.Bot, charas, equip_dict: dict):
+    class CalculateDamageButton(Button):
+        def __init__(self, data: EnkaNetworkResponse, character_id: str, disabled: bool):
             super().__init__(style=ButtonStyle.blurple, label='傷害計算', disabled=disabled)
-            self.data = enka_data
-            self.id = chara_id
-            self.member = member
-            self.enka_data = enka_data
-            self.embeds = embeds
-            self.button_disabled = disabled
-            self.index = index
-            self.bot = bot
-            self.charas = charas
-            self.equip_dict = equip_dict
+            self.data = data
+            self.character_id = character_id
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
-            view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
-                                               2, self.bot, self.charas, self.equip_dict, self.member, self.index)
-            await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, 2):
-                if isinstance(result, Embed):
-                    await i.edit_original_message(embed=result)
-                else:
-                    embed = GenshinCog.parse_damage_embed(
-                        self.id, result[0], self.member, 2, result[1])
-            await i.edit_original_message(embed=embed)
+            self.view.clear_items()
+            self.view.add_item(GenshinCog.EnkaGoBackButton(self.character_id))
+            for index in range(0, 3):
+                self.view.add_item(GenshinCog.DamageTypeButton(
+                    self.data, self.character_id, index))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'), view=self.view)
 
     class EnkaArtifactButton(Button):
         def __init__(self, artifact_embeds: list[Embed], character_id: str, disabled: bool):
@@ -1133,7 +1095,8 @@ class GenshinCog(commands.Cog):
             self.character_id = character_id
 
         async def callback(self, i: Interaction) -> Any:
-            view=GenshinCog.EnkaPageView(self.view.embeds, self.artifact_embeds, self.view.options, True, self.character_id)
+            view = GenshinCog.EnkaPageView(self.view.embeds, self.artifact_embeds,
+                                           self.view.options, False, self.character_id, self.view.data, True)
             await i.response.edit_message(embed=self.artifact_embeds[self.character_id], view=view)
 
     @app_commands.command(name='profile角色展示', description='透過 enka API 查看各式原神數據')
@@ -1185,7 +1148,6 @@ class GenshinCog(commands.Cog):
                 f"<:FRIENDSHIP:982843487697379391> 好感度 - {character.friendship.level}",
                 inline=False
             )
-            print(character.combat.FIGHT_PROP_CRITICAL)
             value = ''
             for skill in character.skills:
                 value += f'{skill.name} | Lvl. {skill.level}\n'
@@ -1224,12 +1186,14 @@ class GenshinCog(commands.Cog):
                     value=artifact_sub_stats
                 )
                 artifact_embed.set_thumbnail(url=character.image.icon)
-                artifact_embed.set_author(name=member.display_name, icon_url=member.avatar)
+                artifact_embed.set_author(
+                    name=member.display_name, icon_url=member.avatar)
                 artifact_embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
 
-        view = GenshinCog.EnkaPageView(embeds, artifact_embeds, options, True, None)
+        view = GenshinCog.EnkaPageView(
+            embeds, artifact_embeds, options, True, None, data, True)
         await i.response.send_message(embed=embeds['0'], view=view)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼')

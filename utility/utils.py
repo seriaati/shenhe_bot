@@ -3,8 +3,10 @@ import os
 import re
 from datetime import datetime
 from enkanetwork import EnkaNetworkResponse
+from enkanetwork.enum import EquipmentsType
 import discord
 import genshin
+import pyppeteer
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
 from data.game.fight_prop import fight_prop
@@ -107,7 +109,8 @@ def calculateArtifactScore(substats: dict):
     return result
 
 
-async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
+async def calculateDamage(data: EnkaNetworkResponse, chara_id: str, browser, damage_type: int):
+    chara_name = (getCharacter(chara_id)['eng']).replace(' ', '')
     log(True, False, 'calculateDamage', f'Calculating damage for {chara_name}')
     talent_to_calculate = ['Normal Atk.', 'Charged Atk.',
                            'Plunging Atk.', 'Ele. Skill', 'Ele. Burst']
@@ -120,11 +123,11 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
     # browser = await launch({"headless": True, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
-    await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
     yield(defaultEmbed('<a:LOADER:982128111904776242> 正在匯入角色資料 (2/6)'))
+    await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
     await page.waitForSelector('div.MuiCardContent-root')
     await page.click('button.MuiButton-root.MuiButton-contained.MuiButton-containedError.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.css-1312m7x')
-    good_format = await enkaToGOOD(enka_data)
+    good_format = await enkaToGOOD(data)
     good_json = json.dumps(good_format)
     await page.focus('textarea.MuiBox-root')
     await page.keyboard.sendCharacter(str(good_json))
@@ -184,8 +187,8 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
         label_vals.append(val)
     result = {}
     normal_attack_name = '<普通攻擊名稱>'
-    dmg_type = ['avgHit', 'hit', 'critHit']
-    await page.click(f'button[value="{dmg_type[dmg]}"]')  # Avg. DMG
+    damage_types = ['avgHit', 'hit', 'critHit']
+    await page.click(f'button[value="{damage_types[damage_type]}"]')
     for t in talent_to_calculate:
         card_index = label_vals.index(t)
         talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
@@ -307,7 +310,7 @@ def getAreaEmoji(area_name: str):
     return emoji or ''
 
 
-async def enkaToGOOD(enka_data):
+async def enkaToGOOD(data: EnkaNetworkResponse):
     good_dict = {
         'format': 'GOOD',
         'version': 1,
@@ -318,115 +321,89 @@ async def enkaToGOOD(enka_data):
     }
     weapon_id = 0
     art_id = 0
-    for chara in enka_data['avatarInfoList']:
-        id = chara['avatarId']
+    for character in data.characters:
+        id = character.id
         chara_key = (getCharacter(id)['eng']).replace(' ', '') or chara_key
-        level = chara['propMap']['4001']['ival']
-        constellation = 0 if 'talentIdList' not in chara else len(
-            chara['talentIdList'])
-        ascention = chara['propMap']['1002']['ival']
-        talents = chara['skillLevelMap']
-        if id == 10000002:  # 神里綾華
-            talent = {
-                'auto': int(talents['10024']),
-                'skill': int(talents['10018']),
-                'burst': int(talents['10019'])
-            }
-        elif id == 10000041:  # 莫娜
-            talent = {
-                'auto': int(talents['10411']),
-                'skill': int(talents['10412']),
-                'burst': int(talents['10415'])
-            }
-        else:
-            talent = {
-                'auto': int(list(talents.values())[0]),
-                'skill': int(list(talents.values())[1]),
-                'burst': int(list(talents.values())[2]),
-            }
+        level = character.level
+        constellation = len(character.constellations)
+        ascension = character.ascension
+        talents = character.skills
+        talent = {
+            'auto': int(talents[0].level),
+            'skill': int(talents[1].level),
+            'burst': int(talents[2].level),
+        }
         good_dict['characters'].append(
             {
                 'key': chara_key,
                 'level': int(level),
                 'constellation': int(constellation),
-                'ascention': int(ascention),
+                'ascension': int(ascension),
                 'talent': talent
             }
         )
-        for e in chara['equipList']:
-            if 'weapon' in e:
-                weapon_id += 1
-                key = (get_name_text_map_hash.getNameTextMapHash(e['flat']['nameTextMapHash'], True)).replace(
-                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['nameTextMapHash']
-                level = e['weapon']['level']
-                ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
-                refinement = list(e['weapon']['affixMap'].values())[
-                    0]+1 if 'affixMap' in e['weapon'] else 0
-                location = chara_key
-                good_dict['weapons'].append(
-                    {
-                        'key': key,
-                        'level': level,
-                        'ascension': ascension,
-                        'refinement': refinement,
-                        'location': location,
-                        'id': weapon_id
-                    }
-                )
-            else:
-                art_id += 1
-                artifact_pos = {
-                    'EQUIP_BRACER': 'flower',
-                    'EQUIP_NECKLACE': 'plume',
-                    'EQUIP_SHOES': 'sands',
-                    'EQUIP_RING': 'goblet',
-                    'EQUIP_DRESS': 'circlet'
+        weapon = character.equipments[-1]
+        weapon_id += 1
+        key = (weapon.detail.name).replace("'", '').title().replace(' ', '').replace('-', '')
+        level = weapon.level
+        ascension = 
+        refinement = weapon.refinement
+        location = chara_key
+        good_dict['weapons'].append(
+            {
+                'key': key,
+                'level': level,
+                'ascension': ascension,
+                'refinement': refinement,
+                'location': location,
+                'id': weapon_id
+            }
+        )
+        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+            art_id += 1
+            stats = {
+                'FIGHT_PROP_HP': 'hp',
+                'FIGHT_PROP_HP_PERCENT': 'hp_',
+                'FIGHT_PROP_ATTACK': 'atk',
+                'FIGHT_PROP_ATTACK_PERCENT': 'atk_',
+                'FIGHT_PROP_DEFENSE': 'def',
+                'FIGHT_PROP_DEFENSE_PERCENT': 'def_',
+                'FIGHT_PROP_CHARGE_EFFICIENCY': 'enerRech_',
+                'FIGHT_PROP_ELEMENT_MASTERY': 'eleMas',
+                'FIGHT_PROP_CRITICAL': 'critRate_',
+                'FIGHT_PROP_CRITICAL_HURT': 'critDMG_',
+                'FIGHT_PROP_HEAL_ADD': 'heal_',
+                'FIGHT_PROP_FIRE_ADD_HURT': 'pyro_dmg_',
+                'FIGHT_PROP_ELEC_ADD_HURT': 'electro_dmg_',
+                'FIGHT_PROP_ICE_ADD_HURT': 'cryo_dmg_',
+                'FIGHT_PROP_WATER_ADD_HURT': 'hydro_dmg_',
+                'FIGHT_PROP_WIND_ADD_HURT': 'anemo_dmg_',
+                'FIGHT_PROP_ROCK_ADD_HURT': 'geo_dmg_',
+                'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
+                'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
+            }
+            setKey = (artifact.detail.name).replace("'", '').title().replace(' ', '').replace('-', '')
+            slotKey = (artifact.detail.artifactType).lower()
+            rarity = artifact.detail.rarity
+            mainStatKey = stats.get(artifact.detail.mainstats.prop_id)
+            level = artifact.level
+            substats = []
+            for substat in artifact.detail.substats:
+                substats.append({
+                    'key': stats.get(substat.prop_id),
+                    'value': substat.value
+                })
+            good_dict['artifacts'].append(
+                {
+                    'setKey': setKey,
+                    'slotKey': slotKey,
+                    'rarity': rarity,
+                    'mainStatKey': mainStatKey,
+                    'level': level,
+                    'substats': substats,
+                    'location': chara_key,
+                    'lock': True,
+                    'id': art_id
                 }
-                stats = {
-                    'FIGHT_PROP_HP': 'hp',
-                    'FIGHT_PROP_HP_PERCENT': 'hp_',
-                    'FIGHT_PROP_ATTACK': 'atk',
-                    'FIGHT_PROP_ATTACK_PERCENT': 'atk_',
-                    'FIGHT_PROP_DEFENSE': 'def',
-                    'FIGHT_PROP_DEFENSE_PERCENT': 'def_',
-                    'FIGHT_PROP_CHARGE_EFFICIENCY': 'enerRech_',
-                    'FIGHT_PROP_ELEMENT_MASTERY': 'eleMas',
-                    'FIGHT_PROP_CRITICAL': 'critRate_',
-                    'FIGHT_PROP_CRITICAL_HURT': 'critDMG_',
-                    'FIGHT_PROP_HEAL_ADD': 'heal_',
-                    'FIGHT_PROP_FIRE_ADD_HURT': 'pyro_dmg_',
-                    'FIGHT_PROP_ELEC_ADD_HURT': 'electro_dmg_',
-                    'FIGHT_PROP_ICE_ADD_HURT': 'cryo_dmg_',
-                    'FIGHT_PROP_WATER_ADD_HURT': 'hydro_dmg_',
-                    'FIGHT_PROP_WIND_ADD_HURT': 'anemo_dmg_',
-                    'FIGHT_PROP_ROCK_ADD_HURT': 'geo_dmg_',
-                    'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
-                    'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
-                }
-                setKey = get_name_text_map_hash.getNameTextMapHash(e['flat']['setNameTextMapHash'], True).replace(
-                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['setNameTextMapHash']
-                slotKey = artifact_pos.get(e['flat']['equipType'])
-                rarity = e['flat']['rankLevel']
-                mainStatKey = stats.get(
-                    e['flat']['reliquaryMainstat']['mainPropId'])
-                level = e['reliquary']['level']-1
-                substats = []
-                for sub_stat in e['flat']['reliquarySubstats']:
-                    substats.append({
-                        'key': stats.get(sub_stat['appendPropId']),
-                        'value': sub_stat['statValue']
-                    })
-                good_dict['artifacts'].append(
-                    {
-                        'setKey': setKey,
-                        'slotKey': slotKey,
-                        'rarity': rarity,
-                        'mainStatKey': mainStatKey,
-                        'level': level,
-                        'substats': substats,
-                        'location': chara_key,
-                        'lock': True,
-                        'id': art_id
-                    }
-                )
+            )
     return good_dict
