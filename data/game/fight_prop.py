@@ -30,12 +30,12 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_CRITICAL": {
-        "name": "暴擊率%",
+        "name": "暴擊率",
         "emoji": "<:CRITICAL:982068460731392040>",
         "substat": True
     },
     "FIGHT_PROP_CRITICAL_HURT": {
-        "name": "暴擊傷害%",
+        "name": "暴擊傷害",
         "emoji": "<:CRITICAL_HURT:982068462081933352>",
         "substat": True
     },
@@ -45,7 +45,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_CHARGE_EFFICIENCY": {
-        "name": "元素充能%",
+        "name": "元素充能效率",
         "emoji": "<:CHARGE_EFFICIENCY:982068459179503646>",
         "substat": True
     },
@@ -56,7 +56,7 @@ fight_prop = {
     },
     "FIGHT_PROP_BASE_ATTACK": {
         "name": "基礎攻擊力",
-        "emoji": "",
+        "emoji": "<:ATTACK:982138214305390632>",
         "substat": False
     },
     "FIGHT_PROP_BASE_DEFENSE": {

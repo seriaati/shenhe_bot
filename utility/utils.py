@@ -2,7 +2,7 @@ import json
 import os
 import re
 from datetime import datetime
-
+from enkanetwork import EnkaNetworkResponse
 import discord
 import genshin
 from data.game.characters import characters_map
@@ -253,38 +253,44 @@ def getElementEmoji(element: str):
     return element_emojis.get(element) or element
 
 
-def getCharacter(id: int = '', name: str = ''):
+def getCharacter(id: int = None, name: str = ''):
     for character_id, character_info in characters_map.items():
         if character_id == str(id) or character_info['name'] == name:
             return character_info
     return {'name': f'{id}{name}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
 
 
-def getWeapon(id: int = '', name: str = ''):
+def getWeapon(id: int = None, name: str = ''):
     for weapon_id, weapon_info in weapons_map.items():
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
     return {'name': f'{id}{name}', 'emoji': '<:WARNING:992552271378386944>', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
 
 
-def getConsumable(id: int = '', name: str = ''):
+def getConsumable(id: int = None, name: str = ''):
     for consumable_id, consumable_info in consumables_map.items():
         if consumable_id == str(id) or consumable_info['name'] == name:
             return consumable_info
     return {'name': '自訂素材', 'emoji': '<:white_star:982456919224615002>'}
 
 
-def getTalent(id: int = '', name: str = ''):
+def getTalent(id: int = None, name: str = ''):
     for talent_id, talent_info in talents_map.items():
         if talent_id == str(id) or talent_info['name'] == name:
             return talent_info
     return {'name': f'{id}{name}'}
 
-def getArtifact(id: int = '', name: str = ''):
+def getArtifact(id: int = None, name: str = ''):
     for artifact_id, artifact_info in artifacts_map.items():
         if artifact_id == str(id) or name in artifact_info['artifacts'] or name == artifact_info['name']:
             return artifact_info 
     raise ValueError(f'Unknwon artifact {id}{name}')
+
+def getFightProp(id: str = '', name: str = ''):
+    for fight_prop_id, fight_prop_info in fight_prop.items():
+        if fight_prop_id == str(id) or name == fight_prop_info['name']:
+            return fight_prop_info
+    raise ValueError(f'Unknwon fight prop {id}{name}')
 
 
 def getAreaEmoji(area_name: str):
