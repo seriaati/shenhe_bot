@@ -1111,6 +1111,7 @@ class GenshinCog(commands.Cog):
             uid_c = i.guild.get_channel(978871680019628032)
             return await i.response.send_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'), ephemeral=True)
         data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
+        print(data)
         if len(data.characters) == 0:
             embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(
                 name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
@@ -1138,14 +1139,14 @@ class GenshinCog(commands.Cog):
             )
             embed.add_field(
                 name='屬性',
-                value=f'<:HP:982068466410463272> 生命值上限 - {int(character.combat.FIGHT_PROP_MAX_HP)}\n'
-                f"<:ATTACK:982138214305390632> 攻擊力 - {int(character.combat.FIGHT_PROP_CUR_ATTACK)}\n"
-                f"<:DEFENSE:982068463566721064> 防禦力 - {int(character.combat.FIGHT_PROP_CUR_DEFENSE)}\n"
-                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {int(character.combat.FIGHT_PROP_ELEMENT_MASTERY)}\n"
-                f"<:CRITICAL:982068460731392040> 暴擊率 - {round(100*character.combat.FIGHT_PROP_CRITICAL, 1)}%\n"
-                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {round(100*character.combat.FIGHT_PROP_CRITICAL_HURT, 1)}%\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {round(100*character.combat.FIGHT_PROP_CHARGE_EFFICIENCY, 1)}%\n"
-                f"<:FRIENDSHIP:982843487697379391> 好感度 - {character.friendship.level}",
+                value=f'<:HP:982068466410463272> 生命值上限 - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n'
+                f"<:ATTACK:982138214305390632> 攻擊力 - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> 防禦力 - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
+                f"<:CRITICAL:982068460731392040> 暴擊率 - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
+                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
+                f"<:FRIENDSHIP:982843487697379391> 好感度 - {character.friendship_level}",
                 inline=False
             )
             value = ''
@@ -1330,7 +1331,7 @@ class GenshinCog(commands.Cog):
                                 await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (substat.name,))
                                 sub_stat_value = await c.fetchone()
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.value))
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.value))
             await self.bot.db.commit()
 
         # clean up leaderboard
