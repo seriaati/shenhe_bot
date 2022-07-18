@@ -18,7 +18,7 @@ from utility.utils import defaultEmbed, errEmbed, log
 class FlowCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.flow_app = FlowApp(self.bot.db, self.bot)
+        self.flow_app = FlowApp(self.bot.db)
         self.debug_toggle = self.bot.debug_toggle
 
     @commands.Cog.listener()
@@ -232,10 +232,10 @@ class FlowCog(commands.Cog):
             await i.response.send_message(embed=defaultEmbed(category_list[category], value_str))
 
     class ShopItemView(DefaultView):
-        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot: commands.Bot, author: Member):
+        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, author: Member):
             super().__init__(timeout=None)
             self.author = author
-            self.add_item(FlowCog.ShopItemSelect(item_names, action, db, bot))
+            self.add_item(FlowCog.ShopItemSelect(item_names, action, db))
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
@@ -243,10 +243,10 @@ class FlowCog(commands.Cog):
             return self.author.id == interaction.user.id
 
     class ShopItemSelect(Select):
-        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection, bot):
+        def __init__(self, item_names: List, action: str, db: aiosqlite.Connection):
             self.action = action
             self.db = db
-            self.flow_app = FlowApp(self.db, bot)
+            self.flow_app = FlowApp(self.db)
             options = []
             for item_name in item_names:
                 options.append(SelectOption(label=item_name, value=item_name))
@@ -401,16 +401,15 @@ class FlowCog(commands.Cog):
                     f"按下後, 你的flow幣將會 **-{flow}**\n"
                     f"對方則會 **+{flow}**")
             embedDM.set_author(name='結算單', icon_url=author.avatar)
-            view = FlowCog.ConfirmView(self.db, self.bot)
+            view = FlowCog.ConfirmView(self.db)
             confirm_message = await thread.send(embed=embedDM, view=view)
             await c.execute('UPDATE find SET msg_id = ?, confirmer_id = ? WHERE msg_ID = ?', (confirm_message.id, i.user.id, i.message.id))
             await self.db.commit()
 
     class ConfirmView(DefaultView):
-        def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
+        def __init__(self, db: aiosqlite.Connection):
             self.db = db
-            self.flow_app = FlowApp(self.db, bot)
-            self.bot = bot
+            self.flow_app = FlowApp(self.db)
             super().__init__(timeout=None)
 
         async def interaction_check(self, i: Interaction) -> bool:

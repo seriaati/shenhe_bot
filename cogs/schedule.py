@@ -19,7 +19,7 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
-        self.flow_app = FlowApp(self.bot.db, self.bot)
+        self.flow_app = FlowApp(self.bot.db)
         self.debug_toggle = self.bot.debug_toggle
         self.claim_reward.start()
         self.resin_notification.start()
