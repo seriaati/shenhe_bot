@@ -1,180 +1,173 @@
 import asyncio
+from typing import Any
 
 import aiosqlite
-import discord
-from discord import ButtonStyle, Interaction, app_commands
+from discord import ButtonStyle, Interaction, TextChannel, app_commands, Member
 from discord.ext import commands
-from discord.ui import Button, button
+from discord.ui import Button
 from debug import DefaultView
 from utility.apps.FlowApp import FlowApp
 from utility.apps.RollApp import RollApp
+from data.roll.banner import banner
 from utility.utils import defaultEmbed, errEmbed, log
-
-global one_pull_price
-one_pull_price = 10
 
 
 class RollCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.debug_toggle = self.bot.debug_toggle
-        self.flow_app = FlowApp(self.bot.db, self.bot)
+        self.flow_app = FlowApp(self.bot.db)
 
-    class Menu(DefaultView):
-        def __init__(self, author: discord.Member, banner: str, db: aiosqlite.Connection, bot):
+    class RollView(DefaultView):
+        def __init__(self, author: Member, db: aiosqlite.Connection, public: TextChannel):
             super().__init__(timeout=None)
             self.db = db
-            self.flow_app = FlowApp(self.db, bot)
+            self.flow_app = FlowApp(self.db)
+            self.roll_app = RollApp(self.db)
             self.author = author
-            self.banner = banner
-            self.bot = bot
+            self.public = public
+            self.add_item(RollCog.RollInfo(False))
+            self.add_item(RollCog.RollHistory(False))
+            self.add_item(RollCog.RollOnce(False))
+            self.add_item(RollCog.RollTen(False))
 
         async def interaction_check(self, i: Interaction) -> bool:
             if i.user.id != self.author.id:
-                await i.response.send_message(embed=errEmbed('這不是你的遊戲視窗','輸入 `/roll` 來開啟一個'), ephemeral=True)
+                await i.response.send_message(embed=errEmbed().set_author(name='這不是你的祈願視窗', icon_url=i.user.avatar), ephemeral=True)
             return i.user.id == self.author.id
 
-        @button(label='詳情', style=ButtonStyle.gray)
-        async def detail_button(self, i: Interaction, button: Button):
-            embed = defaultEmbed('祈願詳情', '')
-            c = await self.db.cursor()
-            await c.execute('SELECT big_prize FROM banners WHERE banner_name = ?', (self.banner,))
-            big_prize = await c.fetchone()
-            big_prize = big_prize[0]
+    class RollInfo(Button):
+        def __init__(self, disabled: bool):
+            super().__init__(label='詳情', disabled=disabled)
+
+        async def callback(self, i: Interaction):
+            embed = defaultEmbed('祈願詳情')
+            value = f"70抽之前: {banner['big_prize']['chance']}%\n"
+            for guarantee in banner['big_prize_guarantee']:
+                value += f"{guarantee['min']} ~ {guarantee['max']} 抽: {guarantee['new_chance']}%\n"
+            value += "90 抽: 100%"
             embed.add_field(
-                name=f'限定 UP - {big_prize}',
-                value="70抽之前: 0.8%\n"
-                "70-79抽: 10%\n"
-                "80-89抽: 30%\n"
-                "90抽: 100%",
+                name=f"限定 UP - {banner['big_prize']['name']}",
+                value=value,
                 inline=False
             )
+            value = ""
+            for prize, chance in banner['other_prizes'].items():
+                value += f"{prize}: {chance}%\n"
             embed.add_field(
                 name='其他獎品',
-                value='10 Flow幣: 10%\n'
-                '100 Flow: 1%\n',
+                value=value,
                 inline=False
             )
             await i.response.send_message(embed=embed, ephemeral=True)
 
-        @button(label='歷史紀錄', style=ButtonStyle.gray)
-        async def history_button(self, i: Interaction, button: Button):
-            c = await self.db.cursor()
-            await c.execute('SELECT * FROM user_roll_data WHERE user_id = ? AND banner_name = ?', (i.user.id, self.banner))
-            user_history = await c.fetchone()
-            if user_history is None:
-                await i.response.send_message(embed=defaultEmbed('你還沒有在這期抽過卡!'), ephemeral=True)
-                return
-            await c.execute('SELECT SUM (history) FROM user_roll_data WHERE user_id = ? AND banner_name = ?', (i.user.id, self.banner))
-            pull_sum = await c.fetchone()
-            pull_sum = pull_sum[0]
-            await c.execute('SELECT SUM (guarantee) FROM user_roll_data WHERE user_id = ? AND banner_name = ?', (i.user.id, self.banner))
-            guarantee_sum = await c.fetchone()
-            guarantee_sum = guarantee_sum[0]
-            result = ''
-            await c.execute('SELECT prize_name, history FROM user_roll_data WHERE user_id = ? AND banner_name = ? AND guarantee IS NULL', (i.user.id, self.banner))
-            user_history = await c.fetchall()
-            for index, tuple in enumerate(user_history):
-                prize_name = tuple[0]
-                history_num = tuple[1]
-                result += f'{prize_name} • {history_num}次\n'
+    class RollHistory(Button):
+        def __init__(self, disabled: bool):
+            super().__init__(label='歷史紀錄', disabled=disabled)
+
+        async def callback(self, i: Interaction):
+            c: aiosqlite.Cursor = await self.view.db.cursor()
+            await c.execute('SELECT prize, count FROM roll_history WHERE user_id = ?', (i.user.id,))
+            roll_history = await c.fetchall()
+            if len(roll_history) == 0:
+                return await i.response.send_message(embed=errEmbed().set_author(name='你沒有進行過祈願!', icon_url=i.user.avatar), ephemeral=True)
+            await c.execute('SELECT SUM (count) FROM roll_guarantee WHERE user_id = ?', (i.user.id,))
+            guarantee_sum = (await c.fetchone())[0]
+            message = ''
+            history_sum = 0
+            for index, tuple in enumerate(roll_history):
+                history_sum += tuple[1]
+                message += f'{tuple[0]} | {tuple[1]}次\n'
             embed = defaultEmbed(
-                f'<:wish:982419859117838386> 祈願紀錄(目前距離保底{90-guarantee_sum}抽)', f'總共{pull_sum}抽\n{result}')
+                f'<:wish:982419859117838386> 祈願紀錄(目前距離保底{90-guarantee_sum}抽)',
+                f'總共{history_sum}抽\n{message}')
             await i.response.send_message(embed=embed, ephemeral=True)
 
-        @button(label='祈願1次', style=ButtonStyle.blurple)
-        async def one_pull_button(self, i: Interaction, button: Button):
-            user_flow = await self.flow_app.get_user_flow(i.user.id)
-            if user_flow < one_pull_price:
-                return await i.response.send_message(embed=errEmbed(message=f'1 次祈願需花費{one_pull_price} flow幣').set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
-            confirm = RollCog.Confirm(
-                i.user, False, self.banner, self.db, self.bot)
-            await i.response.edit_message(view=confirm)
+    class RollOnce(Button):
+        def __init__(self, disabled: bool):
+            super().__init__(label='祈願 x1', style=ButtonStyle.blurple, disabled=disabled)
 
-        @button(label='祈願10次', style=ButtonStyle.blurple)
-        async def ten_pull_button(self, i: Interaction, button: Button):
-            user_flow = await self.flow_app.get_user_flow(i.user.id)
-            if user_flow < int(one_pull_price)*10:
-                return await i.response.send_message(embed=errEmbed(message=f'10 次祈願需花費{int(one_pull_price)*10} flow幣').set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
-            confirm = RollCog.Confirm(
-                i.user, True, self.banner, self.db, self.bot)
-            await i.response.edit_message(view=confirm)
+        async def callback(self, i: Interaction):
+            user_flow = await self.view.flow_app.get_user_flow(i.user.id)
+            if user_flow < banner['one_pull_price']:
+                return await i.response.send_message(embed=errEmbed(message=f"**祈願 x1** 需花費 **{banner['one_pull_price']}** flow 幣\n目前: {user_flow}").set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
+            self.view.clear_items()
+            self.view.add_item(RollCog.ConfirmRoll(False))
+            self.view.add_item(RollCog.CancelRoll())
+            await i.response.edit_message(view=self.view)
 
-    class Confirm(discord.ui.View):
-        def __init__(self, author: discord.Member, is_ten_pull: bool, banner: str, db: aiosqlite.Connection, bot):
-            super().__init__(timeout=None)
-            self.db = db
-            self.flow_app = FlowApp(self.db, bot)
-            self.roll_app = RollApp(self.db, bot)
-            self.author = author
-            self.banner = banner
-            self.ten_pull = is_ten_pull
-            self.bot = bot
+    class RollTen(Button):
+        def __init__(self, disabled: bool = False):
+            super().__init__(label='祈願 x10', style=ButtonStyle.blurple, disabled=disabled)
 
-        async def interaction_check(self, i: Interaction) -> bool:
-            if i.user.id != self.author.id:
-                await i.response.send_message(embed=errEmbed('這不是你的遊戲視窗','輸入 `/roll` 來開啟一個'), ephemeral=True)
-            return i.user.id == self.author.id
+        async def callback(self, i: Interaction):
+            user_flow = await self.view.flow_app.get_user_flow(i.user.id)
+            if user_flow < 10*banner['one_pull_price']:
+                return await i.response.send_message(embed=errEmbed(message=f"**祈願 x10** 需花費 **{10*banner['one_pull_price']}** flow 幣\n目前: {user_flow}").set_author(name='flow 幣不足', icon_url=i.user.avatar), ephemeral=True)
+            self.view.clear_items()
+            self.view.add_item(RollCog.ConfirmRoll(True))
+            self.view.add_item(RollCog.CancelRoll())
+            await i.response.edit_message(view=self.view)
 
-        @button(label='確認', style=ButtonStyle.green, row=0)
-        async def confirm(self, i: Interaction, button: Button):
-            c = await self.db.cursor()
-            if not self.ten_pull:
-                await self.flow_app.transaction(
-                    user_id=i.user.id, flow_for_user=-int(one_pull_price))
+    class ConfirmRoll(Button):
+        def __init__(self, is_ten_pull: bool):
+            super().__init__(label='確認', style=ButtonStyle.green)
+            self.is_ten_pull = is_ten_pull
+
+        async def callback(self, i: Interaction) -> Any:
+            if not self.is_ten_pull:
+                await self.view.flow_app.transaction(
+                    user_id=i.user.id, flow_for_user=-banner['one_pull_price'])
             else:
-                await self.flow_app.transaction(
-                    user_id=i.user.id, flow_for_user=-int(one_pull_price)*10)
-            prize = await self.roll_app.gu_system(i.user.id, self.banner, self.ten_pull)
-            await self.roll_app.give_money(i.user.id, prize)
-            luluR = i.client.get_user(665092644883398671)
-            check, msg = await self.roll_app.check_big_prize(
-                i.user.id, prize, self.banner)
-            if check:
-                await luluR.send(embed=msg)
+                await self.view.flow_app.transaction(
+                    user_id=i.user.id, flow_for_user=-banner['one_pull_price']*10)
+            prizes = await self.view.roll_app.gu_system(i.user.id, self.is_ten_pull)
+            await self.view.roll_app.give_money(i.user.id, prizes)
+            if (await self.view.roll_app.check_big_prize(i.user.id, prizes)):
                 log(True, False, 'Roll', f'{i.user.id} got big prize')
-                public_channel = i.client.get_channel(
-                    916951131022843964) if not self.debug_toggle else i.client.get_channel(909595117952856084)
-                await public_channel.send(f'🎉 恭喜 {i.user.mention} 抽到 **{self.banner}** 的大獎！！ 🎉')
-            gif, sleep_time = await self.roll_app.animation_chooser(prize, self.banner)
-            result = await self.roll_app.write_history_and_gu(
-                i.user.id, prize, self.banner)
-            embed = defaultEmbed(self.banner, '')
-            embed.set_image(url=gif)
-            menu = RollCog.Menu(i.user, self.banner, self.db, self.bot)
-            await i.response.edit_message(embed=embed, view=menu)
+                await self.view.public.send(f'🎉 恭喜 {i.user.mention} 抽到這期祈願的大獎!! 🎉')
+            url, sleep_time = self.view.roll_app.choose_animation(prizes)
+            result = await self.view.roll_app.write_history_and_gu(i.user.id, prizes)
+            embed = defaultEmbed(banner['name']).set_image(url=url)
+            self.view.clear_items()
+            self.view.add_item(RollCog.RollInfo(True))
+            self.view.add_item(RollCog.RollHistory(True))
+            self.view.add_item(RollCog.RollOnce(True))
+            self.view.add_item(RollCog.RollTen(True))
+            await i.response.edit_message(embed=embed, view=self.view)
             await asyncio.sleep(sleep_time)
-            embed = defaultEmbed('抽卡結果', result)
+            embed = defaultEmbed('抽卡結果', result+f'\n目前 flow 幣: {await self.view.flow_app.get_user_flow(i.user.id)}')
             await i.followup.send(embed=embed, ephemeral=True)
-            embed = defaultEmbed(self.banner)
-            await c.execute('SELECT image_url FROM banners WHERE banner_name = ?', (self.banner,))
-            banner_image_url = await c.fetchone()
-            banner_image_url = banner_image_url[0]
-            embed.set_image(url=banner_image_url)
-            await i.edit_original_message(embed=embed)
+            embed = defaultEmbed(banner['name']).set_image(url=banner['icon'])
+            self.view.clear_items()
+            self.view.add_item(RollCog.RollInfo(False))
+            self.view.add_item(RollCog.RollHistory(False))
+            self.view.add_item(RollCog.RollOnce(False))
+            self.view.add_item(RollCog.RollTen(False))
+            await i.edit_original_message(embed=embed, view=self.view)
 
-        @button(label='取消', style=ButtonStyle.grey, row=0)
-        async def cancel(self, i: Interaction, button: Button):
-            menu = RollCog.Menu(i.user, self.banner, self.db, self.bot)
-            await i.response.edit_message(view=menu)
+    class CancelRoll(Button):
+        def __init__(self):
+            super().__init__(label='取消')
+
+        async def callback(self, i: Interaction):
+            self.view.clear_items()
+            self.view.add_item(RollCog.RollInfo(True))
+            self.view.add_item(RollCog.RollHistory(True))
+            self.view.add_item(RollCog.RollOnce(True))
+            self.view.add_item(RollCog.RollTen(True))
+            await i.response.edit_message(view=self.view)
 
     @app_commands.command(name='roll祈願', description='flow幣祈願系統')
     async def roll(self, i: Interaction):
         check, msg = await self.flow_app.checkFlowAccount(i.user.id)
-        if check == False:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT banner_name FROM banners')
-        banner_name = await c.fetchone()
-        banner_name = banner_name[0]
-        await c.execute('SELECT image_url FROM banners WHERE banner_name = ?', (banner_name,))
-        banner_image_url = await c.fetchone()
-        banner_image_url = banner_image_url[0]
-        menu = self.Menu(i.user, banner_name, self.bot.db, self.bot)
-        embed = defaultEmbed(banner_name)
-        embed.set_image(url=banner_image_url)
-        await i.response.send_message(embed=embed, view=menu)
+        if not check:
+            return await i.response.send_message(embed=msg, ephemeral=True)
+        public = i.client.get_channel(916951131022843964) if not self.bot.debug_toggle else i.client.get_channel(909595117952856084)
+        view = RollCog.RollView(i.user, self.bot.db, public)
+        embed = defaultEmbed(banner['name'])
+        embed.set_image(url=banner['icon'])
+        await i.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
