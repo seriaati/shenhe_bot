@@ -987,8 +987,8 @@ class GenshinCog(commands.Cog):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.EnkaArtifactButton(
                 equip_dict, id, disabled, member))
-            self.add_item(GenshinCog.DamageCalculator(
-                enka_data, id, disabled, member, embeds, index, bot, charas, equip_dict))
+            # self.add_item(GenshinCog.DamageCalculator(
+            #     enka_data, id, disabled, member, embeds, index, bot, charas, equip_dict))
             self.add_item(GenshinCog.EnkaEmojiList())
             self.add_item(GenshinCog.EnkaPageSelect(
                 embeds, charas, equip_dict, member, enka_data, bot))
@@ -1485,7 +1485,7 @@ class GenshinCog(commands.Cog):
                                 await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (substat.name,))
                                 sub_stat_value = await c.fetchone()
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifactType, substat.value))
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.value))
             await self.bot.db.commit()
 
         # clean up leaderboard
