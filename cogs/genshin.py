@@ -29,7 +29,7 @@ from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, get_name_text_map_hash, getArtifact,
                            getCharacter, getClient, getConsumable,
-                           getElementEmoji, getStatEmoji, getTalent, getWeapon,
+                           getElementEmoji, getFightProp, getStatEmoji, getTalent, getWeapon,
                            getWeekdayName)
 
 from genshin.models import WikiPageType
@@ -983,90 +983,53 @@ class GenshinCog(commands.Cog):
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     class EnkaPageView(DefaultView):
-        def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, id: int, disabled: bool, member: Member, enka_data, index: int, bot: commands.Bot):
+        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], options: list[SelectOption], disable_damage_calc_button: bool, character_id: str, data: EnkaNetworkResponse, disable_artifact_button: bool):
             super().__init__(timeout=None)
+            self.embeds = embeds
+            self.artifact_embeds = artifact_embeds
+            self.options = options
+            self.disable_damage_calc_button = disable_damage_calc_button
+            self.character_id = character_id
+            self.data = data
+            self.add_item(GenshinCog.EnkaPageSelect(embeds, options))
             self.add_item(GenshinCog.EnkaArtifactButton(
-                equip_dict, id, disabled, member))
-            # self.add_item(GenshinCog.DamageCalculator(
-            #     enka_data, id, disabled, member, embeds, index, bot, charas, equip_dict))
-            self.add_item(GenshinCog.EnkaEmojiList())
-            self.add_item(GenshinCog.EnkaPageSelect(
-                embeds, charas, equip_dict, member, enka_data, bot))
+                artifact_embeds, character_id, disable_artifact_button))
+            self.add_item(GenshinCog.CalculateDamageButton(
+                data, character_id, disable_damage_calc_button))
 
     class EnkaPageSelect(Select):
-        def __init__(self, embeds: List[Embed], charas: List, equip_dict: dict, member: Member, enka_data, bot: commands.Bot):
-            options = [SelectOption(
-                label='總覽', value=0, emoji='<:SCORE:983948729293897779>')]
+        def __init__(self, embeds: dict[int, Embed], options: list[SelectOption]):
+            super().__init__(placeholder='選擇分頁', options=options, row=2)
             self.embeds = embeds
-            self.equip_dict = equip_dict
-            self.charas = charas
-            self.member = member
-            self.enka_data = enka_data
-            self.bot = bot
-            for chara in charas:
-                options.append(SelectOption(
-                    label=f"{chara[0]}", description=f'{characters_map.get(str(chara[2]))["rarity"]}★ {chara[1]}', value=f'{charas.index(chara)+1} {chara[2]}', emoji=getCharacter(chara[2])["emoji"]))
-            super().__init__(placeholder='選擇分頁', min_values=1, max_values=1, options=options)
+            self.options = options
 
         async def callback(self, i: Interaction) -> Any:
-            value = self.values[0].split()
-            disabled = False if int(value[0]) != 0 else True
-            chara_id = 0 if len(value) == 1 else value[1]
+            disable = True if self.values[0] == '0' else False
             view = GenshinCog.EnkaPageView(
-                self.embeds, self.charas, self.equip_dict, chara_id, disabled, self.member, self.enka_data, int(value[0]), self.bot)
-            await i.response.edit_message(embed=self.embeds[int(value[0])], view=view)
+                self.embeds, self.view.artifact_embeds, self.options, False, self.values[0], self.view.data, False)
+            await i.response.edit_message(embed=self.embeds[self.values[0]], view=view)
 
-    class DamageTypeChoose(DefaultView):
-        def __init__(self, enka_data: dict, chara_id: int, embeds: List[Embed], disabled: bool, index: int, bot: commands.Bot, charas, equip_dict: dict, member: Member, embed_index: int):
-            super().__init__(timeout=None)
-            self.enka_data = enka_data
-            self.chara_id = chara_id
-            self.embeds = embeds
-            self.disabled = disabled
-            self.index = index
-            self.bot = bot
-            self.charas = charas
-            self.equip_dict = equip_dict
-            self.embed_index = embed_index
-            self.member = member
-            for i in range(0, 3):
-                style = ButtonStyle.blurple if i == index else ButtonStyle.gray
-                self.add_item(GenshinCog.DamageTypeButton(enka_data, chara_id, member, i, bot,
-                              style, self.equip_dict, self.charas, self.disabled, self.embeds, embed_index))
+    class EnkaGoBackButton(Button):
+        def __init__(self, character_id: str):
+            super().__init__(emoji='<:left:982588994778972171>')
+            self.character_id = character_id
 
-        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray)
-        async def go_back(self, i: Interaction, button: Button):
-            view = GenshinCog.EnkaPageView(
-                self.embeds, self.charas, self.equip_dict, self.chara_id, self.disabled, self.member, self.enka_data, self.embed_index, self.bot)
-            await i.response.edit_message(embed=self.embeds[self.embed_index], view=view)
+        async def callback(self, i: Interaction):
+            view = GenshinCog.EnkaPageView(self.view.embeds, self.view.artifact_embeds,
+                                           self.view.options, False, self.character_id, self.view.data, False)
+            await i.response.edit_message(embed=self.view.embeds[self.character_id], view=view)
 
     class DamageTypeButton(Button):
-        def __init__(self, enka_data: dict, chara_id: int, member: Member, index: int, bot: commands.Bot, style, equip_dict, charas, disabled, embeds, embed_index: int):
+        def __init__(self, data: EnkaNetworkResponse, character_id: str, damage_type: int):
             labels = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-            super().__init__(style=style, label=labels[index])
-            self.id = chara_id
-            self.member = member
-            self.enka_data = enka_data
-            self.index = index
-            self.bot = bot
-            self.equip_dict = equip_dict
-            self.charas = charas
-            self.disabled = disabled
-            self.embeds = embeds
-            self.embed_index = embed_index
+            super().__init__(style=ButtonStyle.blurple,
+                             label=labels[damage_type])
+            self.data = data
+            self.character_id = character_id
+            self.damage_type = damage_type
 
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
-            view = GenshinCog.DamageTypeChoose(self.enka_data, self.id, self.embeds, self.disabled,
-                                               self.index, self.bot, self.charas, self.equip_dict, self.member, self.embed_index)
-            await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, self.index):
-                if isinstance(result, Embed):
-                    await i.edit_original_message(embed=result)
-                else:
-                    embed = GenshinCog.parse_damage_embed(
-                        self.id, result[0], self.member, self.index, result[1])
-            await i.edit_original_message(embed=embed)
 
     def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
         chara_name = getCharacter(chara_id)['eng']
@@ -1111,245 +1074,128 @@ class GenshinCog(commands.Cog):
         embed.set_thumbnail(url=getCharacter(chara_id)["icon"])
         return embed
 
-    class DamageCalculator(Button):
-        def __init__(self, enka_data: dict, chara_id: int, disabled: bool, member: Member, embeds: List[Embed], index: int, bot: commands.Bot, charas, equip_dict: dict):
+    class CalculateDamageButton(Button):
+        def __init__(self, data: EnkaNetworkResponse, character_id: str, disabled: bool):
             super().__init__(style=ButtonStyle.blurple, label='傷害計算', disabled=disabled)
-            self.data = enka_data
-            self.id = chara_id
-            self.member = member
-            self.enka_data = enka_data
-            self.embeds = embeds
-            self.button_disabled = disabled
-            self.index = index
-            self.bot = bot
-            self.charas = charas
-            self.equip_dict = equip_dict
+            self.data = data
+            self.character_id = character_id
 
         async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
-            view = GenshinCog.DamageTypeChoose(self.data, self.id, self.embeds, self.button_disabled,
-                                               2, self.bot, self.charas, self.equip_dict, self.member, self.index)
-            await i.edit_original_message(view=view)
-            async for result in calculateDamage(self.enka_data, getCharacter(self.id)['eng'].replace(' ', ''), self.bot.browser, 2):
-                if isinstance(result, Embed):
-                    await i.edit_original_message(embed=result)
-                else:
-                    embed = GenshinCog.parse_damage_embed(
-                        self.id, result[0], self.member, 2, result[1])
-            await i.edit_original_message(embed=embed)
-
-    def percent_symbol(propId: str):
-        symbol = '%' if 'PERCENT' in propId or 'CRITICAL' in propId or 'CHARGE' in propId or 'HEAL' in propId or 'HURT' in propId else ''
-        return symbol
+            self.view.clear_items()
+            self.view.add_item(GenshinCog.EnkaGoBackButton(self.character_id))
+            for index in range(0, 3):
+                self.view.add_item(GenshinCog.DamageTypeButton(
+                    self.data, self.character_id, index))
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'), view=self.view)
 
     class EnkaArtifactButton(Button):
-        def __init__(self, equip_dict: dict, id: int, disabled: bool, member: Member):
-            self.equipments = equip_dict
-            self.name = ''
-            self.id = id
-            self.member = member
-            for e, val in equip_dict.items():
-                if int(e) == int(id):
-                    self.name = val['name']
-                    self.chara_equipments = val['equipments']
-            super().__init__(style=ButtonStyle.blurple, label=f'聖遺物', disabled=disabled)
+        def __init__(self, artifact_embeds: list[Embed], character_id: str, disabled: bool):
+            super().__init__(label='聖遺物', style=ButtonStyle.blurple, disabled=disabled)
+            self.artifact_embeds = artifact_embeds
+            self.character_id = character_id
 
         async def callback(self, i: Interaction) -> Any:
-            artifact_emojis = [
-                '<:Flower_of_Life:982167959717945374>', '<:Plume_of_Death:982167959915077643>',
-                '<:Sands_of_Eon:982167959881547877>', '<:Goblet_of_Eonothem:982167959835402240>',
-                '<:Circlet_of_Logos:982167959692787802>']
-            set_name_simplify = {
-                '昔日宗室之儀': '宗室',
-                '冰風迷途的勇士': '冰套',
-                '角鬥士的終幕禮': '角鬥士',
-                '追憶之注連': '追憶',
-                '絕緣之旗印': '絕緣',
-                '平息鳴雷的尊者': '平雷',
-                '如雷的盛怒': '如雷',
-                '華館夢醒形骸記': '華館',
-                '千岩牢固': '千岩'
-            }
-            embed = defaultEmbed(f'{self.name} - 聖遺物')
-            for e in self.chara_equipments:
-                if 'weapon' not in e:
-                    artifact_name = get_name_text_map_hash.getNameTextMapHash(
-                        e['flat']['setNameTextMapHash'])
-                    artifact_name = set_name_simplify.get(
-                        artifact_name) or artifact_name
-                    main = e["flat"]["reliquaryMainstat"]
-                    symbol = GenshinCog.percent_symbol(main['mainPropId'])
-                    artifact_str = f'{artifact_emojis[self.chara_equipments.index(e)]} {artifact_name}  +{int(e["reliquary"]["level"])-1}'
-                    value = ''
-                    value += f'**主詞條 {getStatEmoji(main["mainPropId"])} {main["statValue"]}{symbol}**\n'
-                    artifact_calc_dict = {}
-                    for sub in e['flat']['reliquarySubstats']:
-                        symbol = GenshinCog.percent_symbol(sub['appendPropId'])
-                        value += f'{getStatEmoji(sub["appendPropId"])} {sub["statValue"]}{symbol}\n'
-                        artifact_calc_dict[sub["appendPropId"]
-                                           ] = sub["statValue"]
-                    if int(e["reliquary"]["level"])-1 == 20:
-                        value += f'<:SCORE:983948729293897779> {int(calculateArtifactScore(artifact_calc_dict))}'
-                    embed.add_field(
-                        name=artifact_str,
-                        value=value
-                    )
-                    embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
-            embed.set_thumbnail(url=getCharacter(self.id)["icon"])
-            embed.set_author(name=self.member, icon_url=self.member.avatar)
-            self.disabled = False
-            await i.response.edit_message(embed=embed, view=self.view)
-
-    class EnkaEmojiList(Button):
-        def __init__(self):
-            super().__init__(label='對照表', style=ButtonStyle.gray)
-
-        async def callback(self, i: Interaction) -> Any:
-            embed = defaultEmbed(
-                '符號對照表',
-                '<:HP:982068466410463272> 生命值\n'
-                '<:HP_PERCENT:982138227450347553> 生命值%\n'
-                '<:DEFENSE:982068463566721064> 防禦力\n'
-                '<:DEFENSE_PERCENT:982138218822639626> 防禦力%\n'
-                '<:ATTACK:982138214305390632> 攻擊力\n'
-                '<:ATTACK_PERCENT:982138215832117308> 攻擊力%\n'
-                '<:CRITICAL:982068460731392040> 暴擊率\n'
-                '<:CRITICAL_HURT:982068462081933352> 暴擊傷害\n'
-                '<:CHARGE_EFFICIENCY:982068459179503646> 充能效率\n'
-                '<:ELEMENT_MASTERY:982068464938270730> 元素精通\n'
-                '<:HEAL_ADD:982138224170401853> 治療加成\n\n'
-                '<:ICE_ADD_HURT:982138229140635648> 冰元素傷害加成\n'
-                '<:FIRE_ADD_HURT:982138221569900585> 火元素傷害加成\n'
-                '<:ELEC_ADD_HURT:982138220248711178> 雷元素傷害加成\n'
-                '<:GRASS_ADD_HURT:982138222891110432> 草元素傷害加成\n'
-                '<:ROCK_ADD_HURT:982138232391237632> 岩元素傷害加成\n'
-                '<:WATER_ADD_HURT:982138233813098556> 水元素傷害加成\n'
-                '<:WIND_ADD_HURT:982138235239137290> 風元素傷害加成\n'
-                '<:PHYSICAL_ADD_HURT:982138230923231242> 物理傷害加成'
-            )
-            await i.response.edit_message(embed=embed, view=self.view)
+            view = GenshinCog.EnkaPageView(self.view.embeds, self.artifact_embeds,
+                                           self.view.options, False, self.character_id, self.view.data, True)
+            await i.response.edit_message(embed=self.artifact_embeds[self.character_id], view=view)
 
     @app_commands.command(name='profile角色展示', description='透過 enka API 查看各式原神數據')
-    @app_commands.rename(member='其他人', custom_uid='uid')
-    @app_commands.describe(member='查看其他人的資料', custom_uid='使用 UID 查閱')
-    async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 獲取資料中'))
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他人的資料')
+    async def profile(self, i: Interaction, member: Member = None):
         member = member or i.user
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
         if uid is None:
             uid_c = i.guild.get_channel(978871680019628032)
-            return await i.edit_original_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'))
-        uid = uid[0]
-        uid = custom_uid if custom_uid is not None else uid
-        async with self.bot.session.get(f'https://enka.shinshin.moe/u/{uid}/__data.json?key=b21lZ2FsdWxrZWt3dGY') as r:
-            data = await r.json()
-        if 'avatarInfoList' not in data:
-            embed = errEmbed(message='請照下方的指示操作')
-            embed.set_author(name='找不到資料', icon_url=i.user.avatar)
-            await i.edit_original_message(embed=embed)
+            return await i.response.send_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'), ephemeral=True)
+        data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
+        print(data)
+        if len(data.characters) == 0:
             embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(
-                name='找不到資料', icon_url=i.user.avatar)
-            embed.set_image(url='https://i.imgur.com/frMsGHO.gif')
-            return await i.followup.send(embed=embed, ephemeral=True)
-        player = data['playerInfo']
-        embeds = []
-        sig = f"「{player['signature']}」" if 'signature' in player else '(該玩家沒有簽名)'
+                name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
+            return await i.response.send_message(embed=embed, ephemeral=True)
+        embeds = {}
+        sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
         overview = defaultEmbed(
-            f'{player["nickname"]}',
-            f"{sig}\n"
-            f"玩家等級: Lvl. {player['level']}\n"
-            f"世界等級: W{player['worldLevel']}\n"
-            f"完成成就: {player['finishAchievementNum']}\n"
-            f"深淵已達: {player['towerFloorIndex']}-{player['towerLevelIndex']}")
+            f'{data.player.nickname}',
+            f"{sig}"
+            f"玩家等級: Lvl. {data.player.level}\n"
+            f"世界等級: W{data.player.world_level}\n"
+            f"完成成就: {data.player.achievement}\n"
+            f"深淵已達: {data.player.abyss_floor}-{data.player.abyss_room}")
         overview.set_author(name=member, icon_url=member.avatar)
-        overview.set_image(
-            url=f"https://enka.shinshin.moe/ui/{namecards_map.get(int(player['nameCardId']))['Card']}.png")
-        embeds.append(overview)
-        charas = []
-        for chara in player['showAvatarInfoList']:
-            if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
-                continue
-            charas.append([
-                getCharacter(chara['avatarId'])['name'],
-                f"Lvl. {chara['level']}",
-                chara['avatarId']
-            ])
-        info = data['avatarInfoList']
-        equipt_dict = {}
-        for chara in info:
-            if chara['avatarId'] == 10000007 or chara['avatarId'] == 10000005:
-                continue
-            prop = chara['fightPropMap']
-            talent_levels = chara['skillLevelMap']
-            talent_str = ''
-            const = 0 if 'talentIdList' not in chara else len(
-                chara['talentIdList'])
-            for id, level in talent_levels.items():
-                talent_str += f'{getTalent(id)["name"]} - Lvl. {level}\n'
-            equipments = chara['equipList']
-            equipt_dict[chara['avatarId']] = {
-                'name': getCharacter(chara["avatarId"])['name'],
-                'equipments': equipments
-            }
-            weapon_str = ''
-            for e in equipments:
-                if 'weapon' in e:
-                    weapon_name = get_name_text_map_hash.getNameTextMapHash(
-                        e['flat']['nameTextMapHash'])
-                    refinment_str = ''
-                    if 'affixMap' in e['weapon']:
-                        refinment_str = f"- R{int(list(e['weapon']['affixMap'].values())[0])+1}"
-                    weapon_str += f"{getWeapon(name=weapon_name)['emoji']} {weapon_name} - Lvl. {e['weapon']['level']} {refinment_str}\n"
-                    weapon_sub_str = ''
-                    if len(e['flat']['weaponStats']) == 2:
-                        propId = e['flat']['weaponStats'][1]['appendPropId']
-                        symbol = GenshinCog.percent_symbol(propId)
-                        weapon_sub_str = f"{getStatEmoji(propId)} {e['flat']['weaponStats'][1]['statValue']}{symbol}"
-                    weapon_str += f"<:ATTACK:982138214305390632> {e['flat']['weaponStats'][0]['statValue']}\n{weapon_sub_str}"
-                    break
-            max_level = 20
-            ascention = chara['propMap']['1002']['ival']
-            if ascention == 1:
-                max_level = 30
-            elif ascention == 2:
-                max_level = 50
-            elif ascention == 3:
-                max_level = 60
-            elif ascention == 4:
-                max_level = 70
-            elif ascention == 5:
-                max_level = 80
-            else:
-                max_level = 90
+        overview.set_image(url=data.player.namecard.banner)
+        embeds['0'] = overview
+        options = [SelectOption(label='總覽', value=0,
+                                emoji='<:SCORE:983948729293897779>')]
+        artifact_embeds = {}
+        for character in data.characters:
+            options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
+                           value=character.id, emoji=getCharacter(character.id)['emoji']))
             embed = defaultEmbed(
-                f"{getCharacter(chara['avatarId'])['name']} C{const} (Lvl. {chara['propMap']['4001']['val']}/{max_level})",
-                f'<:HP:982068466410463272> 生命值上限 - {round(prop["2000"])} ({round(prop["1"])}/{round(prop["2000"])-round(prop["1"])})\n'
-                f"<:ATTACK:982138214305390632> 攻擊力 - {round(prop['2001'])} ({round(prop['4'])}/{round(prop['2001'])-round(prop['4'])})\n"
-                f"<:DEFENSE:982068463566721064> 防禦力 - {round(prop['2002'])} ({round(prop['7'])}/{round(prop['2002'])-round(prop['7'])})\n"
-                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {round(prop['28'])}\n"
-                f"<:CRITICAL:982068460731392040> 暴擊率 - {round(prop['20']*100, 1)}%\n"
-                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {round(prop['22']*100, 1)}%\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {round(prop['23']*100, 1)}%\n"
-                f"<:FRIENDSHIP:982843487697379391> 好感度 - {chara['fetterInfo']['expLevel']}")
+                f'{character.name} C{len(character.constellations)}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
+            )
+            embed.add_field(
+                name='屬性',
+                value=f'<:HP:982068466410463272> 生命值上限 - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n'
+                f"<:ATTACK:982138214305390632> 攻擊力 - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> 防禦力 - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
+                f"<:CRITICAL:982068460731392040> 暴擊率 - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
+                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
+                f"<:FRIENDSHIP:982843487697379391> 好感度 - {character.friendship_level}",
+                inline=False
+            )
+            value = ''
+            for skill in character.skills:
+                value += f'{skill.name} | Lvl. {skill.level}\n'
             embed.add_field(
                 name='天賦',
-                value=talent_str,
-                inline=False
+                value=value
             )
+            weapon = character.equipments[-1]
+            weapon_sub_stats = ''
+            for substat in weapon.detail.substats:
+                weapon_sub_stats += f"{getFightProp(name=substat.name)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
             embed.add_field(
-                name=f'武器',
-                value=weapon_str,
+                name='武器',
+                value=f'{getWeapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
+                f"{getFightProp(name=weapon.detail.mainstats.name)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
+                f'{weapon_sub_stats}',
                 inline=False
             )
-            embed.set_thumbnail(url=getCharacter(chara['avatarId'])["icon"])
-            embed.set_author(name=member, icon_url=member.avatar)
-            embeds.append(embed)
+            embed.set_thumbnail(url=character.image.icon)
+            embed.set_author(name=member.display_name, icon_url=member.avatar)
+            embeds[str(character.id)] = embed
+
+            # artifacts
+            artifact_embed = defaultEmbed(f'{character.name} | 聖遺物')
+            index = 0
+            for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
+                artifact_sub_stats = ''
+                artifact_sub_stat_dict = {}
+                for substat in artifact.detail.substats:
+                    artifact_sub_stat_dict[substat.prop_id] = substat.value
+                    artifact_sub_stats += f'{getFightProp(name=substat.name)["emoji"]} {substat.name} {substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
+                if artifact.level == 20:
+                    artifact_sub_stats += f'<:SCORE:983948729293897779> {int(calculateArtifactScore(artifact_sub_stat_dict))}'
+                artifact_embed.add_field(
+                    name=f'{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}',
+                    value=artifact_sub_stats
+                )
+                artifact_embed.set_thumbnail(url=character.image.icon)
+                artifact_embed.set_author(
+                    name=member.display_name, icon_url=member.avatar)
+                artifact_embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
+                index += 1
+            artifact_embeds[str(character.id)] = artifact_embed
 
         view = GenshinCog.EnkaPageView(
-            embeds, charas, equipt_dict, 0, True, member, data, 0, self.bot)
-        await i.edit_original_message(embed=overview, view=view)
+            embeds, artifact_embeds, options, True, None, data, True)
+        await i.response.send_message(embed=embeds['0'], view=view)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼')
     @app_commands.rename(code='兌換碼')
@@ -1417,12 +1263,12 @@ class GenshinCog(commands.Cog):
             await interaction.response.defer()
             self.view.sub_stat = self.prop_id
             self.view.stop()
-            
+
     class LeaderboardArtifactGoBack(Button):
         def __init__(self, c: aiosqlite.Cursor):
             super().__init__(label='返回副詞條選擇', row=2, style=ButtonStyle.green)
             self.c = c
-        
+
         async def callback(self, i: Interaction):
             view = GenshinCog.ArtifactSubStatView(i.user)
             await i.response.edit_message(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
@@ -1448,7 +1294,7 @@ class GenshinCog(commands.Cog):
                     f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
                 embeds.append(embed)
             await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(self.c)]).start(embeded=True, edit_original_message=True)
-            
+
     def rank_user(user_id: int, leaderboard: List[Tuple]):
         interaction_user_rank = None
         rank = 1
@@ -1480,7 +1326,7 @@ class GenshinCog(commands.Cog):
             if len(data.characters) != 0:
                 for character in data.characters:
                     if len(character.equipments) != 0:
-                        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+                        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
                             for substat in artifact.detail.substats:
                                 await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (substat.name,))
                                 sub_stat_value = await c.fetchone()
@@ -1569,8 +1415,10 @@ class GenshinCog(commands.Cog):
                 get_num, use_pull, left_pull, up_guarantee = await WishCog.char_banner_calc(self, tuple[0], True)
                 if tuple[0] in data:
                     continue
-                data[tuple[0]] = 100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull)
-            leaderboard = list(sorted(data.items(), key=lambda item: item[1], reverse=True))
+                data[tuple[0]] = 100*player.luck_evaluate(
+                    get_num=get_num, use_pull=use_pull, left_pull=left_pull)
+            leaderboard = list(
+                sorted(data.items(), key=lambda item: item[1], reverse=True))
             user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             embeds = []
@@ -1579,7 +1427,7 @@ class GenshinCog(commands.Cog):
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
                     message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {round(tuple[1], 2)}%\n'
-                    rank += 1 
+                    rank += 1
                 embed = defaultEmbed(
                     f'🏆 歐氣榜 (你: #{user_rank})', message)
                 embeds.append(embed)

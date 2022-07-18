@@ -61,7 +61,7 @@ class ShenheBot(commands.Bot):
         self.db = await aiosqlite.connect('main.db')
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug_toggle = debug_toggle
-        self.enka_client = EnkaNetworkAPI(lang="cht")
+        self.enka_client = EnkaNetworkAPI(lang='cht')
         await self.load_extension('jishaku')
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem

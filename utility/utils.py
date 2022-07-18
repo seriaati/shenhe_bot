@@ -2,15 +2,18 @@ import json
 import os
 import re
 from datetime import datetime
-
+from enkanetwork import EnkaNetworkResponse
+from enkanetwork.enum import EquipmentsType
 import discord
 import genshin
+from pyppeteer.browser import Browser
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
 from data.game.fight_prop import fight_prop
 from data.game.talents import talents_map
 from data.game.weapons import weapons_map
 from data.game.artifacts import artifacts_map
+from data.game.good_stats import good_stats
 from dotenv import load_dotenv
 from pyppeteer import launch
 
@@ -107,7 +110,8 @@ def calculateArtifactScore(substats: dict):
     return result
 
 
-async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
+async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list[str] = ['', '', '']):
+    chara_name = (getCharacter(character_id)['eng']).replace(' ', '')
     log(True, False, 'calculateDamage', f'Calculating damage for {chara_name}')
     talent_to_calculate = ['Normal Atk.', 'Charged Atk.',
                            'Plunging Atk.', 'Ele. Skill', 'Ele. Burst']
@@ -117,66 +121,26 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
         talent_to_calculate.remove('Ele. Burst')
     elif chara_name in no_ele_skill:
         talent_to_calculate.remove('Ele. Skill')
-    # browser = await launch({"headless": True, "args": ["--start-maximized"]})
+    browser = await launch({"headless": False, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
     await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在匯入角色資料 (2/6)'))
-    await page.waitForSelector('div.MuiCardContent-root')
-    await page.click('button.MuiButton-root.MuiButton-contained.MuiButton-containedError.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.css-1312m7x')
-    good_format = await enkaToGOOD(enka_data)
-    good_json = json.dumps(good_format)
-    await page.focus('textarea.MuiBox-root')
+    # upload button
+    await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-bch5q4 > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(2) > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-isbt42 > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-1ekasd5:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-lrcwtp > div.MuiCardContent-root.css-nph2fg:nth-child(3) > div.MuiBox-root.css-10egq61 > div.MuiBox-root.css-0:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-qqlytg:nth-child(2) > span.MuiButton-root.MuiButton-contained.MuiButton-containedInfo.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-1garcay')
+    await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-bch5q4 > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(2) > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-isbt42 > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-1ekasd5:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-lrcwtp > div.MuiCardContent-root.css-nph2fg:nth-child(3) > div.MuiBox-root.css-10egq61 > div.MuiBox-root.css-0:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-qqlytg:nth-child(2) > span.MuiButton-root.MuiButton-contained.MuiButton-containedInfo.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-1garcay')
+    # get good_json
+    good_json = await enkaToGOOD(data, character_id, hitMode, reactionMode, infusionAura, team)
+    # text box
+    await page.focus('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-nph2fg:nth-child(2) > textarea.MuiBox-root.css-xkq1iw:nth-child(3)')
+    # write in the json data
     await page.keyboard.sendCharacter(str(good_json))
-    await page.click('button.MuiButton-root.MuiButton-contained.MuiButton-containedSuccess.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.css-1p356oi')
-    await page.click('button#dropdownbtn')
-    await page.waitForSelector('ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a')
-    await page.click('li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(n+2)')
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在調整天賦 (3/6)'))
-    if chara_name == 'Xiao':
-        await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/Xiao/talent')
-        await page.waitForSelector('div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')
-        await page.click('div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')
-    elif chara_name == 'RaidenShogun':
-        await page.goto('https://frzyc.github.io/genshin-optimizer/#/characters/RaidenShogun/talent')
-        await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # eye of stormy judgement
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # eye of stormy judgement
-        await page.click('div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button#dropdownbtn.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # resolve stacks
-        await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(7)')  # 50 stack
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(7)')  # 50 stack
-    elif chara_name == 'KamisatoAyaka':
-        await page.goto('https://frzyc.github.io/genshin-optimizer/#/characters/KamisatoAyaka/talent')
-        await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # After using ele. skill
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # After using ele. skill
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(4) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(4) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # sprint touches enemy
-    elif chara_name == 'HuTao':
-        await page.goto('https://frzyc.github.io/genshin-optimizer/#/characters/HuTao/talent')
-        await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # ele. skill
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg:nth-child(2) > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(3) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')  # ele.skill
-        await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(6) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-lg-9.css-1x7fo23:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-6.MuiGrid-grid-md-4.css-1twzmnh:nth-child(5) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-38r5pq > div.MuiCardContent-root.css-nph2fg > div.MuiBox-root.css-1821gv5:nth-child(2) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardContent-root.css-14gm9lj > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw')
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中 (4/6)'))
-    await page.goto(f"https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip")
-    await page.waitForSelector('span.css-t3oe3b')
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在調整武器 (5/6)'))
-    for w in good_format['weapons']:
-        if w['key'] == 'MistsplitterReforged' and w['location'] == chara_name:
-            # Mistsplitter's Edge
-            selector = 'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiBox-root.css-1821gv5:nth-child(5) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-xl-3.css-gew0gq:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-md-6.MuiGrid-grid-lg-4.css-170ukis:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-nph2fg > div.MuiBox-root.css-1821gv5 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button#dropdownbtn.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw'
-            await page.waitForSelector(selector)
-            await page.click(selector)
-            # 3 stacks
-            selector = 'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(5)'
-            await page.waitForSelector(selector)
-            await page.click(selector)
-            break
-        elif w['key'] == 'StaffOfHoma' and w['location'] == 'HuTao' and chara_name == 'HuTao':
-            # Reckless Cinnabar, HP less than 50%
-            selector = 'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx > div.MuiCardContent-root.css-182b5p1 > div.MuiBox-root.css-1821gv5:nth-child(5) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-item.MuiGrid-spacing-xs-1.MuiGrid-grid-xs-12.MuiGrid-grid-md-12.MuiGrid-grid-xl-3.css-gew0gq:nth-child(2) > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-md-6.MuiGrid-grid-lg-4.css-170ukis:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-nph2fg > div.MuiBox-root.css-1821gv5 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeSmall.MuiButton-containedSizeSmall.MuiButton-fullWidth.MuiButtonBase-root.css-ayzgrw'
-            await page.waitForSelector(selector)
-            await page.click(selector)
-            break
-    # Ele. Skill
-    yield(defaultEmbed('<a:LOADER:982128111904776242> 正在蒐集傷害數字 (6/6)'))
+    # replace database button
+    await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-2s1u6n:nth-child(4) > button.MuiButton-root.MuiButton-contained.MuiButton-containedSuccess.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.css-1p356oi')
+    # change language to CHT
+    await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(1) > div.MuiCardContent-root.css-nph2fg:nth-child(3) > button#dropdownbtn.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-z7p9wm')
+    await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
+    await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
+    await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip')
     labels = await page.querySelectorAll('h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     label_vals = []
     for l in labels:
@@ -184,8 +148,6 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
         label_vals.append(val)
     result = {}
     normal_attack_name = '<普通攻擊名稱>'
-    dmg_type = ['avgHit', 'hit', 'critHit']
-    await page.click(f'button[value="{dmg_type[dmg]}"]')  # Avg. DMG
     for t in talent_to_calculate:
         card_index = label_vals.index(t)
         talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
@@ -213,7 +175,7 @@ async def calculateDamage(enka_data, chara_name: str, browser, dmg: int):
             except:
                 pass
     await page.close()
-    yield [result, normal_attack_name]
+    return [result, normal_attack_name]
 
 
 def trimCookie(cookie: str) -> str:
@@ -253,38 +215,44 @@ def getElementEmoji(element: str):
     return element_emojis.get(element) or element
 
 
-def getCharacter(id: int = '', name: str = ''):
+def getCharacter(id: int = None, name: str = ''):
     for character_id, character_info in characters_map.items():
         if character_id == str(id) or character_info['name'] == name:
             return character_info
     return {'name': f'{id}{name}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
 
 
-def getWeapon(id: int = '', name: str = ''):
+def getWeapon(id: int = None, name: str = ''):
     for weapon_id, weapon_info in weapons_map.items():
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
     return {'name': f'{id}{name}', 'emoji': '<:WARNING:992552271378386944>', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
 
 
-def getConsumable(id: int = '', name: str = ''):
+def getConsumable(id: int = None, name: str = ''):
     for consumable_id, consumable_info in consumables_map.items():
         if consumable_id == str(id) or consumable_info['name'] == name:
             return consumable_info
     return {'name': '自訂素材', 'emoji': '<:white_star:982456919224615002>'}
 
 
-def getTalent(id: int = '', name: str = ''):
+def getTalent(id: int = None, name: str = ''):
     for talent_id, talent_info in talents_map.items():
         if talent_id == str(id) or talent_info['name'] == name:
             return talent_info
     return {'name': f'{id}{name}'}
 
-def getArtifact(id: int = '', name: str = ''):
+def getArtifact(id: int = None, name: str = ''):
     for artifact_id, artifact_info in artifacts_map.items():
         if artifact_id == str(id) or name in artifact_info['artifacts'] or name == artifact_info['name']:
             return artifact_info 
     raise ValueError(f'Unknwon artifact {id}{name}')
+
+def getFightProp(id: str = '', name: str = ''):
+    for fight_prop_id, fight_prop_info in fight_prop.items():
+        if fight_prop_id == str(id) or name == fight_prop_info['name']:
+            return fight_prop_info
+    raise ValueError(f'Unknwon fight prop {id}{name}')
 
 
 def getAreaEmoji(area_name: str):
@@ -301,126 +269,69 @@ def getAreaEmoji(area_name: str):
     return emoji or ''
 
 
-async def enkaToGOOD(enka_data):
+async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list[str] = ['', '', '']) -> str:
     good_dict = {
         'format': 'GOOD',
-        'version': 1,
+        'dbVersion': 19,
         'source': '申鶴 • 忘玄',
-        'weapons': [],
+        'version': 1,
+        'characters': [],
         'artifacts': [],
-        'characters': []
+        'weapons': []
     }
-    weapon_id = 0
-    art_id = 0
-    for chara in enka_data['avatarInfoList']:
-        id = chara['avatarId']
-        chara_key = (getCharacter(id)['eng']).replace(' ', '') or chara_key
-        level = chara['propMap']['4001']['ival']
-        constellation = 0 if 'talentIdList' not in chara else len(
-            chara['talentIdList'])
-        ascention = chara['propMap']['1002']['ival']
-        talents = chara['skillLevelMap']
-        if id == 10000002:  # 神里綾華
-            talent = {
-                'auto': int(talents['10024']),
-                'skill': int(talents['10018']),
-                'burst': int(talents['10019'])
-            }
-        elif id == 10000041:  # 莫娜
-            talent = {
-                'auto': int(talents['10411']),
-                'skill': int(talents['10412']),
-                'burst': int(talents['10415'])
-            }
-        else:
-            talent = {
-                'auto': int(list(talents.values())[0]),
-                'skill': int(list(talents.values())[1]),
-                'burst': int(list(talents.values())[2]),
-            }
+    for character in data.characters:
+        burst_index = 3 if character.id == 10000041 or character.id == 10000002 else 2
+        talent = {
+            'auto': int(character.skills[0].level),
+            'skill': int(character.skills[1].level),
+            'burst': int(character.skills[burst_index].level),
+        }
         good_dict['characters'].append(
             {
-                'key': chara_key,
-                'level': int(level),
-                'constellation': int(constellation),
-                'ascention': int(ascention),
-                'talent': talent
+                'key': character.name.replace(' ', ''),
+                'level': character.level,
+                'ascension': character.ascension,
+                'hitMode': hitMode,
+                'reactionMode': reactionMode,
+                'conditional': {},
+                'talent': talent,
+                'infusionAura': infusionAura,
+                'constellation': len(character.constellations),
+                'team': team if character.id == int(character_id) else ['','',''],
+                'compareData': False
             }
         )
-        for e in chara['equipList']:
-            if 'weapon' in e:
-                weapon_id += 1
-                key = (get_name_text_map_hash.getNameTextMapHash(e['flat']['nameTextMapHash'], True)).replace(
-                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['nameTextMapHash']
-                level = e['weapon']['level']
-                ascension = e['weapon']['promoteLevel'] if 'promoteLevel' in e['weapon'] else 0
-                refinement = list(e['weapon']['affixMap'].values())[
-                    0]+1 if 'affixMap' in e['weapon'] else 0
-                location = chara_key
-                good_dict['weapons'].append(
-                    {
-                        'key': key,
-                        'level': level,
-                        'ascension': ascension,
-                        'refinement': refinement,
-                        'location': location,
-                        'id': weapon_id
-                    }
-                )
-            else:
-                art_id += 1
-                artifact_pos = {
-                    'EQUIP_BRACER': 'flower',
-                    'EQUIP_NECKLACE': 'plume',
-                    'EQUIP_SHOES': 'sands',
-                    'EQUIP_RING': 'goblet',
-                    'EQUIP_DRESS': 'circlet'
+        weapon = character.equipments[-1]
+        weapon_key = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace("'", '').title().replace(' ', '').replace('-', '')
+        good_dict['weapons'].append(
+            {
+                'key': weapon_key,
+                'level': weapon.level,
+                'ascension': weapon.ascension,
+                'refinement': weapon.refinement,
+                'location': (getCharacter(character.id)['eng']).replace(' ', ''),
+                'lock': True
+            }
+        )
+        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+            substats = []
+            for substat in artifact.detail.substats:
+                substats.append({
+                    'key': good_stats.get(substat.prop_id),
+                    'value': substat.value
+                })
+            good_dict['artifacts'].append(
+                {
+                    'setKey': artifact.detail.name.replace("'", '').title().replace(' ', '').replace('-', ''),
+                    'rarity': artifact.detail.rarity,
+                    'level': artifact.level,
+                    'slotKey': artifact.detail.artifact_type.lower(),
+                    'mainStatKey': good_stats.get(artifact.detail.mainstats.prop_id),
+                    'substats': substats,
+                    'location': (getCharacter(character.id)['eng']).replace(' ', ''),
+                    'exclude': False,
+                    'lock': True
                 }
-                stats = {
-                    'FIGHT_PROP_HP': 'hp',
-                    'FIGHT_PROP_HP_PERCENT': 'hp_',
-                    'FIGHT_PROP_ATTACK': 'atk',
-                    'FIGHT_PROP_ATTACK_PERCENT': 'atk_',
-                    'FIGHT_PROP_DEFENSE': 'def',
-                    'FIGHT_PROP_DEFENSE_PERCENT': 'def_',
-                    'FIGHT_PROP_CHARGE_EFFICIENCY': 'enerRech_',
-                    'FIGHT_PROP_ELEMENT_MASTERY': 'eleMas',
-                    'FIGHT_PROP_CRITICAL': 'critRate_',
-                    'FIGHT_PROP_CRITICAL_HURT': 'critDMG_',
-                    'FIGHT_PROP_HEAL_ADD': 'heal_',
-                    'FIGHT_PROP_FIRE_ADD_HURT': 'pyro_dmg_',
-                    'FIGHT_PROP_ELEC_ADD_HURT': 'electro_dmg_',
-                    'FIGHT_PROP_ICE_ADD_HURT': 'cryo_dmg_',
-                    'FIGHT_PROP_WATER_ADD_HURT': 'hydro_dmg_',
-                    'FIGHT_PROP_WIND_ADD_HURT': 'anemo_dmg_',
-                    'FIGHT_PROP_ROCK_ADD_HURT': 'geo_dmg_',
-                    'FIGHT_PROP_GRASS_ADD_HURT': 'dendro_dmg_',
-                    'FIGHT_PROP_PHYSICAL_ADD_HURT': 'physical_dmg_'
-                }
-                setKey = get_name_text_map_hash.getNameTextMapHash(e['flat']['setNameTextMapHash'], True).replace(
-                    "'", '').title().replace(' ', '').replace('-', '') or e['flat']['setNameTextMapHash']
-                slotKey = artifact_pos.get(e['flat']['equipType'])
-                rarity = e['flat']['rankLevel']
-                mainStatKey = stats.get(
-                    e['flat']['reliquaryMainstat']['mainPropId'])
-                level = e['reliquary']['level']-1
-                substats = []
-                for sub_stat in e['flat']['reliquarySubstats']:
-                    substats.append({
-                        'key': stats.get(sub_stat['appendPropId']),
-                        'value': sub_stat['statValue']
-                    })
-                good_dict['artifacts'].append(
-                    {
-                        'setKey': setKey,
-                        'slotKey': slotKey,
-                        'rarity': rarity,
-                        'mainStatKey': mainStatKey,
-                        'level': level,
-                        'substats': substats,
-                        'location': chara_key,
-                        'lock': True,
-                        'id': art_id
-                    }
-                )
-    return good_dict
+            )
+    good_json = json.dumps(good_dict)
+    return good_json
