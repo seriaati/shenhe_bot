@@ -11,7 +11,7 @@ from utility.utils import defaultEmbed, errEmbed, log
 class OtherCMDCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.flow_app = FlowApp(self.bot.db, self.bot)
+        self.flow_app = FlowApp(self.bot.db)
         self.quote_ctx_menu = app_commands.ContextMenu(
             name='語錄',
             callback=self.quote_context_menu

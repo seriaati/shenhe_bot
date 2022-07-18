@@ -8,9 +8,8 @@ from utility.utils import errEmbed, log
 
 
 class FlowApp:
-    def __init__(self, db: aiosqlite.Connection, bot) -> None:
+    def __init__(self, db: aiosqlite.Connection) -> None:
         self.db = db
-        self.bot = bot
 
     async def register(self, user_id: int, no_20: bool = False):
         log(True, False, 'Register', user_id)

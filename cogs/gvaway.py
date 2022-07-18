@@ -15,7 +15,6 @@ from utility.utils import defaultEmbed, errEmbed, log
 class GiveAwayCog(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.db = self.bot.db
         self.debug_toggle = self.bot.debug_toggle
         self.gv_channel_id = 965517075508498452 if not self.debug_toggle else 909595117952856084
 
@@ -58,11 +57,10 @@ class GiveAwayCog(commands.Cog):
         await self.bot.db.commit()
 
     class GiveAwayView(DefaultView):
-        def __init__(self, db: aiosqlite.Connection, bot, i: Interaction = None):
+        def __init__(self, db: aiosqlite.Connection, i: Interaction = None):
             self.db = db
             self.interaction = i
-            self.flow_app = FlowApp(self.db, bot)
-            self.bot = bot
+            self.flow_app = FlowApp(self.db)
             self.gv_channel_id = 965517075508498452 if not self.bot.debug_toggle else 909595117952856084
             super().__init__(timeout=None)
 
@@ -113,7 +111,7 @@ class GiveAwayCog(commands.Cog):
             await gv_msg.edit(embed=embed)
 
         async def check_gv_finish(self, gv_msg_id: int, i: Interaction):
-            c = await self.bot.db.cursor()
+            c = await self.db.cursor()
             await c.execute('SELECT goal FROM giveaway WHERE msg_id = ?', (gv_msg_id,))
             goal = await c.fetchone()
             goal = goal[0]

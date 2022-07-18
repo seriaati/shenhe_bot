@@ -48,9 +48,9 @@ class FishCog(commands.Cog):
         return result, fish_adj
 
     class TouchFishButton(Button):  # 摸魚按鈕
-        def __init__(self, fish: str, db: aiosqlite.Connection, bot: commands.Bot, fish_adj: str):
+        def __init__(self, fish: str, db: aiosqlite.Connection, fish_adj: str):
             self.fish = fish
-            self.flow_app = FlowApp(db, bot)
+            self.flow_app = FlowApp(db)
             self.fish_adj = fish_adj
             super().__init__(style=ButtonStyle.blurple,
                              label=f'撫摸{self.fish_adj}的{fish}')
@@ -87,10 +87,10 @@ class FishCog(commands.Cog):
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
     class TouchFish(DefaultView):  # 摸魚view
-        def __init__(self, index: str, db: aiosqlite.Connection, bot: commands.Bot, fish_adj: str):
+        def __init__(self, index: str, db: aiosqlite.Connection, fish_adj: str):
             super().__init__(timeout=None)
             self.add_item(FishCog.TouchFishButton(
-                index, db, bot, fish_adj))
+                index, db, fish_adj))
 
     def get_fish_choices():  # 取得所有魚種
         choices = []
@@ -106,7 +106,7 @@ class FishCog(commands.Cog):
         if random_number == 1 and not isinstance(message.channel, Thread):
             fish = random.choice(list(fish_data.keys()))
             embed, fish_adj = self.generate_fish_embed(fish)
-            view = FishCog.TouchFish(fish, self.bot.db, self.bot, fish_adj)
+            view = FishCog.TouchFish(fish, self.bot.db, fish_adj)
             await message.channel.send(embed=embed, view=view)
 
    # /releasefish
@@ -117,7 +117,7 @@ class FishCog(commands.Cog):
     @app_commands.checks.has_role('小雪團隊')
     async def release_fish(self, i: Interaction, fish_type: str):
         embed, fish_adj = self.generate_fish_embed(fish_type)
-        view = FishCog.TouchFish(fish_type, self.bot.db, self.bot, fish_adj)
+        view = FishCog.TouchFish(fish_type, self.bot.db, fish_adj)
         await i.response.send_message(embed=embed, view=view)
 
 
