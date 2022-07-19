@@ -1,37 +1,38 @@
 import ast
-from dis import dis
 import json
 import re
 from datetime import datetime
 from typing import Any, List, Optional, Tuple
-from enkanetwork import EnkaNetworkResponse, UIDNotFounded
-from enkanetwork.enum import EquipmentsType, DigitType
+
 import aiosqlite
 import discord
-import yaml
 import GGanalysislib
-from cogs.wish import WishCog
-from data.game.characters import characters_map
-from data.game.namecards import namecards_map
-from data.game.talent_books import talent_books
+import yaml
 from data.game.elements import elements
-from data.game.fight_prop import fight_prop
 from data.game.equip_types import equip_types
+from data.game.fight_prop import fight_prop
+from data.game.talent_books import talent_books
+from data.game.GOModes import hitModes
 from debug import DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput, button
+from enkanetwork import EnkaNetworkAPI, EnkaNetworkResponse, UIDNotFounded
+from enkanetwork.enum import DigitType, EquipmentsType
+from pyppeteer.browser import Browser
 from utility.apps.GenshinApp import GenshinApp
 from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
-                           defaultEmbed, divide_chunks, errEmbed, get_name_text_map_hash, getArtifact,
+                           defaultEmbed, divide_chunks, errEmbed, getArtifact,
                            getCharacter, getClient, getConsumable,
-                           getElementEmoji, getFightProp, getStatEmoji, getTalent, getWeapon,
-                           getWeekdayName)
+                           getElementEmoji, getFightProp, getStatEmoji,
+                           getTalent, getWeapon, getWeekdayName,
+                           parse_damage_embed)
 
+from cogs.wish import WishCog
 from genshin.models import WikiPageType
 
 
@@ -98,7 +99,7 @@ class GenshinCog(commands.Cog):
     @app_commands.describe(member='查看其他群友的資料')
     async def check(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        result, success = await self.genshin_app.getRealTimeNotes(member.id, False)
+        result, success = await self.genshin_app.getRealTimeNotes(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 # /stats
 
@@ -983,139 +984,189 @@ class GenshinCog(commands.Cog):
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     class EnkaPageView(DefaultView):
-        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], options: list[SelectOption], disable_damage_calc_button: bool, character_id: str, data: EnkaNetworkResponse, disable_artifact_button: bool):
+        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member):
             super().__init__(timeout=None)
             self.embeds = embeds
             self.artifact_embeds = artifact_embeds
-            self.options = options
-            self.disable_damage_calc_button = disable_damage_calc_button
-            self.character_id = character_id
+            self.character_options = character_options
+            self.character_id = None
+            self.browser = browser
+            self.author = author
             self.data = data
-            self.add_item(GenshinCog.EnkaPageSelect(embeds, options))
-            self.add_item(GenshinCog.EnkaArtifactButton(
-                artifact_embeds, character_id, disable_artifact_button))
-            self.add_item(GenshinCog.CalculateDamageButton(
-                data, character_id, disable_damage_calc_button))
+            self.eng_data = eng_data
+            self.add_item(GenshinCog.EnkaArtifactButton())
+            self.add_item(GenshinCog.CalculateDamageButton())
+            self.add_item(GenshinCog.EnkaPageSelect(character_options))
+            self.children[0].disabled = True
+            self.children[1].disabled = True
+            
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='指令: `/profile`').set_author(name='你不是這個指令的發起者', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.author.id == interaction.user.id
 
     class EnkaPageSelect(Select):
-        def __init__(self, embeds: dict[int, Embed], options: list[SelectOption]):
-            super().__init__(placeholder='選擇分頁', options=options, row=2)
-            self.embeds = embeds
-            self.options = options
+        def __init__(self, character_options: list[SelectOption]):
+            super().__init__(placeholder='選擇角色', options=character_options)
 
         async def callback(self, i: Interaction) -> Any:
-            disable = True if self.values[0] == '0' else False
-            view = GenshinCog.EnkaPageView(
-                self.embeds, self.view.artifact_embeds, self.options, False, self.values[0], self.view.data, False)
-            await i.response.edit_message(embed=self.embeds[self.values[0]], view=view)
-
-    class EnkaGoBackButton(Button):
-        def __init__(self, character_id: str):
-            super().__init__(emoji='<:left:982588994778972171>')
-            self.character_id = character_id
-
-        async def callback(self, i: Interaction):
-            view = GenshinCog.EnkaPageView(self.view.embeds, self.view.artifact_embeds,
-                                           self.view.options, False, self.character_id, self.view.data, False)
-            await i.response.edit_message(embed=self.view.embeds[self.character_id], view=view)
-
-    class DamageTypeButton(Button):
-        def __init__(self, data: EnkaNetworkResponse, character_id: str, damage_type: int):
-            labels = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-            super().__init__(style=ButtonStyle.blurple,
-                             label=labels[damage_type])
-            self.data = data
-            self.character_id = character_id
-            self.damage_type = damage_type
-
-        async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'))
-
-    def parse_damage_embed(chara_id: int, result: dict, member: Member, dmg: int, normal_attack_name: str):
-        chara_name = getCharacter(chara_id)['eng']
-        result['重擊'], result['下落攻擊'] = result['下落攻擊'], result['重擊']
-        embed = defaultEmbed(f"{getCharacter(chara_id)['name']} - 傷害")
-        dmg_type_str = ['平均傷害', '沒暴擊傷害', '暴擊傷害']
-        name = f"{getCharacter(chara_id)['name']} - {dmg_type_str[dmg]}"
-        if chara_name == 'Xiao':
-            name += ' (開Q狀態下)'
-        elif chara_name == 'Raiden Shogun':
-            name += ' (開E+願力50層)'
-        elif chara_name == 'Kamisato Ayaka':
-            name += ' (開E+被動碰到敵人)'
-        elif chara_name == 'Hu Tao':
-            name += '(開E+50%以下生命值)'
-        embed.add_field(
-            name=name,
-            value=f'**{normal_attack_name}**',
-            inline=False
-        )
-        field_count = 0
-        for talent, damages in result.items():
-            field_count += 1
-            value = ''
-            for label, label_damages in damages.items():
-                if label == '低空墜地衝擊傷害':
-                    label = '低空墜地傷害'
-                elif label == '高空墜地衝擊傷害':
-                    label = '高空墜地傷害'
-                value += f'{label} - {label_damages[0]}\n'
-            inline = False if field_count == 4 else True
-            if talent == '重擊':
-                talent = '下落攻擊'
-            elif talent == '下落攻擊':
-                talent = '重擊'
-            embed.add_field(
-                name=talent,
-                value=value,
-                inline=True
-            )
-        embed.set_author(name=member, icon_url=member.avatar)
-        embed.set_thumbnail(url=getCharacter(chara_id)["icon"])
-        return embed
-
-    class CalculateDamageButton(Button):
-        def __init__(self, data: EnkaNetworkResponse, character_id: str, disabled: bool):
-            super().__init__(style=ButtonStyle.blurple, label='傷害計算', disabled=disabled)
-            self.data = data
-            self.character_id = character_id
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.clear_items()
-            self.view.add_item(GenshinCog.EnkaGoBackButton(self.character_id))
-            for index in range(0, 3):
-                self.view.add_item(GenshinCog.DamageTypeButton(
-                    self.data, self.character_id, index))
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在啟動傷害計算器 (1/6)'), view=self.view)
+            disabled = True if self.values[0] == '0' else False
+            self.view.children[0].disabled = disabled
+            self.view.children[1].disabled = disabled
+            self.view.character_id = self.values[0]
+            await i.response.edit_message(embed=self.view.embeds[self.values[0]], view=self.view)
 
     class EnkaArtifactButton(Button):
-        def __init__(self, artifact_embeds: list[Embed], character_id: str, disabled: bool):
-            super().__init__(label='聖遺物', style=ButtonStyle.blurple, disabled=disabled)
-            self.artifact_embeds = artifact_embeds
-            self.character_id = character_id
+        def __init__(self):
+            super().__init__(label='聖遺物', style=ButtonStyle.blurple)
 
         async def callback(self, i: Interaction) -> Any:
-            view = GenshinCog.EnkaPageView(self.view.embeds, self.artifact_embeds,
-                                           self.view.options, False, self.character_id, self.view.data, True)
-            await i.response.edit_message(embed=self.artifact_embeds[self.character_id], view=view)
+            self.disabled = True
+            await i.response.edit_message(embed=self.view.artifact_embeds[self.view.character_id], view=self.view)
+    
+    class CalculateDamageButton(Button):
+        def __init__(self):
+            super().__init__(style=ButtonStyle.blurple, label='計算傷害')
+
+        async def callback(self, i: Interaction) -> Any:
+            view = GenshinCog.DamageCalculatorView(self.view)
+            reactionMode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
+            for item in view.children:
+                item.disabled = True
+            view.children[0].disabled = False
+            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需 5 至 10 秒'), view=view)
+            embed = await calculateDamage(self.view.eng_data, self.view.browser, self.view.character_id, 'critHit', i.user)
+            for item in view.children:
+                item.disabled = False
+            view.children[4].disabled = True
+            character_element = getCharacter(self.view.character_id)['element']
+            if character_element in reactionMode_elements or view.infusionAura in reactionMode_elements:
+                view.children[4].disabled = False
+            await i.edit_original_message(embed=embed, view=view)
+            
+    async def returnDamage(view: DefaultView, i: Interaction):
+        for item in view.children:
+            item.disabled = True
+        view.children[0].disabled = False
+        await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算中', '約需 5 至 10 秒'), view=view)
+        embed = await calculateDamage(view.enka_view.eng_data, view.enka_view.browser, view.enka_view.character_id, view.hitMode, i.user, view.reactionMode, view.infusionAura, view.team, )
+        for item in view.children:
+            item.disabled = False
+        reactionMode_disabled = True
+        character_element = getCharacter(view.enka_view.character_id)['element']
+        reactionMode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
+        if character_element in reactionMode_elements or view.infusionAura in reactionMode_elements:
+            reactionMode_disabled = False
+        view.children[4].disabled = reactionMode_disabled
+        await i.edit_original_message(embed=embed, view=view)
+
+    class DamageCalculatorView(DefaultView):
+        def __init__(self, enka_view: DefaultView):
+            super().__init__(timeout=None)
+            # defining damage calculation variables
+            self.enka_view = enka_view
+            self.hitMode = 'critHit'
+            self.reactionMode = ''
+            self.infusionAura = ''
+            self.team = []
+            
+            # producing select options
+            reactionMode_options = [SelectOption(label='無反應', value='none')]
+            element = getCharacter(self.enka_view.character_id)['element']
+            if element == 'Cryo' or self.infusionAura == 'cryo':
+                reactionMode_options.append(SelectOption(label='融化', value='cryo_melt'))
+            elif element == 'Pyro' or self.infusionAura == 'pyro':
+                reactionMode_options.append(SelectOption(label='蒸發', value='pyro_vaporize'))
+                reactionMode_options.append(SelectOption(label='融化', value='pyro_melt'))
+            elif element == 'Hydro':
+                reactionMode_options.append(SelectOption(label='蒸發', value='hydro_vaporize'))
+            
+            team_options = []
+            option: SelectOption
+            for option in self.enka_view.character_options:
+                if str(option.value) == str(self.enka_view.character_id):
+                    continue
+                team_options.append(SelectOption(label=option.label, value=option.value, emoji=option.emoji))
+            del team_options[0]
+            
+            # adding items
+            self.add_item(GenshinCog.EnkaGoBackButton())
+            for index in range(0, 3):
+                self.add_item(GenshinCog.HitModeButton(index))
+            self.add_item(GenshinCog.ReactionModeSelect(reactionMode_options))
+            self.add_item(GenshinCog.InfusionAuraSelect())
+            self.add_item(GenshinCog.TeamSelect(team_options))
+
+        async def interaction_check(self, interaction: Interaction) -> bool:
+            if self.enka_view.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=errEmbed(message='指令: `/profile`').set_author(name='你不是這個指令的發起者', icon_url=interaction.user.avatar), ephemeral=True)
+            return self.enka_view.author.id == interaction.user.id
+
+    class EnkaGoBackButton(Button):
+        def __init__(self):
+            super().__init__(emoji='<:left:982588994778972171>')
+
+        async def callback(self, i: Interaction):
+            for item in self.view.enka_view.children:
+                item.disabled = False
+            await i.response.edit_message(embed=self.view.enka_view.embeds[self.view.enka_view.character_id], view=self.view.enka_view)
+
+    class HitModeButton(Button):
+        def __init__(self, index: int):
+            super().__init__(style=ButtonStyle.blurple, label=(list(hitModes.values())[index]))
+            self.index = index
+        
+        async def callback(self, i: Interaction) -> Any:
+            self.view.hitMode = (list(hitModes.keys()))[self.index]
+            await GenshinCog.returnDamage(self.view, i)
+
+    class ReactionModeSelect(Select):
+        def __init__(self, options: list[SelectOption]):
+            super().__init__(placeholder='選擇元素反應', options=options)
+
+        async def callback(self, i: Interaction) -> Any:
+            self.view.reactionMode = '' if self.values[0] == 'none' else self.values[0]
+            await GenshinCog.returnDamage(self.view, i)
+
+    class InfusionAuraSelect(Select):
+        def __init__(self):
+            options = [SelectOption(label='無附魔', value='none'), SelectOption(
+                label='火元素附魔', description='班尼特六命', value='pyro'), SelectOption(label='冰元素附魔', description='重雲E', value='cryo')]
+            super().__init__(placeholder='選擇近戰元素附魔', options=options)
+
+        async def callback(self, i: Interaction) -> Any:
+            self.view.infusionAura = '' if self.values[0] == 'none' else self.values[0]
+            await GenshinCog.returnDamage(self.view, i)
+
+    class TeamSelect(Select):
+        def __init__(self, options):
+            super().__init__(placeholder='選擇隊友', options=options, max_values=3)
+
+        async def callback(self, i: Interaction) -> Any:
+            self.view.team = self.values
+            await GenshinCog.returnDamage(self.view, i)
 
     @app_commands.command(name='profile角色展示', description='透過 enka API 查看各式原神數據')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他人的資料')
     async def profile(self, i: Interaction, member: Member = None):
+        await i.response.defer()
         member = member or i.user
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
         if uid is None:
             uid_c = i.guild.get_channel(978871680019628032)
-            return await i.response.send_message(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'), ephemeral=True)
-        data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
-        print(data)
-        if len(data.characters) == 0:
+            return await i.followup.send(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'), ephemeral=True)
+        enka_client: EnkaNetworkAPI = self.bot.enka_client
+        enka_client.lang = 'cht'
+        data: EnkaNetworkResponse = await enka_client.fetch_user(uid[0])
+        enka_client.lang = 'en'
+        eng_data = await enka_client.fetch_user(uid[0])
+        if data.characters is None:
             embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(
                 name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
-            return await i.response.send_message(embed=embed, ephemeral=True)
+            return await i.followup.send(embed=embed, ephemeral=True)
         embeds = {}
         sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
         overview = defaultEmbed(
@@ -1135,7 +1186,7 @@ class GenshinCog(commands.Cog):
             options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
                            value=character.id, emoji=getCharacter(character.id)['emoji']))
             embed = defaultEmbed(
-                f'{character.name} C{len(character.constellations)}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
+                f'{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
             )
             embed.add_field(
                 name='屬性',
@@ -1193,9 +1244,8 @@ class GenshinCog(commands.Cog):
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
 
-        view = GenshinCog.EnkaPageView(
-            embeds, artifact_embeds, options, True, None, data, True)
-        await i.response.send_message(embed=embeds['0'], view=view)
+        view = GenshinCog.EnkaPageView(embeds, artifact_embeds, options, data, self.bot.browser, eng_data, i.user)
+        await i.followup.send(embed=embeds['0'], view=view)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼')
     @app_commands.rename(code='兌換碼')
@@ -1316,23 +1366,25 @@ class GenshinCog(commands.Cog):
         uid = await c.fetchone()
         if uid is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你還沒有註冊過 UID', icon_url=i.user.avatar))
+        enka_client: EnkaNetworkAPI = self.bot.enka_client
+        enka_client.lang = 'cht'
         try:
-            data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
-        except UIDNotFounded:
+            data: EnkaNetworkResponse = await enka_client.fetch_user(uid[0])
+        except:
             pass
         else:
             achievement = data.player.achievement
             await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
-            if len(data.characters) != 0:
+            if data.characters is not None:
                 for character in data.characters:
                     if len(character.equipments) != 0:
                         for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
                             for substat in artifact.detail.substats:
-                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (substat.name,))
+                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
                                 sub_stat_value = await c.fetchone()
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.name, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.value))
-            await self.bot.db.commit()
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}"))
+        await self.bot.db.commit()
 
         # clean up leaderboard
         leaderboards = ['leaderboard',

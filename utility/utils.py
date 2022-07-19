@@ -14,28 +14,11 @@ from data.game.talents import talents_map
 from data.game.weapons import weapons_map
 from data.game.artifacts import artifacts_map
 from data.game.good_stats import good_stats
+from data.game.GOModes import hitModes, reactionModes, infusionAuras
 from dotenv import load_dotenv
 from pyppeteer import launch
 
 load_dotenv()
-
-
-class GetNameTextMapHash():
-    def __init__(self) -> None:
-        with open(f"GenshinData/EN_full_textMap.json", "r", encoding="utf-8") as file:
-            self.en = json.load(file)
-        with open(f"GenshinData/TW_full_textMap.json", "r", encoding="utf-8") as file:
-            self.tw = json.load(file)
-
-    def getNameTextMapHash(self, textMapHash: int, eng: bool = False) -> str:
-        textMap = self.en if eng else self.tw
-        if textMap.get(textMapHash) is not None:
-            return textMap.get(textMapHash)
-        else:
-            raise ValueError(f'找不到 {textMapHash} 的 textMapHash')
-
-
-get_name_text_map_hash = GetNameTextMapHash()
 
 
 def defaultEmbed(title: str = '', message: str = ''):
@@ -110,7 +93,7 @@ def calculateArtifactScore(substats: dict):
     return result
 
 
-async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list[str] = ['', '', '']):
+async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character_id: str, hitMode: str, member: discord.Member, reactionMode: str = '', infusionAura: str = '', team: list = []):
     chara_name = (getCharacter(character_id)['eng']).replace(' ', '')
     log(True, False, 'calculateDamage', f'Calculating damage for {chara_name}')
     talent_to_calculate = ['Normal Atk.', 'Charged Atk.',
@@ -121,7 +104,7 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
         talent_to_calculate.remove('Ele. Burst')
     elif chara_name in no_ele_skill:
         talent_to_calculate.remove('Ele. Skill')
-    browser = await launch({"headless": False, "args": ["--start-maximized"]})
+    # browser = await launch({"headless": False, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
     await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
@@ -141,30 +124,29 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
     await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
     await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
     await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip')
+    await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-action.css-1bh09gn:nth-child(3) > span.css-t3oe3b > h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     labels = await page.querySelectorAll('h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     label_vals = []
     for l in labels:
         val = await (await l.getProperty("textContent")).jsonValue()
         label_vals.append(val)
     result = {}
-    normal_attack_name = '<普通攻擊名稱>'
+    await page.waitForSelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
     for t in talent_to_calculate:
         card_index = label_vals.index(t)
         talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
         talent_name = await (await talent_name.getProperty("textContent")).jsonValue()
         # print(talent_name)
         if talent_to_calculate.index(t) == 0:
-            normal_attack_name = talent_name
-            talent_name = f'普攻'
+            talent_name = '普攻'
         elif talent_to_calculate.index(t) == 1:
-            talent_name = f'重擊'
+            talent_name = '重擊'
         elif talent_to_calculate.index(t) == 2:
-            talent_name = f'下落攻擊'
+            talent_name = '下落攻擊'
         result[talent_name] = {}
         talent_rows = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > ul.MuiList-root.MuiList-padding.css-1jrq055 > li.MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.MuiBox-root.css-1n74xce')
         for row in talent_rows:
-            # 天星3020.3
-            row = await (await row.getProperty("textContent")).jsonValue()
+            row = await (await row.getProperty("textContent")).jsonValue() 
             split_row = re.split(
                 '([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[eE]([+-]?\d+))?', row)
             talent_label = split_row[0]  # 天星
@@ -175,7 +157,134 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
             except:
                 pass
     await page.close()
-    return [result, normal_attack_name]
+    embed = parse_damage_embed(character_id, result, member, hitMode, reactionMode, infusionAura, team)
+    return embed
+
+async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = []) -> str:
+    good_dict = {
+        'format': 'GOOD',
+        'dbVersion': 19,
+        'source': '申鶴 • 忘玄',
+        'version': 1,
+        'characters': [],
+        'artifacts': [],
+        'weapons': []
+    }
+    for character in data.characters:
+        burst_index = 3 if character.id == 10000041 or character.id == 10000002 else 2
+        talent = {
+            'auto': int(character.skills[0].level),
+            'skill': int(character.skills[1].level),
+            'burst': int(character.skills[burst_index].level),
+        }
+        character_team = ['', '', '']
+        if str(character.id) == character_id:
+            for index, member_id in enumerate(team):
+                character_team[index] = getCharacter(member_id)['eng'].replace(' ', '')
+        elif str(character.id) in team:
+            for index, member_id in enumerate(team):
+                if member_id == str(character.id):
+                    continue
+                character_team[index] = getCharacter(member_id)['eng'].replace(' ', '')
+            for index, member_id in enumerate(character_team):
+                if member_id == '':
+                    character_team[index] = getCharacter(character_id)['eng'].replace(' ', '')
+                    break
+        character_team.sort(reverse=True)
+        
+        good_dict['characters'].append(
+            {
+                'key': character.name.replace(' ', ''),
+                'level': character.level,
+                'ascension': character.ascension,
+                'hitMode': hitMode,
+                'reactionMode': reactionMode,
+                'conditional': {},
+                'talent': talent,
+                'infusionAura': infusionAura,
+                'constellation': character.constellations_unlocked,
+                'team': character_team,
+                'compareData': False
+            }
+        )
+        weapon = character.equipments[-1]
+        weapon_key = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace("'", '').title().replace(' ', '').replace('-', '')
+        good_dict['weapons'].append(
+            {
+                'key': weapon_key,
+                'level': weapon.level,
+                'ascension': weapon.ascension,
+                'refinement': weapon.refinement,
+                'location': (getCharacter(character.id)['eng']).replace(' ', ''),
+                'lock': True
+            }
+        )
+        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+            substats = []
+            for substat in artifact.detail.substats:
+                substats.append({
+                    'key': good_stats.get(substat.prop_id),
+                    'value': substat.value
+                })
+            good_dict['artifacts'].append(
+                {
+                    'setKey': artifact.detail.artifact_name_set.replace("'", '').title().replace(' ', '').replace('-', ''),
+                    'rarity': artifact.detail.rarity,
+                    'level': artifact.level,
+                    'slotKey': 'plume' if artifact.detail.artifact_type.lower() == 'feather' else artifact.detail.artifact_type.lower(),
+                    'mainStatKey': good_stats.get(artifact.detail.mainstats.prop_id),
+                    'substats': substats,
+                    'location': (getCharacter(character.id)['eng']).replace(' ', ''),
+                    'exclude': False,
+                    'lock': True
+                }
+            )
+    good_json = json.dumps(good_dict)
+    return good_json
+
+def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Member, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = []):
+    damage_dict['重擊'], damage_dict['下落攻擊'] = damage_dict['下落攻擊'], damage_dict['重擊']
+    embed = defaultEmbed(f"{getCharacter(character_id)['name']} - {hitModes[hitMode]}")
+    field_count = 0
+    for talent, damages in damage_dict.items():
+        field_count += 1
+        value = ''
+        for label, label_damages in damages.items():
+            if label == '低空墜地衝擊傷害':
+                label = '低空墜地傷害'
+            elif label == '高空墜地衝擊傷害':
+                label = '高空墜地傷害'
+            value += f'{label} - {int(float(label_damages[0]))}\n'
+        if talent == '重擊':
+            talent = '下落攻擊'
+        elif talent == '下落攻擊':
+            talent = '重擊'
+        embed.add_field(
+            name=talent,
+            value=value,
+            inline=True
+        )
+    conditions = ''
+    conditions += f'• {reactionModes[reactionMode]}\n' if reactionMode != '' else ''
+    conditions += f'• {infusionAuras[infusionAura]}\n' if infusionAura != '' else ''
+    if len(team) != 0:
+        team_str = ''
+        for team_member in team:
+            team_str += f'• {getCharacter(team_member)["emoji"]} {getCharacter(team_member)["name"]}\n'
+        embed.add_field(
+            name='隊伍',
+            value=team_str,
+            inline=False
+        )
+    if conditions != '':
+        embed.add_field(
+            name='狀態',
+            value=conditions,
+            inline=False
+        )
+    embed.set_author(name=member, icon_url=member.avatar)
+    embed.set_thumbnail(url=getCharacter(character_id)["icon"])
+    return embed
 
 
 def trimCookie(cookie: str) -> str:
@@ -215,11 +324,11 @@ def getElementEmoji(element: str):
     return element_emojis.get(element) or element
 
 
-def getCharacter(id: int = None, name: str = ''):
+def getCharacter(id: int = None, name: str = '', eng: str = ''):
     for character_id, character_info in characters_map.items():
-        if character_id == str(id) or character_info['name'] == name:
+        if character_id == str(id) or character_info['name'] == name or character_info['eng'] == eng:
             return character_info
-    return {'name': f'{id}{name}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
+    return {'name': f'{id}{name}{eng}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
 
 
 def getWeapon(id: int = None, name: str = ''):
@@ -268,70 +377,3 @@ def getAreaEmoji(area_name: str):
     emoji = emoji_dict.get(area_name)
     return emoji or ''
 
-
-async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list[str] = ['', '', '']) -> str:
-    good_dict = {
-        'format': 'GOOD',
-        'dbVersion': 19,
-        'source': '申鶴 • 忘玄',
-        'version': 1,
-        'characters': [],
-        'artifacts': [],
-        'weapons': []
-    }
-    for character in data.characters:
-        burst_index = 3 if character.id == 10000041 or character.id == 10000002 else 2
-        talent = {
-            'auto': int(character.skills[0].level),
-            'skill': int(character.skills[1].level),
-            'burst': int(character.skills[burst_index].level),
-        }
-        good_dict['characters'].append(
-            {
-                'key': character.name.replace(' ', ''),
-                'level': character.level,
-                'ascension': character.ascension,
-                'hitMode': hitMode,
-                'reactionMode': reactionMode,
-                'conditional': {},
-                'talent': talent,
-                'infusionAura': infusionAura,
-                'constellation': len(character.constellations),
-                'team': team if character.id == int(character_id) else ['','',''],
-                'compareData': False
-            }
-        )
-        weapon = character.equipments[-1]
-        weapon_key = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace("'", '').title().replace(' ', '').replace('-', '')
-        good_dict['weapons'].append(
-            {
-                'key': weapon_key,
-                'level': weapon.level,
-                'ascension': weapon.ascension,
-                'refinement': weapon.refinement,
-                'location': (getCharacter(character.id)['eng']).replace(' ', ''),
-                'lock': True
-            }
-        )
-        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
-            substats = []
-            for substat in artifact.detail.substats:
-                substats.append({
-                    'key': good_stats.get(substat.prop_id),
-                    'value': substat.value
-                })
-            good_dict['artifacts'].append(
-                {
-                    'setKey': artifact.detail.name.replace("'", '').title().replace(' ', '').replace('-', ''),
-                    'rarity': artifact.detail.rarity,
-                    'level': artifact.level,
-                    'slotKey': artifact.detail.artifact_type.lower(),
-                    'mainStatKey': good_stats.get(artifact.detail.mainstats.prop_id),
-                    'substats': substats,
-                    'location': (getCharacter(character.id)['eng']).replace(' ', ''),
-                    'exclude': False,
-                    'lock': True
-                }
-            )
-    good_json = json.dumps(good_dict)
-    return good_json
