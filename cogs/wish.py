@@ -146,9 +146,7 @@ class WishCog(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(name='查無祈願紀錄')
-        member = self.bot.get_user(user_id)
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(name='查無祈願紀錄', icon_url=self.bot.get_user(user_id).avatar)
         if result is None:
             return False, embed
         else:
