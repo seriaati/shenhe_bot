@@ -107,7 +107,7 @@ class GenshinApp:
         else:
             return defaultEmbed(message=f'獲得 {reward.amount}x {reward.name}').set_author(name='簽到成功', icon_url=user.avatar), True
 
-    async def getRealTimeNotes(self, user_id: int, check_resin_excess=False):
+    async def getRealTimeNotes(self, user_id: int):
         client, uid, only_uid, user = await self.getUserCookie(user_id)
         if only_uid:
             return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
@@ -119,10 +119,7 @@ class GenshinApp:
         except Exception as e:
             return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
-            if check_resin_excess:
-                return notes.current_resin, True
-            else:
-                return self.parseResinEmbed(notes).set_author(name='即時便籤', icon_url=user.avatar), True
+            return self.parseResinEmbed(notes).set_author(name='即時便籤', icon_url=user.avatar), True
 
     def parseResinEmbed(self, notes) -> Embed:
         if notes.current_resin == notes.max_resin:
@@ -184,7 +181,7 @@ class GenshinApp:
                 day_msg = '今天' if expedition.completion_time.day == datetime.now().day else '明天'
                 exped_msg += f' 完成時間: {day_msg} {expedition.completion_time.strftime("%H:%M")}\n'
         result.add_field(
-            name=f'<:pin:984677478490570762> 探索派遣 ({exped_finished}/{total_exped})',
+            name=f'<:ADVENTURERS_GUILD:998780550615679086> 探索派遣 ({exped_finished}/{total_exped})',
             value=exped_msg,
             inline=False
         )
