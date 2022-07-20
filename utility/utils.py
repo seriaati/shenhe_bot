@@ -1,9 +1,11 @@
 import json
 import os
 import re
+import yaml
 from datetime import datetime
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.enum import EquipmentsType
+from enkanetwork import model
 import discord
 import genshin
 from pyppeteer.browser import Browser
@@ -112,7 +114,7 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
     await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-bch5q4 > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(2) > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-isbt42 > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-1ekasd5:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-lrcwtp > div.MuiCardContent-root.css-nph2fg:nth-child(3) > div.MuiBox-root.css-10egq61 > div.MuiBox-root.css-0:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-qqlytg:nth-child(2) > span.MuiButton-root.MuiButton-contained.MuiButton-containedInfo.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-1garcay')
     await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-bch5q4 > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(2) > div.MuiCardContent-root.css-10j5qql:nth-child(3) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-isbt42 > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-1ekasd5:nth-child(1) > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-lrcwtp > div.MuiCardContent-root.css-nph2fg:nth-child(3) > div.MuiBox-root.css-10egq61 > div.MuiBox-root.css-0:nth-child(2) > div.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-1.css-tuxzvu > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-1.css-qqlytg:nth-child(2) > span.MuiButton-root.MuiButton-contained.MuiButton-containedInfo.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-1garcay')
     # get good_json
-    good_json = await enkaToGOOD(data, character_id, hitMode, reactionMode, infusionAura, team)
+    good_json, description, effect = await enkaToGOOD(data, character_id, hitMode, reactionMode, infusionAura, team)
     # text box
     await page.focus('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu > div.MuiCardContent-root.css-nph2fg:nth-child(2) > textarea.MuiBox-root.css-xkq1iw:nth-child(3)')
     # write in the json data
@@ -157,19 +159,21 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
             except:
                 pass
     await page.close()
-    embed = parse_damage_embed(character_id, result, member, hitMode, reactionMode, infusionAura, team)
+    embed = parse_damage_embed(character_id, result, member, hitMode, reactionMode, infusionAura, team, description, effect)
     return embed
 
 async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = []) -> str:
     good_dict = {
         'format': 'GOOD',
         'dbVersion': 19,
-        'source': '申鶴 • 忘玄',
+        'source': 'Genshin Optimizer',
         'version': 1,
         'characters': [],
         'artifacts': [],
         'weapons': []
     }
+    description = ''
+    effect = ''
     for character in data.characters:
         burst_index = 3 if character.id == 10000041 or character.id == 10000002 else 2
         talent = {
@@ -177,6 +181,7 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
             'skill': int(character.skills[1].level),
             'burst': int(character.skills[burst_index].level),
         }
+        # produce character team
         character_team = ['', '', '']
         if str(character.id) == character_id:
             for index, member_id in enumerate(team):
@@ -192,6 +197,12 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                     break
         character_team.sort(reverse=True)
         
+        # get conditionals
+        conditional = get_conditional.get(character)[0]
+        if (str(character.id) == character_id) or (str(character.id) in team):
+            description += get_conditional.get(character)[1]
+            effect += get_conditional.get(character)[2]
+        
         good_dict['characters'].append(
             {
                 'key': character.name.replace(' ', ''),
@@ -199,7 +210,9 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                 'ascension': character.ascension,
                 'hitMode': hitMode,
                 'reactionMode': reactionMode,
-                'conditional': {},
+                'conditional': {character.name.replace(' ', ''): conditional},
+                'bonusStats': {},
+                'enemyOverride': {},
                 'talent': talent,
                 'infusionAura': infusionAura,
                 'constellation': character.constellations_unlocked,
@@ -240,11 +253,13 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                 }
             )
     good_json = json.dumps(good_dict)
-    return good_json
+    # print(good_json)
+    return good_json, description, effect
 
-def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Member, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = []):
+def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Member, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = [], description: str = '', effect: str = ''):
     damage_dict['重擊'], damage_dict['下落攻擊'] = damage_dict['下落攻擊'], damage_dict['重擊']
-    embed = defaultEmbed(f"{getCharacter(character_id)['name']} - {hitModes[hitMode]}")
+    infusion_str = f'({infusionAuras[infusionAura]})' if infusionAura != '' else ''
+    embed = defaultEmbed(f"{getCharacter(character_id)['name']} - {reactionModes[reactionMode] if reactionMode != '' else ''}{hitModes[hitMode]} {infusion_str}")
     field_count = 0
     for talent, damages in damage_dict.items():
         field_count += 1
@@ -265,27 +280,48 @@ def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Mem
             inline=True
         )
     conditions = ''
-    conditions += f'• {reactionModes[reactionMode]}\n' if reactionMode != '' else ''
-    conditions += f'• {infusionAuras[infusionAura]}\n' if infusionAura != '' else ''
     if len(team) != 0:
         team_str = ''
         for team_member in team:
-            team_str += f'• {getCharacter(team_member)["emoji"]} {getCharacter(team_member)["name"]}\n'
+            team_str += f'{getCharacter(team_member)["emoji"]} {getCharacter(team_member)["name"]}\n'
         embed.add_field(
             name='隊伍',
-            value=team_str,
-            inline=False
+            value=team_str
         )
+    if description != '':
+        conditions += description
     if conditions != '':
         embed.add_field(
             name='狀態',
-            value=conditions,
-            inline=False
+            value=conditions
+        )
+    if effect != '':
+        embed.add_field(
+            name='目前效果',
+            value=effect
         )
     embed.set_author(name=member, icon_url=member.avatar)
     embed.set_thumbnail(url=getCharacter(character_id)["icon"])
     return embed
 
+class GetConditional():
+    def __init__(self):
+        with open(f'data/game/conditionals.yaml', 'r', encoding='utf-8') as f:
+            self.conditionals = yaml.full_load(f)
+            
+    def get(self, character: model.character):
+        result = {}
+        description_str = ''
+        effect_str = ''
+        for conditional in self.conditionals:
+            if conditional['name'] == character.name.replace(' ', ''):
+                if (conditional['ascension'] is not None and int(character.ascension) >= int(conditional['ascension'])) or (conditional['constellation'] is not None and int(character.constellations_unlocked) >= int(conditional['constellation'])) or (conditional['ascension'] is None and conditional['constellation'] is None):
+                    result[conditional['key']] = conditional['value']
+                    description_str += f'• {conditional["description"]}\n'
+                    effect_str += f"• {conditional['effect']}\n"
+        return result, description_str, effect_str
+
+get_conditional = GetConditional()
 
 def trimCookie(cookie: str) -> str:
     try:
