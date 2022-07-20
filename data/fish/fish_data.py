@@ -61,7 +61,7 @@ fish_data = {
         'type_0': True,
         'cute': False,
         'verb': None,
-        'image_url': 'https://i.imgur.com/fTQb7kB.gif'
+        'image_url': 'https://i.imgur.com/UksNJEs.jpg'
     },
     '龍蝦': {
         'flow': 5,
