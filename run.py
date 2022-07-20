@@ -68,7 +68,7 @@ class ShenheBot(commands.Bot):
             await self.load_extension(f'cogs.{cog_name}')
         if not self.debug_toggle:
             self.add_view(FlowCog.AcceptView(self.db, self))
-            self.add_view(FlowCog.ConfirmView(self.db, self))
+            self.add_view(FlowCog.ConfirmView(self.db))
             self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
             self.add_view(ReactionRoles.WorldLevelView())
             self.add_view(ReactionRoles.RoleView())
