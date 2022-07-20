@@ -430,134 +430,134 @@
   value: activeInArea
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '在重雲 E 領域中'
+  effect: '單手劍、大劍、長柄武器角色獲得冰元素附魔'
 - name: Chongyun
   key: asc4
   value: hit
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '重雲 E 領域消失時'
+  effect: '造成冰元素範圍傷害。被擊中的敵人冰元素抗性降低10%，持續8秒。'
 - name: Chongyun
   key: c6
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: 'Q 對生命值百分比低於重雲的敵人造成傷害時'
+  effect: '傷害提升15%'
 - name: RaidenShogun
   key: skillEye
   value: skillEye
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '雷罰惡曜之眼持續期間'
+  effect: '隊伍中角色 Q 造成的傷害獲得提升'
 - name: RaidenShogun
   key: burstResolve
   value: '60'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '累積60層願力時'
+  effect: '雷電將軍 Q 造成的傷害獲得提升'
 - name: KamisatoAyato
   key: inSkill
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '進入「瀧廻鑑花」狀態'
+  effect: '使用瞬水劍進行攻擊，將普攻的傷害轉為水元素範圍傷害'
 - name: KamisatoAyato
   key: c4AfterBurst
   value: 'on'
-  constellation: null
+  constellation: 4
   ascension: null
-  description: ''
-  effect: ''
+  description: '施放 Q 後'
+  effect: '附近的角色普攻的攻擊速度提升15%，持續15秒。'
 - name: KamisatoAyato
   key: burstInArea
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '在神里綾人 Q 領域中'
+  effect: '提升普攻傷害'
 - name: KamisatoAyato
   key: skillStacks
   value: '5'
-  constellation: null
+  constellation: 2
   ascension: null
-  description: ''
-  effect: ''
+  description: '累積5層浪閃效果時'
+  effect: '提升瞬水劍造成的傷害'
 - name: KamisatoAyato
   key: c1OppHp
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '對於生命值低於或等於50%的敵人'
+  effect: '瞬水劍造成的傷害提升40%'
 - name: Amber
   key: C6
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '安柏開 Q 後的10秒內'
+  effect: '移動速度以及攻擊力提升15%'
 - name: Amber
   key: A4
   value: 'on'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '安柏瞄準射擊命中弱點時'
+  effect: '攻擊力提高15%，持續10秒。'
 - name: Yoimiya
   key: skill
   value: skill
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '開 E 後'
+  effect: '普攻造成的傷害轉為火元素傷害，傷害獲得提升'
 - name: Yoimiya
   key: c2
   value: c2
-  constellation: null
+  constellation: 2
   ascension: null
-  description: ''
-  effect: ''
+  description: '宵宮的火元素傷害造成暴擊後的6秒內'
+  effect: '宵宮獲得25%火元素傷害加成。'
 - name: Yoimiya
   key: a1
   value: '10'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 1
+  description: '在宵宮 E 的持續期間內疊加10層'
+  effect: '宵宮獲得20%火元素傷害加成'
 - name: Yoimiya
   key: c1
   value: c1
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '處於琉金火光下的敵人被擊敗時'
+  effect: '宵宮的攻擊力提高20%，持續20秒'
 - name: Kaeya
   key: CryoC1
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '對受到冰元素影響的敵人'
+  effect: '凱亞的普攻與重擊的暴擊率提升15%'
 - name: Shenhe
   key: burst
   value: burst
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '申鶴開 Q 後'
+  effect: '使 Q 中敵人的冰元素抗性與物理抗性降低'
 - name: Shenhe
   key: asc1
   value: field
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 1
+  description: '處於 Q 中的角色'
+  effect: '冰元素傷害加成提高15%'
 - name: Shenhe
   key: quill
   value: quill
@@ -569,37 +569,37 @@
   key: asc4
   value: press
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '申鶴點按 E 後'
+  effect: 'E 和 Q 造成的傷害提高15%，持續10秒'
 - name: Shenhe
   key: c4
   value: '25'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '申鶴開 Q 清除25層霜霄訣後'
+  effect: '申鶴 Q 造成的傷害提高125%'
 - name: Beidou
   key: Ascension4
   value: 'on'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '受到攻擊後的10秒內'
+  effect: '北斗的普攻附帶20%額外雷元素傷害'
 - name: Beidou
   key: Constellation6
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: 'Q 持續期間'
+  effect: '周圍敵人的雷元素抗性降低15%'
 - name: KukiShinobu
   key: c6Trigger
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '久岐忍生命值降至25%以下時'
+  effect: '九岐忍 +150精通'
 - name: Albedo
   key: burstBlossom
   value: isoOnField
