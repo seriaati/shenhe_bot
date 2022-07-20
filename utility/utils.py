@@ -286,14 +286,16 @@ def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Mem
             team_str += f'{getCharacter(team_member)["emoji"]} {getCharacter(team_member)["name"]}\n'
         embed.add_field(
             name='隊伍',
-            value=team_str
+            value=team_str,
+            inline=False
         )
     if description != '':
         conditions += description
     if conditions != '':
         embed.add_field(
             name='狀態',
-            value=conditions
+            value=conditions,
+            inline=False if len(team)== 0 else True
         )
     if effect != '':
         embed.add_field(
