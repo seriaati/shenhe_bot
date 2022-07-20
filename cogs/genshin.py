@@ -1323,9 +1323,9 @@ class GenshinCog(commands.Cog):
             view = GenshinCog.ArtifactSubStatView(i.user)
             await i.response.edit_message(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
             await view.wait()
-            await self.c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (fight_prop.get(view.sub_stat)["name"],))
-            leaderboard = await self.c.fetchall()
-            leaderboard.sort(key=lambda index: index[5], reverse=True)
+            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
+            leaderboard = await c.fetchall()
+            leaderboard.sort(key=lambda index: float(str(index[5]).replace('%', '')), reverse=True)
             user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
