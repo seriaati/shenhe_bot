@@ -61,7 +61,7 @@ class GiveAwayCog(commands.Cog):
             self.db = db
             self.interaction = i
             self.flow_app = FlowApp(self.db)
-            self.gv_channel_id = 965517075508498452 if not self.bot.debug_toggle else 909595117952856084
+            self.gv_channel_id = 965517075508498452
             super().__init__(timeout=None)
 
         async def generate_gv_embed(self, gv_msg_id: int, i: Interaction):
