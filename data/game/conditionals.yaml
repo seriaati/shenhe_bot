@@ -11,14 +11,14 @@
   constellation: 4
   ascension: null
   description: 殺生櫻落雷命中敵人
-  effect: '隊伍中附近的所有角色獲得20%雷元素傷害加成，持續5秒'
+  effect: '20%雷傷加成'
 - name: Barbara
   key: c2
   value: 'on'
   constellation: 2
   ascension: null
   description: 芭芭菈 E 水環生效期間
-  effect: '當前場上自己的角色獲得15%水元素傷害加成'
+  effect: '場上角色獲得15%水傷加成'
 - name: Yanfei
   key: afterBurst
   value: 'on'
@@ -39,7 +39,7 @@
   constellation: null
   ascension: 4
   description: 煙緋重擊暴擊
-  effect: '額外造成一次80%攻擊力的火元素範圍傷害，該傷害視為重擊傷害'
+  effect: '額外造成一次80%攻擊力的火範圍傷害'
 - name: Zhongli
   key: skill
   value: 'on'
@@ -270,7 +270,7 @@
   constellation: null
   ascension: null
   description: '行秋開 Q'
-  effect: 'E 傷害 +50%'
+  effect: '行秋 E 傷害 +50%'
 - name: KaedeharaKazuha
   key: swirlhydro
   value: hydro
@@ -438,69 +438,69 @@
   constellation: null
   ascension: 4
   description: '重雲 E 領域消失時'
-  effect: '造成冰元素範圍傷害。被擊中的敵人冰元素抗性降低10%，持續8秒。'
+  effect: '敵人冰抗性 -10%'
 - name: Chongyun
   key: c6
   value: 'on'
   constellation: 6
   ascension: null
-  description: 'Q 對生命值百分比低於重雲的敵人造成傷害時'
-  effect: '傷害提升15%'
+  description: 'Q 對生命值% <重雲的敵人造成傷害'
+  effect: '傷害 +15%'
 - name: RaidenShogun
   key: skillEye
   value: skillEye
   constellation: null
   ascension: null
-  description: '雷罰惡曜之眼持續期間'
-  effect: '隊伍中角色 Q 造成的傷害獲得提升'
+  description: '雷神 E 持續期間'
+  effect: 'Q 造成傷害提升'
 - name: RaidenShogun
   key: burstResolve
   value: '60'
   constellation: null
   ascension: null
   description: '累積60層願力時'
-  effect: '雷電將軍 Q 造成的傷害獲得提升'
+  effect: '雷神 Q 傷害提升'
 - name: KamisatoAyato
   key: inSkill
   value: 'on'
   constellation: null
   ascension: null
-  description: '進入「瀧廻鑑花」狀態'
-  effect: '使用瞬水劍進行攻擊，將普攻的傷害轉為水元素範圍傷害'
+  description: '神里綾人「瀧廻鑑花」狀態'
+  effect: '神里綾人普攻傷害轉為水元素範圍傷害'
 - name: KamisatoAyato
   key: c4AfterBurst
   value: 'on'
   constellation: 4
   ascension: null
-  description: '施放 Q 後'
-  effect: '附近的角色普攻的攻擊速度提升15%，持續15秒。'
+  description: '神里綾人 Q 後'
+  effect: '角色普攻的攻擊速度 +15%'
 - name: KamisatoAyato
   key: burstInArea
   value: 'on'
   constellation: null
   ascension: null
   description: '在神里綾人 Q 領域中'
-  effect: '提升普攻傷害'
+  effect: '+普攻傷害'
 - name: KamisatoAyato
   key: skillStacks
   value: '5'
   constellation: 2
   ascension: null
-  description: '累積5層浪閃效果時'
-  effect: '提升瞬水劍造成的傷害'
+  description: '神里綾人5層浪閃'
+  effect: '+瞬水劍傷害'
 - name: KamisatoAyato
   key: c1OppHp
   value: 'on'
   constellation: 1
   ascension: null
-  description: '對於生命值低於或等於50%的敵人'
+  description: '對於生命值 <=50%的敵人'
   effect: '瞬水劍造成的傷害提升40%'
 - name: Amber
   key: C6
   value: 'on'
   constellation: 6
   ascension: null
-  description: '安柏開 Q 後的10秒內'
+  description: '安柏開 Q 後'
   effect: '移動速度以及攻擊力提升15%'
 - name: Amber
   key: A4
@@ -514,68 +514,68 @@
   value: skill
   constellation: null
   ascension: null
-  description: '開 E 後'
-  effect: '普攻造成的傷害轉為火元素傷害，傷害獲得提升'
+  description: '宵宮開 E 後'
+  effect: '普攻傷害提升, 火元素附魔'
 - name: Yoimiya
   key: c2
   value: c2
   constellation: 2
   ascension: null
-  description: '宵宮的火元素傷害造成暴擊後的6秒內'
-  effect: '宵宮獲得25%火元素傷害加成。'
+  description: '宵宮火傷暴擊'
+  effect: '宵宮 +25%火傷'
 - name: Yoimiya
   key: a1
   value: '10'
   constellation: null
   ascension: 1
-  description: '在宵宮 E 的持續期間內疊加10層'
-  effect: '宵宮獲得20%火元素傷害加成'
+  description: '宵宮 E 持續期間內疊10層'
+  effect: '宵宮 +20%火傷'
 - name: Yoimiya
   key: c1
   value: c1
   constellation: 1
   ascension: null
   description: '處於琉金火光下的敵人被擊敗時'
-  effect: '宵宮的攻擊力提高20%，持續20秒'
+  effect: '宵宮攻擊力 +20%'
 - name: Kaeya
   key: CryoC1
   value: 'on'
   constellation: 1
   ascension: null
   description: '對受到冰元素影響的敵人'
-  effect: '凱亞的普攻與重擊的暴擊率提升15%'
+  effect: '凱亞普攻重擊暴擊率 +15%'
 - name: Shenhe
   key: burst
   value: burst
   constellation: null
   ascension: null
   description: '申鶴開 Q 後'
-  effect: '使 Q 中敵人的冰元素抗性與物理抗性降低'
+  effect: '敵人冰抗物抗降低'
 - name: Shenhe
   key: asc1
   value: field
   constellation: null
   ascension: 1
-  description: '處於 Q 中的角色'
-  effect: '冰元素傷害加成提高15%'
+  description: '在申鶴 Q 內'
+  effect: '冰元素傷害加成 +15%'
 - name: Shenhe
   key: quill
   value: quill
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '申鶴冰翎持續期間'
+  effect: '冰元素傷害加成'
 - name: Shenhe
   key: asc4
   value: press
   constellation: null
   ascension: 4
   description: '申鶴點按 E 後'
-  effect: 'E 和 Q 造成的傷害提高15%，持續10秒'
+  effect: '角色 EQ 傷害 +15%'
 - name: Shenhe
   key: c4
   value: '25'
-  constellation: null
+  constellation: 4
   ascension: null
   description: '申鶴開 Q 清除25層霜霄訣後'
   effect: '申鶴 Q 造成的傷害提高125%'
@@ -584,257 +584,257 @@
   value: 'on'
   constellation: null
   ascension: 4
-  description: '受到攻擊後的10秒內'
-  effect: '北斗的普攻附帶20%額外雷元素傷害'
+  description: '北斗受到攻擊後'
+  effect: '北斗普攻 +20%雷元素傷害'
 - name: Beidou
   key: Constellation6
   value: 'on'
   constellation: 6
   ascension: null
-  description: 'Q 持續期間'
-  effect: '周圍敵人的雷元素抗性降低15%'
+  description: '北斗Q 持續期間'
+  effect: '周圍敵人雷元素抗性 -15%'
 - name: KukiShinobu
   key: c6Trigger
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: '久岐忍生命值降至25%以下時'
+  description: '久岐忍生命值 <25%'
   effect: '九岐忍 +150精通'
 - name: Albedo
   key: burstBlossom
   value: isoOnField
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '場上存在阿貝多創造的陽華'
+  effect: '造成額外岩元素傷害'
 - name: Albedo
   key: p1EnemyHp
   value: belowHp
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 1
+  description: '敵人生命值 < 50%'
+  effect: '刹那之花傷害 +25%'
 - name: Albedo
   key: skillInField
   value: skillInField
-  constellation: null
+  constellation: 4
   ascension: null
-  description: ''
-  effect: ''
+  description: '處於陽華的領域中'
+  effect: '下落攻擊傷害提高30%'
 - name: Albedo
   key: c6Crystallize
   value: c6Crystallize
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '處於結晶反應產生的護盾庇護下'
+  effect: '傷害 +17%'
 - name: Albedo
   key: burstUsed
   value: burstUsed
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '阿貝多開 Q 後'
+  effect: '元素精通 +125'
 - name: Albedo
   key: c2Stacks
   value: '4'
-  constellation: null
+  constellation: 2
   ascension: null
-  description: ''
-  effect: ''
+  description: '阿貝多生滅計數4層'
+  effect: '增加阿貝多 Q 傷害'
 - name: Eula
   key: TidalIllusion
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '消耗冷酷之心後'
+  effect: '優菈物理傷害加成 +30%'
 - name: Eula
   key: Grimheart
   value: consumed
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '消耗冷酷之心後'
+  effect: '敵人物抗冰抗 -19%'
 - name: Eula
   key: LightfallSword
   value: '30'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '優菈冷酷之心 30 層'
+  effect: '造成傷害'
 - name: ShikanoinHeizou
   key: takeField
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '鹿野院平藏登場'
+  effect: '普通攻擊的攻擊速度 +15%'
 - name: ShikanoinHeizou
   key: declensionStacks
   value: '4'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '鹿野院變格 4 層'
+  effect: '鹿野院 E 增傷'
 - name: Aloy
   key: coil
   value: rush
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '亞蘿伊冰馳狀態'
+  effect: '普攻增傷'
 - name: Aloy
   key: A4
   value: '10'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '亞蘿伊處於冰馳狀態下 10 秒'
+  effect: '冰傷 +35%'
 - name: SangonomiyaKokomi
   key: burst
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '心海開 Q 後'
+  effect: '普攻、重擊、E 傷害增加'
 - name: SangonomiyaKokomi
   key: c6
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '心海 Q 期間, 治療生命>=80%的隊友'
+  effect: '心海 40%水傷加成'
 - name: Rosaria
   key: RosariaC1
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '蘿莎莉亞的攻擊造成暴擊'
+  effect: '攻擊速度、普攻傷害 +10%'
 - name: Rosaria
   key: DilucC6
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '蘿莎莉亞 Q'
+  effect: '敵人物抗 -20%'
 - name: Noelle
   key: SweepingTime
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '諾艾爾開 Q'
+  effect: '傷害加成'
 - name: Xinyan
   key: c6Charged
   value: 'on'
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '辛炎進行重擊'
+  effect: '基於防禦力的50%獲得攻擊力加成'
 - name: Xinyan
   key: skillHitNum
   value: '3'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '辛炎三級護盾'
+  effect: '造成火元素傷害'
 - name: Xinyan
   key: p2Shield
   value: 'on'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '角色處於辛炎護盾下'
+  effect: '物傷 +15%'
 - name: Xinyan
   key: c4Burst
   value: 'on'
-  constellation: null
+  constellation: 4
   ascension: null
-  description: ''
-  effect: ''
+  description: '辛炎 E 造成傷害'
+  effect: '敵人物抗 -15%'
 - name: Xinyan
   key: c1Crit
   value: 'on'
-  constellation: null
+  constellation: 1
   ascension: null
-  description: ''
-  effect: ''
+  description: '辛炎暴擊'
+  effect: '普攻和重擊的攻擊速度 +12%'
 - name: HuTao
   key: GuideToAfterlifeVoyage
   value: 'on'
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '胡桃進入 E 狀態'
+  effect: '加傷'
 - name: HuTao
   key: SanguineRouge
   value: 'on'
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '胡桃血量<=50%'
+  effect: '33%火傷加成'
 - name: KamisatoAyaka
   key: afterSkillA1
   value: afterSkill
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 1
+  description: '神里綾華開 E 後'
+  effect: '普攻重擊傷害 +30%'
 - name: KamisatoAyaka
   key: afterBurst
   value: c4
-  constellation: null
+  constellation: 4
   ascension: null
-  description: ''
-  effect: ''
+  description: '敵人被神里綾華 Q 打到'
+  effect: '敵人防禦 -30%'
 - name: KamisatoAyaka
   key: afterSprint
   value: afterSprint
   constellation: null
   ascension: null
-  description: ''
-  effect: ''
+  description: '神里綾華遁地後'
+  effect: '冰元素附魔'
 - name: KamisatoAyaka
   key: afterApplySprint
   value: afterApplySprint
   constellation: null
-  ascension: null
-  description: ''
-  effect: ''
+  ascension: 4
+  description: '神里綾華附魔冰後'
+  effect: '冰傷 +18%'
 - name: KamisatoAyaka
   key: C6
   value: c6
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '神里綾華「薄冰舞踏」存在'
+  effect: '重擊傷害 +298%'
 - name: Venti
   key: c2
   value: hit
-  constellation: null
+  constellation: 2
   ascension: null
-  description: ''
-  effect: ''
+  description: '被溫迪 E 打到'
+  effect: '敵人風抗物抗 -12%'
 - name: Venti
   key: c6
   value: takeDmg
-  constellation: null
+  constellation: 6
   ascension: null
-  description: ''
-  effect: ''
+  description: '被溫迪 Q 打到'
+  effect: '敵人風抗 -20%'
 - name: Venti
   key: c4
   value: pickup
-  constellation: null
+  constellation: 4
   ascension: null
-  description: ''
-  effect: ''
+  description: '溫迪獲得元素微粒'
+  effect: '溫迪風傷 +25%'
 - name: Qiqi
   key: QiqiC2
   value: 'on'
-  constellation: null
+  constellation: 2
   ascension: null
-  description: ''
-  effect: ''
+  description: '敵人受冰元素影響'
+  effect: '七七普攻重擊傷害 +15%'
