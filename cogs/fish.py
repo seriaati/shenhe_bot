@@ -83,7 +83,7 @@ class FishCog(commands.Cog):
                     # e.g. 摸抹香鯨摸到 20 flow幣!
                 else:  # 50% Chance of decreasing flow amount by 20
                     await self.flow_app.transaction(interaction.user.id, -int(flow))
-                    await interaction.followup.send(f'被**{self.fish_adj}的{self.fish}**{verb}，損失了 {flow} flow幣 qwq\n目前 flow 幣: {await self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
+                    await interaction.followup.send(f'被**{self.fish_adj}的{self.fish}**{random.choice(verb)}，損失了 {flow} flow幣 qwq\n目前 flow 幣: {await self.flow_app.get_user_flow(interaction.user.id)}', ephemeral=True)
                     # e.g. 抹香鯨 鯨爆了，損失了 20 flow幣 qwq
 
     class TouchFish(DefaultView):  # 摸魚view
