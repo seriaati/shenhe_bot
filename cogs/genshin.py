@@ -1421,7 +1421,7 @@ class GenshinCog(commands.Cog):
             await view.wait()
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda index: index[5], reverse=True)
+            leaderboard.sort(key=lambda index: float(str(index[5]).replace('%', '')), reverse=True)
             user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
