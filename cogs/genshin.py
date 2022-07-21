@@ -26,14 +26,14 @@ from utility.paginators.AbyssPaginator import AbyssPaginator
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, getArtifact,
-                           getCharacter, getClient, getConsumable,
+                           getCharacter, getConsumable,
                            getElementEmoji, getFightProp, getStatEmoji,
                            getWeapon, getWeekdayName)
 
 from cogs.wish import WishCog
 
 
-class GenshinCog(commands.Cog):
+class GenshinCog(commands.Cog, name='genshin'):
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)

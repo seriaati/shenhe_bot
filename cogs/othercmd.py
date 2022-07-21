@@ -8,7 +8,7 @@ from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 
-class OtherCMDCog(commands.Cog):
+class OtherCMDCog(commands.Cog, name='other'):
     def __init__(self, bot):
         self.bot = bot
         self.flow_app = FlowApp(self.bot.db)

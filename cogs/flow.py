@@ -15,7 +15,7 @@ from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
 
-class FlowCog(commands.Cog):
+class FlowCog(commands.Cog, name='flow'):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.flow_app = FlowApp(self.bot.db)

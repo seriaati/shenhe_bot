@@ -2,10 +2,9 @@ import discord
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from utility.utils import log
 
 
-class CallCog(commands.Cog):
+class CallCog(commands.Cog, name='call'):
     def __init__(self, bot):
         self.bot = bot
 
