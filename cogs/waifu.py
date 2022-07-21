@@ -19,7 +19,7 @@ from utility.utils import defaultEmbed, divide_chunks, errEmbed
 from waifuim import WaifuAioClient
 
 
-class WaifuCog(commands.Cog):
+class WaifuCog(commands.GroupCog, name='waifu'):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
 
@@ -96,9 +96,7 @@ class WaifuCog(commands.Cog):
             self.view.tag = self.values[0]
             self.view.stop()
 
-    two_d = app_commands.Group(name='2d', description='二次元')
-
-    @two_d.command(name='sfw', description='正常圖')
+    @app_commands.command(name='sfw', description='正常圖')
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 30 張')
     async def sfw(self, i: Interaction, num: int = 1):
@@ -140,7 +138,7 @@ class WaifuCog(commands.Cog):
             await i.response.defer()
             await i.message.delete()
 
-    @two_d.command(name='wallpaper', description='桌面背景')
+    @app_commands.command(name='wallpaper', description='桌面背景')
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')
     async def wallpaper(self, i: Interaction, num: int = 1):
@@ -195,7 +193,7 @@ class WaifuCog(commands.Cog):
                     embeds.append(embed)
                 await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
-    @two_d.command(name='nsfw', description='色圖', nsfw=True)
+    @app_commands.command(name='nsfw', description='色圖', nsfw=True)
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')
     async def nsfw(self, i: Interaction, num: int = 1):
@@ -236,7 +234,7 @@ class WaifuCog(commands.Cog):
         await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, num, num, self.bot.user.id))
         await self.bot.db.commit()
 
-    @two_d.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
+    @app_commands.command(name='waifu', description='從 waifu API 隨機產生一張二次元老婆的照片')
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
     @app_commands.choices(sese=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], many=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], tags=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')

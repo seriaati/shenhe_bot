@@ -17,11 +17,10 @@ from utility.paginators.WishPaginator import WishPaginator
 import genshin
 
 
-class WishCog(commands.Cog):
+class WishCog(commands.GroupCog, name='wish'):
     def __init__(self, bot):
         self.bot = bot
-
-    wish = app_commands.Group(name='wish', description='原神祈願系統相關')
+        super().__init__()
 
     class AuthKeyModal(Modal):
         def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
@@ -124,7 +123,7 @@ class WishCog(commands.Cog):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @wish.command(name='setkey設置', description='設置原神祈願紀錄')
+    @app_commands.command(name='setkey設置', description='設置原神祈願紀錄')
     @app_commands.rename(function='功能')
     @app_commands.describe(function='查看說明或提交連結')
     @app_commands.choices(function=[Choice(name='查看祈願紀錄的設置方式', value='help'),
@@ -229,7 +228,7 @@ class WishCog(commands.Cog):
         return result
 
     # /wish history
-    @wish.command(name='history歷史紀錄', description='祈願歷史紀錄查詢')
+    @app_commands.command(name='history歷史紀錄', description='祈願歷史紀錄查詢')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
@@ -262,7 +261,7 @@ class WishCog(commands.Cog):
             embeds.append(defaultEmbed('詳細祈願紀錄', embed_str))
         await WishPaginator(i, embeds).start(embeded=True)
 
-    @wish.command(name='luck歐氣值', description='限定祈願歐氣值分析')
+    @app_commands.command(name='luck歐氣值', description='限定祈願歐氣值分析')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
@@ -291,7 +290,7 @@ class WishCog(commands.Cog):
         embed.set_author(name=member, icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
-    @wish.command(name='character角色預測', description='預測抽到角色的機率')
+    @app_commands.command(name='character角色預測', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量')
     @app_commands.describe(num='想要抽到幾個5星UP角色?')
     async def wish_char(self, i: Interaction, num: int):
@@ -369,7 +368,7 @@ class WishCog(commands.Cog):
             await interaction.response.defer()
             self.stop()
 
-    @wish.command(name='weapon武器預測', description='預測抽到想要的UP武器的機率')
+    @app_commands.command(name='weapon武器預測', description='預測抽到想要的UP武器的機率')
     @app_commands.rename(item_num='up武器數量')
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
     async def wish_weapon(self, i: Interaction, item_num: int):
@@ -419,7 +418,7 @@ class WishCog(commands.Cog):
         embed.set_author(name=i.user, icon_url=i.user.avatar)
         await i.edit_original_message(embed=embed, view=None)
 
-    @wish.command(name='overview總覽', description='祈願紀錄總覽')
+    @app_commands.command(name='overview總覽', description='祈願紀錄總覽')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):

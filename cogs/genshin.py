@@ -1210,11 +1210,11 @@ class GenshinCog(commands.Cog):
             weapon = character.equipments[-1]
             weapon_sub_stats = ''
             for substat in weapon.detail.substats:
-                weapon_sub_stats += f"{getFightProp(name=substat.name)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
+                weapon_sub_stats += f"{getFightProp(substat.prop_id)['emoji']} {getFightProp(substat.prop_id)['name']} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
             embed.add_field(
                 name='武器',
                 value=f'{getWeapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
-                f"{getFightProp(name=weapon.detail.mainstats.name)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
+                f"{getFightProp(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
                 f'{weapon_sub_stats}',
                 inline=False
             )
@@ -1226,15 +1226,15 @@ class GenshinCog(commands.Cog):
             artifact_embed = defaultEmbed(f'{character.name} | 聖遺物')
             index = 0
             for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
-                artifact_sub_stats = ''
+                artifact_sub_stats = f'**__{getFightProp(artifact.detail.mainstats.prop_id)["emoji"]}{getFightProp(artifact.detail.mainstats.prop_id)["name"]}+{artifact.detail.mainstats.value}__**\n'
                 artifact_sub_stat_dict = {}
                 for substat in artifact.detail.substats:
                     artifact_sub_stat_dict[substat.prop_id] = substat.value
-                    artifact_sub_stats += f'{getFightProp(name=substat.name)["emoji"]} {substat.name} {substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
+                    artifact_sub_stats += f'{getFightProp(substat.prop_id)["emoji"]} {getFightProp(substat.prop_id)["name"]}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
                 if artifact.level == 20:
                     artifact_sub_stats += f'<:SCORE:983948729293897779> {int(calculateArtifactScore(artifact_sub_stat_dict))}'
                 artifact_embed.add_field(
-                    name=f'{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}',
+                    name=f'{list(equip_types.values())[index]}{artifact.detail.name}+{artifact.level}',
                     value=artifact_sub_stats
                 )
                 artifact_embed.set_thumbnail(url=character.image.icon)
@@ -1346,7 +1346,7 @@ class GenshinCog(commands.Cog):
             await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(self.c)]).start(embeded=True, edit_original_message=True)
 
     def rank_user(user_id: int, leaderboard: List[Tuple]):
-        interaction_user_rank = None
+        interaction_user_rank = '(不在榜內)'
         rank = 1
         for index, tuple in enumerate(leaderboard):
             if tuple[0] == user_id:

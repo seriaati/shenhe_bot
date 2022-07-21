@@ -5,7 +5,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_HP_PERCENT": {
-        "name": "生命值%",
+        "name": "生命值",
         "emoji": "<:HP_PERCENT:982138227450347553>",
         "substat": True
     },
@@ -15,7 +15,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_ATTACK_PERCENT": {
-        "name": "攻擊力%",
+        "name": "攻擊力",
         "emoji": "<:ATTACK_PERCENT:982138215832117308>",
         "substat": True
     },
@@ -25,7 +25,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_DEFENSE_PERCENT": {
-        "name": "防禦力%",
+        "name": "防禦力",
         "emoji": "<:DEFENSE_PERCENT:982138218822639626>",
         "substat": True
     },
@@ -45,7 +45,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_CHARGE_EFFICIENCY": {
-        "name": "元素充能效率",
+        "name": "元素充能",
         "emoji": "<:CHARGE_EFFICIENCY:982068459179503646>",
         "substat": True
     },
@@ -65,47 +65,47 @@ fight_prop = {
         "substat": False
     },
     "FIGHT_PROP_HEAL_ADD": {
-        "name": "治療加成%",
+        "name": "治療加成",
         "emoji": "<:HEAL_ADD:982138224170401853>",
         "substat": False
     },
     "FIGHT_PROP_PHYSICAL_ADD_HURT": {
-        "name": "物傷加成%",
+        "name": "物傷加成",
         "emoji": "<:PHYSICAL_ADD_HURT:982138230923231242>",
         "substat": False
     },
     "FIGHT_PROP_FIRE_ADD_HURT": {
-        "name": "火傷加成%",
+        "name": "火傷加成",
         "emoji": "<:FIRE_ADD_HURT:982138221569900585>",
         "substat": False
     },
     "FIGHT_PROP_ELEC_ADD_HURT": {
-        "name": "雷傷加成%",
+        "name": "雷傷加成",
         "emoji": "<:ELEC_ADD_HURT:982138220248711178>",
         "substat": False
     },
     "FIGHT_PROP_WATER_ADD_HURT": {
-        "name": "水傷加成%",
+        "name": "水傷加成",
         "emoji": "<:WATER_ADD_HURT:982138233813098556>",
         "substat": False
     },
     "FIGHT_PROP_GRASS_ADD_HURT": {
-        "name": "草傷加成%",
+        "name": "草傷加成",
         "emoji": "<:GRASS_ADD_HURT:982138222891110432>",
         "substat": False
     },
     "FIGHT_PROP_WIND_ADD_HURT": {
-        "name": "風傷加成%",
+        "name": "風傷加成",
         "emoji": "<:WIND_ADD_HURT:982138235239137290>",
         "substat": False
     },
     "FIGHT_PROP_ROCK_ADD_HURT": {
-        "name": "岩傷加成%",
+        "name": "岩傷加成",
         "emoji": "<:ROCK_ADD_HURT:982138232391237632>",
         "substat": False
     },
     "FIGHT_PROP_ICE_ADD_HURT": {
-        "name": "冰傷加成%",
+        "name": "冰傷加成",
         "emoji": "<:ICE_ADD_HURT:982138229140635648>",
         "substat": False
     },
@@ -115,7 +115,7 @@ fight_prop = {
         "substat": False
     },
     "FIGHT_PROP_SPEED_PERCENT": {
-        "name": "移動速度%",
+        "name": "移動速度",
         "emoji": "",
         "substat": False
     }

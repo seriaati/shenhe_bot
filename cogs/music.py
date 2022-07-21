@@ -13,12 +13,13 @@ import os
 from utility.paginators.GeneralPaginator import GeneralPaginator
 load_dotenv()
 
-class MusicCog(commands.Cog):
+class MusicCog(commands.GroupCog, name='music'):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         if not self.bot.debug_toggle:
             bot.loop.create_task(self.connect_nodes())
+        super().__init__()
 
     async def connect_nodes(self):
         await self.bot.wait_until_ready()

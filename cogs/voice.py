@@ -5,9 +5,10 @@ from utility.utils import defaultEmbed, errEmbed
 import wavelink
 
 
-class VoiceChannel(commands.Cog):
+class VoiceCog(commands.GroupCog, name='vc'):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        super().__init__()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: Member, before: VoiceState, after: VoiceState):
@@ -41,8 +42,6 @@ class VoiceChannel(commands.Cog):
             await c.execute('DELETE FROM voice WHERE channel_id = ?', (old_channel.id,))
         await self.bot.db.commit()
 
-    vc = app_commands.Group(name="vc", description="語音台指令")
-
     async def check_owner(self, channel_id: int, user_id: int):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT owner_id FROM voice WHERE channel_id = ?', (channel_id,))
@@ -53,7 +52,7 @@ class VoiceChannel(commands.Cog):
         else:
             return False, errEmbed().set_author(name='你不是這個語音台的擁有者', icon_url=self.bot.get_user(user_id).avatar)
 
-    @vc.command(name='rename命名', description='重新命名語音台')
+    @app_commands.command(name='rename命名', description='重新命名語音台')
     @app_commands.rename(new='新名稱')
     @app_commands.describe(new='新的語音台名稱')
     async def vc_rename(self, i: Interaction, new: str):
@@ -66,7 +65,7 @@ class VoiceChannel(commands.Cog):
         await current_vc.edit(name=new)
         await i.response.send_message(embed=defaultEmbed(message=f'新名稱: {new}').set_author(name='語音台名稱更改成功', icon_url=i.user.avatar))
 
-    @vc.command(name='lock鎖上', description='鎖上語音台')
+    @app_commands.command(name='lock鎖上', description='鎖上語音台')
     async def vc_lock(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
@@ -81,7 +80,7 @@ class VoiceChannel(commands.Cog):
         await current_vc.set_permissions(traveler, connect=False)
         await i.response.send_message(embed=defaultEmbed(f'{current_vc.name}被鎖上了'))
 
-    @vc.command(name='unlock解鎖', description='解鎖語音台')
+    @app_commands.command(name='unlock解鎖', description='解鎖語音台')
     async def vc_unlock(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
@@ -94,7 +93,7 @@ class VoiceChannel(commands.Cog):
         await current_vc.set_permissions(traveler, connect=True)
         await i.response.send_message(embed=defaultEmbed(f'{current_vc.name}的封印被解除了'))
 
-    @vc.command(name='transfer移交', description='移交房主權')
+    @app_commands.command(name='transfer移交', description='移交房主權')
     @app_commands.rename(new='新房主')
     @app_commands.describe(new='新的房主')
     async def vc_unlock(self, i: Interaction, new: Member):
@@ -109,7 +108,7 @@ class VoiceChannel(commands.Cog):
         await self.bot.db.commit()
         await i.response.send_message(content=f'{i.user.mention} {new.mention}', embed=defaultEmbed(f'房主換人啦', f' {i.user.mention} 將 {current_vc.name} 的房主權移交給了 {new.mention}'))
 
-    @vc.command(name='youtube播放器', description='為當前的語音台創建一個 youtube 播放器')
+    @app_commands.command(name='youtube播放器', description='為當前的語音台創建一個 youtube 播放器')
     async def vc_activity(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
@@ -122,7 +121,7 @@ class VoiceChannel(commands.Cog):
         )
         await i.response.send_message(embed=defaultEmbed('播放器已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
 
-    @vc.command(name='chess西洋棋', description='為當前的語音台創建一個西洋棋遊戲視窗')
+    @app_commands.command(name='chess西洋棋', description='為當前的語音台創建一個西洋棋遊戲視窗')
     async def vc_chess(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
@@ -136,4 +135,4 @@ class VoiceChannel(commands.Cog):
         await i.response.send_message(embed=defaultEmbed('西洋棋遊戲已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(VoiceChannel(bot))
+    await bot.add_cog(VoiceCog(bot))
