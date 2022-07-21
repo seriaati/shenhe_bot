@@ -1,6 +1,6 @@
 from random import randint
 
-from discord import Emoji, Interaction, Member, Message, Role, app_commands
+from discord import Interaction, Member, Message, Role, app_commands
 from discord.ext import commands
 from discord.ui import Button
 from debug import DefaultView

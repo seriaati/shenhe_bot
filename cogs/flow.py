@@ -289,7 +289,7 @@ class FlowCog(commands.Cog):
                 log(False, False, 'shop buy', i.user.id)
             await self.db.commit()
     
-    @app_commands.command(name='shop', description='顯示 flow 商店')
+    @app_commands.command(name='shop商店', description='顯示 flow 商店')
     async def show(self, i: Interaction):
         check, msg = await self.flow_app.checkFlowAccount(i.user.id)
         if check == False:
