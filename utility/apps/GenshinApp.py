@@ -311,7 +311,8 @@ class GenshinApp:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
                 result = errEmbed(message='請輸入 `/stats` 來刷新資料\n'
-                                  '(深淵資料需最多1小時來接收)').set_author(name='找不到深淵資料', icon_url=user.avatar)
+                                  '(深淵資料需最多1小時來接收)\n'
+                                  '/abyss 只支持第9層以上的戰績').set_author(name='找不到深淵資料', icon_url=user.avatar)
                 return result, False
             result = defaultEmbed(
                 f"第{abyss.season}期深淵",
