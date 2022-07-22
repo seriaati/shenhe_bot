@@ -3,12 +3,12 @@ import traceback
 from discord import ButtonStyle, Interaction, HTTPException
 from discord.ui import Button, View, button
 
-from utility.utils import defaultEmbed, errEmbed
+from utility.utils import errEmbed
 
 
 class DebugView(View):
-    def __init__(self, traceback):
-        self.tb = traceback
+    def __init__(self, traceback_message = ''):
+        self.tb = traceback_message
         super().__init__(timeout=None)
 
     @button(label='顯示除錯用訊息', style=ButtonStyle.gray)
@@ -22,8 +22,8 @@ class DebugView(View):
 
 class DefaultView(View):
     async def on_error(self, i: Interaction, e: Exception, item) -> None:
-        seria = i.client.get_user(410036441129943050)
-        view = DebugView(traceback.format_exc())
-        embed = errEmbed(
-            f'未知錯誤', f'```py\n{e}\n```\n```{item}\n```')
-        await i.channel.send(content=f'{seria.mention} 系統已將錯誤回報給小雪, 請耐心等待修復', embed=embed, view=view)
+        traceback_message = traceback.format_exc()
+        view = DebugView(traceback_message)
+        embed = errEmbed('發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
+            name='未知錯誤', icon_url=i.user.avatar)
+        await i.channel.send(embed=embed, view=view)

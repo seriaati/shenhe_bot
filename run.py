@@ -1,21 +1,19 @@
 # shenhe-bot by seria
 
+import getpass
 import os
 import sys
 import traceback
 from pathlib import Path
-import getpass
 
 import aiohttp
 import aiosqlite
-from discord import (Game, HTTPException, Intents, Interaction, Message,
-                     Status, app_commands)
+from discord import Game, Intents, Interaction, Message, Status, app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
-from cogs.gvaway import GiveAwayCog
 from debug import DebugView
 from utility.db_utils import DbUtils
 from utility.utils import errEmbed, log
@@ -63,9 +61,8 @@ class ShenheBot(commands.Bot):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
         # load persistent views
-        if not self.debug_toggle:
-            self.add_view(GiveAwayCog.GiveAwayView(self.db, self))
-
+        self.add_view(DebugView())
+        
     async def on_ready(self):
         await self.change_presence(
             status=Status.online,
@@ -102,6 +99,8 @@ bot = ShenheBot()
 
 
 tree = bot.tree
+
+
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     traceback_message = traceback.format_exc()
