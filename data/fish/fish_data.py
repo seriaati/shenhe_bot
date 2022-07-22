@@ -180,7 +180,7 @@ fish_data = {
         'flow_chance': None,
         'type_0': False,
         'cute': True,
-        'verb': ['潑了一臉泡麵'],
+        'verb': ['潑了一臉泡麵',],
         'image_url': 'https://i.imgur.com/oXEl8tP.jpg'
     },
     '一歌': {
@@ -188,7 +188,7 @@ fish_data = {
         'flow_chance': None,
         'type_0': False,
         'cute': True,
-        'verb': ['扇了一巴掌'],
+        'verb': ['扇了一巴掌',],
         'image_url': 'https://i.imgur.com/0bFgZQR.jpg'
     },
 }
