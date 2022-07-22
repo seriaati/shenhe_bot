@@ -62,6 +62,13 @@ class OtherCMDCog(commands.Cog, name='other'):
         await interaction.response.send_message(f"{person}真可愛~❤")
 
     @app_commands.command(
+        name='id', 
+        description='獲得某人的 Discord id')
+    @app_commands.rename(person='某人')
+    async def dcid(self, interaction: Interaction, person: Member):
+        await interaction.response.send_message(f"{person.mention} 的 id 是 {person.id}", ephemeral=True)
+        
+    @app_commands.command(
         name='flash',
         description='防放閃機制'
     )
