@@ -19,7 +19,7 @@ class FishCog(commands.Cog):
 
     global adj_list
 
-    adj_list = ['可愛', '奇怪', '神奇', '變態', '色色', '野生', '開心', '傷心', '生氣']
+    adj_list = ['可愛', '奇怪', '神奇', '變態', '色色', '野生', '開心', '傷心', '生氣', '長長', '短短', '大大', '小小']
 
     # fish_type = 1 扣幣
     # fish_type = 0 不扣幣
