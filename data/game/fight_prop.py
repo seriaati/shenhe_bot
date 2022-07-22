@@ -5,7 +5,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_HP_PERCENT": {
-        "name": "生命值",
+        "name": "生命值%",
         "emoji": "<:HP_PERCENT:982138227450347553>",
         "substat": True
     },
@@ -15,7 +15,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_ATTACK_PERCENT": {
-        "name": "攻擊力",
+        "name": "攻擊力%",
         "emoji": "<:ATTACK_PERCENT:982138215832117308>",
         "substat": True
     },
@@ -25,7 +25,7 @@ fight_prop = {
         "substat": True
     },
     "FIGHT_PROP_DEFENSE_PERCENT": {
-        "name": "防禦力",
+        "name": "防禦力%",
         "emoji": "<:DEFENSE_PERCENT:982138218822639626>",
         "substat": True
     },

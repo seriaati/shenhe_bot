@@ -7,6 +7,51 @@ characters_map = {
         "emoji": "<:10000060:990114777206517800>",
         "eng": "Yelan"
     },
+    "10000005-anemo": {
+        "name": "風旅行者",
+        "element": "Anemo",
+        "rarity": 5,
+        "icon": 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png',
+        "emoji": '<:10000005:990114640048574484>',
+        "eng": "Anemo Traveler"
+    },
+    "10000005-geo": {
+        "name": "岩旅行者",
+        "element": "Geo",
+        "rarity": 5,
+        "icon": 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png',
+        "emoji": '<:10000005:990114640048574484>',
+        "eng": "Geo Traveler"
+    },
+    "10000005-electro": {
+        "name": "雷旅行者",
+        "element": "Electro",
+        "rarity": 5,
+        "icon": 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerBoy.png',
+        "emoji": '<:10000005:990114640048574484>',
+        "eng": "Electro Traveler"
+    },
+    '10000007-anemo': {
+        'element': 'Anemo',
+        'icon': 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerGirl.png',
+        'name': '風旅行者',
+        'rarity': 5,
+        'emoji': '<:10000007:990114645903814716>',
+        'eng': 'Anemo Traveler'},
+    '10000007-geo': {
+        'element': 'Geo',
+        'icon': 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerGirl.png',
+        'name': '岩旅行者',
+        'rarity': 5,
+        'emoji': '<:10000007:990114645903814716>',
+        'eng': 'Geo Traveler'},
+    '10000007-electro': {
+        'element': 'Electro',
+        'icon': 'https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_PlayerGirl.png',
+        'name': '雷旅行者',
+        'rarity': 5,
+        'emoji': '<:10000007:990114645903814716>',
+        'eng': 'Electro Traveler'},
     "10000066": {
         "name": "神里綾人",
         "element": "Hydro",

@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from typing import Any, List, Optional, Tuple
 
+import calendar
 import aiosqlite
 import discord
 import GGanalysislib
@@ -12,6 +13,8 @@ from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from data.game.GOModes import hitModes
 from data.game.talent_books import talent_books
+from data.game.daily_dungeons import daily_dungeons
+from data.game.avatar_upgrades import avatar_upgrades
 from debug import DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
@@ -417,13 +420,29 @@ class GenshinCog(commands.Cog, name='genshin'):
             await i.response.edit_message(embed=embed)
 
     @app_commands.command(name='farm刷素材', description='查看原神今日可刷素材')
-    async def farm(self, interaction: Interaction):
-        day = datetime.today().weekday()
-        embed = defaultEmbed(
-            f"今日 ({getWeekdayName(day)}) 可以刷的副本材料")
-        embed.set_image(url=GenshinCog.get_farm_image(day))
-        view = GenshinCog.ChooseDay()
-        await interaction.response.send_message(embed=embed, view=view)
+    async def farm(self, i: Interaction):
+        cities = ['', '蒙德', '璃月', '稻妻']
+        embeds = []
+        week_day = calendar.day_name[datetime.today().weekday()].lower()
+        for domain, domain_info in daily_dungeons['data'][week_day].items():
+            domain_name = domain_info['name']
+            domain_city = cities[domain_info['city']]
+            reward_emoji = getConsumable(domain_info['reward'][-1])['emoji']
+            embed = defaultEmbed(f'今天 ({getWeekdayName(datetime.today().weekday())}) 可以刷的素材')
+            farmables = ''
+            for reward in domain_info['reward']:
+                if len(str(reward)) == 6:
+                    for avatar_id, avatar_info in avatar_upgrades['data']['avatar'].items():
+                        for item, rarity in avatar_info['items'].items():
+                            if item == str(reward) and 'beta' not in avatar_info and getCharacter(avatar_id)["emoji"] not in farmables:
+                                farmables += f' {getCharacter(avatar_id)["emoji"]} • {getCharacter(avatar_id)["name"]}\n'
+                    for weapon_id, weapon_info in avatar_upgrades['data']['weapon'].items():
+                        for item, rarity in weapon_info['items'].items():
+                            if item == str(reward) and 'beta' not in weapon_info and getWeapon(weapon_id)["emoji"] not in farmables:
+                                farmables += f' {getWeapon(weapon_id)["emoji"]} • {getWeapon(weapon_id)["name"]}\n'
+            embed.add_field(name=f'{reward_emoji} {domain_name} ({domain_city})', value=farmables)
+            embeds.append(embed)
+        await GeneralPaginator(i, embeds).start(embeded=True)
 
     class ElementChooseView(DefaultView):  # 選擇元素按鈕的view
         def __init__(self, db: aiosqlite.Connection, emojis: List, author: Member, bot: commands.Bot):
@@ -988,7 +1007,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
         uid = await c.fetchone()
         if uid is None:
-            return await i.response.send_message(embed=errEmbed().set_author(name='你還沒有註冊過 UID', icon_url=i.user.avatar))
+            return await i.followup.send(embed=errEmbed().set_author(name='你還沒有註冊過 UID', icon_url=i.user.avatar))
         enka_client: EnkaNetworkAPI = self.bot.enka_client
         enka_client.lang = 'cht'
         try:
