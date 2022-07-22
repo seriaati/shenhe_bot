@@ -216,6 +216,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         def __init__(self, author: Member, db: aiosqlite.Connection):
             super().__init__(timeout=None)
             self.author = author
+            self.db = db
             elements = ['Anemo', 'Cryo', 'Electro', 'Pyro', 'Hydro', 'Geo']
             for index in range(0, 6):
                 self.add_item(GenshinCog.TalentElementButton(

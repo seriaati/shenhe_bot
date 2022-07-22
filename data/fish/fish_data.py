@@ -167,4 +167,28 @@ fish_data = {
         'verb': ['調教了','鞭打了','捆綁了','OO了','噴了一臉茶','舔了','咬了'],
         'image_url': 'https://i.imgur.com/4V1gKTJ.jpg'
     },
+    '02': {
+        'flow': 30,
+        'flow_chance': None,
+        'type_0': False,
+        'cute': True,
+        'verb': ['調教了','鞭打了','捆綁了','OO了','噴了一臉茶','舔了','咬了'],
+        'image_url': 'https://i.imgur.com/4V1gKTJ.jpg'
+    },
+    '奏寶': {
+        'flow': 20,
+        'flow_chance': None,
+        'type_0': False,
+        'cute': True,
+        'verb': ['潑了一臉泡麵',],
+        'image_url': 'https://i.imgur.com/oXEl8tP.jpg'
+    },
+    '一歌': {
+        'flow': 20,
+        'flow_chance': None,
+        'type_0': False,
+        'cute': True,
+        'verb': ['扇了一巴掌',],
+        'image_url': 'https://i.imgur.com/0bFgZQR.jpg'
+    },
 }
