@@ -1,18 +1,37 @@
-![image](https://user-images.githubusercontent.com/61446626/177044393-0fc970b1-8235-4428-80ba-51d1bf667fed.png)  
-即時便籤
-![Animation](https://user-images.githubusercontent.com/61446626/177044503-14d9c661-78b0-4b65-917f-93fd71c35c62.gif)  
-角色配置
-![Animation](https://user-images.githubusercontent.com/61446626/177044566-a1414161-fc9c-464e-9ffa-6ad8aede12ac.gif)  
-角色資訊、聖遺物、傷害計算
-![Animation](https://user-images.githubusercontent.com/61446626/177044661-72c23ef0-8b08-402c-b72a-443334a4f275.gif)  
-角色素材計算
-![Animation](https://user-images.githubusercontent.com/61446626/177044722-215379d0-0635-454f-9056-fcba5a746f5a.gif)  
-天賦素材提醒
-![Animation](https://user-images.githubusercontent.com/61446626/177044775-1a65de8f-aab7-4274-80a7-9b590743391f.gif)  
-原神祈願分析
-![Animation](https://user-images.githubusercontent.com/61446626/177044852-5495345c-9e6b-4adf-9089-a289c86c2d87.gif)  
-自製祈願遊戲
-![Animation](https://user-images.githubusercontent.com/61446626/177044929-e0752995-67cb-4b01-8e4b-f3d51de97561.gif)  
-音樂播放系統
-![Animation](https://user-images.githubusercontent.com/61446626/177045123-f3ba77c6-e7d5-42d1-bdc8-99b3579934e6.gif)  
-二次元老婆生產器
+<h2> 深淵資料 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180607080-e7c61c54-1e64-4101-8b8f-da44b7723fab.gif width=471 height=509>  
+<h2> 區域探索度 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180607295-92ff4fc4-b63c-48cf-826a-3a24211a63dc.png width=471>  
+<h2> 角色配置 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180607475-503e5767-3341-469a-82bd-e4e870469518.gif width=471>
+<h2> 角色素材計算 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180607529-9a96e740-7dd6-4346-997c-e8e1a13c3ae6.gif width=471>
+<h2> 代辦事項清單 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609052-1993a60c-65fc-4b51-a3a8-94b00204fae3.gif width=471>
+<h2> 武器素材計算 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609445-2715695b-a319-4e26-a5d4-526b396b06d2.gif width=471>
+<h2> 即時便籤 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609459-4d14c4f6-1bee-4976-945a-86fc41fb96a4.png width=471>
+<h2> Hoyolab 網頁登入獎勵 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609477-66904322-b9a0-4a01-9650-77745e935690.png width=471>
+<p> 註：註冊帳號後，申鶴每日會幫你自動領獎 </p>
+<h2> 旅行者日記 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609587-bc9be466-6016-49af-a78e-ec58eb20a27c.gif width=471>
+<h2> 原神活動列表 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609622-f1d29d1a-45a9-4a44-ae29-f3f1071a09b4.png width=471>
+<h2> 今日可刷素材表 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609658-191681f6-167f-40ed-9895-9364e67f75ee.png width=471>
+<h2> 成就數排行榜 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609726-03c17daa-8274-471b-a941-be507b401071.png width=471>
+<h2> 聖遺物副詞條排行榜 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609736-f8a3f6e7-5c9e-4405-be23-dcfd69cc65c8.png width=471>
+<h2> 角色展示、聖遺物展示 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609790-e80e6047-0c9f-45b5-bdfc-b6d945043cdb.gif width=471>
+<h2> 傷害計算 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609882-5c229436-1bb3-4b01-8a36-8095494d692b.gif width=471>
+<h2> 原神數據 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609875-44572fad-1cff-4b7a-95fc-5dd8fc08fcbd.png width=471>
+<h2> 樹脂提醒 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180609920-a6ee305e-f955-40bc-a7d9-8b42d7d16dcc.gif width=471>
+<h2> 天賦素材提醒 </h2>
+<img src=https://user-images.githubusercontent.com/61446626/180610041-b79ef569-3909-4248-beac-f0debc5d5f73.gif width=471>
