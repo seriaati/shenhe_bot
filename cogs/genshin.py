@@ -38,39 +38,63 @@ from cogs.wish import WishCog
 
 class GenshinCog(commands.Cog, name='genshin'):
     def __init__(self, bot: commands.Bot):
-        self.bot: commands.Bot = bot
+        self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
-        self.debug_toggle = self.bot.debug_toggle
+        self.debug = self.bot.debug
 
     class CookieModal(Modal):
-        def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
-            self.genshin_app = GenshinApp(db, bot)
+        def __init__(self, genshin_app: GenshinApp):
+            self.genshin_app = genshin_app
             super().__init__(title='提交cookie', timeout=None, custom_id='cookie_modal')
 
         cookie = discord.ui.TextInput(
             label='Cookie',
-            placeholder='請貼上從網頁上取得的Cookie, 取得方式請使用指令 /cookie',
+            placeholder='ctrl+v 貼上複製到的 cookie',
             style=discord.TextStyle.long,
             required=True
         )
 
         async def on_submit(self, i: Interaction):
+            await i.response.defer(ephemeral=True)
             result, success = await self.genshin_app.setCookie(i.user.id, self.cookie.value)
-            await i.response.send_message(embed=result, ephemeral=not success)
+            if not success:
+                return await i.followup.send(embed=result, ephemeral=True)
+            if isinstance(result, list):  # 有多個帳號
+                await i.followup.send(view=GenshinCog.UIDView(result, self.cookie.value, self.genshin_app), ephemeral=True)
+            else:  # 一個帳號而已
+                await i.followup.send(embed=result, ephemeral=True)
 
         async def on_error(self, error: Exception, i: Interaction):
             embed = errEmbed(message=f'```{error}```').set_author(
                 name='未知錯誤', icon_url=i.user.avatar)
-            await i.response.send_message(embed=embed, ephemeral=True)
+            await i.response.send_message(embed=embed)
+
+    class UIDView(DefaultView):
+        def __init__(self, options: list[SelectOption], cookie: str, genshin_app: GenshinApp):
+            super().__init__(timeout=None)
+            self.cookie = cookie
+            self.genshin_app = genshin_app
+            self.add_item(GenshinCog.UIDSelect(options))
+
+    class UIDSelect(Select):
+        def __init__(self, options: list[SelectOption]):
+            super().__init__(placeholder='選擇要註冊的帳號', options=options)
+
+        async def callback(self, i: Interaction) -> Any:
+            await i.response.defer()
+            result, success = await self.view.genshin_app.setCookie(
+                i.user.id, self.view.cookie, int(self.values[0]))
+            await i.followup.send(embed=result, ephemeral=True)
+
 # Cookie Submission
 
     @app_commands.command(
-        name='cookie設定',
-        description='藉由設定 cookie 來註冊你的原神帳號')
+        name='register註冊',
+        description='註冊你的原神帳號')
     @app_commands.rename(option='選項')
     @app_commands.choices(option=[
-        Choice(name='1. 顯示說明如何取得Cookie', value=0),
-        Choice(name='2. 提交已取得的Cookie', value=1)])
+        Choice(name='註冊教學', value=0),
+        Choice(name='提交 cookie', value=1)])
     async def slash_cookie(self, i: Interaction, option: int):
         if option == 0:
             embed = defaultEmbed(
@@ -80,14 +104,14 @@ class GenshinCog(commands.Cog, name='genshin'):
                 "3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n"
                 "4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"
                 "5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n"
-                "6.在這裡提交結果, 使用：`/cookie 提交已取得的Cookie`\n"
+                "6.在這裡提交結果, 使用：`/register 提交 cookie`\n"
                 "無法理解嗎? 跟著下面的圖示操作吧!")
             embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
             code_msg = "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
             await i.response.send_message(embed=embed, ephemeral=True)
             await i.followup.send(content=code_msg, ephemeral=True)
         elif option == 1:
-            await i.response.send_modal(GenshinCog.CookieModal(self.bot.db, self.bot))
+            await i.response.send_modal(GenshinCog.CookieModal(self.genshin_app))
 
     @app_commands.command(
         name='check即時便籤',
@@ -429,7 +453,8 @@ class GenshinCog(commands.Cog, name='genshin'):
             domain_name = domain_info['name']
             domain_city = cities[domain_info['city']]
             reward_emoji = getConsumable(domain_info['reward'][-1])['emoji']
-            embed = defaultEmbed(f'今天 ({getWeekdayName(datetime.today().weekday())}) 可以刷的素材')
+            embed = defaultEmbed(
+                f'今天 ({getWeekdayName(datetime.today().weekday())}) 可以刷的素材')
             farmables = ''
             for reward in domain_info['reward']:
                 if len(str(reward)) == 6:
@@ -441,7 +466,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                         for item, rarity in weapon_info['items'].items():
                             if item == str(reward) and 'beta' not in weapon_info and getWeapon(weapon_id)["emoji"] not in farmables:
                                 farmables += f' {getWeapon(weapon_id)["emoji"]} • {getWeapon(weapon_id)["name"]}\n'
-            embed.add_field(name=f'{reward_emoji} {domain_name} ({domain_city})', value=farmables)
+            embed.add_field(
+                name=f'{reward_emoji} {domain_name} ({domain_city})', value=farmables)
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
 

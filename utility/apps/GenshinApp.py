@@ -3,7 +3,7 @@ from datetime import datetime
 
 import aiosqlite
 import genshin
-from discord import Embed
+from discord import Embed, SelectOption
 from discord.ext import commands
 from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter,
                            getClient, getWeapon, getWeekdayName, log,
@@ -15,84 +15,36 @@ class GenshinApp:
         self.db = db
         self.bot = bot
 
-    async def setCookie(self, user_id: int, cookie: str):
+    async def setCookie(self, user_id: int, cookie: str, uid: int=None):
         log(False, False, 'setCookie', f'{user_id} (cookie = {cookie})')
         user = self.bot.get_user(user_id)
         user_id = int(user_id)
         cookie = trimCookie(cookie)
-        if cookie == None:
+        if cookie is None:
             result = errEmbed(
-                message='輸入 `/cookie` 來查看設定方式').set_author(name='無效的 cookie', icon_url=user.avatar)
+                message='輸入 `/register` 來查看設定方式').set_author(name='無效的 cookie', icon_url=user.avatar)
             return result, False
         client = genshin.Client(lang='zh-tw')
-        client.set_cookies(cookie)
+        client.set_cookies(ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
         accounts = await client.get_game_accounts()
-        if len(accounts) == 0:
-            result = errEmbed(message='已取消設定 cookie').set_author(
-                name='帳號內沒有任何角色')
-            return result, False
-        c: aiosqlite.Cursor = await self.db.cursor()
-        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
-        uid = await c.fetchone()
         if uid is None:
-            result = errEmbed('請至 <#978871680019628032> 註冊 UID').set_author(
-                name='找不到 UID', icon_url=user.avatar)
-            return result, False
-        uid = uid[0]
-        uid_found = False
-        for account in accounts:
-            if account.uid == uid:
-                uid_found = True
-                break
-        if not uid_found:
-            result = errEmbed(message='你在 <#978871680019628032> 輸入的 UID 與你在遊戲內的 UID 不符\n'
-                              '請在確認過後至 <#978871680019628032> 重新輸入 UID'
-                              ).set_author(name='UID 錯誤', icon_url=user.avatar)
-            return result, False
-        ltoken = re.search(
-            '[0-9A-Za-z]{20,}', cookie).group()
-        ltuid_str = re.search('ltuid=[0-9]{3,}', cookie).group()
-        ltuid = int(
-            re.search(r'\d+', ltuid_str).group())
-        cookie_token = (
-            re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group())[13:]
-        c: aiosqlite.Cursor = await self.db.cursor()
-        await c.execute('UPDATE genshin_accounts SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE user_id = ?', (ltuid, ltoken, cookie_token, user_id))
-        log(False, False, 'setCookie', f'{user_id} set cookie success')
-        result = defaultEmbed().set_author(name='cookie 設定完成', icon_url=user.avatar)
-        await self.db.commit()
-        return result, True
-
-    async def setUID(self, user_id: int, uid: int):
-        log(False, False, 'setUID', f'{user_id}: (uid = {uid})')
-        user = self.bot.get_user(user_id)
-        c: aiosqlite.Cursor = await self.db.cursor()
-        if len(str(uid)) != 9:
-            return errEmbed().set_author(name='請輸入長度為9的UID!', icon_url=user.avatar), False
-        if uid//100000000 != 9:
-            result = errEmbed(message='非常抱歉, 「緣神有你」是一個台澳港服為主的群組\n'
-                              '為保群友的遊戲質量, 我們無法接受你的入群申請\n'
-                              '我們真心認為其他群組對你來說可能是個更好的去處 🙏').set_author(name='你似乎不是台港澳服玩家!', icon_url=user.avatar)
-            return result, False
-        await c.execute('SELECT user_id FROM genshin_accounts WHERE uid = ?', (uid,))
-        result = await c.fetchone()
-        if result is not None:
-            return errEmbed(message=f'你輸入的 UID 已經在資料庫裡了\n註冊人為: {(self.bot.get_user(result[0])).mention}').set_author(name='UID 重複', icon_url=user.avatar), False
-        client = getClient()
-        try:
-            genshinUser = await client.get_partial_genshin_user(uid)
-        except genshin.errors.AccountNotFound:
-            return errEmbed(message='請檢查有無輸入錯誤').set_author(name='無效的 UID', icon_url=user.avatar), False
-        except:
-            pass
-        await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
-        result = await c.fetchone()
-        if result is None:
-            await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?)', (user_id, uid))
+            if len(accounts) == 0:
+                result = errEmbed(message='已取消設定帳號').set_author(
+                    name='帳號內沒有任何角色', icon_url=user.avatar)
+                return result, False
+            elif len(accounts) == 1:
+                uid = accounts[0].uid
+            else:
+                account_options = []
+                for account in accounts:
+                    account_options.append(SelectOption(label=f'{account.uid} | Lvl. {account.level} | {account.nickname}', value=account.uid))
+                return account_options, True
         else:
-            await c.execute('UPDATE genshin_accounts SET uid = ? WHERE user_id = ?', (uid, user_id))
-        await self.db.commit()
-        return defaultEmbed(message=uid).set_author(name='設置成功', icon_url=user.avatar), True
+            c = await self.db.cursor()
+            await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
+            result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
+            await self.db.commit()
+            return result, True
 
     async def claimDailyReward(self, user_id: int):
         client, uid, only_uid, user = await self.getUserCookie(user_id)
@@ -249,10 +201,9 @@ class GenshinApp:
             return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             d = diary.data
-            result = defaultEmbed(message=
-                f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
-                f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
-            )
+            result = defaultEmbed(message=f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
+                                  f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
+                                  )
             result.add_field(
                 name='本月共獲得',
                 value=f'<:primo:958555698596290570> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • 上個月: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
@@ -333,7 +284,8 @@ class GenshinApp:
                 return result, True
             result = []
             for floor in abyss.floors:
-                embed = defaultEmbed().set_author(name=f"第{floor.floor}層 (共{floor.stars} ✦)")
+                embed = defaultEmbed().set_author(
+                    name=f"第{floor.floor}層 (共{floor.stars} ✦)")
                 for chamber in floor.chambers:
                     name = f'第{chamber.chamber}間 {chamber.stars} ✦'
                     chara_list = [[], []]
@@ -432,11 +384,10 @@ class GenshinApp:
         try:
             await client.redeem_code(code)
         except genshin.errors.InvalidCookies:
-            return errEmbed(message=
-                '你並非使用 cookie v2.0!\n'
-                '輸入 `/cookie` 來註冊 cookie v2.0\n'
-                '(之前註冊過的用戶需要再次註冊, 真的非常抱歉)'
-            ).set_author(name='設置 cookie v2.0', icon_url=user.avatar), False
+            return errEmbed(message='你並非使用 cookie v2.0!\n'
+                            '輸入 `/cookie` 來註冊 cookie v2.0\n'
+                            '(之前註冊過的用戶需要再次註冊, 真的非常抱歉)'
+                            ).set_author(name='設置 cookie v2.0', icon_url=user.avatar), False
         except genshin.errors.RedemptionClaimed:
             return errEmbed().set_author(name='你已經兌換過這個兌換碼了!', icon_url=user.avatar), False
         except genshin.errors.GenshinException:
@@ -445,41 +396,14 @@ class GenshinApp:
             return defaultEmbed(message=f'兌換碼: {code}').set_author(name='兌換成功', icon_url=user.avatar), True
 
     async def getUserCookie(self, user_id: int):
-        user = self.bot.get_user(user_id) or self.bot.get_user(410036441129943050)
+        user = self.bot.get_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
-        seria_id = 224441463897849856
-        await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (user_id,))
-        result = await c.fetchone()
-        if result is None or result[0] is None:
-            await c.execute('SELECT ltuid FROM genshin_accounts WHERE user_id = ?', (seria_id,))
-            ltuid = (await c.fetchone())[0]
-            await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (seria_id,))
-            ltoken = (await c.fetchone())[0]
-            await c.execute('SELECT cookie_token FROM genshin_accounts WHERE user_id = ?', (seria_id,))
-            cookie_token = (await c.fetchone())[0]
-            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            uid = await c.fetchone()
-            uid = uid[0]
-            client = genshin.Client()
-            client.set_cookies(ltuid=ltuid, ltoken=ltoken,
-                               account_id=ltuid, cookie_token=cookie_token)
-            client.lang = "zh-tw"
-            client.default_game = genshin.Game.GENSHIN
-            client.uids[genshin.Game.GENSHIN] = uid
-            only_uid = True
-        else:
-            await c.execute('SELECT ltoken FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            ltoken = (await c.fetchone())[0]
-            await c.execute('SELECT cookie_token FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            cookie_token = (await c.fetchone())[0]
-            await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            uid = await c.fetchone()
-            uid = uid[0]
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=result[0], ltoken=ltoken, account_id=result[0], cookie_token=cookie_token)
-            client.lang = "zh-tw"
-            client.default_game = genshin.Game.GENSHIN
-            client.uids[genshin.Game.GENSHIN] = uid
-            only_uid = False
-        return client, uid, only_uid, user
+        await c.execute('SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
+        user_data = await c.fetchone()
+        client = genshin.Client()
+        client.set_cookies(
+            ltuid=user_data[0], ltoken=user_data[1], account_id=user_data[0], cookie_token=user_data[2])
+        client.lang = "zh-tw"
+        client.default_game = genshin.Game.GENSHIN
+        client.uids[genshin.Game.GENSHIN] = user_data[3]
+        return client, user_data[3], user
