@@ -22,7 +22,7 @@ Shenhe (public ver.) removes all guild specific features for the discord server 
  - 「這個角色要帶什麼聖遺物跟武器？」: /build 角色配置<br>
  - 「向你炫耀一下我的畢業胡桃」: /profile 角色展示<br>
  - 「讓你看看我優菈核爆的傷害」: /profile 角色展示中的傷害計算器<br>
- - 所有功能請見<a href='https://github.com/seriaati/shenhe_bot/blob/public/features.md'> 功能列表 </a>
+ - 「所有功能」: 請見<a href='https://github.com/seriaati/shenhe_bot/blob/public/features.md'> 功能列表 </a>
  </p>
 
 <h2 align="center">小雪團隊 • Seria Studios</h2>
