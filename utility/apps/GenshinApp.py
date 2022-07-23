@@ -6,8 +6,7 @@ import genshin
 from discord import Embed, SelectOption
 from discord.ext import commands
 from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter,
-                           getClient, getWeapon, getWeekdayName, log,
-                           trimCookie)
+                           getWeapon, getWeekdayName, log, trimCookie)
 
 
 class GenshinApp:
@@ -15,7 +14,7 @@ class GenshinApp:
         self.db = db
         self.bot = bot
 
-    async def setCookie(self, user_id: int, cookie: str, uid: int=None):
+    async def setCookie(self, user_id: int, cookie: str, uid: int = None):
         log(False, False, 'setCookie', f'{user_id} (cookie = {cookie})')
         user = self.bot.get_user(user_id)
         user_id = int(user_id)
@@ -25,7 +24,8 @@ class GenshinApp:
                 message='輸入 `/register` 來查看設定方式').set_author(name='無效的 cookie', icon_url=user.avatar)
             return result, False
         client = genshin.Client(lang='zh-tw')
-        client.set_cookies(ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
+        client.set_cookies(
+            ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
         accounts = await client.get_game_accounts()
         if uid is None:
             if len(accounts) == 0:
@@ -37,19 +37,18 @@ class GenshinApp:
             else:
                 account_options = []
                 for account in accounts:
-                    account_options.append(SelectOption(label=f'{account.uid} | Lvl. {account.level} | {account.nickname}', value=account.uid))
+                    account_options.append(SelectOption(
+                        label=f'{account.uid} | Lvl. {account.level} | {account.nickname}', value=account.uid))
                 return account_options, True
         else:
             c = await self.db.cursor()
-            await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
+            await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
             result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
             await self.db.commit()
             return result, True
 
     async def claimDailyReward(self, user_id: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
-        if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
@@ -60,9 +59,7 @@ class GenshinApp:
             return defaultEmbed(message=f'獲得 {reward.amount}x {reward.name}').set_author(name='簽到成功', icon_url=user.avatar), True
 
     async def getRealTimeNotes(self, user_id: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
-        if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
@@ -140,7 +137,7 @@ class GenshinApp:
         return result
 
     async def getUserStats(self, user_id: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
@@ -172,7 +169,7 @@ class GenshinApp:
         return result.set_author(name='原神數據', icon_url=user.avatar), True
 
     async def getArea(self, user_id: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
@@ -191,7 +188,7 @@ class GenshinApp:
         return result.set_author(name='區域探索度', icon_url=user.avatar), True
 
     async def getDiary(self, user_id: int, month: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
@@ -222,7 +219,7 @@ class GenshinApp:
             return result.set_author(name=f'旅行者日記 • {month}月', icon_url=user.avatar), True
 
     async def getDiaryLog(self, user_id: int):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -248,9 +245,7 @@ class GenshinApp:
         return result, True
 
     async def getAbyss(self, user_id: int, previous: bool, overview: bool):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
-        if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar), False
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic:
@@ -351,9 +346,7 @@ class GenshinApp:
 
     async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int):
         c: aiosqlite.Cursor = await self.db.cursor()
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
-        if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar),
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
@@ -378,16 +371,9 @@ class GenshinApp:
         return result, True
 
     async def redeemCode(self, user_id: int, code: str):
-        client, uid, only_uid, user = await self.getUserCookie(user_id)
-        if only_uid:
-            return errEmbed(message='使用 `/cookie` 指令來註冊').set_author(name='請註冊 cookie', icon_url=user.avatar),
+        client, uid, user = await self.getUserCookie(user_id)
         try:
             await client.redeem_code(code)
-        except genshin.errors.InvalidCookies:
-            return errEmbed(message='你並非使用 cookie v2.0!\n'
-                            '輸入 `/cookie` 來註冊 cookie v2.0\n'
-                            '(之前註冊過的用戶需要再次註冊, 真的非常抱歉)'
-                            ).set_author(name='設置 cookie v2.0', icon_url=user.avatar), False
         except genshin.errors.RedemptionClaimed:
             return errEmbed().set_author(name='你已經兌換過這個兌換碼了!', icon_url=user.avatar), False
         except genshin.errors.GenshinException:
