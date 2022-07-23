@@ -15,7 +15,6 @@ from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
 from debug import DebugView
-from utility.db_utils import DbUtils
 from utility.utils import errEmbed, log
 
 load_dotenv()
@@ -50,7 +49,10 @@ class ShenheBot(commands.Bot):
     async def setup_hook(self) -> None:
         # bot variables
         self.session = aiohttp.ClientSession()
-        self.db = await aiosqlite.connect('main.db')
+        self.db = await aiosqlite.connect('shenhe.db')
+        c = await self.db.cursor()
+        # create tables for db
+        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT [] NOT NULL)')
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI(lang='cht')
@@ -105,7 +107,7 @@ tree = bot.tree
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     traceback_message = traceback.format_exc()
     view = DebugView(traceback_message)
-    embed = errEmbed('發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
+    embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
         name='未知錯誤', icon_url=i.user.avatar)
     await i.channel.send(embed=embed, view=view)
 bot.run(token)

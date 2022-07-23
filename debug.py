@@ -11,7 +11,7 @@ class DebugView(View):
         self.tb = traceback_message
         super().__init__(timeout=None)
 
-    @button(label='顯示除錯用訊息', style=ButtonStyle.gray)
+    @button(label='顯示除錯用訊息', style=ButtonStyle.gray, custom_id='show_debug_message_button')
     async def show_debug_msg(self, i: Interaction, button: Button):
         try:
             await i.response.send_message(embed=errEmbed(f'除錯用訊息', f'```py\n{self.tb}\n```'), ephemeral=True)
@@ -24,6 +24,6 @@ class DefaultView(View):
     async def on_error(self, i: Interaction, e: Exception, item) -> None:
         traceback_message = traceback.format_exc()
         view = DebugView(traceback_message)
-        embed = errEmbed('發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
+        embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
             name='未知錯誤', icon_url=i.user.avatar)
         await i.channel.send(embed=embed, view=view)
