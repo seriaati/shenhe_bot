@@ -4,13 +4,11 @@ from datetime import datetime, timedelta
 
 import aiosqlite
 from data.game.talent_books import talent_books
-from dateutil import parser
 from discord import Forbidden, User
 from discord.ext import commands, tasks
 from discord.utils import sleep_until
-from utility.apps.FlowApp import FlowApp
 from utility.apps.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, errEmbed, getCharacter, log
+from utility.utils import defaultEmbed, getCharacter, log
 
 import genshin
 
@@ -19,30 +17,26 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
-        self.flow_app = FlowApp(self.bot.db)
-        self.debug_toggle = self.bot.debug_toggle
+        self.debug = self.bot.debug
         self.claim_reward.start()
         self.resin_notification.start()
-        self.remove_flow_acc.start()
         self.talent_notification.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
         self.resin_notification.cancel()
-        self.remove_flow_acc.cancel()
         self.talent_notification.cancel()
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        control_channel = self.bot.get_channel(979935065175904286)
-        await control_channel.send(log(True, False, 'Claim Reward', 'Start'))
+        log(True, False, 'Claim Reward', 'Start')
         count = 0
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id FROM genshin_accounts WHERE ltuid IS NOT NULL')
+        await c.execute('SELECT user_id FROM genshin_accounts')
         users = await c.fetchall()
         for index, tuple in enumerate(users):
             user_id = tuple[0]
-            client, uid, only_uid, user = await self.genshin_app.getUserCookie(user_id)
+            client, uid, user = await self.genshin_app.getUserCookie(user_id)
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -54,7 +48,8 @@ class Schedule(commands.Cog):
             else:
                 count += 1
             await asyncio.sleep(3.0)
-        await control_channel.send(log(True, False, 'Claim Reward', f'Ended, {count} success'))
+        await self.bot.db.commit()
+        log(True, False, 'Claim Reward', f'Ended, {count} success')
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
@@ -67,7 +62,7 @@ class Schedule(commands.Cog):
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
-            client, uid, only_uid, user = await self.genshin_app.getUserCookie(user_id)
+            client, uid, user = await self.genshin_app.getUserCookie(user_id)
             try:
                 notes = await client.get_notes(uid)
             except genshin.errors.InvalidCookies:
@@ -78,8 +73,6 @@ class Schedule(commands.Cog):
                 resin = notes.current_resin
                 count += 1
                 if resin >= resin_threshold and current_notif < max_notif:
-                    remind_channel = self.bot.get_channel(
-                        990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
                     user: User = self.bot.get_user(user_id)
                     embed = defaultEmbed(
                         message=f'目前樹脂: {resin}/160\n'
@@ -90,7 +83,7 @@ class Schedule(commands.Cog):
                     try:
                         await user.send(embed=embed)
                     except Forbidden:
-                        await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
+                        await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
                     await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
                 if resin < resin_threshold:
                     await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
@@ -99,8 +92,6 @@ class Schedule(commands.Cog):
 
     @tasks.loop(hours=24)
     async def talent_notification(self):
-        remind_channel = self.bot.get_channel(
-            990237798617473064) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         weekday = datetime.today().weekday()
         talent_book_icon = {
             '自由': 'https://static.wikia.nocookie.net/genshin-impact/images/d/dc/%E3%80%8C%E8%87%AA%E7%94%B1%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest?cb=20201020014319&path-prefix=zh-tw',
@@ -137,7 +128,7 @@ class Schedule(commands.Cog):
                     try:
                         await user.send(embed=embed)
                     except Forbidden:
-                        await remind_channel.send(content=(user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門'), embed=embed)
+                        await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
             await c.execute('SELECT user_id, item FROM todo')
             data = await c.fetchall()
             mentioned = {}
@@ -145,6 +136,8 @@ class Schedule(commands.Cog):
                 user_id = item[0]
                 user = self.bot.get_user(user_id)
                 if user is None:
+                    continue
+                if len([item for item in data if item[0] == user_id]) == 0:
                     continue
                 if user_id not in mentioned:
                     mentioned[user_id] = []
@@ -157,7 +150,7 @@ class Schedule(commands.Cog):
                         try:
                             await user.send(embed=embed)
                         except Forbidden:
-                            await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
+                            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
         else:
             weekday_dict = {
                 0: '週一、週四',
@@ -197,7 +190,7 @@ class Schedule(commands.Cog):
                                 try:
                                     await user.send(embed=embed)
                                 except Forbidden:
-                                    await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
+                                    await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
             await c.execute('SELECT user_id, item FROM todo')
             data = await c.fetchall()
             mentioned = {}
@@ -205,6 +198,8 @@ class Schedule(commands.Cog):
                 user_id = item[0]
                 user = self.bot.get_user(user_id)
                 if user is None:
+                    continue
+                if len([item for item in data if item[0] == user_id]) == 0:
                     continue
                 if user_id not in mentioned:
                     mentioned[user_id] = []
@@ -217,33 +212,7 @@ class Schedule(commands.Cog):
                         try:
                             await user.send(embed=embed)
                         except Forbidden:
-                            await remind_channel.send(content=user.mention+'申鶴沒辦法私訊你, 所以在這裡提醒你\n 輸入 `/remind 隱私設定` 來打開私訊的大門', embed=embed)
-
-    @tasks.loop(hours=24)
-    async def remove_flow_acc(self):
-        log(True, False, 'Remove Flow Acc', 'task start')
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        channel = self.bot.get_channel(957268464928718918)
-        await c.execute('SELECT user_id, last_trans FROM flow_accounts')
-        result = await c.fetchall()
-        now = datetime.now()
-        for index, tuple in enumerate(result):
-            flow = await self.flow_app.get_user_flow(tuple[0])
-            delta = now-parser.parse(tuple[1])
-            if delta.days > 7 and flow <= 100:
-                if flow != 0:
-                    await channel.send(content=f'<@{tuple[0]}>', embed=errEmbed(message=f'系統已扣除你帳戶裡的 flow 幣 ({flow})\n如欲取回款項, 請在今天結束前以任何方式聯絡 <@410036441129943050>').set_author(name='超過 7 天沒有進行 flow 幣交易'))
-                await self.flow_app.transaction(
-                    tuple[0], flow, is_removing_account=True)
-        log(True, False, 'Remove Flow Acc', 'task finished')
-
-    @remove_flow_acc.before_loop
-    async def before_loop(self):
-        now = datetime.now().astimezone()
-        next_run = now.replace(hour=1, minute=30, second=0)  # 等待到早上1點30
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
+                            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
