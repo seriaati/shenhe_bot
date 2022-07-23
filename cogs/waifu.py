@@ -2,17 +2,16 @@ import ast
 import io
 import random
 from typing import Any, List
-import aiosqlite
 
+import aiosqlite
 import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags, wallpaper_tags
 from debug import DefaultView
-from discord import (ButtonStyle, File, Interaction, Member, Message,
-                     SelectOption, app_commands)
+from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
+                     app_commands)
 from discord.app_commands import Choice
-from discord.ext import commands, tasks
-from discord.ext.commands.cooldowns import BucketType
+from discord.ext import commands
 from discord.ui import Button, Select, button
 from utility.paginators.GeneralPaginator import GeneralPaginator
 from utility.utils import defaultEmbed, divide_chunks, errEmbed
@@ -101,7 +100,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     @app_commands.describe(num='上限 30 張')
     async def sfw(self, i: Interaction, num: int = 1):
         if num > 30:
-            return await i.response.send_message(embed=errEmbed().set_author(name='不可大於 30 張', icon_url=i.user.avatar) , ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='不可大於 30 張', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='sfw')
         await i.response.send_message(view=view)
         await view.wait()
@@ -144,7 +143,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     async def wallpaper(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
-        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
         view = WaifuCog.ChooseTagView(i.user, type='wallpaper')
         await i.response.send_message(view=view)
         await view.wait()
@@ -154,9 +152,9 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         lib = random.choice(libs)
         nsfw = x[2]
         url = (hmtai.get(lib, tag))
-        if nsfw == 'True' and i.channel.id != sese_id:
-            return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         if nsfw == 'True':
+            if not i.channel.nsfw:
+                return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
             if num == 1:
                 await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
                 async with self.bot.session.get(str(url)) as resp:
@@ -177,9 +175,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
                     await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
                 await i.delete_original_message()
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, num, num, self.bot.user.id))
-            await self.bot.db.commit()
         else:
             if num == 1:
                 await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
@@ -199,8 +194,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
-        sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
-        if i.channel.id != sese_id:
+        if not i.channel.nsfw:
             return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='nsfw')
         await i.response.send_message(view=view)
@@ -230,9 +224,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
                 await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
             await i.delete_original_message()
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, num, num, self.bot.user.id))
-        await self.bot.db.commit()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
@@ -241,8 +232,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer()
         async with WaifuAioClient() as wf:
-            sese_id = 965842415913152522 if not self.bot.debug_toggle else 984792329426714677
-            if i.channel.id != sese_id and sese == 1:
+            if not i.channel.nsfw and sese == 1:
                 return await i.followup.send(embed=errEmbed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
             is_nsfw = 'True' if sese == 1 else 'False'
             if tags == 1:
@@ -293,9 +283,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                         if index == 0:
                             await (await i.original_message()).delete()
                         await i.channel.send(file=file)
-                    c: aiosqlite.Cursor = await self.bot.db.cursor()
-                    await c.execute('INSERT INTO sese_leaderboard (user_id, sese_count) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET sese_count = sese_count + ? WHERE user_id = ?', (self.bot.user.id, index+1, index+1, self.bot.user.id))
-                    await self.bot.db.commit()
                 else:
                     embeds = []
                     count = 0
