@@ -139,6 +139,10 @@ class CalcCog(commands.GroupCog, name='calc'):
 
         async def callback(self, i: Interaction) -> Any:
             c = await self.db.cursor()
+            await c.execute('SELECT COUNT(item) FROM todo WHERE user_id = ?', (i.user.id,))
+            count = (await c.fetchone())[0]
+            if count >= 125:
+                return await i.response.send_message(embed=errEmbed(message='請輸入 `/todo` 並使用「刪除素材」按鈕').set_author(name='代辦清單可存素材數量已達最大值 (125)', icon_url=i.user.avatar))
             for item_data in self.materials:
                 await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, item_data[0]))
                 count = await c.fetchone()
