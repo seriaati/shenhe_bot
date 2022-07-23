@@ -17,7 +17,8 @@ Shenhe (public ver.) removes all guild specific features for the discord server 
 <h2 align="center">功能亮點 • Feature Highlights</h2>
 <p align="left">
  - 「啊啊啊體力爆了」: /remind 樹脂提醒<br>
- - 「我要鍊什麼角色來著？」: /todo 代辦清單<br>
+ - 「我要練什麼角色來著？」: /todo 代辦清單<br>
+ - 「這個角色/武器需要什麼素材來升級…」: /calc 原神計算機<br>
  - 「今天要刷什麼呢…」: /farm 刷素材<br>
  - 「這個角色要帶什麼聖遺物跟武器？」: /build 角色配置<br>
  - 「向你炫耀一下我的畢業胡桃」: /profile 角色展示<br>
