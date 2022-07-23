@@ -50,12 +50,16 @@ class ShenheBot(commands.Bot):
         # bot variables
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('shenhe.db')
-        c = await self.db.cursor()
-        # create tables for db
-        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT [] NOT NULL)')
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI(lang='cht')
+        # create tables for db
+        c = await self.db.cursor()
+        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT [] NOT NULL)')
+        await c.execute('CREATE TABLE IF NOT EXISTS leaderboard (user_id INTEGER PRIMARY KEY, achievements INTEGER DEFAULT 0)')
+        await c.execute('CREATE TABLE IF NOT EXISTS substat_leaderboard (user_id INTEGER, avatar_id INTEGER, artifact_name TEXT, equip_type TEXT, sub_stat TEXT, sub_stat_value INTEGER, UNIQUE("user_id", "sub_stat"))')
+        await c.execute('CREATE TABLE IF NOT EXISTS todo(user_id INTEGER, item TEXT, count INTEGER DEFAULT 0, UNIQUE("user_id", "item"))')
+        await c.execute('CREATE TABLE IF NOT EXISTS wish_history (user_id INTEGER, wish_name TEXT, wish_rarity INTEGER, wish_time TEXT, wish_type TEXT, wish_banner_type INTEGER, wish_id INTEGER, PRIMARY KEY("wish_id"))')
         # load jishaku
         await self.load_extension('jishaku')
         # load cogs
