@@ -148,7 +148,7 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
         result[talent_name] = {}
         talent_rows = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > ul.MuiList-root.MuiList-padding.css-1jrq055 > li.MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.MuiBox-root.css-1n74xce')
         for row in talent_rows:
-            row = await (await row.getProperty("textContent")).jsonValue() 
+            row = await (await row.getProperty("textContent")).jsonValue()
             split_row = re.split(
                 '([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[eE]([+-]?\d+))?', row)
             talent_label = split_row[0]  # 天星
@@ -159,8 +159,10 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
             except:
                 pass
     await page.close()
-    embed = parse_damage_embed(character_id, result, member, hitMode, reactionMode, infusionAura, team, description, effect)
+    embed = parse_damage_embed(character_id, result, member, hitMode,
+                               reactionMode, infusionAura, team, description, effect)
     return embed
+
 
 async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = []) -> str:
     good_dict = {
@@ -185,24 +187,27 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
         character_team = ['', '', '']
         if str(character.id) == character_id:
             for index, member_id in enumerate(team):
-                character_team[index] = getCharacter(member_id)['eng'].replace(' ', '')
+                character_team[index] = getCharacter(
+                    member_id)['eng'].replace(' ', '')
         elif str(character.id) in team:
             for index, member_id in enumerate(team):
                 if member_id == str(character.id):
                     continue
-                character_team[index] = getCharacter(member_id)['eng'].replace(' ', '')
+                character_team[index] = getCharacter(
+                    member_id)['eng'].replace(' ', '')
             for index, member_id in enumerate(character_team):
                 if member_id == '':
-                    character_team[index] = getCharacter(character_id)['eng'].replace(' ', '')
+                    character_team[index] = getCharacter(
+                        character_id)['eng'].replace(' ', '')
                     break
         character_team.sort(reverse=True)
-        
+
         # get conditionals
         conditional = get_conditional.get(character)[0]
         if (str(character.id) == character_id) or (str(character.id) in team):
             description += get_conditional.get(character)[1]
             effect += get_conditional.get(character)[2]
-        
+
         good_dict['characters'].append(
             {
                 'key': character.name.replace(' ', ''),
@@ -221,7 +226,8 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
             }
         )
         weapon = character.equipments[-1]
-        weapon_key = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace("'", '').title().replace(' ', '').replace('-', '')
+        weapon_key = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace(
+            "'", '').title().replace(' ', '').replace('-', '')
         good_dict['weapons'].append(
             {
                 'key': weapon_key,
@@ -232,7 +238,7 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                 'lock': True
             }
         )
-        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT,character.equipments):
+        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
             substats = []
             for substat in artifact.detail.substats:
                 substats.append({
@@ -253,14 +259,17 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                 }
             )
     good_json = json.dumps(good_dict)
-    log(True, False, 'EnkaToGOOD', f'character_id = {character_id}, hitMode = {hitMode}, reactionMode = {reactionMode}, infusionAura = {infusionAura}, team = {team} ||||| {good_json}')
+    log(True, False, 'EnkaToGOOD',
+        f'character_id = {character_id}, hitMode = {hitMode}, reactionMode = {reactionMode}, infusionAura = {infusionAura}, team = {team} ||||| {good_json}')
     # print(good_json)
     return good_json, description, effect
+
 
 def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Member, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = [], description: str = '', effect: str = ''):
     damage_dict['重擊'], damage_dict['下落攻擊'] = damage_dict['下落攻擊'], damage_dict['重擊']
     infusion_str = f'({infusionAuras[infusionAura]})' if infusionAura != '' else ''
-    embed = defaultEmbed(f"{getCharacter(character_id)['name']} - {reactionModes[reactionMode] if reactionMode != '' else ''}{hitModes[hitMode]} {infusion_str}")
+    embed = defaultEmbed(
+        f"{getCharacter(character_id)['name']} - {reactionModes[reactionMode] if reactionMode != '' else ''}{hitModes[hitMode]} {infusion_str}")
     field_count = 0
     for talent, damages in damage_dict.items():
         field_count += 1
@@ -296,7 +305,7 @@ def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Mem
         embed.add_field(
             name='狀態',
             value=conditions,
-            inline=False if len(team)== 0 else True
+            inline=False if len(team) == 0 else True
         )
     if effect != '':
         embed.add_field(
@@ -307,11 +316,12 @@ def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Mem
     embed.set_thumbnail(url=getCharacter(character_id)["icon"])
     return embed
 
+
 class GetConditional():
     def __init__(self):
         with open(f'data/game/conditionals.yaml', 'r', encoding='utf-8') as f:
             self.conditionals = yaml.full_load(f)
-            
+
     def get(self, character: model.character):
         result = {}
         description_str = ''
@@ -324,17 +334,18 @@ class GetConditional():
                     effect_str += f"• {conditional['effect']}\n"
         return result, description_str, effect_str
 
+
 get_conditional = GetConditional()
+
 
 def trimCookie(cookie: str) -> str:
     try:
-        new_cookie = ' '.join([
-            re.search('ltoken=[0-9A-Za-z]{20,}', cookie).group(),
-            re.search('ltuid=[0-9]{3,}', cookie).group(),
-            re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group(),
-            re.search('account_id=[0-9]{3,}', cookie).group(),
-            re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group()
-        ])
+        new_cookie = [
+            int(re.search(
+                r'\d+', (re.search('ltuid=[0-9]{3,}', cookie).group())).group()),
+            re.search('[0-9A-Za-z]{20,}', cookie).group(),
+            (re.search('cookie_token=[0-9A-Za-z]{20,}', cookie).group())[13:]
+        ]
     except:
         new_cookie = None
     return new_cookie
@@ -392,11 +403,13 @@ def getTalent(id: int = '', name: str = ''):
             return talent_info
     return {'name': f'{id}{name}'}
 
+
 def getArtifact(id: int = '', name: str = ''):
     for artifact_id, artifact_info in artifacts_map.items():
         if artifact_id == str(id) or name in artifact_info['artifacts'] or name == artifact_info['name']:
-            return artifact_info 
+            return artifact_info
     raise ValueError(f'Unknwon artifact {id}{name}')
+
 
 def getFightProp(id: str = '', name: str = ''):
     for fight_prop_id, fight_prop_info in fight_prop.items():
@@ -417,4 +430,3 @@ def getAreaEmoji(area_name: str):
     }
     emoji = emoji_dict.get(area_name)
     return emoji or ''
-
