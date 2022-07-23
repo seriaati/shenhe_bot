@@ -15,7 +15,7 @@ Genshin Impact and also included other customised features.
 
 
 [功能展示與截圖](https://github.com/seriaati/shenhe_bot/blob/public/features.md) <br>
-**⚠️ 這是「緣神有你」專用版的申鶴，大眾用戶請參考 [申鶴（公開版）](https://github.com/seriaati/shenhe_bot/tree/public) ⚠️ **
+**⚠️ 這是「緣神有你」專用版的申鶴，大眾用戶請參考 [申鶴（公開版）](https://github.com/seriaati/shenhe_bot/tree/public)⚠️**
 
 <h2 align="center">小雪團隊 • Seria Studios</h2>
 
