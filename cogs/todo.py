@@ -9,13 +9,9 @@ from debug import DefaultView
 from utility.utils import defaultEmbed, errEmbed, getConsumable
 
 
-class Todo(commands.Cog):
+class Todo(commands.Cog, name='todo'):
     def __init__(self, bot):
         self.bot = bot
-
-    def chunks(self, lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i:i + n]
 
     async def get_todo_embed(db: aiosqlite.Connection, user: Member):
         c = await db.cursor()
@@ -55,7 +51,7 @@ class Todo(commands.Cog):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed('這不是你的代辦清單','輸入 `/todo` 來開啟一個'), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed(message='輸入 `/todo` 來開啟一個').set_author(name='這不是你的代辦清單', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class AddTodoButton(Button):
@@ -71,22 +67,14 @@ class Todo(commands.Cog):
                 count_value = int(modal.count.value)
             except ValueError:
                 return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
-            c = await self.db.cursor()
-            await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, modal.item.value))
-            count = await c.fetchone()
-            if count is None:
-                await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?)', (i.user.id, modal.item.value, count_value))
-            else:
-                count = count[0]
-                await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count+count_value), i.user.id, modal.item.value)
+            c: aiosqlite.Cursor = await self.db.cursor()
+            await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET count = count + ? WHERE user_id = ? AND item = ?', (i.user.id, modal.item.value, count_value, count_value, i.user.id, modal.item.value))
             await self.db.commit()
             embed = await Todo.get_todo_embed(self.db, i.user)
             await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
             count = await c.fetchone()
-            disabled = False
-            if count is None:
-                disabled = True
-            view = Todo.TodoListView(self.db, disabled, i.user)
+            empty = True if count is None else False
+            view = Todo.TodoListView(self.db, empty, i.user)
             await i.edit_original_message(embed=embed, view=view)
 
     class RemoveTodoButton(Button):
