@@ -295,7 +295,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             if chara_str == '':
                 chara_str = '目前尚未設置任何角色'
             embed.add_field(name='目前已設置角色', value=chara_str)
-            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.db, talent_notif_chara_list))
+            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.view.db, talent_notif_chara_list))
 
     class TalentCharaChooserView(DefaultView):
         def __init__(self, element: str, author: Member, db: aiosqlite.Connection, talent_notif_chara_list: list):
