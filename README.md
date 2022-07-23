@@ -5,18 +5,24 @@
 </p>
 
 <p align="left">
-這是公開版的申鶴，其將原本申鶴的原神及二次元圖片功能保留，其他針對「緣神有你」群組所製作的功能移除。
+這是公開版的申鶴，其將原本申鶴的原神及二次元圖片功能保留，其他針對「緣神有你」群組所製作的功能移除。 <br>
 </p>
 
 <p align="left">
 Shenhe (public ver.) removes all guild specific features for the discord server "yuanshen yo ni", while keeping the genshin and waifu image features.
 </p>
 
+<a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> 將申鶴邀請到你的群組 </a>
+
 <h2 align="center">功能亮點 • Feature Highlights</h2>
 <p align="left">
- - 快速: 使用 SQLite 資料庫系統<br>
- - 簡單: 一次設置，永久享受所有功能<br>
- - 方便: 各式多樣化功能，滿足你在原神的冒險旅程中的所需<br>
+ - 「啊啊啊體力爆了」: /remind 樹脂提醒<br>
+ - 「我要鍊什麼角色來著？」: /todo 代辦清單<br>
+ - 「今天要刷什麼呢…」: /farm 刷素材<br>
+ - 「這個角色要帶什麼聖遺物跟武器？」: /build 角色配置<br>
+ - 「向你炫耀一下我的畢業胡桃」: /profile 角色展示<br>
+ - 「讓你看看我優菈核爆的傷害」: /profile 角色展示中的傷害計算器<br>
+ - 所有功能請見<a href='https://github.com/seriaati/shenhe_bot/blob/public/features.md'> 功能列表 </a>
  </p>
 
 <h2 align="center">小雪團隊 • Seria Studios</h2>
