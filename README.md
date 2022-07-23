@@ -13,14 +13,13 @@ Shenhe (public ver.) removes all guild specific features for the discord server 
 </p>
 
 <h2 align="center">功能亮點 • Feature Highlights</h2>
-
-
-<h2 align="center">小雪團隊 • Seria Studios</h2>
 <p align="left">
  - 快速: 使用 SQLite 資料庫系統<br>
  - 簡單: 一次設置，永久享受所有功能<br>
  - 方便: 各式多樣化功能，滿足你在原神的冒險旅程中的所需<br>
  </p>
+
+<h2 align="center">小雪團隊 • Seria Studios</h2>
 
 <p align="center">
 <img src="https://i.imgur.com/j2RCDKr.png" width="300" height="300" />
