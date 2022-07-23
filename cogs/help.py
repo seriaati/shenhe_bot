@@ -1,5 +1,5 @@
 from discord.ui import Select
-from discord import SelectOption, app_commands, Interaction, Embed
+from discord import SelectOption, app_commands, Interaction
 from discord.ext import commands
 from debug import DefaultView
 from utility.utils import defaultEmbed
@@ -14,14 +14,8 @@ class Dropdown(Select):
                          description='需註冊+設置祈願紀錄', emoji='🌠'),
             SelectOption(label='原神計算',
                          description='計算原神角色、武器養成素材並加到代辦清單', emoji='<:CALCULATOR:999540912319369227>'),
-            SelectOption(label='呼叫相關', description='呼叫群友', emoji='🔉'),
-            SelectOption(label='flow系統', description='交易方式, 發布委託等',
-                         emoji='🌊'),
-            SelectOption(label='其他', description='其他指令', emoji='🙂'),
-            SelectOption(label='語音台', description='語音台相關指令',
-                         emoji='🎙️'),
-            SelectOption(label='音樂系統', description='音樂系統相關指令',
-                         emoji='🎵'),
+            SelectOption(label='代辦清單',
+                         description='整理要打的素材, 乾淨俐落', emoji='✅'),
             SelectOption(label='二次元圖片系統', description='香香的',
                          emoji='2️⃣'),
         ]
@@ -29,8 +23,7 @@ class Dropdown(Select):
         self.bot = bot
 
     async def callback(self, interaction: Interaction):
-        cogs = ['genshin', 'wish', 'calc', 'call',
-                'flow', 'other', 'vc', 'music', 'waifu']
+        cogs = ['genshin', 'wish', 'calc', 'todo', 'waifu']
         for index, option in enumerate(self.options):
             if option.value == self.values[0]:
                 selected_option = option
@@ -58,17 +51,6 @@ class DropdownView(DefaultView):
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    def returnHelpEmbed(embed: Embed, commands: list[app_commands.Command]):
-        embed = embed
-        for command in commands:
-            if len(command.checks) != 0:
-                continue
-            embed.add_field(
-                name=f'`{command.name}`',
-                value=command.description
-            )
-        return embed
 
     @app_commands.command(name='help幫助', description='獲得幫助')
     async def help(self, interaction: Interaction):
