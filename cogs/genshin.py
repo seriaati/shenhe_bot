@@ -572,11 +572,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     @app_commands.command(name='build角色配置', description='查看角色推薦主詞條、畢業面板、不同配置、聖遺物思路等')
     async def build(self, i: Interaction):
-        emojis = []
-        ids = [982138235239137290, 982138229140635648, 982138220248711178,
-               982138232391237632, 982138233813098556, 982138221569900585]
-        for id in ids:
-            emojis.append(self.bot.get_emoji(id))
+        emojis = ['<:WIND_ADD_HURT:982138235239137290>','<:ICE_ADD_HURT:982138229140635648>','<:ELEC_ADD_HURT:982138220248711178>','<:ROCK_ADD_HURT:982138232391237632>','<:WATER_ADD_HURT:982138233813098556>','<:FIRE_ADD_HURT:982138221569900585>']
         view = GenshinCog.ElementChooseView(
             self.bot.db, emojis, i.user, self.bot)
         await i.response.send_message(embed=defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar), view=view)
