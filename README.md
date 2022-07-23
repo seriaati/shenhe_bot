@@ -1,19 +1,23 @@
-<h1 align="center">申鶴 • Shenhe Bot</h1>
+<h1 align="center">申鶴 - 公開版 (Shenhe Public ver.)</h1>
 
 <p align="center">
 <img src="https://i.imgur.com/bwWfOJH.png" width="430" height="430" />
 </p>
 
 <p align="left">
-申鶴是小雪團隊為緣神有你 Discord 伺服器所製作的機器人，擁有各項原神相關功能以及其他客製化功能。
+這是公開版的申鶴，其將原本申鶴的原神及二次元圖片功能保留，其他針對「緣神有你」群組所製作的功能移除。
 </p>
 
 <p align="left">
-Shenhe is a multi-purpose bot created by Seria Studios for the discord server 緣神有你, it has all sorts of features for 
-Genshin Impact and also included other customised features.
+Shenhe (public ver.) removes all guild specific features for the discord server "yuanshen yo ni", while keeping the genshin and waifu image features.
 </p>
 
-[功能展示與截圖](https://github.com/seriaati/shenhe_bot/blob/main/features.md)
+<h2 align="center">功能亮點 • Feature Highlights</h2>
+<p align="left">
+ - 快速: 使用 SQLite 資料庫系統<br>
+ - 簡單: 一次設置，永久享受所有功能<br>
+ - 方便: 各式多樣化功能，滿足你在原神的冒險旅程中的所需<br>
+ </p>
 
 <h2 align="center">小雪團隊 • Seria Studios</h2>
 
