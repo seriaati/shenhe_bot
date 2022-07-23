@@ -7,6 +7,7 @@ from discord import (ButtonStyle, Interaction, Member, SelectOption,
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput
+from utility.apps.GenshinApp import GenshinApp
 from utility.utils import (defaultEmbed, errEmbed, getCharacter, getClient,
                            getConsumable, getWeapon)
 
@@ -15,6 +16,7 @@ class CalcCog(commands.GroupCog, name='calc'):
     def __init__(self, bot: commands.Bot):
         super().__init__()
         self.bot = bot
+        self.genshin_app = GenshinApp(bot.db, bot)
         
     class CalcultorElementButtonView(DefaultView):
         def __init__(self, author: Member, chara_list: list, item_type: str):
@@ -220,6 +222,9 @@ class CalcCog(commands.GroupCog, name='calc'):
 
     @app_commands.command(name='character擁有角色', description='個別計算一個自己擁有的角色所需的素材 (需註冊)')
     async def calc_character(self, i: Interaction):
+        exists = await self.genshin_app.userDataExists(i.user.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
         client, uid, user = await self.genshin_app.getUserCookie(i.user.id)
         try:
             charas = await client.get_calculator_characters(sync=True)

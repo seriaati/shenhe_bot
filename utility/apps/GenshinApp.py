@@ -393,3 +393,11 @@ class GenshinApp:
         client.default_game = genshin.Game.GENSHIN
         client.uids[genshin.Game.GENSHIN] = user_data[3]
         return client, user_data[3], user
+    
+    async def userDataExists(self, user_id: int):
+        c: aiosqlite.Cursor = await self.db.cursor()
+        await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))
+        user_data = await c.fetchone()
+        if user_data is None:
+            return False
+        return True

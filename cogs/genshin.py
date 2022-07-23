@@ -121,6 +121,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料')
     async def check(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         result, success = await self.genshin_app.getRealTimeNotes(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -129,6 +132,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料')
     async def stats(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         result, success = await self.genshin_app.getUserStats(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -137,6 +143,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料')
     async def area(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         result, success = await self.genshin_app.getArea(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -145,6 +154,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料')
     async def claim(self, i: Interaction, member: Member = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         result, success = await self.genshin_app.claimDailyReward(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -185,6 +197,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         app_commands.Choice(name='上上個月', value=-2)])
     async def diary(self, i: Interaction, month: int, member: Optional[Member] = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.getDiary(member.id, month)
@@ -205,6 +220,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     )
     async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: Member = None):
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.getAbyss(member.id, previous, overview)
@@ -365,6 +383,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     async def remind(self, i: Interaction, function: int, toggle: int = 1):
         if function == 0:
             if toggle == 0:
+                exists = await self.genshin_app.userDataExists(i.user.id)
+                if not exists:
+                    return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
                 result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
                 await i.response.send_message(embed=result, ephemeral=not success)
             else:
@@ -406,43 +427,6 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.set_author(name='如何讓申鶴進入你的私訊?', icon_url=i.user.avatar)
             embed.set_image(url='https://i.imgur.com/sYg4SpD.gif')
             await i.response.send_message(embed=embed, ephemeral=True)
-
-    def get_farm_image(day: int):
-        if day == 0 or day == 3:
-            url = "https://i.imgur.com/Jr5tlUs.png"
-        elif day == 1 or day == 4:
-            url = "https://media.discordapp.net/attachments/823440627127287839/958862746127060992/5ac261bdfc846f45.png"
-        elif day == 2 or day == 5:
-            url = "https://media.discordapp.net/attachments/823440627127287839/958862745871220796/0b16376c23bfa1ab.png"
-        else:
-            url = "https://i.imgur.com/MPI5uwW.png"
-        return url
-
-    class ChooseDay(DefaultView):
-        def __init__(self):
-            super().__init__(timeout=None)
-            for i in range(0, 4):
-                self.add_item(GenshinCog.DayButton(i))
-
-    class DayButton(Button):
-        def __init__(self, day: int):
-            self.day = day
-            if day == 0:
-                label = '週一、週四'
-            elif day == 1:
-                label = '週二、週五'
-            elif day == 2:
-                label = '週三、週六'
-            else:
-                label = '週日'
-                self.day = 6
-            super().__init__(label=label, style=ButtonStyle.blurple)
-
-        async def callback(self, i: Interaction) -> Any:
-            day_str = f'{getWeekdayName(self.day)}、{getWeekdayName(self.day+3)}' if self.day != 6 else '週日'
-            embed = defaultEmbed(f"{day_str}可以刷的副本材料")
-            embed.set_image(url=GenshinCog.get_farm_image(self.day))
-            await i.response.edit_message(embed=embed)
 
     @app_commands.command(name='farm刷素材', description='查看原神今日可刷素材')
     async def farm(self, i: Interaction):
@@ -819,6 +803,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     async def profile(self, i: Interaction, member: Member = None):
         await i.response.defer()
         member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()
@@ -918,6 +905,9 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.command(name='redeem兌換', description='兌換禮物碼 (需註冊)')
     @app_commands.rename(code='兌換碼')
     async def redeem(self, i: Interaction, code: str):
+        exists = await self.genshin_app.userDataExists(i.user.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
         result = await self.genshin_app.redeemCode(i.user.id, code)
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
