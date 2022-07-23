@@ -230,14 +230,14 @@ class GenshinApp:
         else:
             primoLog = ''
             result = []
-            async for action in client.diary_log(limit=35):
+            async for action in client.diary_log(limit=30):
                 primoLog = primoLog + \
                     f"{action.action} - {action.amount} 原石"+"\n"
             embed = defaultEmbed(message=f"{primoLog}")
             embed.set_author(name='原石獲取紀錄', icon_url=user.avatar)
             result.append(embed)
             moraLog = ''
-            async for action in client.diary_log(limit=25, type=genshin.models.DiaryType.MORA):
+            async for action in client.diary_log(limit=30, type=genshin.models.DiaryType.MORA):
                 moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
             embed = defaultEmbed(message=f"{moraLog}")
             embed.set_author(name='摩拉獲取紀錄', icon_url=user.avatar)
