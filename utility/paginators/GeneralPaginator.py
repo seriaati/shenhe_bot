@@ -57,21 +57,11 @@ class _view(View):
         await self.update_children(interaction)
 
 
-class MaterialButton(Button):
-    def __init__(self, embed: Embed):
-        super().__init__(label='升級天賦所需素材', style=ButtonStyle.green, row=2)
-        self.embed = embed
-
-    async def callback(self, i: Interaction):
-        await i.response.send_message(embed=self.embed, ephemeral=True)
-
-
 class GeneralPaginator:
-    def __init__(self, interaction: Interaction, pages: list, custom_children: Optional[List[Union[Button, Select]]] = [], material_embed: Embed = None):
+    def __init__(self, interaction: Interaction, pages: list, custom_children: Optional[List[Union[Button, Select]]] = []):
         self.custom_children = custom_children
         self.interaction = interaction
         self.pages = pages
-        self.material_embed = material_embed
 
     async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True, edit_original_message: bool = False, follow_up: bool = False, materials: bool = False) -> None:
         if not (self.pages):
@@ -92,9 +82,6 @@ class GeneralPaginator:
         if (len(self.custom_children) > 0):
             for child in self.custom_children:
                 view.add_item(child)
-
-        if materials:
-            view.add_item(MaterialButton(self.material_embed))
 
         kwargs = {'content': self.pages[view.current_page]} if not (
             embeded) else {'embed': self.pages[view.current_page]}

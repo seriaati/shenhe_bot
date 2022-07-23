@@ -1101,7 +1101,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(c)]).start(embeded=True, edit_original_message=True)
             except ValueError:
                 await i.followup.send(embed=errEmbed().set_author(name='排行榜內目前沒有玩家', icon_url=i.user.avatar), ephemeral=True)
-        
+
         elif type == 2:
             player = GGanalysislib.PityGacha()
             await c.execute('SELECT DISTINCT user_id FROM wish_history WHERE guild_id = ?', (i.guild.id))
@@ -1172,16 +1172,22 @@ class GenshinCog(commands.Cog, name='genshin'):
             self.view.avatar_id = self.values[0]
             self.view.stop()
 
-    class ShowMaterialsView(DefaultView):
-        def __init__(self, embed: Embed, author: Member):
-            super().__init__(timeout=None)
-            self.author = author
+    class MaterialButton(Button):
+        def __init__(self, embed: Embed):
+            super().__init__(label='升級天賦所需素材', style=ButtonStyle.green, row=2)
             self.embed = embed
 
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /wiki 來查看你的維基百科', icon_url=interaction.user.avatar), ephemeral=True)
-            return interaction.user.id == self.author.id
+        async def callback(self, i: Interaction):
+            await i.response.send_message(embed=self.embed, ephemeral=True)
+
+    class WikiPageChooseSelect(Select):
+        def __init__(self, embeds: list[Embed], options: list[SelectOption]):
+            super().__init__(placeholder='快速導覽', options=options)
+            self.embeds = embeds
+
+        async def callback(self, i: Interaction):
+            self.view.current_page = int(self.values[0])
+            await self.view.update_children(i)
 
     @app_commands.command(name='wiki原神百科', description='原神百科')
     @app_commands.rename(type='分類')
@@ -1198,6 +1204,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 avatar = await resp.json()
             avatar_data = avatar["data"]
             embeds = []
+            options = []
             embed = defaultEmbed(
                 f"{elements.get(avatar['data']['element'])} {avatar['data']['name']}")
             embed.add_field(
@@ -1213,6 +1220,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
             embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
             embeds.append(embed)
+            options.append(SelectOption(label='基本資料', value=0))
             embed = defaultEmbed().set_author(
                 name='等級突破素材', icon_url=(getCharacter(view.avatar_id))['icon'])
             for promoteLevel in avatar_data['upgrade']['promote'][1:]:
@@ -1227,6 +1235,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 )
             embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
             embeds.append(embed)
+            options.append(SelectOption(label='突破素材', value=1))
             for talent_id, talent_info in avatar_data["talent"].items():
                 max = 3
                 if view.avatar_id == '10000002' or view.avatar_id == '10000041':
@@ -1269,6 +1278,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                     embed.set_thumbnail(
                         url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
+            options.append(SelectOption(label='天賦', value=2))
+            options.append(SelectOption(
+                label='固有天賦', value=5 if max == 3 else 6))
             const_count = 1
             for const_id, const_info in avatar_data['constellation'].items():
                 embed = defaultEmbed().set_author(
@@ -1282,7 +1294,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                     url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
                 embeds.append(embed)
                 const_count += 1
-            await GeneralPaginator(i, embeds, material_embed=material_embed).start(embeded=True, edit_original_message=True, materials=True)
+            options.append(SelectOption(
+                label='命座', value=8 if max == 3 else 9))
+            await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(embeds, options)]).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:
