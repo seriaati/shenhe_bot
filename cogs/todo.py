@@ -1,12 +1,12 @@
 from tkinter.tix import Select
 
 import aiosqlite
-from discord import (ButtonStyle, Interaction, Member, SelectOption,
+from discord import (ButtonStyle, Interaction, Member, Message, SelectOption,
                      app_commands)
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput
 from debug import DefaultView
-from utility.utils import defaultEmbed, errEmbed, getConsumable
+from utility.utils import defaultEmbed, divide_chunks, errEmbed, getConsumable
 
 
 class Todo(commands.Cog, name='todo'):
@@ -31,7 +31,8 @@ class Todo(commands.Cog, name='todo'):
         for index, tuple in enumerate(todo):
             item = tuple[0]
             count = tuple[1]
-            todo_list.append(f'{getConsumable(name=item)["emoji"]} {item} x{count}')
+            todo_list.append(
+                f'{getConsumable(name=item)["emoji"]} {item} x{count}')
         desc = ''
         for todo_item in todo_list:
             desc += f'{todo_item}\n'
@@ -60,6 +61,11 @@ class Todo(commands.Cog, name='todo'):
             super().__init__(label='新增素材', style=ButtonStyle.green)
 
         async def callback(self, i: Interaction):
+            c: aiosqlite.Cursor = await self.db.cursor()
+            await c.execute('SELECT COUNT(item) FROM todo WHERE user_id = ?', (i.user.id,))
+            count = (await c.fetchone())[0]
+            if count >= 125:
+                return await i.response.send_message(embed=errEmbed(message='請使用「刪除素材」按鈕').set_author(name='代辦清單可存素材數量已達最大值 (125)', icon_url=i.user.avatar))
             modal = Todo.AddTodoModal()
             await i.response.send_modal(modal)
             await modal.wait()
@@ -67,7 +73,6 @@ class Todo(commands.Cog, name='todo'):
                 count_value = int(modal.count.value)
             except ValueError:
                 return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
-            c: aiosqlite.Cursor = await self.db.cursor()
             await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET count = count + ? WHERE user_id = ? AND item = ?', (i.user.id, modal.item.value, count_value, count_value, i.user.id, modal.item.value))
             await self.db.commit()
             embed = await Todo.get_todo_embed(self.db, i.user)
@@ -88,31 +93,9 @@ class Todo(commands.Cog, name='todo'):
             todos = await c.fetchall()
             options = []
             for index, tuple in enumerate(todos):
-                options.append(SelectOption(label=tuple[0], value=tuple[0]))
-            modal = Todo.RemoveTodoModal(options)
-            await i.response.send_modal(modal)
-            await modal.wait()
-            await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, modal.item.values[0]))
-            count = await c.fetchone()
-            count = count[0]
-            modal_count_value = modal.count.value or count
-            if modal_count_value > count:
-                return await i.followup.send(embed=errEmbed().set_author(name='不可輸入大於目前素材數量的數字', icon_url=i.user.avatar), ephemeral=True)
-            try:
-                modal_count_value = int(modal_count_value)
-            except ValueError:
-                return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
-            await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count-int(modal_count_value), i.user.id, modal.item.values[0]))
-            await c.execute('DELETE FROM todo WHERE count = 0 AND user_id = ?', (i.user.id,))
-            await self.db.commit()
-            embed = await Todo.get_todo_embed(self.db, i.user)
-            await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
-            count = await c.fetchone()
-            disabled = False
-            if count is None:
-                disabled = True
-            view = Todo.TodoListView(self.db, disabled, i.user)
-            await i.edit_original_message(embed=embed, view=view)
+                options.append(SelectOption(
+                    label=tuple[0], value=tuple[0], emoji=getConsumable(name=tuple[0])['emoji']))
+            await i.response.send_message(embed=defaultEmbed().set_author(name='選擇要刪除的素材', icon_url=i.user.avatar), view=Todo.RemoveTodoView(options, self.db, i.message), ephemeral=True)
 
     class ClearTodoButton(Button):
         def __init__(self, disabled: bool, db: aiosqlite.Connection):
@@ -145,24 +128,55 @@ class Todo(commands.Cog, name='todo'):
             await interaction.response.defer()
 
     class RemoveTodoModal(Modal):
-        item = Select(
-            placeholder='選擇要刪除的素材',
-            min_values=1,
-            max_values=1,
-        )
-
         count = TextInput(
             label='數量',
             placeholder='例如: 28 (如留空則清空該素材)',
             required=False
         )
 
-        def __init__(self, options) -> None:
-            self.item.options = options
+        def __init__(self) -> None:
             super().__init__(title='刪除素材', timeout=None)
 
         async def on_submit(self, interaction: Interaction) -> None:
             await interaction.response.defer()
+
+    class RemoveTodoView(DefaultView):
+        def __init__(self, options: list[SelectOption], db: aiosqlite.Connection, message: Message):
+            super().__init__(timeout=None)
+            options = list(divide_chunks(options, 25))
+            for option in options:
+                self.add_item(Todo.RemoveTodoSelect(option))
+            self.db = db
+            self.message = message
+
+    class RemoveTodoSelect(Select):
+        def __init__(self, options):
+            super().__init__(placeholder='選擇要刪除的素材', options=options)
+
+        async def callback(self, i: Interaction):
+            c: aiosqlite.Cursor = await self.view.db.cursor()
+            modal = Todo.RemoveTodoModal()
+            await i.response.send_modal(modal)
+            await modal.wait()
+            await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, self.values[0]))
+            count = await c.fetchone()
+            count = count[0]
+            modal_count_value = modal.count.value or count
+            if int(modal_count_value) > int(count):
+                return await i.followup.send(embed=errEmbed().set_author(name='不可輸入大於目前素材數量的數字', icon_url=i.user.avatar), ephemeral=True)
+            try:
+                modal_count_value = int(modal_count_value)
+            except ValueError:
+                return await i.followup.send(embed=errEmbed(message='正確: 100, 6969, 4110\n錯誤: 一百萬, 100K, 100,000').set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
+            await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count-int(modal_count_value), i.user.id, self.values[0]))
+            await c.execute('DELETE FROM todo WHERE count = 0 AND user_id = ?', (i.user.id,))
+            await self.view.db.commit()
+            embed = await Todo.get_todo_embed(self.view.db, i.user)
+            await c.execute('SELECT count FROM todo WHERE user_id = ?', (i.user.id,))
+            count = await c.fetchone()
+            disabled = True if count is None else False
+            view = Todo.TodoListView(self.view.db, disabled, i.user)
+            await self.view.message.edit(embed=embed, view=view)
 
     @app_commands.command(name='todo代辦清單', description='查看代辦清單')
     async def todo_list(self, i: Interaction):
