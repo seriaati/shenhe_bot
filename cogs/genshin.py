@@ -1013,7 +1013,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
     @app_commands.rename(type='分類')
     @app_commands.describe(type='選擇要查看的排行榜分類')
-    @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='色色榜', value=2), Choice(name='歐氣榜', value=3)])
+    @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='歐氣榜', value=2)])
     async def leaderboard(self, i: Interaction, type: int):
         await i.response.defer()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -1041,8 +1041,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         await self.bot.db.commit()
 
         # clean up leaderboard
-        leaderboards = ['leaderboard',
-                        'substat_leaderboard', 'sese_leaderboard']
+        leaderboards = ['leaderboard','substat_leaderboard']
         for leaderboard in leaderboards:
             await c.execute(f'SELECT user_id FROM {leaderboard}')
             result = await c.fetchall()
@@ -1097,23 +1096,6 @@ class GenshinCog(commands.Cog, name='genshin'):
                 embeds.append(embed)
             await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(c)]).start(embeded=True, edit_original_message=True)
         elif type == 2:
-            embeds = []
-            await c.execute('SELECT user_id, sese_count FROM sese_leaderboard')
-            leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda index: index[1], reverse=True)
-            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
-            leaderboard = divide_chunks(leaderboard, 10)
-            rank = 1
-            for small_leaderboard in leaderboard:
-                message = ''
-                for index, tuple in enumerate(small_leaderboard):
-                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {tuple[1]}\n'
-                    rank += 1
-                embed = defaultEmbed(
-                    f'🏆 色色榜 (你: #{user_rank})', message)
-                embeds.append(embed)
-            await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
-        elif type == 3:
             player = GGanalysislib.PityGacha()
             await c.execute('SELECT DISTINCT user_id FROM wish_history')
             result = await c.fetchall()
