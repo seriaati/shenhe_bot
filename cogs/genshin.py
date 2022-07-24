@@ -1015,7 +1015,10 @@ class GenshinCog(commands.Cog, name='genshin'):
                     artifact_name = tuple[2]
                     equip_type = tuple[3]
                     sub_stat_value = tuple[5]
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}\n\n'
+                    member = i.guild.get_member(user_id)
+                    if member is None:
+                        continue
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
@@ -1060,18 +1063,6 @@ class GenshinCog(commands.Cog, name='genshin'):
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
                                     await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value, guild_id) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat, guild_id) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.guild.id, i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}"))
 
-        # clean up leaderboard
-        leaderboards = ['leaderboard', 'substat_leaderboard']
-        for leaderboard in leaderboards:
-            await c.execute(f'SELECT DISTINCT user_id FROM {leaderboard}')
-            result = await c.fetchall()
-            for index, tuple in enumerate(result):
-                user_id = tuple[0]
-                user = self.bot.get_user(user_id)
-                if user is None or user not in i.guild.members:
-                    await c.execute(f'DELETE FROM {leaderboard} WHERE user_id = ?', (user_id,))
-        await self.bot.db.commit()
-
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard WHERE guild_id = ?', (i.guild.id,))
             leaderboard = await c.fetchall()
@@ -1083,7 +1074,10 @@ class GenshinCog(commands.Cog, name='genshin'):
             for small_leaderboard in leaderboard:
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
-                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {tuple[1]}\n'
+                    member = i.guild.get_member(tuple[0])
+                    if member is None:
+                        continue
+                    message += f'{rank}. {member.display_name} - {tuple[1]}\n'
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 成就數排行榜 (你: #{user_rank})', message)
@@ -1113,7 +1107,10 @@ class GenshinCog(commands.Cog, name='genshin'):
                     artifact_name = tuple[2]
                     equip_type = tuple[3]
                     sub_stat_value = tuple[5]
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {(i.guild.get_member(user_id)).display_name} • {sub_stat_value}\n\n'
+                    member = i.guild.get_member(user_id)
+                    if member is None:
+                        continue
+                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
@@ -1143,7 +1140,10 @@ class GenshinCog(commands.Cog, name='genshin'):
             for small_leaderboard in leaderboard:
                 message = ''
                 for index, tuple in enumerate(small_leaderboard):
-                    message += f'{rank}. {(i.guild.get_member(tuple[0])).display_name} - {round(tuple[1], 2)}%\n'
+                    member = i.guild.get_member(tuple[0])
+                    if member is None:
+                        continue
+                    message += f'{rank}. {member.display_name} - {round(tuple[1], 2)}%\n'
                     rank += 1
                 embed = defaultEmbed(
                     f'🏆 歐氣榜 (你: #{user_rank})', message)
