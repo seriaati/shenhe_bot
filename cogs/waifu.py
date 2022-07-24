@@ -13,7 +13,7 @@ from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Select, button
-from utility.paginators.GeneralPaginator import GeneralPaginator
+from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import defaultEmbed, divide_chunks, errEmbed
 from waifuim import WaifuAioClient
 

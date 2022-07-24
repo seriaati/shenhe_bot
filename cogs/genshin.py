@@ -25,8 +25,7 @@ from enkanetwork import EnkaNetworkAPI, EnkaNetworkResponse
 from enkanetwork.enum import DigitType, EquipmentsType
 from pyppeteer.browser import Browser
 from utility.apps.GenshinApp import GenshinApp
-from utility.paginators.AbyssPaginator import AbyssPaginator
-from utility.paginators.GeneralPaginator import GeneralPaginator
+from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, getArtifact,
                            getCharacter, getConsumable,
@@ -123,7 +122,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getRealTimeNotes(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -134,7 +133,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getUserStats(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -145,7 +144,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getArea(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -156,7 +155,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.claimDailyReward(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -199,7 +198,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.getDiary(member.id, month)
@@ -208,6 +207,28 @@ class GenshinCog(commands.Cog, name='genshin'):
         else:
             await i.response.send_message(embed=result, view=GenshinCog.DiaryLogView(i.user, member, self.bot.db, self.bot))
 
+    class AbyssFloorView(DefaultView):
+        def __init__(self, author: Member, embeds: list[Embed]):
+            super().__init__(timeout=None)
+            self.author = author 
+            self.add_item(GenshinCog.AbyssFloorSelect(embeds))
+            
+        async def interaction_check(self, i: Interaction) -> bool:
+            if self.author.id != i.user.id:
+                await i.response.send_message(embed=errEmbed(message='指令: `/abyss`').set_author(name='你不是這個指令的發起者', icon_url=i.user.avatar), ephemeral=True)
+            return self.author.id == i.user.id
+    
+    class AbyssFloorSelect(Select):
+        def __init__(self, embeds: list[Embed]):
+            options = []
+            for index in range(0, len(embeds)):
+                options.append(SelectOption(label=f'第{9+index}層', value=index))
+            super().__init__(placeholder='樓層導覽', options=options)
+            self.embeds=embeds
+            
+        async def callback(self, i: Interaction) -> Any:
+            await i.response.edit_message(embed=self.embeds[int(self.values[0])])
+    
     @app_commands.command(name='abyss深淵', description='深淵資料查詢 (需註冊)')
     @app_commands.rename(overview='類別', previous='期別', member='其他人')
     @app_commands.describe(overview='想要查看的資料類別',
@@ -222,7 +243,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.getAbyss(member.id, previous, overview)
@@ -231,7 +252,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         if overview:
             return await i.response.send_message(embed=result)
         else:
-            return await AbyssPaginator(i, result).start(embeded=True)
+            await i.response.send_message(embed=result[0], view=GenshinCog.AbyssFloorView(i.user, result))
 
     @app_commands.command(name='stuck找不到資料', description='註冊了, 但是找不到資料嗎?')
     async def stuck(self, i: Interaction):
@@ -802,7 +823,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar))
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
         uid = await c.fetchone()

@@ -1,5 +1,3 @@
-
-from datetime import timedelta
 import sqlite3
 from typing import Optional
 
@@ -10,9 +8,8 @@ from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Modal, View
-from utility.apps.GenshinApp import GenshinApp
+from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import defaultEmbed, divide_chunks, errEmbed, getClient, log
-from utility.paginators.WishPaginator import WishPaginator
 
 import genshin
 
@@ -145,7 +142,8 @@ class WishCog(commands.GroupCog, name='wish'):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(name='查無祈願紀錄', icon_url=self.bot.get_user(user_id).avatar)
+        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(
+            name='查無祈願紀錄', icon_url=self.bot.get_user(user_id).avatar)
         if result is None:
             return False, embed
         else:
@@ -259,7 +257,7 @@ class WishCog(commands.GroupCog, name='wish'):
             for w in l:
                 embed_str += f'{w}\n'
             embeds.append(defaultEmbed('詳細祈願紀錄', embed_str))
-        await WishPaginator(i, embeds).start(embeded=True)
+        await GeneralPaginator(i, embeds).start(embeded=True)
 
     @app_commands.command(name='luck歐氣值', description='限定祈願歐氣值分析')
     @app_commands.rename(member='其他人')
@@ -330,7 +328,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
             if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗','輸入 `/wish weapon` 來開始計算'), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='UP', style=discord.ButtonStyle.blurple)
@@ -353,7 +351,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
             if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗','輸入 `/wish weapon` 來開始計算'), ephemeral=True)
+                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)
@@ -406,8 +404,9 @@ class WishCog(commands.GroupCog, name='wish'):
         player = GGanalysislib.Up5starWeaponEP()
         calc_pull = 1
         p = 0
-        while(p<80):
-            p = 100*player.get_p(item_num=item_num, calc_pull=calc_pull, pull_state=pull_state, up_guarantee=up_guarantee)
+        while(p < 80):
+            p = 100*player.get_p(item_num=item_num, calc_pull=calc_pull,
+                                 pull_state=pull_state, up_guarantee=up_guarantee)
             calc_pull += 1
         embed = defaultEmbed(
             '<:wish:982419859117838386> 祈願抽數預測',
