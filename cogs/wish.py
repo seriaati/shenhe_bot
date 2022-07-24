@@ -20,7 +20,7 @@ class WishCog(commands.GroupCog, name='wish'):
         super().__init__()
 
     class AuthKeyModal(Modal):
-        def __init__(self, db: aiosqlite.Connection, bot: commands.Bot):
+        def __init__(self, db: aiosqlite.Connection):
             self.db = db
             super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
         url = discord.ui.TextInput(
@@ -136,7 +136,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db, self.bot))
+            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
 
     async def wish_history_exists(self, user_id: int) -> Embed:
         c: aiosqlite.Cursor = await self.bot.db.cursor()
