@@ -303,7 +303,7 @@ class FlowCog(commands.Cog, name='flow'):
             item_names.append(tuple[0])
             item_str += f'• {tuple[0]} - **{tuple[1]}** flow ({tuple[2]}/{tuple[3]})\n\n'
         embed = defaultEmbed("🛒 flow商店", item_str)
-        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db, self.bot, i.user)
+        view = FlowCog.ShopItemView(item_names, 'buy', self.bot.db, i.user)
         await i.response.send_message(embed=embed, view=view)
 
     @app_commands.command(name='additem', description='新增商品')
@@ -326,7 +326,7 @@ class FlowCog(commands.Cog, name='flow'):
         for index, tuple in enumerate(result):
             item_names.append(tuple[0])
         view = FlowCog.ShopItemView(
-            item_names, 'remove', self.bot.db, self.bot)
+            item_names, 'remove', self.bot.db, i.user)
         await i.response.send_message(view=view, ephemeral=True)
 
     def check_in_find_channel(self, channel_id: int):
