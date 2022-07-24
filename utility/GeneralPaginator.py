@@ -9,15 +9,18 @@ from utility.utils import errEmbed
 
 
 class _view(View):
-    def __init__(self, author: User, pages: List[SelectOption], embeded: bool):
+    def __init__(self, author: User, pages: List[SelectOption], embeded: bool, check: bool = True):
         super().__init__(timeout=None)
         self.author = author
         self.pages = pages
         self.embeded = embeded
+        self.check = check
 
         self.current_page = 0
 
     async def interaction_check(self, interaction: Interaction) -> bool:
+        if not self.check:
+            return True
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(embed=errEmbed('你不是這個指令的使用者'), ephemeral=True)
         return (interaction.user.id == self.author.id)
@@ -63,11 +66,11 @@ class GeneralPaginator:
         self.interaction = interaction
         self.pages = pages
 
-    async def start(self, embeded: Optional[bool] = False, edit_original_message: bool = False, follow_up: bool = False) -> None:
+    async def start(self, embeded: Optional[bool] = False, edit_original_message: bool = False, follow_up: bool = False, check: bool = True) -> None:
         if not (self.pages):
             raise ValueError("Missing pages")
 
-        view = _view(self.interaction.user, self.pages, embeded)
+        view = _view(self.interaction.user, self.pages, embeded, check)
 
         view.previous.disabled = True if (view.current_page <= 0) else False
         view.next.disabled = True if (
