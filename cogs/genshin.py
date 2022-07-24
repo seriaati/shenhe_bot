@@ -178,7 +178,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.getUserCharacters(member.id)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True)
+        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True, check=False)
 
     class DiaryLogView(DefaultView):
         def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):

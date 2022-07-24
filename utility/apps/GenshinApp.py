@@ -394,7 +394,7 @@ class GenshinApp:
                 message = ''
                 for character in characters:
                     message += f'{getCharacter(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
-                embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message)
+                embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message).set_author(name='所有角色', icon_url=user.avatar)
                 result['embeds'].append(embed)
                 index += 1
             return result, True
