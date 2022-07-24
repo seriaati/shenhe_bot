@@ -20,7 +20,6 @@ from cogs.gvaway import GiveAwayCog
 from cogs.roles import ReactionRoles
 from cogs.welcome import WelcomeCog
 from debug import DebugView
-from utility.db_utils import DbUtils
 from utility.utils import errEmbed, log
 
 load_dotenv()
