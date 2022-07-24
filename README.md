@@ -1,6 +1,10 @@
 <h1 align="center">申鶴 - 公開版</h1>
 
 <p align="center">
+<a href='https://github.com/seriaati/shenhe_bot/blob/public/README.md'> English README </a>
+</p>
+
+<p align="center">
 <img src="https://i.imgur.com/bwWfOJH.png" width="430" height="430" />
 </p>
 
