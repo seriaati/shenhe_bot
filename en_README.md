@@ -1,7 +1,7 @@
 <h1 align="center">Shenhe (Public Ver.)</h1>
 
 <p align="center">
-Read this README in <a href='https://github.com/seriaati/shenhe_bot/blob/public/README.md'> Chinese </a>
+<a href='https://github.com/seriaati/shenhe_bot/blob/public/README.md'> 中文版 README </a>
 </p>
 
 <p align="center">
