@@ -63,7 +63,7 @@ class GeneralPaginator:
         self.interaction = interaction
         self.pages = pages
 
-    async def start(self, embeded: Optional[bool] = False, quick_navigation: bool = True, edit_original_message: bool = False, follow_up: bool = False, materials: bool = False) -> None:
+    async def start(self, embeded: Optional[bool] = False, edit_original_message: bool = False, follow_up: bool = False) -> None:
         if not (self.pages):
             raise ValueError("Missing pages")
 
@@ -72,12 +72,6 @@ class GeneralPaginator:
         view.previous.disabled = True if (view.current_page <= 0) else False
         view.next.disabled = True if (
             view.current_page + 1 >= len(self.pages)) else False
-
-        if (quick_navigation):
-            options = []
-            for index, page in enumerate(self.pages):
-                options.append(SelectOption(
-                    label=f"Page {index+1}", value=index))
 
         if (len(self.custom_children) > 0):
             for child in self.custom_children:

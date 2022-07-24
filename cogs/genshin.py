@@ -29,7 +29,7 @@ from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import (calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, getArtifact,
                            getCharacter, getConsumable,
-                           getElementEmoji, getFightProp, getStatEmoji,
+                           getElement, getFightProp, getStatEmoji,
                            getWeapon, getWeekdayName)
 
 from cogs.wish import WishCog
@@ -158,6 +158,27 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.claimDailyReward(member.id)
         await i.response.send_message(embed=result, ephemeral=not success)
+        
+    class CharactersElementSelect(Select):
+        def __init__(self, options: list[SelectOption]):
+            super().__init__(placeholder='選擇元素', options=options)
+            
+        async def callback(self, i: Interaction) -> Any:
+            self.view.current_page = int(self.values[0])
+            await self.view.update_children(i)
+   
+    @app_commands.command(name='characters所有角色', description='展示自己擁有的所有角色')
+    @app_commands.rename(member='其他人')
+    @app_commands.describe(member='查看其他群友的資料')
+    async def characters(self, i: Interaction, member: Member = None):
+        member = member or i.user
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+        result, success = await self.genshin_app.getUserCharacters(member.id)
+        if not success:
+            return await i.response.send_message(embed=result, ephemeral=True)
+        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True)
 
     class DiaryLogView(DefaultView):
         def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):
@@ -295,7 +316,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     class TalentElementButton(Button):
         def __init__(self, element: str, row: int):
-            super().__init__(emoji=getElementEmoji(element), row=row)
+            super().__init__(emoji=getElement(element)['emoji'], row=row)
             self.element = element
 
         async def callback(self, interaction: Interaction) -> Any:
@@ -1202,9 +1223,8 @@ class GenshinCog(commands.Cog, name='genshin'):
             await i.response.send_message(embed=self.embed, ephemeral=True)
 
     class WikiPageChooseSelect(Select):
-        def __init__(self, embeds: list[Embed], options: list[SelectOption]):
+        def __init__(self, options: list[SelectOption]):
             super().__init__(placeholder='快速導覽', options=options)
-            self.embeds = embeds
 
         async def callback(self, i: Interaction):
             self.view.current_page = int(self.values[0])
@@ -1317,7 +1337,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 const_count += 1
             options.append(SelectOption(
                 label='命座', value=8 if max == 3 else 9))
-            await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(embeds, options)]).start(embeded=True, edit_original_message=True)
+            await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(options)]).start(embeded=True, edit_original_message=True)
 
 
 async def setup(bot: commands.Bot) -> None:

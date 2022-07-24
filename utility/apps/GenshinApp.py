@@ -5,7 +5,7 @@ import aiosqlite
 import genshin
 from discord import Embed, SelectOption
 from discord.ext import commands
-from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter,
+from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter, getElement,
                            getWeapon, getWeekdayName, log, trimCookie)
 
 
@@ -369,6 +369,35 @@ class GenshinApp:
                 result.set_author(name='設置成功', icon_url=user.avatar)
             await self.db.commit()
         return result, True
+    
+    async def getUserCharacters(self, user_id: int):
+        client, uid, user = await self.getUserCookie(user_id)
+        try:
+            characters = await client.get_genshin_characters(uid)
+        except genshin.errors.DataNotPublic:
+            return errEmbed(
+                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+        except Exception as e:
+            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+        else:
+            # organize characters according to elements
+            result = {'embeds': [], 'options': []}
+            organized_characters = {}
+            for character in characters:
+                if character.element not in organized_characters:
+                    organized_characters[character.element] = []
+                organized_characters[character.element].append(character)
+                
+            index = 0
+            for element, characters in organized_characters.items():
+                result['options'].append(SelectOption(emoji=getElement(element)['emoji'], label=f"{getElement(element)['name']}元素角色", value=index))
+                message = ''
+                for character in characters:
+                    message += f'{getCharacter(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
+                embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message)
+                result['embeds'].append(embed)
+                index += 1
+            return result, True
 
     async def redeemCode(self, user_id: int, code: str):
         client, uid, user = await self.getUserCookie(user_id)

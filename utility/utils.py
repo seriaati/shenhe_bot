@@ -362,16 +362,18 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 
-def getElementEmoji(element: str):
-    element_emojis = {
-        'Anemo': '<:WIND_ADD_HURT:982138235239137290>',
-        'Cryo': '<:ICE_ADD_HURT:982138229140635648>',
-        'Electro': '<:ELEC_ADD_HURT:982138220248711178>',
-        'Geo': '<:ROCK_ADD_HURT:982138232391237632>',
-        'Hydro': '<:WATER_ADD_HURT:982138233813098556>',
-        'Pyro': '<:FIRE_ADD_HURT:982138221569900585>'
+def getElement(element: str):
+    elements = {
+        '風': {'emoji': '<:WIND_ADD_HURT:982138235239137290>','eng': 'Anemo', 'name': '風'},
+        '冰': {'emoji': '<:ICE_ADD_HURT:982138229140635648>','eng': 'Cryo', 'name': '冰'},
+        '雷': {'emoji': '<:ELEC_ADD_HURT:982138220248711178>','eng': 'Electro', 'name': '雷'},
+        '岩': {'emoji': '<:ROCK_ADD_HURT:982138232391237632>','eng': 'Geo', 'name': '岩'},
+        '水': {'emoji': '<:WATER_ADD_HURT:982138233813098556>','eng': 'Hydro', 'name': '水'},
+        '火': {'emoji': '<:FIRE_ADD_HURT:982138221569900585>','eng': 'Pyro', 'name': '火'}
     }
-    return element_emojis.get(element) or element
+    for element_name, element_info in elements.items():
+        if element_name == element or element_info['eng'] == element or element_info['eng'].lower() == element:
+            return element_info
 
 
 def getCharacter(id: int = '', name: str = '', eng: str = ''):
