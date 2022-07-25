@@ -69,7 +69,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             name='未知錯誤', icon_url=i.user.avatar)
             traceback_message = traceback.format_exc()
             view = DebugView(traceback_message)
-            await i.response.send_message(embed=embed, view=view)
+            await i.followup.send(embed=embed, view=view)
 
     class UIDView(DefaultView):
         def __init__(self, options: list[SelectOption], cookie: str, genshin_app: GenshinApp):
