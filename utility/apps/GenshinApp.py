@@ -1,12 +1,14 @@
+from msilib.schema import Icon
 import re
 from datetime import datetime
 
 import aiosqlite
 import genshin
-from discord import Embed, SelectOption
+from discord import Embed, Member, SelectOption
 from discord.ext import commands
-from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter, getElement,
-                           getWeapon, getWeekdayName, log, trimCookie)
+from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter,
+                           getClient, getElement, getWeapon, getWeekdayName,
+                           log, trimCookie)
 
 
 class GenshinApp:
@@ -54,7 +56,7 @@ class GenshinApp:
         except genshin.errors.AlreadyClaimed:
             return errEmbed().set_author(name='你已經領過今天的獎勵了!', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             return defaultEmbed(message=f'獲得 {reward.amount}x {reward.name}').set_author(name='簽到成功', icon_url=user.avatar), True
 
@@ -63,10 +65,9 @@ class GenshinApp:
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             return self.parseResinEmbed(notes).set_author(name='即時便籤', icon_url=user.avatar), True
 
@@ -141,10 +142,9 @@ class GenshinApp:
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             characters = await client.get_calculator_characters()
             result = defaultEmbed()
@@ -173,10 +173,9 @@ class GenshinApp:
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             explorations = genshinUser.explorations
             explore_str = ""
@@ -192,10 +191,9 @@ class GenshinApp:
         try:
             diary = await client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             d = diary.data
             result = defaultEmbed(message=f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
@@ -223,10 +221,9 @@ class GenshinApp:
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             primoLog = ''
             result = []
@@ -249,10 +246,9 @@ class GenshinApp:
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
@@ -350,10 +346,9 @@ class GenshinApp:
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             if resin_notification_toggle == 0:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
@@ -369,16 +364,15 @@ class GenshinApp:
                 result.set_author(name='設置成功', icon_url=user.avatar)
             await self.db.commit()
         return result, True
-    
+
     async def getUserCharacters(self, user_id: int):
         client, uid, user = await self.getUserCookie(user_id)
         try:
             characters = await client.get_genshin_characters(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(
-                '輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             # organize characters according to elements
             result = {'embeds': [], 'options': []}
@@ -387,14 +381,16 @@ class GenshinApp:
                 if character.element not in organized_characters:
                     organized_characters[character.element] = []
                 organized_characters[character.element].append(character)
-                
+
             index = 0
             for element, characters in organized_characters.items():
-                result['options'].append(SelectOption(emoji=getElement(element)['emoji'], label=f"{getElement(element)['name']}元素角色", value=index))
+                result['options'].append(SelectOption(emoji=getElement(
+                    element)['emoji'], label=f"{getElement(element)['name']}元素角色", value=index))
                 message = ''
                 for character in characters:
                     message += f'{getCharacter(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
-                embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message).set_author(name='所有角色', icon_url=user.avatar)
+                embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message).set_author(
+                    name='所有角色', icon_url=user.avatar)
                 result['embeds'].append(embed)
                 index += 1
             return result, True
@@ -407,22 +403,97 @@ class GenshinApp:
             return errEmbed().set_author(name='你已經兌換過這個兌換碼了!', icon_url=user.avatar), False
         except genshin.errors.GenshinException:
             return errEmbed().set_author(name='兌換碼無效', icon_url=user.avatar), False
+        except Exception as e:
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
         else:
             return defaultEmbed(message=f'兌換碼: {code}').set_author(name='兌換成功', icon_url=user.avatar), True
+
+    async def getActivities(self, user_id: int, custom_uid: int):
+        client, uid, user = await self.getUserCookie(user_id)
+        uid = custom_uid or uid
+        try:
+            activities = await client.get_genshin_activities(uid)
+        except genshin.errors.DataNotPublic:
+            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+        except Exception as e:
+            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+        else:
+            summer = activities.summertime_odyssey
+            if summer is None:
+                return errEmbed().set_author(name='找不到你的海島活動資料', icon_url=user.avatar), False
+            result = await self.parseSummerEmbed(summer, user, custom_uid)
+            return result, True
+
+    async def parseSummerEmbed(self, summer: genshin.models.Summer, user: Member, custom_uid: int = None) -> list[Embed]:
+        embeds = []
+        embed = defaultEmbed().set_author(name='金蘋果群島', icon_url=user.avatar)
+        embed.add_field(
+            name='<:SCORE:983948729293897779> 總覽',
+            value=f'浪船錨點: {summer.waverider_waypoints}/13\n'
+            f'傳送點: {summer.waypoints}/10\n'
+            f'寶箱數: {summer.treasure_chests}'
+        )
+        embeds.append(embed)
+        embed = defaultEmbed().set_author(name='金蘋果群島', icon_url=user.avatar)
+        surfs = summer.surfpiercer
+        value = ''
+        for surf in surfs:
+            if surf.finished:
+                minutes, seconds = divmod(surf.time, 60)
+                time_str = f'{minutes}分 {seconds}秒' if minutes != 0 else f'{seconds}秒'
+                value += f'{surf.id}. {time_str}\n'
+            else:
+                value += f'{surf.id}. *尚未完成* \n'
+        embed.add_field(
+            name='逸速穿浪',
+            value=value
+        )
+        embed.set_thumbnail(url='https://i.imgur.com/Qt4Tez0.png')
+        embeds.append(embed)
+        memories = summer.memories
+        for memory in memories:
+            embed = defaultEmbed().set_author(name='金蘋果群島 - 夏日回憶', icon_url=user.avatar)
+            embed.set_thumbnail(url='https://i.imgur.com/yAbpUF8.png')
+            embed.set_image(url=memory.icon)
+            embed.add_field(name=memory.name,
+                            value=f'完成時間: {memory.finish_time}')
+            embeds.append(embed)
+        realms = summer.realm_exploration
+        for realm in realms:
+            embed = defaultEmbed().set_author(name='金蘋果群島 - 謎域探索', icon_url=user.avatar)
+            embed.set_thumbnail(url='https://i.imgur.com/0jyBciz.png')
+            embed.set_image(url=realm.icon)
+            embed.add_field(
+                name=realm.name,
+                value=f'初次探索完成時間: {realm.finish_time if realm.finished else "尚未完成"}\n'
+                f'累計成功挑戰 {realm.success} 次\n'
+                f'累計釋放 {realm.skills_used} 次技能'
+            )
+            embeds.append(embed)
+        if custom_uid is not None:
+            embed: Embed
+            for embed in embeds:
+                embed.set_footer(text=f'自訂 UID 搜尋: {custom_uid}')
+        return embeds
 
     async def getUserCookie(self, user_id: int):
         user = self.bot.get_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
         user_data = await c.fetchone()
-        client = genshin.Client()
-        client.set_cookies(
-            ltuid=user_data[0], ltoken=user_data[1], account_id=user_data[0], cookie_token=user_data[2])
-        client.lang = "zh-tw"
-        client.default_game = genshin.Game.GENSHIN
-        client.uids[genshin.Game.GENSHIN] = user_data[3]
-        return client, user_data[3], user
-    
+        if user_data is None:
+            client = getClient()
+            uid = None
+        else:
+            uid = user_data[3]
+            client = genshin.Client()
+            client.set_cookies(
+                ltuid=user_data[0], ltoken=user_data[1], account_id=user_data[0], cookie_token=user_data[2])
+            client.lang = "zh-tw"
+            client.default_game = genshin.Game.GENSHIN
+            client.uids[genshin.Game.GENSHIN] = uid
+        return client, uid, user
+
     async def userDataExists(self, user_id: int):
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT * FROM genshin_accounts WHERE user_id = ?', (user_id,))

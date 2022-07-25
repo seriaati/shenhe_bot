@@ -1331,5 +1331,15 @@ class GenshinCog(commands.Cog, name='genshin'):
             await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(options)]).start(embeded=True, edit_original_message=True)
 
 
+    @app_commands.command(name='activity歷來活動', description='查看原神歷來活動數據')
+    @app_commands.rename(member='其他人', custom_uid='uid')
+    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    async def activity(self, i: Interaction, member: Member = None, custom_uid: int = None):
+        member = member or i.user 
+        result, success = await self.genshin_app.getActivities(member.id, custom_uid)
+        if not success:
+            return await i.response.send_message(embed=result, ephemeral=True)
+        await GeneralPaginator(i, result).start(embeded=True)
+
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))
