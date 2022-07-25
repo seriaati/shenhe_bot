@@ -40,13 +40,12 @@ class GenshinApp:
                     account_options.append(SelectOption(
                         label=f'{account.uid} | Lvl. {account.level} | {account.nickname}', value=account.uid))
                 return account_options, True
-        else:
-            c = await self.db.cursor()
-            await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
-            result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
-            await self.db.commit()
-            log(True, False, 'setCookie', f'{user_id} setCookie success')
-            return result, True
+        c = await self.db.cursor()
+        await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
+        result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
+        await self.db.commit()
+        log(True, False, 'setCookie', f'{user_id} setCookie success')
+        return result, True
 
     async def claimDailyReward(self, user_id: int):
         client, uid, user = await self.getUserCookie(user_id)

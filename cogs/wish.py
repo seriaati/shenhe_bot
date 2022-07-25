@@ -1,3 +1,4 @@
+from datetime import datetime
 import sqlite3
 from typing import Optional
 
@@ -233,15 +234,14 @@ class WishCog(commands.GroupCog, name='wish'):
         member = member or i.user
         check, msg = await self.wish_history_exists(member.id)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
+            return await i.response.send_message(embed=msg, ephemeral=True)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
         result = await c.fetchall()
         user_wishes = []
         for index, tuple in enumerate(result):
             wish_name = tuple[0]
-            wish_time = tuple[2]
+            wish_time = (datetime.strptime(tuple[2], "%Y/%m/%d %H:%M:%S")).strftime("%Y/%m/%d")
             wish_rarity = tuple[1]
             wish_type = tuple[3]
             if wish_rarity == 5 or wish_rarity == 4:
