@@ -57,7 +57,7 @@ class ShenheBot(commands.Bot):
         self.enka_client = EnkaNetworkAPI(lang='cht')
         # create tables for db
         c = await self.db.cursor()
-        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT [] NOT NULL)')
+        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT "[]")')
         await c.execute('CREATE TABLE IF NOT EXISTS leaderboard (user_id INTEGER PRIMARY KEY, achievements INTEGER DEFAULT 0, guild_id INTEGER)')
         await c.execute('CREATE TABLE IF NOT EXISTS substat_leaderboard (user_id INTEGER, avatar_id INTEGER, artifact_name TEXT, equip_type TEXT, sub_stat TEXT, sub_stat_value INTEGER, guild_id INTEGER, UNIQUE("user_id", "sub_stat"))')
         await c.execute('CREATE TABLE IF NOT EXISTS todo(user_id INTEGER, item TEXT, count INTEGER DEFAULT 0, UNIQUE("user_id", "item"))')

@@ -327,34 +327,28 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.set_author(name='選擇角色', icon_url=interaction.user.avatar)
             c = await self.view.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            user_chara_list: str = (await c.fetchone())[0]
+            chara_list: list = ast.literal_eval((await c.fetchone())[0])
             chara_str = ''
-            if user_chara_list == '':
-                talent_notif_chara_list = []
-                chara_str = '目前尚未設置任何角色'
-            else:
-                talent_notif_chara_list: list = ast.literal_eval(
-                    user_chara_list)
-                for chara in talent_notif_chara_list:
-                    chara_str += f'• {chara}\n'
+            for chara in chara_list:
+                chara_str += f'• {chara}\n'
             if chara_str == '':
                 chara_str = '目前尚未設置任何角色'
             embed.add_field(name='目前已設置角色', value=chara_str)
-            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.view.db, talent_notif_chara_list))
+            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.view.db, chara_list))
 
     class TalentCharaChooserView(DefaultView):
-        def __init__(self, element: str, author: Member, db: aiosqlite.Connection, talent_notif_chara_list: list):
+        def __init__(self, element: str, author: Member, db: aiosqlite.Connection, chara_list: list):
             super().__init__(timeout=None)
             self.add_item(GenshinCog.TalentCharaChooser(
-                element, db, talent_notif_chara_list, author))
-            self.talent_notif_chara_list = talent_notif_chara_list
+                element, db, chara_list, author))
+            self.chara_list = chara_list
             self.author = author
             self.db = db
 
         @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=2)
         async def go_back(self, i: Interaction, button: Button):
             message = ''
-            for chara in self.talent_notif_chara_list:
+            for chara in self.chara_list:
                 message += f'• {chara}\n'
             if message == '':
                 message = '目前尚未設置任何角色'
@@ -369,7 +363,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             return self.author.id == interaction.user.id
 
     class TalentCharaChooser(Select):
-        def __init__(self, element: str, db: aiosqlite.Connection, talent_notif_chara_list: list, author: Member):
+        def __init__(self, element: str, db: aiosqlite.Connection, chara_list: list, author: Member):
             options = []
             self.db = db
             self.author = author
@@ -379,7 +373,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     for character_name, element_name in characters.items():
                         if element == element_name:
                             desc = f'{week_day} - 「{book_name}」'
-                            if character_name in talent_notif_chara_list:
+                            if character_name in chara_list:
                                 desc = '已設置過此角色, 再次選擇將會移除'
                             options.append(SelectOption(
                                 label=character_name, description=desc, emoji=getCharacter(name=character_name)['emoji']))
@@ -388,16 +382,12 @@ class GenshinCog(commands.Cog, name='genshin'):
         async def callback(self, interaction: Interaction) -> Any:
             c = await self.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            chara_list = (await c.fetchone())[0]
-            if chara_list == '':
-                chara_list = self.values
-            else:
-                chara_list: list = ast.literal_eval(chara_list)
-                for chara in self.values:
-                    if chara in chara_list:
-                        chara_list.remove(chara)
-                    else:
-                        chara_list.append(chara)
+            chara_list: list = ast.literal_eval((await c.fetchone())[0])
+            for chara in self.values:
+                if chara in chara_list:
+                    chara_list.remove(chara)
+                else:
+                    chara_list.append(chara)
             await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 1, talent_notif_chara_list = ? WHERE user_id = ?', (str(chara_list), interaction.user.id))
             await self.db.commit()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
@@ -412,18 +402,13 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.add_field(name='目前已設置角色', value=chara_str)
             c = await self.db.cursor()
             await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            user_chara_list: list = (await c.fetchone())[0]
-            if user_chara_list == '':
-                talent_notif_chara_list = []
-            else:
-                talent_notif_chara_list: list = ast.literal_eval(
-                    user_chara_list)
-            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, talent_notif_chara_list))
+            chara_list: list = ast.literal_eval((await c.fetchone())[0])
+            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, chara_list))
 
     @app_commands.command(name='remind提醒', description='設置提醒功能 (樹脂提醒需要註冊, 天賦不需要)')
     @app_commands.rename(function='功能', toggle='開關')
     @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
-    @app_commands.choices(function=[Choice(name='樹脂提醒 (需註冊)', value=0), Choice(name='天賦素材提醒', value=1), Choice(name='隱私設定', value=2)],
+    @app_commands.choices(function=[Choice(name='樹脂提醒 (需註冊)', value=0), Choice(name='天賦素材提醒', value=1), Choice(name='啟用提醒功能前請先確認隱私設定', value=2)],
                           toggle=[Choice(name='開 (調整設定)', value=1), Choice(name='關', value=0)])
     async def remind(self, i: Interaction, function: int, toggle: int = 1):
         if function == 0:
@@ -449,15 +434,10 @@ class GenshinCog(commands.Cog, name='genshin'):
                 await i.response.send_message(embed=embed)
             else:
                 c: aiosqlite.Cursor = await self.bot.db.cursor()
-                message = ''
                 await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
-                talent_notif_chara_list: list = (await c.fetchone())[0]
-                if talent_notif_chara_list == '':
-                    talent_notif_chara_list = []
-                else:
-                    talent_notif_chara_list: list = ast.literal_eval(
-                        talent_notif_chara_list)
-                for chara in talent_notif_chara_list:
+                chara_list: list = ast.literal_eval((await c.fetchone())[0])
+                message = ''
+                for chara in chara_list:
                     message += f'• {chara}\n'
                 if message == '':
                     message = '目前尚未設置任何角色'
