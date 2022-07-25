@@ -5,7 +5,7 @@ import os
 import sys
 import traceback
 from pathlib import Path
-
+import getpass
 import aiohttp
 import aiosqlite
 from discord import Game, Intents, Interaction, Message, Status, app_commands
@@ -47,10 +47,11 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
+        user = getpass.getuser()
         # bot variables
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('shenhe.db')
-        self.main_db = await aiosqlite.connect("C:/Users/alice/shenhe_bot/main.db")
+        self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_bot/main.db")
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI(lang='cht')
@@ -97,6 +98,7 @@ class ShenheBot(commands.Bot):
 
     async def close(self) -> None:
         await self.db.close()
+        await self.main_db.close()
         await self.browser.close()
         await self.session.close()
         return await super().close()
