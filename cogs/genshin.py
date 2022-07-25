@@ -787,7 +787,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                 self.add_item(GenshinCog.HitModeButton(index))
             self.add_item(GenshinCog.ReactionModeSelect(reactionMode_options))
             self.add_item(GenshinCog.InfusionAuraSelect())
-            self.add_item(GenshinCog.TeamSelect(team_options))
+            if len(team_options) >= 1:
+                self.add_item(GenshinCog.TeamSelect(team_options))
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.enka_view.author.id != interaction.user.id:
@@ -833,7 +834,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     class TeamSelect(Select):
         def __init__(self, options):
-            super().__init__(placeholder='選擇隊友', options=options, max_values=3)
+            super().__init__(placeholder='選擇隊友', options=options, max_values=3, min_values=1)
 
         async def callback(self, i: Interaction) -> Any:
             self.view.team = self.values
