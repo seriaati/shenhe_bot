@@ -1,5 +1,5 @@
 import aiosqlite
-from discord import Interaction, Member, VoiceChannel, VoiceState, app_commands, InviteTarget
+from discord import Interaction, Member, NotFound, VoiceChannel, VoiceState, app_commands, InviteTarget
 from discord.ext import commands
 from utility.utils import defaultEmbed, errEmbed
 import wavelink
@@ -38,7 +38,10 @@ class VoiceCog(commands.GroupCog, name='vc'):
             if owner is not None and len(old_channel.members) != 0:
                 await c.execute('UPDATE voice SET owner_id = ? WHERE channel_id = ?', (old_channel.members[0].id, old_channel.id))
         if old_channel is not None and old_channel != vc and len(old_channel.members) == 0:
-            await old_channel.delete()
+            try:
+                await old_channel.delete()
+            except NotFound:
+                pass
             await c.execute('DELETE FROM voice WHERE channel_id = ?', (old_channel.id,))
         await self.bot.db.commit()
 
