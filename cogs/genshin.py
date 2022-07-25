@@ -814,7 +814,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     class TeamSelect(Select):
         def __init__(self, options):
-            super().__init__(placeholder='選擇隊友', options=options, max_values=3, min_values=1)
+            super().__init__(placeholder='選擇隊友', options=options, max_values=3 if len(options)>=3 else len(options))
 
         async def callback(self, i: Interaction) -> Any:
             self.view.team = self.values
