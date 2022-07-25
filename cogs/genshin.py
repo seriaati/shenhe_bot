@@ -836,30 +836,36 @@ class GenshinCog(commands.Cog, name='genshin'):
             self.view.team = self.values
             await GenshinCog.returnDamage(self.view, i)
 
-    @app_commands.command(name='profile角色展示', description='透過 enka API 查看各式原神數據')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他人的資料')
-    async def profile(self, i: Interaction, member: Member = None):
+    @app_commands.command(name='profile角色展示', description='查看原神角色聖遺物、屬性、進行傷害計算')
+    @app_commands.rename(member='其他人', custom_uid = 'uid')
+    @app_commands.describe(member='查看其他人的資料', custom_uid = '欲查詢玩家的 UID，如果已註冊過則不用填')
+    async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.defer()
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
-        if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
-        uid = await c.fetchone()
-        if uid is None:
-            uid_c = i.guild.get_channel(978871680019628032)
-            return await i.followup.send(embed=errEmbed('找不到 UID!', f'請先至 {uid_c.mention} 設置 UID!'), ephemeral=True)
+        if custom_uid is None:
+            if i.guild.id == 916838066117824553:
+                await c.execute('SELECT uid FROM uid_list WHERE user_id = ?', (member.id,))
+                uid = await c.fetchone()
+                if uid is None:
+                    return await i.followup.send(embed=errEmbed('找不到 UID!', f'請先至 <#978871680019628032> 設置 UID!'), ephemeral=True)
+            else:
+                exists = await self.genshin_app.userDataExists(member.id)
+                if not exists:
+                    return await i.followup.send(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+                await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
+                uid = await c.fetchone()
+        uid = custom_uid or uid[0]
         enka_client: EnkaNetworkAPI = self.bot.enka_client
         enka_client.lang = 'cht'
-        data: EnkaNetworkResponse = await enka_client.fetch_user(uid[0])
-        enka_client.lang = 'en'
-        eng_data = await enka_client.fetch_user(uid[0])
+        data: EnkaNetworkResponse = await enka_client.fetch_user(uid)
         if data.characters is None:
-            embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(申鶴有機率判斷錯誤, 可以考慮重新輸入指令)\n(開啟後, 資料最多需要10分鐘更新)').set_author(
+            embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(開啟後, 資料最多需要10分鐘更新)').set_author(
                 name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
             return await i.followup.send(embed=embed, ephemeral=True)
+        enka_client.lang = 'en'
+        eng_data = await enka_client.fetch_user(uid)
+        enka_client.lang = 'cht'
         embeds = {}
         sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
         overview = defaultEmbed(
