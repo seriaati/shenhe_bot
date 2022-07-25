@@ -1,6 +1,7 @@
 import ast
 import re
 from datetime import datetime
+import traceback
 from typing import Any, List, Optional, Tuple
 
 import calendar
@@ -15,7 +16,7 @@ from data.game.GOModes import hitModes
 from data.game.talent_books import talent_books
 from data.game.daily_dungeons import daily_dungeons
 from data.game.avatar_upgrades import avatar_upgrades
-from debug import DefaultView
+from debug import DebugView, DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
 from discord.app_commands import Choice
@@ -63,10 +64,12 @@ class GenshinCog(commands.Cog, name='genshin'):
             else:  # 一個帳號而已
                 await i.followup.send(embed=result, ephemeral=True)
 
-        async def on_error(self, error: Exception, i: Interaction):
-            embed = errEmbed(message=f'```{error}```').set_author(
-                name='未知錯誤', icon_url=i.user.avatar)
-            await i.response.send_message(embed=embed)
+        async def on_error(self, i: Interaction, error: Exception) -> None:
+            embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
+            name='未知錯誤', icon_url=i.user.avatar)
+            traceback_message = traceback.format_exc()
+            view = DebugView(traceback_message)
+            await i.response.send_message(embed=embed, view=view)
 
     class UIDView(DefaultView):
         def __init__(self, options: list[SelectOption], cookie: str, genshin_app: GenshinApp):
@@ -842,17 +845,18 @@ class GenshinCog(commands.Cog, name='genshin'):
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.defer()
         member = member or i.user
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
         if custom_uid is None:
             if i.guild.id == 916838066117824553:
-                await c.execute('SELECT uid FROM uid_list WHERE user_id = ?', (member.id,))
+                c: aiosqlite.Cursor = await self.bot.main_db.cursor()
+                await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
                 if uid is None:
-                    return await i.followup.send(embed=errEmbed('找不到 UID!', f'請先至 <#978871680019628032> 設置 UID!'), ephemeral=True)
+                    return await i.followup.send(embed=errEmbed(message='請先至 <#978871680019628032> 設置 UID!').set_author(name='找不到 UID!', icon_url=member.avatar), ephemeral=True)
             else:
+                c: aiosqlite.Cursor = await self.bot.db.cursor()
                 exists = await self.genshin_app.userDataExists(member.id)
                 if not exists:
-                    return await i.followup.send(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+                    return await i.followup.send(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號\n或是在選項直接輸入你的 UID 也可以').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
         uid = custom_uid or uid[0]

@@ -15,7 +15,7 @@ class GenshinApp:
         self.bot = bot
 
     async def setCookie(self, user_id: int, cookie: str, uid: int = None):
-        log(False, False, 'setCookie', f'{user_id} (cookie = {cookie})')
+        log(False, False, 'setCookie', f'{user_id} ({cookie})')
         user = self.bot.get_user(user_id)
         user_id = int(user_id)
         cookie = trimCookie(cookie)
@@ -45,6 +45,7 @@ class GenshinApp:
             await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
             result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
             await self.db.commit()
+            log(True, False, 'setCookie', f'{user_id} setCookie success')
             return result, True
 
     async def claimDailyReward(self, user_id: int):

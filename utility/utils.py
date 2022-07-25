@@ -259,8 +259,6 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
                 }
             )
     good_json = json.dumps(good_dict)
-    log(True, False, 'EnkaToGOOD',
-        f'character_id = {character_id}, hitMode = {hitMode}, reactionMode = {reactionMode}, infusionAura = {infusionAura}, team = {team} ||||| {good_json}')
     # print(good_json)
     return good_json, description, effect
 
