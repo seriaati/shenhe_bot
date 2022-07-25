@@ -1250,11 +1250,11 @@ class GenshinCog(commands.Cog, name='genshin'):
             )
             embed.set_image(
                 url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
-            embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
+            embed.set_thumbnail(url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
             options.append(SelectOption(label='基本資料', value=0))
             embed = defaultEmbed().set_author(
-                name='等級突破素材', icon_url=(getCharacter(view.avatar_id))['icon'])
+                name='等級突破素材', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             for promoteLevel in avatar_data['upgrade']['promote'][1:]:
                 value = ''
                 for item_id, item_count in promoteLevel['costItems'].items():
@@ -1265,7 +1265,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     value=value,
                     inline=True
                 )
-            embed.set_thumbnail(url=(getCharacter(view.avatar_id))['icon'])
+            embed.set_thumbnail(url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
             options.append(SelectOption(label='突破素材', value=1))
             for talent_id, talent_info in avatar_data["talent"].items():
@@ -1274,7 +1274,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     max = 4
                 if int(talent_id) <= max:
                     embed = defaultEmbed().set_author(
-                        name='天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                        name='天賦', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     embed.add_field(
                         name=talent_info['name'],
                         value=GenshinCog.parse_event_description(
@@ -1282,7 +1282,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                         inline=False
                     )
                     material_embed = defaultEmbed().set_author(
-                        name='升級天賦所需素材', icon_url=(getCharacter(view.avatar_id))['icon'])
+                        name='升級天賦所需素材', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     for level, promote_info in talent_info['promote'].items():
                         if level == '1' or int(level) > 10:
                             continue
@@ -1300,7 +1300,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     embeds.append(embed)
                 else:
                     embed = defaultEmbed().set_author(
-                        name='固有天賦', icon_url=(getCharacter(view.avatar_id))['icon'])
+                        name='固有天賦', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     embed.add_field(
                         name=talent_info['name'],
                         value=GenshinCog.parse_event_description(
@@ -1316,7 +1316,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             const_count = 1
             for const_id, const_info in avatar_data['constellation'].items():
                 embed = defaultEmbed().set_author(
-                    name=f'命座 {const_count}', icon_url=(getCharacter(view.avatar_id))['icon'])
+                    name=f'命座 {const_count}', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                 embed.add_field(
                     name=const_info['name'],
                     value=GenshinCog.parse_event_description(
