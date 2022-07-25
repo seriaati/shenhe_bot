@@ -8,7 +8,8 @@ from discord.ui import Button, button
 from debug import DefaultView
 from utility.apps.FlowApp import FlowApp
 from utility.paginators.TutorialPaginator import TutorialPaginator
-from utility.utils import defaultEmbed, log
+from utility.utils import defaultEmbed, errEmbed, log
+from enkanetwork import UIDNotFounded, VaildateUIDError
 
 
 class WelcomeCog(commands.Cog):
@@ -26,14 +27,34 @@ class WelcomeCog(commands.Cog):
             if len(num) == 0:
                 return
             uid = int(num[0])
-            result, success = await self.genshin_app.setUID(message.author.id, uid)
-            if not success:
-                await message.channel.send(content=message.author.mention, embed=result, delete_after=5)
+            if len(str(uid)) != 9:
+                return await message.channel.send(content=message.author.mention, embed=errEmbed().set_author(name='UID 長度需為9位數', icon_url=message.author.avatar))
+            if uid // 100000000 != 9:
+                return await message.channel.send(content=message.author.mention, embed=errEmbed().set_author(name='你不是台港澳服玩家', icon_url=message.author.avatar))
+            loading_message = await message.channel.send(content=message.author.mention, embed=defaultEmbed('<a:LOADER:982128111904776242> 正在驗證 UID...', uid))
+            try:
+                await self.bot.enka_client.fetch_user(uid)
+            except UIDNotFounded or VaildateUIDError:
+                await loading_message.delete()
+                await message.channel.send(content=message.author.mention, embed=errEmbed(message='如果你認為這是一個錯誤, 請私訊 <@410036441129943050>').set_author(name='無效的 UID', icon_url=message.author.avatar))          
+            except:
+                await loading_message.delete()
+                await message.channel.send(content=message.author.mention, embed=errEmbed(message=f'請私訊 <@410036441129943050>').set_author(name='未知錯誤', icon_url=message.author.avatar))
             else:
-                await message.channel.send(content=message.author.mention, embed=result)
+                await loading_message.delete()
+                c: aiosqlite.Cursor = await self.bot.db.cursor()
+                await c.execute('SELECT user_id FROM genshin_accounts WHERE uid = ?', (uid,))
+                user_id = await c.fetchone()
+                if user_id is not None:
+                    return await message.channel.send(content=message.author.mention, embed=errEmbed(message=f'{self.bot.get_user(user_id[0]).mention} 已經註冊這個 UID 了').set_author(name='UID 已被註冊', icon_url=message.author.avatar))
+                await c.execute('INSERT INTO genshin_accounts (user_id, uid) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET uid = ? WHERE user_id =?', (message.author.id, uid, uid, message.author.id))
+                await self.bot.db.commit()
+                await message.channel.send(content=message.author.mention, embed=defaultEmbed(message=uid).set_author(name='UID 設置成功', icon_url=message.author.avatar))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
+        if member.guild.id != 916838066117824553:
+            return
         log(True, False, 'On Member Remove', member.id)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT flow FROM flow_accounts WHERE user_id = ?', (member.id,))
@@ -44,6 +65,8 @@ class WelcomeCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: Member, after: Member):
+        if before.guild.id != 916838066117824553:
+            return
         if self.bot.debug_toggle:
             return
         r = before.guild.get_role(978532779098796042)
