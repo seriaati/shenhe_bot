@@ -106,6 +106,11 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
         talent_to_calculate.remove('Ele. Burst')
     elif chara_name in no_ele_skill:
         talent_to_calculate.remove('Ele. Skill')
+    if int(character_id) == 10000060: # calculating damage for Yelan
+        for character in data.characters: # search for Yelan in characters
+            if character.id == 10000060:
+                if character.constellations_unlocked == 6: # yelan is C6
+                    talent_to_calculate.remove('Normal Atk.') # don't calculate normal attack damage
     # browser = await launch({"headless": False, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
@@ -139,11 +144,11 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
         talent_name = await page.querySelector(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-content.css-11qjisw:nth-child(2) > span.MuiTypography-root.MuiTypography-subtitle1.MuiCardHeader-title.css-slco8z > span')
         talent_name = await (await talent_name.getProperty("textContent")).jsonValue()
         # print(talent_name)
-        if talent_to_calculate.index(t) == 0:
+        if t == 'Normal Atk.':
             talent_name = '普攻'
-        elif talent_to_calculate.index(t) == 1:
+        elif t == 'Charged Atk.':
             talent_name = '重擊'
-        elif talent_to_calculate.index(t) == 2:
+        elif t == 'Plunging Atk.':
             talent_name = '下落攻擊'
         result[talent_name] = {}
         talent_rows = await page.querySelectorAll(f'div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child({card_index}) > div.MuiCardContent-root.css-14gm9lj:nth-child(3) > ul.MuiList-root.MuiList-padding.css-1jrq055 > li.MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.MuiBox-root.css-1n74xce')

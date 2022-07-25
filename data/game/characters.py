@@ -1,12 +1,4 @@
 characters_map = {
-    "0": {
-        "name": "夜蘭",
-        "element": "Hydro",
-        "rarity": 5,
-        "icon": "https://upload-os-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_Yelan.png",
-        "emoji": "<:10000060:990114777206517800>",
-        "eng": "Yelan"
-    },
     "10000005-anemo": {
         "name": "風旅行者",
         "element": "Anemo",
