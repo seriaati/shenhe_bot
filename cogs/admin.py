@@ -16,6 +16,8 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_presence_update(self, before: Member, after: Member):
+        if before.guild.id != 916838066117824553:
+            return
         # 可以你麻煩你程式到yuyu 10:45~7:00時上線就留記錄嗎?
         target_id = 410036441129943050 if self.bot.debug_toggle else 565171333684658177
         if before.id != target_id or after.id != target_id:
@@ -31,6 +33,8 @@ class AdminCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: Message):
         if message.author.id == self.bot.user.id:
+            return
+        if message.guild.id != 916838066117824553:
             return
         sese_channel = self.bot.get_channel(
             984792329426714677) if self.debug else self.bot.get_channel(965842415913152522)
@@ -52,6 +56,8 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent):
+        if payload.guild_id != 916838066117824553:
+            return
         c: TextChannel = self.bot.get_channel(
             988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         if payload.cached_message is not None:
@@ -80,6 +86,8 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
+        if member.guild.id != 916838066117824553:
+            return
         c: TextChannel = self.bot.get_channel(
             988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         embed = defaultEmbed(
@@ -93,6 +101,8 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
+        if member.guild.id != 916838066117824553:
+            return
         c: TextChannel = self.bot.get_channel(
             988698669442269184) if not self.bot.debug_toggle else self.bot.get_channel(909595117952856084)
         embed = defaultEmbed(
