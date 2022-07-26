@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 import traceback
 from typing import Any, List, Optional, Tuple
-
+import json
 import calendar
 import aiosqlite
 import discord
@@ -14,8 +14,7 @@ from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from data.game.GOModes import hitModes
 from data.game.talent_books import talent_books
-from data.game.daily_dungeons import daily_dungeons
-from data.game.avatar_upgrades import avatar_upgrades
+from data.textMap.dc_locale_to_enka import DLE
 from debug import DebugView, DefaultView
 from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
                      SelectOption, app_commands)
@@ -29,7 +28,7 @@ from utility.apps.GenshinApp import GenshinApp
 from utility.GeneralPaginator import GeneralPaginator
 from utility.utils import (TextMap, calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, getArtifact,
-                           getCharacter, getConsumable,
+                           getCharacter, getCityName, getConsumable,
                            getElement, getFightProp, getStatEmoji,
                            getWeapon, getWeekdayName)
 
@@ -135,9 +134,6 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def stats(self, i: Interaction, member: Member = None, custom_uid: int = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
-        if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getUserStats(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -146,9 +142,6 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def area(self, i: Interaction, member: Member = None, custom_uid: int = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
-        if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getArea(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -456,13 +449,19 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     @app_commands.command(name='farm刷素材', description='查看原神今日可刷素材')
     async def farm(self, i: Interaction):
-        cities = ['', '蒙德', '璃月', '稻妻']
+        await i.response.defer()
         embeds = []
         week_day = calendar.day_name[datetime.today().weekday()].lower()
         user_locale = await self.textMap.getUserLocale(i.user.id)
+        user_locale = user_locale or i.locale
+        enka_locale = DLE.get(str(user_locale))
+        async with self.bot.session.get(f'https://api.ambr.top/v2/{enka_locale}/dailyDungeon?vh=28R6') as r:
+            daily_dungeons = await r.json()
+        async with self.bot.session.get('https://api.ambr.top/v2/static/upgrade?vh=28R6') as r:
+            avatar_upgrades = await r.json()
         for domain, domain_info in daily_dungeons['data'][week_day].items():
             domain_name = domain_info['name']
-            domain_city = cities[domain_info['city']]
+            domain_city = getCityName([domain_info['city']], self.textMap, i.locale, user_locale)
             reward_emoji = getConsumable(domain_info['reward'][-1])['emoji']
             embed = defaultEmbed(
                 f'今天 ({getWeekdayName((datetime.today().weekday()), self.textMap, i.locale, user_locale)}) 可以刷的素材')
@@ -480,7 +479,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.add_field(
                 name=f'{reward_emoji} {domain_name} ({domain_city})', value=farmables)
             embeds.append(embed)
-        await GeneralPaginator(i, embeds).start(embeded=True)
+        await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
     class ElementChooseView(DefaultView):  # 選擇元素按鈕的view
         def __init__(self, db: aiosqlite.Connection, emojis: List, author: Member, bot: commands.Bot):
@@ -831,6 +830,8 @@ class GenshinCog(commands.Cog, name='genshin'):
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.defer()
         member = member or i.user
+        user_locale = await self.textMap.getUserLocale(i.user.id)
+        user_locale = user_locale or i.locale
         if custom_uid is None:
             if i.guild.id == 916838066117824553:
                 c: aiosqlite.Cursor = await self.bot.main_db.cursor()
@@ -846,16 +847,15 @@ class GenshinCog(commands.Cog, name='genshin'):
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
         uid = custom_uid or uid[0]
-        enka_client: EnkaNetworkAPI = self.bot.enka_client
-        enka_client.lang = 'cht'
-        data: EnkaNetworkResponse = await enka_client.fetch_user(uid)
+        enka_locale = DLE.get(str(user_locale))
+        await self.bot.enka_client.set_langauge(enka_locale)
+        data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
         if data.characters is None:
             embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(開啟後, 資料最多需要10分鐘更新)').set_author(
                 name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
             return await i.followup.send(embed=embed, ephemeral=True)
-        enka_client.lang = 'en'
-        eng_data = await enka_client.fetch_user(uid)
-        enka_client.lang = 'cht'
+        await self.bot.enka_client.set_langauge('en')
+        eng_data = await self.bot.enka_client.fetch_user(uid)
         embeds = {}
         sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
         overview = defaultEmbed(
@@ -1061,11 +1061,10 @@ class GenshinCog(commands.Cog, name='genshin'):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
         uid = await c.fetchone()
-        enka_client: EnkaNetworkAPI = self.bot.enka_client
-        enka_client.lang = 'cht'
         if uid is not None:
             try:
-                data: EnkaNetworkResponse = await enka_client.fetch_user(uid[0])
+                await self.bot.enka_client.set_language('cht')
+                data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
             except:
                 pass
             else:
