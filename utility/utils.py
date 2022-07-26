@@ -385,7 +385,15 @@ def trimCookie(cookie: str) -> str:
     return new_cookie
 
 
-def getWeekdayName(n: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
+def getCityName(city_id: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
+    cities = {
+        1: textMap.get(129, locale, user_locale),
+        2: textMap.get(130, locale, user_locale),
+        3: textMap.get(131, locale, user_locale)
+    }
+    return cities.get(city_id)
+
+def getWeekdayName(day_num: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
     weekday_dict = {
         0: textMap.get(25, locale, user_locale),
         1: textMap.get(26, locale, user_locale),
@@ -395,7 +403,7 @@ def getWeekdayName(n: int, textMap: TextMap, locale: discord.Locale, user_locale
         5: textMap.get(30, locale, user_locale),
         6: textMap.get(31, locale, user_locale)
     }
-    return weekday_dict.get(n)
+    return weekday_dict.get(day_num)
 
 
 def divide_chunks(l, n):
