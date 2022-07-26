@@ -1,9 +1,11 @@
+from typing import Any
 import aiosqlite
 import wavelink
 from discord.ext import commands
-from discord import ButtonStyle, Interaction, app_commands
-from discord.ui import View, button, Button
+from discord import ButtonStyle, Interaction, Member, SelectOption, app_commands
+from discord.ui import View, button, Button, Select
 from dotenv import load_dotenv
+from debug import DefaultView
 from utility.utils import defaultEmbed, divide_chunks, errEmbed
 from wavelink.ext import spotify
 import datetime
@@ -13,12 +15,13 @@ import os
 from utility.paginators.GeneralPaginator import GeneralPaginator
 load_dotenv()
 
+
 class MusicCog(commands.GroupCog, name='music'):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        if not self.bot.debug_toggle:
-            bot.loop.create_task(self.connect_nodes())
+        # if not self.bot.debug_toggle:
+        bot.loop.create_task(self.connect_nodes())
         super().__init__()
 
     async def connect_nodes(self):
@@ -38,6 +41,28 @@ class MusicCog(commands.GroupCog, name='music'):
             await self.bot.wait_for("wavelink_track_start", timeout=180)
         except asyncio.TimeoutError:
             await player.disconnect()
+            
+    class ChooseSongView(DefaultView):
+        def __init__(self, options: list[SelectOption], author: Member):
+            super().__init__(timeout=None)
+            self.author = author
+            self.uri = None
+            self.add_item(MusicCog.ChooseSongSelect(options))
+            
+        async def interaction_check(self, i: Interaction) -> bool:
+            if i.user.id != self.author.id:
+                await i.response.send_message(embed=errEmbed(message='指令: `/music play`').set_author(name='你不是這個指令的發起者', icon_url=i.user.avatar), ephemeral=True)
+            return i.user.id == self.author.id
+    
+    class ChooseSongSelect(Select):
+        def __init__(self, options: list[SelectOption]):
+            super().__init__(placeholder='選擇想播放的歌曲', options=options)
+            
+        async def callback(self, i: Interaction) -> Any:
+            await i.response.defer()
+            await i.message.delete()
+            self.view.uri = self.values[0]
+            self.view.stop()
 
     @app_commands.command(name="play播放", description="播放音樂")
     @app_commands.rename(search='關鍵詞或連結')
@@ -53,7 +78,7 @@ class MusicCog(commands.GroupCog, name='music'):
                 return await i.response.send_message(embed=errEmbed(message='你跟目前申鶴所在的語音台不同,\n且申鶴目前正在為那邊的使用者播歌\n請等待至對方播放完畢').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
             await vc.disconnect()
             vc: wavelink.Player = await i.user.voice.channel.connect(cls=wavelink.Player)
-        await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 搜尋中'))
+        await i.response.defer()
         regex = re.compile(
             r'^(?:http|ftp)s?://'
             r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
@@ -61,79 +86,66 @@ class MusicCog(commands.GroupCog, name='music'):
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
             r'(?::\d+)?'
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        is_url = (re.match(regex, search) is not None)
-        is_playlist = False
-        is_spotify = False
-        if is_url:
-            if 'list' in search and 'spotify' not in search:
-                emoji = '<:yt:985540703323058196>'
-                is_playlist = True
-                try:
-                    playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
-                except wavelink.errors.LoadTrackError:
-                    return await i.edit_original_message(embed=errEmbed().set_author(name='無效的播放清單', icon_url=i.user.avatar))
-                track: wavelink.YouTubeTrack = playlist.tracks[
-                    0] if playlist.selected_track is None else playlist.tracks[playlist.selected_track]
-                playlist.tracks.remove(track)
-                for t in playlist.tracks:
-                    vc.queue.put(t)
-            elif 'playlist' in search and 'spotify' in search:
-                emoji = '<:spotify:985539937053061190>'
-                is_playlist = True
-                is_spotify = True
-                first = True
-                try:
-                    await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 正在加載播放清單', '時長取決於播放清單長度'))
-                    async for partial in spotify.SpotifyTrack.iterator(query=search, partial_tracks=False):
-                        if first:
-                            track = partial
-                            first = False
+        if (re.match(regex, search) is not None):  # search is a url
+            if decoded := spotify.decode_url(search):
+                if decoded["type"] is spotify.SpotifySearchType.unusable:
+                    return await i.followup.send(embed=errEmbed().set_author(name='無效的 spotify 連結', icon_url=i.user.avatar), ephemeral=True)
+                elif decoded["type"] in (
+                    spotify.SpotifySearchType.playlist,
+                    spotify.SpotifySearchType.album,
+                ):
+                    async for partial in spotify.SpotifyTrack.iterator(query=decoded["id"], partial_tracks=True, type=decoded["type"]):
                         vc.queue.put(partial)
-                except wavelink.ext.spotify.SpotifyRequestError:
-                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應 spotify 播放清單', icon_url=i.user.avatar), ephemeral=True)
+                    await vc.play(vc.queue[0])
+                    return await i.followup.send(embed=defaultEmbed().set_author(name='已將播放清單新增至待播清單', icon_url=i.user.avatar))
+                else:
+                    emoji = '<:spotify:985539937053061190>'
+                    track = await spotify.SpotifyTrack.search(
+                        query=decoded["id"], return_first=True
+                    )
             elif 'youtu.be' in search or 'youtube' in search:
                 emoji = '<:yt:985540703323058196>'
-                track: wavelink.YouTubeTrack = await wavelink.NodePool.get_node().get_tracks(wavelink.YouTubeTrack, search)
-            elif 'spotify' in search:
-                is_spotify = True
-                emoji = '<:spotify:985539937053061190>'
-                try:
-                    track: spotify.SpotifyTrack = await spotify.SpotifyTrack.search(query=search, return_first=True)
-                except wavelink.ext.spotify.SpotifyRequestError:
-                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應 spotify 歌曲', icon_url=i.user.avatar), ephemeral=True)
-            if not is_playlist and not is_spotify:
-                try:
-                    track = track[0]
-                except IndexError:
-                    return await i.edit_original_message(embed=errEmbed().set_author(name='該連結找不到對應歌曲', icon_url=i.user.avatar), ephemeral=True)
+                if 'list' in search:
+                    try:
+                        playlist: wavelink.YouTubePlaylist = await wavelink.NodePool.get_node().get_playlist(wavelink.YouTubePlaylist, search)
+                    except Exception as e:
+                        return await i.followup.send(embed=errEmbed(message=f"```py\n{e}\n```").set_author(name='無效的播放清單', icon_url=i.user.avatar))
+                    for track in playlist.tracks:
+                        vc.queue.put(track)
+                    await vc.play(vc.queue[0])
+                    embed = defaultEmbed(f'{emoji} {playlist.name}')
+                    embed.set_author(name='已將播放清單中的歌曲新增至待播清單', icon_url=i.user.avatar)
+                    embed.set_image(url=vc.queue[0].thumb)
+                    return await i.followup.send(embed=embed)
+                else:
+                    try:
+                        track = await wavelink.YouTubeTrack.search(query=search, return_first=True)
+                    except Exception as e:
+                        return await i.followup.send(embed=errEmbed(message=f"```py\n{e}\n```").set_author(name='無效的歌曲', icon_url=i.user.avatar), ephemeral=True)
         else:
             emoji = '<:yt:985540703323058196>'
-            track: wavelink.YouTubeTrack = await wavelink.YouTubeTrack.search(search, return_first=True)
-        verb = ''
-        if vc.is_playing():
-            if is_playlist:
-                verb = '已新增'
-            else:
-                verb = '(已新增至待播放清單)'
-                vc.queue.put(track)
-        else:
+            tracks = await wavelink.YouTubeTrack.search(search)
+            options = []
+            for track in tracks[:25]:
+                options.append(SelectOption(label=track.title, description=track.author, value=track.uri))
+            view = MusicCog.ChooseSongView(options, i.user)
+            embed = defaultEmbed().set_author(name=f'歌曲搜尋: {search}', icon_url=i.user.avatar)
+            await i.followup.send(embed=embed, view=view)
+            await view.wait()
+            track = await wavelink.YouTubeTrack.search(query=view.uri, return_first=True)
+        try:
             await vc.play(track)
-        if vc.is_paused():
-            await vc.resume()
-        if is_playlist and not is_spotify:
-            title = f'{emoji} {verb}播放清單: {playlist.name}'
-        elif is_playlist and is_spotify:
-            title = f'{emoji} {verb}以{track.title}為首的播放清單'
-        else:
-            title = f'{emoji} {track.title}'
-        embed = defaultEmbed(
-            f'{title}',
-            f'{verb}\n'
+        except AttributeError:
+            return await i.followup.send(embed=errEmbed().set_author(name='無效的歌曲', icon_url=i.user.avatar), ephemeral=True)
+        embed = defaultEmbed(f'{emoji} {track.title}').set_author(name='已將歌曲新增至待播清單', icon_url=i.user.avatar)
+        embed.add_field(
+            name='歌曲資訊',
+            value=
             f'<:CLOCK:985902088691277904> {datetime.timedelta(seconds=track.length)}\n'
             f'<:MIC:985902267418955776> {track.author}\n'
             f'<:LINK:985902086262759484> {track.uri}')
-        embed.set_image(url=track.thumb)
-        await i.edit_original_message(embed=embed)
+        embed.set_image(url=track.thumbnail)
+        await i.followup.send(embed=embed)
 
     class VoteView(View):
         def __init__(self, db: aiosqlite.Connection, requirement: int, vc: wavelink.Player, action: str):
@@ -164,7 +176,7 @@ class MusicCog(commands.GroupCog, name='music'):
                 return self.stop()
             await i.response.edit_message(embed=defaultEmbed(self.action, f'贊成人數: {count}/{self.requirement}'))
 
-    @app_commands.command(name='stop停止', description='停止播放器並清除待播放清單')
+    @app_commands.command(name='stop停止', description='停止播放器並清除待播清單')
     async def music_stop(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
@@ -172,8 +184,7 @@ class MusicCog(commands.GroupCog, name='music'):
             return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='播放器不存在', icon_url=i.user.avatar), ephemeral=True)
         else:
             vc: wavelink.Player = i.guild.voice_client
-        if not vc.is_playing():
-            return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='現在沒有正在播放的歌曲', icon_url=i.user.avatar), ephemeral=True)
+
         async def action(one_person: bool, i: Interaction):
             await vc.stop()
             vc.queue.clear()
@@ -208,6 +219,7 @@ class MusicCog(commands.GroupCog, name='music'):
             vc: wavelink.Player = i.guild.voice_client
         if vc.is_paused():
             return await i.response.send_message(embed=errEmbed().set_author(name='播放器已經被暫停了', icon_url=i.user.avatar), ephemeral=True)
+
         async def action(one_person: bool):
             await vc.pause()
             if one_person:
@@ -241,6 +253,7 @@ class MusicCog(commands.GroupCog, name='music'):
             vc: wavelink.Player = i.guild.voice_client
         if not vc.is_paused():
             return await i.response.send_message(embed=errEmbed().set_author(name='目前的音樂沒有被暫停', icon_url=i.user.avatar), ephemeral=True)
+
         async def action(one_person: bool):
             await vc.resume()
             if one_person:
@@ -292,7 +305,7 @@ class MusicCog(commands.GroupCog, name='music'):
         embed.set_image(url=track.thumb)
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='queue待播清單', description='查看目前待播放清單')
+    @app_commands.command(name='queue待播清單', description='查看目前待播清單')
     async def music_queue(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
@@ -308,9 +321,12 @@ class MusicCog(commands.GroupCog, name='music'):
         for queue in divided_queues:
             value = ''
             for track in queue:
-                value += f'{count}. {track.info["title"]}\n'
+                if isinstance(track, wavelink.PartialTrack):
+                    value += f'{count}. spotify 歌曲不支援待播清單顯示\n'
+                else:
+                    value += f'{count}. {track.info["title"]}\n'
                 count += 1
-            embeds.append(defaultEmbed('待播放清單', value))
+            embeds.append(defaultEmbed('待播清單', value))
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     @app_commands.command(name='skip跳過', description='跳過目前正在播放的歌曲')
@@ -323,6 +339,7 @@ class MusicCog(commands.GroupCog, name='music'):
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
             return await i.response.send_message(embed=errEmbed(message='輸入 `/play` 來播放歌曲').set_author(name='後面沒有歌了', icon_url=i.user.avatar), ephemeral=True)
+
         async def action(one_person: bool):
             await vc.stop()
             if one_person:
@@ -346,7 +363,7 @@ class MusicCog(commands.GroupCog, name='music'):
             await view.wait()
             await action(False)
 
-    @app_commands.command(name='clear清除', description='清除目前的待播放清單')
+    @app_commands.command(name='clear清除', description='清除目前的待播清單')
     async def music_clear(self, i: Interaction):
         if i.user.voice is None:
             return await i.response.send_message(embed=errEmbed().set_author(name='請在語音台中使用此指令', icon_url=i.user.avatar), ephemeral=True)
@@ -355,13 +372,14 @@ class MusicCog(commands.GroupCog, name='music'):
         else:
             vc: wavelink.Player = i.guild.voice_client
         if vc.queue.is_empty:
-            return await i.response.send_message(embed=errEmbed().set_author(name='待播放清單已經沒有歌了', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed().set_author(name='待播清單已經沒有歌了', icon_url=i.user.avatar), ephemeral=True)
+
         async def action(one_person: bool):
             vc.queue.clear()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('待播放清單清除成功'))
+                await i.response.send_message(embed=defaultEmbed('待播清單清除成功'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('待播放清單清除成功'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('待播清單清除成功'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
@@ -372,8 +390,8 @@ class MusicCog(commands.GroupCog, name='music'):
                 url = i.channel.get_partial_message(result[0]).jump_url
                 return await i.response.send_message(embed=errEmbed(message=f'[連結]({url})').set_author(name='投票已存在', icon_url=i.user.avatar), ephemeral=True)
             view = MusicCog.VoteView(self.bot.db, round(
-                (len(vc.channel.members)-1)/2), vc, '要清除待播放清單嗎?')
-            await i.response.send_message(embed=defaultEmbed('要清除待播放清單嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
+                (len(vc.channel.members)-1)/2), vc, '要清除待播清單嗎?')
+            await i.response.send_message(embed=defaultEmbed('要清除待播清單嗎?', f'贊成人數: 1/{round((len(vc.channel.members)-1)/2)}'), view=view)
             msg = await i.original_message()
             await c.execute('INSERT INTO music (user_id, channel_id, msg_id) VALUES (?, ?, ?)', (i.user.id, vc.channel.id, msg.id))
             await view.wait()
