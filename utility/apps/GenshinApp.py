@@ -28,7 +28,8 @@ class GenshinApp:
                 message=self.textMap.get(35, locale, user_locale)).set_author(name=self.textMap.get(36, locale, user_locale), icon_url=user.avatar)
             return result, False
         client = genshin.Client()
-        client.lang = user_locale or locale
+        user_locale = user_locale or locale
+        client.lang = DLGP.get(user_locale)
         client.set_cookies(
             ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
         accounts = await client.get_game_accounts()
