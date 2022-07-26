@@ -132,7 +132,7 @@
   element: 風
   icon: Jean
   builds:
-    - weapon: 腐植之劍
+    - weapon: 腐殖之劍
       artifacts: 翠綠2件套+角斗2件套
       main_stats: 攻攻治
       talents: 6/9/10
