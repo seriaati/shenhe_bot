@@ -375,7 +375,19 @@
   en-US: By default, shenhe responds you with the same langauge your discord uses
 126:
   zh-TW: "這裡更改後的語言會蓋過你的 dc 設定"
-  en-US: The settings you change here will override your discord langauge
+  en-US: Changing language will override the default langauge
 127:
   zh-TW: 如果該語言還沒翻譯好, 會使用英文回覆
   en-US: If any text is not translated yet, shenhe will respond you with English
+128:
+  zh-TW: 更改語言
+  en-US: Changing langauge
+129:
+  zh-TW: 蒙德
+  en-US: Mondstat
+130:
+  zh-TW: 璃月
+  en-US: Liyue
+131:
+  zh-TW: 稻妻
+  en-US: Inazuma
