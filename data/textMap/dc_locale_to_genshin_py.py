@@ -9,6 +9,5 @@ DLGP = {
     'ko': 'ko-kr',
     'pt-BR': 'pt-pt',
     'ru': 'ru-ru',
-    'th': 'th-th',
     'vi': 'vi-vn'
 }
