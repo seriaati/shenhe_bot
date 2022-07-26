@@ -134,6 +134,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             await i.message.delete()
 
     @app_commands.command(name='nsfw色圖', description='透過選擇標籤來產出色色的圖片', nsfw=True)
+    @app_commands.guild_only()
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')
     async def nsfw(self, i: Interaction, num: int = 1):
@@ -171,6 +172,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             await i.delete_original_message()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
+    @app_commands.guild_only()
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
     @app_commands.choices(sese=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], many=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], tags=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')
