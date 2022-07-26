@@ -54,7 +54,7 @@ class ShenheBot(commands.Bot):
         self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_bot/main.db")
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
-        self.enka_client = EnkaNetworkAPI(lang='cht')
+        self.enka_client = EnkaNetworkAPI()
         # create tables for db
         c = await self.db.cursor()
         await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT "[]")')
