@@ -848,18 +848,18 @@ class GenshinCog(commands.Cog, name='genshin'):
                 uid = await c.fetchone()
         uid = custom_uid or uid[0]
         enka_locale = DLE.get(str(user_locale))
+        await self.bot.enka_client.set_language(enka_locale)
         try:
-            await self.bot.enka_client.set_langauge(enka_locale)
+            data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
         except KeyError:
             return await i.followup.send(embed=errEmbed(message='你的帳號是一個 1 等的空帳號').set_author(name='查無資料', icon_url=i.user.avatar), ephemeral=True)
         except UIDNotFounded or VaildateUIDError:
             return await i.followup.send(embed=errEmbed().set_author(name='UID 無效', icon_url=i.user.avatar), ephemeral=True)
-        data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
         if data.characters is None:
             embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(開啟後, 資料最多需要10分鐘更新)').set_author(
                 name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
             return await i.followup.send(embed=embed, ephemeral=True)
-        await self.bot.enka_client.set_langauge('en')
+        await self.bot.enka_client.set_language('en')
         eng_data = await self.bot.enka_client.fetch_user(uid)
         embeds = {}
         sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
