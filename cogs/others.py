@@ -103,7 +103,13 @@ class OthersCog(commands.Cog, name='others'):
     @app_commands.command(name='lang語言', description='更改申鶴回覆你的語言')
     async def lang(self, i: Interaction):
         user_locale = await self.textMap.getUserLocale(i.user.id)
-        await i.response.send_message(view=OthersCog.LangView(i.locale, self.bot.db, user_locale), ephemeral=True)
+        embed = defaultEmbed(message=
+            f'{self.textMap.get(125, i.locale, user_locale)}\n'
+            f'{self.textMap.get(126, i.locale, user_locale)}\n'
+            f'{self.textMap.get(127, i.locale, user_locale)}'
+        )
+        embed.set_author(name='更改語言', icon_url=i.user.avatar)
+        await i.response.send_message(embed=embed, view=OthersCog.LangView(i.locale, self.bot.db, user_locale), ephemeral=True)
     
     
 async def setup(bot: commands.Bot) -> None:

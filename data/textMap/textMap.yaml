@@ -370,3 +370,12 @@
 124:
   zh-TW: 返回預設
   en-US: Back to default
+125:
+  zh-TW: "申鶴預設是使用你的 dc 語言來回覆你"
+  en-US: By default, shenhe responds you with the same langauge your discord uses
+126:
+  zh-TW: "這裡更改後的語言會蓋過你的 dc 設定"
+  en-US: The settings you change here will override your discord langauge
+127:
+  zh-TW: 如果該語言還沒翻譯好, 會使用英文回覆
+  en-US: If any text is not translated yet, shenhe will respond you with English
