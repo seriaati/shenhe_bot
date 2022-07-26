@@ -111,31 +111,6 @@ class VoiceCog(commands.GroupCog, name='vc'):
         await self.bot.db.commit()
         await i.response.send_message(content=f'{i.user.mention} {new.mention}', embed=defaultEmbed(f'房主換人啦', f' {i.user.mention} 將 {current_vc.name} 的房主權移交給了 {new.mention}'))
 
-    @app_commands.command(name='youtube播放器', description='為當前的語音台創建一個 youtube 播放器')
-    async def vc_activity(self, i: Interaction):
-        if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
-        vc = i.user.voice.channel
-        invite = await vc.create_invite( 
-            max_age=0, 
-            max_uses=0, 
-            target_application_id=880218394199220334,
-            target_type=InviteTarget.embedded_application
-        )
-        await i.response.send_message(embed=defaultEmbed('播放器已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
-
-    @app_commands.command(name='chess西洋棋', description='為當前的語音台創建一個西洋棋遊戲視窗')
-    async def vc_chess(self, i: Interaction):
-        if i.user.voice is None:
-            return await i.response.send_message(embed=errEmbed().set_author(name='你必須在語音台裡才能用這個指令', icon_url=i.user.avatar), ephemeral=True)
-        vc = i.user.voice.channel
-        invite = await vc.create_invite( 
-            max_age=0, 
-            max_uses=0, 
-            target_application_id=832012774040141894,
-            target_type=InviteTarget.embedded_application
-        )
-        await i.response.send_message(embed=defaultEmbed('西洋棋遊戲已創建',f'{invite}\n\n點擊連結來啟用'), ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(VoiceCog(bot))
