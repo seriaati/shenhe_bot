@@ -27,7 +27,7 @@ from enkanetwork.enum import DigitType, EquipmentsType
 from pyppeteer.browser import Browser
 from utility.apps.GenshinApp import GenshinApp
 from utility.GeneralPaginator import GeneralPaginator
-from utility.utils import (calculateArtifactScore, calculateDamage,
+from utility.utils import (TextMap, calculateArtifactScore, calculateDamage,
                            defaultEmbed, divide_chunks, errEmbed, getArtifact,
                            getCharacter, getConsumable,
                            getElement, getFightProp, getStatEmoji,
@@ -41,6 +41,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
+        self.textMap = TextMap(self.bot.db)
 
     class CookieModal(Modal):
         def __init__(self, genshin_app: GenshinApp):
@@ -56,7 +57,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         async def on_submit(self, i: Interaction):
             await i.response.defer(ephemeral=True)
-            result, success = await self.genshin_app.setCookie(i.user.id, self.cookie.value)
+            result, success = await self.genshin_app.setCookie(i.user.id, self.cookie.value, i.locale)
             if not success:
                 return await i.followup.send(embed=result, ephemeral=True)
             if isinstance(result, list):  # 有多個帳號
@@ -66,7 +67,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         async def on_error(self, i: Interaction, error: Exception) -> None:
             embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
-            name='未知錯誤', icon_url=i.user.avatar)
+                name='未知錯誤', icon_url=i.user.avatar)
             traceback_message = traceback.format_exc()
             view = DebugView(traceback_message)
             await i.followup.send(embed=embed, view=view)
@@ -85,7 +86,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         async def callback(self, i: Interaction) -> Any:
             await i.response.defer()
             result, success = await self.view.genshin_app.setCookie(
-                i.user.id, self.view.cookie, int(self.values[0]))
+                i.user.id, self.view.cookie, i.locale, int(self.values[0]))
             await i.followup.send(embed=result, ephemeral=True)
 
 # Cookie Submission
@@ -126,29 +127,29 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getRealTimeNotes(member.id)
+        result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量 (需註冊)')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def stats(self, i: Interaction, member: Optional[Member] = None):
+    @app_commands.rename(member='其他人', custom_uid='uid')
+    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    async def stats(self, i: Interaction, member: Member = None, custom_uid: int = None):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getUserStats(member.id)
+        result, success = await self.genshin_app.getUserStats(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='area探索度', description='查看區域探索度 (需註冊)')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def area(self, i: Interaction, member: Optional[Member] = None):
+    @app_commands.rename(member='其他人', custom_uid='uid')
+    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    async def area(self, i: Interaction, member: Member = None, custom_uid: int = None):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getArea(member.id)
+        result, success = await self.genshin_app.getArea(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='claim登入獎勵', description='領取hoyolab網頁登入獎勵 (需註冊)')
@@ -159,17 +160,17 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.claimDailyReward(member.id)
+        result, success = await self.genshin_app.claimDailyReward(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
-        
+
     class CharactersElementSelect(Select):
         def __init__(self, options: list[SelectOption]):
             super().__init__(placeholder='選擇元素', options=options)
-            
+
         async def callback(self, i: Interaction) -> Any:
             self.view.current_page = int(self.values[0])
             await self.view.update_children(i)
-   
+
     @app_commands.command(name='characters所有角色', description='展示自己擁有的所有角色')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
@@ -178,7 +179,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getUserCharacters(member.id)
+        result, success = await self.genshin_app.getUserCharacters(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True, check=False)
@@ -197,7 +198,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         @button(label='原石紀錄', emoji='<:primo:958555698596290570>')
         async def primo(self, i: Interaction, button: Button):
-            result, success = await self.genshin_app.getDiaryLog(self.member.id)
+            result, success = await self.genshin_app.getDiaryLog(self.member.id, i.locale)
             if not success:
                 await i.response.send_message(embed=result, ephemeral=True)
             result = result[0]
@@ -205,7 +206,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         @button(label='摩拉紀錄', emoji='<:mora:958577933650362468>')
         async def mora(self, i: Interaction, button: Button):
-            result, success = await self.genshin_app.getDiaryLog(self.member.id)
+            result, success = await self.genshin_app.getDiaryLog(self.member.id, i.locale)
             if not success:
                 await i.response.send_message(embed=result, ephemeral=True)
             result = result[1]
@@ -225,7 +226,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
-        result, success = await self.genshin_app.getDiary(member.id, month)
+        result, success = await self.genshin_app.getDiary(member.id, month, i.locale)
         if not success:
             await i.response.send_message(embed=result, ephemeral=not success)
         else:
@@ -234,25 +235,25 @@ class GenshinCog(commands.Cog, name='genshin'):
     class AbyssFloorView(DefaultView):
         def __init__(self, author: Member, embeds: list[Embed]):
             super().__init__(timeout=None)
-            self.author = author 
+            self.author = author
             self.add_item(GenshinCog.AbyssFloorSelect(embeds))
-            
+
         async def interaction_check(self, i: Interaction) -> bool:
             if self.author.id != i.user.id:
                 await i.response.send_message(embed=errEmbed(message='指令: `/abyss`').set_author(name='你不是這個指令的發起者', icon_url=i.user.avatar), ephemeral=True)
             return self.author.id == i.user.id
-    
+
     class AbyssFloorSelect(Select):
         def __init__(self, embeds: list[Embed]):
             options = []
             for index in range(0, len(embeds)):
                 options.append(SelectOption(label=f'第{9+index}層', value=index))
             super().__init__(placeholder='樓層導覽', options=options)
-            self.embeds=embeds
-            
+            self.embeds = embeds
+
         async def callback(self, i: Interaction) -> Any:
             await i.response.edit_message(embed=self.embeds[int(self.values[0])])
-    
+
     @app_commands.command(name='abyss深淵', description='深淵資料查詢 (需註冊)')
     @app_commands.rename(overview='類別', previous='期別', member='其他人')
     @app_commands.describe(overview='想要查看的資料類別',
@@ -270,7 +271,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
-        result, success = await self.genshin_app.getAbyss(member.id, previous, overview)
+        result, success = await self.genshin_app.getAbyss(member.id, previous, overview, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         if overview:
@@ -416,13 +417,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                 exists = await self.genshin_app.userDataExists(i.user.id)
                 if not exists:
                     return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
-                result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None)
+                result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None, i.locale)
                 await i.response.send_message(embed=result, ephemeral=not success)
             else:
                 modal = GenshinCog.ResinNotifModal()
                 await i.response.send_modal(modal)
                 await modal.wait()
-                result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value)
+                result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value, i.locale)
                 await i.followup.send(embed=result, ephemeral=not success)
         elif function == 1:
             if toggle == 0:
@@ -458,12 +459,13 @@ class GenshinCog(commands.Cog, name='genshin'):
         cities = ['', '蒙德', '璃月', '稻妻']
         embeds = []
         week_day = calendar.day_name[datetime.today().weekday()].lower()
+        user_locale = await self.textMap.getUserLocale(i.user.id)
         for domain, domain_info in daily_dungeons['data'][week_day].items():
             domain_name = domain_info['name']
             domain_city = cities[domain_info['city']]
             reward_emoji = getConsumable(domain_info['reward'][-1])['emoji']
             embed = defaultEmbed(
-                f'今天 ({getWeekdayName(datetime.today().weekday())}) 可以刷的素材')
+                f'今天 ({getWeekdayName((datetime.today().weekday()), self.textMap, i.locale, user_locale)}) 可以刷的素材')
             farmables = ''
             for reward in domain_info['reward']:
                 if len(str(reward)) == 6:
@@ -540,6 +542,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             self.db = db
             self.author = author
             self.bot = bot
+            self.textMap = TextMap(self.db)
             elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
             elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
             with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
@@ -551,11 +554,12 @@ class GenshinCog(commands.Cog, name='genshin'):
             super().__init__(
                 placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
 
-        async def callback(self, interaction: Interaction):
-            result, has_thoughts = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]))
+        async def callback(self, i: Interaction):
+            user_locale = await self.textMap.getUserLocale(i.user.id)
+            result, has_thoughts = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]), i.locale, user_locale)
             view = GenshinCog.BuildSelectView(
                 len(result), result, self.index, self.db, self.author, has_thoughts, self.bot)
-            await interaction.response.edit_message(embed=result[0][0], view=view)
+            await i.response.edit_message(embed=result[0][0], view=view)
 
     class BuildSelectView(DefaultView):
         def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection, author: Member, has_thoughts: bool, bot: commands.Bot):
@@ -814,15 +818,16 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     class TeamSelect(Select):
         def __init__(self, options):
-            super().__init__(placeholder='選擇隊友', options=options, max_values=3 if len(options)>=3 else len(options))
+            super().__init__(placeholder='選擇隊友', options=options,
+                             max_values=3 if len(options) >= 3 else len(options))
 
         async def callback(self, i: Interaction) -> Any:
             self.view.team = self.values
             await GenshinCog.returnDamage(self.view, i)
 
     @app_commands.command(name='profile角色展示', description='查看原神角色聖遺物、屬性、進行傷害計算')
-    @app_commands.rename(member='其他人', custom_uid = 'uid')
-    @app_commands.describe(member='查看其他人的資料', custom_uid = '欲查詢玩家的 UID，如果已註冊過則不用填')
+    @app_commands.rename(member='其他人', custom_uid='uid')
+    @app_commands.describe(member='查看其他人的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
         await i.response.defer()
         member = member or i.user
@@ -938,7 +943,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.userDataExists(i.user.id)
         if not exists:
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
-        result = await self.genshin_app.redeemCode(i.user.id, code)
+        result = await self.genshin_app.redeemCode(i.user.id, code, i.locale)
         result.set_author(name=i.user, url=i.user.avatar)
         await i.response.send_message(embed=result)
 
@@ -1250,7 +1255,8 @@ class GenshinCog(commands.Cog, name='genshin'):
             )
             embed.set_image(
                 url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
-            embed.set_thumbnail(url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            embed.set_thumbnail(
+                url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
             options.append(SelectOption(label='基本資料', value=0))
             embed = defaultEmbed().set_author(
@@ -1265,7 +1271,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                     value=value,
                     inline=True
                 )
-            embed.set_thumbnail(url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            embed.set_thumbnail(
+                url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
             options.append(SelectOption(label='突破素材', value=1))
             for talent_id, talent_info in avatar_data["talent"].items():
@@ -1330,16 +1337,16 @@ class GenshinCog(commands.Cog, name='genshin'):
                 label='命座', value=8 if max == 3 else 9))
             await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(options)]).start(embeded=True, edit_original_message=True)
 
-
     @app_commands.command(name='activity歷來活動', description='查看原神歷來活動數據')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def activity(self, i: Interaction, member: Member = None, custom_uid: int = None):
-        member = member or i.user 
-        result, success = await self.genshin_app.getActivities(member.id, custom_uid)
+        member = member or i.user
+        result, success = await self.genshin_app.getActivities(member.id, custom_uid, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         await GeneralPaginator(i, result).start(embeded=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))

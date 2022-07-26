@@ -1,38 +1,41 @@
-from msilib.schema import Icon
-import re
 from datetime import datetime
+from typing import Literal
 
 import aiosqlite
 import genshin
-from discord import Embed, Member, SelectOption
+from data.textMap.dc_local_to_genshin_py import DLGP
+from discord import Embed, Locale, Member, SelectOption
 from discord.ext import commands
-from utility.utils import (defaultEmbed, errEmbed, getAreaEmoji, getCharacter,
-                           getClient, getElement, getWeapon, getWeekdayName,
-                           log, trimCookie)
+from utility.utils import (TextMap, defaultEmbed, errEmbed, getAreaEmoji,
+                           getCharacter, getClient, getElement, getWeapon,
+                           getWeekdayName, log, trimCookie)
 
 
 class GenshinApp:
     def __init__(self, db: aiosqlite.Connection, bot: commands.Bot) -> None:
         self.db = db
         self.bot = bot
+        self.textMap = TextMap(self.db)
 
-    async def setCookie(self, user_id: int, cookie: str, uid: int = None):
+    async def setCookie(self, user_id: int, cookie: str, locale: Locale, uid: int = None):
         log(False, False, 'setCookie', f'{user_id} ({cookie})')
         user = self.bot.get_user(user_id)
+        user_locale = await self.textMap.getUserLocale(user_id)
         user_id = int(user_id)
         cookie = trimCookie(cookie)
         if cookie is None:
             result = errEmbed(
-                message='輸入 `/register` 來查看設定方式').set_author(name='無效的 cookie', icon_url=user.avatar)
+                message=self.textMap.get(35, locale, user_locale)).set_author(name=self.textMap.get(36, locale, user_locale), icon_url=user.avatar)
             return result, False
-        client = genshin.Client(lang='zh-tw')
+        client = genshin.Client()
+        client.lang = user_locale or locale
         client.set_cookies(
             ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
         accounts = await client.get_game_accounts()
         if uid is None:
             if len(accounts) == 0:
-                result = errEmbed(message='已取消設定帳號').set_author(
-                    name='帳號內沒有任何角色', icon_url=user.avatar)
+                result = errEmbed(message=self.textMap.get(37, locale, user_locale)).set_author(
+                    name=self.textMap.get(38, locale, user_locale), icon_url=user.avatar)
                 return result, False
             elif len(accounts) == 1:
                 uid = accounts[0].uid
@@ -44,246 +47,260 @@ class GenshinApp:
                 return account_options, True
         c = await self.db.cursor()
         await c.execute('INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?', (user_id, cookie[0], cookie[1], cookie[2], uid, cookie[0], cookie[1], cookie[2], uid, user_id))
-        result = defaultEmbed().set_author(name='帳號設定成功', icon_url=user.avatar)
+        result = defaultEmbed().set_author(name=self.textMap.get(
+            39, locale, user_locale), icon_url=user.avatar)
         await self.db.commit()
         log(True, False, 'setCookie', f'{user_id} setCookie success')
         return result, True
 
-    async def claimDailyReward(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def claimDailyReward(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
-            return errEmbed().set_author(name='你已經領過今天的獎勵了!', icon_url=user.avatar), False
+            return errEmbed().set_author(name=self.textMap.get(40, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
-            return defaultEmbed(message=f'獲得 {reward.amount}x {reward.name}').set_author(name='簽到成功', icon_url=user.avatar), True
+            return defaultEmbed(message=f'{self.textMap.get(41, locale, user_locale)} {reward.amount}x {reward.name}').set_author(name=self.textMap.get(42, locale, user_locale), icon_url=user.avatar), True
 
-    async def getRealTimeNotes(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getRealTimeNotes(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
-            return self.parseResinEmbed(notes).set_author(name='即時便籤', icon_url=user.avatar), True
+            return self.parseResinEmbed(notes, locale, user_locale).set_author(name=self.textMap.get(24, locale, user_locale), icon_url=user.avatar), True
 
-    def parseResinEmbed(self, notes) -> Embed:
+    def parseResinEmbed(self, notes, locale: Locale, user_locale: str) -> Embed:
         if notes.current_resin == notes.max_resin:
-            resin_recover_time = '已滿'
+            resin_recover_time = self.textMap.get(1, locale, user_locale)
         else:
-            day_msg = '今天' if notes.resin_recovery_time.day == datetime.now().day else '明天'
+            day_msg = self.textMap.get(2, locale, user_locale) if notes.resin_recovery_time.day == datetime.now(
+            ).day else self.textMap.get(3, locale, user_locale)
             resin_recover_time = f'{day_msg} {notes.resin_recovery_time.strftime("%H:%M")}'
 
         if notes.current_realm_currency == notes.max_realm_currency:
-            realm_recover_time = '已滿'
+            realm_recover_time = self.textMap.get(1, locale, user_locale)
         else:
             weekday_msg = getWeekdayName(
-                notes.realm_currency_recovery_time.weekday())
+                notes.realm_currency_recovery_time.weekday(), self.textMap, locale, user_locale)
             realm_recover_time = f'{weekday_msg} {notes.realm_currency_recovery_time.strftime("%H:%M")}'
         if notes.transformer_recovery_time != None:
             t = notes.remaining_transformer_recovery_time
             if t.days > 0:
-                recover_time = f'剩餘 {t.days} 天'
+                recover_time = f'{t.days} {self.textMap.get(5, locale, user_locale)}'
             elif t.hours > 0:
-                recover_time = f'剩餘 {t.hours} 小時'
+                recover_time = f'{t.hours} {self.textMap.get(6, locale, user_locale)}'
             elif t.minutes > 0:
-                recover_time = f'剩餘 {t.minutes} 分'
+                recover_time = f'{t.minutes} {self.textMap.get(7, locale, user_locale)}'
             elif t.seconds > 0:
-                recover_time = f'剩餘 {t.seconds} 秒'
+                recover_time = f'{t.seconds} {self.textMap.get(8, locale, user_locale)}'
             else:
-                recover_time = '可使用'
+                recover_time = f'{self.textMap.get(9, locale, user_locale)}'
         else:
-            recover_time = '質變儀不存在'
+            recover_time = self.textMap.get(10, locale, user_locale)
         result = defaultEmbed(
             f"",
-            f"<:daily:956383830070140938> 已完成的每日數量: {notes.completed_commissions}/{notes.max_commissions}\n"
-            f"<:transformer:966156330089971732> 質變儀剩餘時間: {recover_time}"
+            f"<:daily:956383830070140938> {self.textMap.get(11, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
+            f"<:transformer:966156330089971732> {self.textMap.get(12, locale, user_locale)}: {recover_time}"
         )
         result.add_field(
-            name='<:resin:956377956115157022> 樹脂',
-            value=f" 目前樹脂: {notes.current_resin}/{notes.max_resin}\n"
-            f"樹脂回滿時間: {resin_recover_time}\n"
-            f'週本樹脂減半: 剩餘 {notes.remaining_resin_discounts}/3 次',
+            name=f'<:resin:956377956115157022> {self.textMap.get(13, locale, user_locale)}',
+            value=f" {self.textMap.get(14, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
+            f"{self.textMap.get(15, locale, user_locale)} {resin_recover_time}\n"
+            f'{self.textMap.get(16, locale, user_locale)}: {notes.remaining_resin_discounts}/3',
             inline=False
         )
         result.add_field(
-            name='<:realm:956384011750613112> 塵歌壺',
-            value=f" 目前洞天寶錢數量: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-            f'寶錢全部恢復時間: {realm_recover_time}',
+            name=f'<:realm:956384011750613112> {self.textMap.get(17, locale, user_locale)}',
+            value=f" {self.textMap.get(14, locale, user_locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
+            f'{self.textMap.get(15, locale, user_locale)}: {realm_recover_time}',
             inline=False
         )
         exped_finished = 0
         exped_msg = ''
+        total_exped = len(notes.expeditions)
         if not notes.expeditions:
-            exped_msg = '沒有探索派遣'
-            total_exped = 0
+            exped_msg = self.textMap.get(18, locale, user_locale)
         for expedition in notes.expeditions:
-            total_exped = len(notes.expeditions)
-            exped_msg += f'• {getCharacter(expedition.character.id)["name"]}'
+            exped_msg += f'• {expedition.character.name}'
             if expedition.finished:
                 exped_finished += 1
-                exped_msg += ': 已完成\n'
+                exped_msg += f': {self.textMap.get(19, locale, user_locale)}\n'
             else:
-                day_msg = '今天' if expedition.completion_time.day == datetime.now().day else '明天'
-                exped_msg += f' 完成時間: {day_msg} {expedition.completion_time.strftime("%H:%M")}\n'
+                day_msg = self.textMap.get(2, locale, user_locale) if expedition.completion_time.day == datetime.now(
+                ).day else self.textMap.get(3, locale, user_locale)
+                exped_msg += f': {day_msg} {expedition.completion_time.strftime("%H:%M")}\n'
         result.add_field(
-            name=f'<:ADVENTURERS_GUILD:998780550615679086> 探索派遣 ({exped_finished}/{total_exped})',
+            name=f'<:ADVENTURERS_GUILD:998780550615679086> {self.textMap.get(20, locale, user_locale)} ({exped_finished}/{total_exped})',
             value=exped_msg,
             inline=False
         )
         return result
 
-    async def getUserStats(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getUserStats(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+        uid = custom_uid or uid
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             characters = await client.get_calculator_characters()
             result = defaultEmbed()
             result.add_field(
-                name='綜合',
-                value=f"📅 活躍天數: {genshinUser.stats.days_active}\n"
-                f"<:expedition:956385168757780631> 角色數量: {genshinUser.stats.characters}/{len(characters)}\n"
-                f"📜 成就數量:{genshinUser.stats.achievements}/639\n"
-                f"🌙 深淵已達: {genshinUser.stats.spiral_abyss}層",
+                name=self.textMap.get(43, locale, user_locale),
+                value=f"📅 {self.textMap.get(44, locale, user_locale)}: {genshinUser.stats.days_active}\n"
+                f"<:expedition:956385168757780631> {self.textMap.get(45, locale, user_locale)}: {genshinUser.stats.characters}/{len(characters)}\n"
+                f"📜 {self.textMap.get(46, locale, user_locale)}: {genshinUser.stats.achievements}\n"
+                f"🌙 {self.textMap.get(47, locale, user_locale)}: {genshinUser.stats.spiral_abyss}",
                 inline=False)
             result.add_field(
-                name='神瞳',
-                value=f"<:anemo:956719995906322472> 風神瞳: {genshinUser.stats.anemoculi}/66\n"
-                f"<:geo:956719995440730143> 岩神瞳: {genshinUser.stats.geoculi}/131\n"
-                f"<:electro:956719996262821928> 雷神瞳: {genshinUser.stats.electroculi}/181", inline=False)
-            result.add_field(
-                name='寶箱',
-                value=f"一般寶箱: {genshinUser.stats.common_chests}\n"
-                f"稀有寶箱: {genshinUser.stats.exquisite_chests}\n"
-                f"珍貴寶箱: {genshinUser.stats.luxurious_chests}",
+                name=self.textMap.get(48, locale, user_locale),
+                value=f"<:anemo:956719995906322472> {self.textMap.get(49, locale, user_locale)}: {genshinUser.stats.anemoculi}/66\n"
+                f"<:geo:956719995440730143> {self.textMap.get(50, locale, user_locale)}: {genshinUser.stats.geoculi}/131\n"
+                f"<:electro:956719996262821928> {self.textMap.get(51, locale, user_locale)}: {genshinUser.stats.electroculi}/181",
                 inline=False)
-        return result.set_author(name='原神數據', icon_url=user.avatar), True
+            result.add_field(
+                name=self.textMap.get(52, locale, user_locale),
+                value=f"{self.textMap.get(53, locale, user_locale)}: {genshinUser.stats.common_chests}\n"
+                f"{self.textMap.get(54, locale, user_locale)}: {genshinUser.stats.exquisite_chests}\n"
+                f"{self.textMap.get(57, locale, user_locale)}: {genshinUser.stats.precious_chests}\n"
+                f"{self.textMap.get(55, locale, user_locale)}: {genshinUser.stats.luxurious_chests}",
+                inline=False)
+            result.set_author(name=self.textMap.get(
+                56, locale, user_locale), icon_url=user.avatar)
+            if custom_uid is not None:
+                result.set_footer(text=f'{self.textMap.get(123, locale, user_locale)}: {custom_uid}')
+            return result, True
 
-    async def getArea(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getArea(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+        uid = custom_uid or uid
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             explorations = genshinUser.explorations
             explore_str = ""
             for exploration in reversed(explorations):
-                level_str = '' if exploration.name == '淵下宮' or exploration.name == '層岩巨淵' else f'- Lvl. {exploration.level}'
-                emoji_name = getAreaEmoji(exploration.name)
-                explore_str += f"{emoji_name} {exploration.name} {exploration.explored}% {level_str}\n"
+                level_str = "" if exploration.id == 5 or exploration.id == 6 else f"Lvl. {exploration.offerings[0].level}"
+                emoji = getAreaEmoji(exploration.id)
+                explore_str += f"{emoji} {exploration.name} | {exploration.explored}% | {level_str}\n"
             result = defaultEmbed(message=explore_str)
-        return result.set_author(name='區域探索度', icon_url=user.avatar), True
+        return result.set_author(name=self.textMap.get(58, locale, user_locale), icon_url=user.avatar), True
 
-    async def getDiary(self, user_id: int, month: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getDiary(self, user_id: int, month: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             diary = await client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             d = diary.data
-            result = defaultEmbed(message=f'原石收入比上個月{"增加" if d.primogems_rate > 0 else "減少"}了{abs(d.primogems_rate)}%\n'
-                                  f'摩拉收入比上個月{"增加" if d.mora_rate > 0 else "減少"}了{abs(d.mora_rate)}%'
-                                  )
+            result = defaultEmbed(
+                message=f'{self.textMap.get(59, locale, user_locale)} {self.textMap.get(60, locale, user_locale) if d.primogems_rate > 0 else self.textMap.get(61, locale, user_locale)} {abs(d.primogems_rate)}%\n'
+                f'{self.textMap.get(62, locale, user_locale)} {self.textMap.get(60, locale, user_locale) if d.mora_rate > 0 else self.textMap.get(61, locale, user_locale)} {abs(d.mora_rate)}%'
+            )
             result.add_field(
-                name='本月共獲得',
-                value=f'<:primo:958555698596290570> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • 上個月: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
-                f'<:mora:958577933650362468> {d.current_mora} • 上個月: {d.last_mora}',
+                name=self.textMap.get(63, locale, user_locale),
+                value=f'<:primo:958555698596290570> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {self.textMap.get(64, locale, user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
+                f'<:mora:958577933650362468> {d.current_mora} • {self.textMap.get(64, locale, user_locale)}: {d.last_mora}',
                 inline=False
             )
             msg = ''
             for cat in d.categories:
                 msg += f'{cat.name}: {cat.percentage}%\n'
-            result.add_field(name=f'原石收入分類', value=msg, inline=False)
+            result.add_field(name=self.textMap.get(
+                65, locale, user_locale), value=msg, inline=False)
             result.add_field(
-                name='獲取紀錄',
-                value='點按下方的按鈕可以\n查看本月近30筆的摩拉或原石獲取紀錄',
+                name=self.textMap.get(66, locale, user_locale),
+                value=f'{self.textMap.get(67, locale, user_locale)}\n{self.textMap.get(68, locale, user_locale)}',
                 inline=False
             )
-            return result.set_author(name=f'旅行者日記 • {month}月', icon_url=user.avatar), True
+            return result.set_author(name=f'{self.textMap.get(69, locale, user_locale)} • {month}', icon_url=user.avatar), True
 
-    async def getDiaryLog(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getDiaryLog(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             primoLog = ''
             result = []
             async for action in client.diary_log(limit=30):
                 primoLog = primoLog + \
-                    f"{action.action} - {action.amount} 原石"+"\n"
+                    f"{action.action} - {action.amount} {self.textMap.get(71, locale, user_locale)}"+"\n"
             embed = defaultEmbed(message=f"{primoLog}")
-            embed.set_author(name='原石獲取紀錄', icon_url=user.avatar)
+            embed.set_author(name=self.textMap.get(
+                70, locale, user_locale), icon_url=user.avatar)
             result.append(embed)
             moraLog = ''
             async for action in client.diary_log(limit=30, type=genshin.models.DiaryType.MORA):
-                moraLog = moraLog+f"{action.action} - {action.amount} 摩拉"+"\n"
+                moraLog = moraLog + \
+                    f"{action.action} - {action.amount} {self.textMap.get(73, locale, user_locale)}"+"\n"
             embed = defaultEmbed(message=f"{moraLog}")
-            embed.set_author(name='摩拉獲取紀錄', icon_url=user.avatar)
+            embed.set_author(name=self.textMap.get(
+                72, locale, user_locale), icon_url=user.avatar)
             result.append(embed)
         return result, True
 
-    async def getAbyss(self, user_id: int, previous: bool, overview: bool):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getAbyss(self, user_id: int, previous: bool, overview: bool, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
-                result = errEmbed(message='請輸入 `/stats` 來刷新資料\n'
-                                  '(深淵資料需最多1小時來接收)\n'
-                                  '/abyss 只支持第9層以上的戰績').set_author(name='找不到深淵資料', icon_url=user.avatar)
+                result = errEmbed(message=f'{self.textMap.get(74, locale, user_locale)}\n'
+                                  f'{self.textMap.get(75, locale, user_locale)}')
+                result.set_author(name=self.textMap.get(
+                    76, locale, user_locale), icon_url=user.avatar)
                 return result, False
             result = defaultEmbed(
-                f"第{abyss.season}期深淵",
-                f"獲勝場次: {abyss.total_wins}/{abyss.total_battles}\n"
-                f"達到{abyss.max_floor}層\n"
-                f"共{abyss.total_stars} ✦"
+                f"{self.textMap.get(77, locale, user_locale)} {abyss.season}",
+                f"{self.textMap.get(78, locale, user_locale)} {abyss.max_floor}\n"
+                f"✦ {abyss.total_stars}"
             )
             result.add_field(
-                name="戰績",
-                value=f"單次最高傷害 • {getCharacter(rank.strongest_strike[0].id)['name']} • {rank.strongest_strike[0].value}\n"
-                f"擊殺王 • {getCharacter(rank.most_kills[0].id)['name']} • {rank.most_kills[0].value}次擊殺\n"
-                f"最常使用角色 • {getCharacter(rank.most_played[0].id)['name']} • {rank.most_played[0].value}次\n"
-                f"最多Q使用角色 • {getCharacter(rank.most_bursts_used[0].id)['name']} • {rank.most_bursts_used[0].value}次\n"
-                f"最多E使用角色 • {getCharacter(rank.most_skills_used[0].id)['name']} • {rank.most_skills_used[0].value}次"
+                name=self.textMap.get(79, locale, user_locale),
+                value=f"{getCharacter(rank.strongest_strike[0].id)['emoji']} {self.textMap.get(80, locale, user_locale)}: {rank.strongest_strike[0].value}\n"
+                f"{getCharacter(rank.most_kills[0].id)['emoji']} {self.textMap.get(81, locale, user_locale)}: {rank.most_kills[0].value}\n"
+                f"{getCharacter(rank.most_damage_taken[0].id)['emoji']} {self.textMap.get(82, locale, user_locale)}: {rank.most_damage_taken[0].value}\n"
+                f"{getCharacter(rank.most_bursts_used[0].id)['emoji']} {self.textMap.get(83, locale, user_locale)}: {rank.most_bursts_used[0].value}\n"
+                f"{getCharacter(rank.most_skills_used[0].id)['emoji']} {self.textMap.get(84, locale, user_locale)}: {rank.most_skills_used[0].value}"
             )
-            result.set_author(name='深淵總覽', icon_url=user.avatar)
+            result.set_author(name=self.textMap.get(85, locale, user_locale), icon_url=user.avatar)
             if overview:
                 return result, True
             result = []
             for floor in abyss.floors:
                 embed = defaultEmbed().set_author(
-                    name=f"第{floor.floor}層 (共{floor.stars} ✦)")
+                    name=f"F{floor.floor} (✦ {floor.stars}/9)")
                 for chamber in floor.chambers:
-                    name = f'第{chamber.chamber}間 {chamber.stars} ✦'
+                    name = f'{self.textMap.get(86, locale, user_locale)} {chamber.chamber} {self.textMap.get(87, locale, user_locale)} ✦ {chamber.stars}'
                     chara_list = [[], []]
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
-                            chara_list[i].append(
-                                getCharacter(chara.id)['name'])
+                            chara_list[i].append(chara.name)
                     topStr = ''
                     bottomStr = ''
                     for top_char in chara_list[0]:
@@ -292,14 +309,14 @@ class GenshinApp:
                         bottomStr += f"• {bottom_char} "
                     embed.add_field(
                         name=name,
-                        value=f"[上半] {topStr}\n\n"
-                        f"[下半] {bottomStr}",
+                        value=f"{self.textMap.get(88, locale, user_locale)} {topStr}\n\n"
+                        f"{self.textMap.get(89, locale, user_locale)} {bottomStr}",
                         inline=False
                     )
                 result.append(embed)
             return result, True
 
-    async def getBuild(self, element_dict: dict, chara_name: str):
+    async def getBuild(self, element_dict: dict, chara_name: str, locale: Locale, user_locale: Literal["str", None]):
         charas = dict(element_dict)
         result = []
         name = chara_name
@@ -310,29 +327,29 @@ class GenshinApp:
             for stat, value in build['stats'].items():
                 statStr += f'{stat} ➜ {value}\n'
             embed = defaultEmbed(
-                f'{name} - 配置{count}',
-                f"武器 • {getWeapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
-                f"聖遺物 • {build['artifacts']}\n"
-                f"主詞條 • {build['main_stats']}\n"
-                f"天賦 • {build['talents']}\n"
+                f'{name} - {self.textMap.get(90, locale, user_locale)}{count}',
+                f"{self.textMap.get(91, locale, user_locale)} • {getWeapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
+                f"{self.textMap.get(92, locale, user_locale)} • {build['artifacts']}\n"
+                f"{self.textMap.get(93, locale, user_locale)} • {build['main_stats']}\n"
+                f"{self.textMap.get(94, locale, user_locale)} • {build['talents']}\n"
                 f"{build['move']} • {build['dmg']}\n\n"
             )
             embed.add_field(
-                name=f"屬性面版",
+                name=self.textMap.get(95, locale, user_locale),
                 value=statStr
             )
             count += 1
             embed.set_thumbnail(
                 url=getCharacter(name=name)["icon"])
             embed.set_footer(
-                text='[來源](https://bbs.nga.cn/read.php?tid=25843014)')
+                text=f'[{self.textMap.get(96, locale, user_locale)}](https://bbs.nga.cn/read.php?tid=25843014)')
             result.append([embed, build['weapon'], build['artifacts']])
         if 'thoughts' in charas[chara_name]:
             has_thoughts = True
             count = 1
-            embed = defaultEmbed(f'聖遺物思路')
+            embed = defaultEmbed(self.textMap.get(97, locale, user_locale))
             for thought in charas[chara_name]['thoughts']:
-                embed.add_field(name=f'思路{count}',
+                embed.add_field(name=f'#{count}',
                                 value=thought, inline=False)
                 count += 1
             embed.set_thumbnail(
@@ -340,39 +357,39 @@ class GenshinApp:
             result.append([embed, '', ''])
         return result, has_thoughts
 
-    async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int):
+    async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int, locale: Locale):
         c: aiosqlite.Cursor = await self.db.cursor()
-        client, uid, user = await self.getUserCookie(user_id)
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
-            notes = await client.get_notes(uid)
+            await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             if resin_notification_toggle == 0:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
-                result = defaultEmbed().set_author(name='樹脂提醒功能已關閉', icon_url=user.avatar)
+                result = defaultEmbed().set_author(name=self.textMap.get(98, locale, user_locale), icon_url=user.avatar)
             else:
                 await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?', (resin_notification_toggle, resin_threshold, max_notif, user_id))
-                toggle_str = '開' if resin_notification_toggle == 1 else '關'
+                toggle_str = self.textMap.get(99, locale, user_locale) if resin_notification_toggle == 1 else self.textMap.get(100, locale, user_locale)
                 result = defaultEmbed(
-                    message=f'目前開關: {toggle_str}\n'
-                    f'樹脂提醒閥值: {resin_threshold}\n'
-                    f'最大提醒數量: {max_notif}'
+                    message=f'{self.textMap.get(101, locale, user_locale)}: {toggle_str}\n'
+                    f'{self.textMap.get(102, locale, user_locale)}: {resin_threshold}\n'
+                    f'{self.textMap.get(103, locale, user_locale)}: {max_notif}'
                 )
-                result.set_author(name='設置成功', icon_url=user.avatar)
+                result.set_author(name=self.textMap.get(104, locale, user_locale), icon_url=user.avatar)
             await self.db.commit()
         return result, True
 
-    async def getUserCharacters(self, user_id: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getUserCharacters(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             characters = await client.get_genshin_characters(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             # organize characters according to elements
             result = {'embeds': [], 'options': []}
@@ -390,93 +407,93 @@ class GenshinApp:
                 for character in characters:
                     message += f'{getCharacter(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
                 embed = defaultEmbed(f'{getElement(element)["emoji"]} {getElement(element)["name"]}元素角色', message).set_author(
-                    name='所有角色', icon_url=user.avatar)
+                    name=self.textMap.get(105, locale, user_locale), icon_url=user.avatar)
                 result['embeds'].append(embed)
                 index += 1
             return result, True
 
-    async def redeemCode(self, user_id: int, code: str):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def redeemCode(self, user_id: int, code: str, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         try:
             await client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
-            return errEmbed().set_author(name='你已經兌換過這個兌換碼了!', icon_url=user.avatar), False
+            return errEmbed().set_author(name=self.textMap.get(106, locale, user_locale), icon_url=user.avatar), False
         except genshin.errors.GenshinException:
-            return errEmbed().set_author(name='兌換碼無效', icon_url=user.avatar), False
+            return errEmbed().set_author(name=self.textMap.get(107, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
-            return defaultEmbed(message=f'兌換碼: {code}').set_author(name='兌換成功', icon_url=user.avatar), True
+            return defaultEmbed(message=f'{self.textMap.get(108, locale, user_locale)}: {code}').set_author(name=self.textMap.get(109, locale, user_locale), icon_url=user.avatar), True
 
-    async def getActivities(self, user_id: int, custom_uid: int):
-        client, uid, user = await self.getUserCookie(user_id)
+    async def getActivities(self, user_id: int, custom_uid: int, locale: Locale):
+        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
         uid = custom_uid or uid
         try:
             activities = await client.get_genshin_activities(uid)
         except genshin.errors.DataNotPublic:
-            return errEmbed(message='輸入 `/stuck` 來獲取更多資訊').set_author(name='資料不公開', icon_url=user.avatar), False
+            return errEmbed(message=self.textMap.get(21, locale, user_locale)).set_author(name=self.textMap.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return errEmbed(message=f'```{e}```').set_author(name='錯誤', icon_url=user.avatar), False
+            return errEmbed(message=f'```{e}```').set_author(name=self.textMap.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             summer = activities.summertime_odyssey
             if summer is None:
-                return errEmbed().set_author(name='找不到你的海島活動資料', icon_url=user.avatar), False
-            result = await self.parseSummerEmbed(summer, user, custom_uid)
+                return errEmbed().set_author(name=self.textMap.get(110, locale, user_locale), icon_url=user.avatar), False
+            result = await self.parseSummerEmbed(summer, user, custom_uid, locale, user_locale)
             return result, True
 
-    async def parseSummerEmbed(self, summer: genshin.models.Summer, user: Member, custom_uid: int = None) -> list[Embed]:
+    async def parseSummerEmbed(self, summer: genshin.models.Summer, user: Member, custom_uid: int, locale: Locale, user_locale: Literal["str", None]) -> list[Embed]:
         embeds = []
-        embed = defaultEmbed().set_author(name='金蘋果群島', icon_url=user.avatar)
+        embed = defaultEmbed().set_author(name=self.textMap.get(111, locale, user_locale), icon_url=user.avatar)
         embed.add_field(
-            name='<:SCORE:983948729293897779> 總覽',
-            value=f'浪船錨點: {summer.waverider_waypoints}/13\n'
-            f'傳送點: {summer.waypoints}/10\n'
-            f'寶箱數: {summer.treasure_chests}'
+            name=f'<:SCORE:983948729293897779> {self.textMap.get(43, locale, user_locale)}',
+            value=f'{self.textMap.get(112, locale, user_locale)}: {summer.waverider_waypoints}/13\n'
+            f'{self.textMap.get(113, locale, user_locale)}: {summer.waypoints}/10\n'
+            f'{self.textMap.get(114, locale, user_locale)}: {summer.treasure_chests}'
         )
         embeds.append(embed)
-        embed = defaultEmbed().set_author(name='金蘋果群島', icon_url=user.avatar)
+        embed = defaultEmbed().set_author(name=self.textMap.get(111, locale, user_locale), icon_url=user.avatar)
         surfs = summer.surfpiercer
         value = ''
         for surf in surfs:
             if surf.finished:
                 minutes, seconds = divmod(surf.time, 60)
-                time_str = f'{minutes}分 {seconds}秒' if minutes != 0 else f'{seconds}秒'
+                time_str = f'{minutes}{self.textMap.get(7, locale, user_locale)} {seconds}{self.textMap.get(8, locale, user_locale)}' if minutes != 0 else f'{seconds}{self.textMap.get(8, locale, user_locale)}'
                 value += f'{surf.id}. {time_str}\n'
             else:
-                value += f'{surf.id}. *尚未完成* \n'
+                value += f'{surf.id}. *{self.textMap.get(115, locale, user_locale)}* \n'
         embed.add_field(
-            name='逸速穿浪',
+            name=self.textMap.get(116, locale, user_locale),
             value=value
         )
         embed.set_thumbnail(url='https://i.imgur.com/Qt4Tez0.png')
         embeds.append(embed)
         memories = summer.memories
         for memory in memories:
-            embed = defaultEmbed().set_author(name='金蘋果群島 - 夏日回憶', icon_url=user.avatar)
+            embed = defaultEmbed().set_author(name=self.textMap.get(117, locale, user_locale), icon_url=user.avatar)
             embed.set_thumbnail(url='https://i.imgur.com/yAbpUF8.png')
             embed.set_image(url=memory.icon)
             embed.add_field(name=memory.name,
-                            value=f'完成時間: {memory.finish_time}')
+                            value=f'{self.textMap.get(119, locale, user_locale)}: {memory.finish_time}')
             embeds.append(embed)
         realms = summer.realm_exploration
         for realm in realms:
-            embed = defaultEmbed().set_author(name='金蘋果群島 - 謎域探索', icon_url=user.avatar)
+            embed = defaultEmbed().set_author(name=self.textMap.get(118, locale, user_locale), icon_url=user.avatar)
             embed.set_thumbnail(url='https://i.imgur.com/0jyBciz.png')
             embed.set_image(url=realm.icon)
             embed.add_field(
                 name=realm.name,
-                value=f'初次探索完成時間: {realm.finish_time if realm.finished else "尚未完成"}\n'
-                f'累計成功挑戰 {realm.success} 次\n'
-                f'累計釋放 {realm.skills_used} 次技能'
+                value=f'{self.textMap.get(119, locale, user_locale)}: {realm.finish_time if realm.finished else self.textMap.get(115, locale, user_locale)}\n'
+                f'{self.textMap.get(120, locale, user_locale)} {realm.success} {self.textMap.get(121, locale, user_locale)}\n'
+                f'{self.textMap.get(122, locale, user_locale)} {realm.skills_used} {self.textMap.get(121, locale, user_locale)}'
             )
             embeds.append(embed)
         if custom_uid is not None:
             embed: Embed
             for embed in embeds:
-                embed.set_footer(text=f'自訂 UID 搜尋: {custom_uid}')
+                embed.set_footer(text=f'{self.textMap.get(123, locale, user_locale)}: {custom_uid}')
         return embeds
 
-    async def getUserCookie(self, user_id: int):
+    async def getUserCookie(self, user_id: int, locale: Locale=None):
         user = self.bot.get_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
@@ -489,10 +506,15 @@ class GenshinApp:
             client = genshin.Client()
             client.set_cookies(
                 ltuid=user_data[0], ltoken=user_data[1], account_id=user_data[0], cookie_token=user_data[2])
-            client.lang = "zh-tw"
             client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid
-        return client, uid, user
+        user_locale = await self.textMap.getUserLocale(user_id)
+        if user_locale is not None:
+            locale = user_locale
+        client_locale = DLGP.get(str(locale)) or 'en-us'
+        client.lang = client_locale
+        await client.update_character_names(lang=client._lang)
+        return client, uid, user, user_locale
 
     async def userDataExists(self, user_id: int):
         c: aiosqlite.Cursor = await self.db.cursor()

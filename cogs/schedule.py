@@ -36,7 +36,7 @@ class Schedule(commands.Cog):
         users = await c.fetchall()
         for index, tuple in enumerate(users):
             user_id = tuple[0]
-            client, uid, user = await self.genshin_app.getUserCookie(user_id)
+            client, uid, user, user_locale = await self.genshin_app.getUserCookie(user_id)
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -62,7 +62,7 @@ class Schedule(commands.Cog):
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
-            client, uid, user = await self.genshin_app.getUserCookie(user_id)
+            client, uid, user, user_locale = await self.genshin_app.getUserCookie(user_id)
             try:
                 notes = await client.get_notes(uid)
             except genshin.errors.InvalidCookies:

@@ -1,24 +1,26 @@
 import json
 import os
 import re
-import yaml
 from datetime import datetime
-from enkanetwork import EnkaNetworkResponse
-from enkanetwork.enum import EquipmentsType
-from enkanetwork import model
+from typing import Literal
+
+import aiosqlite
 import discord
 import genshin
-from pyppeteer.browser import Browser
+import yaml
+from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
 from data.game.fight_prop import fight_prop
+from data.game.GOModes import hitModes, infusionAuras, reactionModes
+from data.game.good_stats import good_stats
 from data.game.talents import talents_map
 from data.game.weapons import weapons_map
-from data.game.artifacts import artifacts_map
-from data.game.good_stats import good_stats
-from data.game.GOModes import hitModes, reactionModes, infusionAuras
 from dotenv import load_dotenv
+from enkanetwork import EnkaNetworkResponse, model
+from enkanetwork.enum import EquipmentsType
 from pyppeteer import launch
+from pyppeteer.browser import Browser
 
 load_dotenv()
 
@@ -33,6 +35,34 @@ def ayaakaaEmbed(title: str = '', message: str = ''):
 
 def errEmbed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xfc5165)
+
+
+class TextMap():
+    def __init__(self, db: aiosqlite.Connection):
+        with open(f'data/textMap/textMap.yaml', 'r', encoding='utf-8') as f:
+            self.textMap = yaml.full_load(f)
+        self.db = db
+
+    def get(self, textMapHash: int, locale: discord.Locale, user_locale: str):
+        text = self.textMap.get(textMapHash)
+        if text is None:
+            raise ValueError(f'textMapHash not found: {textMapHash}')
+        else:
+            if user_locale is not None:
+                locale = user_locale
+            if str(locale) not in text:
+                return text['en-US']
+            else:
+                return text[str(locale)]
+
+    async def getUserLocale(self, user_id: int):
+        c = await self.db.cursor()
+        await c.execute('SELECT lang FROM user_lang WHERE user_id = ?', (user_id,))
+        user_lang = await c.fetchone()
+        if user_lang is None:
+            return None
+        else:
+            return user_lang[0]
 
 
 def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
@@ -106,11 +136,12 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
         talent_to_calculate.remove('Ele. Burst')
     elif chara_name in no_ele_skill:
         talent_to_calculate.remove('Ele. Skill')
-    if int(character_id) == 10000060: # calculating damage for Yelan
-        for character in data.characters: # search for Yelan in characters
+    if int(character_id) == 10000060:  # calculating damage for Yelan
+        for character in data.characters:  # search for Yelan in characters
             if character.id == 10000060:
-                if character.constellations_unlocked == 6: # yelan is C6
-                    talent_to_calculate.remove('Normal Atk.') # don't calculate normal attack damage
+                if character.constellations_unlocked == 6:  # yelan is C6
+                    # don't calculate normal attack damage
+                    talent_to_calculate.remove('Normal Atk.')
     # browser = await launch({"headless": False, "args": ["--start-maximized"]})
     page = await browser.newPage()
     await page.setViewport({"width": 1440, "height": 900})
@@ -354,9 +385,16 @@ def trimCookie(cookie: str) -> str:
     return new_cookie
 
 
-def getWeekdayName(n: int) -> str:
-    weekday_dict = {0: '週一', 1: '週二', 2: '週三',
-                    3: '週四', 4: '週五', 5: '週六', 6: '週日'}
+def getWeekdayName(n: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
+    weekday_dict = {
+        0: textMap.get(25, locale, user_locale),
+        1: textMap.get(26, locale, user_locale),
+        2: textMap.get(27, locale, user_locale),
+        3: textMap.get(28, locale, user_locale),
+        4: textMap.get(29, locale, user_locale),
+        5: textMap.get(30, locale, user_locale),
+        6: textMap.get(31, locale, user_locale)
+    }
     return weekday_dict.get(n)
 
 
@@ -367,12 +405,12 @@ def divide_chunks(l, n):
 
 def getElement(element: str):
     elements = {
-        '風': {'emoji': '<:WIND_ADD_HURT:982138235239137290>','eng': 'Anemo', 'name': '風'},
-        '冰': {'emoji': '<:ICE_ADD_HURT:982138229140635648>','eng': 'Cryo', 'name': '冰'},
-        '雷': {'emoji': '<:ELEC_ADD_HURT:982138220248711178>','eng': 'Electro', 'name': '雷'},
-        '岩': {'emoji': '<:ROCK_ADD_HURT:982138232391237632>','eng': 'Geo', 'name': '岩'},
-        '水': {'emoji': '<:WATER_ADD_HURT:982138233813098556>','eng': 'Hydro', 'name': '水'},
-        '火': {'emoji': '<:FIRE_ADD_HURT:982138221569900585>','eng': 'Pyro', 'name': '火'}
+        '風': {'emoji': '<:WIND_ADD_HURT:982138235239137290>', 'eng': 'Anemo', 'name': '風'},
+        '冰': {'emoji': '<:ICE_ADD_HURT:982138229140635648>', 'eng': 'Cryo', 'name': '冰'},
+        '雷': {'emoji': '<:ELEC_ADD_HURT:982138220248711178>', 'eng': 'Electro', 'name': '雷'},
+        '岩': {'emoji': '<:ROCK_ADD_HURT:982138232391237632>', 'eng': 'Geo', 'name': '岩'},
+        '水': {'emoji': '<:WATER_ADD_HURT:982138233813098556>', 'eng': 'Hydro', 'name': '水'},
+        '火': {'emoji': '<:FIRE_ADD_HURT:982138221569900585>', 'eng': 'Pyro', 'name': '火'}
     }
     for element_name, element_info in elements.items():
         if element_name == element or element_info['eng'] == element or element_info['eng'].lower() == element:
@@ -423,15 +461,16 @@ def getFightProp(id: str = '', name: str = ''):
     raise ValueError(f'Unknwon fight prop {id}{name}')
 
 
-def getAreaEmoji(area_name: str):
+def getAreaEmoji(exploration_id: int):
     emoji_dict = {
-        '蒙德': '<:Emblem_Mondstadt:982449412938809354>',
-        '璃月': '<:Emblem_Liyue:982449411047165992>',
-        '稻妻': '<:Emblem_Inazuma:982449409117806674>',
-        '層岩巨淵': '<:Emblem_Chasm:982449404076249138>',
-        '層岩巨淵·地下礦區': '<:Emblem_Chasm:982449404076249138>',
-        '淵下宮': '<:Emblem_Enkanomiya:982449407469441045>',
-        '龍脊雪山': '<:Emblem_Dragonspine:982449405883977749>'
+        1: '<:Emblem_Mondstadt:982449412938809354>',
+        2: '<:Emblem_Liyue:982449411047165992>',
+        3: '<:Emblem_Dragonspine:982449405883977749>',
+        4: '<:Emblem_Inazuma:982449409117806674>',
+        5: '<:Emblem_Enkanomiya:982449407469441045>',
+        6: '<:Emblem_Chasm:982449404076249138>',
+        7: '<:Emblem_Chasm:982449404076249138>',
     }
-    emoji = emoji_dict.get(area_name)
+
+    emoji = emoji_dict.get(exploration_id)
     return emoji or ''
