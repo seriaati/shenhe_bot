@@ -3,7 +3,7 @@ from typing import Literal
 
 import aiosqlite
 import genshin
-from data.textMap.dc_local_to_genshin_py import DLGP
+from data.textMap.dc_locale_to_genshin_py import DLGP
 from discord import Embed, Locale, Member, SelectOption
 from discord.ext import commands
 from utility.utils import (TextMap, defaultEmbed, errEmbed, getAreaEmoji,
