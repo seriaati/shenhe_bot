@@ -70,9 +70,3 @@ nsfw_tags = {
     '絕對領域': {'libs': ['hmtai'], 'value': 'zettaiRyouiki', 'description': '接近大腿根部的部位?'},
     'hass': {'libs': ['nekobot'], 'value': 'hass', 'description': '應該是屁股的意思...但是又不太一樣'}
 }
-
-wallpaper_tags = {
-    '正常的電腦桌面背景': {'libs': ['hmtai'], 'value': 'wallpaper', 'description': '', 'nsfw': False},
-    '正常的手機背景': {'libs': ['hmtai'], 'value': 'mobileWallpaper', 'description': '', 'nsfw': False},
-    '色色的手機背景': {'libs': ['hmtai'], 'value': 'nsfwMobileWallpaper', 'description': '你想拿色圖當手機桌面嗎 0.0', 'nsfw': True},
-}

@@ -6,7 +6,7 @@ from typing import Any, List
 import aiosqlite
 import hmtai
 import waifuim
-from data.waifu.waifu_tags import nsfw_tags, sfw_tags, wallpaper_tags
+from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
 from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
                      app_commands)
@@ -69,10 +69,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                 for tag_name, tag_info in nsfw_tags.items():
                     options.append(SelectOption(
                         label=tag_name, value=f'{str(tag_info["libs"])}/{tag_info["value"]}', description=tag_info["description"]))
-            elif type == 'wallpaper':
-                for tag_name, tag_info in wallpaper_tags.items():
-                    options.append(SelectOption(
-                        label=tag_name, value=f'{str(tag_info["libs"])}/{tag_info["value"]}/{tag_info["nsfw"]}', description=tag_info["description"]))
             divided = list(divide_chunks(options, 25))
             first = 1
             second = len(divided[0])
@@ -136,57 +132,6 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         async def deleteImage(self, i: Interaction, button: Button):
             await i.response.defer()
             await i.message.delete()
-
-    @app_commands.command(name='wallpaper桌面背景', description='透過選擇標籤來產出可以拿來當作桌布的圖片')
-    @app_commands.rename(num='張數')
-    @app_commands.describe(num='上限 5 張')
-    async def wallpaper(self, i: Interaction, num: int = 1):
-        if num > 5:
-            return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
-        view = WaifuCog.ChooseTagView(i.user, type='wallpaper')
-        await i.response.send_message(view=view)
-        await view.wait()
-        x = view.tag.split('/')
-        libs = ast.literal_eval(x[0])
-        tag = x[1]
-        lib = random.choice(libs)
-        nsfw = x[2]
-        url = (hmtai.get(lib, tag))
-        if nsfw == 'True':
-            if not i.channel.nsfw:
-                return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
-            if num == 1:
-                await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
-                async with self.bot.session.get(str(url)) as resp:
-                    bytes_obj = io.BytesIO(await resp.read())
-                    file = File(
-                        bytes_obj, filename='waifu_image.gif', spoiler=True)
-                await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(i.user))
-            else:
-                await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
-                for index in range(0, num):
-                    lib = random.choice(libs)
-                    url = (hmtai.get(lib, tag))
-                    if url is None:
-                        break
-                    async with self.bot.session.get(str(url)) as resp:
-                        bytes_obj = io.BytesIO(await resp.read())
-                        file = File(
-                            bytes_obj, filename='waifu_image.gif', spoiler=True)
-                    await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
-                await i.delete_original_message()
-        else:
-            if num == 1:
-                await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
-            else:
-                embeds = []
-                for index in range(0, num):
-                    lib = random.choice(libs)
-                    embed = defaultEmbed(f'標籤: {tag}')
-                    embed.set_image(url=(hmtai.get(lib, tag)))
-                    embed.set_footer(text=f'API: {lib}')
-                    embeds.append(embed)
-                await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
 
     @app_commands.command(name='nsfw色圖', description='透過選擇標籤來產出色色的圖片', nsfw=True)
     @app_commands.rename(num='張數')
