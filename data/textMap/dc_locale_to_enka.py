@@ -7,6 +7,7 @@ DLE = {
     'fr': 'fr',
     'ja': 'jp',
     'ko': 'kr',
+    'th': 'th',
     'pt-BR': 'pt',
     'ru': 'ru',
     'vi': 'vn'

@@ -7,6 +7,7 @@ DLGP = {
     'fr': 'fr-fr',
     'ja': 'ja-jp',
     'ko': 'ko-kr',
+    'th': 'th-th',
     'pt-BR': 'pt-pt',
     'ru': 'ru-ru',
     'vi': 'vi-vn'
