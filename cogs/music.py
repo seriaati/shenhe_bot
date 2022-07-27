@@ -96,7 +96,8 @@ class MusicCog(commands.GroupCog, name='music'):
                 ):
                     async for partial in spotify.SpotifyTrack.iterator(query=decoded["id"], partial_tracks=True, type=decoded["type"]):
                         vc.queue.put(partial)
-                    await vc.play(vc.queue[0])
+                    if not vc.is_playing():
+                        await vc.play(vc.queue[0])
                     return await i.followup.send(embed=defaultEmbed().set_author(name='已將播放清單新增至待播清單', icon_url=i.user.avatar))
                 else:
                     emoji = '<:spotify:985539937053061190>'
@@ -112,7 +113,8 @@ class MusicCog(commands.GroupCog, name='music'):
                         return await i.followup.send(embed=errEmbed(message=f"```py\n{e}\n```").set_author(name='無效的播放清單', icon_url=i.user.avatar))
                     for track in playlist.tracks:
                         vc.queue.put(track)
-                    await vc.play(vc.queue[0])
+                    if not vc.is_playing():
+                        await vc.play(vc.queue[0])
                     embed = defaultEmbed(f'{emoji} {playlist.name}')
                     embed.set_author(name='已將播放清單中的歌曲新增至待播清單', icon_url=i.user.avatar)
                     embed.set_image(url=vc.queue[0].thumb)
@@ -134,7 +136,10 @@ class MusicCog(commands.GroupCog, name='music'):
             await view.wait()
             track = await wavelink.YouTubeTrack.search(query=view.uri, return_first=True)
         try:
-            await vc.play(track)
+            if not vc.is_playing():
+                await vc.play(track)
+            else:
+                vc.queue.put(track)
         except AttributeError:
             return await i.followup.send(embed=errEmbed().set_author(name='無效的歌曲', icon_url=i.user.avatar), ephemeral=True)
         embed = defaultEmbed(f'{emoji} {track.title}').set_author(name='已將歌曲新增至待播清單', icon_url=i.user.avatar)
@@ -343,9 +348,9 @@ class MusicCog(commands.GroupCog, name='music'):
         async def action(one_person: bool):
             await vc.stop()
             if one_person:
-                await i.response.send_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0]}'))
+                await i.response.send_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0].title}'))
             else:
-                await i.edit_original_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0]}'), view=None)
+                await i.edit_original_message(embed=defaultEmbed('跳過成功', f'正在播放: {vc.queue[0].title}'), view=None)
         if len(vc.channel.members)-1 <= 2:
             await action(True)
         else:
