@@ -21,7 +21,7 @@ from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Modal, Select, TextInput, button
-from enkanetwork import EnkaNetworkAPI, EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
+from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
 from enkanetwork.enum import DigitType, EquipmentsType
 from pyppeteer.browser import Browser
 from utility.apps.GenshinApp import GenshinApp
@@ -41,6 +41,43 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
         self.textMap = TextMap(self.bot.db)
+        self.search_uid_context_menu = app_commands.ContextMenu(
+            name='查看 UID',
+            callback=self.search_uid_ctx_menu
+        )
+        self.profile_context_menu = app_commands.ContextMenu(
+            name='查看 profile',
+            callback=self.profile_ctx_menu
+        )
+        self.characters_context_menu = app_commands.ContextMenu(
+            name='查看所有角色',
+            callback=self.characters_ctx_menu
+        )
+        self.stats_context_menu = app_commands.ContextMenu(
+            name='原神數據',
+            callback=self.stats_ctx_menu
+        )
+        self.check_context_menu = app_commands.ContextMenu(
+            name='即時便籤',
+            callback=self.check_ctx_menu
+        )
+        self.bot.tree.add_command(self.search_uid_context_menu)
+        self.bot.tree.add_command(self.profile_context_menu)
+        self.bot.tree.add_command(self.characters_context_menu)
+        self.bot.tree.add_command(self.stats_context_menu)
+        self.bot.tree.add_command(self.check_context_menu)
+        
+    async def cog_unload(self) -> None:
+        self.bot.tree.remove_command(
+            self.search_uid_context_menu.name, type=self.search_uid_context_menu.type)
+        self.bot.tree.remove_command(
+            self.profile_context_menu.name, type=self.profile_context_menu.type)
+        self.bot.tree.remove_command(
+            self.characters_context_menu.name, type=self.characters_context_menu.type)
+        self.bot.tree.remove_command(
+            self.stats_context_menu.name, type=self.stats_context_menu.type)
+        self.bot.tree.remove_command(
+            self.check_context_menu.name, type=self.check_context_menu.type)
 
     class CookieModal(Modal):
         def __init__(self, genshin_app: GenshinApp):
@@ -128,6 +165,13 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
+        
+    async def check_ctx_menu(self, i: Interaction, member: Member):
+        exists = await self.genshin_app.userDataExists(member.id)
+        if not exists:
+            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+        result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
+        await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量 (需註冊)')
     @app_commands.rename(member='其他人', custom_uid='uid')
@@ -136,6 +180,10 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         result, success = await self.genshin_app.getUserStats(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
+        
+    async def stats_ctx_menu(self, i: Interaction, member: Member):
+        result, success = await self.genshin_app.getUserStats(member.id, None, i.locale)
+        await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='area探索度', description='查看區域探索度 (需註冊)')
     @app_commands.rename(member='其他人', custom_uid='uid')
@@ -168,6 +216,12 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
     async def characters(self, i: Interaction, member: Member = None):
+        await self.characters_comamnd(i, member, False)
+        
+    async def characters_ctx_menu(self, i: Interaction, member: Member):
+        await self.characters_comamnd(i, member)
+    
+    async def characters_comamnd(self, i: Interaction, member: Member = None, ephemeral: bool = True):
         member = member or i.user
         exists = await self.genshin_app.userDataExists(member.id)
         if not exists:
@@ -175,7 +229,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.getUserCharacters(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True, check=False)
+        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True, check=False, ephemeral=ephemeral)
 
     class DiaryLogView(DefaultView):
         def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):
@@ -610,6 +664,12 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
+        await self.search_uid_command(i, player, False)
+        
+    async def search_uid_ctx_menu(self, i: Interaction, player: Member):
+        await self.search_uid_command(i, player)
+        
+    async def search_uid_command(self, i: Interaction, player: Member, ephemeral: bool = True):
         if i.guild.id == 916838066117824553:
             c = await self.bot.main_db.cursor()
         else:
@@ -618,43 +678,11 @@ class GenshinCog(commands.Cog, name='genshin'):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
-            return await i.response.send_message(embed=errEmbed('這個使用者還沒有註冊過UID\n請至 <#978871680019628032> 註冊 UID').set_author(name='查無 UID', icon_url=player.avatar), ephemeral=True)
+            return await i.response.send_message(embed=errEmbed('這個使用者還沒有註冊過UID\n`/register` 來註冊帳號').set_author(name='查無 UID', icon_url=player.avatar), ephemeral=True)
         uid = uid[0]
-        embed = defaultEmbed()
-        embed.set_author(name=uid, icon_url=player.avatar)
-        await i.response.send_message(embed=embed)
-
-    def oculi_embed_style(element: str, url: str):
-        embed = defaultEmbed(f'{element}神瞳位置')
-        embed.set_image(url=url)
-        embed.set_footer(text='單純功能搬運, 圖源並非來自我')
-        return embed
-
-    def get_oculi_embeds(area: int):
-        embeds = []
-        if area == 0:
-            for i in range(1, 5):
-                url = f'https://fortoffans.github.io/Maps/Oculus/Anemoculus/Map_Anemoculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_embed_style('風', url))
-        elif area == 1:
-            for i in range(1, 6):
-                url = f'https://images-ext-1.discordapp.net/external/Gm5I4dqqanZEksPk7pggWfwoqW5UOiKPJP8Rt-uYQ5E/https/fortoffans.github.io/Maps/Oculus/Geoculus/Map_Geoculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_embed_style('岩', url))
-        elif area == 2:
-            for i in range(1, 7):
-                url = f'https://images-ext-1.discordapp.net/external/u6qgVi5Fk28_wwEuu3OS9blTzC-7JQpridJiWv0vI5s/https/fortoffans.github.io/Maps/Oculus/Electroculus/Map_Electroculus_{i}.jpg?width=831&height=554'
-                embeds.append(GenshinCog.oculi_embed_style('雷', url))
-        return embeds
-
-    @app_commands.command(name='oculi神瞳', description='查看不同地區的神瞳位置')
-    @app_commands.rename(area='地區')
-    @app_commands.choices(area=[
-        Choice(name='蒙德', value=0),
-        Choice(name='璃月', value=1),
-        Choice(name='稻妻', value=2)])
-    async def oculi(self, i: Interaction, area: int):
-        embeds = GenshinCog.get_oculi_embeds(area)
-        await GeneralPaginator(i, embeds).start(embeded=True)
+        embed = defaultEmbed(uid)
+        embed.set_author(name=f'{player.display_name} 的 UID', icon_url=player.avatar)
+        await i.response.send_message(embed=embed, ephemeral=ephemeral)
 
     class EnkaPageView(DefaultView):
         def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member):
@@ -832,7 +860,13 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他人的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
-        await i.response.defer()
+        await self.profile_command(i, member, custom_uid, False)
+        
+    async def profile_ctx_menu(self, i: Interaction, member: Member):
+        await self.profile_command(i, member)
+    
+    async def profile_command(self, i: Interaction, member: Member = None, custom_uid: int = None, ephemeral: bool = True):
+        await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await self.textMap.getUserLocale(i.user.id)
         user_locale = user_locale or i.locale
@@ -944,7 +978,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         view = GenshinCog.EnkaPageView(
             embeds, artifact_embeds, options, data, self.bot.browser, eng_data, i.user)
-        await i.followup.send(embed=embeds['0'], view=view)
+        await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼 (需註冊)')
     @app_commands.rename(code='兌換碼')
