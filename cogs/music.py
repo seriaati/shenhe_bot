@@ -322,7 +322,7 @@ class MusicCog(commands.GroupCog, name='music'):
             value = ''
             for track in queue:
                 if isinstance(track, wavelink.PartialTrack):
-                    value += f'{count}. spotify 歌曲不支援待播清單顯示\n'
+                    value += f'{count}. {track.title}\n'
                 else:
                     value += f'{count}. {track.info["title"]}\n'
                 count += 1
