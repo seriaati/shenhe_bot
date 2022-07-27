@@ -22,6 +22,8 @@ from enkanetwork.enum import EquipmentsType
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 
+from data.textMap.dc_locale_to_enka import DLE
+
 load_dotenv()
 
 
@@ -41,6 +43,8 @@ class TextMap():
     def __init__(self, db: aiosqlite.Connection):
         with open(f'data/textMap/textMap.yaml', 'r', encoding='utf-8') as f:
             self.textMap = yaml.full_load(f)
+        with open(f'data/textMap/avatar.json', 'r', encoding='utf-8') as f:
+            self.avatar = yaml.full_load(f)
         self.db = db
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str):
@@ -54,6 +58,36 @@ class TextMap():
                 return text['en-US']
             else:
                 return text[str(locale)]
+            
+    def getAvatar(self, character_id: int, locale: discord.Locale, user_locale: str):
+        avatarText = self.avatar.get(str(character_id))
+        if avatarText is None:
+            raise ValueError(f'avatar not found: {character_id}')
+        else:
+            if user_locale is not None:
+                locale = user_locale
+            enka_locale = DLE.get(str(locale))
+            return avatarText[str(enka_locale)]
+        
+    def getMaterial(self, material_id: int, locale: discord.Locale, user_locale: str):
+        avatarText = self.avatar.get(str(material_id))
+        if avatarText is None:
+            raise ValueError(f'avatar not found: {material_id}')
+        else:
+            if user_locale is not None:
+                locale = user_locale
+            enka_locale = DLE.get(str(locale))
+            return avatarText[str(enka_locale)]
+        
+    def getWeapon(self, weapon_id: int, locale: discord.Locale, user_locale: str):
+        avatarText = self.avatar.get(str(weapon_id))
+        if avatarText is None:
+            raise ValueError(f'avatar not found: {weapon_id}')
+        else:
+            if user_locale is not None:
+                locale = user_locale
+            enka_locale = DLE.get(str(locale))
+            return avatarText[str(enka_locale)]
 
     async def getUserLocale(self, user_id: int):
         c = await self.db.cursor()
