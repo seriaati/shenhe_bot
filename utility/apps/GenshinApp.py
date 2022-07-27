@@ -112,7 +112,7 @@ class GenshinApp:
         result.add_field(
             name=f'<:resin:956377956115157022> {self.textMap.get(13, locale, user_locale)}',
             value=f" {self.textMap.get(14, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
-            f"{self.textMap.get(15, locale, user_locale)} {resin_recover_time}\n"
+            f"{self.textMap.get(15, locale, user_locale)}: {resin_recover_time}\n"
             f'{self.textMap.get(16, locale, user_locale)}: {notes.remaining_resin_discounts}/3',
             inline=False
         )
@@ -451,6 +451,7 @@ class GenshinApp:
             f'{self.textMap.get(113, locale, user_locale)}: {summer.waypoints}/10\n'
             f'{self.textMap.get(114, locale, user_locale)}: {summer.treasure_chests}'
         )
+        embed.set_image(url='https://i.imgur.com/Zk1tqxA.png')
         embeds.append(embed)
         embed = defaultEmbed().set_author(name=self.textMap.get(111, locale, user_locale), icon_url=user.avatar)
         surfs = summer.surfpiercer

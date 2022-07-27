@@ -18,12 +18,14 @@ class Dropdown(Select):
                          description='整理要打的素材, 乾淨俐落', emoji='✅'),
             SelectOption(label='二次元圖片系統', description='香香的',
                          emoji='2️⃣'),
+            SelectOption(label='其他', description='其他指令',
+                         emoji='❄️'),
         ]
         super().__init__(placeholder='你想要什麼樣的幫助呢?', options=options)
         self.bot = bot
 
     async def callback(self, interaction: Interaction):
-        cogs = ['genshin', 'wish', 'calc', 'todo', 'waifu']
+        cogs = ['genshin', 'wish', 'calc', 'todo', 'waifu', 'others']
         for index, option in enumerate(self.options):
             if option.value == self.values[0]:
                 selected_option = option

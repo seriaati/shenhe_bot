@@ -610,7 +610,11 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        if i.guild.id == 916838066117824553:
+            c = await self.bot.main_db.cursor()
+        else:
+            c = await self.bot.db.cursor()
+        c: aiosqlite.Cursor
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
@@ -1048,7 +1052,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(self.c)]).start(embeded=True, edit_original_message=True)
 
     def rank_user(user_id: int, leaderboard: List[Tuple]):
-        interaction_user_rank = '(不在榜內)'
+        interaction_user_rank = '不在榜內'
         rank = 1
         for index, tuple in enumerate(leaderboard):
             if tuple[0] == user_id:
