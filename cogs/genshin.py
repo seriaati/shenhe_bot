@@ -1007,11 +1007,14 @@ class GenshinCog(commands.Cog, name='genshin'):
         async with self.bot.session.get(f'https://api.ambr.top/assets/data/event.json') as r:
             events = await r.json()
         embeds = []
+        user_locale = await self.textMap.getUserLocale(i.user.id)
+        user_locale = user_locale or i.locale 
+        enka_locale = DLE.get(str(user_locale)).upper()
         for event_id, event in events.items():
             value = GenshinCog.parse_event_description(
-                event['description']['CHT'])
+                event['description'][enka_locale])
             embed = defaultEmbed(
-                event['name']['CHT'], event['nameFull']['CHT'])
+                event['name']['CHT'], event['nameFull'][enka_locale])
             if len(value) < 1024:
                 embed.add_field(
                     name='<:placeholder:982425507503165470>', value=value)
@@ -1021,7 +1024,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     value = value[1024:]
                     embed.add_field(
                         name='<:placeholder:982425507503165470>', value=new_value)
-            embed.set_image(url=event['banner']['CHT'])
+            embed.set_image(url=event['banner'][enka_locale])
             embeds.append(embed)
         await GeneralPaginator(i, embeds).start(embeded=True)
 
