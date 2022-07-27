@@ -29,7 +29,7 @@ class GenshinApp:
             return result, False
         client = genshin.Client()
         user_locale = user_locale or locale
-        client.lang = DLGP.get(user_locale)
+        client.lang = DLGP.get(str(user_locale))
         client.set_cookies(
             ltuid=cookie[0], ltoken=cookie[1], account_id=cookie[0], cookie_token=cookie[2])
         accounts = await client.get_game_accounts()
