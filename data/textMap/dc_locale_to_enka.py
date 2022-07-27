@@ -10,5 +10,5 @@ DLE = {
     'th': 'th',
     'pt-BR': 'pt',
     'ru': 'ru',
-    'vi': 'vn'
+    'vi': 'vi'
 }
