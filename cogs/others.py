@@ -7,6 +7,8 @@ from discord.ext import commands
 from discord.ui import Select
 from utility.utils import defaultEmbed, TextMap, errEmbed
 from data.textMap.dc_locale_to_enka import DLE
+import sys
+import importlib
 
 
 class OthersCog(commands.Cog, name='others'):
@@ -112,7 +114,7 @@ class OthersCog(commands.Cog, name='others'):
         embed.set_author(name='更改語言', icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=OthersCog.LangView(i.locale, self.bot.db, user_locale), ephemeral=True)
         
-    @app_commands.command(name='update更新', description='更新原神資料（管理員用指令）')
+    @app_commands.command(name='update更新', description='更新原神資料（管理員用）')
     async def update(self, i: Interaction):
         if i.user.id != 410036441129943050:
             return await i.response.send_message(embed=errEmbed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
@@ -131,6 +133,15 @@ class OthersCog(commands.Cog, name='others'):
                 json.dump(dict, f, indent=4)
         await i.edit_original_message(embed=defaultEmbed().set_author(name='更新資料完畢', icon_url=i.user.avatar))
     
+    @app_commands.command(name='reload重整', description='重整某個 module（管理員用）')
+    @app_commands.rename(module_name='名稱')
+    async def realod(self, i: Interaction, module_name: str):
+        try:
+            importlib.reload(sys.modules[module_name])
+        except KeyError:
+            return await i.response.send_message(embed=errEmbed(message=module_name).set_author(name='查無 module', icon_url=i.user.avatar), ephemeral=True)
+        else:
+            return await i.response.send_message(embed=defaultEmbed(message=module_name).set_author(name='重整成功', icon_url=i.user.avatar), ephemeral=True)
     
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))
