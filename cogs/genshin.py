@@ -1062,7 +1062,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(type='選擇要查看的排行榜分類')
     @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='歐氣榜', value=2)])
     async def leaderboard(self, i: Interaction, type: int):
-        await i.response.defer(ephemeral=True)
+        await i.response.defer()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
         uid = await c.fetchone()
@@ -1074,18 +1074,18 @@ class GenshinCog(commands.Cog, name='genshin'):
                 pass
             else:
                 achievement = data.player.achievement
-                await c.execute('INSERT INTO leaderboard (user_id, achievements, guild_id) VALUES (?, ?, ?) ON CONFLICT (user_id, guild_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.guild.id, i.user.id, achievement))
+                await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
                 if data.characters is not None:
                     for character in data.characters:
                         for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
                             for substat in artifact.detail.substats:
-                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ? AND guild_id = ?', (substat.prop_id, i.user.id, i.guild.id))
+                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
                                 sub_stat_value = await c.fetchone()
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value, guild_id) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat, guild_id) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.guild.id, i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}"))
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}"))
 
         if type == 0:
-            await c.execute('SELECT user_id, achievements FROM leaderboard WHERE guild_id = ?', (i.guild.id,))
+            await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: index[1], reverse=True)
             user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
@@ -1112,7 +1112,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             view = GenshinCog.ArtifactSubStatView(i.user)
             await i.followup.send(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
             await view.wait()
-            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ? AND guild_id =?', (view.sub_stat, i.guild.id))
+            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: float(
                 str(index[5]).replace('%', '')), reverse=True)
@@ -1143,7 +1143,7 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         elif type == 2:
             player = GGanalysislib.PityGacha()
-            await c.execute('SELECT DISTINCT user_id FROM wish_history WHERE guild_id = ?', (i.guild.id))
+            await c.execute('SELECT DISTINCT user_id FROM wish_history')
             result = await c.fetchall()
             data = {}
             for index, tuple in enumerate(result):
