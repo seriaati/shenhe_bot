@@ -10,7 +10,7 @@ from debug import DefaultView
 from discord import Button, Interaction, Member, SelectOption, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Select
+from discord.ui import Select, Modal
 from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
@@ -20,6 +20,22 @@ class FlowCog(commands.Cog, name='flow'):
         self.bot = bot
         self.flow_app = FlowApp(self.bot.db)
         self.debug_toggle = self.bot.debug_toggle
+        self.acc_context_menu = app_commands.ContextMenu(
+            name='查看 flow 帳號',
+            callback=self.acc_ctx_menu
+        )
+        self.give_context_menu = app_commands.ContextMenu(
+            name='給 flow 幣',
+            callback=self.give_ctx_menu
+        )
+        self.bot.tree.add_command(self.acc_context_menu)
+        self.bot.tree.add_command(self.give_context_menu)
+        
+    async def cog_unload(self) -> None:
+        self.bot.tree.remove_command(
+            self.acc_context_menu.name, type=self.acc_context_menu.type)
+        self.bot.tree.remove_command(
+            self.give_context_menu.name, type=self.give_context_menu.type)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -100,16 +116,30 @@ class FlowCog(commands.Cog, name='flow'):
         embed.add_field(name=f'{flow} flow',value=time_state_str)
         embed.set_author(name=f'flow 帳號', icon_url=member.avatar)
         await i.response.send_message(embed=embed)
+    
+    async def acc_ctx_menu(self, i: Interaction, member: Member):
+        check, msg = await self.flow_app.checkFlowAccount(member.id)
+        if check == False:
+            return await i.response.send_message(embed=msg, ephemeral=True)
+        db: aiosqlite.Connection = self.bot.db
+        c = await db.cursor()
+        await c.execute('SELECT morning, noon, night FROM flow_accounts WHERE user_id = ?', (member.id,))
+        result = await c.fetchone()
+        flow = await self.flow_app.get_user_flow(member.id)
+        time_state_str = ''
+        time_coin_list = ['<:morning:982608491426508810>', '<:noon:982608493313929246>', '<:night:982608497290125366>']
+        for index in range(0, 3):
+            new_time = (parser.parse(result[index])).strftime("%Y-%m-%d %H:%M:%S")
+            time_state_str += f'{time_coin_list[index]} {new_time}\n'
+        embed = defaultEmbed()
+        embed.add_field(name=f'{flow} flow',value=time_state_str)
+        embed.set_author(name=f'flow 帳號', icon_url=member.avatar)
+        await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name='give給錢', description='給其他人flow幣')
     @app_commands.rename(member='某人', flow='要給予的flow幣數量')
     async def give(self, i: Interaction, member: Member, flow: int):
         log(False, False, 'Give', f'{i.user.id} give {flow} to {member.id}')
-        if member.id == i.user.id:
-            return await i.response.send_message(
-                embed=errEmbed(message='<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!').set_author(
-                    name='不可以自己給自己flow幣', icon_url=i.user.avatar),
-                ephemeral=True)
         if flow < 0:
             return await i.response.send_message(
                 embed=errEmbed(message='<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!').set_author(
@@ -124,6 +154,43 @@ class FlowCog(commands.Cog, name='flow'):
             f"{self.bot.get_user(i.user.id).mention} **- {flow}** flow幣\n"
             f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣").set_author(name='交易成功', icon_url=i.user.avatar)
         await i.response.send_message(content=f'{i.user.mention}{member.mention}', embed=embed)
+        
+    class GiveFlowModal(Modal):
+        def __init__(self, member: Member):
+            super().__init__(title=f'給 {member.display_name} flow 幣', timeout=None)
+            
+        flow = discord.ui.TextInput(
+            label='Flow 幣數量',
+            placeholder='輸入要給予的 flow 幣數量',
+        )
+        
+        async def on_submit(self, i: Interaction) -> None:
+            await i.response.defer()
+            self.stop()
+    
+    async def give_ctx_menu(self, i: Interaction, member: Member):
+        modal = FlowCog.GiveFlowModal(member)
+        await i.response.send_modal(modal)
+        await modal.wait()
+        flow = modal.flow.value
+        if not flow.isnumeric():
+            return await i.response.send_message(embed=errEmbed().set_author(name='請輸入數字', icon_url=i.user.avatar), ephemeral=True)
+        flow = int(flow)
+        log(False, False, 'Give', f'{i.user.id} give {flow} to {member.id}')
+        if flow < 0:
+            return await i.response.send_message(
+                embed=errEmbed(message='<:PaimonSeria:958341967698337854> 還想學土司跟ceye洗錢啊!').set_author(
+                    name='不可以給負數flow幣', icon_url=i.user.avatar),
+                ephemeral=True)
+        user_flow = await self.flow_app.get_user_flow(i.user.id)
+        if user_flow < flow:
+            return await i.response.send_message(embed=errEmbed(f'需要至少: {flow} flow').set_author(name="flow 幣不足", icon_url=i.user.avatar), ephemeral=True)
+        await self.flow_app.transaction(i.user.id, -flow)
+        await self.flow_app.transaction(member.id, flow)
+        embed = defaultEmbed(message=
+            f"{self.bot.get_user(i.user.id).mention} **- {flow}** flow幣\n"
+            f"{self.bot.get_user(member.id).mention} **+ {flow}** flow幣").set_author(name='交易成功', icon_url=i.user.avatar)
+        await i.followup.send(content=f'{i.user.mention}{member.mention}', embed=embed)
 
     @app_commands.command(name='take收錢', description='將某人的flow幣轉回銀行')
     @app_commands.rename(member='某人', flow='要拿取的flow幣數量', private='私人訊息')
