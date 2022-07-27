@@ -1,10 +1,9 @@
 from random import randint
-import aiosqlite
 
+from debug import DefaultView
 from discord import Interaction, Member, Message, Role, app_commands
 from discord.ext import commands
 from discord.ui import Button
-from debug import DefaultView
 from utility.apps.FlowApp import FlowApp
 from utility.utils import defaultEmbed, errEmbed, log
 
@@ -152,19 +151,6 @@ class OtherCMDCog(commands.Cog, name='other'):
         view.add_item(Button(label="下載頭像", url=member.avatar.url))
         embed.set_image(url=member.avatar)
         await i.response.send_message(embed=embed, view=view)
-        
-    @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
-    @app_commands.rename(player='使用者')
-    @app_commands.describe(player='選擇想要查詢的使用者')
-    async def search_uid(self, i: Interaction, player: Member):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
-        uid = await c.fetchone()
-        if uid is None:
-            return await i.response.send_message(embed=errEmbed('這個使用者還沒有註冊過UID\n請至 <#978871680019628032> 註冊 UID').set_author(name='查無 UID', icon_url=player.avatar), ephemeral=True)
-        embed = defaultEmbed()
-        embed.set_author(name=uid[0], icon_url=player.avatar)
-        await i.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
