@@ -472,7 +472,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             artifact_embeds[str(character.id)] = artifact_embed
 
         view = EnkaProfile.View(embeds, artifact_embeds, options,
-                                data, self.bot.browser, eng_data, i.user, self.bot.db)
+                                data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼 (需註冊)')
@@ -630,7 +630,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.choices(type=[Choice(name='角色', value=0)])
     async def wiki(self, i: Interaction, type: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_locale = user_locale or i.locale 
+        user_locale = user_locale or i.locale
         ambr_top_locale = to_ambr_top(user_locale)
         if type == 0:
             async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar') as resp:
@@ -672,7 +672,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                     inline=True
                 )
             embeds.append(embed)
-            options.append(SelectOption(label=text_map.get(310, i.locale, user_locale), value=1))
+            options.append(SelectOption(label=text_map.get(
+                310, i.locale, user_locale), value=1))
             for talent_id, talent_info in avatar_data["talent"].items():
                 max = 3
                 if view.avatar_id == '10000002' or view.avatar_id == '10000041':
@@ -715,7 +716,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                     embed.set_thumbnail(
                         url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
-            options.append(SelectOption(label=text_map.get(94, i.locale, user_locale), value=2))
+            options.append(SelectOption(label=text_map.get(
+                94, i.locale, user_locale), value=2))
             options.append(SelectOption(
                 label=text_map.get(313, i.locale, user_locale), value=5 if max == 3 else 6))
             const_count = 1
