@@ -1,36 +1,30 @@
 import ast
-import re
 from datetime import datetime
-import traceback
-from typing import Any, List, Optional, Tuple
-import json
-import calendar
+from pprint import pprint
+
 import aiosqlite
-import discord
 import GGanalysislib
-import yaml
 from data.game.elements import elements
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from data.game.GOModes import hitModes
-from data.game.talent_books import talent_books
-from data.textMap.dc_locale_to_enka import DLE
-from debug import DebugView, DefaultView
-from discord import (ButtonStyle, Embed, Emoji, Interaction, Member,
-                     SelectOption, app_commands)
+from discord import Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Button, Modal, Select, TextInput, button
 from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
 from enkanetwork.enum import DigitType, EquipmentsType
-from pyppeteer.browser import Browser
-from utility.apps.GenshinApp import GenshinApp
-from utility.GeneralPaginator import GeneralPaginator
-from utility.utils import (TextMap, calculateArtifactScore, calculateDamage,
-                           defaultEmbed, divide_chunks, errEmbed, getArtifact,
-                           getCharacter, getCityName, getConsumable,
-                           getElement, getFightProp, getStatEmoji,
-                           getWeapon, getWeekdayName)
+from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
+                                 Build, CharacterWiki, Diary, EnkaProfile,
+                                 ResinNotification, ShowAllCharacters,
+                                 TalentNotification)
+from utility.apps.genshin import GenshinApp, get_farm_dict
+from utility.apps.text_map.convert_locale import to_ambr_top, to_enka
+from utility.apps.text_map.TextMap import text_map
+from utility.apps.text_map.utils import get_user_locale, get_weekday_name
+from utility.paginator import GeneralPaginator
+from utility.utils import (calculate_artifact_score, default_embed,
+                           divide_chunks, error_embed, get_material,
+                           getArtifact, getCharacter, getFightProp, getWeapon,
+                           parse_HTML, rank_user)
 
 from cogs.wish import WishCog
 
@@ -40,7 +34,8 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
-        self.textMap = TextMap(self.bot.db)
+
+        # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
             name='查看 UID',
             callback=self.search_uid_ctx_menu
@@ -66,7 +61,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot.tree.add_command(self.characters_context_menu)
         self.bot.tree.add_command(self.stats_context_menu)
         self.bot.tree.add_command(self.check_context_menu)
-        
+
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(
             self.search_uid_context_menu.name, type=self.search_uid_context_menu.type)
@@ -79,54 +74,6 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot.tree.remove_command(
             self.check_context_menu.name, type=self.check_context_menu.type)
 
-    class CookieModal(Modal):
-        def __init__(self, genshin_app: GenshinApp):
-            self.genshin_app = genshin_app
-            super().__init__(title='提交cookie', timeout=None, custom_id='cookie_modal')
-
-        cookie = discord.ui.TextInput(
-            label='Cookie',
-            placeholder='ctrl+v 貼上複製到的 cookie',
-            style=discord.TextStyle.long,
-            required=True
-        )
-
-        async def on_submit(self, i: Interaction):
-            await i.response.defer(ephemeral=True)
-            result, success = await self.genshin_app.setCookie(i.user.id, self.cookie.value, i.locale)
-            if not success:
-                return await i.followup.send(embed=result, ephemeral=True)
-            if isinstance(result, list):  # 有多個帳號
-                await i.followup.send(view=GenshinCog.UIDView(result, self.cookie.value, self.genshin_app), ephemeral=True)
-            else:  # 一個帳號而已
-                await i.followup.send(embed=result, ephemeral=True)
-
-        async def on_error(self, i: Interaction, error: Exception) -> None:
-            embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
-                name='未知錯誤', icon_url=i.user.avatar)
-            traceback_message = traceback.format_exc()
-            view = DebugView(traceback_message)
-            await i.followup.send(embed=embed, view=view)
-
-    class UIDView(DefaultView):
-        def __init__(self, options: list[SelectOption], cookie: str, genshin_app: GenshinApp):
-            super().__init__(timeout=None)
-            self.cookie = cookie
-            self.genshin_app = genshin_app
-            self.add_item(GenshinCog.UIDSelect(options))
-
-    class UIDSelect(Select):
-        def __init__(self, options: list[SelectOption]):
-            super().__init__(placeholder='選擇要註冊的帳號', options=options)
-
-        async def callback(self, i: Interaction) -> Any:
-            await i.response.defer()
-            result, success = await self.view.genshin_app.setCookie(
-                i.user.id, self.view.cookie, i.locale, int(self.values[0]))
-            await i.followup.send(embed=result, ephemeral=True)
-
-# Cookie Submission
-
     @app_commands.command(
         name='register註冊',
         description='註冊你的原神帳號')
@@ -135,22 +82,16 @@ class GenshinCog(commands.Cog, name='genshin'):
         Choice(name='註冊教學', value=0),
         Choice(name='提交 cookie', value=1)])
     async def slash_cookie(self, i: Interaction, option: int):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if option == 0:
-            embed = defaultEmbed(
-                'Cookie設置流程',
-                "1.先複製底下的整段程式碼\n"
-                "2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n"
-                "3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n"
-                "4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n"
-                "5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n"
-                "6.在這裡提交結果, 使用：`/register 提交 cookie`\n"
-                "無法理解嗎? 跟著下面的圖示操作吧!")
+            embed = default_embed(
+                text_map.get(137, i.locale, user_locale), text_map.get(138, i.locale, user_locale))
             embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
-            code_msg = "```script:d=document.cookie; c=d.includes('account_id') || alert('過期或無效的Cookie,請先登出帳號再重新登入!'); c && document.write(d)```"
+            code_msg = f"```script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, i.locale, user_locale)}'); c && document.write(d)```"
             await i.response.send_message(embed=embed, ephemeral=True)
             await i.followup.send(content=code_msg, ephemeral=True)
         elif option == 1:
-            await i.response.send_modal(GenshinCog.CookieModal(self.genshin_app))
+            await i.response.send_modal(AccountRegister.Modal(self.genshin_app, i.locale, user_locale))
 
     @app_commands.command(
         name='check即時便籤',
@@ -158,37 +99,39 @@ class GenshinCog(commands.Cog, name='genshin'):
     )
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def check(self, i: Interaction, member: Optional[Member] = None):
+    async def check(self, i: Interaction, member: User = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
-        
-    async def check_ctx_menu(self, i: Interaction, member: Member):
-        exists = await self.genshin_app.userDataExists(member.id)
+
+    async def check_ctx_menu(self, i: Interaction, member: User):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量 (需註冊)')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
-    async def stats(self, i: Interaction, member: Member = None, custom_uid: int = None):
+    async def stats(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.getUserStats(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
-        
-    async def stats_ctx_menu(self, i: Interaction, member: Member):
+
+    async def stats_ctx_menu(self, i: Interaction, member: User):
         result, success = await self.genshin_app.getUserStats(member.id, None, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='area探索度', description='查看區域探索度 (需註冊)')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
-    async def area(self, i: Interaction, member: Member = None, custom_uid: int = None):
+    async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.getArea(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
@@ -196,68 +139,35 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.command(name='claim登入獎勵', description='領取hoyolab網頁登入獎勵 (需註冊)')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def claim(self, i: Interaction, member: Member = None):
+    async def claim(self, i: Interaction, member: User = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.claimDailyReward(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
-
-    class CharactersElementSelect(Select):
-        def __init__(self, options: list[SelectOption]):
-            super().__init__(placeholder='選擇元素', options=options)
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.current_page = int(self.values[0])
-            await self.view.update_children(i)
 
     @app_commands.command(name='characters所有角色', description='展示自己擁有的所有角色')
     @app_commands.rename(member='其他人')
     @app_commands.describe(member='查看其他群友的資料')
-    async def characters(self, i: Interaction, member: Member = None):
+    async def characters(self, i: Interaction, member: User = None):
         await self.characters_comamnd(i, member, False)
-        
-    async def characters_ctx_menu(self, i: Interaction, member: Member):
+
+    async def characters_ctx_menu(self, i: Interaction, member: User):
         await self.characters_comamnd(i, member)
-    
-    async def characters_comamnd(self, i: Interaction, member: Member = None, ephemeral: bool = True):
+
+    async def characters_comamnd(self, i: Interaction, member: User = None, ephemeral: bool = True):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         result, success = await self.genshin_app.getUserCharacters(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result['embeds'], [GenshinCog.CharactersElementSelect(result['options'])]).start(embeded=True, check=False, ephemeral=ephemeral)
-
-    class DiaryLogView(DefaultView):
-        def __init__(self, author: Member, member: Member, db: aiosqlite.Connection, bot: commands.Bot):
-            super().__init__(timeout=None)
-            self.author = author
-            self.member = member
-            self.genshin_app = GenshinApp(db, bot)
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed(message='指令: `/diary`').set_author(name='你不是這個指令的發起者', icon_url=interaction.user.avatar))
-            return self.author.id == interaction.user.id
-
-        @button(label='原石紀錄', emoji='<:primo:958555698596290570>')
-        async def primo(self, i: Interaction, button: Button):
-            result, success = await self.genshin_app.getDiaryLog(self.member.id, i.locale)
-            if not success:
-                await i.response.send_message(embed=result, ephemeral=True)
-            result = result[0]
-            await i.response.send_message(embed=result, ephemeral=True)
-
-        @button(label='摩拉紀錄', emoji='<:mora:958577933650362468>')
-        async def mora(self, i: Interaction, button: Button):
-            result, success = await self.genshin_app.getDiaryLog(self.member.id, i.locale)
-            if not success:
-                await i.response.send_message(embed=result, ephemeral=True)
-            result = result[1]
-            await i.response.send_message(embed=result, ephemeral=True)
+        placeholder = text_map.get(142, i.locale, user_locale)
+        await GeneralPaginator(i, result['embeds'], [ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(embeded=True, check=False, ephemeral=ephemeral)
 
     @app_commands.command(name='diary旅行者日記', description='查看旅行者日記 (需註冊)')
     @app_commands.rename(month='月份', member='其他人')
@@ -266,40 +176,19 @@ class GenshinCog(commands.Cog, name='genshin'):
         app_commands.Choice(name='這個月', value=0),
         app_commands.Choice(name='上個月', value=-1),
         app_commands.Choice(name='上上個月', value=-2)])
-    async def diary(self, i: Interaction, month: int, member: Optional[Member] = None):
+    async def diary(self, i: Interaction, month: int = 0, member: User = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.getDiary(member.id, month, i.locale)
         if not success:
             await i.response.send_message(embed=result, ephemeral=not success)
         else:
-            await i.response.send_message(embed=result, view=GenshinCog.DiaryLogView(i.user, member, self.bot.db, self.bot))
-
-    class AbyssFloorView(DefaultView):
-        def __init__(self, author: Member, embeds: list[Embed]):
-            super().__init__(timeout=None)
-            self.author = author
-            self.add_item(GenshinCog.AbyssFloorSelect(embeds))
-
-        async def interaction_check(self, i: Interaction) -> bool:
-            if self.author.id != i.user.id:
-                await i.response.send_message(embed=errEmbed(message='指令: `/abyss`').set_author(name='你不是這個指令的發起者', icon_url=i.user.avatar), ephemeral=True)
-            return self.author.id == i.user.id
-
-    class AbyssFloorSelect(Select):
-        def __init__(self, embeds: list[Embed]):
-            options = []
-            for index in range(0, len(embeds)):
-                options.append(SelectOption(label=f'第{9+index}層', value=index))
-            super().__init__(placeholder='樓層導覽', options=options)
-            self.embeds = embeds
-
-        async def callback(self, i: Interaction) -> Any:
-            await i.response.edit_message(embed=self.embeds[int(self.values[0])])
+            await i.response.send_message(embed=result, view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale))
 
     @app_commands.command(name='abyss深淵', description='深淵資料查詢 (需註冊)')
     @app_commands.rename(overview='類別', previous='期別', member='其他人')
@@ -311,11 +200,12 @@ class GenshinCog(commands.Cog, name='genshin'):
         previous=[Choice(name='本期紀錄', value=0),
                   Choice(name='上期紀錄', value=1)]
     )
-    async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: Member = None):
+    async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: User = None):
         member = member or i.user
-        exists = await self.genshin_app.userDataExists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.getAbyss(member.id, previous, overview, i.locale)
@@ -324,180 +214,66 @@ class GenshinCog(commands.Cog, name='genshin'):
         if overview:
             return await i.response.send_message(embed=result)
         else:
-            await i.response.send_message(embed=result[0], view=GenshinCog.AbyssFloorView(i.user, result))
+            await i.response.send_message(embed=result[0], view=Abyss.View(i.user, result, i.locale, user_locale, self.bot.db))
 
     @app_commands.command(name='stuck找不到資料', description='註冊了, 但是找不到資料嗎?')
     async def stuck(self, i: Interaction):
-        embed = defaultEmbed(
-            '註冊了, 但是找不到資料?',
-            '請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n'
-            '跟著下方圖片中的步驟操作\n\n'
-            '文字教學:\n'
-            '1. 點選右上角自己的頭像\n'
-            '2. 個人主頁\n'
-            '3. 右上角「原神」\n'
-            '4. 設定齒輪\n'
-            '5. 三個選項都打開')
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        embed = default_embed(
+            text_map.get(149, i.locale, user_locale),
+            text_map.get(150, i.locale, user_locale))
         embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
         await i.response.send_message(embed=embed, ephemeral=True)
-
-    class ResinNotifModal(Modal, title='樹脂提醒設定'):
-        resin_threshold = TextInput(
-            label='樹脂閥值', placeholder='例如: 140 (不得大於 160)')
-        max_notif = TextInput(label='最大提醒值', placeholder='例如: 5')
-
-        async def on_submit(self, interaction: Interaction) -> None:
-            await interaction.response.defer()
-            self.stop()
-
-    class TalentElementChooser(DefaultView):
-        def __init__(self, author: Member, db: aiosqlite.Connection):
-            super().__init__(timeout=None)
-            self.author = author
-            self.db = db
-            elements = ['Anemo', 'Cryo', 'Electro', 'Pyro', 'Hydro', 'Geo']
-            for index in range(0, 6):
-                self.add_item(GenshinCog.TalentElementButton(
-                    elements[index], index//3))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/remind` 來設置自己的提醒功能').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-    class TalentElementButton(Button):
-        def __init__(self, element: str, row: int):
-            super().__init__(emoji=getElement(element)['emoji'], row=row)
-            self.element = element
-
-        async def callback(self, interaction: Interaction) -> Any:
-            embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
-            embed.set_author(name='選擇角色', icon_url=interaction.user.avatar)
-            c = await self.view.db.cursor()
-            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            chara_list: list = ast.literal_eval((await c.fetchone())[0])
-            chara_str = ''
-            for chara in chara_list:
-                chara_str += f'• {chara}\n'
-            if chara_str == '':
-                chara_str = '目前尚未設置任何角色'
-            embed.add_field(name='目前已設置角色', value=chara_str)
-            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.view.author, self.view.db, chara_list))
-
-    class TalentCharaChooserView(DefaultView):
-        def __init__(self, element: str, author: Member, db: aiosqlite.Connection, chara_list: list):
-            super().__init__(timeout=None)
-            self.add_item(GenshinCog.TalentCharaChooser(
-                element, db, chara_list, author))
-            self.chara_list = chara_list
-            self.author = author
-            self.db = db
-
-        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=2)
-        async def go_back(self, i: Interaction, button: Button):
-            message = ''
-            for chara in self.chara_list:
-                message += f'• {chara}\n'
-            if message == '':
-                message = '目前尚未設置任何角色'
-            embed = defaultEmbed()
-            embed.add_field(name='已設置角色', value=message)
-            embed.set_author(name='選擇想要設置提醒功能的角色元素', icon_url=i.user.avatar)
-            await i.response.edit_message(embed=embed, view=GenshinCog.TalentElementChooser(i.user, self.db))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/remind` 來設置自己的提醒功能').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-    class TalentCharaChooser(Select):
-        def __init__(self, element: str, db: aiosqlite.Connection, chara_list: list, author: Member):
-            options = []
-            self.db = db
-            self.author = author
-            self.element = element
-            for week_day, books in talent_books.items():
-                for book_name, characters in books.items():
-                    for character_name, element_name in characters.items():
-                        if element == element_name:
-                            desc = f'{week_day} - 「{book_name}」'
-                            if character_name in chara_list:
-                                desc = '已設置過此角色, 再次選擇將會移除'
-                            options.append(SelectOption(
-                                label=character_name, description=desc, emoji=getCharacter(name=character_name)['emoji']))
-            super().__init__(options=options, placeholder='選擇角色', max_values=len(options))
-
-        async def callback(self, interaction: Interaction) -> Any:
-            c = await self.db.cursor()
-            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            chara_list: list = ast.literal_eval((await c.fetchone())[0])
-            for chara in self.values:
-                if chara in chara_list:
-                    chara_list.remove(chara)
-                else:
-                    chara_list.append(chara)
-            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 1, talent_notif_chara_list = ? WHERE user_id = ?', (str(chara_list), interaction.user.id))
-            await self.db.commit()
-            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            chara_list = ast.literal_eval((await c.fetchone())[0])
-            chara_str = ''
-            for chara in chara_list:
-                chara_str += f'• {chara}\n'
-            chara_str = '目前尚未設置任何角色' if chara_str == '' else chara_str
-            embed = defaultEmbed(message='選擇已經設置過的角色將移除該角色的提醒')
-            embed.set_author(
-                name='選擇角色', icon_url=interaction.user.avatar)
-            embed.add_field(name='目前已設置角色', value=chara_str)
-            c = await self.db.cursor()
-            await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (interaction.user.id,))
-            chara_list: list = ast.literal_eval((await c.fetchone())[0])
-            await interaction.response.edit_message(embed=embed, view=GenshinCog.TalentCharaChooserView(self.element, self.author, self.db, chara_list))
 
     @app_commands.command(name='remind提醒', description='設置提醒功能 (樹脂提醒需要註冊, 天賦不需要)')
     @app_commands.rename(function='功能', toggle='開關')
     @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
     @app_commands.choices(function=[Choice(name='樹脂提醒 (需註冊)', value=0), Choice(name='天賦素材提醒', value=1), Choice(name='啟用提醒功能前請先確認隱私設定', value=2)],
                           toggle=[Choice(name='開 (調整設定)', value=1), Choice(name='關', value=0)])
-    async def remind(self, i: Interaction, function: int, toggle: int = 1):
+    async def remind(self, i: Interaction, function: int, toggle: int):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == 0:
             if toggle == 0:
-                exists = await self.genshin_app.userDataExists(i.user.id)
+                exists = await self.genshin_app.check_user_data(i.user.id)
                 if not exists:
-                    return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
+                    return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar))
                 result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None, i.locale)
                 await i.response.send_message(embed=result, ephemeral=not success)
             else:
-                modal = GenshinCog.ResinNotifModal()
+                modal = ResinNotification.Modal(i.locale, user_locale)
                 await i.response.send_modal(modal)
                 await modal.wait()
                 result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value, i.locale)
                 await i.followup.send(embed=result, ephemeral=not success)
+
         elif function == 1:
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
             if toggle == 0:
-                c: aiosqlite.Cursor = await self.bot.db.cursor()
                 await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (i.user.id,))
                 await self.bot.db.commit()
-                embed = defaultEmbed()
-                embed.set_author(name='天賦提醒功能已關閉', icon_url=i.user.avatar)
+                embed = default_embed()
+                embed.set_author(name=text_map.get(
+                    307, i.locale, user_locale), icon_url=i.user.avatar)
                 await i.response.send_message(embed=embed)
             else:
-                c: aiosqlite.Cursor = await self.bot.db.cursor()
-                await c.execute('SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
-                chara_list: list = ast.literal_eval((await c.fetchone())[0])
-                message = ''
-                for chara in chara_list:
-                    message += f'• {chara}\n'
-                if message == '':
-                    message = '目前尚未設置任何角色'
-                embed = defaultEmbed()
-                embed.add_field(name='已設置角色', value=message)
-                embed.set_author(name='選擇想要設置提醒功能的角色元素',
-                                 icon_url=i.user.avatar)
-                view = GenshinCog.TalentElementChooser(i.user, self.bot.db)
-                await i.response.send_message(embed=embed, view=view)
+                await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 1 WHERE user_id = ?', (i.user.id,))
+                await self.bot.db.commit()
+                embed = default_embed(message=text_map.get(
+                    156, i.locale, user_locale))
+                embed.set_author(name=text_map.get(
+                    157, i.locale, user_locale), icon_url=i.user.avatar)
+                value = await self.genshin_app.get_user_talent_notification_enabled_str(i.user.id, i.locale)
+                embed.add_field(name=text_map.get(
+                    159, i.locale, user_locale), value=value)
+                await i.response.send_message(embed=embed, view=TalentNotification.View(i.user, i.locale, user_locale, self.bot.db, self.genshin_app, self.bot.session))
+
         elif function == 2:
-            embed = defaultEmbed(message='1. 右鍵「緣神有你」\n2. 點擊「隱私設定」\n3. 將開關打開')
-            embed.set_author(name='如何讓申鶴進入你的私訊?', icon_url=i.user.avatar)
+            embed = default_embed(
+                message=f'1. {text_map.get(308, i.locale, user_locale)}\n'
+                f'2. {text_map.get(309, i.locale, user_locale)}\n'
+                f'3. {text_map.get(310, i.locale, user_locale)}')
+            embed.set_author(name=text_map.get(
+                311, i.locale, user_locale), icon_url=i.user.avatar)
             embed.set_image(url='https://i.imgur.com/sYg4SpD.gif')
             await i.response.send_message(embed=embed, ephemeral=True)
 
@@ -505,171 +281,56 @@ class GenshinCog(commands.Cog, name='genshin'):
     async def farm(self, i: Interaction):
         await i.response.defer()
         embeds = []
-        week_day = calendar.day_name[datetime.today().weekday()].lower()
-        user_locale = await self.textMap.getUserLocale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         user_locale = user_locale or i.locale
-        enka_locale = DLE.get(str(user_locale))
-        async with self.bot.session.get(f'https://api.ambr.top/v2/{enka_locale}/dailyDungeon?vh=28R6') as r:
-            daily_dungeons = await r.json()
-        async with self.bot.session.get('https://api.ambr.top/v2/static/upgrade?vh=28R6') as r:
-            avatar_upgrades = await r.json()
-        for domain, domain_info in daily_dungeons['data'][week_day].items():
-            domain_name = domain_info['name']
-            domain_city = getCityName([domain_info['city']], self.textMap, i.locale, user_locale)
-            reward_emoji = getConsumable(domain_info['reward'][-1])['emoji']
-            embed = defaultEmbed(
-                f'今天 ({getWeekdayName((datetime.today().weekday()), self.textMap, i.locale, user_locale)}) 可以刷的素材')
-            farmables = ''
-            for reward in domain_info['reward']:
-                if len(str(reward)) == 6:
-                    for avatar_id, avatar_info in avatar_upgrades['data']['avatar'].items():
-                        for item, rarity in avatar_info['items'].items():
-                            if item == str(reward) and 'beta' not in avatar_info and getCharacter(avatar_id)["emoji"] not in farmables:
-                                farmables += f' {getCharacter(avatar_id)["emoji"]} • {getCharacter(avatar_id)["name"]}\n'
-                    for weapon_id, weapon_info in avatar_upgrades['data']['weapon'].items():
-                        for item, rarity in weapon_info['items'].items():
-                            if item == str(reward) and 'beta' not in weapon_info and getWeapon(weapon_id)["emoji"] not in farmables:
-                                farmables += f' {getWeapon(weapon_id)["emoji"]} • {getWeapon(weapon_id)["name"]}\n'
-            embed.add_field(
-                name=f'{reward_emoji} {domain_name} ({domain_city})', value=farmables)
+        farm_dict, daily_dungeon = await get_farm_dict(self.bot.session, user_locale)
+        today_farmable = {}
+
+        for dungeon, dungeon_info in daily_dungeon[get_weekday_name(datetime.today().weekday(), 'en-US', None, True)].items():
+            if dungeon_info['id'] not in today_farmable:
+                today_farmable[dungeon_info['id']] = []
+            for character_id, character_items in farm_dict['avatar'].items():
+                for item_id in list(character_items.keys()):
+                    if int(item_id) in dungeon_info['reward'] and character_id not in today_farmable[dungeon_info['id']]:
+                        today_farmable[dungeon_info['id']].append(character_id)
+            for weapon_id, weapon_items in farm_dict['weapon'].items():
+                for item_id in list(weapon_items.keys()):
+                    if int(item_id) in dungeon_info['reward'] and weapon_id not in today_farmable[dungeon_info['id']]:
+                        today_farmable[dungeon_info['id']].append(weapon_id)
+
+        # pprint(today_farmable)
+
+        for domain_id, farmable_list in today_farmable.items():
+            embed = default_embed(
+                f'{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}')
+            value = ''
+            for farmable in farmable_list:
+                emoji = getWeapon(farmable)['emoji'] if len(
+                    farmable) == 5 else getCharacter(farmable)['emoji']
+                name = text_map.get_weapon_name(farmable, i.locale, user_locale) if len(
+                    farmable) == 5 else text_map.get_character_name(farmable, i.locale, user_locale)
+                value += f'{emoji} {name}\n'
+            embed.add_field(name=text_map.get_domain_name(
+                domain_id, i.locale, user_locale), value=value)
             embeds.append(embed)
+
         await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
-
-    class ElementChooseView(DefaultView):  # 選擇元素按鈕的view
-        def __init__(self, db: aiosqlite.Connection, emojis: List, author: Member, bot: commands.Bot):
-            super().__init__(timeout=None)
-            self.author = author
-            for i in range(0, 6):
-                self.add_item(GenshinCog.ElementButton(
-                    i, db, emojis[i], author, bot))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-    class ElementButton(Button):  # 元素按鈕
-        def __init__(self, index: int, db: aiosqlite.Connection, emoji: Emoji, author: Member, bot: commands.Bot):
-            self.index = index
-            self.db = db
-            self.author = author
-            self.bot = bot
-            super().__init__(style=ButtonStyle.gray, row=index % 2, emoji=emoji)
-
-        async def callback(self, i: Interaction):
-            view = GenshinCog.CharactersDropdownView(
-                self.index, self.db, self.author, self.bot)
-            embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
-            await i.response.edit_message(embed=embed, view=view)
-
-    class CharactersDropdownView(DefaultView):  # 角色配置下拉選單的view
-        def __init__(self, index: int, db: aiosqlite.Connection, author: Member, bot: commands.Bot):
-            super().__init__(timeout=None)
-            self.db = db
-            self.author = author
-            self.bot = bot
-            self.add_item(
-                GenshinCog.BuildCharactersDropdown(index, db, author, bot))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
-        async def back(self, i: Interaction, button: Button):
-            emojis = []
-            ids = [982138235239137290, 982138229140635648, 982138220248711178,
-                   982138232391237632, 982138233813098556, 982138221569900585]
-            for id in ids:
-                emojis.append(i.client.get_emoji(id))
-            view = GenshinCog.ElementChooseView(
-                self.db, emojis, self.author, self.bot)
-            embed = defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar)
-            await i.response.edit_message(embed=embed, view=view)
-
-    class BuildCharactersDropdown(Select):  # 角色配置下拉選單(依元素分類)
-        def __init__(self, index: int, db: aiosqlite.Connection, author: Member, bot: commands.Bot):
-            self.genshin_app = GenshinApp(db, bot)
-            self.index = index
-            self.db = db
-            self.author = author
-            self.bot = bot
-            self.textMap = TextMap(self.db)
-            elemenet_chinese = ['風', '冰', '雷', '岩', '水', '火']
-            elements = ['anemo', 'cryo', 'electro', 'geo', 'hydro', 'pyro']
-            with open(f'data/builds/{elements[index]}.yaml', 'r', encoding='utf-8') as f:
-                self.build_dict = yaml.full_load(f)
-            options = []
-            for character, value in self.build_dict.items():
-                options.append(SelectOption(label=character, value=character,
-                               emoji=getCharacter(name=character)['emoji']))
-            super().__init__(
-                placeholder=f'{elemenet_chinese[index]}元素角色', min_values=1, max_values=1, options=options)
-
-        async def callback(self, i: Interaction):
-            user_locale = await self.textMap.getUserLocale(i.user.id)
-            result, has_thoughts = await self.genshin_app.getBuild(self.build_dict, str(self.values[0]), i.locale, user_locale)
-            view = GenshinCog.BuildSelectView(
-                len(result), result, self.index, self.db, self.author, has_thoughts, self.bot)
-            await i.response.edit_message(embed=result[0][0], view=view)
-
-    class BuildSelectView(DefaultView):
-        def __init__(self, total: int, build_embeds: List, index: int, db: aiosqlite.Connection, author: Member, has_thoughts: bool, bot: commands.Bot):
-            super().__init__(timeout=None)
-            self.index = index
-            self.db = db
-            self.author = author
-            self.bot = bot
-            self.add_item(GenshinCog.BuildSelect(
-                total, build_embeds, has_thoughts))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/build` 來查看角色配置').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-        @button(emoji='<:left:982588994778972171>', style=ButtonStyle.gray, row=1)
-        async def back(self, i: Interaction, button: Button):
-            view = GenshinCog.CharactersDropdownView(
-                self.index, self.db, self.author, self.bot)
-            embed = defaultEmbed().set_author(name='選擇角色', icon_url=i.user.avatar)
-            await i.response.edit_message(embed=embed, view=view)
-
-    class BuildSelect(Select):
-        def __init__(self, total: int, build_embeds: List, has_thoughts: bool):
-            options = []
-            self.embeds = build_embeds
-            for i in range(1, total+1):
-                options.append(SelectOption(
-                    label=f'配置{i} - {build_embeds[i-1][1]} - {build_embeds[i-1][2]}', value=i))
-            if has_thoughts:
-                options[-1] = SelectOption(
-                    label=f'聖遺物思路', value=total)
-            super().__init__(
-                placeholder=f'選擇配置', min_values=1, max_values=1, options=options)
-
-        async def callback(self, interaction: Interaction) -> Any:
-            await interaction.response.edit_message(embed=self.embeds[int(self.values[0])-1][0])
 
     @app_commands.command(name='build角色配置', description='查看角色推薦主詞條、畢業面板、不同配置、聖遺物思路等')
     async def build(self, i: Interaction):
-        emojis = ['<:WIND_ADD_HURT:982138235239137290>', '<:ICE_ADD_HURT:982138229140635648>', '<:ELEC_ADD_HURT:982138220248711178>',
-                  '<:ROCK_ADD_HURT:982138232391237632>', '<:WATER_ADD_HURT:982138233813098556>', '<:FIRE_ADD_HURT:982138221569900585>']
-        view = GenshinCog.ElementChooseView(
-            self.bot.db, emojis, i.user, self.bot)
-        await i.response.send_message(embed=defaultEmbed().set_author(name='選擇要查看角色的元素', icon_url=i.user.avatar), view=view)
+        await i.response.send_message(view=Build.View(i.user, self.bot.db))
 
     @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
     @app_commands.rename(player='使用者')
     @app_commands.describe(player='選擇想要查詢的使用者')
     async def search_uid(self, i: Interaction, player: Member):
         await self.search_uid_command(i, player, False)
-        
+
     async def search_uid_ctx_menu(self, i: Interaction, player: Member):
         await self.search_uid_command(i, player)
-        
+
     async def search_uid_command(self, i: Interaction, player: Member, ephemeral: bool = True):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if i.guild.id == 916838066117824553:
             c = await self.bot.main_db.cursor()
         else:
@@ -678,273 +339,105 @@ class GenshinCog(commands.Cog, name='genshin'):
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (player.id,))
         uid = await c.fetchone()
         if uid is None:
-            return await i.response.send_message(embed=errEmbed('這個使用者還沒有註冊過UID\n`/register` 來註冊帳號').set_author(name='查無 UID', icon_url=player.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(165, i.locale, user_locale)).set_author(name=text_map.get(166, i.locale, user_locale), icon_url=player.avatar), ephemeral=True)
         uid = uid[0]
-        embed = defaultEmbed(uid)
-        embed.set_author(name=f'{player.display_name} 的 UID', icon_url=player.avatar)
+        embed = default_embed(uid)
+        embed.set_author(
+            name=f'{player.display_name}{text_map.get(167, i.locale, user_locale)}', icon_url=player.avatar)
         await i.response.send_message(embed=embed, ephemeral=ephemeral)
-
-    class EnkaPageView(DefaultView):
-        def __init__(self, embeds: dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member):
-            super().__init__(timeout=None)
-            self.embeds = embeds
-            self.artifact_embeds = artifact_embeds
-            self.character_options = character_options
-            self.character_id = None
-            self.browser = browser
-            self.author = author
-            self.data = data
-            self.eng_data = eng_data
-            self.add_item(GenshinCog.EnkaArtifactButton())
-            self.add_item(GenshinCog.CalculateDamageButton())
-            self.add_item(GenshinCog.EnkaPageSelect(character_options))
-            self.children[0].disabled = True
-            self.children[1].disabled = True
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='指令: `/profile`').set_author(name='你不是這個指令的發起者', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.author.id == interaction.user.id
-
-    class EnkaPageSelect(Select):
-        def __init__(self, character_options: list[SelectOption]):
-            super().__init__(placeholder='選擇角色', options=character_options)
-
-        async def callback(self, i: Interaction) -> Any:
-            disabled = True if self.values[0] == '0' else False
-            self.view.children[0].disabled = disabled
-            self.view.children[1].disabled = disabled
-            self.view.character_id = self.values[0]
-            await i.response.edit_message(embed=self.view.embeds[self.values[0]], view=self.view)
-
-    class EnkaArtifactButton(Button):
-        def __init__(self):
-            super().__init__(label='聖遺物', style=ButtonStyle.blurple)
-
-        async def callback(self, i: Interaction) -> Any:
-            self.disabled = True
-            await i.response.edit_message(embed=self.view.artifact_embeds[self.view.character_id], view=self.view)
-
-    class CalculateDamageButton(Button):
-        def __init__(self):
-            super().__init__(style=ButtonStyle.blurple, label='計算傷害')
-
-        async def callback(self, i: Interaction) -> Any:
-            view = GenshinCog.DamageCalculatorView(self.view)
-            reactionMode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
-            for item in view.children:
-                item.disabled = True
-            view.children[0].disabled = False
-            await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算傷害中', '約需 5 至 10 秒'), view=view)
-            embed = await calculateDamage(self.view.eng_data, self.view.browser, self.view.character_id, 'critHit', i.user)
-            for item in view.children:
-                item.disabled = False
-            view.children[4].disabled = True
-            character_element = getCharacter(self.view.character_id)['element']
-            if character_element in reactionMode_elements or view.infusionAura in reactionMode_elements:
-                view.children[4].disabled = False
-            await i.edit_original_message(embed=embed, view=view)
-
-    async def returnDamage(view: DefaultView, i: Interaction):
-        for item in view.children:
-            item.disabled = True
-        view.children[0].disabled = False
-        await i.response.edit_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 計算中', '約需 5 至 10 秒'), view=view)
-        embed = await calculateDamage(view.enka_view.eng_data, view.enka_view.browser, view.enka_view.character_id, view.hitMode, i.user, view.reactionMode, view.infusionAura, view.team, )
-        for item in view.children:
-            item.disabled = False
-        reactionMode_disabled = True
-        character_element = getCharacter(
-            view.enka_view.character_id)['element']
-        reactionMode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
-        if character_element in reactionMode_elements or view.infusionAura in reactionMode_elements:
-            reactionMode_disabled = False
-        view.children[4].disabled = reactionMode_disabled
-        await i.edit_original_message(embed=embed, view=view)
-
-    class DamageCalculatorView(DefaultView):
-        def __init__(self, enka_view: DefaultView):
-            super().__init__(timeout=None)
-            # defining damage calculation variables
-            self.enka_view = enka_view
-            self.hitMode = 'critHit'
-            self.reactionMode = ''
-            self.infusionAura = ''
-            self.team = []
-
-            # producing select options
-            reactionMode_options = [SelectOption(label='無反應', value='none')]
-            element = getCharacter(self.enka_view.character_id)['element']
-            if element == 'Cryo' or self.infusionAura == 'cryo':
-                reactionMode_options.append(
-                    SelectOption(label='融化', value='cryo_melt'))
-            elif element == 'Pyro' or self.infusionAura == 'pyro':
-                reactionMode_options.append(SelectOption(
-                    label='蒸發', value='pyro_vaporize'))
-                reactionMode_options.append(
-                    SelectOption(label='融化', value='pyro_melt'))
-            elif element == 'Hydro':
-                reactionMode_options.append(SelectOption(
-                    label='蒸發', value='hydro_vaporize'))
-
-            team_options = []
-            option: SelectOption
-            for option in self.enka_view.character_options:
-                if str(option.value) == str(self.enka_view.character_id):
-                    continue
-                team_options.append(SelectOption(
-                    label=option.label, value=option.value, emoji=option.emoji))
-            del team_options[0]
-
-            # adding items
-            self.add_item(GenshinCog.EnkaGoBackButton())
-            for index in range(0, 3):
-                self.add_item(GenshinCog.HitModeButton(index))
-            self.add_item(GenshinCog.ReactionModeSelect(reactionMode_options))
-            self.add_item(GenshinCog.InfusionAuraSelect())
-            if len(team_options) >= 1:
-                self.add_item(GenshinCog.TeamSelect(team_options))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.enka_view.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='指令: `/profile`').set_author(name='你不是這個指令的發起者', icon_url=interaction.user.avatar), ephemeral=True)
-            return self.enka_view.author.id == interaction.user.id
-
-    class EnkaGoBackButton(Button):
-        def __init__(self):
-            super().__init__(emoji='<:left:982588994778972171>')
-
-        async def callback(self, i: Interaction):
-            for item in self.view.enka_view.children:
-                item.disabled = False
-            await i.response.edit_message(embed=self.view.enka_view.embeds[self.view.enka_view.character_id], view=self.view.enka_view)
-
-    class HitModeButton(Button):
-        def __init__(self, index: int):
-            super().__init__(style=ButtonStyle.blurple,
-                             label=(list(hitModes.values())[index]))
-            self.index = index
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.hitMode = (list(hitModes.keys()))[self.index]
-            await GenshinCog.returnDamage(self.view, i)
-
-    class ReactionModeSelect(Select):
-        def __init__(self, options: list[SelectOption]):
-            super().__init__(placeholder='選擇元素反應', options=options)
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.reactionMode = '' if self.values[0] == 'none' else self.values[0]
-            await GenshinCog.returnDamage(self.view, i)
-
-    class InfusionAuraSelect(Select):
-        def __init__(self):
-            options = [SelectOption(label='無附魔', value='none'), SelectOption(
-                label='火元素附魔', description='班尼特六命', value='pyro'), SelectOption(label='冰元素附魔', description='重雲E', value='cryo')]
-            super().__init__(placeholder='選擇近戰元素附魔', options=options)
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.infusionAura = '' if self.values[0] == 'none' else self.values[0]
-            await GenshinCog.returnDamage(self.view, i)
-
-    class TeamSelect(Select):
-        def __init__(self, options):
-            super().__init__(placeholder='選擇隊友', options=options,
-                             max_values=3 if len(options) >= 3 else len(options))
-
-        async def callback(self, i: Interaction) -> Any:
-            self.view.team = self.values
-            await GenshinCog.returnDamage(self.view, i)
 
     @app_commands.command(name='profile角色展示', description='查看原神角色聖遺物、屬性、進行傷害計算')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他人的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
-    async def profile(self, i: Interaction, member: Member = None, custom_uid: int = None):
+    async def profile(self, i: Interaction, member: User = None, custom_uid: int = None):
         await self.profile_command(i, member, custom_uid, False)
-        
-    async def profile_ctx_menu(self, i: Interaction, member: Member):
+
+    async def profile_ctx_menu(self, i: Interaction, member: User):
         await self.profile_command(i, member)
-    
-    async def profile_command(self, i: Interaction, member: Member = None, custom_uid: int = None, ephemeral: bool = True):
+
+    async def profile_command(self, i: Interaction, member: User = None, custom_uid: int = None, ephemeral: bool = True):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        user_locale = await self.textMap.getUserLocale(i.user.id)
-        user_locale = user_locale or i.locale
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if custom_uid is None:
             if i.guild.id == 916838066117824553:
                 c: aiosqlite.Cursor = await self.bot.main_db.cursor()
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
                 if uid is None:
-                    return await i.followup.send(embed=errEmbed(message='請先至 <#978871680019628032> 設置 UID!').set_author(name='找不到 UID!', icon_url=member.avatar), ephemeral=True)
+                    return await i.followup.send(embed=error_embed(message='請先至 <#978871680019628032> 設置 UID!').set_author(name='找不到 UID!', icon_url=member.avatar), ephemeral=True)
             else:
                 c: aiosqlite.Cursor = await self.bot.db.cursor()
-                exists = await self.genshin_app.userDataExists(member.id)
+                exists = await self.genshin_app.check_user_data(member.id)
                 if not exists:
-                    return await i.followup.send(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號\n或是在選項直接輸入你的 UID 也可以').set_author(name='找不到使用者資料!', icon_url=member.avatar), ephemeral=True)
+                    return await i.followup.send(embed=error_embed(message=f'{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}').set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
         uid = custom_uid or uid[0]
-        enka_locale = DLE.get(str(user_locale))
+        enka_locale = to_enka(user_locale or i.locale)
         await self.bot.enka_client.set_language(enka_locale)
         try:
             data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
         except KeyError:
-            return await i.followup.send(embed=errEmbed(message='你的帳號是一個 1 等的空帳號').set_author(name='查無資料', icon_url=i.user.avatar), ephemeral=True)
+            return await i.followup.send(embed=error_embed(message=text_map.get(285, i.locale, user_locale)).set_author(name=text_map.get(284, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         except UIDNotFounded or VaildateUIDError:
-            return await i.followup.send(embed=errEmbed().set_author(name='UID 無效', icon_url=i.user.avatar), ephemeral=True)
+            return await i.followup.send(embed=error_embed().set_author(name=text_map.get(286, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         if data.characters is None:
-            embed = defaultEmbed(message='請在遊戲中打開「顯示角色詳情」\n(開啟後, 資料最多需要10分鐘更新)').set_author(
-                name='找不到資料', icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
+            embed = default_embed(message=text_map.get(287, i.locale, user_locale)).set_author(
+                name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar).set_image(url='https://i.imgur.com/frMsGHO.gif')
             return await i.followup.send(embed=embed, ephemeral=True)
         await self.bot.enka_client.set_language('en')
         eng_data = await self.bot.enka_client.fetch_user(uid)
         embeds = {}
         sig = f'「{data.player.signature}」\n' if data.player.signature != '' else ''
-        overview = defaultEmbed(
+        overview = default_embed(
             f'{data.player.nickname}',
             f"{sig}"
-            f"玩家等級: Lvl. {data.player.level}\n"
-            f"世界等級: W{data.player.world_level}\n"
-            f"完成成就: {data.player.achievement}\n"
-            f"深淵已達: {data.player.abyss_floor}-{data.player.abyss_room}")
+            f"{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n"
+            f"{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n"
+            f"{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n"
+            f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}")
         overview.set_author(name=member, icon_url=member.avatar)
         overview.set_image(url=data.player.namecard.banner)
         embeds['0'] = overview
-        options = [SelectOption(label='總覽', value=0,
+        options = [SelectOption(label=text_map.get(43, i.locale, user_locale), value=0,
                                 emoji='<:SCORE:983948729293897779>')]
         artifact_embeds = {}
         for character in data.characters:
             options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
                            value=character.id, emoji=getCharacter(character.id)['emoji']))
-            embed = defaultEmbed(
+            embed = default_embed(
                 f'{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
             )
             embed.add_field(
-                name='屬性',
-                value=f'<:HP:982068466410463272> 生命值上限 - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n'
-                f"<:ATTACK:982138214305390632> 攻擊力 - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
-                f"<:DEFENSE:982068463566721064> 防禦力 - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
-                f"<:ELEMENT_MASTERY:982068464938270730> 元素精通 - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
-                f"<:CRITICAL:982068460731392040> 暴擊率 - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
-                f"<:CRITICAL_HURT:982068462081933352> 暴擊傷害 - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> 元素充能效率 - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
-                f"<:FRIENDSHIP:982843487697379391> 好感度 - {character.friendship_level}",
+                name=text_map.get(301, i.locale, user_locale),
+                value=f'<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n'
+                f"<:ATTACK:982138214305390632> {text_map.get(293, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> {text_map.get(294, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(295, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
+                f"<:CRITICAL:982068460731392040> {text_map.get(296, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
+                f"<:CRITICAL_HURT:982068462081933352> {text_map.get(297, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(298, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
+                f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
                 inline=False
             )
+
+            # talents
             value = ''
             for skill in character.skills:
                 value += f'{skill.name} | Lvl. {skill.level}\n'
             embed.add_field(
-                name='天賦',
+                name=text_map.get(94, i.locale, user_locale),
                 value=value
             )
+
+            # weapon
             weapon = character.equipments[-1]
             weapon_sub_stats = ''
             for substat in weapon.detail.substats:
-                weapon_sub_stats += f"{getFightProp(substat.prop_id)['emoji']} {getFightProp(substat.prop_id)['name']} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
+                weapon_sub_stats += f"{getFightProp(substat.prop_id)['emoji']} {text_map.get(fight_prop.get(substat.prop_id)['text_map_hash'], i.locale, user_locale)} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
             embed.add_field(
-                name='武器',
+                name=text_map.get(91, i.locale, user_locale),
                 value=f'{getWeapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
                 f"{getFightProp(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
                 f'{weapon_sub_stats}',
@@ -955,148 +448,62 @@ class GenshinCog(commands.Cog, name='genshin'):
             embeds[str(character.id)] = embed
 
             # artifacts
-            artifact_embed = defaultEmbed(f'{character.name} | 聖遺物')
+            artifact_embed = default_embed(
+                f'{character.name} | {text_map.get(92, i.locale, user_locale)}')
             index = 0
             for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
-                artifact_sub_stats = f'**__{getFightProp(artifact.detail.mainstats.prop_id)["emoji"]}{getFightProp(artifact.detail.mainstats.prop_id)["name"]}+{artifact.detail.mainstats.value}__**\n'
+                artifact_sub_stats = f'**__{getFightProp(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
                 artifact_sub_stat_dict = {}
                 for substat in artifact.detail.substats:
                     artifact_sub_stat_dict[substat.prop_id] = substat.value
-                    artifact_sub_stats += f'{getFightProp(substat.prop_id)["emoji"]} {getFightProp(substat.prop_id)["name"]}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
+                    artifact_sub_stats += f'{getFightProp(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
                 if artifact.level == 20:
-                    artifact_sub_stats += f'<:SCORE:983948729293897779> {int(calculateArtifactScore(artifact_sub_stat_dict))}'
+                    artifact_sub_stats += f'<:SCORE:983948729293897779> {int(calculate_artifact_score(artifact_sub_stat_dict))}'
                 artifact_embed.add_field(
-                    name=f'{list(equip_types.values())[index]}{artifact.detail.name}+{artifact.level}',
+                    name=f'{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}',
                     value=artifact_sub_stats
                 )
                 artifact_embed.set_thumbnail(url=character.image.icon)
                 artifact_embed.set_author(
                     name=member.display_name, icon_url=member.avatar)
-                artifact_embed.set_footer(text='聖遺物滿分99, 只有+20才會評分')
+                artifact_embed.set_footer(
+                    text=text_map.get(300, i.locale, user_locale))
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
 
-        view = GenshinCog.EnkaPageView(
-            embeds, artifact_embeds, options, data, self.bot.browser, eng_data, i.user)
+        view = EnkaProfile.View(embeds, artifact_embeds, options,
+                                data, self.bot.browser, eng_data, i.user, self.bot.db)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
 
     @app_commands.command(name='redeem兌換', description='兌換禮物碼 (需註冊)')
     @app_commands.rename(code='兌換碼')
     async def redeem(self, i: Interaction, code: str):
-        exists = await self.genshin_app.userDataExists(i.user.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        exists = await self.genshin_app.check_user_data(i.user.id)
         if not exists:
-            return await i.response.send_message(embed=errEmbed(message='請先使用 `/register` 指令註冊帳號').set_author(name='找不到使用者資料!', icon_url=i.user.avatar))
-        result = await self.genshin_app.redeemCode(i.user.id, code, i.locale)
-        result.set_author(name=i.user, url=i.user.avatar)
-        await i.response.send_message(embed=result)
-
-    def parse_event_description(description: str):
-        description = description.replace('\\n', '\n')
-        # replace tags with style attributes
-        description = description.replace('</p>', '\n')
-        description = description.replace('<strong>', '**')
-        description = description.replace('</strong>', '**')
-
-        # remove all HTML tags
-        CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-        description = re.sub(CLEANR, '', description)
-        return description
+            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar))
+        result, success = await self.genshin_app.redeemCode(i.user.id, code, i.locale)
+        await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='events活動', description='查看原神近期的活動')
     async def events(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         async with self.bot.session.get(f'https://api.ambr.top/assets/data/event.json') as r:
             events = await r.json()
         embeds = []
-        user_locale = await self.textMap.getUserLocale(i.user.id)
-        user_locale = user_locale or i.locale 
-        enka_locale = DLE.get(str(user_locale)).upper()
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = user_locale or i.locale
+        ambr_top_locale = to_ambr_top(user_locale).upper()
         for event_id, event in events.items():
-            value = GenshinCog.parse_event_description(
-                event['description'][enka_locale])
-            embed = defaultEmbed(
-                event['name']['CHT'], event['nameFull'][enka_locale])
-            if len(value) < 1024:
-                embed.add_field(
-                    name='<:placeholder:982425507503165470>', value=value)
-            else:
-                while len(value) > 1024:
-                    new_value = value[:1024]
-                    value = value[1024:]
-                    embed.add_field(
-                        name='<:placeholder:982425507503165470>', value=new_value)
-            embed.set_image(url=event['banner'][enka_locale])
+            value = parse_HTML(
+                event['description'][ambr_top_locale])
+            embed = default_embed(
+                event['name'][ambr_top_locale], event['nameFull'][ambr_top_locale])
+            embed.add_field(
+                name='<:placeholder:982425507503165470>', value=value[:1021]+'...', inline=False)
+            embed.set_image(url=event['banner'][ambr_top_locale])
             embeds.append(embed)
-        await GeneralPaginator(i, embeds).start(embeded=True)
-
-    class ArtifactSubStatView(DefaultView):
-        def __init__(self, author: Member):
-            super().__init__(timeout=None)
-            self.author = author
-            self.sub_stat = None
-            for prop_id, prop_info in fight_prop.items():
-                if prop_info['substat']:
-                    self.add_item(GenshinCog.ArtifactSubStatButton(
-                        prop_id, prop_info['name']))
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/leaderbaord` 來查看排行榜').set_author(name='這不是你的操作視窗', icon_url=interaction.user.avatar), ephemeral=True)
-            return interaction.user.id == self.author.id
-
-    class ArtifactSubStatButton(Button):
-        def __init__(self, prop_id: str, prop_name: str):
-            super().__init__(label=prop_name, emoji=getStatEmoji(prop_id))
-            self.prop_id = prop_id
-
-        async def callback(self, interaction: Interaction) -> Any:
-            await interaction.response.defer()
-            self.view.sub_stat = self.prop_id
-            self.view.stop()
-
-    class LeaderboardArtifactGoBack(Button):
-        def __init__(self, c: aiosqlite.Cursor):
-            super().__init__(label='返回副詞條選擇', row=2, style=ButtonStyle.green)
-            self.c = c
-
-        async def callback(self, i: Interaction):
-            view = GenshinCog.ArtifactSubStatView(i.user)
-            await i.response.edit_message(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
-            await view.wait()
-            await self.c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
-            leaderboard = await self.c.fetchall()
-            leaderboard.sort(key=lambda index: float(
-                str(index[5]).replace('%', '')), reverse=True)
-            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
-            leaderboard = divide_chunks(leaderboard, 10)
-            rank = 1
-            embeds = []
-            for small_leaderboard in leaderboard:
-                message = ''
-                for index, tuple in enumerate(small_leaderboard):
-                    user_id = tuple[0]
-                    avatar_id = tuple[1]
-                    artifact_name = tuple[2]
-                    equip_type = tuple[3]
-                    sub_stat_value = tuple[5]
-                    member = i.guild.get_member(user_id)
-                    if member is None:
-                        continue
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
-                    rank += 1
-                embed = defaultEmbed(
-                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
-                embeds.append(embed)
-            await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(self.c)]).start(embeded=True, edit_original_message=True)
-
-    def rank_user(user_id: int, leaderboard: List[Tuple]):
-        interaction_user_rank = '不在榜內'
-        rank = 1
-        for index, tuple in enumerate(leaderboard):
-            if tuple[0] == user_id:
-                interaction_user_rank = rank
-                break
-            rank += 1
-        return interaction_user_rank
+        await GeneralPaginator(i, embeds).start(embeded=True, ephemeral=True, follow_up=True)
 
     @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
     @app_commands.rename(type='分類')
@@ -1104,6 +511,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='歐氣榜', value=2)])
     async def leaderboard(self, i: Interaction, type: int):
         await i.response.defer()
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
         uid = await c.fetchone()
@@ -1123,13 +531,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                                 await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
                                 sub_stat_value = await c.fetchone()
                                 if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET user_id = ?, avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}"))
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
 
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: index[1], reverse=True)
-            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
+            user_rank = rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             embeds = []
             rank = 1
@@ -1141,23 +549,24 @@ class GenshinCog(commands.Cog, name='genshin'):
                         continue
                     message += f'{rank}. {member.display_name} - {tuple[1]}\n'
                     rank += 1
-                embed = defaultEmbed(
-                    f'🏆 成就數排行榜 (你: #{user_rank})', message)
+                embed = default_embed(
+                    f'🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank or text_map.get(253, i.locale, user_locale)})', message)
                 embeds.append(embed)
             try:
                 await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
             except ValueError:
-                await i.followup.send(embed=errEmbed().set_author(name='排行榜內目前沒有玩家', icon_url=i.user.avatar), ephemeral=True)
+                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
         elif type == 1:
-            view = GenshinCog.ArtifactSubStatView(i.user)
-            await i.followup.send(embed=defaultEmbed().set_author(name='選擇想要查看的副詞條排行榜', icon_url=i.user.avatar), view=view)
+            view = ArtifactLeaderboard.View(
+                i.user, self.bot.db, i.locale, user_locale)
+            await i.followup.send(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
             await view.wait()
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
             leaderboard.sort(key=lambda index: float(
                 str(index[5]).replace('%', '')), reverse=True)
-            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
+            user_rank = rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             rank = 1
             embeds = []
@@ -1174,13 +583,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                         continue
                     message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
                     rank += 1
-                embed = defaultEmbed(
-                    f'🏆 副詞條排行榜 - {fight_prop.get(view.sub_stat)["name"]} (你: #{user_rank})', message)
+                embed = default_embed(
+                    f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
                 embeds.append(embed)
             try:
-                await GeneralPaginator(i, embeds, [GenshinCog.LeaderboardArtifactGoBack(c)]).start(embeded=True, edit_original_message=True)
+                await GeneralPaginator(i, embeds, [ArtifactLeaderboard.GoBack(c, text_map.get(282, i.locale, user_locale), self.bot.db)]).start(embeded=True, edit_original_message=True)
             except ValueError:
-                await i.followup.send(embed=errEmbed().set_author(name='排行榜內目前沒有玩家', icon_url=i.user.avatar), ephemeral=True)
+                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
         elif type == 2:
             player = GGanalysislib.PityGacha()
@@ -1195,7 +604,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     get_num=get_num, use_pull=use_pull, left_pull=left_pull)
             leaderboard = list(
                 sorted(data.items(), key=lambda item: item[1], reverse=True))
-            user_rank = GenshinCog.rank_user(i.user.id, leaderboard)
+            user_rank = rank_user(i.user.id, leaderboard)
             leaderboard = divide_chunks(leaderboard, 10)
             embeds = []
             rank = 1
@@ -1207,143 +616,89 @@ class GenshinCog(commands.Cog, name='genshin'):
                         continue
                     message += f'{rank}. {member.display_name} - {round(tuple[1], 2)}%\n'
                     rank += 1
-                embed = defaultEmbed(
-                    f'🏆 歐氣榜 (你: #{user_rank})', message)
+                embed = default_embed(
+                    f'🏆 {text_map.get(257, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
                 embeds.append(embed)
             try:
                 await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
             except ValueError:
-                await i.followup.send(embed=errEmbed().set_author(name='排行榜內目前沒有玩家', icon_url=i.user.avatar), ephemeral=True)
-
-    class WikiElementChooseView(DefaultView):
-        def __init__(self, data: dict, author: Member):
-            super().__init__(timeout=None)
-            self.author = author
-            for index in range(0, 7):
-                self.add_item(GenshinCog.WikiElementButton(data, index))
-            self.avatar_id = None
-
-        async def interaction_check(self, interaction: Interaction) -> bool:
-            if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /wiki 來查看你的維基百科', icon_url=interaction.user.avatar), ephemeral=True)
-            return interaction.user.id == self.author.id
-
-    class WikiElementButton(Button):
-        def __init__(self, data: dict, index: int):
-            super().__init__(
-                emoji=(list(elements.values()))[index], row=index//4)
-            self.index = index
-            self.data = data
-
-        async def callback(self, interaction: Interaction) -> Any:
-            self.view.clear_items()
-            self.view.add_item(GenshinCog.WikiElementSelect(
-                self.data, list(elements.keys())[self.index]))
-            await interaction.response.edit_message(view=self.view)
-
-    class WikiElementSelect(Select):
-        def __init__(self, data: dict, element: str):
-            options = []
-            for avatar_id, avatar_info in data['data']['items'].items():
-                if avatar_info['element'] == element:
-                    options.append(SelectOption(label=avatar_info['name'], emoji=(
-                        getCharacter(name=avatar_info['name']))['emoji'], value=avatar_id))
-            super().__init__(placeholder='選擇角色', options=options)
-
-        async def callback(self, i: Interaction):
-            await i.response.defer()
-            self.view.avatar_id = self.values[0]
-            self.view.stop()
-
-    class MaterialButton(Button):
-        def __init__(self, embed: Embed):
-            super().__init__(label='升級天賦所需素材', style=ButtonStyle.green, row=2)
-            self.embed = embed
-
-        async def callback(self, i: Interaction):
-            await i.response.send_message(embed=self.embed, ephemeral=True)
-
-    class WikiPageChooseSelect(Select):
-        def __init__(self, options: list[SelectOption]):
-            super().__init__(placeholder='快速導覽', options=options)
-
-        async def callback(self, i: Interaction):
-            self.view.current_page = int(self.values[0])
-            await self.view.update_children(i)
+                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
     @app_commands.command(name='wiki原神百科', description='原神百科')
     @app_commands.rename(type='分類')
     @app_commands.describe(type='選擇要查看的維基百科分類')
     @app_commands.choices(type=[Choice(name='角色', value=0)])
     async def wiki(self, i: Interaction, type: int):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = user_locale or i.locale 
+        ambr_top_locale = to_ambr_top(user_locale)
         if type == 0:
-            async with self.bot.session.get('https://api.ambr.top/v2/cht/avatar') as resp:
+            async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar') as resp:
                 data = await resp.json()
-            view = GenshinCog.WikiElementChooseView(data, i.user)
+            view = CharacterWiki.View(data, i.user, self.bot.db)
             await i.response.send_message(view=view)
             await view.wait()
-            async with self.bot.session.get(f'https://api.ambr.top/v2/cht/avatar/{view.avatar_id}') as resp:
+            async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar/{view.avatar_id}') as resp:
                 avatar = await resp.json()
             avatar_data = avatar["data"]
             embeds = []
             options = []
-            embed = defaultEmbed(
+            embed = default_embed(
                 f"{elements.get(avatar['data']['element'])} {avatar['data']['name']}")
             embed.add_field(
-                name='基本資料',
-                value=f'生日: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
-                f'頭銜: {avatar_data["fetter"]["title"]}\n'
+                name=text_map.get(315, i.locale, user_locale),
+                value=f'{text_map.get(316, i.locale, user_locale)}: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
+                f'{text_map.get(317, i.locale, user_locale)}: {avatar_data["fetter"]["title"]}\n'
                 f'*{avatar_data["fetter"]["detail"]}*\n'
-                f'命座: {avatar_data["fetter"]["constellation"]}\n'
-                f'隸屬於: {avatar_data["native"] if "native" in avatar_data else "???"}\n'
-                f'名片: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n'
+                f'{text_map.get(318, i.locale, user_locale)}: {avatar_data["fetter"]["constellation"]}\n'
+                f'{text_map.get(319, i.locale, user_locale)}: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n'
             )
             embed.set_image(
-                url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"]}_P.png')
+                url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"].replace("Icon", "Pic")}_P.png')
             embed.set_thumbnail(
                 url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
-            options.append(SelectOption(label='基本資料', value=0))
-            embed = defaultEmbed().set_author(
-                name='等級突破素材', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            options.append(SelectOption(label=embed.fields[0].name, value=0))
+            embed = default_embed().set_author(
+                name=text_map.get(310, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             for promoteLevel in avatar_data['upgrade']['promote'][1:]:
                 value = ''
                 for item_id, item_count in promoteLevel['costItems'].items():
-                    value += f'{(getConsumable(id=item_id))["emoji"]} x{item_count}\n'
+                    value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
                 value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
                 embed.add_field(
-                    name=f'突破到 lvl.{promoteLevel["unlockMaxLevel"]}',
+                    name=f'{text_map.get(311, i.locale, user_locale)} lvl.{promoteLevel["unlockMaxLevel"]}',
                     value=value,
                     inline=True
                 )
             embed.set_thumbnail(
                 url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
-            options.append(SelectOption(label='突破素材', value=1))
+            options.append(SelectOption(label=text_map.get(310, i.locale, user_locale), value=1))
             for talent_id, talent_info in avatar_data["talent"].items():
                 max = 3
                 if view.avatar_id == '10000002' or view.avatar_id == '10000041':
                     max = 4
                 if int(talent_id) <= max:
-                    embed = defaultEmbed().set_author(
-                        name='天賦', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+                    embed = default_embed().set_author(
+                        name=text_map.get(94, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     embed.add_field(
                         name=talent_info['name'],
-                        value=GenshinCog.parse_event_description(
+                        value=parse_HTML(
                             talent_info["description"]),
                         inline=False
                     )
-                    material_embed = defaultEmbed().set_author(
-                        name='升級天賦所需素材', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+                    material_embed = default_embed().set_author(
+                        name=text_map.get(312, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     for level, promote_info in talent_info['promote'].items():
                         if level == '1' or int(level) > 10:
                             continue
                         value = ''
                         for item_id, item_count in promote_info['costItems'].items():
-                            value += f'{(getConsumable(id=item_id))["emoji"]} x{item_count}\n'
+                            value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
                         value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
                         material_embed.add_field(
-                            name=f'升到 lvl.{level}',
+                            name=f'{text_map.get(314, i.locale, user_locale)} lvl.{level}',
                             value=value,
                             inline=True
                         )
@@ -1351,27 +706,27 @@ class GenshinCog(commands.Cog, name='genshin'):
                         url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
                 else:
-                    embed = defaultEmbed().set_author(
-                        name='固有天賦', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+                    embed = default_embed().set_author(
+                        name=text_map.get(313, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                     embed.add_field(
                         name=talent_info['name'],
-                        value=GenshinCog.parse_event_description(
+                        value=parse_HTML(
                             talent_info["description"]),
                         inline=False
                     )
                     embed.set_thumbnail(
                         url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
                     embeds.append(embed)
-            options.append(SelectOption(label='天賦', value=2))
+            options.append(SelectOption(label=text_map.get(94, i.locale, user_locale), value=2))
             options.append(SelectOption(
-                label='固有天賦', value=5 if max == 3 else 6))
+                label=text_map.get(313, i.locale, user_locale), value=5 if max == 3 else 6))
             const_count = 1
             for const_id, const_info in avatar_data['constellation'].items():
-                embed = defaultEmbed().set_author(
-                    name=f'命座 {const_count}', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+                embed = default_embed().set_author(
+                    name=f'{text_map.get(318, i.locale, user_locale)} {const_count}', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
                 embed.add_field(
                     name=const_info['name'],
-                    value=GenshinCog.parse_event_description(
+                    value=parse_HTML(
                         const_info['description'])
                 )
                 embed.set_thumbnail(
@@ -1379,13 +734,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                 embeds.append(embed)
                 const_count += 1
             options.append(SelectOption(
-                label='命座', value=8 if max == 3 else 9))
-            await GeneralPaginator(i, embeds, [GenshinCog.MaterialButton(material_embed), GenshinCog.WikiPageChooseSelect(options)]).start(embeded=True, edit_original_message=True)
+                label=text_map.get(318, i.locale, user_locale), value=8 if max == 3 else 9))
+            await GeneralPaginator(i, embeds, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(312, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(embeded=True, edit_original_message=True)
 
     @app_commands.command(name='activity歷來活動', description='查看原神歷來活動數據')
     @app_commands.rename(member='其他人', custom_uid='uid')
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
-    async def activity(self, i: Interaction, member: Member = None, custom_uid: int = None):
+    async def activity(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.getActivities(member.id, custom_uid, i.locale)
         if not success:

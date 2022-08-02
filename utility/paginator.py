@@ -5,7 +5,7 @@ from discord import Embed, Interaction, SelectOption, User, ButtonStyle
 from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
 
-from utility.utils import errEmbed
+from utility.utils import error_embed
 
 
 class _view(View):
@@ -22,7 +22,7 @@ class _view(View):
         if not self.check:
             return True
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message(embed=errEmbed('你不是這個指令的使用者'), ephemeral=True)
+            await interaction.response.send_message(embed=error_embed('你不是這個指令的使用者'), ephemeral=True)
         return (interaction.user.id == self.author.id)
 
     async def update_children(self, interaction: Interaction):
@@ -83,7 +83,8 @@ class GeneralPaginator:
         kwargs = {'content': self.pages[view.current_page]} if not (
             embeded) else {'embed': self.pages[view.current_page]}
         kwargs['view'] = view
-        kwargs['ephemeral'] = ephemeral
+        if not edit_original_message:
+            kwargs['ephemeral'] = ephemeral
 
         if edit_original_message:
             await self.interaction.edit_original_message(**kwargs)

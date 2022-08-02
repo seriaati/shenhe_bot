@@ -1,10 +1,11 @@
 import json
 import os
 import re
+import time
 from datetime import datetime
-from typing import Literal
+from typing import List, Literal, Tuple
 
-import aiosqlite
+import aiohttp
 import discord
 import genshin
 import yaml
@@ -22,12 +23,10 @@ from enkanetwork.enum import EquipmentsType
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 
-from data.textMap.dc_locale_to_enka import DLE
-
 load_dotenv()
 
 
-def defaultEmbed(title: str = '', message: str = ''):
+def default_embed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xa68bd3)
 
 
@@ -35,68 +34,8 @@ def ayaakaaEmbed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xADC6E5)
 
 
-def errEmbed(title: str = '', message: str = ''):
+def error_embed(title: str = '', message: str = ''):
     return discord.Embed(title=title, description=message, color=0xfc5165)
-
-
-class TextMap():
-    def __init__(self, db: aiosqlite.Connection):
-        with open(f'data/textMap/textMap.yaml', 'r', encoding='utf-8') as f:
-            self.textMap = yaml.full_load(f)
-        with open(f'data/textMap/avatar.json', 'r', encoding='utf-8') as f:
-            self.avatar = yaml.full_load(f)
-        self.db = db
-
-    def get(self, textMapHash: int, locale: discord.Locale, user_locale: str):
-        text = self.textMap.get(textMapHash)
-        if text is None:
-            raise ValueError(f'textMapHash not found: {textMapHash}')
-        else:
-            if user_locale is not None:
-                locale = user_locale
-            if str(locale) not in text:
-                return text['en-US']
-            else:
-                return text[str(locale)]
-            
-    def getAvatar(self, character_id: int, locale: discord.Locale, user_locale: str):
-        avatarText = self.avatar.get(str(character_id))
-        if avatarText is None:
-            raise ValueError(f'avatar not found: {character_id}')
-        else:
-            if user_locale is not None:
-                locale = user_locale
-            enka_locale = DLE.get(str(locale))
-            return avatarText[str(enka_locale)]
-        
-    def getMaterial(self, material_id: int, locale: discord.Locale, user_locale: str):
-        avatarText = self.avatar.get(str(material_id))
-        if avatarText is None:
-            raise ValueError(f'avatar not found: {material_id}')
-        else:
-            if user_locale is not None:
-                locale = user_locale
-            enka_locale = DLE.get(str(locale))
-            return avatarText[str(enka_locale)]
-        
-    def getWeapon(self, weapon_id: int, locale: discord.Locale, user_locale: str):
-        avatarText = self.avatar.get(str(weapon_id))
-        if avatarText is None:
-            raise ValueError(f'avatar not found: {weapon_id}')
-        else:
-            if user_locale is not None:
-                locale = user_locale
-            enka_locale = DLE.get(str(locale))
-            return avatarText[str(enka_locale)]
-
-    async def getUserLocale(self, user_id: int):
-        c = await self.db.cursor()
-        await c.execute('SELECT lang FROM user_lang WHERE user_id = ?', (user_id,))
-        user_lang = await c.fetchone()
-        if user_lang is None:
-            return None
-        else:
-            return user_lang[0]
 
 
 def log(is_system: bool, is_error: bool, log_type: str, log_msg: str):
@@ -122,7 +61,7 @@ def getStatEmoji(propid: str):
     return fight_prop[propid]['emoji']
 
 
-def getClient():
+def get_dummy_client():
     cookies = {"ltuid": os.getenv('ltuid'),
                "ltoken": os.getenv('ltoken')}
     client = genshin.Client(cookies)
@@ -140,7 +79,7 @@ def time_in_range(start, end, x):
         return start <= x or x <= end
 
 
-def calculateArtifactScore(substats: dict):
+def calculate_artifact_score(substats: dict):
     tier_four_val = {
         'FIGHT_PROP_HP': 1196,
         'FIGHT_PROP_HP_PERCENT': 5.8,
@@ -195,7 +134,7 @@ async def calculateDamage(data: EnkaNetworkResponse, browser: Browser, character
     await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(1) > div.MuiCardContent-root.css-nph2fg:nth-child(3) > button#dropdownbtn.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.MuiButtonBase-root.css-z7p9wm')
     await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
     await page.click('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiMenuItem-root.MuiMenuItem-gutters.MuiButtonBase-root.css-szd4wn:nth-child(2)')
-    await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}/equip')
+    await page.goto(f'https://frzyc.github.io/genshin-optimizer/#/characters/{chara_name}')
     await page.waitForSelector('div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1vbu9gx:nth-child(2) > div.MuiCardHeader-root.css-faujvq:nth-child(1) > div.MuiCardHeader-action.css-1bh09gn:nth-child(3) > span.css-t3oe3b > h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     labels = await page.querySelectorAll('h6.MuiTypography-root.MuiTypography-subtitle2.css-1tv3e07')
     label_vals = []
@@ -336,7 +275,7 @@ async def enkaToGOOD(data: EnkaNetworkResponse, character_id: str, hitMode: str,
 def parse_damage_embed(character_id: int, damage_dict: dict, member: discord.Member, hitMode: str, reactionMode: str = '', infusionAura: str = '', team: list = [], description: str = '', effect: str = ''):
     damage_dict['重擊'], damage_dict['下落攻擊'] = damage_dict['下落攻擊'], damage_dict['重擊']
     infusion_str = f'({infusionAuras[infusionAura]})' if infusionAura != '' else ''
-    embed = defaultEmbed(
+    embed = default_embed(
         f"{getCharacter(character_id)['name']} - {reactionModes[reactionMode] if reactionMode != '' else ''}{hitModes[hitMode]} {infusion_str}")
     field_count = 0
     for talent, damages in damage_dict.items():
@@ -406,7 +345,7 @@ class GetConditional():
 get_conditional = GetConditional()
 
 
-def trimCookie(cookie: str) -> str:
+def trim_cookie(cookie: str) -> str:
     try:
         new_cookie = [
             int(re.search(
@@ -417,27 +356,6 @@ def trimCookie(cookie: str) -> str:
     except:
         new_cookie = None
     return new_cookie
-
-
-def getCityName(city_id: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
-    cities = {
-        1: textMap.get(129, locale, user_locale),
-        2: textMap.get(130, locale, user_locale),
-        3: textMap.get(131, locale, user_locale)
-    }
-    return cities.get(city_id)
-
-def getWeekdayName(day_num: int, textMap: TextMap, locale: discord.Locale, user_locale: Literal["str", None]) -> str:
-    weekday_dict = {
-        0: textMap.get(25, locale, user_locale),
-        1: textMap.get(26, locale, user_locale),
-        2: textMap.get(27, locale, user_locale),
-        3: textMap.get(28, locale, user_locale),
-        4: textMap.get(29, locale, user_locale),
-        5: textMap.get(30, locale, user_locale),
-        6: textMap.get(31, locale, user_locale)
-    }
-    return weekday_dict.get(day_num)
 
 
 def divide_chunks(l, n):
@@ -472,10 +390,10 @@ def getWeapon(id: int = '', name: str = ''):
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
     # print(f'Invalid weapon {id}{name}')
-    return {'name': f'{id}{name}', 'emoji': '<:WARNING:992552271378386944>', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
+    return {'name': f'{id}{name}', 'emoji': '⚠️', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
 
 
-def getConsumable(id: int = '', name: str = ''):
+def get_material(id: int = '', name: str = ''):
     for consumable_id, consumable_info in consumables_map.items():
         if consumable_id == str(id) or consumable_info['name'] == name:
             return consumable_info
@@ -516,3 +434,37 @@ def getAreaEmoji(exploration_id: int):
 
     emoji = emoji_dict.get(exploration_id)
     return emoji or ''
+
+def rank_user(user_id: int, leaderboard: List[Tuple]):
+    interaction_user_rank = None
+    rank = 1
+    for index, tuple in enumerate(leaderboard):
+        if tuple[0] == user_id:
+            interaction_user_rank = rank
+            break
+        rank += 1
+    return interaction_user_rank
+
+def parse_HTML(HTML_string: str):
+        HTML_string = HTML_string.replace('\\n', '\n')
+        # replace tags with style attributes
+        HTML_string = HTML_string.replace('</p>', '\n')
+        HTML_string = HTML_string.replace('<strong>', '**')
+        HTML_string = HTML_string.replace('</strong>', '**')
+
+        # remove all HTML tags
+        CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+        HTML_string = re.sub(CLEANR, '', HTML_string)
+        return HTML_string
+    
+def get_weekday_int_with_name(weekday_name: str) -> int:
+    weekday_name_dict = {
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+        'sunday': 6
+    }
+    return weekday_name_dict.get(weekday_name)

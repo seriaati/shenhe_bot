@@ -13,8 +13,8 @@ from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Button, Select, button
-from utility.GeneralPaginator import GeneralPaginator
-from utility.utils import defaultEmbed, divide_chunks, errEmbed
+from utility.paginator import GeneralPaginator
+from utility.utils import default_embed, divide_chunks, error_embed
 from waifuim import WaifuAioClient
 
 
@@ -42,7 +42,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed(message='輸入 `/waifu` 來自行選擇標籤').set_author(name='這不是你的操控視窗', icon_url=interaction.user.avatar), ephemeral=True)
+                await interaction.response.send_message(embed=error_embed(message='輸入 `/waifu` 來自行選擇標籤').set_author(name='這不是你的操控視窗', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class TagSelector(Select):
@@ -79,7 +79,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed().set_author(name='輸入 /waifu 來尋找你的二次元老婆', icon_url=interaction.user.avatar), ephemeral=True)
+                await interaction.response.send_message(embed=error_embed().set_author(name='輸入 /waifu 來尋找你的二次元老婆', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
     class ChooseTagSelect(Select):
@@ -96,7 +96,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     @app_commands.describe(num='上限 30 張')
     async def sfw(self, i: Interaction, num: int = 1):
         if num > 30:
-            return await i.response.send_message(embed=errEmbed().set_author(name='不可大於 30 張', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed().set_author(name='不可大於 30 張', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='sfw')
         await i.response.send_message(view=view)
         await view.wait()
@@ -105,12 +105,12 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         tag = x[1]
         lib = random.choice(libs)
         if num == 1:
-            await i.edit_original_message(embed=defaultEmbed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
+            await i.edit_original_message(embed=default_embed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
         else:
             embeds = []
             for index in range(0, num):
                 lib = random.choice(libs)
-                embed = defaultEmbed(f'標籤: {tag}')
+                embed = default_embed(f'標籤: {tag}')
                 embed.set_image(url=(hmtai.get(lib, tag)))
                 embed.set_footer(text=f'API: {lib}')
                 embeds.append(embed)
@@ -125,7 +125,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             if self.author is None:
                 return True
             if self.author.id != interaction.user.id:
-                await interaction.response.send_message(embed=errEmbed().set_author(name='你不是這個指令的發起人', icon_url=interaction.user.avatar), ephemeral=True)
+                await interaction.response.send_message(embed=error_embed().set_author(name='你不是這個指令的發起人', icon_url=interaction.user.avatar), ephemeral=True)
             return self.author.id == interaction.user.id
 
         @button(label='刪除圖片', emoji='🗑️', style=ButtonStyle.gray)
@@ -139,9 +139,9 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     @app_commands.describe(num='上限 5 張')
     async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
-            return await i.response.send_message(embed=errEmbed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
         if not i.channel.nsfw:
-            return await i.response.send_message(embed=errEmbed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='nsfw')
         await i.response.send_message(view=view)
         await view.wait()
@@ -151,14 +151,14 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         lib = random.choice(libs)
         url = (hmtai.get(lib, tag))
         if num == 1:
-            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            await i.edit_original_message(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
             async with self.bot.session.get(str(url)) as resp:
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(
                     bytes_obj, filename='waifu_image.gif', spoiler=True)
             await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(i.user))
         else:
-            await i.edit_original_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            await i.edit_original_message(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
             for index in range(0, num):
                 lib = random.choice(libs)
                 url = (hmtai.get(lib, tag))
@@ -180,7 +180,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         await i.response.defer()
         async with WaifuAioClient() as wf:
             if not i.channel.nsfw and sese == 1:
-                return await i.followup.send(embed=errEmbed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
+                return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
             is_nsfw = 'True' if sese == 1 else 'False'
             if tags == 1:
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
@@ -191,7 +191,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     try:
                         image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=errEmbed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+                        return await i.edit_original_message(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     image = await wf.random(is_nsfw=[is_nsfw])
                 if sese == 1:
@@ -204,7 +204,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     else:
                         await i.followup.send(file=file)
                 else:
-                    embed = defaultEmbed('您的老婆已送達')
+                    embed = default_embed('您的老婆已送達')
                     embed.set_image(url=image)
                     if tags == 1:
                         await i.edit_original_message(embed=embed, view=None)
@@ -216,7 +216,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     try:
                         images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=errEmbed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+                        return await i.edit_original_message(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:
@@ -235,7 +235,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     count = 0
                     for image in images:
                         count += 1
-                        embed = defaultEmbed(f'{i.user.display_name} 的後宮')
+                        embed = default_embed(f'{i.user.display_name} 的後宮')
                         embed.set_image(url=image)
                         embed.set_footer(text=f'第 {count}/30 位老婆')
                         embeds.append(embed)

@@ -9,8 +9,8 @@ from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
 from discord.ui import Modal, View
-from utility.GeneralPaginator import GeneralPaginator
-from utility.utils import defaultEmbed, divide_chunks, errEmbed, getClient, log
+from utility.paginator import GeneralPaginator
+from utility.utils import default_embed, divide_chunks, error_embed, get_dummy_client, log
 
 import genshin
 
@@ -32,16 +32,16 @@ class WishCog(commands.GroupCog, name='wish'):
         )
 
         async def on_submit(self, i: discord.Interaction):
-            client = getClient()
+            client = get_dummy_client()
             url = self.url.value
             log(True, False, 'Wish Setkey', f'{i.user.id} (url={url})')
             authkey = genshin.utility.extract_authkey(url)
             client.authkey = authkey
-            await i.response.send_message(embed=defaultEmbed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
+            await i.response.send_message(embed=default_embed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
             try:
                 wish_history = await client.wish_history()
             except Exception as e:
-                await i.edit_original_message(embed=errEmbed('出現錯誤', f'請告知小雪\n```{e}```'))
+                await i.edit_original_message(embed=error_embed('出現錯誤', f'請告知小雪\n```{e}```'))
             c = await self.db.cursor()
             for wish in wish_history:
                 wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
@@ -50,7 +50,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 except sqlite3.IntegrityError:
                     pass
             await self.db.commit()
-            await i.edit_original_message(embed=defaultEmbed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
+            await i.edit_original_message(embed=default_embed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
 
     class ChoosePlatform(View):
         def __init__(self):
@@ -58,7 +58,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         @discord.ui.button(label='PC', style=discord.ButtonStyle.blurple)
         async def pc(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = defaultEmbed(
+            embed = default_embed(
                 'PC 設置方式',
                 '1. 在電腦開啟原神(如果你使用多組帳號，請重新啟動遊戲)\n'
                 '2. 打開祈願紀錄並等待讀取\n'
@@ -73,7 +73,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         @discord.ui.button(label='Android', style=discord.ButtonStyle.blurple)
         async def android(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = defaultEmbed(
+            embed = default_embed(
                 'Android 設置方式',
                 '[影片教學](https://youtu.be/pe_aROJ8Av8)\n'
                 '影片教學中複製了所有文本, 請只複製連結(步驟7)\n'
@@ -91,7 +91,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         @discord.ui.button(label='IOS', style=discord.ButtonStyle.blurple)
         async def ios(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = defaultEmbed(
+            embed = default_embed(
                 'IOS 設置方式',
                 '[影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)\n'
                 '1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)\n'
@@ -111,7 +111,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         @discord.ui.button(label='Play Station', style=discord.ButtonStyle.blurple)
         async def ps(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = defaultEmbed(
+            embed = default_embed(
                 'Play Station 設置流程',
                 '如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式\n'
                 '1. 在你的 PlayStation 裡打開原神\n'
@@ -129,7 +129,7 @@ class WishCog(commands.GroupCog, name='wish'):
     async def set_key(self, i: Interaction, function: str):
         if function == 'help':
             view = WishCog.ChoosePlatform()
-            embed = defaultEmbed(
+            embed = default_embed(
                 '選擇你目前的平台',
                 '提醒: PC的設置方式是最簡便也最安全的\n'
                 '其他管道只有在真的不得已的情況下再去做使用\n'
@@ -143,7 +143,7 @@ class WishCog(commands.GroupCog, name='wish'):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
         result = await c.fetchone()
-        embed = errEmbed(message='使用 `/wish setkey` 指令來設置').set_author(
+        embed = error_embed(message='使用 `/wish setkey` 指令來設置').set_author(
             name='查無祈願紀錄', icon_url=self.bot.get_user(user_id).avatar)
         if result is None:
             return False, embed
@@ -256,7 +256,7 @@ class WishCog(commands.GroupCog, name='wish'):
             embed_str = ''
             for w in l:
                 embed_str += f'{w}\n'
-            embeds.append(defaultEmbed('詳細祈願紀錄', embed_str))
+            embeds.append(default_embed('詳細祈願紀錄', embed_str))
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     @app_commands.command(name='luck歐氣值', description='限定祈願歐氣值分析')
@@ -272,13 +272,13 @@ class WishCog(commands.GroupCog, name='wish'):
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
         result = await c.fetchone()
         if result is None:
-            await i.response.send_message(embed=errEmbed(message='請在限定池中進行祈願\n再使用 `/wish setkey` 更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed(message='請在限定池中進行祈願\n再使用 `/wish setkey` 更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
             return
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
             member.id, True)
         player = GGanalysislib.PityGacha()
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
-        embed = defaultEmbed(
+        embed = default_embed(
             '<:wish:982419859117838386> 限定祈願歐氣值分析',
             f'• 你的運氣擊敗了**{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull), 2))}%**的玩家\n'
             f'• 共**{use_pull}**抽\n'
@@ -300,7 +300,7 @@ class WishCog(commands.GroupCog, name='wish'):
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            return await i.response.send_message(embed=errEmbed(message='請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message='請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(i.user.id)
         gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
         player = GGanalysislib.Up5starCharacter()
@@ -311,7 +311,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 item_num=num, calc_pull=calc_pull,
                 pull_state=left_pull, up_guarantee=up_guarantee)
             calc_pull += 1
-        embed = defaultEmbed(
+        embed = default_embed(
             '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想要抽出**{num}**個5星UP角色\n'
             f'• 墊了**{left_pull}**抽\n'
@@ -328,7 +328,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
             if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
+                await interaction.response.send_message(embed=error_embed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='UP', style=discord.ButtonStyle.blurple)
@@ -351,7 +351,7 @@ class WishCog(commands.GroupCog, name='wish'):
 
         async def interaction_check(self, interaction: discord.Interaction) -> bool:
             if interaction.user.id != self.author.id:
-                await interaction.response.send_message(embed=errEmbed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
+                await interaction.response.send_message(embed=error_embed('這不是你的計算視窗', '輸入 `/wish weapon` 來開始計算'), ephemeral=True)
             return interaction.user.id == self.author.id
 
         @discord.ui.button(label='想要的', style=discord.ButtonStyle.blurple)
@@ -377,12 +377,12 @@ class WishCog(commands.GroupCog, name='wish'):
         await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302', (i.user.id,))
         result = await c.fetchone()
         if result is None:
-            return await i.response.send_message(embed=errEmbed(message='請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message='請在武器池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         last_name, pull_state = await self.weapon_banner_calc(i.user.id)
         if last_name == '':
-            return await i.response.send_message(embed=errEmbed(message='你還沒有在限定武器池抽中過五星武器').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message='你還沒有在限定武器池抽中過五星武器').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
         up_or_std_view = WishCog.UpOrStd(i.user)
-        await i.response.send_message(embed=defaultEmbed(
+        await i.response.send_message(embed=default_embed(
             '限定UP還是常駐?',
             f'你最後一次抽到的五星武器是:\n'
             f'**{last_name}**\n'
@@ -392,7 +392,7 @@ class WishCog(commands.GroupCog, name='wish'):
         if up_or_std_view.value:  # 是UP
             want_or_not_view = WishCog.WantOrNot(i.user)
             await i.edit_original_message(
-                embed=defaultEmbed('是想要的UP還是不想要的?'),
+                embed=default_embed('是想要的UP還是不想要的?'),
                 view=want_or_not_view)
             await want_or_not_view.wait()
             if want_or_not_view.value:  # 是想要的UP
@@ -408,7 +408,7 @@ class WishCog(commands.GroupCog, name='wish'):
             p = 100*player.get_p(item_num=item_num, calc_pull=calc_pull,
                                  pull_state=pull_state, up_guarantee=up_guarantee)
             calc_pull += 1
-        embed = defaultEmbed(
+        embed = default_embed(
             '<:wish:982419859117838386> 祈願抽數預測',
             f'• 想抽出**{item_num}**把想要的UP\n'
             f'• 已經墊了**{pull_state}**抽\n'
@@ -429,7 +429,7 @@ class WishCog(commands.GroupCog, name='wish'):
         overview = await self.wish_overview_calc(member.id)
         total_wish = overview[0][0] + overview[1][0] + \
             overview[2][0] + overview[3][0]
-        embed = defaultEmbed(
+        embed = default_embed(
             '<:wish:982419859117838386> 祈願總覽',
             f'共**{total_wish}**抽\n'
             f'即**{160*int(total_wish)}**原石'

@@ -5,7 +5,7 @@ import os
 import sys
 import traceback
 from pathlib import Path
-import getpass
+
 import aiohttp
 import aiosqlite
 from discord import Game, Intents, Interaction, Message, Status, app_commands
@@ -15,7 +15,9 @@ from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
 from debug import DebugView
-from utility.utils import errEmbed, log
+from utility.apps.text_map.TextMap import text_map
+from utility.apps.text_map.utils import get_user_locale
+from utility.utils import error_embed, log
 
 load_dotenv()
 
@@ -70,7 +72,7 @@ class ShenheBot(commands.Bot):
             await self.load_extension(f'cogs.{cog_name}')
         # load persistent views
         self.add_view(DebugView())
-        
+
     async def on_ready(self):
         await self.change_presence(
             status=Status.online,
@@ -112,9 +114,12 @@ tree = bot.tree
 
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
+    user_locale = await get_user_locale(i.user.id, bot.db)
+    embed = error_embed(message=text_map.get(
+        134, i.locale, user_locale))
+    embed.set_author(name=text_map.get(
+        135, i.locale, user_locale), icon_url=i.user.avatar)
     traceback_message = traceback.format_exc()
     view = DebugView(traceback_message)
-    embed = errEmbed(message='發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤').set_author(
-        name='未知錯誤', icon_url=i.user.avatar)
     await i.channel.send(embed=embed, view=view)
 bot.run(token)

@@ -7,3 +7,13 @@ elements = {
     'Fire': '<:FIRE_ADD_HURT:982138221569900585>',
     'Grass': '<:GRASS_ADD_HURT:982138222891110432>'
 }
+
+convert_elements = {
+    'Wind': 'Anemo',
+    'Ice': 'Cryo',
+    'Electric': 'Electro',
+    'Rock': 'Geo',
+    'Water': 'Hydro',
+    'Fire': 'Pyro',
+    'Grass': 'Dendro'
+}

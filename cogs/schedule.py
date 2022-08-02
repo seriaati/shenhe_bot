@@ -6,9 +6,11 @@ import aiosqlite
 from data.game.talent_books import talent_books
 from discord import Forbidden, User
 from discord.ext import commands, tasks
-from discord.utils import sleep_until
-from utility.apps.GenshinApp import GenshinApp
-from utility.utils import defaultEmbed, getCharacter, log
+from discord.utils import format_dt, sleep_until
+from utility.apps.genshin import GenshinApp, get_farm_dict
+from utility.apps.text_map.TextMap import text_map
+from utility.apps.text_map.utils import get_user_locale
+from utility.utils import default_embed, get_material, getCharacter, log
 
 import genshin
 
@@ -37,6 +39,7 @@ class Schedule(commands.Cog):
         for index, tuple in enumerate(users):
             user_id = tuple[0]
             client, uid, user, user_locale = await self.genshin_app.getUserCookie(user_id)
+            client.lang = user_locale
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -74,12 +77,15 @@ class Schedule(commands.Cog):
                 count += 1
                 if resin >= resin_threshold and current_notif < max_notif:
                     user: User = self.bot.get_user(user_id)
-                    embed = defaultEmbed(
-                        message=f'目前樹脂: {resin}/160\n'
-                        f'目前設定閥值: {resin_threshold}\n'
-                        f'目前最大提醒值: {max_notif}\n\n'
-                        '輸入`/remind`來更改設定')
-                    embed.set_author(name='樹脂要滿出來啦!!', icon_url=user.avatar)
+                    embed = default_embed(
+                        message=f'{text_map.get(303, "zh-TW", user_locale)}: {notes.current_resin}/{notes.max_resin}\n'
+                        f'{text_map.get(15, "zh-TW", user_locale)}: {format_dt(notes.resin_recovery_time, "R")}\n'
+                        f'{text_map.get(302, "zh-TW", user_locale)}: {resin_threshold}\n'
+                        f'{text_map.get(304, "zh-TW", user_locale)}: {max_notif}')
+                    embed.set_footer(text=text_map.get(
+                        305, "zh-TW", user_locale))
+                    embed.set_author(name=text_map.get(
+                        306, "zh-TW", user_locale), icon_url=user.avatar)
                     try:
                         await user.send(embed=embed)
                     except Forbidden:
@@ -92,127 +98,34 @@ class Schedule(commands.Cog):
 
     @tasks.loop(hours=24)
     async def talent_notification(self):
-        weekday = datetime.today().weekday()
-        talent_book_icon = {
-            '自由': 'https://static.wikia.nocookie.net/genshin-impact/images/d/dc/%E3%80%8C%E8%87%AA%E7%94%B1%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest?cb=20201020014319&path-prefix=zh-tw',
-            '繁榮': 'https://static.wikia.nocookie.net/genshin-impact/images/7/7b/%E3%80%8C%E7%B9%81%E6%A6%AE%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014317&path-prefix=zh-tw',
-            '抗爭': 'https://static.wikia.nocookie.net/genshin-impact/images/9/9a/%E3%80%8C%E6%8A%97%E7%88%AD%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014321&path-prefix=zh-tw',
-            '詩文': 'https://static.wikia.nocookie.net/genshin-impact/images/e/eb/%E3%80%8C%E8%A9%A9%E6%96%87%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014327&path-prefix=zh-tw',
-            '勤勞': 'https://static.wikia.nocookie.net/genshin-impact/images/2/2c/%E3%80%8C%E5%8B%A4%E5%8B%9E%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014325&path-prefix=zh-tw',
-            '風雅': 'https://static.wikia.nocookie.net/genshin-impact/images/f/f5/%E3%80%8C%E9%A2%A8%E9%9B%85%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008100225&path-prefix=zh-tw',
-            '天光': 'https://static.wikia.nocookie.net/genshin-impact/images/4/4e/%E3%80%8C%E5%A4%A9%E5%85%89%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008100529&path-prefix=zh-tw',
-            '浮世': 'https://static.wikia.nocookie.net/genshin-impact/images/8/8a/%E3%80%8C%E6%B5%AE%E4%B8%96%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20211008095854&path-prefix=zh-tw',
-            '黃金': 'https://static.wikia.nocookie.net/genshin-impact/images/3/3f/%E3%80%8C%E9%BB%83%E9%87%91%E3%80%8D%E7%9A%84%E6%95%99%E5%B0%8E.png/revision/latest/scale-to-width-down/64?cb=20201020014322&path-prefix=zh-tw'
-        }
-        if weekday == 6:
-            c: aiosqlite = await self.bot.db.cursor()
-            talent_book_list = [
-                '自由', '繁榮', '浮世',
-                '風雅', '抗爭', '勤勞',
-                '詩文', '黃金', '天光'
-            ]
-            await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
-            data = await c.fetchall()
-            for index, tuple in enumerate(data):
-                user_id = tuple[0]
-                user = self.bot.get_user(user_id)
-                if user is None:
-                    continue
-                chara_list = ast.literal_eval(tuple[1])
-                for chara in chara_list:
-                    embed = defaultEmbed(
-                        message=f'該為{chara}刷本啦!\n\n輸入 `/remind` 來更改設定')
-                    embed.set_thumbnail(url=getCharacter(name=chara)['icon'])
-                    embed.set_author(name=f'刷本啦!', icon_url=(
-                        self.bot.get_user(user_id)).avatar)
-                    try:
-                        await user.send(embed=embed)
-                    except Forbidden:
-                        await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
-            await c.execute('SELECT user_id, item FROM todo')
-            data = await c.fetchall()
-            mentioned = {}
-            for index, item in enumerate(data):
-                user_id = item[0]
-                user = self.bot.get_user(user_id)
-                if user is None:
-                    continue
-                if len([item for item in data if item[0] == user_id]) == 0:
-                    continue
-                if user_id not in mentioned:
-                    mentioned[user_id] = []
-                for talent_book in talent_book_list:
-                    if talent_book in str(item[1]) and talent_book not in mentioned[user_id]:
-                        mentioned[user_id].append(talent_book)
-                        embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
-                            name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
-                        embed.set_thumbnail(url=talent_book_icon[talent_book])
-                        try:
-                            await user.send(embed=embed)
-                        except Forbidden:
-                            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
-        else:
-            weekday_dict = {
-                0: '週一、週四',
-                1: '週二、週五',
-                2: '週三、週六',
-                3: '週一、週四',
-                4: '週二、週五',
-                5: '週三、週六'
-            }
-            talent_book_list = {
-                0: ['自由', '繁榮', '浮世'],
-                1: ['風雅', '抗爭', '勤勞'],
-                2: ['詩文', '黃金', '天光'],
-                3: ['自由', '繁榮', '浮世'],
-                4: ['風雅', '抗爭', '勤勞'],
-                5: ['詩文', '黃金', '天光']
-            }
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute("SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1 AND talent_notif_chara_list != ''")
-            data = await c.fetchall()
-            for index, tuple in enumerate(data):
-                user_id = tuple[0]
-                user = self.bot.get_user(user_id)
-                if user is None:
-                    continue
-                chara_list = ast.literal_eval(tuple[1])
-                for chara in chara_list:
-                    for book_name, characters in talent_books[weekday_dict[weekday]].items():
-                        for character_name, element_name in characters.items():
-                            if character_name == chara:
-                                embed = defaultEmbed(
-                                    message=f'該為{chara}刷「{book_name}」本啦!\n\n輸入 `/remind` 來更改設定')
-                                embed.set_thumbnail(
-                                    url=getCharacter(name=chara)['icon'])
-                                embed.set_author(name=f'刷本啦!', icon_url=(
-                                    self.bot.get_user(user_id)).avatar)
-                                try:
-                                    await user.send(embed=embed)
-                                except Forbidden:
-                                    await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
-            await c.execute('SELECT user_id, item FROM todo')
-            data = await c.fetchall()
-            mentioned = {}
-            for index, item in enumerate(data):
-                user_id = item[0]
-                user = self.bot.get_user(user_id)
-                if user is None:
-                    continue
-                if len([item for item in data if item[0] == user_id]) == 0:
-                    continue
-                if user_id not in mentioned:
-                    mentioned[user_id] = []
-                for talent_book in talent_book_list[weekday]:
-                    if talent_book in str(item[1]) and talent_book not in mentioned[user_id]:
-                        mentioned[user_id].append(talent_book)
-                        embed = defaultEmbed(message='這是根據你的代辦清單所發出的自動通知\n輸入 `/todo` 來查看你的代辦清單').set_author(
-                            name=f'該刷「{talent_book}」本啦!', icon_url=self.bot.get_user(user_id).avatar)
-                        embed.set_thumbnail(url=talent_book_icon[talent_book])
-                        try:
-                            await user.send(embed=embed)
-                        except Forbidden:
-                            await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
+        today_weekday = datetime.today().weekday()
+        farm_dict = (await get_farm_dict(self.bot.session, 'zh-TW'))[0]
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute('SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1')
+        users = await c.fetchall()
+        for index, tuple in enumerate(users):
+            user_id = tuple[0]
+            user = self.bot.get_user(user_id)
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            user_notification_list = ast.literal_eval(tuple[1])
+            notified = {}
+            for character_id in user_notification_list:
+                for item_id, item_info in farm_dict['avatar'][character_id].items():
+                    if today_weekday in item_info['weekday']:
+                        if character_id not in notified:
+                            notified[character_id] = []
+                        if item_id not in notified[character_id]:
+                            notified[character_id].append(item_id)
+            for character_id, materials in notified.items():
+                embed = default_embed()
+                embed.set_author(
+                    name=f"{text_map.get(312, 'zh-TW', user_locale)} {text_map.get_character_name(character_id, 'zh-TW', user_locale)} {text_map.get(313, 'zh-TW', user_locale)}", icon_url=user.avatar)
+                embed.set_thumbnail(url=getCharacter(character_id)["icon"])
+                value = ''
+                for material in materials:
+                    value += f"{get_material(material)['emoji']} {text_map.get_material_name(material, 'zh-TW', user_locale)}\n"
+                embed.add_field(name=text_map.get(314, 'zh-TW', user_locale), value=value)
+                await user.send(embed=embed)
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
