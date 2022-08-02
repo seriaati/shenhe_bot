@@ -14,17 +14,22 @@
 
 <a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> 將申鶴邀請到你的群組 </a>
 
+<h2 align="center">參與翻譯</h2>
+<p align="left">
+讓申鶴用你熟悉的語言回覆你吧！有意參與申鶴的本地化工程者可以加我 dc: seria#5334
+</p>
+
 <h2 align="center">功能亮點</h2>
 <p align="left">
- - 「啊啊啊體力爆了」: /remind 樹脂提醒<br>
- - 「啊啊啊忘記領獎勵了」: 申鶴自動領獎<br>
- - 「我要練什麼角色來著？」: /todo 代辦清單<br>
- - 「這個角色/武器需要什麼素材來升級…」: /calc 原神計算機<br>
- - 「今天要刷什麼呢…」: /farm 刷素材<br>
- - 「這個角色要帶什麼聖遺物跟武器？」: /build 角色配置<br>
- - 「向你炫耀一下我的畢業胡桃」: /profile 角色展示<br>
- - 「讓你看看我優菈核爆的傷害」: /profile 角色展示中的傷害計算器<br>
- - 「所有功能」: 請見<a href='https://github.com/seriaati/shenhe_bot/blob/public/features.md'> 功能列表 </a>
+ • 「啊啊啊體力爆了」: /remind 樹脂提醒<br>
+ • 「啊啊啊忘記領獎勵了」: 申鶴自動領獎<br>
+ • 「我要練什麼角色來著？」: /todo 代辦清單<br>
+ • 「這個角色/武器需要什麼素材來升級…」: /calc 原神計算機<br>
+ • 「今天要刷什麼呢…」: /farm 刷素材<br>
+ • 「這個角色要帶什麼聖遺物跟武器？」: /build 角色配置<br>
+ • 「向你炫耀一下我的畢業胡桃」: /profile 角色展示<br>
+ • 「讓你看看我優菈核爆的傷害」: /profile 角色展示中的傷害計算器<br>
+ • 「所有功能」: 請見<a href='https://github.com/seriaati/shenhe_bot/blob/public/features.md'> 功能列表 </a>
  </p>
 
 <h2 align="center">致謝</h2> 
