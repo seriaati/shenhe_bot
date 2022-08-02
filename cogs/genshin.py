@@ -671,8 +671,6 @@ class GenshinCog(commands.Cog, name='genshin'):
                     value=value,
                     inline=True
                 )
-            embed.set_thumbnail(
-                url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
             embeds.append(embed)
             options.append(SelectOption(label=text_map.get(310, i.locale, user_locale), value=1))
             for talent_id, talent_info in avatar_data["talent"].items():

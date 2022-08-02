@@ -25,47 +25,47 @@ class LangSelect(Select):
                 'emoji': '🇹🇼'
             },
             'en-US': {
-                'name': 'English (US) | 70%',
+                'name': 'English (US) | 90%',
                 'emoji': '🇺🇸'
             },
             'ja': {
-                'name': '日本語 | 5%',
+                'name': '日本語 | 10%',
                 'emoji': '🇯🇵'
             },
             'de': {
-                'name': 'deutsch | 5%',
+                'name': 'deutsch | 10%',
                 'emoji': '🇩🇪'
             },
             'es-ES': {
-                'name': 'español/española | 5%',
+                'name': 'español/española | 10%',
                 'emoji': '🇪🇸'
             },
             'fr': {
-                'name': 'français/française | 5%',
+                'name': 'français/française | 10%',
                 'emoji': '🇫🇷'
             },
             'ko': {
-                'name': '한국어 | 5%',
+                'name': '한국어 | 10%',
                 'emoji': '🇰🇷'
             },
             'pt-BR': {
-                'name': 'português | 5%',
+                'name': 'português | 10%',
                 'emoji': '🇧🇷'
             },
             'ru': {
-                'name': 'русский | 5%',
+                'name': 'русский | 10%',
                 'emoji': '🇷🇺'
             },
             'th': {
-                'name': 'แบบไทย | 5%',
+                'name': 'แบบไทย | 10%',
                 'emoji': '🇹🇭'
             },
             'vi': {
-                'name': 'Tiếng Việt | 5%',
+                'name': 'Tiếng Việt | 10%',
                 'emoji': '🇻🇳'
             },
             'zh-CN': {
-                'name': '简体中文 | 5%',
+                'name': '简体中文 | 10%',
                 'emoji': '🇨🇳'
             }
                 
