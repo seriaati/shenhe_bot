@@ -59,6 +59,7 @@ class CalculateDamageButton(Button):
         super().__init__(style=ButtonStyle.blurple, label='計算傷害', disabled=True)
 
     async def callback(self, i: Interaction) -> Any:
+        return await i.response.send_message(embed=default_embed('this feature is currently disabled', 'I am still working on it'))
         view = DamageCalculator(self.view)
         reactionMode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
         for item in view.children:
