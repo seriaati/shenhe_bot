@@ -40,7 +40,7 @@ class Schedule(commands.Cog):
         for index, tuple in enumerate(users):
             user_id = tuple[0]
             client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
-            client.lang = to_genshin_py(user_locale)
+            client.lang = to_genshin_py(user_locale) or 'ja-jp'
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -131,6 +131,7 @@ class Schedule(commands.Cog):
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
+        await self.bot.wait_until_ready()
         now = datetime.now().astimezone()
         next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
         if next_run < now:
