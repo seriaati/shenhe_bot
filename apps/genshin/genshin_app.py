@@ -101,18 +101,18 @@ class GenshinApp:
         else:
             transformer_recover_time = text_map.get(10, locale, user_locale)
         result = default_embed(message=
-            f"<:daily:956383830070140938> {text_map.get(11, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
-            f"<:transformer:966156330089971732> {text_map.get(12, locale, user_locale)}: {transformer_recover_time}"
+            f"<:daily:1004648484877651978> {text_map.get(11, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
+            f"<:transformer:1004648470981902427> {text_map.get(12, locale, user_locale)}: {transformer_recover_time}"
         )
         result.add_field(
-            name=f'<:resin:956377956115157022> {text_map.get(13, locale, user_locale)}',
+            name=f'<:resin:1004648472995168326> {text_map.get(13, locale, user_locale)}',
             value=f"{text_map.get(14, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
             f"{text_map.get(15, locale, user_locale)}: {resin_recover_time}\n"
             f'{text_map.get(16, locale, user_locale)}: {notes.remaining_resin_discounts}/3',
             inline=False
         )
         result.add_field(
-            name=f'<:realm:956384011750613112> {text_map.get(17, locale, user_locale)}',
+            name=f'<:realm:1004648474266062880> {text_map.get(17, locale, user_locale)}',
             value=f" {text_map.get(14, locale, user_locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
             f'{text_map.get(15, locale, user_locale)}: {realm_recover_time}',
             inline=False
@@ -150,16 +150,16 @@ class GenshinApp:
             result = default_embed()
             result.add_field(
                 name=text_map.get(43, locale, user_locale),
-                value=f"📅 {text_map.get(44, locale, user_locale)}: {genshinUser.stats.days_active}\n"
-                f"<:expedition:956385168757780631> {text_map.get(45, locale, user_locale)}: {genshinUser.stats.characters}/{len(characters)}\n"
-                f"📜 {text_map.get(46, locale, user_locale)}: {genshinUser.stats.achievements}\n"
-                f"🌙 {text_map.get(47, locale, user_locale)}: {genshinUser.stats.spiral_abyss}",
+                value=f"{text_map.get(44, locale, user_locale)}: {genshinUser.stats.days_active}\n"
+                f"{text_map.get(45, locale, user_locale)}: {genshinUser.stats.characters}/{len(characters)}\n"
+                f"{text_map.get(46, locale, user_locale)}: {genshinUser.stats.achievements}\n"
+                f"{text_map.get(47, locale, user_locale)}: {genshinUser.stats.spiral_abyss}",
                 inline=False)
             result.add_field(
                 name=text_map.get(48, locale, user_locale),
-                value=f"<:anemo:956719995906322472> {text_map.get(49, locale, user_locale)}: {genshinUser.stats.anemoculi}/66\n"
-                f"<:geo:956719995440730143> {text_map.get(50, locale, user_locale)}: {genshinUser.stats.geoculi}/131\n"
-                f"<:electro:956719996262821928> {text_map.get(51, locale, user_locale)}: {genshinUser.stats.electroculi}/181",
+                value=f"<:anemoculus:1004648487016734730> {text_map.get(49, locale, user_locale)}: {genshinUser.stats.anemoculi}/66\n"
+                f"<:geoculus:1004648479525707776> {text_map.get(50, locale, user_locale)}: {genshinUser.stats.geoculi}/131\n"
+                f"<:electroculus:1004648483149594664> {text_map.get(51, locale, user_locale)}: {genshinUser.stats.electroculi}/181",
                 inline=False)
             result.add_field(
                 name=text_map.get(52, locale, user_locale),
