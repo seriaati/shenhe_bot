@@ -15,7 +15,12 @@ class View(DefaultView):
         super().__init__(timeout=None)
         # defining damage calculation variables
         self.enka_view = enka_view
-        self.calculator = DamageCalculator(enka_view.eng_data, enka_view.browser,
+        character_name = ''
+        for character in enka_view.data.characters:
+            if str(character.id) == enka_view.character_id:
+                character_name = character.name
+                break
+        self.calculator = DamageCalculator(character_name, enka_view.eng_data, enka_view.browser,
                                            enka_view.character_id, user_locale or locale, 'critHit', enka_view.author)
 
         # producing select options
