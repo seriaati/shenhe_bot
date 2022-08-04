@@ -42,7 +42,7 @@ class WishCog(commands.GroupCog, name='wish'):
             try:
                 wish_history = await client.wish_history()
             except Exception as e:
-                await i.edit_original_message(embed=error_embed('出現錯誤', f'請告知小雪\n```{e}```'))
+                return await i.edit_original_message(embed=error_embed('出現錯誤', f'請告知小雪\n```{e}```'))
             c = await self.db.cursor()
             for wish in wish_history:
                 wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
