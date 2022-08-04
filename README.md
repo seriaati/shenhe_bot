@@ -12,7 +12,7 @@
 這是公開版的申鶴，其將原本申鶴的原神及二次元圖片功能保留，其他針對「緣神有你」群組所製作的功能移除。 <br>
 </p>
 
-<a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> 將申鶴邀請到你的群組 </a>
+<a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> [Invite Shenhe] 將申鶴邀請到你的群組 </a>
 
 <h2 align="center">參與翻譯</h2>
 <p align="left">
