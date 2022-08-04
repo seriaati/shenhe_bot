@@ -19,7 +19,7 @@ from utility.utils import default_embed, log, split_text_and_number
 
 
 class DamageCalculator:
-    def __init__(self, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: list = []):
+    def __init__(self, character_name: str, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: list = []):
         self.data = data
         self.browser = browser
         self.character_id = character_id
@@ -29,6 +29,7 @@ class DamageCalculator:
         self.reaction_mode = reaction_mode
         self.infusion_aura = infusion_aura
         self.team = team
+        self.character_name = character_name
         self.current_character = None
         for character in data.characters:
             if str(character.id) == character_id:
@@ -219,7 +220,7 @@ class DamageCalculator:
         infusion_str = f'({text_map.get(infusion_aura_texts[self.infusion_aura], self.locale)})' if self.infusion_aura != '' else ''
         reaction_mode_str = f'({text_map.get(reaction_mode_texts[self.reaction_mode], self.locale)})' if self.reaction_mode != '' else ''
         embed = default_embed(
-            f"{self.current_character.name} {text_map.get(hit_mode_texts[self.hit_mode], self.locale)} {infusion_str} {reaction_mode_str}")
+            f"{self.character_name} {text_map.get(hit_mode_texts[self.hit_mode], self.locale)} {infusion_str} {reaction_mode_str}")
         field_count = 0
         for talent, damages in damage_dict.items():
             field_count += 1
