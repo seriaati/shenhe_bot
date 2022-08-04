@@ -85,7 +85,7 @@ def split_text_and_number(text: str) -> List:
     letter_index = None
     number_index = None
     for index, letter in enumerate(list_text):
-        if not letter.isnumeric():
+        if not letter.isdigit():
             letter_index = index 
         else:
             if index - 1 == letter_index:
