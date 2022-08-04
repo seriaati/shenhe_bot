@@ -1,9 +1,10 @@
 import aiosqlite
 from discord import Locale, Member
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
+from utility.utils import default_embed
 
-from utility.utils import default_embed, get_material
+from apps.genshin.utils import get_material
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 
 
 async def get_todo_embed(db: aiosqlite.Connection, user: Member, locale: Locale):
@@ -22,5 +23,6 @@ async def get_todo_embed(db: aiosqlite.Connection, user: Member, locale: Locale)
         count = tuple[1]
         message += f'{get_material(item)["emoji"]} {text_map.get_material_name(item, locale, user_locale)} x{count}\n'
     embed = default_embed(message=message)
-    embed.set_author(name=text_map.get(202, locale, user_locale), icon_url=user.avatar)
+    embed.set_author(name=text_map.get(
+        202, locale, user_locale), icon_url=user.avatar)
     return embed, False

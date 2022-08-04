@@ -1,20 +1,16 @@
 import ast
-from typing import Dict, List, Literal, Tuple, Union
+from typing import Literal
 
-import aiohttp
 import aiosqlite
-from data.game.elements import convert_elements
+from apps.genshin.utils import get_area_emoji, get_character, get_dummy_client, get_element, trim_cookie
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import (get_element_name, get_month_name,
+                                 get_user_locale)
 from discord import Embed, Locale, Member, SelectOption
 from discord.ext import commands
 from discord.utils import format_dt
-from utility.apps.text_map.convert_locale import to_ambr_top, to_genshin_py
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import (get_element_name, get_month_name,
-                                         get_user_locale)
-from utility.utils import (default_embed, error_embed, get_dummy_client,
-                           get_weekday_int_with_name, getAreaEmoji,
-                           getCharacter, getElement, getWeapon, log,
-                           trim_cookie)
+from utility.utils import default_embed, error_embed, log
 
 import genshin
 
@@ -24,8 +20,8 @@ class GenshinApp:
         self.db = db
         self.bot = bot
 
-    async def setCookie(self, user_id: int, cookie: str, locale: Locale, uid: int = None):
-        log(False, False, 'setCookie', f'{user_id} ({cookie})')
+    async def set_cookie(self, user_id: int, cookie: str, locale: Locale, uid: int = None):
+        log(False, False, 'set_cookie', f'{user_id} ({cookie})')
         user = self.bot.get_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
@@ -58,11 +54,11 @@ class GenshinApp:
         result = default_embed().set_author(name=text_map.get(
             39, locale, user_locale), icon_url=user.avatar)
         await self.db.commit()
-        log(True, False, 'setCookie', f'{user_id} setCookie success')
+        log(True, False, 'set_cookie', f'{user_id} set_cookie success')
         return result, True
 
-    async def claimDailyReward(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def claim_daily_reward(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
@@ -72,8 +68,8 @@ class GenshinApp:
         else:
             return default_embed(message=f'{text_map.get(41, locale, user_locale)} {reward.amount}x {reward.name}').set_author(name=text_map.get(42, locale, user_locale), icon_url=user.avatar), True
 
-    async def getRealTimeNotes(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_real_time_notes(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             notes = await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
@@ -81,9 +77,9 @@ class GenshinApp:
         except Exception as e:
             return error_embed(message=f'```{e}```').set_author(name=text_map.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
-            return self.parseResinEmbed(notes, locale, user_locale).set_author(name=text_map.get(24, locale, user_locale), icon_url=user.avatar), True
+            return self.parse_resin_embed(notes, locale, user_locale).set_author(name=text_map.get(24, locale, user_locale), icon_url=user.avatar), True
 
-    def parseResinEmbed(self, notes: genshin.models.Notes, locale: Locale, user_locale: str) -> Embed:
+    def parse_resin_embed(self, notes: genshin.models.Notes, locale: Locale, user_locale: str) -> Embed:
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, locale, user_locale)
         else:
@@ -95,13 +91,16 @@ class GenshinApp:
             realm_recover_time = format_dt(
                 notes.realm_currency_recovery_time, 'R')
 
-        if notes.transformer_recovery_time != None:
-            transformer_recover_time = format_dt(
-                notes.transformer_recovery_time, 'R')
+        if notes.transformer_recovery_time is not None:
+            if notes.transformer_recovery_time == 0:
+                transformer_recover_time = text_map.get(
+                    9, locale, user_locale)
+            else:
+                transformer_recover_time = format_dt(
+                    notes.transformer_recovery_time, 'R')
         else:
             transformer_recover_time = text_map.get(10, locale, user_locale)
-        result = default_embed(
-            f"",
+        result = default_embed(message=
             f"<:daily:956383830070140938> {text_map.get(11, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
             f"<:transformer:966156330089971732> {text_map.get(12, locale, user_locale)}: {transformer_recover_time}"
         )
@@ -137,8 +136,8 @@ class GenshinApp:
         )
         return result
 
-    async def getUserStats(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_stats(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
@@ -176,8 +175,8 @@ class GenshinApp:
                     text=f'{text_map.get(123, locale, user_locale)}: {custom_uid}')
             return result, True
 
-    async def getArea(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_area(self, user_id: int, custom_uid: Literal["int", None], locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
             genshinUser = await client.get_partial_genshin_user(uid)
@@ -190,13 +189,13 @@ class GenshinApp:
             explore_str = ""
             for exploration in reversed(explorations):
                 level_str = "" if exploration.id == 5 or exploration.id == 6 else f"Lvl. {exploration.offerings[0].level}"
-                emoji = getAreaEmoji(exploration.id)
+                emoji = get_area_emoji(exploration.id)
                 explore_str += f"{emoji} {exploration.name} | {exploration.explored}% | {level_str}\n"
             result = default_embed(message=explore_str)
         return result.set_author(name=text_map.get(58, locale, user_locale), icon_url=user.avatar), True
 
-    async def getDiary(self, user_id: int, month: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_diary(self, user_id: int, month: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             diary = await client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
@@ -229,8 +228,8 @@ class GenshinApp:
                 name=f'{text_map.get(69, locale, user_locale)} • {get_month_name(month, locale, user_locale)}', icon_url=user.avatar)
             return result, True
 
-    async def getDiaryLog(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_diary_logs(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             diary = await client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -257,8 +256,8 @@ class GenshinApp:
             result.append(embed)
         return result, True
 
-    async def getAbyss(self, user_id: int, previous: bool, overview: bool, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_abyss(self, user_id: int, previous: bool, overview: bool, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
         except genshin.errors.DataNotPublic:
@@ -280,11 +279,11 @@ class GenshinApp:
             )
             result.add_field(
                 name=text_map.get(79, locale, user_locale),
-                value=f"{getCharacter(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, user_locale)}: {rank.strongest_strike[0].value}\n"
-                f"{getCharacter(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, user_locale)}: {rank.most_kills[0].value}\n"
-                f"{getCharacter(rank.most_damage_taken[0].id)['emoji']} {text_map.get(82, locale, user_locale)}: {rank.most_damage_taken[0].value}\n"
-                f"{getCharacter(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, user_locale)}: {rank.most_bursts_used[0].value}\n"
-                f"{getCharacter(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, user_locale)}: {rank.most_skills_used[0].value}"
+                value=f"{get_character(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, user_locale)}: {rank.strongest_strike[0].value}\n"
+                f"{get_character(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, user_locale)}: {rank.most_kills[0].value}\n"
+                f"{get_character(rank.most_damage_taken[0].id)['emoji']} {text_map.get(82, locale, user_locale)}: {rank.most_damage_taken[0].value}\n"
+                f"{get_character(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, user_locale)}: {rank.most_bursts_used[0].value}\n"
+                f"{get_character(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, user_locale)}: {rank.most_skills_used[0].value}"
             )
             result.set_author(name=text_map.get(
                 85, locale, user_locale), icon_url=user.avatar)
@@ -300,7 +299,7 @@ class GenshinApp:
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
                             chara_list[i].append(
-                                f"{getCharacter(chara.id)['emoji']} **{chara.name}**")
+                                f"{get_character(chara.id)['emoji']} **{chara.name}**")
                     topStr = ''
                     bottomStr = ''
                     for top_char in chara_list[0]:
@@ -316,9 +315,9 @@ class GenshinApp:
                 result.append(embed)
             return result, True
 
-    async def setResinNotification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int, locale: Locale):
+    async def set_resin_notification(self, user_id: int, resin_notification_toggle: int, resin_threshold: int, max_notif: int, locale: Locale):
         c: aiosqlite.Cursor = await self.db.cursor()
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             await client.get_notes(uid)
         except genshin.errors.DataNotPublic:
@@ -344,8 +343,8 @@ class GenshinApp:
             await self.db.commit()
         return result, True
 
-    async def getUserCharacters(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_all_characters(self, user_id: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             characters = await client.get_genshin_characters(uid)
         except genshin.errors.DataNotPublic:
@@ -363,19 +362,19 @@ class GenshinApp:
 
             index = 0
             for element, characters in organized_characters.items():
-                result['options'].append(SelectOption(emoji=getElement(
+                result['options'].append(SelectOption(emoji=get_element(
                     element)['emoji'], label=f'{get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}', value=index))
                 message = ''
                 for character in characters:
-                    message += f'{getCharacter(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
-                embed = default_embed(f'{getElement(element)["emoji"]} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}', message).set_author(
+                    message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
+                embed = default_embed(f'{get_element(element)["emoji"]} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}', message).set_author(
                     name=text_map.get(105, locale, user_locale), icon_url=user.avatar)
                 result['embeds'].append(embed)
                 index += 1
             return result, True
 
-    async def redeemCode(self, user_id: int, code: str, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def redeem_code(self, user_id: int, code: str, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             await client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
@@ -387,8 +386,8 @@ class GenshinApp:
         else:
             return default_embed(message=f'{text_map.get(108, locale, user_locale)}: {code}').set_author(name=text_map.get(109, locale, user_locale), icon_url=user.avatar), True
 
-    async def getActivities(self, user_id: int, custom_uid: int, locale: Locale):
-        client, uid, user, user_locale = await self.getUserCookie(user_id, locale)
+    async def get_activities(self, user_id: int, custom_uid: int, locale: Locale):
+        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
             activities = await client.get_genshin_activities(uid)
@@ -400,10 +399,10 @@ class GenshinApp:
             summer = activities.summertime_odyssey
             if summer is None:
                 return error_embed().set_author(name=text_map.get(110, locale, user_locale), icon_url=user.avatar), False
-            result = await self.parseSummerEmbed(summer, user, custom_uid, locale, user_locale)
+            result = await self.parse_summer_embed(summer, user, custom_uid, locale, user_locale)
             return result, True
 
-    async def parseSummerEmbed(self, summer: genshin.models.Summer, user: Member, custom_uid: int, locale: Locale, user_locale: Literal["str", None]) -> list[Embed]:
+    async def parse_summer_embed(self, summer: genshin.models.Summer, user: Member, custom_uid: int, locale: Locale, user_locale: Literal["str", None]) -> list[Embed]:
         embeds = []
         embed = default_embed().set_author(name=text_map.get(
             111, locale, user_locale), icon_url=user.avatar)
@@ -461,7 +460,7 @@ class GenshinApp:
                     text=f'{text_map.get(123, locale, user_locale)}: {custom_uid}')
         return embeds
 
-    async def getUserCookie(self, user_id: int, locale: Locale = None):
+    async def get_user_data(self, user_id: int, locale: Locale = None):
         user = self.bot.get_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute('SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?', (user_id,))
@@ -502,158 +501,3 @@ class GenshinApp:
             for character_id in character_list:
                 enabled_characters_str += f'• {text_map.get_character_name(character_id, locale, user_locale)}\n'
         return enabled_characters_str
-
-
-async def get_farm_dict(session: aiohttp.ClientSession, locale: str | Locale) -> dict:
-    ambr_top_locale = to_ambr_top(locale)
-    async with session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/dailyDungeon?vh=28R6') as r:
-        daily_dungeon = await r.json()
-    async with session.get('https://api.ambr.top/v2/static/upgrade?vh=28R6') as r:
-        upgrade = await r.json()
-    upgrade = upgrade['data']
-    daily_dungeon = daily_dungeon['data']
-
-    # get a dict of rewards first
-    rewards = {}
-    for weekday, domains in daily_dungeon.items():
-        for domain, domain_info in domains.items():
-            for reward_id in domain_info['reward']:
-                if len(str(reward_id)) == 6:  # exclude mora and other stuff
-                    if str(reward_id) not in rewards:
-                        rewards[str(reward_id)] = {
-                            'domain_id': domain_info['id'], 'domain_city': domain_info['city'], 'weekday': []}
-                    if get_weekday_int_with_name(weekday) not in rewards[str(reward_id)]['weekday']:
-                        rewards[str(reward_id)]['weekday'].append(
-                            get_weekday_int_with_name(weekday))
-
-    result = {'avatar': {}, 'weapon': {}}
-
-    # then, organize the rewards according to characters
-    for avatar_id, avatar_info in upgrade['avatar'].items():
-        if 'beta' in avatar_info:  # skip beta characters
-            continue
-        result['avatar'][avatar_id] = {}
-        for item_id, item_rarity in avatar_info['items'].items():
-            if avatar_id not in result['avatar']:
-                result['avatar'][avatar_id] = {}
-            if item_id in rewards:
-                result['avatar'][avatar_id][item_id] = rewards[item_id]
-
-    # as well as weapons
-    for weapon_id, weapon_info in upgrade['weapon'].items():
-        if 'beta' in weapon_info:  # skip beta weapons
-            continue
-        result['weapon'][weapon_id] = {}
-        for item_id, item_rarity in weapon_info['items'].items():
-            if item_id in rewards:
-                result['weapon'][weapon_id][item_id] = rewards[item_id]
-
-    # "15509": {
-    #     "114029": {
-    #         "domain_id": 4353,
-    #         "domain_city": 3,
-    #         "weekday": 6
-    #     },
-    #     "114030": {
-    #         "domain_id": 4353,
-    #         "domain_city": 3,
-    #         "weekday": 6
-    #     }
-    # }
-
-    return result, daily_dungeon
-
-
-async def get_all_non_beta_characters(session: aiohttp.ClientSession, locale: Literal['Locale', 'str']) -> dict:
-    """Returns all genshin non-beta characters in the given ambr.top locale, elements are converted (i.e. from ice to cryo)
-
-    Args:
-        session (aiohttp.ClientSession): the aiohttp session
-        locale (Literal['Locale', 'str']): the ambr.top locale
-        user_locale (str): used to override the default locale if needed
-
-    Returns:
-        dict: a dict of all characters with their rarity, element, and name (from the textMap using the given locale)
-    """
-
-    ambr_top_locale = to_ambr_top(locale)
-    async with session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar') as r:
-        avatars = await r.json()
-    avatars = avatars['data']['items']
-
-    result = {}
-    for avatar_id, avatar_info in avatars.items():
-        result[avatar_id] = {
-            'rank': avatar_info['rank'], 'element': convert_elements.get(avatar_info['element']),
-            'name': text_map.get_character_name(avatar_id, locale)
-        }
-
-    return result
-
-
-def get_character_builds(character_id: int, element_builds_dict: dict, locale: Locale, user_locale: str) -> Tuple[List[Union[Embed, str, str]], bool]:
-    """Gets a character's builds
-
-    Args:
-        character_id (int): the id of the character
-        element_builds_dict (dict): the dictionary of all characters of a given element, this is stored in data/builds
-        locale (Locale): the discord locale 
-        user_locale (str): the user locale
-
-    Returns:
-        Tuple[List[Embed], bool]: returns a list of lists of embeds, weapons, and artifacts of different builds + a boolean that indicates whether the character has artifact thoughts
-    """
-    character_name = text_map.get_character_name(character_id, 'zh-TW', None)
-    translated_character_name = text_map.get_character_name(
-        character_id, locale, user_locale)
-    count = 1
-    has_thoughts = False
-    result = []
-
-    for build in element_builds_dict[character_name]['builds']:
-        statStr = ''
-        for stat, value in build['stats'].items():
-            statStr += f'{stat} ➜ {value}\n'
-        embed = default_embed(
-            f'{translated_character_name} - {text_map.get(90, locale, user_locale)}{count}',
-            f"{text_map.get(91, locale, user_locale)} • {getWeapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
-            f"{text_map.get(92, locale, user_locale)} • {build['artifacts']}\n"
-            f"{text_map.get(93, locale, user_locale)} • {build['main_stats']}\n"
-            f"{text_map.get(94, locale, user_locale)} • {build['talents']}\n"
-            f"{build['move']} • {build['dmg']}\n\n"
-        )
-        embed.add_field(
-            name=text_map.get(95, locale, user_locale),
-            value=statStr
-        )
-        count += 1
-        embed.set_thumbnail(
-            url=getCharacter(character_id)["icon"])
-        embed.set_footer(
-            text=f'[{text_map.get(96, locale, user_locale)}](https://bbs.nga.cn/read.php?tid=25843014)')
-        result.append([embed, build['weapon'], build['artifacts']])
-
-    if 'thoughts' in element_builds_dict[character_name]:
-        has_thoughts = True
-        count = 1
-        embed = default_embed(text_map.get(97, locale, user_locale))
-        for thought in element_builds_dict[character_name]['thoughts']:
-            embed.add_field(name=f'#{count}',
-                            value=thought, inline=False)
-            count += 1
-        embed.set_thumbnail(
-            url=getCharacter(character_id)["icon"])
-        result.append([embed, text_map.get(97, locale, user_locale), ''])
-
-    return result, has_thoughts
-
-
-def check_level_validity(levels: Dict[str, str], locale: Literal['Locale', 'str']) -> Tuple[bool, str]:
-    for level_type, level in levels.items():
-        if not level.isnumeric():
-            return False, text_map.get(187, locale)
-        if (level_type == 'current' or level_type == 'target') and (int(level) > 90 or int(level) < 1):
-            return False, text_map.get(188, locale)
-        if (level_type == 'a' or level_type == 'e' or level_type == 'q') and (int(level) > 10 or int(level) < 1):
-            return False, text_map.get(189, locale)
-    return True, ''

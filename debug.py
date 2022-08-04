@@ -3,7 +3,7 @@ import traceback
 from discord import ButtonStyle, HTTPException, Interaction
 from discord.ui import Button, View, button
 
-from utility.apps.text_map.TextMap import text_map
+from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed
 
 

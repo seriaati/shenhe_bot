@@ -1,6 +1,6 @@
 from discord.ui import Modal , TextInput
 from discord import Locale, Interaction
-from utility.apps.text_map.TextMap import text_map
+from apps.text_map.text_map_app import text_map
 
 class Modal(Modal):
     resin_threshold = TextInput(

@@ -1,13 +1,14 @@
 from typing import Any
 
 import aiosqlite
+from apps.genshin.utils import get_character
 from data.game.elements import elements
 from debug import DefaultView
 from discord import ButtonStyle, Embed, Interaction, Member, SelectOption
 from discord.ui import Button, Select
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
-from utility.utils import error_embed, getCharacter
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from utility.utils import error_embed
 
 
 class View(DefaultView):
@@ -47,7 +48,7 @@ class CharacterSelect(Select):
         options = []
         for avatar_id, avatar_info in data['data']['items'].items():
             if avatar_info['element'] == element:
-                options.append(SelectOption(label=avatar_info['name'], emoji=getCharacter(
+                options.append(SelectOption(label=avatar_info['name'], emoji=get_character(
                     avatar_id)['emoji'], value=avatar_id))
         super().__init__(placeholder=placeholder, options=options)
 

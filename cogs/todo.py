@@ -1,8 +1,8 @@
 from discord import Interaction, app_commands
 from discord.ext import commands
-from utility.apps.text_map.utils import get_user_locale
+from apps.text_map.utils import get_user_locale
 from UI_elements.todo import TodoList
-from utility.apps.todo import get_todo_embed
+from apps.todo import get_todo_embed
 
 
 class Todo(commands.Cog, name='todo'):

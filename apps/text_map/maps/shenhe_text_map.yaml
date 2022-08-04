@@ -411,7 +411,7 @@
   en-US: Account registration tutorial
 138:
   zh-TW: "1.先複製底下的整段程式碼\n2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n6.在這裡提交結果, 使用：`/register 提交 cookie`\n無法理解嗎? 跟著下面的圖示操作吧!"
-  en-US: "1.Copy the code below\n2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n3.Click the address bar and select all the text there\n4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n5.Press ENTER, a white webpage will show up displaying your cookie, select all and copy\n6.Submit your cookie here, use the `/reigster` command\nToo complicated? The image below might help!"
+  en-US: "1.Copy the code below\n2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n3.Click the address bar and select all the text there\n4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n6.Submit your cookie here, use the `/reigster` command\nToo complicated? The image below might help!"
 139:
   zh-TW: "過期或無效的Cookie,請先登出帳號再重新登入!"
   en-US: "Cookie invalid or is outdated, please logout then login again!"
@@ -943,3 +943,81 @@
 325:
   zh-TW: 快速導覽
   en-US: Quick navigation
+326:
+  zh-TW: 普攻
+  en-US: Normal Atk.
+327:
+  zh-TW: 重擊
+  en-US: Charged Atk.
+328:
+  zh-TW: 下落攻擊
+  en-US: Plunging Atk.
+329:
+  zh-TW: 計算傷害中...
+  en-US: Calculating damage...
+330:
+  zh-TW: 大約需要 5 至 10 秒
+  en-US: This requires around 5 to 10 seconds
+331:
+  zh-TW: 無反應
+  en-US: No reaction
+332:
+  zh-TW: 融化
+  en-US: Melt
+333:
+  zh-TW: 蒸發
+  en-US: Vaporize
+334:
+  zh-TW: 平均傷害
+  en-US: Avg. DMG
+335:
+  zh-TW: 沒暴擊傷害
+  en-US: Non Crit DMG
+336:
+  zh-TW: 暴擊傷害
+  en-US: Crit Hit DMG
+337:
+  zh-TW: 選擇元素反應
+  en-US: Select elemental reaction
+338:
+  zh-TW: 無近戰元素附魔
+  en-US: No team melee infusion
+339:
+  zh-TW: 火元素近戰附魔
+  en-US: Pyro infusion
+340:
+  zh-TW: 冰元素近戰附魔
+  en-US: Cryo infusion
+341:
+  zh-TW: 班尼特六命
+  en-US: Bennett C6
+342:
+  zh-TW: 重雲元素戰技
+  en-US: Chongyun Skill
+343:
+  zh-TW: 選擇近戰元素附魔
+  en-US: Select team melee infusion
+344:
+  zh-TW: 選擇隊友
+  en-US: Select teammate(s)
+345:
+  zh-TW: 隊伍
+  en-US: Team
+346:
+  zh-TW: 狀態
+  en-US: Conditions
+347:
+  zh-TW: 目前效果
+  en-US: Effects
+348:
+  zh-TW: 計算傷害
+  en-US: Calculate Damage
+349:
+  zh-TW: 聖遺物和武器的效果目前還不計入
+  en-US: Artifact and weapon effects are not included for now
+350:
+  zh-TW: 融化
+  en-US: melt
+351:
+  zh-TW: 蒸發
+  en-US: vaporize

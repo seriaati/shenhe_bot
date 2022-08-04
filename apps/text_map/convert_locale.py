@@ -1,4 +1,5 @@
 from typing import Literal
+
 from discord import Locale
 
 
@@ -47,11 +48,30 @@ to_genshin_py_dict = {
     'vi': 'vi-vn'
 }
 
-def to_enka(locale: Literal["Locale", "str"]):
+to_go_dict = {
+    'zh-CN': 1,
+    'zh-TW': 2,
+    'de': 3,
+    'en-US': 4,
+    'es-ES': 5,
+    'fr': 6,
+    'in': 7,
+    'ja': 8,
+    'ko': 9,
+    'pt-BR': 10,
+    'ru': 11,
+    'th': 12,
+    'vi': 13
+}
+
+def to_enka(locale: Locale):
     return to_enka_dict.get(str(locale))
 
-def to_ambr_top(locale: Literal["Locale", "str"]):
+def to_ambr_top(locale: Locale):
     return to_ambr_top_dict.get(str(locale))
 
-def to_genshin_py(locale: Literal["Locale", "str"]):
+def to_genshin_py(locale: Locale):
     return to_genshin_py_dict.get(str(locale))
+
+def to_go(locale: Locale):
+    return to_go_dict.get(str(locale))

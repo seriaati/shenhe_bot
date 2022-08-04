@@ -15,8 +15,8 @@ from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
 from debug import DebugView
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log
 
 load_dotenv()

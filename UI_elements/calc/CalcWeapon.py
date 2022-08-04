@@ -1,12 +1,13 @@
 from typing import Any, List
 
 import aiosqlite
+from apps.genshin.utils import get_weapon
 from debug import DefaultView
 from discord import Interaction, Locale, Member, SelectOption
 from discord.ui import Modal, Select, TextInput
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
-from utility.utils import error_embed, getWeapon
+from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
+from utility.utils import error_embed
 
 
 class View(DefaultView):
@@ -31,7 +32,7 @@ class WeaponSelect(Select):
         options = []
         for weapon in weapons:
             options.append(SelectOption(
-                label=weapon.name, value=weapon.id, emoji=getWeapon(weapon.id)['emoji']))
+                label=weapon.name, value=weapon.id, emoji=get_weapon(weapon.id)['emoji']))
         super().__init__(placeholder=placeholder, options=options)
         self.weapons = weapons
 

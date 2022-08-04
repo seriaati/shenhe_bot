@@ -1,13 +1,14 @@
 from typing import List
 
 import aiosqlite
+from apps.genshin.utils import get_material
 from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
 from discord.ui import Button, Modal, Select, TextInput
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.todo import get_todo_embed
-from utility.utils import error_embed, get_material
+from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
+from apps.todo import get_todo_embed
+from utility.utils import error_embed
 
 
 class View(DefaultView):

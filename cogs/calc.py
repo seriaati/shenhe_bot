@@ -1,13 +1,14 @@
 from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from utility.apps.text_map.convert_locale import to_genshin_py
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
+from apps.genshin.utils import check_level_validity, get_character, get_dummy_client, get_material, get_weapon
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
 from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
-from utility.apps.genshin import GenshinApp, check_level_validity
-from utility.utils import (default_embed, error_embed, getCharacter, get_dummy_client,
-                           get_material, getWeapon)
+from apps.genshin.genshin_app import GenshinApp
+from utility.utils import (default_embed, error_embed)
+
 
 
 class CalcCog(commands.GroupCog, name='calc'):
@@ -30,7 +31,7 @@ class CalcCog(commands.GroupCog, name='calc'):
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
         if sync:
-            client = (await self.genshin_app.getUserCookie(i.user.id, i.locale))[0]
+            client = (await self.genshin_app.get_user_data(i.user.id, i.locale))[0]
         else:
             client = get_dummy_client()
             client.lang = to_genshin_py(user_locale or i.locale)
@@ -49,7 +50,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         embed = default_embed()
         embed.set_author(name=text_map.get(
             191, i.locale, user_locale), icon_url=i.user.avatar)
-        embed.set_thumbnail(url=getCharacter(view.character_id)['icon'])
+        embed.set_thumbnail(url=get_character(view.character_id)['icon'])
         
         if sync:
             character_level = (await client.get_calculator_characters(query=text_map.get_character_name(int(view.character_id), 'en-US'), sync=True, lang='en-us'))[0].level
@@ -154,7 +155,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         embed = default_embed()
         embed.set_author(name=text_map.get(
             191, i.locale, user_locale), icon_url=i.user.avatar)
-        embed.set_thumbnail(url=getWeapon(view.weapon_id)['icon'])
+        embed.set_thumbnail(url=get_weapon(view.weapon_id)['icon'])
         embed.add_field(
             name=text_map.get(192, i.locale, user_locale),
             value=f'{text_map.get(200, i.locale, user_locale)} {view.levels["current"]} ▸ {view.levels["target"]}\n',

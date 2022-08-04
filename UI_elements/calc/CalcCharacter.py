@@ -2,14 +2,15 @@ from typing import List, Literal, Sequence
 
 import aiohttp
 import aiosqlite
+from apps.genshin.utils import get_character
 from data.game.elements import convert_elements, elements
 from debug import DefaultView
 from discord import Interaction, Member, SelectOption
 from discord.ui import Button, Modal, Select, TextInput
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
+from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
 from genshin.models import BaseCharacter
-from utility.utils import error_embed, getCharacter
+from utility.utils import error_embed
 
 
 class View(DefaultView):
@@ -49,7 +50,7 @@ class ElementButton(Button):
             if character.element == self.element:
                 options.append(SelectOption(
                     label=text_map.get_character_name(character.id, locale),
-                    emoji=getCharacter(character.id)['emoji'],
+                    emoji=get_character(character.id)['emoji'],
                     value=character.id))
         placeholder = text_map.get(157, locale)
         self.view.clear_items()

@@ -4,8 +4,8 @@ import aiosqlite
 from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member
 from discord.ui import Button
-from utility.apps.text_map.utils import get_user_locale
-from utility.apps.text_map.TextMap import text_map
+from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
 from utility.utils import default_embed, error_embed
 
 

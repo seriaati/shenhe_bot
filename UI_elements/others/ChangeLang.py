@@ -3,8 +3,8 @@ import aiosqlite
 from discord import Interaction, Locale, SelectOption
 from debug import DefaultView
 from discord.ui import Select
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed
 
 class View(DefaultView):

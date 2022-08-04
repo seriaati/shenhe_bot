@@ -1,16 +1,16 @@
 from typing import Any
 
 import aiosqlite
+from apps.genshin.utils import get_artifact, get_character, get_fight_prop
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member
 from discord.ui import Button
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           getArtifact, getCharacter, getStatEmoji, rank_user)
+from utility.utils import (default_embed, divide_chunks, error_embed, rank_user)
 
 
 class View(DefaultView):
@@ -18,8 +18,8 @@ class View(DefaultView):
         super().__init__(timeout=None)
         self.author = author
         self.sub_stat = None
-        self.db = db 
-        self.locale = locale 
+        self.db = db
+        self.locale = locale
         self.user_locale = user_locale
         for prop_id, prop_info in fight_prop.items():
             if prop_info['substat']:
@@ -32,15 +32,17 @@ class View(DefaultView):
             await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         return i.user.id == self.author.id
 
+
 class SubStatButton(Button):
     def __init__(self, prop_id: str, prop_name: str):
-        super().__init__(label=prop_name, emoji=getStatEmoji(prop_id))
+        super().__init__(label=prop_name, emoji=get_fight_prop(prop_id)['emoji'])
         self.prop_id = prop_id
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
         self.view.sub_stat = self.prop_id
         self.view.stop()
+
 
 class GoBack(Button):
     def __init__(self, c: aiosqlite.Cursor, label: str, db: aiosqlite.Connection):
@@ -72,7 +74,7 @@ class GoBack(Button):
                 member = i.guild.get_member(user_id)
                 if member is None:
                     continue
-                message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
+                message += f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
                 rank += 1
             embed = default_embed(
                 f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)

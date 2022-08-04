@@ -1,14 +1,14 @@
 from typing import Dict, List
 import aiosqlite
 import yaml
-from utility.apps.text_map.utils import get_user_locale
+from apps.genshin.utils import get_character, get_character_builds
+from apps.text_map.utils import get_user_locale
 from debug import DefaultView
 from discord import Embed, Member, Interaction, SelectOption
 from discord.ui import Button, Select
-from utility.utils import error_embed, getCharacter
-from utility.apps.text_map.TextMap import text_map
+from utility.utils import error_embed
+from apps.text_map.text_map_app import text_map
 from data.game.elements import convert_elements, elements
-from utility.apps.genshin import get_character_builds
 
 
 class View(DefaultView):
@@ -109,7 +109,7 @@ async def element_button_callback(i: Interaction, element: str, view: View):
         options.append(
             SelectOption(
                 label=localized_character_name,
-                emoji=getCharacter(character_id)['emoji'],
+                emoji=get_character(character_id)['emoji'],
                 value=character_id,
                 description=f'{len(character_builds["builds"])} {text_map.get(164, i.locale, user_locale)}'
             )

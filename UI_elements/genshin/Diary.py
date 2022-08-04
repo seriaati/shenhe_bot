@@ -1,8 +1,8 @@
 from debug import DefaultView
 from discord import Interaction, Locale, Member
 from discord.ui import Button
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.genshin import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.genshin.genshin_app import GenshinApp
 from utility.utils import error_embed
 
 
@@ -31,7 +31,7 @@ class Primo(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        result, success = await self.view.genshin_app.getDiaryLog(self.view.member.id, i.locale)
+        result, success = await self.view.genshin_app.get_diary_logs(self.view.member.id, i.locale)
         if not success:
             await i.response.send_message(embed=result, ephemeral=True)
         result = result[0]
@@ -44,7 +44,7 @@ class Mora(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        result, success = await self.view.genshin_app.getDiaryLog(self.view.member.id, i.locale)
+        result, success = await self.view.genshin_app.get_diary_logs(self.view.member.id, i.locale)
         if not success:
             await i.response.send_message(embed=result, ephemeral=True)
         result = result[1]

@@ -3,14 +3,15 @@ import asyncio
 from datetime import datetime, timedelta
 
 import aiosqlite
-from data.game.talent_books import talent_books
+from apps.genshin.genshin_app import GenshinApp
+from apps.genshin.utils import get_character, get_farm_dict, get_material
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from discord import Forbidden, User
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
-from utility.apps.genshin import GenshinApp, get_farm_dict
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
-from utility.utils import default_embed, get_material, getCharacter, log
+from utility.utils import default_embed, log
 
 import genshin
 
@@ -38,8 +39,8 @@ class Schedule(commands.Cog):
         users = await c.fetchall()
         for index, tuple in enumerate(users):
             user_id = tuple[0]
-            client, uid, user, user_locale = await self.genshin_app.getUserCookie(user_id)
-            client.lang = user_locale
+            client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
+            client.lang = to_genshin_py(user_locale)
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -65,7 +66,7 @@ class Schedule(commands.Cog):
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
-            client, uid, user, user_locale = await self.genshin_app.getUserCookie(user_id)
+            client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
             try:
                 notes = await client.get_notes(uid)
             except genshin.errors.InvalidCookies:
@@ -120,11 +121,12 @@ class Schedule(commands.Cog):
                 embed = default_embed()
                 embed.set_author(
                     name=f"{text_map.get(312, 'zh-TW', user_locale)} {text_map.get_character_name(character_id, 'zh-TW', user_locale)} {text_map.get(313, 'zh-TW', user_locale)}", icon_url=user.avatar)
-                embed.set_thumbnail(url=getCharacter(character_id)["icon"])
+                embed.set_thumbnail(url=get_character(character_id)["icon"])
                 value = ''
                 for material in materials:
                     value += f"{get_material(material)['emoji']} {text_map.get_material_name(material, 'zh-TW', user_locale)}\n"
-                embed.add_field(name=text_map.get(314, 'zh-TW', user_locale), value=value)
+                embed.add_field(name=text_map.get(
+                    314, 'zh-TW', user_locale), value=value)
                 await user.send(embed=embed)
 
     @claim_reward.before_loop

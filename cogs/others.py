@@ -4,9 +4,9 @@ import sys
 
 from discord import Interaction, app_commands
 from discord.ext import commands
-from utility.apps.text_map.convert_locale import to_ambr_top_dict
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
+from apps.text_map.convert_locale import to_ambr_top_dict
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed
 from UI_elements.others import ChangeLang
 

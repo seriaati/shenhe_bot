@@ -4,9 +4,9 @@ from typing import Any
 from debug import DebugView, DefaultView
 from discord import Interaction, Locale, SelectOption, TextStyle
 from discord.ui import Modal, Select, TextInput
-from utility.apps.genshin import GenshinApp
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
+from apps.genshin.genshin_app import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed
 
 
@@ -28,7 +28,7 @@ class Modal(Modal):
 
     async def on_submit(self, i: Interaction) -> None:
         await i.response.defer(ephemeral=True)
-        result, success = await self.genshin_app.setCookie(i.user.id, self.cookie.value, i.locale)
+        result, success = await self.genshin_app.set_cookie(i.user.id, self.cookie.value, i.locale)
         if not success:
             return await i.followup.send(embed=result, ephemeral=True)
         if isinstance(result, list):  # 有多個帳號
@@ -65,6 +65,6 @@ class UIDSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
-        result, success = await self.view.genshin_app.setCookie(
+        result, success = await self.view.genshin_app.set_cookie(
             i.user.id, self.view.cookie.value, i.locale, int(self.values[0]))
         await i.followup.send(embed=result, ephemeral=True)

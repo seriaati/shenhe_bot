@@ -4,7 +4,8 @@ from typing import Literal
 import discord
 import yaml
 
-from utility.apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.convert_locale import to_ambr_top
+
 
 
 class TextMap():

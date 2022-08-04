@@ -2,7 +2,7 @@ from typing import Literal
 
 import aiosqlite
 from discord import Locale
-from utility.apps.text_map.TextMap import text_map
+from apps.text_map.text_map_app import text_map
 
 
 def getCityName(city_id: int, locale: Locale, user_locale: Literal["str", None]) -> str:

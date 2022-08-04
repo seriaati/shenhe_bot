@@ -1,9 +1,13 @@
-import ast
 from datetime import datetime
 from pprint import pprint
 
 import aiosqlite
 import GGanalysislib
+from apps.genshin.genshin_app import GenshinApp
+from apps.genshin.utils import calculate_artifact_score, get_artifact, get_character, get_farm_dict, get_fight_prop, get_material, get_weapon
+from apps.text_map.convert_locale import to_ambr_top, to_enka
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import elements
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
@@ -16,14 +20,8 @@ from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
                                  Build, CharacterWiki, Diary, EnkaProfile,
                                  ResinNotification, ShowAllCharacters,
                                  TalentNotification)
-from utility.apps.genshin import GenshinApp, get_farm_dict
-from utility.apps.text_map.convert_locale import to_ambr_top, to_enka
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale, get_weekday_name
 from utility.paginator import GeneralPaginator
-from utility.utils import (calculate_artifact_score, default_embed,
-                           divide_chunks, error_embed, get_material,
-                           getArtifact, getCharacter, getFightProp, getWeapon,
+from utility.utils import (default_embed, divide_chunks, error_embed,
                            parse_HTML, rank_user)
 
 from cogs.wish import WishCog
@@ -105,7 +103,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
+        result, success = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
@@ -113,7 +111,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getRealTimeNotes(member.id, i.locale)
+        result, success = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量 (需註冊)')
@@ -121,11 +119,11 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def stats(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
-        result, success = await self.genshin_app.getUserStats(member.id, custom_uid, i.locale)
+        result, success = await self.genshin_app.get_stats(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
-        result, success = await self.genshin_app.getUserStats(member.id, None, i.locale)
+        result, success = await self.genshin_app.get_stats(member.id, None, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(name='area探索度', description='查看區域探索度 (需註冊)')
@@ -133,7 +131,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
-        result, success = await self.genshin_app.getArea(member.id, custom_uid, i.locale)
+        result, success = await self.genshin_app.get_area(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='claim登入獎勵', description='領取hoyolab網頁登入獎勵 (需註冊)')
@@ -145,7 +143,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.claimDailyReward(member.id, i.locale)
+        result, success = await self.genshin_app.claim_daily_reward(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='characters所有角色', description='展示自己擁有的所有角色')
@@ -163,7 +161,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
-        result, success = await self.genshin_app.getUserCharacters(member.id, i.locale)
+        result, success = await self.genshin_app.get_all_characters(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         placeholder = text_map.get(142, i.locale, user_locale)
@@ -184,7 +182,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
-        result, success = await self.genshin_app.getDiary(member.id, month, i.locale)
+        result, success = await self.genshin_app.get_diary(member.id, month, i.locale)
         if not success:
             await i.response.send_message(embed=result, ephemeral=not success)
         else:
@@ -208,7 +206,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
-        result, success = await self.genshin_app.getAbyss(member.id, previous, overview, i.locale)
+        result, success = await self.genshin_app.get_abyss(member.id, previous, overview, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         if overview:
@@ -237,13 +235,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                 exists = await self.genshin_app.check_user_data(i.user.id)
                 if not exists:
                     return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar))
-                result, success = await self.genshin_app.setResinNotification(i.user.id, 0, None, None, i.locale)
+                result, success = await self.genshin_app.set_resin_notification(i.user.id, 0, None, None, i.locale)
                 await i.response.send_message(embed=result, ephemeral=not success)
             else:
                 modal = ResinNotification.Modal(i.locale, user_locale)
                 await i.response.send_modal(modal)
                 await modal.wait()
-                result, success = await self.genshin_app.setResinNotification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value, i.locale)
+                result, success = await self.genshin_app.set_resin_notification(i.user.id, toggle, modal.resin_threshold.value, modal.max_notif.value, i.locale)
                 await i.followup.send(embed=result, ephemeral=not success)
 
         elif function == 1:
@@ -305,8 +303,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                 f'{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}')
             value = ''
             for farmable in farmable_list:
-                emoji = getWeapon(farmable)['emoji'] if len(
-                    farmable) == 5 else getCharacter(farmable)['emoji']
+                emoji = get_weapon(farmable)['emoji'] if len(
+                    farmable) == 5 else get_character(farmable)['emoji']
                 name = text_map.get_weapon_name(farmable, i.locale, user_locale) if len(
                     farmable) == 5 else text_map.get_character_name(farmable, i.locale, user_locale)
                 value += f'{emoji} {name}\n'
@@ -397,7 +395,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             f"{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n"
             f"{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n"
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}")
-        overview.set_author(name=member, icon_url=member.avatar)
+        overview.set_author(name=member.display_name, icon_url=member.avatar)
         overview.set_image(url=data.player.namecard.banner)
         embeds['0'] = overview
         options = [SelectOption(label=text_map.get(43, i.locale, user_locale), value=0,
@@ -405,7 +403,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         artifact_embeds = {}
         for character in data.characters:
             options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
-                           value=character.id, emoji=getCharacter(character.id)['emoji']))
+                           value=character.id, emoji=get_character(character.id)['emoji']))
             embed = default_embed(
                 f'{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
             )
@@ -435,11 +433,11 @@ class GenshinCog(commands.Cog, name='genshin'):
             weapon = character.equipments[-1]
             weapon_sub_stats = ''
             for substat in weapon.detail.substats:
-                weapon_sub_stats += f"{getFightProp(substat.prop_id)['emoji']} {text_map.get(fight_prop.get(substat.prop_id)['text_map_hash'], i.locale, user_locale)} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
+                weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {text_map.get(fight_prop.get(substat.prop_id)['text_map_hash'], i.locale, user_locale)} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
             embed.add_field(
                 name=text_map.get(91, i.locale, user_locale),
-                value=f'{getWeapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
-                f"{getFightProp(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
+                value=f'{get_weapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
+                f"{get_fight_prop(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
                 f'{weapon_sub_stats}',
                 inline=False
             )
@@ -452,11 +450,11 @@ class GenshinCog(commands.Cog, name='genshin'):
                 f'{character.name} | {text_map.get(92, i.locale, user_locale)}')
             index = 0
             for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
-                artifact_sub_stats = f'**__{getFightProp(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
+                artifact_sub_stats = f'**__{get_fight_prop(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(artifact.detail.mainstats.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
                 artifact_sub_stat_dict = {}
                 for substat in artifact.detail.substats:
                     artifact_sub_stat_dict[substat.prop_id] = substat.value
-                    artifact_sub_stats += f'{getFightProp(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
+                    artifact_sub_stats += f'{get_fight_prop(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
                 if artifact.level == 20:
                     artifact_sub_stats += f'<:SCORE:983948729293897779> {int(calculate_artifact_score(artifact_sub_stat_dict))}'
                 artifact_embed.add_field(
@@ -482,7 +480,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         exists = await self.genshin_app.check_user_data(i.user.id)
         if not exists:
             return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar))
-        result, success = await self.genshin_app.redeemCode(i.user.id, code, i.locale)
+        result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
     @app_commands.command(name='events活動', description='查看原神近期的活動')
@@ -581,7 +579,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     member = i.guild.get_member(user_id)
                     if member is None:
                         continue
-                    message += f'{rank}. {getCharacter(avatar_id)["emoji"]} {getArtifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
+                    message += f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
                     rank += 1
                 embed = default_embed(
                     f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
@@ -742,7 +740,7 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
     async def activity(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
-        result, success = await self.genshin_app.getActivities(member.id, custom_uid, i.locale)
+        result, success = await self.genshin_app.get_activities(member.id, custom_uid, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         await GeneralPaginator(i, result).start(embeded=True)

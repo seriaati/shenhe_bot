@@ -3,15 +3,15 @@ from typing import Any
 
 import aiohttp
 import aiosqlite
+from apps.genshin.utils import get_all_non_beta_characters, get_character
 from data.game.elements import convert_elements, elements
 from debug import DefaultView
 from discord import Interaction, Locale, Member, SelectOption
 from discord.ui import Button, Select
-from utility.apps.genshin import GenshinApp, get_all_non_beta_characters
-from utility.apps.text_map.convert_locale import to_ambr_top
-from utility.apps.text_map.TextMap import text_map
-from utility.apps.text_map.utils import get_user_locale
-from utility.utils import default_embed, error_embed, getCharacter
+from apps.genshin.genshin_app import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from utility.utils import default_embed, error_embed
 
 
 class View(DefaultView):
@@ -66,7 +66,7 @@ class ElementButton(Button):
                     161, i.locale, user_locale) if character_id in user_character_list else None
                 options.append(SelectOption(
                     label=character_info['name'],
-                    emoji=getCharacter(character_id)['emoji'],
+                    emoji=get_character(character_id)['emoji'],
                     value=character_id,
                     description=description)
                 )
