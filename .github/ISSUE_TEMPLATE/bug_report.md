@@ -1,5 +1,5 @@
 ---
-name: bug_report
+name: 錯誤回報
 about: 回報錯誤來讓小雪修復
 title: "[錯誤回報] XXX"
 labels: bug
