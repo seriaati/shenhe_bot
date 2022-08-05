@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: 功能請求
 about: 提出建議或改進方向來讓申鶴變得更好
 title: "[功能請求] XXX"
 labels: enhancement
