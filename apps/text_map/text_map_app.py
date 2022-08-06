@@ -87,7 +87,7 @@ class TextMap():
             for lang_code, character_lang_name in character_name_dict.items():
                 if character_lang_name == character_name:
                     if not character_id.isnumeric():
-                        return extract_integer_from_string(character_id)
+                        return character_id
                     else:
                         return int(character_id)
         return character_name
