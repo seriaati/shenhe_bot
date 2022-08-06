@@ -1,5 +1,4 @@
 from datetime import datetime
-import sqlite3
 from typing import Optional
 
 import aiosqlite
@@ -8,50 +7,17 @@ import GGanalysislib
 from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import Modal, View
-from apps.genshin.utils import get_dummy_client
+from discord.ui import View
+from apps.text_map.utils import get_user_locale
 from utility.paginator import GeneralPaginator
-from utility.utils import default_embed, divide_chunks, error_embed, log
-
-import genshin
+from utility.utils import default_embed, divide_chunks, error_embed
+from UI_elements.wish import SetAuthKey
 
 
 class WishCog(commands.GroupCog, name='wish'):
     def __init__(self, bot):
         self.bot = bot
         super().__init__()
-
-    class AuthKeyModal(Modal):
-        def __init__(self, db: aiosqlite.Connection):
-            self.db = db
-            super().__init__(title='抽卡紀錄設定', timeout=None, custom_id='cookie_modal')
-        url = discord.ui.TextInput(
-            label='Auth Key URL',
-            placeholder='請ctrl+v貼上複製的連結',
-            style=discord.TextStyle.long,
-            required=True
-        )
-
-        async def on_submit(self, i: discord.Interaction):
-            client = get_dummy_client()
-            url = self.url.value
-            log(True, False, 'Wish Setkey', f'{i.user.id} (url={url})')
-            authkey = genshin.utility.extract_authkey(url)
-            client.authkey = authkey
-            await i.response.send_message(embed=default_embed('<a:LOADER:982128111904776242> 請稍等, 處理數據中...', '過程約需30至45秒, 時長取決於祈願數量'), ephemeral=True)
-            try:
-                wish_history = await client.wish_history()
-            except Exception as e:
-                return await i.edit_original_message(embed=error_embed('出現錯誤', f'請告知小雪\n```{e}```'))
-            c = await self.db.cursor()
-            for wish in wish_history:
-                wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
-                try:
-                    await c.execute('INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id) VALUES (?, ?, ?, ?, ?, ?, ?)', (i.user.id, wish.name, wish.rarity, wish_time, wish.type, wish.banner_type, wish.id))
-                except sqlite3.IntegrityError:
-                    pass
-            await self.db.commit()
-            await i.edit_original_message(embed=default_embed('<:wish:982419859117838386> 抽卡紀錄設置成功'))
 
     class ChoosePlatform(View):
         def __init__(self):
@@ -128,6 +94,7 @@ class WishCog(commands.GroupCog, name='wish'):
     @app_commands.choices(function=[Choice(name='查看祈願紀錄的設置方式', value='help'),
                                     Choice(name='提交連結', value='submit')])
     async def set_key(self, i: Interaction, function: str):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == 'help':
             view = WishCog.ChoosePlatform()
             embed = default_embed(
@@ -138,7 +105,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 '也可以將帳號交給有PC且自己信任的人來獲取數據')
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
-            await i.response.send_modal(WishCog.AuthKeyModal(self.bot.db))
+            await i.response.send_modal(SetAuthKey.Modal(self.bot.db, i.locale, user_locale))
 
     async def wish_history_exists(self, user_id: int) -> Embed:
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -242,7 +209,8 @@ class WishCog(commands.GroupCog, name='wish'):
         user_wishes = []
         for index, tuple in enumerate(result):
             wish_name = tuple[0]
-            wish_time = (datetime.strptime(tuple[2], "%Y/%m/%d %H:%M:%S")).strftime("%Y/%m/%d")
+            wish_time = (datetime.strptime(
+                tuple[2], "%Y/%m/%d %H:%M:%S")).strftime("%Y/%m/%d")
             wish_rarity = tuple[1]
             wish_type = tuple[3]
             if wish_rarity == 5 or wish_rarity == 4:

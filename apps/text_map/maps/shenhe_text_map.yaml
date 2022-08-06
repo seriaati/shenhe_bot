@@ -395,8 +395,8 @@
   zh-TW: 提交 Cookie
   en-US: Submit your cookie
 133:
-  zh-TW: ctrl+v 來貼上你複製的 cookie
-  en-US: ctrl+v to paste your cookie
+  zh-TW: 請貼上剛剛複製的文字
+  en-US: please paste the text you copied here
 134:
   zh-TW: "發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤"
   en-US: "There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error."
@@ -1021,3 +1021,18 @@
 351:
   zh-TW: 蒸發
   en-US: vaporize
+352:
+  zh-TW: 祈願紀錄連結
+  en-US: Authkey URL
+353:
+  zh-TW: 匯入祈願紀錄
+  en-US: Importing wish history
+354:
+  zh-TW: 請貼上複製的連結
+  en-US: Please paste the link here
+355:
+  zh-TW: 請稍等, 處理數據中...
+  en-US: Please wait for awhile while shenhe is processing your wish history
+356:
+  zh-TW: 祈願紀錄匯入成功
+  en-US: Successfully imported wish history
