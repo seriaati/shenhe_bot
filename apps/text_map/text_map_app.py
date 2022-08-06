@@ -5,6 +5,7 @@ import discord
 import yaml
 
 from apps.text_map.convert_locale import to_ambr_top
+from utility.utils import extract_integer_from_string
 
 
 class TextMap():
@@ -81,10 +82,14 @@ class TextMap():
             return dungeonText[str(ambr_locale)]
 
     def get_character_id_with_name(self, character_name: str) -> str | int:
+        character_id: str
         for character_id, character_name_dict in self.avatar.items():
             for lang_code, character_lang_name in character_name_dict.items():
                 if character_lang_name == character_name:
-                    return int(character_id)
+                    if not character_id.isnumeric():
+                        return extract_integer_from_string(character_id)
+                    else:
+                        return int(character_id)
         return character_name
 
 

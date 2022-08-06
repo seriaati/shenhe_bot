@@ -92,3 +92,8 @@ def split_text_and_number(text: str) -> List:
                 number_index = index
                 break
     return [text[:number_index], text[number_index:]]
+
+def extract_integer_from_string(text: str) -> int:
+    text = text.replace('-', ' ')
+    text = [int(character) for character in text.split() if character.isdigit()]
+    return int(text[0])
