@@ -4,89 +4,20 @@ from typing import Optional
 import aiosqlite
 import discord
 import GGanalysislib
+from apps.text_map.utils import get_user_locale
 from discord import Embed, Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from discord.ui import View
-from apps.text_map.utils import get_user_locale
+from UI_elements.wish import SetAuthKey, ChoosePlatform
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
-from UI_elements.wish import SetAuthKey
+from apps.text_map.text_map_app import text_map
 
 
 class WishCog(commands.GroupCog, name='wish'):
     def __init__(self, bot):
         self.bot = bot
         super().__init__()
-
-    class ChoosePlatform(View):
-        def __init__(self):
-            super().__init__(timeout=None)
-
-        @discord.ui.button(label='PC', style=discord.ButtonStyle.blurple)
-        async def pc(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = default_embed(
-                'PC 設置方式',
-                '1. 在電腦開啟原神(如果你使用多組帳號，請重新啟動遊戲)\n'
-                '2. 打開祈願紀錄並等待讀取\n'
-                '3. 在鍵盤點選"開始"鍵 (Windows鍵), 並搜尋 Powershell\n'
-                '4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell\n'
-                '5. 按Enter鍵, 接著連結會自動複製到剪貼簿\n'
-                '6. 在這裡提交連結, 請輸入`/wish setkey`指令'
-            )
-            code_msg = "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/41853f2b76dcb845cf8cb0c44174fb63459920f4/getlink_global.ps1'))"
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            await interaction.followup.send(content=f'```{code_msg}```', ephemeral=True)
-
-        @discord.ui.button(label='Android', style=discord.ButtonStyle.blurple)
-        async def android(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = default_embed(
-                'Android 設置方式',
-                '[影片教學](https://youtu.be/pe_aROJ8Av8)\n'
-                '影片教學中複製了所有文本, 請只複製連結(步驟7)\n'
-                '1. 打開祈願界面 (遊戲內)\n'
-                '2. 點擊歷史記錄\n'
-                '3. 等待載入\n'
-                '4. 斷網(關閉wifi或行動數據)\n'
-                '5. 點擊右上角刷新按鈕\n'
-                '6. 此時頁面應該提示錯誤, 並顯示一些文字\n'
-                '7. 長按並複製「只有連結」的部份(粗體字)\n'
-                '8. 連網(接回wifi或行動數據)\n'
-                '9. 在這裡提交連結, 請輸入`/wish setkey`指令'
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        @discord.ui.button(label='IOS', style=discord.ButtonStyle.blurple)
-        async def ios(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = default_embed(
-                'IOS 設置方式',
-                '[影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)\n'
-                '1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)\n'
-                '2. 開啟app, 接著在系統設定 (設定 > 一般 > VPN與裝置管理) 中同意 VPN\n'
-                '3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝 CA > CA 就下載好了\n'
-                '4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install\n'
-                '5. 開啟原神，接著打開祈願畫面，並在這個畫面等待\n'
-                '6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕\n'
-                '7. 回到原神，接著開啟祈願歷史紀錄\n'
-                '8. 等候頁面載入\n'
-                '9. 回到 Stream App > 停止抓包\n'
-                '10. 按 抓包歷史 > 選擇一個以.json結尾的歷史紀錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)\n'
-                '11. 點選 "請求" 分頁, 接著複製連結\n'
-                '12. 在這裡提交連結, 請輸入`/wish setkey`指令'
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        @discord.ui.button(label='Play Station', style=discord.ButtonStyle.blurple)
-        async def ps(self, interaction: discord.Interaction, button: discord.ui.Button):
-            embed = default_embed(
-                'Play Station 設置流程',
-                '如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式\n'
-                '1. 在你的 PlayStation 裡打開原神\n'
-                '2. 打開你的信箱 QR Code\n'
-                '3. 用手機掃描 QR Code 得到連結'
-                '4. 在這裡提交連結, 請輸入`/wish setkey`指令'
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name='setkey設置', description='設置原神祈願紀錄')
     @app_commands.rename(function='功能')
@@ -96,13 +27,8 @@ class WishCog(commands.GroupCog, name='wish'):
     async def set_key(self, i: Interaction, function: str):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == 'help':
-            view = WishCog.ChoosePlatform()
-            embed = default_embed(
-                '選擇你目前的平台',
-                '提醒: PC的設置方式是最簡便也最安全的\n'
-                '其他管道只有在真的不得已的情況下再去做使用\n'
-                '尤其IOS的設置方式極其複雜且可能失敗\n'
-                '也可以將帳號交給有PC且自己信任的人來獲取數據')
+            view = ChoosePlatform.View(i.locale, user_locale)
+            embed = default_embed(text_map.get(365, i.locale, user_locale))
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
             await i.response.send_modal(SetAuthKey.Modal(self.bot.db, i.locale, user_locale))

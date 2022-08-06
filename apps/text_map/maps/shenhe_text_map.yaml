@@ -1,1038 +1,1136 @@
 1:
-  zh-TW: 已滿
-  en-US: Full
+    zh-TW: 已滿
+    en-US: Full
 2:
-  zh-TW: 今天
-  en-US: Today's
+    zh-TW: 今天
+    en-US: Today's
 3:
-  zh-TW: 明天
-  en-US: Tomorrow
+    zh-TW: 明天
+    en-US: Tomorrow
 4:
-  zh-TW: 剩餘
-  en-US: Remaining
+    zh-TW: 剩餘
+    en-US: Remaining
 5:
-  zh-TW: 天
-  en-US: days
+    zh-TW: 天
+    en-US: days
 6:
-  zh-TW: 小時
-  en-US: hr
+    zh-TW: 小時
+    en-US: hr
 7:
-  zh-TW: 分
-  en-US: min
+    zh-TW: 分
+    en-US: min
 8:
-  zh-TW: 秒
-  en-US: sec
+    zh-TW: 秒
+    en-US: sec
 9:
-  zh-TW: 可使用
-  en-US: Available
+    zh-TW: 可使用
+    en-US: Available
 10:
-  zh-TW: 質變儀不存在
-  en-US: P.T. not found
+    zh-TW: 質變儀不存在
+    en-US: P.T. not found
 11:
-  zh-TW: 已完成的每日數量
-  en-US: Dailies finished
+    zh-TW: 已完成的每日數量
+    en-US: Dailies finished
 12:
-  zh-TW: 質變儀剩餘時間
-  en-US: P.T. remainig time
+    zh-TW: 質變儀剩餘時間
+    en-US: P.T. remainig time
 13:
-  zh-TW: 樹脂
-  en-US: Resin
+    zh-TW: 樹脂
+    en-US: Resin
 14:
-  zh-TW: 目前
-  en-US: Current
+    zh-TW: 目前
+    en-US: Current
 15:
-  zh-TW: 回復時間
-  en-US: Recovery time
+    zh-TW: 回復時間
+    en-US: Recovery time
 16:
-  zh-TW: 周本減半次數
-  en-US: Resin discounts
+    zh-TW: 周本減半次數
+    en-US: Resin discounts
 17:
-  zh-TW: 塵歌壺
-  en-US: Serenitea Pot
+    zh-TW: 塵歌壺
+    en-US: Serenitea Pot
 18:
-  zh-TW: 沒有探索派遣
-  en-US: No expeditions found
+    zh-TW: 沒有探索派遣
+    en-US: No expeditions found
 19:
-  zh-TW: 已完成
-  en-US: Finished
+    zh-TW: 已完成
+    en-US: Finished
 20:
-  zh-TW: 探索派遣
-  en-US: Expeditions
+    zh-TW: 探索派遣
+    en-US: Expeditions
 21:
-  zh-TW: "輸入 `/stuck` 來獲取更多資訊"
-  en-US: "`/stuck` for more information"
+    zh-TW: "輸入 `/stuck` 來獲取更多資訊"
+    en-US: "`/stuck` for more information"
 22:
-  zh-TW: 資料不公開
-  en-US: Data not public
+    zh-TW: 資料不公開
+    en-US: Data not public
 23:
-  zh-TW: 錯誤
-  en-US: Error
+    zh-TW: 錯誤
+    en-US: Error
 24:
-  zh-TW: 即時便籤
-  en-US: Realtime notes
+    zh-TW: 即時便籤
+    en-US: Realtime notes
 25:
-  zh-TW: 週一
-  en-US: Mon.
+    zh-TW: 週一
+    en-US: Mon.
 26:
-  zh-TW: 週二
-  en-US: Tue.
+    zh-TW: 週二
+    en-US: Tue.
 27:
-  zh-TW: 週三
-  en-US: Wed.
+    zh-TW: 週三
+    en-US: Wed.
 28:
-  zh-TW: 週四
-  en-US: Thu.
+    zh-TW: 週四
+    en-US: Thu.
 29:
-  zh-TW: 週五
-  en-US: Fri.
+    zh-TW: 週五
+    en-US: Fri.
 30:
-  zh-TW: 週六
-  en-US: Sat.
+    zh-TW: 週六
+    en-US: Sat.
 31:
-  zh-TW: 週日
-  en-US: Sun.
+    zh-TW: 週日
+    en-US: Sun.
 32:
-  zh-TW: 選擇語言
-  en-US: Choose your language
+    zh-TW: 選擇語言
+    en-US: Choose your language
 33:
-  zh-TW: 語言更改成功
-  en-US: Langauge changed
+    zh-TW: 語言更改成功
+    en-US: Langauge changed
 34:
-  zh-TW: 目前語言
-  en-US: Current language
+    zh-TW: 目前語言
+    en-US: Current language
 35:
-  zh-TW: "輸入 `/register` 來查看設定方式"
-  en-US: "`/register` for more information"
+    zh-TW: "輸入 `/register` 來查看設定方式"
+    en-US: "`/register` for more information"
 36:
-  zh-TW: 無效的 cookie
-  en-US: Cookie invalid
+    zh-TW: 無效的 cookie
+    en-US: Cookie invalid
 37:
-  zh-TW: 已取消設定帳號
-  en-US: Account register cancelled
+    zh-TW: 已取消設定帳號
+    en-US: Account register cancelled
 38:
-  zh-TW: 帳號內沒有任何角色
-  en-US: No valid accounts were obtained from the cookie
+    zh-TW: 帳號內沒有任何角色
+    en-US: No valid accounts were obtained from the cookie
 39:
-  zh-TW: 帳號設定成功
-  en-US: Account registration successful
+    zh-TW: 帳號設定成功
+    en-US: Account registration successful
 40:
-  zh-TW: 你已經領取過今天的獎勵了!
-  en-US: You have already claimed today's login reward!
+    zh-TW: 你已經領取過今天的獎勵了!
+    en-US: You have already claimed today's login reward!
 41:
-  zh-TW: 獲得
-  en-US: Obtained
+    zh-TW: 獲得
+    en-US: Obtained
 42:
-  zh-TW: 簽到成功
-  en-US: Claim successful
+    zh-TW: 簽到成功
+    en-US: Claim successful
 43:
-  zh-TW: 總覽
-  en-US: Overview
+    zh-TW: 總覽
+    en-US: Overview
 44:
-  zh-TW: 活躍天數
-  en-US: Days Active
+    zh-TW: 活躍天數
+    en-US: Days Active
 45:
-  zh-TW: 角色數量
-  en-US: Characters
+    zh-TW: 角色數量
+    en-US: Characters
 46:
-  zh-TW: 成就數
-  en-US: Achievements
+    zh-TW: 成就數
+    en-US: Achievements
 47:
-  zh-TW: 深淵已達
-  en-US: Spiral Abyss
+    zh-TW: 深淵已達
+    en-US: Spiral Abyss
 48:
-  zh-TW: 神瞳
-  en-US: Oculi
+    zh-TW: 神瞳
+    en-US: Oculi
 49:
-  zh-TW: 風神瞳
-  en-US: Anemoculi
+    zh-TW: 風神瞳
+    en-US: Anemoculi
 50:
-  zh-TW: 岩神瞳
-  en-US: Geoculi
+    zh-TW: 岩神瞳
+    en-US: Geoculi
 51:
-  zh-TW: 雷神瞳
-  en-US: Electroculi
+    zh-TW: 雷神瞳
+    en-US: Electroculi
 52:
-  zh-TW: 寶箱
-  en-US: Chests
+    zh-TW: 寶箱
+    en-US: Chests
 53:
-  zh-TW: 普通寶箱
-  en-US: Common Chests
+    zh-TW: 普通寶箱
+    en-US: Common Chests
 54:
-  zh-TW: 精緻寶箱
-  en-US: Exquisite Chests
+    zh-TW: 精緻寶箱
+    en-US: Exquisite Chests
 55:
-  zh-TW: 華麗寶箱
-  en-US: Luxurious Chests
+    zh-TW: 華麗寶箱
+    en-US: Luxurious Chests
 56:
-  zh-TW: 原神數據
-  en-US: Genshin stats
+    zh-TW: 原神數據
+    en-US: Genshin stats
 57:
-  zh-TW: 珍貴寶箱
-  en-US: Precious Chests
+    zh-TW: 珍貴寶箱
+    en-US: Precious Chests
 58:
-  zh-TW: 區域探索度
-  en-US: World Exploration
+    zh-TW: 區域探索度
+    en-US: World Exploration
 59:
-  zh-TW: 原石收入比上個月
-  en-US: Primo income v.s last month
+    zh-TW: 原石收入比上個月
+    en-US: Primo income v.s last month
 60:
-  zh-TW: 增加了
-  en-US: increased
+    zh-TW: 增加了
+    en-US: increased
 61:
-  zh-TW: 減少了
-  en-US: decreased
+    zh-TW: 減少了
+    en-US: decreased
 62:
-  zh-TW: 摩拉收入比上個月
-  en-US: Mora income v.s last month
+    zh-TW: 摩拉收入比上個月
+    en-US: Mora income v.s last month
 63:
-  zh-TW: 本月共獲得
-  en-US: Acquired this month
+    zh-TW: 本月共獲得
+    en-US: Acquired this month
 64:
-  zh-TW: 上個月
-  en-US: Last month
+    zh-TW: 上個月
+    en-US: Last month
 65:
-  zh-TW: 原石收入分類
-  en-US: Primogems obtained
+    zh-TW: 原石收入分類
+    en-US: Primogems obtained
 66:
-  zh-TW: 獲取紀錄
-  en-US: Diary log
+    zh-TW: 獲取紀錄
+    en-US: Diary log
 67:
-  zh-TW: 點擊下方的按鈕
-  en-US: Click the button below
+    zh-TW: 點擊下方的按鈕
+    en-US: Click the button below
 68:
-  zh-TW: 查看本月近 30 筆的原石或摩拉紀錄
-  en-US: to view the last 30 primo or mora records
+    zh-TW: 查看本月近 30 筆的原石或摩拉紀錄
+    en-US: to view the last 30 primo or mora records
 69:
-  zh-TW: 旅行者日記
-  en-US: Traveler's Diary
+    zh-TW: 旅行者日記
+    en-US: Traveler's Diary
 70:
-  zh-TW: 原石獲取紀錄
-  en-US: Primo Log
+    zh-TW: 原石獲取紀錄
+    en-US: Primo Log
 71:
-  zh-TW: 原石
-  en-US: primos
+    zh-TW: 原石
+    en-US: primos
 72:
-  zh-TW: 摩拉獲取紀錄
-  en-US: Mora Log
+    zh-TW: 摩拉獲取紀錄
+    en-US: Mora Log
 73:
-  zh-TW: 摩拉
-  en-US: mora
+    zh-TW: 摩拉
+    en-US: mora
 74:
-  zh-TW: "請使用 `/stats` 來刷新資料"
-  en-US: "Use the `/stats` command to refresh your stats"
+    zh-TW: "請使用 `/stats` 來刷新資料"
+    en-US: "Use the `/stats` command to refresh your stats"
 75:
-  zh-TW: "(本指令只顯示第9層以上資料)"
-  en-US: "(This command only shows data above floor 9)"
+    zh-TW: "(本指令只顯示第9層以上資料)"
+    en-US: "(This command only shows data above floor 9)"
 76:
-  zh-TW: 找不到深淵資料
-  en-US: Spiral abyss data not found
+    zh-TW: 找不到深淵資料
+    en-US: Spiral abyss data not found
 77:
-  zh-TW: 期別
-  en-US: Lunar phase
+    zh-TW: 期別
+    en-US: Lunar phase
 78:
-  zh-TW: 達到
-  en-US: Deepest descent
+    zh-TW: 達到
+    en-US: Deepest descent
 79:
-  zh-TW: 戰績
-  en-US: Challenge Summary
+    zh-TW: 戰績
+    en-US: Challenge Summary
 80:
-  zh-TW: 單次最高傷害
-  en-US: Strongest single strike
+    zh-TW: 單次最高傷害
+    en-US: Strongest single strike
 81:
-  zh-TW: 最多擊殺
-  en-US: Most defeats
+    zh-TW: 最多擊殺
+    en-US: Most defeats
 82:
-  zh-TW: 最高承傷
-  en-US: Most damage taken
+    zh-TW: 最高承傷
+    en-US: Most damage taken
 83:
-  zh-TW: 最多元素爆發
-  en-US: Elemental bursts unleashed
+    zh-TW: 最多元素爆發
+    en-US: Elemental bursts unleashed
 84:
-  zh-TW: 最多元素戰技
-  en-US: Elemental skills cast
+    zh-TW: 最多元素戰技
+    en-US: Elemental skills cast
 85:
-  zh-TW: 深淵總覽
-  en-US: Spiral Abyss Overview
+    zh-TW: 深淵總覽
+    en-US: Spiral Abyss Overview
 86:
-  zh-TW: ""
-  en-US: Chamber
+    zh-TW: ""
+    en-US: Chamber
 87:
-  zh-TW: 間
-  en-US: ""
+    zh-TW: 間
+    en-US: ""
 88:
-  zh-TW: "[上半]"
-  en-US: "[First Half]"
+    zh-TW: "[上半]"
+    en-US: "[First Half]"
 89:
-  zh-TW: "[下半]"
-  en-US: "[Second Half]"
+    zh-TW: "[下半]"
+    en-US: "[Second Half]"
 90:
-  zh-TW: "配置#"
-  en-US: "Build #"
+    zh-TW: "配置#"
+    en-US: "Build #"
 91:
-  zh-TW: 武器
-  en-US: Weapon
+    zh-TW: 武器
+    en-US: Weapon
 92:
-  zh-TW: 聖遺物
-  en-US: Artifacts
+    zh-TW: 聖遺物
+    en-US: Artifacts
 93:
-  zh-TW: 主詞條
-  en-US: Main Stats
+    zh-TW: 主詞條
+    en-US: Main Stats
 94:
-  zh-TW: 天賦
-  en-US: Talents
+    zh-TW: 天賦
+    en-US: Talents
 95:
-  zh-TW: 屬性面板
-  en-US: Character Stats
+    zh-TW: 屬性面板
+    en-US: Character Stats
 96:
-  zh-TW: 來源
-  en-US: Source
+    zh-TW: 來源
+    en-US: Source
 97:
-  zh-TW: 聖遺物思路
-  en-US: Artifact Thoughts
+    zh-TW: 聖遺物思路
+    en-US: Artifact Thoughts
 98:
-  zh-TW: 樹脂提醒已關閉
-  en-US: Resin reminder has been turned off
+    zh-TW: 樹脂提醒已關閉
+    en-US: Resin reminder has been turned off
 99:
-  zh-TW: 開
-  en-US: "ON"
+    zh-TW: 開
+    en-US: "ON"
 100:
-  zh-TW: 關
-  en-US: "OFF"
+    zh-TW: 關
+    en-US: "OFF"
 101:
-  zh-TW: 目前開關
-  en-US: Current Toggle
+    zh-TW: 目前開關
+    en-US: Current Toggle
 102:
-  zh-TW: 樹脂閥值
-  en-US: Resing Threshold
+    zh-TW: 樹脂閥值
+    en-US: Resing Threshold
 103:
-  zh-TW: 最大提醒數量
-  en-US: Max. notification number
+    zh-TW: 最大提醒數量
+    en-US: Max. notification number
 104:
-  zh-TW: 設置成功
-  en-US: Settings saved
+    zh-TW: 設置成功
+    en-US: Settings saved
 105:
-  zh-TW: 所有角色
-  en-US: Characters
+    zh-TW: 所有角色
+    en-US: Characters
 106:
-  zh-TW: 你已經兌換過這個兌換碼了!
-  en-US: This gift code has already been redeemed!
+    zh-TW: 你已經兌換過這個兌換碼了!
+    en-US: This gift code has already been redeemed!
 107:
-  zh-TW: 兌換碼無效
-  en-US: Gift code invalid
+    zh-TW: 兌換碼無效
+    en-US: Gift code invalid
 108:
-  zh-TW: 兌換碼
-  en-US: Gift code
+    zh-TW: 兌換碼
+    en-US: Gift code
 109:
-  zh-TW: 兌換碼兌換成功
-  en-US: Code redeemed
+    zh-TW: 兌換碼兌換成功
+    en-US: Code redeemed
 110:
-  zh-TW: 找不到你的海島活動資料
-  en-US: Summer event data not found
+    zh-TW: 找不到你的海島活動資料
+    en-US: Summer event data not found
 111:
-  zh-TW: 金蘋果群島
-  en-US: Golden Apple Archipelago
+    zh-TW: 金蘋果群島
+    en-US: Golden Apple Archipelago
 112:
-  zh-TW: 浪船錨點
-  en-US: Waverider Waypoints Unlocked
+    zh-TW: 浪船錨點
+    en-US: Waverider Waypoints Unlocked
 113:
-  zh-TW: 傳送錨點
-  en-US: Waypoints Unlocked
+    zh-TW: 傳送錨點
+    en-US: Waypoints Unlocked
 114:
-  zh-TW: 寶箱
-  en-US: Treasure Chests Obtained
+    zh-TW: 寶箱
+    en-US: Treasure Chests Obtained
 115:
-  zh-TW: 尚未完成
-  en-US: Unfinished
+    zh-TW: 尚未完成
+    en-US: Unfinished
 116:
-  zh-TW: 逸速穿浪
-  en-US: Surfpiercer
+    zh-TW: 逸速穿浪
+    en-US: Surfpiercer
 117:
-  zh-TW: 夏日回憶
-  en-US: Summer Memories
+    zh-TW: 夏日回憶
+    en-US: Summer Memories
 118:
-  zh-TW: 謎域探索
-  en-US: Realm Exploration
+    zh-TW: 謎域探索
+    en-US: Realm Exploration
 119:
-  zh-TW: 完成時間
-  en-US: Time completed
+    zh-TW: 完成時間
+    en-US: Time completed
 120:
-  zh-TW: 累計成功挑戰
-  en-US: Successfully challenged
+    zh-TW: 累計成功挑戰
+    en-US: Successfully challenged
 121:
-  zh-TW: 次
-  en-US: times
+    zh-TW: 次
+    en-US: times
 122:
-  zh-TW: 累計釋放技能
-  en-US: Unleashed elemental skill
+    zh-TW: 累計釋放技能
+    en-US: Unleashed elemental skill
 123:
-  zh-TW: "自訂 UID 搜尋"
-  en-US: "Custom UID searched"
+    zh-TW: "自訂 UID 搜尋"
+    en-US: "Custom UID searched"
 124:
-  zh-TW: 返回預設
-  en-US: Back to default
+    zh-TW: 返回預設
+    en-US: Back to default
 125:
-  zh-TW: "申鶴預設是使用你的 dc 語言來回覆你"
-  en-US: By default, shenhe responds you with the same langauge your discord uses
+    zh-TW: "申鶴預設是使用你的 dc 語言來回覆你"
+    en-US: By default, shenhe responds you with the same langauge your discord uses
 126:
-  zh-TW: "這裡更改後的語言會蓋過你的 dc 設定"
-  en-US: Changing language will override the default langauge
+    zh-TW: "這裡更改後的語言會蓋過你的 dc 設定"
+    en-US: Changing language will override the default langauge
 127:
-  zh-TW: 如果該語言還沒翻譯好, 會使用英文回覆
-  en-US: If any text is not translated yet, shenhe will respond you with English
+    zh-TW: 如果該語言還沒翻譯好, 會使用英文回覆
+    en-US: If any text is not translated yet, shenhe will respond you with English
 128:
-  zh-TW: 更改語言
-  en-US: Changing langauge
+    zh-TW: 更改語言
+    en-US: Changing langauge
 129:
-  zh-TW: 蒙德
-  en-US: Mondstat
+    zh-TW: 蒙德
+    en-US: Mondstat
 130:
-  zh-TW: 璃月
-  en-US: Liyue
+    zh-TW: 璃月
+    en-US: Liyue
 131:
-  zh-TW: 稻妻
-  en-US: Inazuma
+    zh-TW: 稻妻
+    en-US: Inazuma
 132:
-  zh-TW: 提交 Cookie
-  en-US: Submit your cookie
+    zh-TW: 提交 Cookie
+    en-US: Submit your cookie
 133:
-  zh-TW: 請貼上剛剛複製的文字
-  en-US: please paste the text you copied here
+    zh-TW: 請貼上剛剛複製的文字
+    en-US: please paste the text you copied here
 134:
-  zh-TW: "發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤"
-  en-US: "There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error."
+    zh-TW: "發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤"
+    en-US: "There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error."
 135:
-  zh-TW: 未知錯誤
-  en-US: There was an error
+    zh-TW: 未知錯誤
+    en-US: There was an error
 136:
-  zh-TW: 選擇要註冊的帳號
-  en-US: Choose your account
+    zh-TW: 選擇要註冊的帳號
+    en-US: Choose your account
 137:
-  zh-TW: Cookie 設置流程
-  en-US: Account registration tutorial
+    zh-TW: Cookie 設置流程
+    en-US: Account registration tutorial
 138:
-  zh-TW: "1.先複製底下的整段程式碼\n2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n6.在這裡提交結果, 使用：`/register 提交 cookie`\n無法理解嗎? 跟著下面的圖示操作吧!"
-  en-US: "1.Copy the code below\n2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n3.Click the address bar and select all the text there\n4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n6.Submit your cookie here, use the `/reigster` command\nToo complicated? The image below might help!"
+    zh-TW: "1.先複製底下的整段程式碼\n2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n6.在這裡提交結果, 使用：`/register 提交 cookie`\n無法理解嗎? 跟著下面的圖示操作吧!"
+    en-US: "1.Copy the code below\n2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n3.Click the address bar and select all the text there\n4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n6.Submit your cookie here, use the `/reigster` command\nToo complicated? The image below might help!"
 139:
-  zh-TW: "過期或無效的Cookie,請先登出帳號再重新登入!"
-  en-US: "Cookie invalid or is outdated, please logout then login again!"
+    zh-TW: "過期或無效的Cookie,請先登出帳號再重新登入!"
+    en-US: "Cookie invalid or is outdated, please logout then login again!"
 140:
-  zh-TW: "請使用 `/register` 指令來註冊帳號"
-  en-US: "Please use the `/register` command"
+    zh-TW: "請使用 `/register` 指令來註冊帳號"
+    en-US: "Please use the `/register` command"
 141:
-  zh-TW: 找不到帳號資料!
-  en-US: Account data not found!
+    zh-TW: 找不到帳號資料!
+    en-US: Account data not found!
 142:
-  zh-TW: 選擇元素
-  en-US: Choose your element
+    zh-TW: 選擇元素
+    en-US: Choose your element
 143:
-  zh-TW: 你不是這個指令的發起者
-  en-US: You are not the issuer of this command
+    zh-TW: 你不是這個指令的發起者
+    en-US: You are not the issuer of this command
 144:
-  zh-TW: 原石紀錄
-  en-US: Primo Log
+    zh-TW: 原石紀錄
+    en-US: Primo Log
 145:
-  zh-TW: 摩拉紀錄
-  en-US: Mora Log
+    zh-TW: 摩拉紀錄
+    en-US: Mora Log
 146:
-  zh-TW: 第
-  en-US: Floor No.
+    zh-TW: 第
+    en-US: Floor No.
 147:
-  zh-TW: 層
-  en-US: ""
+    zh-TW: 層
+    en-US: ""
 148:
-  zh-TW: 樓層導覽
-  en-US: Choose abyss floor
+    zh-TW: 樓層導覽
+    en-US: Choose abyss floor
 149:
-  zh-TW: 資料不公開?
-  en-US: Data not public?
+    zh-TW: 資料不公開?
+    en-US: Data not public?
 150:
-  zh-TW: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n跟著下方圖片中的步驟操作\n\n1. 點選右上角自己的頭像\n2. 個人主頁\n3. 右上角「原神」\n4. 設定齒輪\n5. 三個選項都打開"
-  en-US: "Please go to <https://www.hoyolab.com> and login\nFollow the steps in the image below\n\n1. Click the avatar on the top right\n2. Personal homepage\n3. Click `Genshin` on the top right corner\n4. Click the gear icon\n5. Toggle all the switches"
+    zh-TW: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n跟著下方圖片中的步驟操作\n\n1. 點選右上角自己的頭像\n2. 個人主頁\n3. 右上角「原神」\n4. 設定齒輪\n5. 三個選項都打開"
+    en-US: "Please go to <https://www.hoyolab.com> and login\nFollow the steps in the image below\n\n1. Click the avatar on the top right\n2. Personal homepage\n3. Click `Genshin` on the top right corner\n4. Click the gear icon\n5. Toggle all the switches"
 151:
-  zh-TW: 樹脂提醒設定
-  en-US: Resin notification settings
+    zh-TW: 樹脂提醒設定
+    en-US: Resin notification settings
 152:
-  zh-TW: 樹脂閥值
-  en-US: Resin threshold
+    zh-TW: 樹脂閥值
+    en-US: Resin threshold
 153:
-  zh-TW: 當樹脂數量超過這個數字後，申鶴會私訊提醒你
-  en-US: Shenhe will DM you after your resin exceeds the threshold
+    zh-TW: 當樹脂數量超過這個數字後，申鶴會私訊提醒你
+    en-US: Shenhe will DM you after your resin exceeds the threshold
 154:
-  zh-TW: 最大提醒值
-  en-US: Max. notification number
+    zh-TW: 最大提醒值
+    en-US: Max. notification number
 155:
-  zh-TW: 申鶴最多提醒你的次數
-  en-US: DM will stop after this number of times
+    zh-TW: 申鶴最多提醒你的次數
+    en-US: DM will stop after this number of times
 156:
-  zh-TW: 選擇已經設置過的角色將移除該角色的提醒
-  en-US: Choosing a character that already has notification ON will remove its notification
+    zh-TW: 選擇已經設置過的角色將移除該角色的提醒
+    en-US: Choosing a character that already has notification ON will remove its notification
 157:
-  zh-TW: 選擇角色
-  en-US: "Choose your character(s)"
+    zh-TW: 選擇角色
+    en-US: "Choose your character(s)"
 158:
-  zh-TW: 目前尚未設置任何角色
-  en-US: There are currently no notifications set for any characters
+    zh-TW: 目前尚未設置任何角色
+    en-US: There are currently no notifications set for any characters
 159:
-  zh-TW: 目前設置的角色
-  en-US: Current character notifications
+    zh-TW: 目前設置的角色
+    en-US: Current character notifications
 160:
-  zh-TW: 選擇元素
-  en-US: Choose your element
+    zh-TW: 選擇元素
+    en-US: Choose your element
 161:
-  zh-TW: '已設置過此角色, 再次選擇將會關閉通知'
-  en-US: 'Choosing this character will turn OFF its notifications'
+    zh-TW: "已設置過此角色, 再次選擇將會關閉通知"
+    en-US: "Choosing this character will turn OFF its notifications"
 162:
-  zh-TW: 配置
-  en-US: Build
+    zh-TW: 配置
+    en-US: Build
 163:
-  zh-TW: 選擇配置
-  en-US: Choose your build
+    zh-TW: 選擇配置
+    en-US: Choose your build
 164:
-  zh-TW: 種配置
-  en-US: builds
+    zh-TW: 種配置
+    en-US: builds
 165:
-  zh-TW: "這個使用者還沒有註冊過帳號\n`/register` 來註冊帳號"
-  en-US: "This user hasn't registered their account yet\n`/register` to register"
+    zh-TW: "這個使用者還沒有註冊過帳號\n`/register` 來註冊帳號"
+    en-US: "This user hasn't registered their account yet\n`/register` to register"
 166:
-  zh-TW: "查無使用者"
-  en-US: User not found
+    zh-TW: "查無使用者"
+    en-US: User not found
 167:
-  zh-TW: " 的 UID"
-  en-US: "'s UID"
+    zh-TW: " 的 UID"
+    en-US: "'s UID"
 168:
-  zh-TW: 計算資料輸入
-  en-US: Enter your data
+    zh-TW: 計算資料輸入
+    en-US: Enter your data
 169:
-  zh-TW: 角色目標等級
-  en-US: Character target level
+    zh-TW: 角色目標等級
+    en-US: Character target level
 170:
-  zh-TW: "例如: 90"
-  en-US: "For example: 90"
+    zh-TW: "例如: 90"
+    en-US: "For example: 90"
 171:
-  zh-TW: 普通攻擊目標等級
-  en-US: Auto attack target level
+    zh-TW: 普通攻擊目標等級
+    en-US: Auto attack target level
 172:
-  zh-TW: "例如: 5"
-  en-US: "For example: 5"
+    zh-TW: "例如: 5"
+    en-US: "For example: 5"
 173:
-  zh-TW: "元素戰技 (E) 目標等級"
-  en-US: "Elemental skill (E) target level"
+    zh-TW: "元素戰技 (E) 目標等級"
+    en-US: "Elemental skill (E) target level"
 174:
-  zh-TW: "元素戰技 (Q) 目標等級"
-  en-US: "Elemental burst (Q) target level"
+    zh-TW: "元素戰技 (Q) 目標等級"
+    en-US: "Elemental burst (Q) target level"
 175:
-  zh-TW: 新增到代辦清單
-  en-US: Add to todo list
+    zh-TW: 新增到代辦清單
+    en-US: Add to todo list
 176:
-  zh-TW: "請輸入 `/todo` 並使用「刪除素材」按鈕"
-  en-US: "Please remove some materials from your todo list using the `remove materials` button"
+    zh-TW: "請輸入 `/todo` 並使用「刪除素材」按鈕"
+    en-US: "Please remove some materials from your todo list using the `remove materials` button"
 177:
-  zh-TW: "代辦清單可存素材數量已達最大值 (125)"
-  en-US: "You have reached the limit of materials you can have in your todo list (125)"
+    zh-TW: "代辦清單可存素材數量已達最大值 (125)"
+    en-US: "You have reached the limit of materials you can have in your todo list (125)"
 178:
-  zh-TW: "使用`/todo`指令來查看你的代辦事項"
-  en-US: "Use `/todo` to view your todo list"
+    zh-TW: "使用`/todo`指令來查看你的代辦事項"
+    en-US: "Use `/todo` to view your todo list"
 179:
-  zh-TW: 新增成功
-  en-US: Success
+    zh-TW: 新增成功
+    en-US: Success
 180:
-  zh-TW: 選擇武器
-  en-US: Choose your weapon
+    zh-TW: 選擇武器
+    en-US: Choose your weapon
 181:
-  zh-TW: 設置
-  en-US: "Set the levels for"
+    zh-TW: 設置
+    en-US: "Set the levels for"
 182:
-  zh-TW: 的等級
-  en-US: ""
+    zh-TW: 的等級
+    en-US: ""
 183:
-  zh-TW: 目前等級
-  en-US: Current level
+    zh-TW: 目前等級
+    en-US: Current level
 184:
-  zh-TW: "例如: 1"
-  en-US: "For example: 1"
+    zh-TW: "例如: 1"
+    en-US: "For example: 1"
 185:
-  zh-TW: 目標等級
-  en-US: Target level
+    zh-TW: 目標等級
+    en-US: Target level
 186:
-  zh-TW: "例如: 90"
-  en-US: "For example: 90"
+    zh-TW: "例如: 90"
+    en-US: "For example: 90"
 187:
-  zh-TW: 請輸入數字
-  en-US: Please enter a number
+    zh-TW: 請輸入數字
+    en-US: Please enter a number
 188:
-  zh-TW: "角色等級: 請輸入介於 1~90 的數字"
-  en-US: "Character level: Please enter a number between 1 and 90"
+    zh-TW: "角色等級: 請輸入介於 1~90 的數字"
+    en-US: "Character level: Please enter a number between 1 and 90"
 189:
-  zh-TW: "天賦等級: 請輸入介於 1~10 的數字"
-  en-US: "Talent level: Please enter a number between 1 and 10"
+    zh-TW: "天賦等級: 請輸入介於 1~10 的數字"
+    en-US: "Talent level: Please enter a number between 1 and 10"
 190:
-  zh-TW: 無效的輸入
-  en-US: Invalid input
+    zh-TW: 無效的輸入
+    en-US: Invalid input
 191:
-  zh-TW: 計算結果
-  en-US: Calculation results
+    zh-TW: 計算結果
+    en-US: Calculation results
 192:
-  zh-TW: 計算內容
-  en-US: Calculation content
+    zh-TW: 計算內容
+    en-US: Calculation content
 193:
-  zh-TW: 角色等級
-  en-US: Character level
+    zh-TW: 角色等級
+    en-US: Character level
 194:
-  zh-TW: "普攻(A)等級"
-  en-US: Normal attack level
+    zh-TW: "普攻(A)等級"
+    en-US: Normal attack level
 195:
-  zh-TW: "元素戰技(E)等級"
-  en-US: Elemental skill level
+    zh-TW: "元素戰技(E)等級"
+    en-US: Elemental skill level
 196:
-  zh-TW: "元素爆發(Q)等級"
-  en-US: Elemental burst level
+    zh-TW: "元素爆發(Q)等級"
+    en-US: Elemental burst level
 197:
-  zh-TW: 不需要任何素材
-  en-US: No materials needed
+    zh-TW: 不需要任何素材
+    en-US: No materials needed
 198:
-  zh-TW: 角色升級
-  en-US: Character level-up
+    zh-TW: 角色升級
+    en-US: Character level-up
 199:
-  zh-TW: 天賦升級
-  en-US: Talent level-up
+    zh-TW: 天賦升級
+    en-US: Talent level-up
 200:
-  zh-TW: 武器等級
-  en-US: Weapon level
+    zh-TW: 武器等級
+    en-US: Weapon level
 201:
-  zh-TW: 武器升級
-  en-US: Weapon level-up
+    zh-TW: 武器升級
+    en-US: Weapon level-up
 202:
-  zh-TW: 代辦清單
-  en-US: Todo list
+    zh-TW: 代辦清單
+    en-US: Todo list
 203:
-  zh-TW: 新增素材
-  en-US: Add item
+    zh-TW: 新增素材
+    en-US: Add item
 204:
-  zh-TW: "太好了, 沒有需要蒐集的素材 ˋ( ° ▽、° ) \n使用 `/calc` 指令來計算角色素材\n或是使用下方的按鈕來新增素材"
-  en-US: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \nUse the `/calc` command to calculate materials\n for character and weapon level-up\nOr use the green button below to add your custom items"
+    zh-TW: "太好了, 沒有需要蒐集的素材 ˋ( ° ▽、° ) \n
+        使用 `/calc` 指令來計算角色素材\n
+        或是使用下方的按鈕來新增素材"
+    en-US: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n
+        Use the `/calc` command to calculate materials\n
+        for character and weapon level-up\n
+        Or use the green button below to add your custom items"
 205:
-  zh-TW: 刪除素材
-  en-US: Remove item
+    zh-TW: 刪除素材
+    en-US: Remove item
 206:
-  zh-TW: 清空代辦清單
-  en-US: Clear items
+    zh-TW: 清空代辦清單
+    en-US: Clear items
 207:
-  zh-TW: 選擇要刪除的素材
-  en-US: Choose the item you wish to remove
+    zh-TW: 選擇要刪除的素材
+    en-US: Choose the item you wish to remove
 208:
-  zh-TW: 材料名稱
-  en-US: Item name
+    zh-TW: 材料名稱
+    en-US: Item name
 209:
-  zh-TW: "例如: 摩拉"
-  en-US: "For example: mora"
+    zh-TW: "例如: 摩拉"
+    en-US: "For example: mora"
 210:
-  zh-TW: 材料數量
-  en-US: Item amount
+    zh-TW: 材料數量
+    en-US: Item amount
 211:
-  zh-TW: "例如: 90 (留空將清空該素材)"
-  en-US: "(Leaving this field blank will remove the item entirely)"
+    zh-TW: "例如: 90 (留空將清空該素材)"
+    en-US: "(Leaving this field blank will remove the item entirely)"
 212:
-  zh-TW: 不可輸入大於目前素材數量的數字
-  en-US: "You can't remove more items than you have in your dodo list"
+    zh-TW: 不可輸入大於目前素材數量的數字
+    en-US: "You can't remove more items than you have in your dodo list"
 213:
-  zh-TW: 冰元素
-  en-US: Cryo
+    zh-TW: 冰元素
+    en-US: Cryo
 214:
-  zh-TW: 岩元素
-  en-US: Geo
+    zh-TW: 岩元素
+    en-US: Geo
 215:
-  zh-TW: 火元素
-  en-US: Pyro
+    zh-TW: 火元素
+    en-US: Pyro
 216:
-  zh-TW: 風元素
-  en-US: Anemo
+    zh-TW: 風元素
+    en-US: Anemo
 217:
-  zh-TW: 水元素
-  en-US: Hydro
+    zh-TW: 水元素
+    en-US: Hydro
 218:
-  zh-TW: 草元素
-  en-US: Dendro
+    zh-TW: 草元素
+    en-US: Dendro
 219:
-  zh-TW: 雷元素
-  en-US: Electro
+    zh-TW: 雷元素
+    en-US: Electro
 220:
-  zh-TW: 角色
-  en-US: Characters
+    zh-TW: 角色
+    en-US: Characters
 221:
-  zh-TW: 一月
-  en-US: January
+    zh-TW: 一月
+    en-US: January
 222:
-  zh-TW: 二月
-  en-US: February
+    zh-TW: 二月
+    en-US: February
 223:
-  zh-TW: 三月
-  en-US: March
+    zh-TW: 三月
+    en-US: March
 224:
-  zh-TW: 四月
-  en-US: April
+    zh-TW: 四月
+    en-US: April
 225:
-  zh-TW: 五月
-  en-US: May
+    zh-TW: 五月
+    en-US: May
 226:
-  zh-TW: 六月
-  en-US: June
+    zh-TW: 六月
+    en-US: June
 227:
-  zh-TW: 七月
-  en-US: July
+    zh-TW: 七月
+    en-US: July
 228:
-  zh-TW: 八月
-  en-US: August
+    zh-TW: 八月
+    en-US: August
 229:
-  zh-TW: 九月
-  en-US: September
+    zh-TW: 九月
+    en-US: September
 230:
-  zh-TW: 十月
-  en-US: October
+    zh-TW: 十月
+    en-US: October
 231:
-  zh-TW: 十一月
-  en-US: November
+    zh-TW: 十一月
+    en-US: November
 232:
-  zh-TW: 十二月
-  en-US: December
+    zh-TW: 十二月
+    en-US: December
 234:
-  zh-TW: 週一
-  en-US: monday
+    zh-TW: 週一
+    en-US: monday
 235:
-  zh-TW: 週二
-  en-US: tuesday
+    zh-TW: 週二
+    en-US: tuesday
 236:
-  zh-TW: 週三
-  en-US: wednesday
+    zh-TW: 週三
+    en-US: wednesday
 237:
-  zh-TW: 週四
-  en-US: thursday
+    zh-TW: 週四
+    en-US: thursday
 238:
-  zh-TW: 週五
-  en-US: friday
+    zh-TW: 週五
+    en-US: friday
 239:
-  zh-TW: 週六
-  en-US: saturday
+    zh-TW: 週六
+    en-US: saturday
 240:
-  zh-TW: 週日
-  en-US: sunday
+    zh-TW: 週日
+    en-US: sunday
 250:
-  zh-TW: 可以刷的素材
-  en-US: farmable items
+    zh-TW: 可以刷的素材
+    en-US: farmable items
 251:
-  zh-TW: 成就數排行榜
-  en-US: Achievement leaderboard
+    zh-TW: 成就數排行榜
+    en-US: Achievement leaderboard
 252:
-  zh-TW: 你
-  en-US: You
+    zh-TW: 你
+    en-US: You
 253:
-  zh-TW: 不在榜內
-  en-US: "N/A"
+    zh-TW: 不在榜內
+    en-US: "N/A"
 254:
-  zh-TW: 排行榜內目前沒有玩家
-  en-US: This leaderboard is currently empty
+    zh-TW: 排行榜內目前沒有玩家
+    en-US: This leaderboard is currently empty
 255:
-  zh-TW: 選擇想要查看的副詞條排行榜
-  en-US: Choose the substat leadeboard you with to view
+    zh-TW: 選擇想要查看的副詞條排行榜
+    en-US: Choose the substat leadeboard you with to view
 256:
-  zh-TW: 副詞條排行榜
-  en-US: Substat leaderboard
+    zh-TW: 副詞條排行榜
+    en-US: Substat leaderboard
 257:
-  zh-TW: 歐氣榜
-  en-US: Luck leaderboard
+    zh-TW: 歐氣榜
+    en-US: Luck leaderboard
 258:
-  zh-TW: 生命值
-  en-US: HP
+    zh-TW: 生命值
+    en-US: HP
 259:
-  zh-TW: 生命值%
-  en-US: HP%
+    zh-TW: 生命值%
+    en-US: HP%
 260:
-  zh-TW: 攻擊力
-  en-US: Atk.
+    zh-TW: 攻擊力
+    en-US: Atk.
 261:
-  zh-TW: 攻擊力%
-  en-US: Atk.%
+    zh-TW: 攻擊力%
+    en-US: Atk.%
 262:
-  zh-TW: 防禦力
-  en-US: Def.
+    zh-TW: 防禦力
+    en-US: Def.
 263:
-  zh-TW: 防禦力%
-  en-US: Def.%
+    zh-TW: 防禦力%
+    en-US: Def.%
 264:
-  zh-TW: 暴擊率
-  en-US: Crit Rate
+    zh-TW: 暴擊率
+    en-US: Crit Rate
 265:
-  zh-TW: 暴擊傷害
-  en-US: Crit DMG
+    zh-TW: 暴擊傷害
+    en-US: Crit DMG
 266:
-  zh-TW: 元素精通
-  en-US: Elem. Mastery
+    zh-TW: 元素精通
+    en-US: Elem. Mastery
 267:
-  zh-TW: 元素充能
-  en-US: Energy Recharge
+    zh-TW: 元素充能
+    en-US: Energy Recharge
 268:
-  zh-TW: 基礎生命值
-  en-US: Base HP
+    zh-TW: 基礎生命值
+    en-US: Base HP
 269:
-  zh-TW: 基礎攻擊力
-  en-US: Base Atk.
+    zh-TW: 基礎攻擊力
+    en-US: Base Atk.
 270:
-  zh-TW: 基礎防禦力
-  en-US: Base Def.
+    zh-TW: 基礎防禦力
+    en-US: Base Def.
 271:
-  zh-TW: 治療加成
-  en-US: Healing Bonus
+    zh-TW: 治療加成
+    en-US: Healing Bonus
 272:
-  zh-TW: 物傷加成
-  en-US: Physic DMG Bonus
+    zh-TW: 物傷加成
+    en-US: Physic DMG Bonus
 273:
-  zh-TW: 火傷加成
-  en-US: Pyro DMG Bonus
+    zh-TW: 火傷加成
+    en-US: Pyro DMG Bonus
 274:
-  zh-TW: 雷傷加成
-  en-US: Electro DMG Bonus
+    zh-TW: 雷傷加成
+    en-US: Electro DMG Bonus
 275:
-  zh-TW: 水傷加成
-  en-US: Hydro DMG Bonus
+    zh-TW: 水傷加成
+    en-US: Hydro DMG Bonus
 276:
-  zh-TW: 草傷加成
-  en-US: Dendro DMG Bonus
+    zh-TW: 草傷加成
+    en-US: Dendro DMG Bonus
 277:
-  zh-TW: 風傷加成
-  en-US: Anemo DMG Bonus
+    zh-TW: 風傷加成
+    en-US: Anemo DMG Bonus
 278:
-  zh-TW: 岩傷加成
-  en-US: Geo DMG Bonus
+    zh-TW: 岩傷加成
+    en-US: Geo DMG Bonus
 279:
-  zh-TW: 冰傷加成
-  en-US: Cryo DMG Bonus
+    zh-TW: 冰傷加成
+    en-US: Cryo DMG Bonus
 280:
-  zh-TW: 基礎移速
-  en-US: Base Speed
+    zh-TW: 基礎移速
+    en-US: Base Speed
 281:
-  zh-TW: 移速%
-  en-US: Speed%
+    zh-TW: 移速%
+    en-US: Speed%
 282:
-  zh-TW: 返回副詞條選擇
-  en-US: Go back
+    zh-TW: 返回副詞條選擇
+    en-US: Go back
 283:
-  zh-TW: 或是直接輸入你的 UID
-  en-US: Or enter your UID in the options
+    zh-TW: 或是直接輸入你的 UID
+    en-US: Or enter your UID in the options
 284:
-  zh-TW: 無效的帳號
-  en-US: Invalid account
+    zh-TW: 無效的帳號
+    en-US: Invalid account
 285:
-  zh-TW: 這是一個沒有主角的空帳號
-  en-US: This is an account without a main character
+    zh-TW: 這是一個沒有主角的空帳號
+    en-US: This is an account without a main character
 286:
-  zh-TW: 無效的 UID
-  en-US: Invalid UID
+    zh-TW: 無效的 UID
+    en-US: Invalid UID
 287:
-  zh-TW: "請在遊戲中打開「顯示角色詳情」"
-  en-US: "Please turn on the character showcase toggle in game"
+    zh-TW: "請在遊戲中打開「顯示角色詳情」"
+    en-US: "Please turn on the character showcase toggle in game"
 288:
-  zh-TW: 玩家等級
-  en-US: Player level
+    zh-TW: 玩家等級
+    en-US: Player level
 289:
-  zh-TW: 世界等級
-  en-US: World level
+    zh-TW: 世界等級
+    en-US: World level
 290:
-  zh-TW: 成就
-  en-US: Achievement
+    zh-TW: 成就
+    en-US: Achievement
 291:
-  zh-TW: 深淵已達
-  en-US: Spiral abyss
+    zh-TW: 深淵已達
+    en-US: Spiral abyss
 292:
-  zh-TW: 生命值上限
-  en-US: Max HP
+    zh-TW: 生命值上限
+    en-US: Max HP
 293:
-  zh-TW: 攻擊力
-  en-US: Atk.
+    zh-TW: 攻擊力
+    en-US: Atk.
 294:
-  zh-TW: 防禦力
-  en-US: Def.
+    zh-TW: 防禦力
+    en-US: Def.
 295:
-  zh-TW: 元素精通
-  en-US: Elem. Mastery
+    zh-TW: 元素精通
+    en-US: Elem. Mastery
 296:
-  zh-TW: 暴擊率
-  en-US: Crit Rate
+    zh-TW: 暴擊率
+    en-US: Crit Rate
 297:
-  zh-TW: 暴擊傷害
-  en-US: Crit DMG
+    zh-TW: 暴擊傷害
+    en-US: Crit DMG
 298:
-  zh-TW: 元素充能效率
-  en-US: Energy Recharge
+    zh-TW: 元素充能效率
+    en-US: Energy Recharge
 299:
-  zh-TW: 好感度
-  en-US: Friendship Level
+    zh-TW: 好感度
+    en-US: Friendship Level
 300:
-  zh-TW: 聖遺物最高分為 99, 只有 +20 才會評分
-  en-US: The highest artifact score is 99, only +20 artifacts will have scores
+    zh-TW: 聖遺物最高分為 99, 只有 +20 才會評分
+    en-US: The highest artifact score is 99, only +20 artifacts will have scores
 301:
-  zh-TW: 屬性
-  en-US: Stats
+    zh-TW: 屬性
+    en-US: Stats
 302:
-  zh-TW: 目前設定閥值
-  en-US: Current threshold
+    zh-TW: 目前設定閥值
+    en-US: Current threshold
 303:
-  zh-TW: 目前樹脂
-  en-US: Current resin
+    zh-TW: 目前樹脂
+    en-US: Current resin
 304:
-  zh-TW: 目前最大提醒值
-  en-US: Current max. notification number
+    zh-TW: 目前最大提醒值
+    en-US: Current max. notification number
 305:
-  zh-TW: "輸入 /remind 來更改設定"
-  en-US: "User /remind to change the settings"
+    zh-TW: "輸入 /remind 來更改設定"
+    en-US: "User /remind to change the settings"
 306:
-  zh-TW: "樹脂要滿出來啦!!"
-  en-US: "Resin is almost full!!"
+    zh-TW: "樹脂要滿出來啦!!"
+    en-US: "Resin is almost full!!"
 307:
-  zh-TW: 天賦提醒功能已關閉
-  en-US: Talent notification is now turned OFF
+    zh-TW: 天賦提醒功能已關閉
+    en-US: Talent notification is now turned OFF
 308:
-  zh-TW: 右鍵任意一個有申鶴在內的群組
-  en-US: Right click any server that has shenhe in it
+    zh-TW: 右鍵任意一個有申鶴在內的群組
+    en-US: Right click any server that has shenhe in it
 309:
-  zh-TW: "點擊「隱私設定」"
-  en-US: "Click on `privacy settings`"
+    zh-TW: "點擊「隱私設定」"
+    en-US: "Click on `privacy settings`"
 310:
-  zh-TW: 將開關打開
-  en-US: Turn the toggle ON
+    zh-TW: 將開關打開
+    en-US: Turn the toggle ON
 311:
-  zh-TW: 如何讓申鶴私訊你?
-  en-US: How to unblock DM from servers
+    zh-TW: 如何讓申鶴私訊你?
+    en-US: How to unblock DM from servers
 312:
-  zh-TW: 該為
-  en-US: Time to farm materials for
+    zh-TW: 該為
+    en-US: Time to farm materials for
 313:
-  zh-TW: "刷本啦!"
-  en-US: "!"
+    zh-TW: "刷本啦!"
+    en-US: "!"
 314:
-  zh-TW: 你可以刷的素材
-  en-US: Items you can farm
+    zh-TW: 你可以刷的素材
+    en-US: Items you can farm
 315:
-  zh-TW: 基本資料
-  en-US: Basic information
+    zh-TW: 基本資料
+    en-US: Basic information
 316:
-  zh-TW: 生日
-  en-US: Birthday
+    zh-TW: 生日
+    en-US: Birthday
 317:
-  zh-TW: 頭銜
-  en-US: Affiliation
+    zh-TW: 頭銜
+    en-US: Affiliation
 318:
-  zh-TW: 命座
-  en-US: Constellation
+    zh-TW: 命座
+    en-US: Constellation
 319:
-  zh-TW: 名片
-  en-US: Name card
+    zh-TW: 名片
+    en-US: Name card
 320:
-  zh-TW: 等級突破素材
-  en-US: Ascension materials
+    zh-TW: 等級突破素材
+    en-US: Ascension materials
 321:
-  zh-TW: 突破到
-  en-US: Ascension to 
+    zh-TW: 突破到
+    en-US: Ascension to
 322:
-  zh-TW: 升級天賦素材
-  en-US: Talent level-up materials
+    zh-TW: 升級天賦素材
+    en-US: Talent level-up materials
 323:
-  zh-TW: 固有天賦
-  en-US: Passive Talents
+    zh-TW: 固有天賦
+    en-US: Passive Talents
 324:
-  zh-TW: 升級到
-  en-US: Level-up to
+    zh-TW: 升級到
+    en-US: Level-up to
 325:
-  zh-TW: 快速導覽
-  en-US: Quick navigation
+    zh-TW: 快速導覽
+    en-US: Quick navigation
 326:
-  zh-TW: 普攻
-  en-US: Normal Atk.
+    zh-TW: 普攻
+    en-US: Normal Atk.
 327:
-  zh-TW: 重擊
-  en-US: Charged Atk.
+    zh-TW: 重擊
+    en-US: Charged Atk.
 328:
-  zh-TW: 下落攻擊
-  en-US: Plunging Atk.
+    zh-TW: 下落攻擊
+    en-US: Plunging Atk.
 329:
-  zh-TW: 計算傷害中...
-  en-US: Calculating damage...
+    zh-TW: 計算傷害中...
+    en-US: Calculating damage...
 330:
-  zh-TW: 大約需要 5 至 10 秒
-  en-US: This requires around 5 to 10 seconds
+    zh-TW: 大約需要 5 至 10 秒
+    en-US: This requires around 5 to 10 seconds
 331:
-  zh-TW: 無反應
-  en-US: No reaction
+    zh-TW: 無反應
+    en-US: No reaction
 332:
-  zh-TW: 融化
-  en-US: Melt
+    zh-TW: 融化
+    en-US: Melt
 333:
-  zh-TW: 蒸發
-  en-US: Vaporize
+    zh-TW: 蒸發
+    en-US: Vaporize
 334:
-  zh-TW: 平均傷害
-  en-US: Avg. DMG
+    zh-TW: 平均傷害
+    en-US: Avg. DMG
 335:
-  zh-TW: 沒暴擊傷害
-  en-US: Non Crit DMG
+    zh-TW: 沒暴擊傷害
+    en-US: Non Crit DMG
 336:
-  zh-TW: 暴擊傷害
-  en-US: Crit Hit DMG
+    zh-TW: 暴擊傷害
+    en-US: Crit Hit DMG
 337:
-  zh-TW: 選擇元素反應
-  en-US: Select elemental reaction
+    zh-TW: 選擇元素反應
+    en-US: Select elemental reaction
 338:
-  zh-TW: 無近戰元素附魔
-  en-US: No team melee infusion
+    zh-TW: 無近戰元素附魔
+    en-US: No team melee infusion
 339:
-  zh-TW: 火元素近戰附魔
-  en-US: Pyro infusion
+    zh-TW: 火元素近戰附魔
+    en-US: Pyro infusion
 340:
-  zh-TW: 冰元素近戰附魔
-  en-US: Cryo infusion
+    zh-TW: 冰元素近戰附魔
+    en-US: Cryo infusion
 341:
-  zh-TW: 班尼特六命
-  en-US: Bennett C6
+    zh-TW: 班尼特六命
+    en-US: Bennett C6
 342:
-  zh-TW: 重雲元素戰技
-  en-US: Chongyun Skill
+    zh-TW: 重雲元素戰技
+    en-US: Chongyun Skill
 343:
-  zh-TW: 選擇近戰元素附魔
-  en-US: Select team melee infusion
+    zh-TW: 選擇近戰元素附魔
+    en-US: Select team melee infusion
 344:
-  zh-TW: 選擇隊友
-  en-US: Select teammate(s)
+    zh-TW: 選擇隊友
+    en-US: Select teammate(s)
 345:
-  zh-TW: 隊伍
-  en-US: Team
+    zh-TW: 隊伍
+    en-US: Team
 346:
-  zh-TW: 狀態
-  en-US: Conditions
+    zh-TW: 狀態
+    en-US: Conditions
 347:
-  zh-TW: 目前效果
-  en-US: Effects
+    zh-TW: 目前效果
+    en-US: Effects
 348:
-  zh-TW: 計算傷害
-  en-US: Calculate Damage
+    zh-TW: 計算傷害
+    en-US: Calculate Damage
 349:
-  zh-TW: 聖遺物和武器的效果目前還不計入
-  en-US: Artifact and weapon effects are not included for now
+    zh-TW: 聖遺物和武器的效果目前還不計入
+    en-US: Artifact and weapon effects are not included for now
 350:
-  zh-TW: 融化
-  en-US: melt
+    zh-TW: 融化
+    en-US: melt
 351:
-  zh-TW: 蒸發
-  en-US: vaporize
+    zh-TW: 蒸發
+    en-US: vaporize
 352:
-  zh-TW: 祈願紀錄連結
-  en-US: Authkey URL
+    zh-TW: 祈願紀錄連結
+    en-US: Authkey URL
 353:
-  zh-TW: 匯入祈願紀錄
-  en-US: Importing wish history
+    zh-TW: 匯入祈願紀錄
+    en-US: Importing wish history
 354:
-  zh-TW: 請貼上複製的連結
-  en-US: Please paste the link here
+    zh-TW: 請貼上複製的連結
+    en-US: Please paste the link here
 355:
-  zh-TW: 請稍等, 處理數據中...
-  en-US: Please wait for awhile while shenhe is processing your wish history
+    zh-TW: 請稍等, 處理數據中...
+    en-US: Please wait for awhile while shenhe is processing your wish history
 356:
-  zh-TW: 祈願紀錄匯入成功
-  en-US: Successfully imported wish history
+    zh-TW: 祈願紀錄匯入成功
+    en-US: Successfully imported wish history
+357:
+    zh-TW: "PC 設置方式"
+    en-US: "Importing wish history using PC"
+358:
+    zh-TW: "1. 在電腦開啟原神 (如果你使用多組帳號，請重新啟動遊戲)\n
+        2. 打開祈願紀錄並等待讀取\n
+        3. 在鍵盤點選「開始」鍵 (Windows鍵), 並搜尋 Powershell\n
+        4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell\n
+        5. 按Enter鍵, 接著連結會自動複製到剪貼簿\n
+        6. 在這裡提交連結, 請輸入`/wish setkey`指令"
+    en-US:
+        "1. Open genshin impact (If you use multiple accounts, please restart the game)\n
+        2. Open the wish history in the game and wait it to load\n
+        3. Press START on your keyboard, then search for Powershell\n
+        4. Click Windows Powershell, then copy & paste the script below to the Powershell\n
+        5. Press ENTER, and a link will copied to your clipboard\n
+        6. Submit the link you copied by using the `/wish setkey` command"
+359:
+    zh-TW: "Android 設置方式"
+    en-US: "Importing wish history using your android phone"
+360:
+    zh-TW: "[影片教學](https://youtu.be/pe_aROJ8Av8)\n
+        影片教學中複製了所有文本, 請只複製連結(步驟7)\n
+        1. 打開祈願界面 (遊戲內)\n
+        2. 點擊歷史記錄\n
+        3. 等待載入\n
+        4. 斷網(關閉wifi或行動數據)\n
+        5. 點擊右上角刷新按鈕\n
+        6. 此時頁面應該提示錯誤, 並顯示一些文字\n
+        7. 長按並複製「只有連結」的部份(粗體字)\n
+        8. 連網(接回wifi或行動數據)\n
+        9. 在這裡提交連結, 請輸入`/wish setkey`指令"
+    en-US: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n
+        The video tutorial copied the entire text, we only want the link here (in step 7)\n
+        1. Open Wish (in the game)\n
+        2. Press History\n
+        3. Wait for it to load\n
+        4. Turn off your Wi-Fi and data connection\n
+        5. Press refresh on top right corner\n
+        6. The page should display an error and show you some text with a black font\n
+        7. Hold the text, select the link part, then copy\n
+        8. Turn on your Wi-Fi or data connection\n
+        9. Submit that link here using the `/wish setkey` command"
+361:
+    zh-TW: IOS 教學
+    en-US: Importing wish history using your IOS device
+362:
+    zh-TW: "[影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)\n
+        1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)\n
+        2. 開啟app, 接著在系統設定 (設定 > 一般 > VPN與裝置管理) 中同意 VPN\n
+        3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝 CA > CA 就下載好了\n
+        4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install\n
+        5. 開啟原神，接著打開祈願畫面，並在這個畫面等待\n
+        6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕\n
+        7. 回到原神，接著開啟祈願歷史紀錄\n
+        8. 等候頁面載入\n
+        9. 回到 Stream App > 停止抓包\n
+        10. 按 抓包歷史 > 選擇一個以.json結尾的歷史紀錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)\n
+        11. 點選 「請求」 分頁, 接著複製連結\n
+        12. 在這裡提交連結, 請輸入`/wish setkey`指令"
+    en-US: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n
+        1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n
+        2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n
+        3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n
+        4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n
+        5. Open Genshin Impact then open Wish screen, stay on that page\n
+        6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n
+        7. Back to Genshin Impact then open the Wish history page\n
+        8. Wait for page to load\n
+        9. Back to Stream App > Stop Sniffing\n
+        10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n
+        11. Click Request tab, then copy the link\n
+        12. Submit that link here using the `/wish setkey` command"
+363:
+    zh-TW: Playstation 設置流程
+    en-US: Importing wish history using your Playstation device
+364:
+    zh-TW:
+        "(如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式)\n
+        1. 在你的 PlayStation 裡打開原神\n
+        2. 打開你的信箱 QR Code\n
+        3. 用手機掃描 QR Code 得到連結
+        4. 在這裡提交連結, 請輸入`/wish setkey`指令"
+    en-US:
+        "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n
+        (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n
+        1. Open Genshin Impact on your PlayStation\n
+        2. Open the event mail that contains the QR Code\n
+        3. Scan the QR Code with your phone\n
+        4. Submit the link here using the `/wish setkey` command"
+365:
+    zh-TW: 選擇你的平台
+    en-US: Choose your platform
