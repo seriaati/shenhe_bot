@@ -378,7 +378,9 @@ class GenshinCog(commands.Cog, name='genshin'):
             data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
         except KeyError:
             return await i.followup.send(embed=error_embed(message=text_map.get(285, i.locale, user_locale)).set_author(name=text_map.get(284, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
-        except UIDNotFounded or VaildateUIDError:
+        except UIDNotFounded:
+            return await i.followup.send(embed=error_embed().set_author(name=text_map.get(286, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+        except VaildateUIDError:
             return await i.followup.send(embed=error_embed().set_author(name=text_map.get(286, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         if data.characters is None:
             embed = default_embed(message=text_map.get(287, i.locale, user_locale)).set_author(
