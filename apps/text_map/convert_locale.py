@@ -64,14 +64,14 @@ to_go_dict = {
     'vi': 13
 }
 
-def to_enka(locale: Locale):
-    return to_enka_dict.get(str(locale))
+def to_enka(locale: Locale | str):
+    return to_enka_dict.get(str(locale)) or 'en'
 
-def to_ambr_top(locale: Locale):
-    return to_ambr_top_dict.get(str(locale))
+def to_ambr_top(locale: Locale | str):
+    return to_ambr_top_dict.get(str(locale)) or 'en'
 
-def to_genshin_py(locale: Locale):
-    return to_genshin_py_dict.get(str(locale))
+def to_genshin_py(locale: Locale | str):
+    return to_genshin_py_dict.get(str(locale)) or 'en-us'
 
-def to_go(locale: Locale):
-    return to_go_dict.get(str(locale))
+def to_go(locale: Locale | str):
+    return to_go_dict.get(str(locale)) or 4
