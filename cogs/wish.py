@@ -4,14 +4,14 @@ from typing import Optional
 import aiosqlite
 import discord
 import GGanalysislib
+from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Embed, Interaction, Member, app_commands
+from discord import Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
-from UI_elements.wish import SetAuthKey, ChoosePlatform
+from UI_elements.wish import ChoosePlatform, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
-from apps.text_map.text_map_app import text_map
 
 
 class WishCog(commands.GroupCog, name='wish'):
@@ -29,96 +29,10 @@ class WishCog(commands.GroupCog, name='wish'):
         if function == 'help':
             view = ChoosePlatform.View(i.locale, user_locale)
             embed = default_embed(text_map.get(365, i.locale, user_locale))
+            embed.set_footer(text=text_map.get(366, i.locale, user_locale))
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
         else:
             await i.response.send_modal(SetAuthKey.Modal(self.bot.db, i.locale, user_locale))
-
-    async def wish_history_exists(self, user_id: int) -> Embed:
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
-        result = await c.fetchone()
-        embed = error_embed(message='使用 `/wish setkey` 指令來設置').set_author(
-            name='查無祈願紀錄', icon_url=self.bot.get_user(user_id).avatar)
-        if result is None:
-            return False, embed
-        else:
-            return True, None
-
-    async def char_banner_calc(self, user_id: int, luck: bool = False):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT wish_name, wish_rarity, wish_type FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
-        user_wish_history = await c.fetchall()
-        std_characters = ['迪盧克', '琴', '七七', '莫娜', '刻晴']
-        get_num = 0
-        left_pull = 0
-        use_pull = len(user_wish_history)
-        found_last_five_star = False
-        up_guarantee = 0
-        for index, tuple in enumerate(user_wish_history):
-            wish_name = tuple[0]
-            wish_rarity = tuple[1]
-            if wish_rarity == 5:
-                if luck:
-                    get_num += 1
-                else:
-                    if wish_name not in std_characters:
-                        get_num += 1
-                if not found_last_five_star:
-                    found_last_five_star = True
-                    if wish_name not in std_characters:
-                        up_guarantee = 0
-                    else:
-                        up_guarantee = 1
-            else:
-                if not found_last_five_star:
-                    left_pull += 1
-        if luck:
-            await c.execute('SELECT COUNT (wish_name) FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, 200))
-            use_pull += (await c.fetchone())[0]
-        return get_num, use_pull, left_pull, up_guarantee
-
-    async def weapon_banner_calc(self, user_id: int):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND wish_type = '武器'", (user_id,))
-        user_wish_history = await c.fetchall()
-        last_name = ''
-        pull_state = 0
-        for index, tuple in enumerate(user_wish_history):
-            wish_name = tuple[0]
-            wish_rarity = tuple[1]
-            if wish_rarity != 5:
-                pull_state += 1
-            else:
-                last_name = wish_name
-                break
-        return last_name, pull_state
-
-    async def wish_overview_calc(self, user_id: int):
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        banner_ids = [100, 200, 301, 302]
-        result = []
-        for banner_id in banner_ids:
-            if banner_id == 301:
-                await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND (wish_banner_type = ? OR wish_banner_type = ?)', (user_id, banner_id, 400))
-            else:
-                await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
-            total = await c.fetchall()
-            total_wish = len(total)
-            left_pull = 0
-            for index, tuple in enumerate(total):
-                wish_rarity = tuple[0]
-                if wish_rarity != 5:
-                    left_pull += 1
-                else:
-                    break
-            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 5', (user_id, banner_id))
-            five_star = await c.fetchall()
-            five_star = len(five_star)
-            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 4', (user_id, banner_id))
-            four_star = await c.fetchall()
-            four_star = len(four_star)
-            result.append([total_wish, left_pull, five_star, four_star])
-        return result
 
     # /wish history
     @app_commands.command(name='history歷史紀錄', description='祈願歷史紀錄查詢')

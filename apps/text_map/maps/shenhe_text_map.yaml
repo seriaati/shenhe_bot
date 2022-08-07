@@ -1134,3 +1134,15 @@
 365:
     zh-TW: 選擇你的平台
     en-US: Choose your platform
+366:
+    zh-TW: "祈願紀錄的語言是根據你目前設置的語言決定的\n
+        之後更改語言不會改變先前紀錄的語言"
+    en-US:
+        "The language of your wish history is based on your current selected language\n
+        changing the language afterward will have no effect on your previous wish history"
+367:
+    zh-TW: 找不到任何祈願紀錄
+    en-US: No wish history data found 
+368:
+    zh-TW: "輸入 `/wish setkey` 來匯入祈願紀錄"
+    en-US: "`/wish setkey` to import your wish history"
