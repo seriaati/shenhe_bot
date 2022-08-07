@@ -7,6 +7,7 @@ from discord import Interaction, Locale, TextStyle
 from discord.ui import Modal, TextInput
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from apps.text_map.convert_locale import to_genshin_py
 from utility.utils import default_embed, error_embed, log
 
 
@@ -30,6 +31,7 @@ class Modal(Modal):
     async def on_submit(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.db)
         client = get_dummy_client()
+        client.lang = to_genshin_py(user_locale or i.locale) or 'en-US'
         url = self.url.value
         authkey = genshin.utility.extract_authkey(url)
         log(True, False, 'Wish Setkey', f'{i.user.id} (key={authkey})')
@@ -40,7 +42,6 @@ class Modal(Modal):
             wish_history = await client.wish_history()
         except Exception as e:
             return await i.edit_original_message(embed=error_embed(text_map.get(135, i.locale, user_locale), f'```py\n{e}\n```'))
-        await i.edit_original_message(embed=default_embed(len(wish_history)))
         c = await self.db.cursor()
         for wish in wish_history:
             wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
