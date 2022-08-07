@@ -34,6 +34,7 @@ async def get_user_event_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[i
     c = await db.cursor()
     await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
     user_wish_history = await c.fetchall()
+    user_wish_history.sort(key=lambda index: index[3], reverse=True)
 
     get_num = 0  # 抽到了幾個5星
     left_pull = 0  # 墊了幾抽
@@ -74,6 +75,7 @@ async def get_user_weapon_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[
     c = await db.cursor()
     await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND wish_type = '武器'", (user_id,))
     user_wish_history = await c.fetchall()
+    user_wish_history.sort(key=lambda index: index[3], reverse=True)
 
     last_name = ''  # 最後一個抽到的武器的名字
     pull_state = 0  # 墊了幾抽
@@ -104,6 +106,8 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
     for banner_id in banner_ids:
         await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
         user_wish_history = await c.fetchall()
+        user_wish_history.sort(key=lambda index: index[3], reverse=True)
+        
         total = len(user_wish_history)  # 總抽
         left_pull = 0  # 墊抽
         for index, tuple in enumerate(user_wish_history):
