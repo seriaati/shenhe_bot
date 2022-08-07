@@ -32,7 +32,7 @@ async def get_user_event_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[i
         Tuple[int, int, int, Literal[0, 1]]: Returns get_num(number of five stars), left_pull(number of pulls from the last five star), use_pull(total number of pulls), up_guarantee(whether the user has a big pity, 1 is yes, 0 is no)
     """
     c = await db.cursor()
-    await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
+    await c.execute("SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)", (user_id,))
     user_wish_history = await c.fetchall()
     user_wish_history.sort(key=lambda index: index[3], reverse=True)
 
@@ -41,14 +41,17 @@ async def get_user_event_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[i
     use_pull = len(user_wish_history)  # 共抽了幾抽
     found_last_five_star = False
     up_guarantee = 0  # 有無大保底, 1 代表有
+    standard_num = 0 # 抽到的常駐角色數量
 
     standard_characters = get_standard_characters()
 
     for index, tuple in enumerate(user_wish_history):
-        wish_name = tuple[0]
-        wish_rarity = tuple[1]
+        wish_name = tuple[1]
+        wish_rarity = tuple[2]
         if wish_rarity == 5:
             get_num += 1
+            if wish_name in standard_characters:
+                standard_num += 1
             if not found_last_five_star:
                 found_last_five_star = True
                 if wish_name in standard_characters:  # 最後一個抽到的五星是常駐
@@ -58,8 +61,10 @@ async def get_user_event_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[i
         else:
             if not found_last_five_star:  # 在找到最後一個抽到的五星之前都算墊的
                 left_pull += 1
+                
+    up_five_star_num = get_num - standard_num
 
-    return get_num, left_pull, use_pull, up_guarantee
+    return get_num, left_pull, use_pull, up_guarantee, up_five_star_num
 
 
 async def get_user_weapon_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[str, int]:
@@ -73,7 +78,7 @@ async def get_user_weapon_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[
         Tuple[str, int]: Returns last_name (the last weapon name), and pull_state(number of pulls from the last five star)
     """
     c = await db.cursor()
-    await c.execute("SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND wish_type = '武器'", (user_id,))
+    await c.execute("SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND wish_type = '武器'", (user_id,))
     user_wish_history = await c.fetchall()
     user_wish_history.sort(key=lambda index: index[3], reverse=True)
 
@@ -81,8 +86,8 @@ async def get_user_weapon_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[
     pull_state = 0  # 墊了幾抽
 
     for index, tuple in enumerate(user_wish_history):
-        wish_name = tuple[0]
-        wish_rarity = tuple[1]
+        wish_name = tuple[1]
+        wish_rarity = tuple[2]
         if wish_rarity != 5:
             pull_state += 1
         else:
@@ -104,14 +109,14 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
     result = {}
 
     for banner_id in banner_ids:
-        await c.execute('SELECT wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
         user_wish_history = await c.fetchall()
         user_wish_history.sort(key=lambda index: index[3], reverse=True)
         
         total = len(user_wish_history)  # 總抽
         left_pull = 0  # 墊抽
         for index, tuple in enumerate(user_wish_history):
-            wish_rarity = tuple[0]
+            wish_rarity = tuple[2]
             if wish_rarity == 5:
                 break
             else:  # 不是五星墊抽＋1

@@ -1139,10 +1139,61 @@
         之後更改語言不會改變先前紀錄的語言"
     en-US:
         "The language of your wish history is based on your current selected language\n
-        changing the language afterward will have no effect on your previous wish history"
+        changing the language afterward will not change anything"
 367:
     zh-TW: 找不到任何祈願紀錄
     en-US: No wish history data found 
 368:
     zh-TW: "輸入 `/wish setkey` 來匯入祈願紀錄"
     en-US: "`/wish setkey` to import your wish history"
+369:
+    zh-TW: 祈願紀錄
+    en-US: Wish history
+370:
+    zh-TW: 有大保底
+    en-US: Big pity available 
+371:
+    zh-TW: 有小保底
+    en-US: Small pity available
+372:
+    zh-TW: 歐氣值分析
+    en-US: Wish luck analysis
+373:
+    zh-TW: 你的運氣擊敗了
+    en-US: Your luck is better than
+374:
+    zh-TW: 的玩家
+    en-US: of players
+375:
+    zh-TW: 共
+    en-US: ""
+376:
+    zh-TW: 抽
+    en-US: pulls in total
+378:
+    zh-TW: 出了
+    en-US: ""
+379:
+    zh-TW: 個 UP 五星
+    en-US: UP five stars in total
+380:
+    zh-TW: 墊了
+    en-US: ""
+381:
+    zh-TW: 抽
+    en-US: pity pulls
+382:
+    zh-TW: 想要抽出
+    en-US: Wishing to pull
+383:
+    zh-TW: 個 UP 五星角色
+    en-US: UP 5 star characters
+384:
+    zh-TW: 預計
+    en-US: Expecting to finish after
+385:
+    zh-TW: 抽後結束
+    en-US: pulls
+386:
+    zh-TW: 祈願抽數預測
+    en-US: Event wish pull number prediction

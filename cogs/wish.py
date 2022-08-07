@@ -6,6 +6,7 @@ import discord
 import GGanalysislib
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from apps.wish.wish_app import check_user_wish_data, get_user_event_wish
 from discord import Interaction, Member, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
@@ -40,32 +41,41 @@ class WishCog(commands.GroupCog, name='wish'):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_history(self, i: Interaction, member: Member = None):
         member = member or i.user
-        check, msg = await self.wish_history_exists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        check, msg = await check_user_wish_data(member.id, i, self.bot.db)
         if not check:
             return await i.response.send_message(embed=msg, ephemeral=True)
+
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute('SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE user_id = ?', (member.id,))
-        result = await c.fetchall()
-        user_wishes = []
-        for index, tuple in enumerate(result):
+        user_wish_history = await c.fetchall()
+        user_wish_history.sort(key=lambda index: index[3], reverse=True)
+
+        user_wish = []
+
+        for index, tuple in enumerate(user_wish_history):
             wish_name = tuple[0]
+            wish_rarity = tuple[1]
             wish_time = (datetime.strptime(
                 tuple[2], "%Y/%m/%d %H:%M:%S")).strftime("%Y/%m/%d")
-            wish_rarity = tuple[1]
             wish_type = tuple[3]
-            if wish_rarity == 5 or wish_rarity == 4:
-                user_wishes.append(
+            if wish_rarity == 5 or wish_rarity == 4:  # mark high rarity wishes with blue
+                user_wish.append(
                     f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://github.com/seriaati/shenhe_bot)")
             else:
-                user_wishes.append(
+                user_wish.append(
                     f"{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})")
-        first_twenty_wishes = list(divide_chunks(user_wishes, 20))
+
+        user_wish = list(divide_chunks(user_wish, 20))
         embeds = []
-        for l in first_twenty_wishes:
+        for small_segment in user_wish:
             embed_str = ''
-            for w in l:
-                embed_str += f'{w}\n'
-            embeds.append(default_embed('詳細祈願紀錄', embed_str))
+            for wish_str in small_segment:
+                embed_str += f'{wish_str}\n'
+            embed = default_embed(message=embed_str)
+            embed.set_author(name=text_map.get(369, i.locale, user_locale), icon_url=i.user.avatar)
+            embeds.append(embed)
+            
         await GeneralPaginator(i, embeds).start(embeded=True)
 
     @app_commands.command(name='luck歐氣值', description='限定祈願歐氣值分析')
@@ -73,45 +83,37 @@ class WishCog(commands.GroupCog, name='wish'):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_analysis(self, i: Interaction, member: Member = None):
         member = member or i.user
-        check, msg = await self.wish_history_exists(member.id)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        check, msg = await check_user_wish_data(member.id, i, self.bot.db)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (member.id,))
-        result = await c.fetchone()
-        if result is None:
-            await i.response.send_message(embed=error_embed(message='請在限定池中進行祈願\n再使用 `/wish setkey` 更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
-            return
-        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(
-            member.id, True)
-        player = GGanalysislib.PityGacha()
-        gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
-        embed = default_embed(
-            '<:wish:982419859117838386> 限定祈願歐氣值分析',
-            f'• 你的運氣擊敗了**{str(round(100*player.luck_evaluate(get_num=get_num, use_pull=use_pull, left_pull=left_pull), 2))}%**的玩家\n'
-            f'• 共**{use_pull}**抽\n'
-            f'• 出了**{get_num}**個5星\n'
-            f'• 墊了**{left_pull}**抽'
+            return await i.response.send_message(embed=msg, ephemeral=True)
+        
+        get_num, left_pull, use_pull, up_guarantee, up_five_star_num = await get_user_event_wish(member.id, self.bot.db)
+        player = GGanalysislib.Up5starCharacter()
+        player_luck = str(round(100*player.luck_evaluate(get_num=up_five_star_num, use_pull=use_pull, left_pull=left_pull), 2))
+        guarantee = text_map.get(370, i.locale, user_locale) if up_guarantee == 1 else text_map.get(371, i.locale, user_locale)
+        
+        embed = default_embed(message=
+            f'• {text_map.get(373, i.locale, user_locale)} **{player_luck}%** {text_map.get(374, i.locale, user_locale)}\n'
+            f'• {text_map.get(375, i.locale, user_locale)} **{use_pull}** {text_map.get(376, i.locale, user_locale)}\n'
+            f'• {text_map.get(378, i.locale, user_locale)} **{up_five_star_num}** {text_map.get(379, i.locale, user_locale)}\n'
+            f'• {text_map.get(380, i.locale, user_locale)} **{left_pull}** {text_map.get(381, i.locale, user_locale)}\n'
+            f'• {guarantee}'
         )
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(name=text_map.get(372, i.locale, user_locale), icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
     @app_commands.command(name='character角色預測', description='預測抽到角色的機率')
     @app_commands.rename(num='up角色數量')
     @app_commands.describe(num='想要抽到幾個5星UP角色?')
     async def wish_char(self, i: Interaction, num: int):
-        check, msg = await self.wish_history_exists(i.user.id)
+        check, embed = await check_user_wish_data(i.user.id, i, self.bot.db)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         if not check:
-            await i.response.send_message(embed=msg, ephemeral=True)
-            return
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)', (i.user.id,))
-        result = await c.fetchone()
-        if result is None:
-            return await i.response.send_message(embed=error_embed(message='請在限定池中進行祈願\n再使用`/wish setkey`更新祈願紀錄').set_author(name='錯誤', icon_url=i.user.avatar), ephemeral=True)
-        get_num, use_pull, left_pull, up_guarantee = await self.char_banner_calc(i.user.id)
-        gu_str = '有大保底' if up_guarantee == 1 else '沒有大保底'
+            return await i.response.send_message(embed=embed, ephemeral=True)
+        
+        get_num, left_pull, use_pull, up_guarantee, up_five_star_num = await get_user_event_wish(i.user.id, self.bot.db)
+        guarantee = text_map.get(370, i.locale, user_locale) if up_guarantee == 1 else text_map.get(371, i.locale, user_locale)
         player = GGanalysislib.Up5starCharacter()
         calc_pull = 1
         p = 0
@@ -120,13 +122,13 @@ class WishCog(commands.GroupCog, name='wish'):
                 item_num=num, calc_pull=calc_pull,
                 pull_state=left_pull, up_guarantee=up_guarantee)
             calc_pull += 1
-        embed = default_embed(
-            '<:wish:982419859117838386> 祈願抽數預測',
-            f'• 想要抽出**{num}**個5星UP角色\n'
-            f'• 墊了**{left_pull}**抽\n'
-            f'• {gu_str}\n'
-            f'• 預計**{calc_pull}**抽後結束')
-        embed.set_author(name=i.user, icon_url=i.user.avatar)
+            
+        embed = default_embed(message=
+            f'• {text_map.get(382, i.locale, user_locale)} **{num}** {text_map.get(383, i.locale, user_locale)}\n'
+            f'• {text_map.get(380, i.locale, user_locale)} **{left_pull}** {text_map.get(381, i.locale, user_locale)}\n'
+            f'• {guarantee}\n'
+            f'• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}\n')
+        embed.set_author(name=text_map.get(386, i.locale, user_locale), icon_url=i.user.avatar)
         await i.response.send_message(embed=embed)
 
     class UpOrStd(discord.ui.View):
@@ -179,7 +181,7 @@ class WishCog(commands.GroupCog, name='wish'):
     @app_commands.rename(item_num='up武器數量')
     @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
     async def wish_weapon(self, i: Interaction, item_num: int):
-        check, msg = await self.wish_history_exists(i.user.id)
+        check, msg = await check_user_wish_data(i.user.id)
         if not check:
             return await i.response.send_message(embed=msg, ephemeral=True)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -231,7 +233,7 @@ class WishCog(commands.GroupCog, name='wish'):
     @app_commands.describe(member='查看其他群友的資料')
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
-        check, msg = await self.wish_history_exists(member.id)
+        check, msg = await check_user_wish_data(member.id)
         if not check:
             await i.response.send_message(embed=msg, ephemeral=True)
             return
