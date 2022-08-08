@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Dict, Literal, Tuple
 
 import aiosqlite
@@ -10,7 +11,7 @@ from utility.utils import error_embed
 
 async def check_user_wish_data(user_id: int, i: Interaction, db: aiosqlite.Connection) -> Tuple[bool, Embed]:
     c = await db.cursor()
-    user_locale = get_user_locale(user_id, db)
+    user_locale = await get_user_locale(user_id, db)
     await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (user_id,))
     result = await c.fetchone()
     embed = error_embed(message=text_map.get(368, i.locale, user_locale)).set_author(
@@ -104,12 +105,15 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
     # 301 - character event wish
     # 400 - character event wish
     # 302 - weapon event wish
-    banner_ids = [200, 301, 400, 302]
+    banner_ids = [200, 301, 302]
 
     result = {}
 
     for banner_id in banner_ids:
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
+        if banner_id == 301:
+            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND (wish_banner_type = ? OR wish_banner_type = 400)', (user_id, banner_id))
+        else:
+            await c.execute('SELECT * FROM wish_history WHERE user_id = ? AND wish_banner_type = ?', (user_id, banner_id))
         user_wish_history = await c.fetchall()
         user_wish_history.sort(key=lambda index: index[3], reverse=True)
         
@@ -132,11 +136,9 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
         result[banner_id] = {
             'total': total,
             'five_star': five_star,
-            'four_star': four_star
+            'four_star': four_star,
+            'left_pull': left_pull
         }
 
-    # combine 301 and 400
-    for key, value in result['400'].items():
-        result[300][key] += value
-
+    # pprint(result)
     return result
