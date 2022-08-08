@@ -174,7 +174,7 @@
     en-US: World Exploration
 59:
     zh-TW: 原石收入比上個月
-    en-US: Primo income v.s last month
+    en-US: Primogem income v.s last month
 60:
     zh-TW: 增加了
     en-US: increased
@@ -1169,7 +1169,7 @@
     en-US: ""
 376:
     zh-TW: 抽
-    en-US: pulls in total
+    en-US: pull(s) in total
 378:
     zh-TW: 出了
     en-US: ""
@@ -1177,11 +1177,11 @@
     zh-TW: 個 UP 五星
     en-US: UP five stars in total
 380:
-    zh-TW: 墊了
+    zh-TW: 已經墊了
     en-US: ""
 381:
     zh-TW: 抽
-    en-US: pity pulls
+    en-US: pity pull(s)
 382:
     zh-TW: 想要抽出
     en-US: Wishing to pull
@@ -1193,7 +1193,64 @@
     en-US: Expecting to finish after
 385:
     zh-TW: 抽後結束
-    en-US: pulls
+    en-US: pull(s)
 386:
     zh-TW: 祈願抽數預測
-    en-US: Event wish pull number prediction
+    en-US: Event wish number prediction
+387:
+    zh-TW: 常駐
+    en-US: Standard
+388:
+    zh-TW: 想要的
+    en-US: "Yes"
+389:
+    zh-TW: 不想要的
+    en-US: "No"
+390:
+    zh-TW: 請問這把武器是你想要的嗎?
+    en-US: Is this the weapon you wanted?
+391:
+    zh-TW: 你最後一次抽到的五星武器是
+    en-US: The last 5 star weapon you pulled was
+392:
+    zh-TW: 這是一把常駐還是 UP 武器?
+    en-US: Is this a standard or limited time UP weapon?
+393:
+    zh-TW: 武器祈願抽數預測
+    en-US: Weapon wish number prediction
+394:
+    zh-TW: 想要抽出
+    en-US: Wishing to pull
+395:
+    zh-TW: 個想要的五星 UP 武器
+    en-US: weapon(s) you want
+396:
+    zh-TW: 即為
+    en-US: That is
+397:
+    zh-TW: 原石
+    en-US: primogems
+398:
+    zh-TW: 常駐池
+    en-US: Standard banner
+399:
+    zh-TW: 角色池
+    en-US: Limited-time banner
+400:
+    zh-TW: 武器池
+    en-US: Weapon banner
+401:
+    zh-TW: 平均
+    en-US: ""
+402:
+    zh-TW: 抽出一金
+    en-US: pull(s) per 5 star
+403:
+    zh-TW: 距離保底
+    en-US: ""
+404:
+    zh-TW: 抽
+    en-US: pull(s) from pity
+405:
+    zh-TW: 你還沒有在武器池抽中過五星武器
+    en-US: You haven't pulled any 5 star weapons in the weapon banner yet
