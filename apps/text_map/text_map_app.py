@@ -93,5 +93,5 @@ class TextMap():
         return character_name
 
 
-# initialize the class firsts to load the text maps
+# initialize the class first to load the text maps
 text_map = TextMap()
