@@ -1,25 +1,31 @@
+import json
 from datetime import datetime
 from pprint import pprint
+from typing import Dict
 
 import aiosqlite
 import GGanalysislib
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import calculate_artifact_score, get_artifact, get_character, get_farm_dict, get_fight_prop, get_material, get_weapon
-from apps.text_map.convert_locale import to_ambr_top, to_enka
+from apps.genshin.utils import (calculate_artifact_score, get_artifact,
+                                get_character, get_farm_dict, get_fight_prop,
+                                get_material, get_weapon)
+from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import elements
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
+from dateutil import parser
 from discord import Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.ext import commands
+from discord.utils import format_dt
 from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
 from enkanetwork.enum import DigitType, EquipmentsType
 from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
                                  Build, CharacterWiki, Diary, EnkaProfile,
-                                 ResinNotification, ShowAllCharacters,
-                                 TalentNotification)
+                                 EventTypeChooser, ResinNotification,
+                                 ShowAllCharacters, TalentNotification)
 from utility.paginator import GeneralPaginator
 from utility.utils import (default_embed, divide_chunks, error_embed,
                            parse_HTML, rank_user)
@@ -487,23 +493,49 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     @app_commands.command(name='events活動', description='查看原神近期的活動')
     async def events(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
-        async with self.bot.session.get(f'https://api.ambr.top/assets/data/event.json') as r:
-            events = await r.json()
-        embeds = []
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_locale = user_locale or i.locale
-        ambr_top_locale = to_ambr_top(user_locale).upper()
-        for event_id, event in events.items():
-            value = parse_HTML(
-                event['description'][ambr_top_locale])
-            embed = default_embed(
-                event['name'][ambr_top_locale], event['nameFull'][ambr_top_locale])
-            embed.add_field(
-                name='<:placeholder:982425507503165470>', value=value[:1021]+'...', inline=False)
-            embed.set_image(url=event['banner'][ambr_top_locale])
-            embeds.append(embed)
-        await GeneralPaginator(i, embeds).start(embeded=True, ephemeral=True, follow_up=True)
+        await i.response.defer()
+        user_locale = (await get_user_locale(i.user.id, self.bot.db)) or i.locale
+        genshin_py_locale = to_genshin_py(user_locale)
+        event_overview_API = f'https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014'
+        event_details_API = f'https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0'
+        async with self.bot.session.get(event_overview_API) as r:
+            overview: Dict = await r.json()
+        async with self.bot.session.get(event_details_API) as r:
+            details: Dict = await r.json()
+
+        type_list = overview['data']['type_list']
+        options = []
+        for type in type_list:
+            options.append(SelectOption(
+                label=type['mi18n_name'], value=type['id']))
+            
+        # get a dict of details
+        detail_dict = {}
+        for event in details['data']['list']:
+            detail_dict[event['ann_id']] = event['content']
+            
+        first_id = None
+
+        embeds = {}
+        for event_list in overview['data']['list']:
+            list = event_list['list']
+            if list[0]['type'] not in embeds:
+                embeds[list[0]['type']] = []
+            if first_id is None:
+                first_id = list[0]['type']
+            for event in list:
+                embed = default_embed(event['title'])
+                embed.set_author(
+                    name=event['type_label'], icon_url=event['tag_icon'])
+                embed.set_image(url=event['banner'])
+                embed.add_field(name=text_map.get(406, i.locale, user_locale), value=format_dt(
+                    parser.parse(event['start_time'])))
+                embed.add_field(name=text_map.get(407, i.locale, user_locale), value=format_dt(
+                    parser.parse(event['end_time'])))
+                embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(detail_dict[event['ann_id']])[:1021]+'...', inline=False)
+                embeds[event['type']].append(embed)
+
+        await GeneralPaginator(i, embeds[first_id], [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(embeded=True, follow_up=True)
 
     @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
     @app_commands.rename(type='分類')
