@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import List, Tuple
 
 import discord
+from dateutil import parser
+from discord.utils import format_dt
 
 
 def default_embed(title: str = '', message: str = ''):
@@ -65,6 +67,18 @@ def parse_HTML(HTML_string: str):
     # remove all HTML tags
     CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
     HTML_string = re.sub(CLEANR, '', HTML_string)
+
+    # remove time tags from mihoyo
+    HTML_string = HTML_string.replace('t class="t_gl"', '')
+    HTML_string = HTML_string.replace('t class="t_lc"', '')
+    HTML_string = HTML_string.replace('/t', '')
+
+    # turn date time string into discord timestamps
+    matches = re.findall(r'\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}', HTML_string)
+    for match in matches:
+        datetime_obj = parser.parse(match)
+        HTML_string = HTML_string.replace(match, format_dt(datetime_obj))
+
     return HTML_string
 
 
@@ -80,20 +94,23 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     }
     return weekday_name_dict.get(weekday_name)
 
+
 def split_text_and_number(text: str) -> List:
     list_text = list(text)
     letter_index = None
     number_index = None
     for index, letter in enumerate(list_text):
         if not letter.isdigit():
-            letter_index = index 
+            letter_index = index
         else:
             if index - 1 == letter_index:
                 number_index = index
                 break
     return [text[:number_index], text[number_index:]]
 
+
 def extract_integer_from_string(text: str) -> int:
     text = text.replace('-', ' ')
-    text = [int(character) for character in text.split() if character.isdigit()]
+    text = [int(character)
+            for character in text.split() if character.isdigit()]
     return int(text[0])
