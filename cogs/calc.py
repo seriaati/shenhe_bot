@@ -44,7 +44,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         valid, error_message = check_level_validity(
             view.levels, user_locale or i.locale)
         if not valid:
-            await i.delete_original_message()
+            await i.delete_original_response()
             return await i.followup.send(embed=error_embed(message=error_message).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
         embed = default_embed()
@@ -111,7 +111,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         disabled = True if len(materials) == 0 else False
         view = AddToTodo.View(self.bot.db, disabled, i.user,
                               materials, i.locale, user_locale)
-        await i.edit_original_message(embed=embed, view=view)
+        await i.edit_original_response(embed=embed, view=view)
 
     @app_commands.command(name='weapon武器', description='計算武器所需的素材')
     @app_commands.rename(types='武器類別', rarities='稀有度')
@@ -144,7 +144,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         valid, error_message = check_level_validity(
             view.levels, user_locale or i.locale)
         if not valid:
-            await i.delete_original_message()
+            await i.delete_original_response()
             return await i.followup.send(embed=error_embed(message=error_message).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
         cost = await (
@@ -179,7 +179,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         disabled = True if len(materials) == 0 else False
         view = AddToTodo.View(self.bot.db, disabled, i.user,
                               materials, i.locale, user_locale)
-        await i.edit_original_message(embed=embed, view=view)
+        await i.edit_original_response(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:

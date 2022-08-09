@@ -179,7 +179,7 @@ class WishCog(commands.GroupCog, name='wish'):
                               )
         embed.set_author(name=text_map.get(
             393, i.locale, user_locale), icon_url=i.user.avatar)
-        await i.edit_original_message(embed=embed, view=None)
+        await i.edit_original_response(embed=embed, view=None)
 
     @app_commands.command(name='overview總覽', description='祈願紀錄總覽')
     @app_commands.rename(member='其他人')

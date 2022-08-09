@@ -50,7 +50,7 @@ class AddItem(Button):
         await self.view.db.commit()
         embed, empty = await get_todo_embed(self.view.db, i.user, i.locale)
         view = View(self.view.db, empty, i.user, i.locale, user_locale)
-        await i.edit_original_message(embed=embed, view=view)
+        await i.edit_original_response(embed=embed, view=view)
 
 
 class RemoveItem(Button):
@@ -155,4 +155,4 @@ class RemoveItemSelect(Select):
         await self.view.db.commit()
         embed, disabled = await get_todo_embed(self.view.db, i.user, i.locale)
         view = View(self.view.db, disabled, i.user, i.locale, user_locale)
-        await i.edit_original_message(embed=embed, view=view)
+        await i.edit_original_response(embed=embed, view=view)

@@ -105,7 +105,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         tag = x[1]
         lib = random.choice(libs)
         if num == 1:
-            await i.edit_original_message(embed=default_embed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
+            await i.edit_original_response(embed=default_embed(f'標籤: {tag}').set_image(url=(hmtai.get(lib, tag))).set_footer(text=f'API: {lib}'), view=None)
         else:
             embeds = []
             for index in range(0, num):
@@ -151,14 +151,14 @@ class WaifuCog(commands.GroupCog, name='waifu'):
         lib = random.choice(libs)
         url = (hmtai.get(lib, tag))
         if num == 1:
-            await i.edit_original_message(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            await i.edit_original_response(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
             async with self.bot.session.get(str(url)) as resp:
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(
                     bytes_obj, filename='waifu_image.gif', spoiler=True)
-            await i.edit_original_message(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(i.user))
+            await i.edit_original_response(embed=None, attachments=[file], view=WaifuCog.DeleteImageView(i.user))
         else:
-            await i.edit_original_message(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
+            await i.edit_original_response(embed=default_embed('<a:LOADER:982128111904776242> 尋找及下載圖片中...', '時長取決於小雪家裡網路速度'), view=None)
             for index in range(0, num):
                 lib = random.choice(libs)
                 url = (hmtai.get(lib, tag))
@@ -169,7 +169,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     file = File(
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
                 await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
-            await i.delete_original_message()
+            await i.delete_original_response()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
     @app_commands.guild_only()
@@ -191,7 +191,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     try:
                         image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+                        return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     image = await wf.random(is_nsfw=[is_nsfw])
                 if sese == 1:
@@ -200,14 +200,14 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                         file = File(
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
                     if tags == 1:
-                        await i.edit_original_message(attachments=[file], view=None)
+                        await i.edit_original_response(attachments=[file], view=None)
                     else:
                         await i.followup.send(file=file)
                 else:
                     embed = default_embed('您的老婆已送達')
                     embed.set_image(url=image)
                     if tags == 1:
-                        await i.edit_original_message(embed=embed, view=None)
+                        await i.edit_original_response(embed=embed, view=None)
                     else:
                         await i.followup.send(embed=embed)
 
@@ -216,7 +216,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     try:
                         images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
                     except waifuim.exceptions.APIException:
-                        return await i.edit_original_message(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+                        return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:
@@ -228,7 +228,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                             file = File(
                                 bytes_obj, filename='waifu_image.gif', spoiler=True)
                         if index == 0:
-                            await (await i.original_message()).delete()
+                            await (await i.original_response()).delete()
                         await i.channel.send(file=file)
                 else:
                     embeds = []

@@ -87,7 +87,7 @@ class GeneralPaginator:
             kwargs['ephemeral'] = ephemeral
 
         if edit_original_message:
-            await self.interaction.edit_original_message(**kwargs)
+            await self.interaction.edit_original_response(**kwargs)
         elif follow_up:
             await self.interaction.followup.send(**kwargs)
         else:
@@ -95,4 +95,4 @@ class GeneralPaginator:
 
         await view.wait()
 
-        # await self.interaction.delete_original_message()
+        await self.interaction.delete_original_response()

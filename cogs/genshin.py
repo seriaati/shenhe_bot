@@ -18,6 +18,7 @@ from data.game.fight_prop import fight_prop
 from dateutil import parser
 from discord import Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
+from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
 from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
@@ -78,9 +79,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot.tree.remove_command(
             self.check_context_menu.name, type=self.check_context_menu.type)
 
-    @app_commands.command(
-        name='register註冊',
-        description='註冊你的原神帳號')
+    @app_commands.command(name='register', description=_("Register your genshin account in shenhe's database to use commands that require one", hash=410))
     @app_commands.rename(option='選項')
     @app_commands.choices(option=[
         Choice(name='註冊教學', value=0),
@@ -508,12 +507,12 @@ class GenshinCog(commands.Cog, name='genshin'):
         for type in type_list:
             options.append(SelectOption(
                 label=type['mi18n_name'], value=type['id']))
-            
+
         # get a dict of details
         detail_dict = {}
         for event in details['data']['list']:
             detail_dict[event['ann_id']] = event['content']
-            
+
         first_id = None
 
         embeds = {}
@@ -532,7 +531,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                     parser.parse(event['start_time'])))
                 embed.add_field(name=text_map.get(407, i.locale, user_locale), value=format_dt(
                     parser.parse(event['end_time'])))
-                embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(detail_dict[event['ann_id']])[:1021]+'...', inline=False)
+                embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(
+                    detail_dict[event['ann_id']])[:1021]+'...', inline=False)
                 embeds[event['type']].append(embed)
 
         await GeneralPaginator(i, embeds[first_id], [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(embeded=True, follow_up=True)
