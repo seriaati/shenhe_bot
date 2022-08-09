@@ -157,72 +157,95 @@
 40:
     zh-TW: 你已經領取過今天的獎勵了!
     en-US: You have already claimed today's login reward!
+    zh-CN: 你已经领取过今天的奖励了！
 41:
     zh-TW: 獲得
     en-US: Obtained
+    zh-CN: 获得
 42:
     zh-TW: 簽到成功
     en-US: Claim successful
+    zh-CN: 签到成功
 43:
     zh-TW: 總覽
     en-US: Overview
+    zh-CN: 总览
 44:
     zh-TW: 活躍天數
     en-US: Days Active
+    zh-CN: 活跃天数
 45:
     zh-TW: 角色數量
     en-US: Characters
+    zh-CN: 角色数量
 46:
     zh-TW: 成就數
     en-US: Achievements
+    zh-CN: 成绩数
 47:
     zh-TW: 深淵已達
     en-US: Spiral Abyss
+    zh-CN: 深渊已达
 48:
     zh-TW: 神瞳
     en-US: Oculi
+    zh-CN: 神瞳
 49:
     zh-TW: 風神瞳
     en-US: Anemoculi
+    zh-CN: 风神瞳
 50:
     zh-TW: 岩神瞳
     en-US: Geoculi
+    zh-CN: 岩神瞳
 51:
     zh-TW: 雷神瞳
     en-US: Electroculi
+    zh-CN: 雷神瞳
 52:
     zh-TW: 寶箱
     en-US: Chests
+    zh-CN: 宝箱
 53:
     zh-TW: 普通寶箱
     en-US: Common Chests
+    zh-CN: 普通宝箱
 54:
     zh-TW: 精緻寶箱
     en-US: Exquisite Chests
+    zh-CN: 精致宝箱
 55:
     zh-TW: 華麗寶箱
     en-US: Luxurious Chests
+    zh-CN: 华丽宝箱
 56:
     zh-TW: 原神數據
     en-US: Genshin stats
+    zh-CN: 原神数据
 57:
     zh-TW: 珍貴寶箱
     en-US: Precious Chests
+    zh-CN: 珍贵宝箱
 58:
     zh-TW: 區域探索度
     en-US: World Exploration
+    zh-CN: 区域探索度
 59:
     zh-TW: 原石收入比上個月
     en-US: Primogem income v.s last month
+    zh-CN: 原石收入比上个月
 60:
     zh-TW: 增加了
     en-US: increased
+    zh-CN: 增加了
 61:
     zh-TW: 減少了
     en-US: decreased
+    zh-CN: 减少了
 62:
     zh-TW: 摩拉收入比上個月
     en-US: Mora income v.s last month
+    zh-CN: 摩拉收入比上个月
 63:
     zh-TW: 本月共獲得
     en-US: Acquired this month
