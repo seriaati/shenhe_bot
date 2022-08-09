@@ -1,42 +1,55 @@
 1:
     zh-TW: 已滿
     en-US: Full
+    zh-CN: 已满
 2:
     zh-TW: 今天
     en-US: Today's
+    zh-CN: 今天
 3:
     zh-TW: 明天
     en-US: Tomorrow
+    zh-CN: 明天
 4:
     zh-TW: 剩餘
     en-US: Remaining
+    zh-CN: 剩余
 5:
     zh-TW: 天
     en-US: days
+    zh-CN: 天
 6:
     zh-TW: 小時
     en-US: hr
+    zh-CN: 小时
 7:
     zh-TW: 分
     en-US: min
+    zh-CN: 分
 8:
     zh-TW: 秒
     en-US: sec
+    zh-CN: 秒
 9:
     zh-TW: 可使用
     en-US: Available
+    zh-CN: 可使用
 10:
     zh-TW: 質變儀不存在
     en-US: P.T. not found
+    zh-CN: 质变仪不存在
 11:
     zh-TW: 已完成的每日數量
     en-US: Dailies finished
+    zh-CN: 已完成的每日数量
 12:
     zh-TW: 質變儀剩餘時間
     en-US: P.T. remaining time
+    zh-CN: 质变仪剩余时间
 13:
     zh-TW: 樹脂
     en-US: Resin
+    zh-CN: 树脂
 14:
     zh-TW: 目前
     en-US: Current
