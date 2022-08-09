@@ -41,7 +41,7 @@ class Modal(Modal):
         try:
             wish_history = await client.wish_history()
         except Exception as e:
-            return await i.edit_original_message(embed=error_embed(text_map.get(135, i.locale, user_locale), f'```py\n{e}\n```'))
+            return await i.edit_original_response(embed=error_embed(text_map.get(135, i.locale, user_locale), f'```py\n{e}\n```'))
         c = await self.db.cursor()
         for wish in wish_history:
             wish_time = wish.time.strftime("%Y/%m/%d %H:%M:%S")
@@ -50,4 +50,4 @@ class Modal(Modal):
             except sqlite3.IntegrityError:
                 pass
         await self.db.commit()
-        await i.edit_original_message(embed=default_embed(f'<:wish:982419859117838386> {text_map.get(356, i.locale, user_locale)}'))
+        await i.edit_original_response(embed=default_embed(f'<:wish:982419859117838386> {text_map.get(356, i.locale, user_locale)}'))

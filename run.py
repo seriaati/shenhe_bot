@@ -5,18 +5,21 @@ import os
 import sys
 import traceback
 from pathlib import Path
+from typing import Optional
 
 import aiohttp
 import aiosqlite
-from discord import Game, Intents, Interaction, Message, Status, app_commands
+from discord import (Game, Intents, Interaction, Locale, Message, Status,
+                     app_commands)
+from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
 
-from debug import DebugView
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from debug import DebugView
 from utility.utils import error_embed, log
 
 load_dotenv()
@@ -38,6 +41,14 @@ intents.members = True
 intents.reactions = True
 intents.message_content = True
 intents.presences = True
+
+
+class Translator(app_commands.Translator):
+    async def translate(self, string: locale_str, locale: Locale, context: TranslationContext) -> Optional[str]:
+        try:
+            return text_map.get(string.extras['hash'], locale)
+        except (ValueError, KeyError):
+            return None
 
 
 class ShenheBot(commands.Bot):
@@ -78,6 +89,8 @@ class ShenheBot(commands.Bot):
             status=Status.online,
             activity=Game(name=f'/help')
         )
+        tree = self.tree
+        await tree.set_translator(Translator())
         print(log(True, False, 'Bot', f'Logged in as {self.user}'))
 
     async def on_message(self, message: Message):
@@ -107,8 +120,6 @@ class ShenheBot(commands.Bot):
 
 
 bot = ShenheBot()
-
-
 tree = bot.tree
 
 
@@ -122,4 +133,5 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     traceback_message = traceback.format_exc()
     view = DebugView(traceback_message)
     await i.channel.send(embed=embed, view=view)
+
 bot.run(token)

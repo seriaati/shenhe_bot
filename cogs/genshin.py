@@ -18,6 +18,7 @@ from data.game.fight_prop import fight_prop
 from dateutil import parser
 from discord import Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
+from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
 from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
@@ -78,13 +79,11 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot.tree.remove_command(
             self.check_context_menu.name, type=self.check_context_menu.type)
 
-    @app_commands.command(
-        name='register註冊',
-        description='註冊你的原神帳號')
-    @app_commands.rename(option='選項')
+    @app_commands.command(name='register', description=_("Register your genshin account in shenhe's database to use commands that require one", hash=410))
+    @app_commands.rename(option=_('option', hash=411))
     @app_commands.choices(option=[
-        Choice(name='註冊教學', value=0),
-        Choice(name='提交 cookie', value=1)])
+        Choice(name=_('registration tutorial', hash=412), value=0),
+        Choice(name=_('submit cookie', has=413), value=1)])
     async def slash_cookie(self, i: Interaction, option: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if option == 0:
@@ -98,11 +97,12 @@ class GenshinCog(commands.Cog, name='genshin'):
             await i.response.send_modal(AccountRegister.Modal(self.genshin_app, i.locale, user_locale))
 
     @app_commands.command(
-        name='check即時便籤',
-        description='查看即時便籤: 目前樹脂、洞天寶錢、探索派遣 (需註冊)'
+        name='check',
+        description=_(
+            'Check resin, pot, and expedition status (needs /register)', hash=414)
     )
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
+    @app_commands.rename(member=_('user', hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
     async def check(self, i: Interaction, member: User = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -120,9 +120,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
-    @app_commands.command(name='stats數據', description='查看原神資料, 如活躍時間、神瞳數量、寶箱數量 (需註冊)')
-    @app_commands.rename(member='其他人', custom_uid='uid')
-    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    @app_commands.command(name='stats', description=_('View your genshin stats: Active days, oculi number, and number of chests obtained', hash=417))
+    @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
+    @app_commands.describe(member=_("check other user's data", hash=416), custom_uid=_("The UID of the player you're trying to search with", hash=418))
     async def stats(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.get_stats(member.id, custom_uid, i.locale)
@@ -132,17 +132,17 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.get_stats(member.id, None, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
-    @app_commands.command(name='area探索度', description='查看區域探索度 (需註冊)')
-    @app_commands.rename(member='其他人', custom_uid='uid')
-    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    @app_commands.command(name='area', description=_('View exploration rates of different areas in genshin', hash=419))
+    @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
+    @app_commands.describe(member=_("check other user's data", hash=416), custom_uid=_("The UID of the player you're trying to search with", hash=418))
     async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.get_area(member.id, custom_uid, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
-    @app_commands.command(name='claim登入獎勵', description='領取hoyolab網頁登入獎勵 (需註冊)')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
+    @app_commands.command(name='claim', description=_('Immediately claim your hoyolab daily login reward (needs /register)', hash=420))
+    @app_commands.rename(member=_('user', hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
     async def claim(self, i: Interaction, member: User = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -152,9 +152,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.claim_daily_reward(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
-    @app_commands.command(name='characters所有角色', description='展示自己擁有的所有角色')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
+    @app_commands.command(name='characters', description=_('View all of your characters, useful for building abyss teams (needs /register)', hash=421))
+    @app_commands.rename(member=_('user', hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
     async def characters(self, i: Interaction, member: User = None):
         await self.characters_comamnd(i, member, False)
 
@@ -173,13 +173,13 @@ class GenshinCog(commands.Cog, name='genshin'):
         placeholder = text_map.get(142, i.locale, user_locale)
         await GeneralPaginator(i, result['embeds'], [ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(embeded=True, check=False, ephemeral=ephemeral)
 
-    @app_commands.command(name='diary旅行者日記', description='查看旅行者日記 (需註冊)')
-    @app_commands.rename(month='月份', member='其他人')
-    @app_commands.describe(month='要查詢的月份', member='查看其他群友的資料')
+    @app_commands.command(name='diary', description=_("View your traveler's diary: primo and mora income (needs /regsiter)", hash=422))
+    @app_commands.rename(month=_('month', hash=423), member=_('user', hash=415))
+    @app_commands.describe(month=_("The month of the diary you're trying to view", hash=424), member=_("check other user's data", hash=416))
     @app_commands.choices(month=[
-        app_commands.Choice(name='這個月', value=0),
-        app_commands.Choice(name='上個月', value=-1),
-        app_commands.Choice(name='上上個月', value=-2)])
+        app_commands.Choice(name=_('This month', hash=425), value=0),
+        app_commands.Choice(name=_('Last month', hash=426), value=-1),
+        app_commands.Choice(name=_('The month before last month', hash=427), value=-2)])
     async def diary(self, i: Interaction, month: int = 0, member: User = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -194,15 +194,15 @@ class GenshinCog(commands.Cog, name='genshin'):
         else:
             await i.response.send_message(embed=result, view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale))
 
-    @app_commands.command(name='abyss深淵', description='深淵資料查詢 (需註冊)')
-    @app_commands.rename(overview='類別', previous='期別', member='其他人')
-    @app_commands.describe(overview='想要查看的資料類別',
-                           previous='這期還是上期?', member='查看其他群友的資料')
+    @app_commands.command(name='abyss', description=_('View abyss information (needs /register)', hash=428))
+    @app_commands.rename(overview=_('type', hash=429), previous=_('season', hash=430), member=_('user', hash=415))
+    @app_commands.describe(overview=_("The data type you're trying to view", hash=431),
+                           previous=_('Which abyss season?', hash=432), member=_("check other user's data", hash=416))
     @app_commands.choices(
-        overview=[Choice(name='詳細', value=0),
-                  Choice(name='總覽', value=1)],
-        previous=[Choice(name='本期紀錄', value=0),
-                  Choice(name='上期紀錄', value=1)]
+        overview=[Choice(name=_('Detailed', hash=433), value=0),
+                  Choice(name=_('Overview', hash=434), value=1)],
+        previous=[Choice(name=_('Current season', hash=435), value=0),
+                  Choice(name=_('Last season', hash=436), value=1)]
     )
     async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: User = None):
         member = member or i.user
@@ -220,7 +220,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         else:
             await i.response.send_message(embed=result[0], view=Abyss.View(i.user, result, i.locale, user_locale, self.bot.db))
 
-    @app_commands.command(name='stuck找不到資料', description='註冊了, 但是找不到資料嗎?')
+    @app_commands.command(name='stuck', description=_('Data not public?', hash=437))
     async def stuck(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embed = default_embed(
@@ -229,11 +229,10 @@ class GenshinCog(commands.Cog, name='genshin'):
         embed.set_image(url='https://i.imgur.com/w6Q7WwJ.gif')
         await i.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name='remind提醒', description='設置提醒功能 (樹脂提醒需要註冊, 天賦不需要)')
-    @app_commands.rename(function='功能', toggle='開關')
-    @app_commands.describe(function='提醒功能', toggle='要開啟或關閉該提醒功能')
-    @app_commands.choices(function=[Choice(name='樹脂提醒 (需註冊)', value=0), Choice(name='天賦素材提醒', value=1), Choice(name='啟用提醒功能前請先確認隱私設定', value=2)],
-                          toggle=[Choice(name='開 (調整設定)', value=1), Choice(name='關', value=0)])
+    @app_commands.command(name='remind', description=_('Set reminders', hash=438))
+    @app_commands.rename(function=_('function', hash=439), toggle=_('toggle', hash=440))
+    @app_commands.choices(function=[Choice(name=_('Resin reminder (needs /register)', hash=441), value=0), Choice(name=_('Talent material reminder', hash=442), value=1), Choice(name=_('Check your privacy settings here before you use this feature', hash=443), value=2)],
+                          toggle=[Choice(name=_('ON (Change settings)', hash=444), value=1), Choice(name=_('OFF', hash=445), value=0)])
     async def remind(self, i: Interaction, function: int, toggle: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == 0:
@@ -281,7 +280,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.set_image(url='https://i.imgur.com/sYg4SpD.gif')
             await i.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name='farm刷素材', description='查看原神今日可刷素材')
+    @app_commands.command(name='farm', description=_("View today's farmable items", hash=446))
     async def farm(self, i: Interaction):
         await i.response.defer()
         embeds = []
@@ -320,13 +319,12 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
 
-    @app_commands.command(name='build角色配置', description='查看角色推薦主詞條、畢業面板、不同配置、聖遺物思路等')
+    @app_commands.command(name='build', description=_("View character builds: Talent levels, artifacts, weapons", hash=447))
     async def build(self, i: Interaction):
         await i.response.send_message(view=Build.View(i.user, self.bot.db))
 
-    @app_commands.command(name='uid查詢', description='查詢特定使用者的原神UID')
-    @app_commands.rename(player='使用者')
-    @app_commands.describe(player='選擇想要查詢的使用者')
+    @app_commands.command(name='uid', description=_("Search a user's genshin UID (if they registered in shenhe)", hash=448))
+    @app_commands.rename(player=_('user', hash=415))
     async def search_uid(self, i: Interaction, player: Member):
         await self.search_uid_command(i, player, False)
 
@@ -350,9 +348,9 @@ class GenshinCog(commands.Cog, name='genshin'):
             name=f'{player.display_name}{text_map.get(167, i.locale, user_locale)}', icon_url=player.avatar)
         await i.response.send_message(embed=embed, ephemeral=ephemeral)
 
-    @app_commands.command(name='profile角色展示', description='查看原神角色聖遺物、屬性、進行傷害計算')
-    @app_commands.rename(member='其他人', custom_uid='uid')
-    @app_commands.describe(member='查看其他人的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    @app_commands.command(name='profile', description=_('View your genshin profile: Character stats, artifacts, and perform damage calculations', hash=449))
+    @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
+    @app_commands.describe(member=_("check other user's data", hash=416), custom_uid=_("The UID of the player you're trying to search with", hash=418))
     async def profile(self, i: Interaction, member: User = None, custom_uid: int = None):
         await self.profile_command(i, member, custom_uid, False)
 
@@ -481,8 +479,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                                 data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
 
-    @app_commands.command(name='redeem兌換', description='兌換禮物碼 (需註冊)')
-    @app_commands.rename(code='兌換碼')
+    @app_commands.command(name='redeem', description=_('Redeem a gift code (needs /register)', hash=450))
+    @app_commands.rename(code=_('code', hash=451))
     async def redeem(self, i: Interaction, code: str):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         exists = await self.genshin_app.check_user_data(i.user.id)
@@ -491,7 +489,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
-    @app_commands.command(name='events活動', description='查看原神近期的活動')
+    @app_commands.command(name='events', description=_('View ongoing genshin events', hash=452))
     async def events(self, i: Interaction):
         await i.response.defer()
         user_locale = (await get_user_locale(i.user.id, self.bot.db)) or i.locale
@@ -508,12 +506,12 @@ class GenshinCog(commands.Cog, name='genshin'):
         for type in type_list:
             options.append(SelectOption(
                 label=type['mi18n_name'], value=type['id']))
-            
+
         # get a dict of details
         detail_dict = {}
         for event in details['data']['list']:
             detail_dict[event['ann_id']] = event['content']
-            
+
         first_id = None
 
         embeds = {}
@@ -532,15 +530,15 @@ class GenshinCog(commands.Cog, name='genshin'):
                     parser.parse(event['start_time'])))
                 embed.add_field(name=text_map.get(407, i.locale, user_locale), value=format_dt(
                     parser.parse(event['end_time'])))
-                embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(detail_dict[event['ann_id']])[:1021]+'...', inline=False)
+                embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(
+                    detail_dict[event['ann_id']])[:1021]+'...', inline=False)
                 embeds[event['type']].append(embed)
 
         await GeneralPaginator(i, embeds[first_id], [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(embeded=True, follow_up=True)
 
-    @app_commands.command(name='leaderboard排行榜', description='查看排行榜')
-    @app_commands.rename(type='分類')
-    @app_commands.describe(type='選擇要查看的排行榜分類')
-    @app_commands.choices(type=[Choice(name='成就榜', value=0), Choice(name='聖遺物副詞條榜', value=1), Choice(name='歐氣榜', value=2)])
+    @app_commands.command(name='leaderboard', description=_('View various leaderbaords', hash=453))
+    @app_commands.rename(type=_('type', hash=429))
+    @app_commands.choices(type=[Choice(name=_('Achievement leaderboard', hash=453), value=0), Choice(name=_('Artifact substat leaderboard', hash=454), value=1), Choice(name=_('Wish luck leaderboard', hash=455), value=2)])
     async def leaderboard(self, i: Interaction, type: int):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -656,10 +654,9 @@ class GenshinCog(commands.Cog, name='genshin'):
             except ValueError:
                 await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
-    @app_commands.command(name='wiki原神百科', description='原神百科')
-    @app_commands.rename(type='分類')
-    @app_commands.describe(type='選擇要查看的維基百科分類')
-    @app_commands.choices(type=[Choice(name='角色', value=0)])
+    @app_commands.command(name='wiki', description=_('View genshin wiki', hash=457))
+    @app_commands.rename(type=_('type', hash=429))
+    @app_commands.choices(type=[Choice(name=_('Characters', hash=458), value=0)])
     async def wiki(self, i: Interaction, type: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         user_locale = user_locale or i.locale
@@ -769,9 +766,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                 label=text_map.get(318, i.locale, user_locale), value=8 if max == 3 else 9))
             await GeneralPaginator(i, embeds, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(312, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(embeded=True, edit_original_message=True)
 
-    @app_commands.command(name='activity歷來活動', description='查看原神歷來活動數據')
-    @app_commands.rename(member='其他人', custom_uid='uid')
-    @app_commands.describe(member='查看其他群友的資料', custom_uid='欲查詢玩家的 UID，如果已註冊過則不用填')
+    @app_commands.command(name='activity', description=_('View your past genshin activity stats', hash=459))
+    @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
+    @app_commands.describe(member=_("check other user's data", hash=416), custom_uid=_("The UID of the player you're trying to search with", hash=418))
     async def activity(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
         result, success = await self.genshin_app.get_activities(member.id, custom_uid, i.locale)

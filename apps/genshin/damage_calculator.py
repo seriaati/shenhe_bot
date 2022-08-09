@@ -298,4 +298,4 @@ async def return_damage(i: discord.Interaction, view):
     if character_element in reaction_mode_elements or calculator.infusion_aura in reaction_mode_elements:
         reaction_mode_disabled = False
     view.children[4].disabled = reaction_mode_disabled
-    await i.edit_original_message(embed=embed, view=view)
+    await i.edit_original_response(embed=embed, view=view)
