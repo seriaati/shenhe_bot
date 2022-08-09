@@ -3,7 +3,6 @@ import io
 import random
 from typing import Any, List
 
-import aiosqlite
 import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
@@ -11,6 +10,7 @@ from debug import DefaultView
 from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
                      app_commands)
 from discord.app_commands import Choice
+from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import Button, Select, button
 from utility.paginator import GeneralPaginator
@@ -91,7 +91,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             self.view.tag = self.values[0]
             self.view.stop()
 
-    @app_commands.command(name='sfw正常圖', description='透過選擇標籤來產出不色色的圖片')
+    @app_commands.command(name='sfw', description='透過選擇標籤來產出不色色的圖片')
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 30 張')
     async def sfw(self, i: Interaction, num: int = 1):
@@ -133,7 +133,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             await i.response.defer()
             await i.message.delete()
 
-    @app_commands.command(name='nsfw色圖', description='透過選擇標籤來產出色色的圖片', nsfw=True)
+    @app_commands.command(name='nsfw', description='透過選擇標籤來產出色色的圖片', nsfw=True)
     @app_commands.guild_only()
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')

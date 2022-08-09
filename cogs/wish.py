@@ -15,18 +15,17 @@ from discord.ext import commands
 from UI_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
-
+from discord.app_commands import locale_str as _
 
 class WishCog(commands.GroupCog, name='wish'):
     def __init__(self, bot):
         self.bot = bot
         super().__init__()
 
-    @app_commands.command(name='setkey設置', description='設置原神祈願紀錄')
-    @app_commands.rename(function='功能')
-    @app_commands.describe(function='查看說明或提交連結')
-    @app_commands.choices(function=[Choice(name='查看祈願紀錄的設置方式', value='help'),
-                                    Choice(name='提交連結', value='submit')])
+    @app_commands.command(name='import', description=_("Import your genshin wish history", hash=474))
+    @app_commands.rename(function=_('option', hash=475))
+    @app_commands.choices(function=[Choice(name=_('Tutorial', hash=476), value='help'),
+                                    Choice(name=_('Submit authkey link', hash=477), value='submit')])
     async def set_key(self, i: Interaction, function: str):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == 'help':
@@ -38,18 +37,15 @@ class WishCog(commands.GroupCog, name='wish'):
             await i.response.send_modal(SetAuthKey.Modal(self.bot.db, i.locale, user_locale))
 
     # /wish history
-    @app_commands.command(name='history歷史紀錄', description='祈願歷史紀錄查詢')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
-    async def wish_history(self, i: Interaction, member: Member = None):
-        member = member or i.user
+    @app_commands.command(name='history', description=_('View wish history', hash=478))
+    async def wish_history(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        check, msg = await check_user_wish_data(member.id, i, self.bot.db)
+        check, msg = await check_user_wish_data(i.user.id, i, self.bot.db)
         if not check:
             return await i.response.send_message(embed=msg, ephemeral=True)
 
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (member.id,))
+        await c.execute('SELECT * FROM wish_history WHERE user_id = ?', (i.user.id,))
         user_wish_history = await c.fetchall()
         user_wish_history.sort(key=lambda index: index[3], reverse=True)
 
@@ -81,9 +77,9 @@ class WishCog(commands.GroupCog, name='wish'):
 
         await GeneralPaginator(i, embeds).start(embeded=True)
 
-    @app_commands.command(name='luck歐氣值', description='限定祈願歐氣值分析')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
+    @app_commands.command(name='luck', description=_('Wish luck analysis', hash=479))
+    @app_commands.rename(member=_('user', hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_analysis(self, i: Interaction, member: Member = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -108,9 +104,9 @@ class WishCog(commands.GroupCog, name='wish'):
             372, i.locale, user_locale), icon_url=member.avatar)
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='character角色預測', description='預測抽到角色的機率')
-    @app_commands.rename(num='up角色數量')
-    @app_commands.describe(num='想要抽到幾個5星UP角色?')
+    @app_commands.command(name='character', description=_("Predict the chance of pulling a character", hash=480))
+    @app_commands.rename(num=_('number', hash=481))
+    @app_commands.describe(num=_('How many five star UP characters do you wish to pull?', hash=482))
     async def wish_char(self, i: Interaction, num: int):
         check, embed = await check_user_wish_data(i.user.id, i, self.bot.db)
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -137,9 +133,9 @@ class WishCog(commands.GroupCog, name='wish'):
             386, i.locale, user_locale), icon_url=i.user.avatar)
         await i.response.send_message(embed=embed)
 
-    @app_commands.command(name='weapon武器預測', description='預測抽到想要的UP武器的機率')
-    @app_commands.rename(item_num='up武器數量')
-    @app_commands.describe(item_num='想要抽到幾把自己想要的UP武器?')
+    @app_commands.command(name='weapon', description=_("Predict the chance of pulling a weapon you want", hash=483))
+    @app_commands.rename(item_num=_('number', hash=482))
+    @app_commands.describe(item_num=_('How many five star UP weapons do you wish to pull?', hash=483))
     async def wish_weapon(self, i: Interaction, item_num: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         check, msg = await check_user_wish_data(i.user.id, i, self.bot.db)
@@ -181,9 +177,9 @@ class WishCog(commands.GroupCog, name='wish'):
             393, i.locale, user_locale), icon_url=i.user.avatar)
         await i.edit_original_response(embed=embed, view=None)
 
-    @app_commands.command(name='overview總覽', description='祈願紀錄總覽')
-    @app_commands.rename(member='其他人')
-    @app_commands.describe(member='查看其他群友的資料')
+    @app_commands.command(name='overview', description=_("View you genshin wish overview", hash=484))
+    @app_commands.rename(member=_('user', hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)

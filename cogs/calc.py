@@ -1,15 +1,15 @@
+from apps.genshin.genshin_app import GenshinApp
+from apps.genshin.utils import (check_level_validity, get_character,
+                                get_dummy_client, get_material, get_weapon)
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from discord import Interaction, app_commands
 from discord.app_commands import Choice
+from discord.app_commands import locale_str as _
 from discord.ext import commands
-from apps.genshin.utils import check_level_validity, get_character, get_dummy_client, get_material, get_weapon
-from apps.text_map.convert_locale import to_genshin_py
-from apps.text_map.utils import get_user_locale
-from apps.text_map.text_map_app import text_map
 from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
-from apps.genshin.genshin_app import GenshinApp
-from utility.utils import (default_embed, error_embed)
-
-
+from utility.utils import default_embed, error_embed
 
 class CalcCog(commands.GroupCog, name='calc'):
     def __init__(self, bot: commands.Bot):
@@ -17,10 +17,10 @@ class CalcCog(commands.GroupCog, name='calc'):
         self.bot = bot
         self.genshin_app = GenshinApp(bot.db, bot)
 
-    @app_commands.command(name='character角色', description='計算角色升級所需素材')
-    @app_commands.rename(sync='同步')
-    @app_commands.describe(sync='與遊戲資料同步, 將會自動填入角色及天賦等級')
-    @app_commands.choices(sync=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
+    @app_commands.command(name='character', description=_("Calculate materials needed for upgrading a character", hash=460))
+    @app_commands.rename(sync=_("sync", hash=461))
+    @app_commands.describe(sync=_('sync in-game data to automatically fill in character and talent levels (needs /regsiter)', hash=462))
+    @app_commands.choices(sync=[Choice(name=_('ON', hash=463), value=1), Choice(name=_('OFF', hash=464), value=0)])
     async def calc_characters(self, i: Interaction, sync: int = 0):
         sync = True if sync == 1 else False
         special_talent_characters = [10000041, 10000002]
@@ -51,7 +51,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         embed.set_author(name=text_map.get(
             191, i.locale, user_locale), icon_url=i.user.avatar)
         embed.set_thumbnail(url=get_character(view.character_id)['icon'])
-        
+
         if sync:
             character_level = (await client.get_calculator_characters(query=text_map.get_character_name(int(view.character_id), 'en-US'), sync=True, lang='en-us'))[0].level
             talents = (await client.get_character_details(int(view.character_id))).talents
@@ -113,16 +113,15 @@ class CalcCog(commands.GroupCog, name='calc'):
                               materials, i.locale, user_locale)
         await i.edit_original_response(embed=embed, view=view)
 
-    @app_commands.command(name='weapon武器', description='計算武器所需的素材')
-    @app_commands.rename(types='武器類別', rarities='稀有度')
-    @app_commands.describe(types='要計算的武器的類別', rarities='武器的稀有度')
+    @app_commands.command(name='weapon', description=_('Calcualte materials needed for upgrading a weapon', hash=465))
+    @app_commands.rename(types=_('type', hash=466), rarities=_('rarity', hash=467))
     @app_commands.choices(
         types=[
-            Choice(name='單手劍', value=1),
-            Choice(name='法器', value=10),
-            Choice(name='大劍', value=11),
-            Choice(name='弓箭', value=12),
-            Choice(name='長槍', value=13)],
+            Choice(name=_('sword', hash=468), value=1),
+            Choice(name=_('catalyst', hash=469), value=10),
+            Choice(name=_('claymore', hash=470), value=11),
+            Choice(name=_('bow', hash=471), value=12),
+            Choice(name=_('polearm', hash=472), value=13)],
         rarities=[
             Choice(name='★★★★★', value=5),
             Choice(name='★★★★', value=4),
