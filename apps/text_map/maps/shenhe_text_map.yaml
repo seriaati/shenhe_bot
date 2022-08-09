@@ -53,81 +53,107 @@
 14:
     zh-TW: 目前
     en-US: Current
+    zh-CN: 目前
 15:
     zh-TW: 回復時間
     en-US: Recovery time
+    zh-CN: 回复时间
 16:
     zh-TW: 周本減半次數
     en-US: Resin discounts
+    zh-CN: 周本减半次数
 17:
     zh-TW: 塵歌壺
     en-US: Serenitea Pot
+    zh-CN: 尘歌壶
 18:
     zh-TW: 沒有探索派遣
     en-US: No expeditions found
+    zh-CN: 没有探索派遣
 19:
     zh-TW: 已完成
     en-US: Finished
+    zh-CN: 已完成
 20:
     zh-TW: 探索派遣
     en-US: Expeditions
+    zh-CN: 探索派遣
 21:
     zh-TW: "輸入 `/stuck` 來獲取更多資訊"
     en-US: "`/stuck` for more information"
+    zh-CN: "输入 `/stuck` 来获取更多资讯
 22:
     zh-TW: 資料不公開
     en-US: Data not public
+    zh-CN: 资料不公开
 23:
     zh-TW: 錯誤
     en-US: Error
+    zh-CN: 错误
 24:
     zh-TW: 即時便籤
     en-US: Realtime notes
+    zh-CN: 即时便签
 25:
     zh-TW: 週一
     en-US: Mon.
+    zh-CN: 周一
 26:
     zh-TW: 週二
     en-US: Tue.
+    zh-CN: 周二
 27:
     zh-TW: 週三
     en-US: Wed.
+    zh-CN: 周三
 28:
     zh-TW: 週四
     en-US: Thu.
+    zh-CN: 周四
 29:
     zh-TW: 週五
     en-US: Fri.
+    zh-CN: 周五
 30:
     zh-TW: 週六
     en-US: Sat.
+    zh-CN: 周六
 31:
     zh-TW: 週日
     en-US: Sun.
+    zh-CN: 周日
 32:
     zh-TW: 選擇語言
     en-US: Choose your language
+    zh-CN: 选择语言
 33:
     zh-TW: 語言更改成功
     en-US: Langauge changed
+    zh-CN: 语言更改成功
 34:
     zh-TW: 目前語言
     en-US: Current language
+    zh-CN: 目前语言
 35:
     zh-TW: "輸入 `/register` 來查看設定方式"
     en-US: "`/register` for more information"
+    zh-CN: "输入 `/register` 来查看设定方式"
 36:
     zh-TW: 無效的 cookie
     en-US: Cookie invalid
+    zh-CN: 无效的 cookie
 37:
     zh-TW: 已取消設定帳號
     en-US: Account register cancelled
+    zh-CN: 已取消设定帐号
 38:
     zh-TW: 帳號內沒有任何角色
     en-US: No valid accounts were obtained from the cookie
+    zh-CN: 帐号内没有任何角色
 39:
     zh-TW: 帳號設定成功
     en-US: Account registration successful
+    zh-CN: 帐号设定成功
 40:
     zh-TW: 你已經領取過今天的獎勵了!
     en-US: You have already claimed today's login reward!
