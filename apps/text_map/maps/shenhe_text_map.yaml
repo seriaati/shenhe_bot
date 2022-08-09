@@ -1,27 +1,6 @@
 1:
     zh-TW: 已滿
     en-US: Full
-2:
-    zh-TW: 今天
-    en-US: Today's
-3:
-    zh-TW: 明天
-    en-US: Tomorrow
-4:
-    zh-TW: 剩餘
-    en-US: Remaining
-5:
-    zh-TW: 天
-    en-US: days
-6:
-    zh-TW: 小時
-    en-US: hr
-7:
-    zh-TW: 分
-    en-US: min
-8:
-    zh-TW: 秒
-    en-US: sec
 9:
     zh-TW: 可使用
     en-US: Available
@@ -33,7 +12,7 @@
     en-US: Dailies finished
 12:
     zh-TW: 質變儀剩餘時間
-    en-US: P.T. remainig time
+    en-US: P.T. remaining time
 13:
     zh-TW: 樹脂
     en-US: Resin
@@ -1454,4 +1433,12 @@
 496:
     zh-TW: 管理員用
 497:
+    zh-TW: 原神數據
+498:
+    zh-TW: 查看 profile
+499:
+    zh-TW: 查看所有角色
+500:
+    zh-TW: 即時便籤
+501:
     zh-TW: 更新自身排名

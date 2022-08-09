@@ -42,23 +42,23 @@ class GenshinCog(commands.Cog, name='genshin'):
 
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
-            name='查看 UID',
+            name=_('UID'),
             callback=self.search_uid_ctx_menu
         )
         self.profile_context_menu = app_commands.ContextMenu(
-            name='查看 profile',
+            name=_('Profile', hash=498),
             callback=self.profile_ctx_menu
         )
         self.characters_context_menu = app_commands.ContextMenu(
-            name='查看所有角色',
+            name=_('Characters', hash=499),
             callback=self.characters_ctx_menu
         )
         self.stats_context_menu = app_commands.ContextMenu(
-            name='原神數據',
+            name=_('Stats', hash=497),
             callback=self.stats_ctx_menu
         )
         self.check_context_menu = app_commands.ContextMenu(
-            name='即時便籤',
+            name=_('Real time notes', hash=500),
             callback=self.check_ctx_menu
         )
         self.bot.tree.add_command(self.search_uid_context_menu)
