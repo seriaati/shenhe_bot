@@ -25,7 +25,7 @@ class TextMap():
         text = self.textMap.get(textMapHash)
         if text is None:
             print(f'text map hash not found: {textMapHash}')
-            return textMapHash
+            raise ValueError(textMapHash)
         else:
             locale = user_locale or locale
             if str(locale) not in text:
