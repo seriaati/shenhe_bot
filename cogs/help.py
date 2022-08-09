@@ -1,30 +1,36 @@
-from discord.ui import Select
-from discord import SelectOption, app_commands, Interaction
-from discord.ext import commands
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from debug import DefaultView
+from discord import Interaction, Locale, SelectOption, app_commands
+from discord.app_commands import locale_str as _
+from discord.ext import commands
+from discord.ui import Select
 from utility.utils import default_embed
 
 
 class Dropdown(Select):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, locale: Locale, user_locale: str | None):
         options = [
-            SelectOption(label='原神', description='註冊帳號即可使用',
+            SelectOption(label=text_map.get(487, locale, user_locale),
                          emoji='🌟'),
-            SelectOption(label='原神祈願(需註冊)',
-                         description='需註冊+設置祈願紀錄', emoji='🌠'),
-            SelectOption(label='原神計算',
-                         description='計算原神角色、武器養成素材並加到代辦清單', emoji='<:CALCULATOR:999540912319369227>'),
-            SelectOption(label='代辦清單',
-                         description='整理要打的素材, 乾淨俐落', emoji='✅'),
-            SelectOption(label='二次元圖片系統', description='香香的',
+            SelectOption(label=text_map.get(488, locale, user_locale),
+                         description=text_map.get(489, locale, user_locale),
+                         emoji='🌠'),
+            SelectOption(label=text_map.get(490, locale, user_locale),
+                         description=text_map.get(491, locale, user_locale),
+                         emoji='<:CALCULATOR:999540912319369227>'),
+            SelectOption(label=text_map.get(492, locale, user_locale),
+                         emoji='✅'),
+            SelectOption(label=text_map.get(493, locale, user_locale),
                          emoji='2️⃣'),
-            SelectOption(label='其他', description='其他指令',
+            SelectOption(label=text_map.get(494, locale, user_locale),
                          emoji='❄️'),
         ]
-        super().__init__(placeholder='你想要什麼樣的幫助呢?', options=options)
+        super().__init__(placeholder=text_map.get(495, locale, user_locale), options=options)
         self.bot = bot
 
-    async def callback(self, interaction: Interaction):
+    async def callback(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         cogs = ['genshin', 'wish', 'calc', 'todo', 'waifu', 'others']
         for index, option in enumerate(self.options):
             if option.value == self.values[0]:
@@ -37,27 +43,34 @@ class Dropdown(Select):
         for command in commands:
             if len(command.checks) != 0:
                 continue
+            hash = command._locale_description.extras['hash']
+            value = ''
+            try:
+                value = text_map.get(hash, i.locale, user_locale)
+            except (ValueError, KeyError):
+                value = command.description
             embed.add_field(
-                name=f'`{command.name}`',
-                value=command.description
+                name=f'`/{command.name}`',
+                value=value
             )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await i.response.send_message(embed=embed, ephemeral=True)
 
 
 class DropdownView(DefaultView):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, locale: Locale, user_locale: str | None):
         super().__init__()
-        self.add_item(Dropdown(bot))
+        self.add_item(Dropdown(bot, locale, user_locale))
 
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='help幫助', description='獲得幫助')
-    async def help(self, interaction: Interaction):
-        view = DropdownView(self.bot)
-        await interaction.response.send_message(view=view)
+    @app_commands.command(name='help', description=_("Get an overview of shenhe commands", hash=486))
+    async def help(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        view = DropdownView(self.bot, i.locale, user_locale)
+        await i.response.send_message(view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
