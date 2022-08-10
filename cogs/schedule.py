@@ -1,6 +1,7 @@
 import ast
 import asyncio
 from datetime import datetime, timedelta
+import random
 
 import aiosqlite
 from apps.genshin.genshin_app import GenshinApp
@@ -8,7 +9,7 @@ from apps.genshin.utils import get_character, get_farm_dict, get_material
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Forbidden, Interaction, User, app_commands
+from discord import Forbidden, Game, Interaction, User, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
@@ -25,11 +26,19 @@ class Schedule(commands.Cog):
         self.claim_reward.start()
         self.resin_notification.start()
         self.talent_notification.start()
+        self.change_status.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
         self.resin_notification.cancel()
         self.talent_notification.cancel()
+        self.change_status.cancel()
+
+    @tasks.loop(minutes=10)
+    async def change_status(self):
+        status_list = ['/help', 'discord.gg/ryfamUykRw',
+                       f'in {len(self.bot.guilds)} guilds']
+        await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
@@ -157,6 +166,10 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
+        
+    @change_status.before_loop
+    async def before_check(self):
+        await self.bot.wait_until_ready()
 
     @app_commands.command(name='instantclaim', description=_('Admin usage only', hash=496))
     async def instantclaim(self, i: Interaction):
