@@ -249,102 +249,135 @@
 63:
     zh-TW: 本月共獲得
     en-US: Acquired this month
+    zh-CN: 本月共获得
 64:
     zh-TW: 上個月
     en-US: Last month
+    zh-CN: 上个月
 65:
     zh-TW: 原石收入分類
     en-US: Primogems obtained
+    zh-CN: 原石收入分类
 66:
     zh-TW: 獲取紀錄
     en-US: Diary log
+    zh-CN: 获取记录
 67:
     zh-TW: 點擊下方的按鈕
     en-US: Click the button below
+    zh-CN: 点击下方的按钮
 68:
     zh-TW: 查看本月近 30 筆的原石或摩拉紀錄
     en-US: to view the last 30 primo or mora records
+    zh-CN: 查看本月近 30 笔的原石或摩拉记录
 69:
     zh-TW: 旅行者日記
     en-US: Traveler's Diary
+    zh-CN: 旅行者日记
 70:
     zh-TW: 原石獲取紀錄
     en-US: Primo Log
+    zh-CN: 原石获取记录
 71:
     zh-TW: 原石
     en-US: primos
+    zh-CN: 原石
 72:
     zh-TW: 摩拉獲取紀錄
     en-US: Mora Log
+    zh-CN: 摩拉获取记录
 73:
     zh-TW: 摩拉
     en-US: mora
+    zh-CN: 摩拉
 74:
     zh-TW: "請使用 `/stats` 來刷新資料"
     en-US: "Use the `/stats` command to refresh your stats"
+    zh-CN: “请使用 `/stats` 来刷新资料"
 75:
     zh-TW: "(本指令只顯示第9層以上資料)"
     en-US: "(This command only shows data above floor 9)"
+    zh-CN: “(本指令只显示第9层以上资料)"
 76:
     zh-TW: 找不到深淵資料
     en-US: Spiral abyss data not found
+    zh-CN: 找不到深渊资料
 77:
     zh-TW: 期別
     en-US: Lunar phase
+    zh-CN: 期别
 78:
     zh-TW: 達到
     en-US: Deepest descent
+    zh-CN: 达到
 79:
     zh-TW: 戰績
     en-US: Challenge Summary
+    zh-CN: 战绩
 80:
     zh-TW: 單次最高傷害
     en-US: Strongest single strike
+    zh-CN: 单次最高伤害
 81:
     zh-TW: 最多擊殺
     en-US: Most defeats
+    zh-CN: 最多击杀
 82:
     zh-TW: 最高承傷
     en-US: Most damage taken
+    zh-CN: 最高承伤
 83:
     zh-TW: 最多元素爆發
     en-US: Elemental bursts unleashed
+    zh-CN: 最多元素爆发
 84:
     zh-TW: 最多元素戰技
     en-US: Elemental skills cast
+    zh-CN: 最多元素战技
 85:
     zh-TW: 深淵總覽
     en-US: Spiral Abyss Overview
+    zh-CN: 深渊总览
 86:
     zh-TW: ""
     en-US: Chamber
+    zh-CN: ""
 87:
     zh-TW: 間
     en-US: ""
+    zh-CN: 见
 88:
     zh-TW: "[上半]"
     en-US: "[First Half]"
+    zh-CN: "[上半]"
 89:
     zh-TW: "[下半]"
     en-US: "[Second Half]"
+    zh-CN: "[下半]"
 90:
     zh-TW: "配置#"
     en-US: "Build #"
+    zh-CN: "配置#"
 91:
     zh-TW: 武器
     en-US: Weapon
+    zh-CN: 武器
 92:
     zh-TW: 聖遺物
     en-US: Artifacts
+    zh-CN: 圣遗物
 93:
     zh-TW: 主詞條
     en-US: Main Stats
+    zh-CN: 主词条
 94:
     zh-TW: 天賦
     en-US: Talents
+    zh-CN: 天赋
 95:
     zh-TW: 屬性面板
     en-US: Character Stats
+    zh-CN: 属性面板
 96:
     zh-TW: 來源
     en-US: Source
