@@ -12,6 +12,7 @@ from apps.genshin.utils import (calculate_artifact_score, get_artifact,
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
+from apps.wish.wish_app import get_user_event_wish
 from data.game.elements import elements
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
@@ -21,17 +22,15 @@ from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
-from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
+from enkanetwork import (EnkaNetworkAPI, EnkaNetworkResponse, UIDNotFounded,
+                         VaildateUIDError)
 from enkanetwork.enum import DigitType, EquipmentsType
 from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
                                  Build, CharacterWiki, Diary, EnkaProfile,
                                  EventTypeChooser, ResinNotification,
                                  ShowAllCharacters, TalentNotification)
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           parse_HTML, rank_user)
-
-from cogs.wish import WishCog
+from utility.utils import default_embed, divide_chunks, error_embed, parse_HTML
 
 
 class GenshinCog(commands.Cog, name='genshin'):
@@ -171,7 +170,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         placeholder = text_map.get(142, i.locale, user_locale)
-        await GeneralPaginator(i, result['embeds'], [ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(embeded=True, check=False, ephemeral=ephemeral)
+        await GeneralPaginator(i, result['embeds'], [ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(check=False, ephemeral=ephemeral)
 
     @app_commands.command(name='diary', description=_("View your traveler's diary: primo and mora income (needs /regsiter)", hash=422))
     @app_commands.rename(month=_('month', hash=423), member=_('user', hash=415))
@@ -317,7 +316,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 domain_id, i.locale, user_locale), value=value)
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
+        await GeneralPaginator(i, embeds).start(followup=True)
 
     @app_commands.command(name='build', description=_("View character builds: Talent levels, artifacts, weapons", hash=447))
     async def build(self, i: Interaction):
@@ -534,128 +533,166 @@ class GenshinCog(commands.Cog, name='genshin'):
                     detail_dict[event['ann_id']])[:1021]+'...', inline=False)
                 embeds[event['type']].append(embed)
 
-        await GeneralPaginator(i, embeds[first_id], [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(embeded=True, follow_up=True)
+        await GeneralPaginator(i, embeds[first_id], [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(followup=True)
 
-    @app_commands.command(name='leaderboard', description=_('View different leaderbaords', hash=453))
-    @app_commands.rename(type=_('type', hash=429))
-    @app_commands.choices(type=[Choice(name=_('Achievement leaderboard', hash=453), value=0), Choice(name=_('Artifact substat leaderboard', hash=454), value=1), Choice(name=_('Wish luck leaderboard', hash=455), value=2), Choice(name=_('Update leaderboard position', hash=497), value=3)])
+    @app_commands.command(
+        name='leaderboard',
+        description=_('View different leaderbaords', hash=453))
+    @app_commands.rename(type=_('option', hash=429))
+    @app_commands.choices(type=[
+        Choice(name=_('Achievement leaderboard', hash=453), value=0),
+        Choice(name=_('Artifact substat leaderboard', hash=454), value=1),
+        Choice(name=_('Wish luck leaderboard', hash=455), value=2),
+        Choice(name=_('Update self leaderboard position', hash=501), value=3)])
     async def leaderboard(self, i: Interaction, type: int):
-        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
 
         if type == 0:
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
-            leaderboard.sort(key=lambda index: index[1], reverse=True)
-            user_rank = rank_user(i.user.id, leaderboard)
-            leaderboard = divide_chunks(leaderboard, 10)
-            embeds = []
+            if len(leaderboard) == 0:
+                return await i.response.send_message(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            leaderboard_dict = {}
+            for index, tuple in enumerate(leaderboard):
+                member = i.guild.get_member(tuple[0])
+                if member is not None:
+                    leaderboard_dict[tuple[0]] = tuple[1]
+            leaderboard_dict = dict(
+                sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True))
+
+            leaderboard_str_list = []
             rank = 1
-            for small_leaderboard in leaderboard:
+            user_rank = text_map.get(253, i.locale, user_locale)
+            for user_id, achievement_num in leaderboard_dict.items():
+                member = i.guild.get_member(user_id)
+                if member.id == i.user.id:
+                    user_rank = str(f'#{rank}')
+                leaderboard_str_list.append(
+                    f'{rank}. {member.display_name} - {achievement_num}\n')
+                rank += 1
+            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+
+            embeds = []
+            for str_list in leaderboard_str_list:
                 message = ''
-                for index, tuple in enumerate(small_leaderboard):
-                    member = i.guild.get_member(tuple[0])
-                    if member is None:
-                        continue
-                    message += f'{rank}. {member.display_name} - {tuple[1]}\n'
-                    rank += 1
+                for string in str_list:
+                    message += string
                 embed = default_embed(
-                    f'🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank or text_map.get(253, i.locale, user_locale)})', message)
+                    f'🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
-            try:
-                await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
-            except ValueError:
-                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            await GeneralPaginator(i, embeds).start()
 
         elif type == 1:
             view = ArtifactLeaderboard.View(
                 i.user, self.bot.db, i.locale, user_locale)
-            await i.followup.send(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
+            await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
             await view.wait()
+
             await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
+            if len(leaderboard) == 0:
+                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
             leaderboard.sort(key=lambda index: float(
                 str(index[5]).replace('%', '')), reverse=True)
-            user_rank = rank_user(i.user.id, leaderboard)
-            leaderboard = divide_chunks(leaderboard, 10)
+
+            leaderboard_str_list = []
             rank = 1
+            user_rank = text_map.get(253, i.locale, user_locale)
+            for index, tuple in enumerate(leaderboard):
+                user_id = tuple[0]
+                avatar_id = tuple[1]
+                artifact_name = tuple[2]
+                equip_type = tuple[3]
+                sub_stat_value = tuple[5]
+                member = i.guild.get_member(user_id)
+                if member.id == i.user.id:
+                    user_rank = str(f'#{rank}')
+                leaderboard_str_list.append(
+                    f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n')
+                rank += 1
+            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+
             embeds = []
-            for small_leaderboard in leaderboard:
+            for str_list in leaderboard_str_list:
                 message = ''
-                for index, tuple in enumerate(small_leaderboard):
-                    user_id = tuple[0]
-                    avatar_id = tuple[1]
-                    artifact_name = tuple[2]
-                    equip_type = tuple[3]
-                    sub_stat_value = tuple[5]
-                    member = i.guild.get_member(user_id)
-                    if member is None:
-                        continue
-                    message += f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
-                    rank += 1
+                for string in str_list:
+                    message += string
                 embed = default_embed(
-                    f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
+                    f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
-            try:
-                await GeneralPaginator(i, embeds, [ArtifactLeaderboard.GoBack(c, text_map.get(282, i.locale, user_locale), self.bot.db)]).start(embeded=True, edit_original_message=True)
-            except ValueError:
-                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            await GeneralPaginator(i, embeds, [ArtifactLeaderboard.GoBack(text_map.get(282, i.locale, user_locale), self.bot.db)]).start(edit=True)
 
         elif type == 2:
-            player = GGanalysislib.PityGacha()
             await c.execute('SELECT DISTINCT user_id FROM wish_history')
-            result = await c.fetchall()
-            data = {}
-            for index, tuple in enumerate(result):
-                get_num, use_pull, left_pull, up_guarantee = await WishCog.char_banner_calc(self, tuple[0], True)
-                if tuple[0] in data:
-                    continue
-                data[tuple[0]] = 100*player.luck_evaluate(
-                    get_num=get_num, use_pull=use_pull, left_pull=left_pull)
-            leaderboard = list(
-                sorted(data.items(), key=lambda item: item[1], reverse=True))
-            user_rank = rank_user(i.user.id, leaderboard)
-            leaderboard = divide_chunks(leaderboard, 10)
-            embeds = []
+            leaderboard = await c.fetchall()
+            if len(leaderboard) == 0:
+                return await i.response.send_message(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            leaderboard_dict = {}
+            for index, tuple in enumerate(leaderboard):
+                member = i.guild.get_member(tuple[0])
+                if member is not None:
+                    get_num, left_pull, use_pull, up_guarantee, up_five_star_num = await get_user_event_wish(member.id, self.bot.db)
+                    player = GGanalysislib.Up5starCharacter()
+                    player_luck = round(100*player.luck_evaluate(
+                        get_num=up_five_star_num,
+                        use_pull=use_pull, left_pull=left_pull), 2)
+                    if player_luck != 0.0:
+                        leaderboard_dict[tuple[0]] = player_luck
+            leaderboard_dict = dict(
+                sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True))
+            if len(leaderboard_dict) == 0:
+                return await i.response.send_message(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            leaderboard_str_list = []
             rank = 1
-            for small_leaderboard in leaderboard:
+            user_rank = text_map.get(253, i.locale, user_locale)
+            for user_id, luck in leaderboard_dict.items():
+                member = i.guild.get_member(user_id)
+                if member.id == i.user.id:
+                    user_rank = str(f'#{rank}')
+                leaderboard_str_list.append(
+                    f'{rank}. {member.display_name} - {luck}%\n')
+                rank += 1
+            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+
+            embeds = []
+            for str_list in leaderboard_str_list:
                 message = ''
-                for index, tuple in enumerate(small_leaderboard):
-                    member = i.guild.get_member(tuple[0])
-                    if member is None:
-                        continue
-                    message += f'{rank}. {member.display_name} - {round(tuple[1], 2)}%\n'
-                    rank += 1
+                for string in str_list:
+                    message += string
                 embed = default_embed(
-                    f'🏆 {text_map.get(257, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
+                    f'🏆 {text_map.get(257, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
-            try:
-                await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
-            except ValueError:
-                await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+
+            await GeneralPaginator(i, embeds).start()
 
         elif type == 3:
+            await i.response.defer(ephemeral=True)
             await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (i.user.id,))
             uid = await c.fetchone()
-            if uid is not None:
-                try:
-                    await self.bot.enka_client.set_language('cht')
-                    data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
-                except:
-                    pass
-                else:
-                    achievement = data.player.achievement
-                    await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
-                    if data.characters is None:
-                        return
-                    for character in data.characters:
-                        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
-                            for substat in artifact.detail.substats:
-                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
-                                sub_stat_value = await c.fetchone()
-                                if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
+            if (uid is None) or (uid[0] is None):
+                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(141, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            try:
+                await self.bot.enka_client.set_language('cht')
+                data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
+            except:
+                return
+            achievement = data.player.achievement
+            await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
+            if data.characters is not None:
+                for character in data.characters:
+                    for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
+                        for substat in artifact.detail.substats:
+                            await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
+                            sub_stat_value = await c.fetchone()
+                            if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
+                                await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
+            await i.followup.send(embed=default_embed().set_author(name=text_map.get(502, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
     @app_commands.command(name='wiki', description=_('View genshin wiki', hash=457))
     @app_commands.rename(type=_('type', hash=429))
@@ -767,7 +804,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 const_count += 1
             options.append(SelectOption(
                 label=text_map.get(318, i.locale, user_locale), value=8 if max == 3 else 9))
-            await GeneralPaginator(i, embeds, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(312, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(embeded=True, edit_original_message=True)
+            await GeneralPaginator(i, embeds, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(312, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(edit=True)
 
     @app_commands.command(name='activity', description=_('View your past genshin activity stats', hash=459))
     @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
@@ -777,7 +814,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.get_activities(member.id, custom_uid, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result).start(embeded=True)
+        await GeneralPaginator(i, result).start()
 
 
 async def setup(bot: commands.Bot) -> None:

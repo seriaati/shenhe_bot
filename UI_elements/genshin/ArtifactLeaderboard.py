@@ -10,7 +10,7 @@ from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed, rank_user)
+from utility.utils import default_embed, divide_chunks, error_embed
 
 
 class View(DefaultView):
@@ -35,7 +35,8 @@ class View(DefaultView):
 
 class SubStatButton(Button):
     def __init__(self, prop_id: str, prop_name: str):
-        super().__init__(label=prop_name, emoji=get_fight_prop(prop_id)['emoji'])
+        super().__init__(label=prop_name,
+                         emoji=get_fight_prop(prop_id)['emoji'])
         self.prop_id = prop_id
 
     async def callback(self, i: Interaction) -> Any:
@@ -45,38 +46,49 @@ class SubStatButton(Button):
 
 
 class GoBack(Button):
-    def __init__(self, c: aiosqlite.Cursor, label: str, db: aiosqlite.Connection):
+    def __init__(self, label: str, db: aiosqlite.Connection):
         super().__init__(label=label, row=2, style=ButtonStyle.green)
-        self.c = c
         self.db = db
 
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.db)
-        view = View(i.user, self.db, i.locale, user_locale)
-        await i.response.edit_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
+        c = await self.db.cursor()
+        view = View(
+            i.user, self.db, i.locale, user_locale)
+        await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
         await view.wait()
-        await self.c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
-        leaderboard = await self.c.fetchall()
+
+        await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
+        leaderboard = await c.fetchall()
+        if len(leaderboard) == 0:
+            return await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         leaderboard.sort(key=lambda index: float(
             str(index[5]).replace('%', '')), reverse=True)
-        user_rank = rank_user(i.user.id, leaderboard)
-        leaderboard = divide_chunks(leaderboard, 10)
+
+        leaderboard_str_list = []
         rank = 1
+        user_rank = text_map.get(253, i.locale, user_locale)
+        for index, tuple in enumerate(leaderboard):
+            user_id = tuple[0]
+            avatar_id = tuple[1]
+            artifact_name = tuple[2]
+            equip_type = tuple[3]
+            sub_stat_value = tuple[5]
+            member = i.guild.get_member(user_id)
+            if member.id == i.user.id:
+                user_rank = str(f'#{rank}')
+            leaderboard_str_list.append(
+                f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n')
+            rank += 1
+        leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+
         embeds = []
-        for small_leaderboard in leaderboard:
+        for str_list in leaderboard_str_list:
             message = ''
-            for index, tuple in enumerate(small_leaderboard):
-                user_id = tuple[0]
-                avatar_id = tuple[1]
-                artifact_name = tuple[2]
-                equip_type = tuple[3]
-                sub_stat_value = tuple[5]
-                member = i.guild.get_member(user_id)
-                if member is None:
-                    continue
-                message += f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} • {sub_stat_value}\n\n'
-                rank += 1
+            for string in str_list:
+                message += string
             embed = default_embed(
-                f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
+                f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
             embeds.append(embed)
-        await GeneralPaginator(i, embeds, [GoBack(self.c, text_map.get(282, i.locale, user_locale), self.db)]).start(edit=True)
+
+        await GeneralPaginator(i, embeds, [GoBack(text_map.get(282, i.locale, user_locale), self.db)]).start(edit=True)
