@@ -539,7 +539,8 @@ class FlowCog(commands.Cog, name='flow'):
                     f"委託名稱: {title}\n"
                     f"委託人: {author.mention} **-{new_flow}** flow幣\n"
                     f"接收人: {confirmer.mention} **+{flow}** flow幣\n{str}")
-            await i.response.send_message(embed=embed)
+            button.disabled = True
+            await i.response.send_message(embed=embed, view=self)
             t = i.guild.get_thread(i.channel.id)
             await t.edit(archived=True)
             await c.execute('DELETE FROM find WHERE msg_id = ?', (i.message.id,))
