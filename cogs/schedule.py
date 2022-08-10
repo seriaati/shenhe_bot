@@ -34,27 +34,33 @@ class Schedule(commands.Cog):
     @tasks.loop(hours=24)
     async def claim_reward(self):
         log(True, False, 'Claim Reward', 'Start')
-        count = 0
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id FROM genshin_accounts')
-        users = await c.fetchall()
-        for index, tuple in enumerate(users):
-            user_id = tuple[0]
-            client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
-            client.lang = to_genshin_py(user_locale) or 'ja-jp'
-            try:
-                await client.claim_daily_reward()
-            except genshin.errors.AlreadyClaimed:
-                count += 1
-            except genshin.errors.InvalidCookies:
-                await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            except:
-                continue
-            else:
-                count += 1
-            await asyncio.sleep(3.0)
-        await self.bot.db.commit()
-        log(True, False, 'Claim Reward', f'Ended, {count} success')
+        try:
+            count = 0
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT user_id FROM genshin_accounts')
+            users = await c.fetchall()
+            for index, tuple in enumerate(users):
+                user_id = tuple[0]
+                client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
+                client.lang = to_genshin_py(user_locale) or 'ja-jp'
+                try:
+                    await client.claim_daily_reward()
+                except genshin.errors.AlreadyClaimed:
+                    count += 1
+                except genshin.errors.InvalidCookies:
+                    await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
+                except:
+                    continue
+                else:
+                    count += 1
+                await asyncio.sleep(3.0)
+            await self.bot.db.commit()
+        except Exception as e:
+            log(True, True, 'Claim Reward', f'Failed')
+            seria = self.bot.get_user(410036441129943050)
+            await seria.send(embed=default_embed(message=f'```py\n{e}\n```').set_author(name='Reward claiming is having some isssues', icon_url=seria.avatar))
+        else:
+            log(True, False, 'Claim Reward', f'Ended, {count} success')
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
