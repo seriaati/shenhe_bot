@@ -1,10 +1,11 @@
 __all__ = ['GeneralPaginator']
 
 
-from discord import Embed, Interaction, SelectOption, User, ButtonStyle
+from discord import Interaction, SelectOption, User, ButtonStyle
 from discord.ui import Select, button, Button, View
 from typing import Optional, List, Union
 from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
 
 from utility.utils import error_embed
 
