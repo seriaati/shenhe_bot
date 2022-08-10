@@ -90,6 +90,7 @@ class GoBack(Button):
             for index in range(0, 6):
                 self.view.add_item(ElementButton(
                     element_names[index], element_emojis[index], index//3))
+            await i.response.edit_message(view=self.view)
         elif self.place_to_go_back == 'character':
             await element_button_callback(i, self.element, self.view)
 
