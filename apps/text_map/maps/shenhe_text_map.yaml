@@ -1440,3 +1440,8 @@
     zh-TW: 查看所有角色
 500:
     zh-TW: 即時便籤
+501:
+    zh-TW: 更新自身排名
+502:
+    zh-TW: 排名更新成功
+    en-US: Leaderboard position updated

@@ -46,17 +46,6 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 
-def rank_user(user_id: int, leaderboard: List[Tuple]):
-    interaction_user_rank = None
-    rank = 1
-    for index, tuple in enumerate(leaderboard):
-        if tuple[0] == user_id:
-            interaction_user_rank = rank
-            break
-        rank += 1
-    return interaction_user_rank
-
-
 def parse_HTML(HTML_string: str):
     HTML_string = HTML_string.replace('\\n', '\n')
     # replace tags with style attributes

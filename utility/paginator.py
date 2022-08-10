@@ -9,11 +9,10 @@ from utility.utils import error_embed
 
 
 class _view(View):
-    def __init__(self, author: User, pages: List[SelectOption], embeded: bool, check: bool = True):
+    def __init__(self, author: User, pages: List[SelectOption], check: bool = True):
         super().__init__(timeout=None)
         self.author = author
         self.pages = pages
-        self.embeded = embeded
         self.check = check
 
         self.current_page = 0
@@ -29,8 +28,7 @@ class _view(View):
         self.next.disabled = (self.current_page + 1 == len(self.pages))
         self.previous.disabled = (self.current_page <= 0)
 
-        kwargs = {'content': self.pages[self.current_page]} if not (
-            self.embeded) else {'embed': self.pages[self.current_page]}
+        kwargs = {'embed': self.pages[self.current_page]}
         kwargs['view'] = self
 
         await interaction.response.edit_message(**kwargs)
@@ -66,11 +64,11 @@ class GeneralPaginator:
         self.interaction = interaction
         self.pages = pages
 
-    async def start(self, embeded: Optional[bool] = False, edit_original_message: bool = False, follow_up: bool = False, check: bool = True, ephemeral: bool = False) -> None:
+    async def start(self, edit: bool = False, followup: bool = False, check: bool = True, ephemeral: bool = False) -> None:
         if not (self.pages):
             raise ValueError("Missing pages")
 
-        view = _view(self.interaction.user, self.pages, embeded, check)
+        view = _view(self.interaction.user, self.pages, check)
 
         view.previous.disabled = True if (view.current_page <= 0) else False
         view.next.disabled = True if (
@@ -80,15 +78,14 @@ class GeneralPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
-        kwargs = {'content': self.pages[view.current_page]} if not (
-            embeded) else {'embed': self.pages[view.current_page]}
+        kwargs = {'embed': self.pages[view.current_page]}
         kwargs['view'] = view
-        if not edit_original_message:
+        if not edit:
             kwargs['ephemeral'] = ephemeral
 
-        if edit_original_message:
+        if edit:
             await self.interaction.edit_original_response(**kwargs)
-        elif follow_up:
+        elif followup:
             await self.interaction.followup.send(**kwargs)
         else:
             await self.interaction.response.send_message(**kwargs)
