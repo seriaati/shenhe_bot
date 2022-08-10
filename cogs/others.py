@@ -69,15 +69,6 @@ class OthersCog(commands.Cog, name='others'):
         else:
             return await i.response.send_message(embed=default_embed(message=module_name).set_author(name='重整成功', icon_url=i.user.avatar), ephemeral=True)
 
-    @app_commands.command(name='sync', description=_('Admin usage only', hash=496))
-    @app_commands.guild_only()
-    async def sync(self, i: Interaction):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
-        await i.response.defer(ephemeral=True)
-        await self.bot.tree.sync()
-        await i.followup.send(embed=default_embed().set_author(name='同步成功', icon_url=i.user.avatar), ephemeral=True)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))
