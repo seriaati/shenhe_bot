@@ -114,7 +114,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                 embed.set_image(url=(hmtai.get(lib, tag)))
                 embed.set_footer(text=f'API: {lib}')
                 embeds.append(embed)
-            await GeneralPaginator(i, embeds).start(embeded=True, edit_original_message=True)
+            await GeneralPaginator(i, embeds).start(edit=True)
 
     class DeleteImageView(DefaultView):
         def __init__(self, author: Member):
@@ -239,7 +239,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                         embed.set_image(url=image)
                         embed.set_footer(text=f'第 {count}/30 位老婆')
                         embeds.append(embed)
-                    await GeneralPaginator(i, embeds).start(embeded=True, follow_up=True)
+                    await GeneralPaginator(i, embeds).start(followup=True)
 
 
 async def setup(bot: commands.Bot) -> None:

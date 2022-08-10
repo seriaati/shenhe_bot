@@ -79,4 +79,4 @@ class GoBack(Button):
             embed = default_embed(
                 f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: #{user_rank})', message)
             embeds.append(embed)
-        await GeneralPaginator(i, embeds, [GoBack(self.c, text_map.get(282, i.locale, user_locale), self.db)]).start(embeded=True, edit_original_message=True)
+        await GeneralPaginator(i, embeds, [GoBack(self.c, text_map.get(282, i.locale, user_locale), self.db)]).start(edit=True)
