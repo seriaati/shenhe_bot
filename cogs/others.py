@@ -7,7 +7,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import Interaction, app_commands
 from discord.ext import commands
-from UI_elements.others import ChangeLang
+from UI_elements.others import ChangeLang, Roles
 from utility.utils import default_embed, error_embed
 from discord.app_commands import locale_str as _
 
@@ -69,6 +69,14 @@ class OthersCog(commands.Cog, name='others'):
         else:
             return await i.response.send_message(embed=default_embed(message=module_name).set_author(name='重整成功', icon_url=i.user.avatar), ephemeral=True)
 
+    @app_commands.command(name='roles')
+    async def roles(self, i: Interaction):
+        if i.user.id != 410036441129943050:
+            return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
+        role = i.guild.get_role(1006906916678684752)
+        embed = default_embed('身份組 Roles', f'{role.mention}: {len(role.members)}')
+        await i.response.defer(ephemeral=True)
+        await i.channel.send(embed=embed, view=Roles.View())
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))

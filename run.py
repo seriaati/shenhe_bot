@@ -16,6 +16,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
+from UI_elements.others import Roles
 
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -83,6 +84,7 @@ class ShenheBot(commands.Bot):
             await self.load_extension(f'cogs.{cog_name}')
         # load persistent views
         self.add_view(DebugView())
+        self.add_view(Roles.View())
 
     async def on_ready(self):
         await self.change_presence(
