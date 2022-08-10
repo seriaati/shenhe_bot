@@ -120,6 +120,9 @@ class MusicCog(commands.GroupCog, name='music'):
                     embed.set_image(url=vc.queue[0].thumb)
                     return await i.followup.send(embed=embed)
                 else:
+                    if '&t=' in search:
+                        position = re.search('&t=', search).start()
+                        search = search[:position]
                     try:
                         track = await wavelink.YouTubeTrack.search(query=search, return_first=True)
                     except Exception as e:
