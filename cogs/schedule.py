@@ -8,7 +8,8 @@ from apps.genshin.utils import get_character, get_farm_dict, get_material
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Forbidden, User
+from discord import Forbidden, Interaction, User, app_commands
+from discord.app_commands import locale_str as _
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
 from utility.utils import default_embed, log
@@ -150,6 +151,12 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
+
+    @app_commands.command(name='instantclaim', description=_('Admin usage only', hash=496))
+    async def instantclaim(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
+        await self.claim_reward()
+        await i.followup.send(embed=default_embed().set_author(name='claimed', icon_url=i.user.avatar), ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
