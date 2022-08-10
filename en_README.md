@@ -17,6 +17,11 @@ This is the public branch of shenhe_bot, it removes all the customized feature f
 <h2 align="center">Contributing to Translations</h2>
 <p align="left"> Help translate shenhe to the language you know! If you're interested, feel free to find me on discord! (seria#5334) </p>
 
+<h2 align="center">Translators</h2>
+Huge thank-you to these people that helped the translation of shenhe: <br>
+ • 简体中文 (Simplified Chinese) - <a href='https://github.com/dragon009ak'> @dragon009ak </a> <br>
+ • 日本語 (Japanese) - <a href='https://github.com/Tedd157'> @Tedd157 </a>
+
 <h2 align="center">Feature Highlights</h2>
 <p align="left">
  - Resin notification<br>
