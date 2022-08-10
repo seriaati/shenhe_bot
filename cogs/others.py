@@ -69,7 +69,7 @@ class OthersCog(commands.Cog, name='others'):
         else:
             return await i.response.send_message(embed=default_embed(message=module_name).set_author(name='重整成功', icon_url=i.user.avatar), ephemeral=True)
 
-    @app_commands.command(name='roles')
+    @app_commands.command(name='roles', description=_('Admin usage only', hash=496))
     async def roles(self, i: Interaction):
         if i.user.id != 410036441129943050:
             return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
