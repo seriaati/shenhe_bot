@@ -28,13 +28,13 @@ load_dotenv()
 user_name = getpass.getuser()
 
 if user_name == 'seria':
-    token = os.getenv('DEV_TOKEN')
+    token = os.getenv('YAE_TOKEN')
     debug = True
-    application_id = os.getenv('DEV_APP_ID')
+    application_id = os.getenv('YAE_APP_ID')
 else:
-    token = os.getenv('MAIN_TOKEN')
+    token = os.getenv('SHENHE_BOT_TOKEN')
     debug = False
-    application_id = os.getenv('MAIN_APP_ID')
+    application_id = os.getenv('SHENHE_BOT_APP_ID')
 
 prefix = ['?']
 intents = Intents.default()
