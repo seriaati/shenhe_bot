@@ -98,5 +98,3 @@ class GeneralPaginator:
             await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
-
-        await self.interaction.delete_original_response()
