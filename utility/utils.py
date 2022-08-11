@@ -8,7 +8,9 @@ from discord.utils import format_dt
 
 
 def default_embed(title: str = '', message: str = ''):
-    return discord.Embed(title=title, description=message, color=0xa68bd3)
+    embed = discord.Embed(title=title, description=message, color=0xa68bd3)
+    embed.set_footer('/version 來查看最近更新 (view latest updates)')
+    return embed
 
 
 def error_embed(title: str = '', message: str = ''):
