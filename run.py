@@ -15,6 +15,7 @@ from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
+from utility import paginator
 from pyppeteer import launch
 from UI_elements.others import Roles
 
@@ -85,6 +86,7 @@ class ShenheBot(commands.Bot):
         # load persistent views
         self.add_view(DebugView())
         self.add_view(Roles.View())
+        self.add_view(paginator._view(None, None, self.db))
 
     async def on_ready(self):
         await self.change_presence(
