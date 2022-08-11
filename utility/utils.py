@@ -14,7 +14,9 @@ def default_embed(title: str = '', message: str = ''):
 
 
 def error_embed(title: str = '', message: str = ''):
-    return discord.Embed(title=title, description=message, color=0xfc5165)
+    embed = discord.Embed(title=title, description=message, color=0xfc5165)
+    embed.set_footer('discord: seria#5334, 你也可以私訊我 (you can also DM me)')
+    return embed
 
 
 def log(is_system: bool, is_error: bool, log_type: str, log_message: str, record: bool = True):
