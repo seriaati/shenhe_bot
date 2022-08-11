@@ -6,10 +6,13 @@ from apps.text_map.convert_locale import to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import Interaction, app_commands
+from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.others import ChangeLang, Roles
 from utility.utils import default_embed, error_embed
-from discord.app_commands import locale_str as _
+from utility.paginator import GeneralPaginator
+from data.update.change_log import change_log
+from discord.ui import Button
 
 
 class OthersCog(commands.Cog, name='others'):
@@ -74,9 +77,24 @@ class OthersCog(commands.Cog, name='others'):
         if i.user.id != 410036441129943050:
             return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
         role = i.guild.get_role(1006906916678684752)
-        embed = default_embed('身份組 Roles', f'{role.mention}: {len(role.members)}')
+        embed = default_embed(
+            '身份組 Roles', f'{role.mention}: {len(role.members)}')
         await i.response.defer(ephemeral=True)
         await i.channel.send(embed=embed, view=Roles.View())
+
+    @app_commands.command(name='version', description=_("View shenhe's change logs", hash=503))
+    async def version(self, i: Interaction):
+        embeds = []
+        discord = Button(label='discord', url='https://discord.gg/ryfamUykRw', row=2)
+        github = Button(label='github', url='https://github.com/seriaati/shenhe_bot', row=2)
+        seria = self.bot.get_user(410036441129943050)
+        for version, log in change_log.items():
+            embed = default_embed(version, log)
+            embed.set_thumbnail(url=self.bot.user.avatar)
+            embed.set_footer(text='made by seria#5334', icon_url=seria.avatar)
+            embeds.append(embed)
+            
+        await GeneralPaginator(i, embeds, self.bot.db, [discord, github]).start(check=False)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))
