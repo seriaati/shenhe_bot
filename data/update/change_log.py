@@ -9,7 +9,7 @@ change_log = {
         "• 修復 `/build` 不能返回元素選擇的問題 [#89](https://github.com/seriaati/shenhe_bot/issues/89)",
     'v4.6.0':
         "• 修復 `/wish setkey` 設置失敗時沒有跳出 function 的問題\n"
-        "• 修復 `/profile` 語言部份的問題 [#77](https://github.com/seriaati/shenhe_bot/issues/77)"
+        "• 修復 `/profile` 語言部份的問題 [#77](https://github.com/seriaati/shenhe_bot/issues/77)\n"
         "• 修復 `/build` 風屬性無法顯示的問題 [#81](https://github.com/seriaati/shenhe_bot/issues/81)\n"
         "• `/wish` 祈願系列指令改寫+本地化 [#76](https://github.com/seriaati/shenhe_bot/pull/76)\n"
         "• 改進了 `/events` [#84](https://github.com/seriaati/shenhe_bot/pull/84)"
