@@ -65,7 +65,7 @@ class ShenheBot(commands.Bot):
         # bot variables
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('shenhe.db')
-        self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_bot/main.db")
+        self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_main/main.db")
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI()
