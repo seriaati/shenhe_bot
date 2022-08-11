@@ -26,6 +26,4 @@ class ChangeLogButton(Button):
             label='discord', url='https://discord.gg/ryfamUykRw', row=2)
         github = Button(
             label='github', url='https://github.com/seriaati/shenhe_bot', row=2)
-        embeds = self.view.embeds
-        embeds.pop(0)
-        await GeneralPaginator(i, embeds, self.view.db, [discord, github]).start(ephemeral=True)
+        await GeneralPaginator(i, self.view.embeds[1:], self.view.db, [discord, github]).start(ephemeral=True)
