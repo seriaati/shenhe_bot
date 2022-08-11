@@ -86,9 +86,9 @@ class OthersCog(commands.Cog, name='others'):
         embeds = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         discord = Button(
-            label='discord', url='https://discord.gg/ryfamUykRw', row=2)
+            label='Discord', url='https://discord.gg/ryfamUykRw', row=2)
         github = Button(
-            label='github', url='https://github.com/seriaati/shenhe_bot', row=2)
+            label='Github', url='https://github.com/seriaati/shenhe_bot', row=2)
         seria = self.bot.get_user(410036441129943050)
         for version, log in change_log.items():
             embed = default_embed(version, log)
