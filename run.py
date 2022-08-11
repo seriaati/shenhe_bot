@@ -15,13 +15,13 @@ from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
-from utility import paginator
 from pyppeteer import launch
-from UI_elements.others import Roles
 
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DebugView
+from UI_elements.others import ChangeLog, Roles
+from utility import paginator
 from utility.utils import error_embed, log
 
 load_dotenv()
@@ -87,6 +87,7 @@ class ShenheBot(commands.Bot):
         self.add_view(DebugView())
         self.add_view(Roles.View())
         self.add_view(paginator._view(None, None, self.db))
+        self.add_view(ChangeLog.View(self.db, None, None, None))
 
     async def on_ready(self):
         await self.change_presence(
