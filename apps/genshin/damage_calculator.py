@@ -59,8 +59,9 @@ class DamageCalculator:
         if self.current_character.id == 10000060 and self.current_character.constellations_unlocked == 6:  # yelan is C6
             # don't calculate normal attack damage
             talents_to_calculate.remove('Normal Atk.')
-        browser = await launch({'headless': False, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
-        page = await browser.newPage()
+
+        # browser = await launch({'headless': False, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
+        page = await self.browser.newPage()
         await page.setViewport({"width": 1440, "height": 900})
         await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
         # click the upload button
@@ -117,7 +118,7 @@ class DamageCalculator:
                 result[talent_name].append(damage)
                 index += 1
 
-        # await page.close()
+        await page.close()
         return result, description, effect
 
     async def convert_to_GOOD_format(self) -> Tuple[str, str, str]:
@@ -226,7 +227,7 @@ class DamageCalculator:
                     }
                 )
         good_json = json.dumps(good_dict)
-        pprint(good_dict)
+        # pprint(good_dict)
         return good_json, description, effect
 
     def parse_damage_embed(self, damage_dict: dict, description: str, effect: str, member: discord.Member) -> discord.Embed:
