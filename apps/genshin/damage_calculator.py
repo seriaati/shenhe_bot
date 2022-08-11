@@ -1,6 +1,6 @@
 import json
-import re
-from typing import Dict, Tuple
+from pprint import pprint
+from typing import Dict, List, Tuple
 
 import discord
 import yaml
@@ -8,18 +8,19 @@ from apps.genshin.utils import get_character
 from apps.text_map.convert_locale import to_go
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.GO_modes import (hit_mode_texts, hit_modes, infusion_aura_texts,
-                                infusion_auras, reaction_mode_texts,
-                                reaction_modes)
+from data.game.GO_modes import (hit_mode_texts, infusion_aura_texts,
+                                reaction_mode_texts)
 from data.game.good_stats import good_stats
-from enkanetwork import EnkaNetworkResponse, model
+from enkanetwork import EnkaNetworkResponse
 from enkanetwork.enum import EquipmentsType
+from enkanetwork.model.character import CharacterInfo
+from pyppeteer import launch
 from pyppeteer.browser import Browser
 from utility.utils import default_embed, log, split_text_and_number
 
 
 class DamageCalculator:
-    def __init__(self, character_name: str, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: list = []):
+    def __init__(self, character_name: str, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: List[str] = []):
         self.data = data
         self.browser = browser
         self.character_id = character_id
@@ -58,8 +59,8 @@ class DamageCalculator:
         if self.current_character.id == 10000060 and self.current_character.constellations_unlocked == 6:  # yelan is C6
             # don't calculate normal attack damage
             talents_to_calculate.remove('Normal Atk.')
-
-        page = await self.browser.newPage()
+        browser = await launch({'headless': False, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
+        page = await browser.newPage()
         await page.setViewport({"width": 1440, "height": 900})
         await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
         # click the upload button
@@ -116,7 +117,7 @@ class DamageCalculator:
                 result[talent_name].append(damage)
                 index += 1
 
-        await page.close()
+        # await page.close()
         return result, description, effect
 
     async def convert_to_GOOD_format(self) -> Tuple[str, str, str]:
@@ -140,28 +141,37 @@ class DamageCalculator:
             }
             # produce character team
             character_team = ['', '', '']
-            if str(character.id) == self.character_id:
+            if character.id == self.current_character.id:
                 for index, member_id in enumerate(self.team):
-                    character_team[index] = get_character(
-                        member_id)['eng'].replace(' ', '')
+                    character_team[index] = text_map.get_character_name(
+                        member_id, 'en-US').replace(' ', '')
             elif str(character.id) in self.team:
                 for index, member_id in enumerate(self.team):
                     if member_id == str(character.id):
                         continue
-                    character_team[index] = get_character(
-                        member_id)['eng'].replace(' ', '')
+                    character_team[index] = text_map.get_character_name(
+                        member_id, 'en-US').replace(' ', '')
                 for index, member_id in enumerate(character_team):
                     if member_id == '':
-                        character_team[index] = get_character(
-                            self.character_id)['eng'].replace(' ', '')
+                        character_team[index] = text_map.get_character_name(
+                            self.current_character.id, 'en-US').replace(' ', '')
                         break
             character_team.sort(reverse=True)
 
             # get conditionals
-            conditional = conditionals.get(character)[0]
+            conditional = conditionals.get(
+                character, self.current_character)[0]
             if (str(character.id) == self.character_id) or (str(character.id) in self.team):
-                description += conditionals.get(character)[1]
-                effect += conditionals.get(character)[2]
+                description += conditionals.get(character,
+                                                self.current_character)[1]
+                effect += conditionals.get(character,
+                                           self.current_character)[2]
+
+            # team conditionals
+            team_conditional = {}
+            if character.id == self.current_character.id:
+                team_conditional = conditionals.get_team(
+                    self.team, self.data.characters, self.current_character)
 
             good_dict['characters'].append(
                 {
@@ -177,7 +187,9 @@ class DamageCalculator:
                     'infusionAura': self.infusion_aura,
                     'constellation': character.constellations_unlocked,
                     'team': character_team,
-                    'compareData': False
+                    'teamConditional': team_conditional,
+                    'compareData': False,
+                    'customMultiTarget': []
                 }
             )
             weapon = character.equipments[-1]
@@ -189,7 +201,7 @@ class DamageCalculator:
                     'level': weapon.level,
                     'ascension': weapon.ascension,
                     'refinement': weapon.refinement,
-                    'location': (get_character(character.id)['eng']).replace(' ', ''),
+                    'location': (text_map.get_character_name(character.id, 'en-US')).replace(' ', ''),
                     'lock': True
                 }
             )
@@ -208,12 +220,13 @@ class DamageCalculator:
                         'slotKey': 'plume' if artifact.detail.artifact_type.lower() == 'feather' else artifact.detail.artifact_type.lower(),
                         'mainStatKey': good_stats.get(artifact.detail.mainstats.prop_id),
                         'substats': substats,
-                        'location': (get_character(character.id)['eng']).replace(' ', ''),
+                        'location': (text_map.get_character_name(character.id, 'en-US')).replace(' ', ''),
                         'exclude': False,
                         'lock': True
                     }
                 )
         good_json = json.dumps(good_dict)
+        pprint(good_dict)
         return good_json, description, effect
 
     def parse_damage_embed(self, damage_dict: dict, description: str, effect: str, member: discord.Member) -> discord.Embed:
@@ -266,16 +279,31 @@ class Conditional():
         with open(f'data/game/conditionals.yaml', 'r', encoding='utf-8') as f:
             self.conditionals = yaml.full_load(f)
 
-    def get(self, character: model.character) -> Tuple[Dict, str, str]:
+    def get_team(self, team: List[str], characters: List[CharacterInfo], current_character: CharacterInfo):
+        result = {}
+        team_characters: List[CharacterInfo] = []
+        for character in characters:
+            if str(character.id) in team:
+                team_characters.append(character)
+        for character in team_characters:
+            result[character.name.replace(' ', '')] = {
+                character.name.replace(' ', ''):
+                    self.get(character, current_character)[0]}
+
+        return result
+
+    def get(self, character: CharacterInfo, current_character: CharacterInfo) -> Tuple[Dict, str, str]:
         result = {}
         description_str = ''
         effect_str = ''
         for conditional in self.conditionals:
             if conditional['name'] == character.name.replace(' ', ''):
                 if (conditional['ascension'] is not None and int(character.ascension) >= int(conditional['ascension'])) or (conditional['constellation'] is not None and int(character.constellations_unlocked) >= int(conditional['constellation'])) or (conditional['ascension'] is None and conditional['constellation'] is None):
-                    result[conditional['key']] = conditional['value']
+                    result[conditional['key'].replace('custom_element', str(current_character.element.name).lower(
+                    ))] = conditional['value'].replace('custom_element', str(current_character.element.name).lower())
                     description_str += f'• {conditional["description"]}\n'
                     effect_str += f"• {conditional['effect']}\n"
+
         return result, description_str, effect_str
 
 
@@ -293,7 +321,7 @@ async def return_damage(i: discord.Interaction, view):
     for item in view.children:
         item.disabled = False
     reaction_mode_disabled = True
-    character_element = str(calculator.current_character.element)
+    character_element = str(calculator.current_character.element.name)
     reaction_mode_elements = ['Pyro', 'Cryo', 'Hydro', 'pyro', 'cryo']
     if character_element in reaction_mode_elements or calculator.infusion_aura in reaction_mode_elements:
         reaction_mode_disabled = False

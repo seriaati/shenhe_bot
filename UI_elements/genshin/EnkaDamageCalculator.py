@@ -26,7 +26,7 @@ class View(DefaultView):
         # producing select options
         reactionMode_options = [SelectOption(
             label=text_map.get(331, locale, user_locale), value='none')]
-        element = str(self.calculator.current_character.element)
+        element = str(self.calculator.current_character.element.name)
         if element == 'Cryo' or self.calculator.infusion_aura == 'cryo':
             reactionMode_options.append(
                 SelectOption(label=text_map.get(332, locale, user_locale), value='melt'))
