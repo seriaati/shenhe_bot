@@ -23,7 +23,7 @@ class ChangeLogButton(Button):
     async def callback(self, i: Interaction) -> Any:
         self.view: View
         discord = Button(
-            label='discord', url='https://discord.gg/ryfamUykRw', row=2)
+            label='Discord', url='https://discord.gg/ryfamUykRw', row=2)
         github = Button(
-            label='github', url='https://github.com/seriaati/shenhe_bot', row=2)
+            label='Github', url='https://github.com/seriaati/shenhe_bot', row=2)
         await GeneralPaginator(i, self.view.embeds[1:], self.view.db, [discord, github]).start(ephemeral=True)
