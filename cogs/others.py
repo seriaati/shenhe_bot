@@ -87,7 +87,7 @@ class OthersCog(commands.Cog, name='others'):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         seria = self.bot.get_user(410036441129943050)
         locale = user_locale or i.locale
-        if str(locale) == 'zh-TW' or 'zh-CN':
+        if str(locale) == 'zh-TW' or str(locale) == 'zh-CN':
             display_change_log = change_log
         else:
             display_change_log = change_log_en
@@ -97,8 +97,11 @@ class OthersCog(commands.Cog, name='others'):
             embed.set_footer(text=text_map.get(
                 504, i.locale, user_locale), icon_url=seria.avatar)
             embeds.append(embed)
-        view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale) if i.channel.id != 965964989875757156 else None
-        await i.response.send_message(embed=embeds[0], view=view)
+        if i.channel.id != 965964989875757156:
+            view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale)
+            await i.response.send_message(embed=embeds[0], view=view)
+        else:
+            await i.response.send_message(embed=embeds[0])
 
 
 async def setup(bot: commands.Bot) -> None:
