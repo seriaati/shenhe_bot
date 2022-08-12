@@ -20,7 +20,7 @@ from utility.utils import default_embed, log, split_text_and_number
 
 
 class DamageCalculator:
-    def __init__(self, character_name: str, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: List[str] = []):
+    def __init__(self, character_name: str, data: EnkaNetworkResponse, browser: Browser, character_id: str, locale: discord.Locale | str, hit_mode: str, member: discord.Member, reaction_mode: str = '', infusion_aura: str = '', team: List[str] = [], debug: bool = False):
         self.data = data
         self.browser = browser
         self.character_id = character_id
@@ -32,6 +32,7 @@ class DamageCalculator:
         self.team = team
         self.character_name = character_name
         self.current_character = None
+        self.debug = debug
         for character in data.characters:
             if str(character.id) == character_id:
                 self.current_character = character
@@ -39,9 +40,10 @@ class DamageCalculator:
 
     async def run(self) -> discord.Embed:
         damage_dict, description, effect = await self.calculate_damage()
-        embed = self.parse_damage_embed(
-            damage_dict, description, effect, self.member)
-        return embed
+        if not self.debug:
+            embed = self.parse_damage_embed(
+                damage_dict, description, effect, self.member)
+            return embed
 
     async def calculate_damage(self) -> Tuple[Dict, str, str]:
         character_name = self.current_character.name.replace(' ', '')
@@ -117,8 +119,8 @@ class DamageCalculator:
                 damage = await (await damage.getProperty("textContent")).jsonValue()
                 result[talent_name].append(damage)
                 index += 1
-
-        await page.close()
+        if not self.debug:
+            await page.close()
         return result, description, effect
 
     async def convert_to_GOOD_format(self) -> Tuple[str, str, str]:
@@ -160,19 +162,24 @@ class DamageCalculator:
             character_team.sort(reverse=True)
 
             # get conditionals
-            conditional = conditionals.get(
-                character, self.current_character)[0]
+            conditional, desc, eff = conditionals.get(
+                character, self.current_character)
             if (str(character.id) == self.character_id) or (str(character.id) in self.team):
-                description += conditionals.get(character,
-                                                self.current_character)[1]
-                effect += conditionals.get(character,
-                                           self.current_character)[2]
+                description += desc
+                effect += eff
 
             # team conditionals
             team_conditional = {}
             if character.id == self.current_character.id:
                 team_conditional = conditionals.get_team(
                     self.team, self.data.characters, self.current_character)
+
+            # artifact conditionals
+            artifact_conditional, desc, eff = conditionals.get_artifact(
+                character, self.current_character)
+            if (str(character.id) == self.character_id) or (str(character.id) in self.team):
+                description += desc
+                effect += eff
 
             good_dict['characters'].append(
                 {
@@ -181,7 +188,7 @@ class DamageCalculator:
                     'ascension': character.ascension,
                     'hitMode': self.hit_mode,
                     'reaction': self.reaction_mode,
-                    'conditional': {character.name.replace(' ', ''): conditional},
+                    'conditional': {character.name.replace(' ', ''): conditional} | artifact_conditional,
                     'bonusStats': {},
                     'enemyOverride': {},
                     'talent': talent,
@@ -227,7 +234,8 @@ class DamageCalculator:
                     }
                 )
         good_json = json.dumps(good_dict)
-        # pprint(good_dict)
+        if self.debug:
+            pprint(good_dict)
         return good_json, description, effect
 
     def parse_damage_embed(self, damage_dict: dict, description: str, effect: str, member: discord.Member) -> discord.Embed:
@@ -279,6 +287,8 @@ class Conditional():
     def __init__(self):
         with open(f'data/game/conditionals.yaml', 'r', encoding='utf-8') as f:
             self.conditionals = yaml.full_load(f)
+        with open(f'data/game/artifact_conditionals.yaml', 'r', encoding='utf-8') as f:
+            self.artifact_conditionals = yaml.full_load(f)
 
     def get_team(self, team: List[str], characters: List[CharacterInfo], current_character: CharacterInfo):
         result = {}
@@ -287,11 +297,36 @@ class Conditional():
             if str(character.id) in team:
                 team_characters.append(character)
         for character in team_characters:
-            result[character.name.replace(' ', '')] = {
-                character.name.replace(' ', ''):
-                    self.get(character, current_character)[0]}
+            conditional = self.get(character, current_character)[0]
+            artifact_conditional = self.get_artifact(character, current_character)[0]
+            result[character.name.replace(' ', '')] = {character.name.replace(' ', ''): conditional} | artifact_conditional
 
         return result
+
+    def get_artifact(self, character: CharacterInfo, current_character: CharacterInfo) -> Tuple[Dict[str, Dict[str, str]], str, str]:
+        artifact_count = {}
+        description = ''
+        effect = ''
+        result = {}
+        current_character_element = str(current_character.element.name).lower()
+        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
+            artifact_set_name = artifact.detail.artifact_name_set.replace(
+                "'", '').title().replace(' ', '').replace('-', '')
+            if artifact_set_name not in artifact_count:
+                artifact_count[artifact_set_name] = 0
+            artifact_count[artifact_set_name] += 1
+        for set_name, num in artifact_count.items():
+            if num == 4:
+                for conditional in self.artifact_conditionals:
+                    if conditional['name'] == set_name:
+                        result[conditional['name']] = {
+                            conditional['key'].replace('custom_element', current_character_element): conditional['value'].replace('custom_element', current_character_element)}
+                        description += f'• {conditional["description"]}\n'
+                        effect += f"• {conditional['effect']}\n"
+                        
+        # pprint(result)
+
+        return result, description, effect
 
     def get(self, character: CharacterInfo, current_character: CharacterInfo) -> Tuple[Dict, str, str]:
         result = {}
