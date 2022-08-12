@@ -181,6 +181,12 @@ class DamageCalculator:
                 description += desc
                 effect += eff
 
+            # weapon conditionals
+            weapon_conditional, desc, eff = conditionals.get_weapon(character)
+            if (str(character.id) == self.character_id) or (str(character.id) in self.team):
+                description += desc
+                effect += eff
+
             good_dict['characters'].append(
                 {
                     'key': character.name.replace(' ', ''),
@@ -188,7 +194,7 @@ class DamageCalculator:
                     'ascension': character.ascension,
                     'hitMode': self.hit_mode,
                     'reaction': self.reaction_mode,
-                    'conditional': {character.name.replace(' ', ''): conditional} | artifact_conditional,
+                    'conditional': {character.name.replace(' ', ''): conditional} | artifact_conditional | weapon_conditional,
                     'bonusStats': {},
                     'enemyOverride': {},
                     'talent': talent,
@@ -279,7 +285,6 @@ class DamageCalculator:
             )
         embed.set_author(name=member.display_name, icon_url=member.avatar)
         embed.set_thumbnail(url=get_character(self.character_id)["icon"])
-        embed.set_footer(text=text_map.get(349, self.locale))
         return embed
 
 
@@ -289,6 +294,25 @@ class Conditional():
             self.conditionals = yaml.full_load(f)
         with open(f'data/game/artifact_conditionals.yaml', 'r', encoding='utf-8') as f:
             self.artifact_conditionals = yaml.full_load(f)
+        with open(f'data/game/weapon_conditionals.yaml', 'r', encoding='utf-8') as f:
+            self.weapon_conditionals = yaml.full_load(f)
+
+    def get_weapon(self, character: CharacterInfo):
+        result = {}
+        description = ''
+        effect = ''
+        weapon = character.equipments[-1]
+        weapon_name = 'TheCatch' if weapon.detail.name == '"The Catch"' else weapon.detail.name.replace(
+            "'", '').title().replace(' ', '').replace('-', '')
+        for conditional in self.weapon_conditionals:
+            if conditional['name'] == weapon_name:
+                if weapon_name not in result:
+                    result[weapon_name] = {}
+                result[weapon_name][conditional['key']] = conditional['value']
+                description += f'• {conditional["description"]}\n'
+                effect += f"• {conditional['effect']}\n"
+
+        return result, description, effect
 
     def get_team(self, team: List[str], characters: List[CharacterInfo], current_character: CharacterInfo):
         result = {}
@@ -298,8 +322,11 @@ class Conditional():
                 team_characters.append(character)
         for character in team_characters:
             conditional = self.get(character, current_character)[0]
-            artifact_conditional = self.get_artifact(character, current_character)[0]
-            result[character.name.replace(' ', '')] = {character.name.replace(' ', ''): conditional} | artifact_conditional
+            artifact_conditional = self.get_artifact(
+                character, current_character)[0]
+            weapon_conditional = self.get_weapon(character)[0]
+            result[character.name.replace(' ', '')] = {character.name.replace(
+                ' ', ''): conditional} | artifact_conditional | weapon_conditional
 
         return result
 
@@ -323,7 +350,7 @@ class Conditional():
                             conditional['key'].replace('custom_element', current_character_element): conditional['value'].replace('custom_element', current_character_element)}
                         description += f'• {conditional["description"]}\n'
                         effect += f"• {conditional['effect']}\n"
-                        
+
         # pprint(result)
 
         return result, description, effect
