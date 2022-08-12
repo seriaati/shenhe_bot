@@ -14,7 +14,6 @@ from data.game.good_stats import good_stats
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.enum import EquipmentsType
 from enkanetwork.model.character import CharacterInfo
-from pyppeteer import launch
 from pyppeteer.browser import Browser
 from utility.utils import default_embed, log, split_text_and_number
 
