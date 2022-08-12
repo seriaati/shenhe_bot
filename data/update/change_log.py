@@ -1,4 +1,12 @@
 change_log = {
+    'v4.6.3':
+        "• 優化 `/version` [#103](https://github.com/seriaati/shenhe_bot/pull/103)\n"
+        "• 大寫!!! by @MoMuAlt [#105](https://github.com/seriaati/shenhe_bot/pull/105)\n\n"
+        "• 改進傷害計算器[104](https://github.com/seriaati/shenhe_bot/pull/104)\n"
+        "• 新增砂糖增傷 buff\n"
+        "• 新增萬葉增傷 buff\n"
+        "• 新增聖遺物效果/buff\n"
+        "• 新增武器效果/buff\n",
     'v4.6.2':
         "• 修復自動領獎失效的問題\n"
         "• 修復 `/build` 按按鈕觸發的錯誤 [#92](https://github.com/seriaati/shenhe_bot/issues/92)\n"

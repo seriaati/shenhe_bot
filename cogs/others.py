@@ -6,10 +6,10 @@ from apps.text_map.convert_locale import to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.update.change_log import change_log
+from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import Button
 from UI_elements.others import ChangeLang, ChangeLog, Roles
 from utility.utils import default_embed, error_embed
 
@@ -86,13 +86,18 @@ class OthersCog(commands.Cog, name='others'):
         embeds = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         seria = self.bot.get_user(410036441129943050)
-        for version, log in change_log.items():
+        locale = user_locale or i.locale
+        if str(locale) == 'zh-TW' or 'zh-CN':
+            display_change_log = change_log
+        else:
+            display_change_log = change_log_en
+        for version, log in display_change_log.items():
             embed = default_embed(version, log)
             embed.set_thumbnail(url=self.bot.user.avatar)
             embed.set_footer(text=text_map.get(
                 504, i.locale, user_locale), icon_url=seria.avatar)
             embeds.append(embed)
-        view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale)
+        view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale) if i.channel.id != 965964989875757156 else None
         await i.response.send_message(embed=embeds[0], view=view)
 
 
