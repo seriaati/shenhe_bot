@@ -4,7 +4,7 @@ discord.py @ git+https://github.com/Rapptz/discord.py
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
 genshin @ git+https://github.com/thesadru/genshin.py@e5920c9e2765cf62c82b45d9eaca6f6d12761192
 jishaku @git+https://github.com/Gorialis/jishaku
-hmtai==3.1.0
+hmtai==3.2.0
 matplotlib==3.5.3
 numpy==1.23.1
 pyppeteer==1.0.2
