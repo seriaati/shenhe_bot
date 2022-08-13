@@ -37,7 +37,7 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=10)
     async def change_status(self):
         status_list = ['/help', 'discord.gg/ryfamUykRw',
-                       f'in {len(self.bot.guilds)} guilds']
+                       f'in {len(self.bot.guilds)} guilds', 'shenhe.bot.nu']
         await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
 
     @tasks.loop(hours=24)
