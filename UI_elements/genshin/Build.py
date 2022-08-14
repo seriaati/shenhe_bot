@@ -24,9 +24,10 @@ class View(DefaultView):
                 element_names[index], element_emojis[index], index//3))
 
     async def interaction_check(self, i: Interaction) -> bool:
+        user_locale = await get_user_locale(i.user.id, self.db)
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, self.locale, self.user_locale), icon_url=i.user.avatar))
-        return self.author.id == i.user.id
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+        return i.user.id == self.author.id
 
 
 class ElementButton(Button):
@@ -90,6 +91,7 @@ class GoBack(Button):
             for index in range(0, 6):
                 self.view.add_item(ElementButton(
                     element_names[index], element_emojis[index], index//3))
+            await i.response.edit_message(view=self.view)
         elif self.place_to_go_back == 'character':
             await element_button_callback(i, self.element, self.view)
 

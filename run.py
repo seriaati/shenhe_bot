@@ -20,6 +20,8 @@ from pyppeteer import launch
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DebugView
+from UI_elements.others import ChangeLog, Roles
+from utility import paginator
 from utility.utils import error_embed, log
 
 load_dotenv()
@@ -27,13 +29,13 @@ load_dotenv()
 user_name = getpass.getuser()
 
 if user_name == 'seria':
-    token = os.getenv('DEV_TOKEN')
+    token = os.getenv('YAE_TOKEN')
     debug = True
-    application_id = os.getenv('DEV_APP_ID')
+    application_id = os.getenv('YAE_APP_ID')
 else:
-    token = os.getenv('MAIN_TOKEN')
+    token = os.getenv('SHENHE_BOT_TOKEN')
     debug = False
-    application_id = os.getenv('MAIN_APP_ID')
+    application_id = os.getenv('SHENHE_BOT_APP_ID')
 
 prefix = ['?']
 intents = Intents.default()
@@ -64,7 +66,7 @@ class ShenheBot(commands.Bot):
         # bot variables
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('shenhe.db')
-        self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_bot/main.db")
+        self.main_db = await aiosqlite.connect(f"C:/Users/{user}/shenhe_main/main.db")
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI()
@@ -83,6 +85,9 @@ class ShenheBot(commands.Bot):
             await self.load_extension(f'cogs.{cog_name}')
         # load persistent views
         self.add_view(DebugView())
+        self.add_view(Roles.View())
+        self.add_view(paginator._view(None, None, self.db))
+        self.add_view(ChangeLog.View(self.db, None, None, None))
 
     async def on_ready(self):
         await self.change_presence(

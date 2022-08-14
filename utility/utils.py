@@ -8,11 +8,15 @@ from discord.utils import format_dt
 
 
 def default_embed(title: str = '', message: str = ''):
-    return discord.Embed(title=title, description=message, color=0xa68bd3)
+    embed = discord.Embed(title=title, description=message, color=0xa68bd3)
+    embed.set_footer(text='/version 來查看最近更新')
+    return embed
 
 
 def error_embed(title: str = '', message: str = ''):
-    return discord.Embed(title=title, description=message, color=0xfc5165)
+    embed = discord.Embed(title=title, description=message, color=0xfc5165)
+    embed.set_footer(text='discord: seria#5334')
+    return embed
 
 
 def log(is_system: bool, is_error: bool, log_type: str, log_message: str, record: bool = True):
@@ -44,17 +48,6 @@ def time_in_range(start, end, x):
 def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
-
-
-def rank_user(user_id: int, leaderboard: List[Tuple]):
-    interaction_user_rank = None
-    rank = 1
-    for index, tuple in enumerate(leaderboard):
-        if tuple[0] == user_id:
-            interaction_user_rank = rank
-            break
-        rank += 1
-    return interaction_user_rank
 
 
 def parse_HTML(HTML_string: str):

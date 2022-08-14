@@ -16,9 +16,17 @@
 
 <h2 align="center">參與翻譯</h2>
 <p align="left">
+
+
 讓申鶴用你熟悉的語言回覆你吧！有意參與申鶴的本地化工程者可以加我 dc: seria#5334
 </p>
 
+<h2 align="center">翻譯致謝</h2>
+<p align="left">
+非常感謝這些人對申鶴翻譯做出的貢獻: <br>
+ • 简体中文 - <a href='https://github.com/dragon009ak'> @dragon009ak </a> <br>
+ • 日本語 - <a href='https://github.com/Tedd157'> @Tedd157 </a>
+ 
 <h2 align="center">功能亮點</h2>
 <p align="left">
  • 「啊啊啊體力爆了」: /remind 樹脂提醒<br>

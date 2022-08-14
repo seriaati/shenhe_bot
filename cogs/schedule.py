@@ -1,6 +1,7 @@
 import ast
 import asyncio
 from datetime import datetime, timedelta
+import random
 
 import aiosqlite
 from apps.genshin.genshin_app import GenshinApp
@@ -8,7 +9,8 @@ from apps.genshin.utils import get_character, get_farm_dict, get_material
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Forbidden, User
+from discord import Forbidden, Game, Interaction, User, app_commands
+from discord.app_commands import locale_str as _
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
 from utility.utils import default_embed, log
@@ -24,36 +26,50 @@ class Schedule(commands.Cog):
         self.claim_reward.start()
         self.resin_notification.start()
         self.talent_notification.start()
+        self.change_status.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
         self.resin_notification.cancel()
         self.talent_notification.cancel()
+        self.change_status.cancel()
+
+    @tasks.loop(minutes=10)
+    async def change_status(self):
+        status_list = ['/help', 'discord.gg/ryfamUykRw',
+                       f'in {len(self.bot.guilds)} guilds', 'shenhe.bot.nu']
+        await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
         log(True, False, 'Claim Reward', 'Start')
-        count = 0
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id FROM genshin_accounts')
-        users = await c.fetchall()
-        for index, tuple in enumerate(users):
-            user_id = tuple[0]
-            client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
-            client.lang = to_genshin_py(user_locale) or 'ja-jp'
-            try:
-                await client.claim_daily_reward()
-            except genshin.errors.AlreadyClaimed:
-                count += 1
-            except genshin.errors.InvalidCookies:
-                await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
-            except:
-                continue
-            else:
-                count += 1
-            await asyncio.sleep(3.0)
-        await self.bot.db.commit()
-        log(True, False, 'Claim Reward', f'Ended, {count} success')
+        try:
+            count = 0
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute('SELECT user_id FROM genshin_accounts')
+            users = await c.fetchall()
+            for index, tuple in enumerate(users):
+                user_id = tuple[0]
+                client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
+                client.lang = to_genshin_py(user_locale) or 'ja-jp'
+                try:
+                    await client.claim_daily_reward()
+                except genshin.errors.AlreadyClaimed:
+                    count += 1
+                except genshin.errors.InvalidCookies:
+                    await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
+                except:
+                    continue
+                else:
+                    count += 1
+                await asyncio.sleep(3.0)
+            await self.bot.db.commit()
+        except Exception as e:
+            log(True, True, 'Claim Reward', f'Failed')
+            seria = self.bot.get_user(410036441129943050)
+            await seria.send(embed=default_embed(message=f'```py\n{e}\n```').set_author(name='Reward claiming is having some isssues', icon_url=seria.avatar))
+        else:
+            log(True, False, 'Claim Reward', f'Ended, {count} success')
 
     @tasks.loop(hours=2)
     async def resin_notification(self):
@@ -150,6 +166,16 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
+        
+    @change_status.before_loop
+    async def before_check(self):
+        await self.bot.wait_until_ready()
+
+    @app_commands.command(name='instantclaim', description=_('Admin usage only', hash=496))
+    async def instantclaim(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
+        await self.claim_reward()
+        await i.followup.send(embed=default_embed().set_author(name='claimed', icon_url=i.user.avatar), ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -26,7 +26,7 @@ class View(DefaultView):
         # producing select options
         reactionMode_options = [SelectOption(
             label=text_map.get(331, locale, user_locale), value='none')]
-        element = str(self.calculator.current_character.element)
+        element = str(self.calculator.current_character.element.name)
         if element == 'Cryo' or self.calculator.infusion_aura == 'cryo':
             reactionMode_options.append(
                 SelectOption(label=text_map.get(332, locale, user_locale), value='melt'))
@@ -68,7 +68,7 @@ class View(DefaultView):
         self.view: View
         user_locale = await get_user_locale(i.user.id, self.enka_view.db)
         if i.user.id != self.enka_view.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), avatar=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         return i.user.id == self.enka_view.author.id
 
 
