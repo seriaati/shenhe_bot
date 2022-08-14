@@ -40,8 +40,8 @@ class OthersCog(commands.Cog, name='others'):
             return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
         await i.response.send_message(embed=default_embed().set_author(name='更新資料開始', icon_url=i.user.avatar))
 
-        # character, weapon, material text map
-        things_to_update = ['avatar', 'weapon', 'material']
+        # character, weapon, material, artifact text map
+        things_to_update = ['avatar', 'weapon', 'material', 'reliquary']
         for thing in things_to_update:
             dict = {}
             for lang in list(to_ambr_top_dict.values()):
@@ -54,7 +54,7 @@ class OthersCog(commands.Cog, name='others'):
             with open(f'apps/text_map/maps/{thing}.json', 'w+') as f:
                 json.dump(dict, f, indent=4)
 
-        await i.followup.send(embed=default_embed().set_author(name='角色、武器、素材 text map 更新成功', icon_url=i.user.avatar))
+        await i.followup.send(embed=default_embed().set_author(name='角色、武器、素材、聖遺物 text map 更新成功', icon_url=i.user.avatar))
 
         # daily dungeon text map
         dict = {}
