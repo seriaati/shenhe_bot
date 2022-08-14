@@ -1,429 +1,595 @@
 1:
     zh-TW: 已滿
     en-US: Full
+    zh-CN: 已满
 2:
     zh-TW: 今天
     en-US: Today's
+    zh-CN: 今天
+3:
+    zh-TW: 明天
+    en-US: Tomorrow
+    zh-CN: 明天
+4:
+    zh-TW: 剩餘
+    en-US: Remaining
+    zh-CN: 剩余
+5:
+    zh-TW: 天
+    en-US: days
+    zh-CN: 天
+6:
+    zh-TW: 小時
+    en-US: hr
+    zh-CN: 小时
+7:
+    zh-TW: 分
+    en-US: min
+    zh-CN: 分
+8:
+    zh-TW: 秒
+    en-US: sec
+    zh-CN: 秒
 9:
     zh-TW: 可使用
     en-US: Available
+    zh-CN: 可使用
 10:
     zh-TW: 質變儀不存在
     en-US: P.T. not found
+    zh-CN: 质变仪不存在
 11:
     zh-TW: 已完成的每日數量
     en-US: Dailies finished
+    zh-CN: 已完成的每日数量
 12:
     zh-TW: 質變儀剩餘時間
     en-US: P.T. remaining time
+    zh-CN: 质变仪剩余时间
 13:
     zh-TW: 樹脂
     en-US: Resin
+    zh-CN: 树脂
 14:
     zh-TW: 目前
     en-US: Current
+    zh-CN: 目前
 15:
     zh-TW: 回復時間
     en-US: Recovery time
+    zh-CN: 回复时间
 16:
     zh-TW: 周本減半次數
     en-US: Resin discounts
+    zh-CN: 周本减半次数
 17:
     zh-TW: 塵歌壺
     en-US: Serenitea Pot
+    zh-CN: 尘歌壶
 18:
     zh-TW: 沒有探索派遣
     en-US: No expeditions found
+    zh-CN: 没有探索派遣
 19:
     zh-TW: 已完成
     en-US: Finished
+    zh-CN: 已完成
 20:
     zh-TW: 探索派遣
     en-US: Expeditions
+    zh-CN: 探索派遣
 21:
     zh-TW: "輸入 `/stuck` 來獲取更多資訊"
     en-US: "`/stuck` for more information"
+    zh-CN: "输入 `/stuck` 来获取更多资讯
 22:
     zh-TW: 資料不公開
     en-US: Data not public
+    zh-CN: 资料不公开
 23:
     zh-TW: 錯誤
     en-US: Error
+    zh-CN: 错误
 24:
     zh-TW: 即時便籤
     en-US: Realtime notes
+    zh-CN: 即时便签
 25:
     zh-TW: 週一
     en-US: Mon.
+    zh-CN: 周一
 26:
     zh-TW: 週二
     en-US: Tue.
+    zh-CN: 周二
 27:
     zh-TW: 週三
     en-US: Wed.
+    zh-CN: 周三
 28:
     zh-TW: 週四
     en-US: Thu.
+    zh-CN: 周四
 29:
     zh-TW: 週五
     en-US: Fri.
+    zh-CN: 周五
 30:
     zh-TW: 週六
     en-US: Sat.
+    zh-CN: 周六
 31:
     zh-TW: 週日
     en-US: Sun.
+    zh-CN: 周日
 32:
     zh-TW: 選擇語言
     en-US: Choose your language
+    zh-CN: 选择语言
 33:
     zh-TW: 語言更改成功
     en-US: Langauge changed
+    zh-CN: 语言更改成功
 34:
     zh-TW: 目前語言
     en-US: Current language
+    zh-CN: 目前语言
 35:
     zh-TW: "輸入 `/register` 來查看設定方式"
     en-US: "`/register` for more information"
+    zh-CN: "输入 `/register` 来查看设定方式"
 36:
     zh-TW: 無效的 cookie
     en-US: Cookie invalid
+    zh-CN: 无效的 cookie
 37:
     zh-TW: 已取消設定帳號
     en-US: Account register cancelled
+    zh-CN: 已取消设定帐号
 38:
     zh-TW: 帳號內沒有任何角色
     en-US: No valid accounts were obtained from the cookie
+    zh-CN: 帐号内没有任何角色
 39:
     zh-TW: 帳號設定成功
     en-US: Account registration successful
+    zh-CN: 帐号设定成功
 40:
     zh-TW: 你已經領取過今天的獎勵了!
     en-US: You have already claimed today's login reward!
+    zh-CN: 你已经领取过今天的奖励了！
 41:
     zh-TW: 獲得
     en-US: Obtained
+    zh-CN: 获得
 42:
     zh-TW: 簽到成功
     en-US: Claim successful
+    zh-CN: 签到成功
 43:
     zh-TW: 總覽
     en-US: Overview
+    zh-CN: 总览
 44:
     zh-TW: 活躍天數
     en-US: Days Active
+    zh-CN: 活跃天数
 45:
     zh-TW: 角色數量
     en-US: Characters
+    zh-CN: 角色数量
 46:
     zh-TW: 成就數
     en-US: Achievements
+    zh-CN: 成绩数
 47:
     zh-TW: 深淵已達
     en-US: Spiral Abyss
+    zh-CN: 深渊已达
 48:
     zh-TW: 神瞳
     en-US: Oculi
+    zh-CN: 神瞳
 49:
     zh-TW: 風神瞳
     en-US: Anemoculi
+    zh-CN: 风神瞳
 50:
     zh-TW: 岩神瞳
     en-US: Geoculi
+    zh-CN: 岩神瞳
 51:
     zh-TW: 雷神瞳
     en-US: Electroculi
+    zh-CN: 雷神瞳
 52:
     zh-TW: 寶箱
     en-US: Chests
+    zh-CN: 宝箱
 53:
     zh-TW: 普通寶箱
     en-US: Common Chests
+    zh-CN: 普通宝箱
 54:
     zh-TW: 精緻寶箱
     en-US: Exquisite Chests
+    zh-CN: 精致宝箱
 55:
     zh-TW: 華麗寶箱
     en-US: Luxurious Chests
+    zh-CN: 华丽宝箱
 56:
     zh-TW: 原神數據
     en-US: Genshin stats
+    zh-CN: 原神数据
 57:
     zh-TW: 珍貴寶箱
     en-US: Precious Chests
+    zh-CN: 珍贵宝箱
 58:
     zh-TW: 區域探索度
     en-US: World Exploration
+    zh-CN: 区域探索度
 59:
     zh-TW: 原石收入比上個月
     en-US: Primogem income v.s last month
+    zh-CN: 原石收入比上个月
 60:
     zh-TW: 增加了
     en-US: increased
+    zh-CN: 增加了
 61:
     zh-TW: 減少了
     en-US: decreased
+    zh-CN: 减少了
 62:
     zh-TW: 摩拉收入比上個月
     en-US: Mora income v.s last month
+    zh-CN: 摩拉收入比上个月
 63:
     zh-TW: 本月共獲得
     en-US: Acquired this month
+    zh-CN: 本月共获得
 64:
     zh-TW: 上個月
     en-US: Last month
+    zh-CN: 上个月
 65:
     zh-TW: 原石收入分類
     en-US: Primogems obtained
+    zh-CN: 原石收入分类
 66:
     zh-TW: 獲取紀錄
     en-US: Diary log
+    zh-CN: 获取记录
 67:
     zh-TW: 點擊下方的按鈕
     en-US: Click the button below
+    zh-CN: 点击下方的按钮
 68:
     zh-TW: 查看本月近 30 筆的原石或摩拉紀錄
     en-US: to view the last 30 primo or mora records
+    zh-CN: 查看本月近 30 笔的原石或摩拉记录
 69:
     zh-TW: 旅行者日記
     en-US: Traveler's Diary
+    zh-CN: 旅行者日记
 70:
     zh-TW: 原石獲取紀錄
     en-US: Primo Log
+    zh-CN: 原石获取记录
 71:
     zh-TW: 原石
     en-US: primos
+    zh-CN: 原石
 72:
     zh-TW: 摩拉獲取紀錄
     en-US: Mora Log
+    zh-CN: 摩拉获取记录
 73:
     zh-TW: 摩拉
     en-US: mora
+    zh-CN: 摩拉
 74:
     zh-TW: "請使用 `/stats` 來刷新資料"
     en-US: "Use the `/stats` command to refresh your stats"
+    zh-CN: “请使用 `/stats` 来刷新资料"
 75:
     zh-TW: "(本指令只顯示第9層以上資料)"
     en-US: "(This command only shows data above floor 9)"
+    zh-CN: “(本指令只显示第9层以上资料)"
 76:
     zh-TW: 找不到深淵資料
     en-US: Spiral abyss data not found
+    zh-CN: 找不到深渊资料
 77:
     zh-TW: 期別
     en-US: Lunar phase
+    zh-CN: 期别
 78:
     zh-TW: 達到
     en-US: Deepest descent
+    zh-CN: 达到
 79:
     zh-TW: 戰績
     en-US: Challenge Summary
+    zh-CN: 战绩
 80:
     zh-TW: 單次最高傷害
     en-US: Strongest single strike
+    zh-CN: 单次最高伤害
 81:
     zh-TW: 最多擊殺
     en-US: Most defeats
+    zh-CN: 最多击杀
 82:
     zh-TW: 最高承傷
     en-US: Most damage taken
+    zh-CN: 最高承伤
 83:
     zh-TW: 最多元素爆發
     en-US: Elemental bursts unleashed
+    zh-CN: 最多元素爆发
 84:
     zh-TW: 最多元素戰技
     en-US: Elemental skills cast
+    zh-CN: 最多元素战技
 85:
     zh-TW: 深淵總覽
     en-US: Spiral Abyss Overview
+    zh-CN: 深渊总览
 86:
     zh-TW: ""
     en-US: Chamber
+    zh-CN: ""
 87:
     zh-TW: 間
     en-US: ""
+    zh-CN: 见
 88:
     zh-TW: "[上半]"
     en-US: "[First Half]"
+    zh-CN: "[上半]"
 89:
     zh-TW: "[下半]"
     en-US: "[Second Half]"
+    zh-CN: "[下半]"
 90:
     zh-TW: "配置#"
     en-US: "Build #"
+    zh-CN: "配置#"
 91:
     zh-TW: 武器
     en-US: Weapon
+    zh-CN: 武器
 92:
     zh-TW: 聖遺物
     en-US: Artifacts
+    zh-CN: 圣遗物
 93:
     zh-TW: 主詞條
     en-US: Main Stats
+    zh-CN: 主词条
 94:
     zh-TW: 天賦
     en-US: Talents
+    zh-CN: 天赋
 95:
     zh-TW: 屬性面板
     en-US: Character Stats
+    zh-CN: 属性面板
 96:
     zh-TW: 來源
     en-US: Source
+    zh-CN: 来源
 97:
     zh-TW: 聖遺物思路
     en-US: Artifact Thoughts
+    zh-CN: 圣遗物思路
 98:
     zh-TW: 樹脂提醒已關閉
     en-US: Resin reminder has been turned off
+    zh-CN: 树脂提醒已关闭
 99:
     zh-TW: 開
     en-US: "ON"
+    zh-CN: 开
 100:
     zh-TW: 關
     en-US: "OFF"
+    zh-CN: 关
 101:
     zh-TW: 目前開關
     en-US: Current Toggle
+    zh-CN: 目前开关
 102:
     zh-TW: 樹脂閥值
     en-US: Resing Threshold
+    zh-CN: 树脂阀值
 103:
     zh-TW: 最大提醒數量
     en-US: Max. notification number
+    zh-CN: 最大提醒数量
 104:
     zh-TW: 設置成功
     en-US: Settings saved
+    zh-CN: 设置成功
 105:
     zh-TW: 所有角色
     en-US: Characters
+    zh-CN: 所有角色
 106:
     zh-TW: 你已經兌換過這個兌換碼了!
     en-US: This gift code has already been redeemed!
+    zh-CN: 你已经兑换过这个兑换码了!
 107:
     zh-TW: 兌換碼無效
     en-US: Gift code invalid
+    zh-CN: 兑换码无效
 108:
     zh-TW: 兌換碼
     en-US: Gift code
+    zh-CN: 兑换码
 109:
     zh-TW: 兌換碼兌換成功
     en-US: Code redeemed
+    zh-CN: 兑换码兑换成功
 110:
     zh-TW: 找不到你的海島活動資料
     en-US: Summer event data not found
+    zh-CN: 找不到你的海岛活动资料
 111:
     zh-TW: 金蘋果群島
     en-US: Golden Apple Archipelago
+    zh-CN: 金苹果群岛
 112:
     zh-TW: 浪船錨點
     en-US: Waverider Waypoints Unlocked
+    zh-CN: 浪船锚点
 113:
     zh-TW: 傳送錨點
     en-US: Waypoints Unlocked
+    zh-CN: 传送锚点
 114:
     zh-TW: 寶箱
     en-US: Treasure Chests Obtained
+    zh-CN: 宝箱
 115:
     zh-TW: 尚未完成
     en-US: Unfinished
+    zh-CN: 尚未完成
 116:
     zh-TW: 逸速穿浪
     en-US: Surfpiercer
+    zh-CN: 逸速穿浪
 117:
     zh-TW: 夏日回憶
     en-US: Summer Memories
+    zh-CN: 夏日回忆
 118:
     zh-TW: 謎域探索
     en-US: Realm Exploration
+    zh-CN: 迷域探索
 119:
     zh-TW: 完成時間
     en-US: Time completed
+    zh-CN: 完成时间
 120:
     zh-TW: 累計成功挑戰
     en-US: Successfully challenged
+    zh-CN: 累计成功挑战
 121:
     zh-TW: 次
     en-US: times
+    zh-CN: 次
 122:
     zh-TW: 累計釋放技能
     en-US: Unleashed elemental skill
+    zh-CN: 累计释放技能
 123:
     zh-TW: "自訂 UID 搜尋"
     en-US: "Custom UID searched"
+    zh-CN: "自定 UID 搜寻"
 124:
     zh-TW: 返回預設
     en-US: Back to default
+    zh-CN: 返回预设
 125:
     zh-TW: "申鶴預設是使用你的 dc 語言來回覆你"
     en-US: By default, shenhe responds you with the same langauge your discord uses
+    zh-CN: "申鹤预设时使用你的 dc 语言来回复你"
 126:
     zh-TW: "這裡更改後的語言會蓋過你的 dc 設定"
     en-US: Changing language will override the default langauge
+    zh-CN: "这里更改后的语言会盖过你的 dc 设定"
 127:
     zh-TW: 如果該語言還沒翻譯好, 會使用英文回覆
     en-US: If any text is not translated yet, shenhe will respond you with English
+    zh-CN: 如果该语言还没翻译好，会使用英文回复
 128:
     zh-TW: 更改語言
     en-US: Changing langauge
+    zh-CN: 更改语言
 129:
     zh-TW: 蒙德
     en-US: Mondstat
+    zh-CN: 蒙德
 130:
     zh-TW: 璃月
     en-US: Liyue
+    zh-CN: 璃月
 131:
     zh-TW: 稻妻
     en-US: Inazuma
+    zh-CN: 稻妻
 132:
     zh-TW: 提交 Cookie
     en-US: Submit your cookie
+    zh-CN: 提交 Cookie
 133:
     zh-TW: 請貼上剛剛複製的文字
     en-US: please paste the text you copied here
+    zh-CN: 请贴上刚刚复制的文字
 134:
     zh-TW: "發生了未知的錯誤, 請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤"
     en-US: "There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error."
+    zh-CN: "发生了未知的错误，请至[申鹤的 issue 页面](https://github.com/seriaati/shenhe_bot/issues)回报这个错误"
 135:
     zh-TW: 未知錯誤
     en-US: There was an error
+    zh-CN: 未知错误
 136:
     zh-TW: 選擇要註冊的帳號
     en-US: Choose your account
+    zh-CN: 选择要注册的账号
 137:
     zh-TW: Cookie 設置流程
     en-US: Account registration tutorial
+    zh-CN: Cookie 设置流程
 138:
     zh-TW: "1.先複製底下的整段程式碼\n2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n6.在這裡提交結果, 使用：`/register 提交 cookie`\n無法理解嗎? 跟著下面的圖示操作吧!"
     en-US: "1.Copy the code below\n2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n3.Click the address bar and select all the text there\n4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n6.Submit your cookie here, use the `/reigster` command\nToo complicated? The image below might help!"
+    zh-CN: "1.先复制底下的整段程式码\n2.电脑或手机使用Chrome开启Hoyolab并登入账号 <https://www.hoyolab.com>\n3.按浏览器上面网址的部分，并确保选取了全部网址\n4.在网址列先输入 `java`, 然后贴上程式码, 确保网址开头变成 `javascript:`\n5.按Enter, 网页会变成显示你的Cookie, 全选然后复制\n6.在这里提交结果, 使用: `/register 提交 cookie`\n无法理解吗? 跟着下面的图示操作吧!"
 139:
     zh-TW: "過期或無效的Cookie,請先登出帳號再重新登入!"
     en-US: "Cookie invalid or is outdated, please logout then login again!"
+    zh-CN: "过期或无效的Cookie,请先登场账号在重新登入!"
 140:
     zh-TW: "請使用 `/register` 指令來註冊帳號"
     en-US: "Please use the `/register` command"
+    zh-CN: "请使用 `/register` 指令来注册账号"
 141:
     zh-TW: 找不到帳號資料!
     en-US: Account data not found!
+    zh-CN: 找不到账号资料!
 142:
     zh-TW: 選擇元素
     en-US: Choose your element
+    zh-CN: 选择元素
 143:
     zh-TW: 你不是這個指令的發起者
     en-US: You are not the issuer of this command
+    zh-CN: 你不是这个指令的发起者
 144:
     zh-TW: 原石紀錄
     en-US: Primo Log
+    zh-CN: 原石记录
 145:
     zh-TW: 摩拉紀錄
     en-US: Mora Log
+    zh-CN: 摩拉记录
 146:
     zh-TW: 第
     en-US: Floor No.
+    zh-CN: 第
 147:
     zh-TW: 層
     en-US: ""
+    zh-CN: 层
 148:
     zh-TW: 樓層導覽
     en-US: Choose abyss floor
+    zh-CN: 楼层导览
 149:
     zh-TW: 資料不公開?
     en-US: Data not public?
