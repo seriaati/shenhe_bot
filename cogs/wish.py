@@ -134,8 +134,8 @@ class WishCog(commands.GroupCog, name='wish'):
         await i.response.send_message(embed=embed)
 
     @app_commands.command(name='weapon', description=_("Predict the chance of pulling a weapon you want", hash=483))
-    @app_commands.rename(item_num=_('number', hash=482))
-    @app_commands.describe(item_num=_('How many five star UP weapons do you wish to pull?', hash=483))
+    @app_commands.rename(item_num=_('number', hash=506))
+    @app_commands.describe(item_num=_('How many five star UP weapons do you wish to pull?', hash=507))
     async def wish_weapon(self, i: Interaction, item_num: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         check, msg = await check_user_wish_data(i.user.id, i, self.bot.db)
