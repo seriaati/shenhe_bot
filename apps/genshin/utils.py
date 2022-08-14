@@ -3,20 +3,19 @@ import re
 from typing import Dict, List, Literal, Tuple, Union
 
 import aiohttp
-from discord import Embed, Locale
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
-from data.game.elements import convert_elements
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
+from data.game.elements import convert_elements, elements
 from data.game.fight_prop import fight_prop
 from data.game.weapons import weapons_map
+from discord import Embed, Locale, SelectOption
 from dotenv import load_dotenv
+from utility.utils import default_embed, get_weekday_int_with_name, parse_HTML
 
 import genshin
-
-from utility.utils import default_embed, get_weekday_int_with_name
 
 load_dotenv()
 
@@ -277,3 +276,101 @@ def get_area_emoji(exploration_id: int):
 
     emoji = emoji_dict.get(exploration_id)
     return emoji or ''
+
+def parse_character_wiki_embed(avatar: Dict, avatar_id: str, locale: Locale, user_locale: str | None) -> Tuple[List[Embed], Embed, List[SelectOption]]:
+    avatar_data = avatar["data"]
+    embeds = []
+    options = []
+    embed = default_embed(
+        f"{elements.get(avatar['data']['element'])} {avatar['data']['name']}")
+    embed.add_field(
+        name=text_map.get(315, locale, user_locale),
+        value=f'{text_map.get(316, locale, user_locale)}: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
+        f'{text_map.get(317, locale, user_locale)}: {avatar_data["fetter"]["title"]}\n'
+        f'*{avatar_data["fetter"]["detail"]}*\n'
+        f'{text_map.get(318, locale, user_locale)}: {avatar_data["fetter"]["constellation"]}\n'
+        f'{text_map.get(319, locale, user_locale)}: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n'
+    )
+    embed.set_image(
+        url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"].replace("Icon", "Pic")}_P.png')
+    embed.set_thumbnail(
+        url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+    embeds.append(embed)
+    options.append(SelectOption(label=embed.fields[0].name, value=0))
+    embed = default_embed().set_author(
+        name=text_map.get(320, locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+    for promoteLevel in avatar_data['upgrade']['promote'][1:]:
+        value = ''
+        for item_id, item_count in promoteLevel['costItems'].items():
+            value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
+        value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
+        embed.add_field(
+            name=f'{text_map.get(321, locale, user_locale)} lvl.{promoteLevel["unlockMaxLevel"]}',
+            value=value,
+            inline=True
+        )
+    embeds.append(embed)
+    options.append(SelectOption(label=text_map.get(
+        320, locale, user_locale), value=1))
+    for talent_id, talent_info in avatar_data["talent"].items():
+        max = 3
+        if avatar_id == '10000002' or avatar_id == '10000041':
+            max = 4
+        if int(talent_id) <= max:
+            embed = default_embed().set_author(
+                name=text_map.get(94, locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            embed.add_field(
+                name=talent_info['name'],
+                value=parse_HTML(
+                    talent_info["description"]),
+                inline=False
+            )
+            material_embed = default_embed().set_author(
+                name=text_map.get(322, locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            for level, promote_info in talent_info['promote'].items():
+                if level == '1' or int(level) > 10:
+                    continue
+                value = ''
+                for item_id, item_count in promote_info['costItems'].items():
+                    value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
+                value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
+                material_embed.add_field(
+                    name=f'{text_map.get(324, locale, user_locale)} lvl.{level}',
+                    value=value,
+                    inline=True
+                )
+            embed.set_thumbnail(
+                url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+            embeds.append(embed)
+        else:
+            embed = default_embed().set_author(
+                name=text_map.get(323, locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+            embed.add_field(
+                name=talent_info['name'],
+                value=parse_HTML(
+                    talent_info["description"]),
+                inline=False
+            )
+            embed.set_thumbnail(
+                url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
+            embeds.append(embed)
+    options.append(SelectOption(label=text_map.get(
+        94, locale, user_locale), value=2))
+    options.append(SelectOption(
+        label=text_map.get(323, locale, user_locale), value=5 if max == 3 else 6))
+    const_count = 1
+    for const_id, const_info in avatar_data['constellation'].items():
+        embed = default_embed().set_author(
+            name=f'{text_map.get(318, locale, user_locale)} {const_count}', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
+        embed.add_field(
+            name=const_info['name'],
+            value=parse_HTML(
+                const_info['description'])
+        )
+        embed.set_thumbnail(
+            url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
+        embeds.append(embed)
+        const_count += 1
+    options.append(SelectOption(
+        label=text_map.get(318, locale, user_locale), value=8 if max == 3 else 9))
+    return embeds, material_embed, options

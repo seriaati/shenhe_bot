@@ -1,14 +1,15 @@
 import json
 from datetime import datetime
 from pprint import pprint
-from typing import Dict
+from typing import Dict, List
 
 import aiosqlite
 import GGanalysislib
+import yaml
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (calculate_artifact_score, get_artifact,
                                 get_character, get_farm_dict, get_fight_prop,
-                                get_material, get_weapon)
+                                get_material, get_weapon, parse_character_wiki_embed)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
@@ -38,6 +39,15 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
+        with open(f'apps/text_map/maps/avatar.json', 'r', encoding='utf-8') as f:
+            avatar = json.load(f)
+        with open(f'apps/text_map/maps/weapon.json', 'r', encoding='utf-8') as f:
+            weapon = json.load(f)
+        with open(f'apps/text_map/maps/material.json', 'r', encoding='utf-8') as f:
+            material = json.load(f)
+        with open(f'apps/text_map/maps/reliquary.json', 'r', encoding='utf-8') as f:
+            reliquary = json.load(f)
+        self.text_map_files = [avatar, weapon, material, reliquary]
 
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
@@ -624,7 +634,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
 
-            await GeneralPaginator(i, embeds, self.bot.db,[ArtifactLeaderboard.GoBack(text_map.get(282, i.locale, user_locale), self.bot.db)]).start(edit=True)
+            await GeneralPaginator(i, embeds, self.bot.db, [ArtifactLeaderboard.GoBack(text_map.get(282, i.locale, user_locale), self.bot.db)]).start(edit=True)
 
         elif type == 2:
             await c.execute('SELECT DISTINCT user_id FROM wish_history')
@@ -694,117 +704,44 @@ class GenshinCog(commands.Cog, name='genshin'):
                                 await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
             await i.followup.send(embed=default_embed().set_author(name=text_map.get(502, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
-    @app_commands.command(name='wiki', description=_('View genshin wiki', hash=457))
-    @app_commands.rename(type=_('type', hash=429))
-    @app_commands.choices(type=[Choice(name=_('Characters', hash=458), value=0)])
-    async def wiki(self, i: Interaction, type: int):
+    @app_commands.command(name='search')
+    async def search(self, i: Interaction, query: str):
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_locale = user_locale or i.locale
+        ambr_top_locale = to_ambr_top(user_locale or i.locale)
+        names = ['avatar', 'material', 'weapon', 'reliquary']
+        item_type = None
+        for index, file in enumerate(self.text_map_files):
+            if query in file:
+                item_type = index
+                break
+        if item_type == 0:
+            async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}') as r:
+                avatar = await r.json()
+            embeds, material_embed, options = parse_character_wiki_embed(avatar, query, i.locale, user_locale)
+            await GeneralPaginator(i, embeds, self.bot.db, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(322, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(followup=True)
+
+    @search.autocomplete('query')
+    async def query_autocomplete(self, i: Interaction, current: str) -> List[Choice[str]]:
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         ambr_top_locale = to_ambr_top(user_locale)
-        if type == 0:
-            async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar') as resp:
-                data = await resp.json()
-            view = CharacterWiki.View(data, i.user, self.bot.db)
-            await i.response.send_message(view=view)
-            await view.wait()
-            async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/avatar/{view.avatar_id}') as resp:
-                avatar = await resp.json()
-            avatar_data = avatar["data"]
-            embeds = []
-            options = []
-            embed = default_embed(
-                f"{elements.get(avatar['data']['element'])} {avatar['data']['name']}")
-            embed.add_field(
-                name=text_map.get(315, i.locale, user_locale),
-                value=f'{text_map.get(316, i.locale, user_locale)}: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
-                f'{text_map.get(317, i.locale, user_locale)}: {avatar_data["fetter"]["title"]}\n'
-                f'*{avatar_data["fetter"]["detail"]}*\n'
-                f'{text_map.get(318, i.locale, user_locale)}: {avatar_data["fetter"]["constellation"]}\n'
-                f'{text_map.get(319, i.locale, user_locale)}: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n'
-            )
-            embed.set_image(
-                url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"].replace("Icon", "Pic")}_P.png')
-            embed.set_thumbnail(
-                url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-            embeds.append(embed)
-            options.append(SelectOption(label=embed.fields[0].name, value=0))
-            embed = default_embed().set_author(
-                name=text_map.get(310, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-            for promoteLevel in avatar_data['upgrade']['promote'][1:]:
-                value = ''
-                for item_id, item_count in promoteLevel['costItems'].items():
-                    value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
-                value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
-                embed.add_field(
-                    name=f'{text_map.get(311, i.locale, user_locale)} lvl.{promoteLevel["unlockMaxLevel"]}',
-                    value=value,
-                    inline=True
-                )
-            embeds.append(embed)
-            options.append(SelectOption(label=text_map.get(
-                310, i.locale, user_locale), value=1))
-            for talent_id, talent_info in avatar_data["talent"].items():
-                max = 3
-                if view.avatar_id == '10000002' or view.avatar_id == '10000041':
-                    max = 4
-                if int(talent_id) <= max:
-                    embed = default_embed().set_author(
-                        name=text_map.get(94, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-                    embed.add_field(
-                        name=talent_info['name'],
-                        value=parse_HTML(
-                            talent_info["description"]),
-                        inline=False
-                    )
-                    material_embed = default_embed().set_author(
-                        name=text_map.get(312, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-                    for level, promote_info in talent_info['promote'].items():
-                        if level == '1' or int(level) > 10:
-                            continue
-                        value = ''
-                        for item_id, item_count in promote_info['costItems'].items():
-                            value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
-                        value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
-                        material_embed.add_field(
-                            name=f'{text_map.get(314, i.locale, user_locale)} lvl.{level}',
-                            value=value,
-                            inline=True
-                        )
-                    embed.set_thumbnail(
-                        url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
-                    embeds.append(embed)
-                else:
-                    embed = default_embed().set_author(
-                        name=text_map.get(313, i.locale, user_locale), icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-                    embed.add_field(
-                        name=talent_info['name'],
-                        value=parse_HTML(
-                            talent_info["description"]),
-                        inline=False
-                    )
-                    embed.set_thumbnail(
-                        url=f'https://api.ambr.top/assets/UI/{talent_info["icon"]}.png')
-                    embeds.append(embed)
-            options.append(SelectOption(label=text_map.get(
-                94, i.locale, user_locale), value=2))
-            options.append(SelectOption(
-                label=text_map.get(313, i.locale, user_locale), value=5 if max == 3 else 6))
-            const_count = 1
-            for const_id, const_info in avatar_data['constellation'].items():
-                embed = default_embed().set_author(
-                    name=f'{text_map.get(318, i.locale, user_locale)} {const_count}', icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'))
-                embed.add_field(
-                    name=const_info['name'],
-                    value=parse_HTML(
-                        const_info['description'])
-                )
-                embed.set_thumbnail(
-                    url=f'https://api.ambr.top/assets/UI/{const_info["icon"]}.png')
-                embeds.append(embed)
-                const_count += 1
-            options.append(SelectOption(
-                label=text_map.get(318, i.locale, user_locale), value=8 if max == 3 else 9))
-            await GeneralPaginator(i, embeds, self.bot.db, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(312, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(edit=True)
+        user_ambr_top_locale = to_ambr_top(i.locale)
+        everything_dict = {}
+        query_list = []
+        for queries in self.text_map_files:
+            for query_id, query_names in queries.items():
+                everything_dict[query_names[ambr_top_locale]] = query_id
+                everything_dict[query_names[user_ambr_top_locale]] = query_id
+                query_list.append(query_names[ambr_top_locale])
+                query_list.append(query_names[user_ambr_top_locale])
+
+        query_list = list(dict.fromkeys(query_list))
+
+        result = [
+            app_commands.Choice(name=query, value=everything_dict[query])
+            for query in query_list if current.lower() in query.lower()
+        ]
+        return result[:25]
 
     @app_commands.command(name='activity', description=_('View your past genshin activity stats', hash=459))
     @app_commands.rename(member=_('user', hash=415), custom_uid='uid')
