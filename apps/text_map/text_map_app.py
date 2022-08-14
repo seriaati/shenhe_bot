@@ -10,7 +10,7 @@ from utility.utils import extract_integer_from_string
 
 class TextMap():
     def __init__(self):
-        langs = ['de-DE', 'en-US', 'es-ES', 'fr-FR', 'ja-JP', 'ko-KR', 'pt-PT', 'ru-RU', 'th-TH', 'vi-VN', 'ch-CN']
+        langs = ['de-DE', 'en-US', 'es-ES', 'fr-FR', 'ja-JP', 'ko-KR', 'pt-PT', 'ru-RU', 'th-TH', 'vi-VN', 'zh-CN']
         self.text_maps = {
             'de-DE': {},
             'en-US': {},
@@ -22,18 +22,18 @@ class TextMap():
             'ru-RU': {},
             'th-TH': {},
             'vi-VN': {},
-            'ch-CN': {}
+            'zh-CN': {}
         }
         for lang in langs:
-            with open(f'text_map/{lang}/text_map.json', 'r', encoding='utf-8') as f:
-                self.text_maps[lang] = yaml.load(f)
-        with open('text_map/avatar.json', 'r', encoding='utf-8') as f:
+            with open(f'text_maps/{lang}/text_map.yaml', 'r', encoding='utf-8') as f:
+                self.text_maps[lang] = yaml.full_load(f)
+        with open('text_maps/avatar.json', 'r', encoding='utf-8') as f:
             self.avatar = json.load(f)
-        with open('text_map/material.json', 'r', encoding='utf-8') as f:
+        with open('text_maps/material.json', 'r', encoding='utf-8') as f:
             self.material = json.load(f)
-        with open('text_map/weapon.json', 'r', encoding='utf-8') as f:
+        with open('text_maps/weapon.json', 'r', encoding='utf-8') as f:
             self.weapon = json.load(f)
-        with open('text_map/dailyDungeon.json', 'r', encoding='utf-8') as f:
+        with open('text_maps/dailyDungeon.json', 'r', encoding='utf-8') as f:
             self.dailyDungeon = json.load(f)
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
