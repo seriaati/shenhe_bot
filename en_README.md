@@ -15,7 +15,8 @@ This is the public branch of shenhe_bot, it removes all the customized feature f
 <a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> Invite shenhe to your discord server </a>
 
 <h2 align="center">Contributing to Translations</h2>
-<p align="left"> Help translate shenhe to the language you know! If you're interested, feel free to find me on discord! (seria#5334) </p>
+<a title="Crowdin" target="_blank" href="https://crowdin.com/project/shenhebot"><img src="https://badges.crowdin.net/shenhebot/localized.svg"></a> <br>
+Translate via crodwin: https://crwd.in/shenhebot
 
 <h2 align="center">Translators</h2>
 Huge thank-you to these people that helped the translation of shenhe: <br>
