@@ -64,14 +64,35 @@ to_go_dict = {
     'vi': 13
 }
 
+paths = {
+    'de': 'de-DE',
+    'en-US': 'en-US',
+    'es-ES': 'es-ES',
+    'fr': 'fr-FR',
+    'ja': 'ja-JP',
+    'ko': 'ko-KR',
+    'pt-BR': 'pt-PT',
+    'ru': 'ru-RU',
+    'th': 'th-TH',
+    'vi': 'vi-VN',
+    'ch-CN': 'ch-CN'
+}
+
+
 def to_enka(locale: Locale | str):
     return to_enka_dict.get(str(locale)) or 'en'
+
 
 def to_ambr_top(locale: Locale | str):
     return to_ambr_top_dict.get(str(locale)) or 'en'
 
+
 def to_genshin_py(locale: Locale | str):
     return to_genshin_py_dict.get(str(locale)) or 'en-us'
 
+
 def to_go(locale: Locale | str):
     return to_go_dict.get(str(locale)) or 4
+
+def to_paths(locale: Locale | str):
+    return paths.get(str(locale)) or 'en-US'

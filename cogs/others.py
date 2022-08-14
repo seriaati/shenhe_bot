@@ -51,8 +51,8 @@ class OthersCog(commands.Cog, name='others'):
                     if character_id not in dict:
                         dict[character_id] = {}
                     dict[character_id][lang] = character_info['name']
-            with open(f'apps/text_map/maps/{thing}.json', 'w+') as f:
-                json.dump(dict, f, indent=4)
+            with open(f'text_map/{thing}.json', 'w+', encoding='utf-8') as f:
+                json.dump(dict, f, indent=4, ensure_ascii=False)
 
         await i.followup.send(embed=default_embed().set_author(name='角色、武器、素材、聖遺物 text map 更新成功', icon_url=i.user.avatar))
 
@@ -66,8 +66,8 @@ class OthersCog(commands.Cog, name='others'):
                     if str(domain_info['id']) not in dict:
                         dict[str(domain_info['id'])] = {}
                     dict[str(domain_info['id'])][lang] = domain_info['name']
-        with open(f'apps/text_map/maps/dailyDungeon.json', 'w+') as f:
-            json.dump(dict, f, indent=4)
+        with open(f'text_map/dailyDungeon.json', 'w+', encoding='utf-8') as f:
+            json.dump(dict, f, indent=4, ensure_ascii=False)
 
         await i.followup.send(embed=default_embed().set_author(name='秘境關卡 text map 更新成功', icon_url=i.user.avatar))
 

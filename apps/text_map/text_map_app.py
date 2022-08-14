@@ -4,34 +4,47 @@ from typing import Literal
 import discord
 import yaml
 
-from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.convert_locale import to_ambr_top, to_paths
 from utility.utils import extract_integer_from_string
 
 
 class TextMap():
     def __init__(self):
-        with open('apps/text_map/maps/shenhe_text_map.yaml', 'r', encoding='utf-8') as f:
-            self.textMap = yaml.full_load(f)
-        with open('apps/text_map/maps/avatar.json', 'r', encoding='utf-8') as f:
+        langs = ['de-DE', 'en-US', 'es-ES', 'fr-FR', 'ja-JP', 'ko-KR', 'pt-PT', 'ru-RU', 'th-TH', 'vi-VN', 'ch-CN']
+        self.text_maps = {
+            'de-DE': {},
+            'en-US': {},
+            'es-ES': {},
+            'fr-FR': {},
+            'ja-JP': {},
+            'ko-KR': {},
+            'pt-PT': {},
+            'ru-RU': {},
+            'th-TH': {},
+            'vi-VN': {},
+            'ch-CN': {}
+        }
+        for lang in langs:
+            with open(f'text_map/{lang}/text_map.json', 'r', encoding='utf-8') as f:
+                self.text_maps[lang] = yaml.load(f)
+        with open('text_map/avatar.json', 'r', encoding='utf-8') as f:
             self.avatar = json.load(f)
-        with open('apps/text_map/maps/material.json', 'r', encoding='utf-8') as f:
+        with open('text_map/material.json', 'r', encoding='utf-8') as f:
             self.material = json.load(f)
-        with open('apps/text_map/maps/weapon.json', 'r', encoding='utf-8') as f:
+        with open('text_map/weapon.json', 'r', encoding='utf-8') as f:
             self.weapon = json.load(f)
-        with open('apps/text_map/maps/dailyDungeon.json', 'r', encoding='utf-8') as f:
+        with open('text_map/dailyDungeon.json', 'r', encoding='utf-8') as f:
             self.dailyDungeon = json.load(f)
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
-        text = self.textMap.get(textMapHash)
+        locale = user_locale or locale 
+        path = to_paths(locale)
+        text_map = self.text_maps[path]
+        text = text_map.get(textMapHash)
         if text is None:
             print(f'text map hash not found: {textMapHash}')
-            raise ValueError(textMapHash)
         else:
-            locale = user_locale or locale
-            if str(locale) not in text:
-                return text['en-US']
-            else:
-                return text[str(locale)]
+            return text
 
     def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Literal[None, 'str']:
         avatarText = self.avatar.get(str(character_id))

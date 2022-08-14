@@ -39,13 +39,13 @@ class GenshinCog(commands.Cog, name='genshin'):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
-        with open(f'apps/text_map/maps/avatar.json', 'r', encoding='utf-8') as f:
+        with open(f'text_map/avatar.json', 'r', encoding='utf-8') as f:
             avatar = json.load(f)
-        with open(f'apps/text_map/maps/weapon.json', 'r', encoding='utf-8') as f:
+        with open(f'text_map/weapon.json', 'r', encoding='utf-8') as f:
             weapon = json.load(f)
-        with open(f'apps/text_map/maps/material.json', 'r', encoding='utf-8') as f:
+        with open(f'text_map/material.json', 'r', encoding='utf-8') as f:
             material = json.load(f)
-        with open(f'apps/text_map/maps/reliquary.json', 'r', encoding='utf-8') as f:
+        with open(f'text_map/reliquary.json', 'r', encoding='utf-8') as f:
             reliquary = json.load(f)
         self.text_map_files = [avatar, weapon, material, reliquary]
 
