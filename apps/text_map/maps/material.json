@@ -1185,9 +1185,9 @@
         "jp": "\u30b5\u30a6\u30de\u30e9\u30bf\u84ee",
         "kr": "\ub2ec \uc5f0\uaf43",
         "th": "Nilotpala Lotus",
-        "pt": "L\u00f3tus Lunar",
+        "pt": "L\u00f3tus Nilotpala",
         "ru": "\u041b\u043e\u0442\u043e\u0441 \u043d\u0438\u043b\u043e\u0442\u043f\u0430\u043b\u0430",
-        "vi": "Nguy\u1ec7t Li\u00ean"
+        "vi": "Sen Nilotpala"
     },
     "101216": {
         "chs": "\u9999\u8f9b\u679c",
@@ -1213,9 +1213,9 @@
         "jp": "\u30ab\u30eb\u30d1\u30e9\u30bf\u84ee",
         "kr": "\uac81\uc758 \uc5f0\uaf43",
         "th": "Kalpalata Lotus",
-        "pt": "Kalpalata",
+        "pt": "L\u00f3tus Kalpalata",
         "ru": "\u041b\u043e\u0442\u043e\u0441 \u043a\u0430\u043b\u044c\u043f\u0430\u043b\u0430\u0442\u0430",
-        "vi": "Kalpalata"
+        "vi": "Sen Kalpalata"
     },
     "101218": {
         "chs": "\u58a9\u58a9\u6843",
@@ -1252,10 +1252,10 @@
         "en": "Viparyas",
         "es": "Viparyas",
         "fr": "Viparyas",
-        "jp": "\u30f4\u30a3\u30d1\u30ea\u30e3\u30fc\u30ba",
+        "jp": "\u30f4\u30a3\u30d1\u30ea\u30e3\u30b9",
         "kr": "\ube44\ubcf4\uc57c",
         "th": "Viparyas",
-        "pt": "Viboya",
+        "pt": "Viparya",
         "ru": "\u0412\u0438\u043f\u0430\u0440\u0438\u0430\u0441",
         "vi": "Viparyas"
     },
@@ -4614,8 +4614,8 @@
         "fr": "Poulet au beurre",
         "jp": "\u30d0\u30bf\u30fc\u30c1\u30ad\u30f3",
         "kr": "\ubc84\ud130 \uce58\ud0a8",
-        "th": "Saut\u00e9ed Chicken",
-        "pt": "Frango Manteiga",
+        "th": "Butter Chicken",
+        "pt": "Frango na Manteiga",
         "ru": "\u0426\u044b\u043f\u043b\u0451\u043d\u043e\u043a \u0432 \u043c\u0430\u0441\u043b\u0435",
         "vi": "G\u00e0 \u00c1p Ch\u1ea3o"
     },
@@ -4626,7 +4626,7 @@
         "en": "Shawarma Wrap",
         "es": "Rollos de shawarma",
         "fr": "Shawarma",
-        "jp": "\u30b7\u30e3\u30ef\u30eb\u30de",
+        "jp": "\u30b7\u30e3\u30ef\u30eb\u30de\u30b5\u30f3\u30c9",
         "kr": "\uc0e4\uc640\ub974\ub9c8",
         "th": "Shawarma Wrap",
         "pt": "Rolinho Shawarma",
@@ -4668,7 +4668,7 @@
         "en": "Mushroom Hodgepodge",
         "es": "Revuelto de champi\u00f1ones",
         "fr": "M\u00e9lang\u00e9 de champignons",
-        "jp": "\u30ad\u30ce\u30b3\u3054\u3063\u305f\u716e",
+        "jp": "\u5c71\u76db\u308a\u30ad\u30ce\u30b3",
         "kr": "\ubaa8\ub460 \ubc84\uc12f",
         "th": "Mushroom Hodgepodge",
         "pt": "Panel\u00e3o de Cogumelos",
@@ -4708,10 +4708,10 @@
         "cht": "\u8584\u8377\u8c46\u6e6f",
         "de": "Minzbohnensuppe",
         "en": "Minty Bean Soup",
-        "es": "Sopa de brotes de menta",
+        "es": "Sopa de menta y frijoles",
         "fr": "Soupe de pois-menthe",
         "jp": "\u30df\u30f3\u30c8\u30d3\u30fc\u30f3\u30b9\u30fc\u30d7",
-        "kr": "\ud5c8\ube0c \ucf69 \uc218\ud504",
+        "kr": "\uc644\ub450\ucf69 \ubbfc\ud2b8 \uc218\ud504",
         "th": "Minty Bean Soup",
         "pt": "Sopa de Feij\u00e3o com Menta",
         "ru": "\u041c\u044f\u0442\u043d\u043e-\u0444\u0430\u0441\u043e\u043b\u0435\u0432\u044b\u0439 \u0441\u0443\u043f",
@@ -4721,19 +4721,19 @@
         "chs": "\u517d\u7c73\u9999\u9999",
         "cht": "\u7378\u7c73\u9999\u9999",
         "de": "Tierische Reispuffer\u00df\u00df\u00df",
-        "en": "Beastly Rice Puffs",
+        "en": "Biryani",
         "es": "Hojaldres de arroz abestiado",
         "fr": "Riz souffl\u00e9 bestial",
         "jp": "\u7363\u8089\u306e\u30d3\u30ea\u30e4\u30cb",
         "kr": "\uc9d0\uc2b9\uace0\uae30 \ud544\ub77c\ud504",
-        "th": "Beastly Rice Puffs",
+        "th": "Biryani",
         "pt": "Bolinhas de Arroz Monstruoso",
         "ru": "\u041c\u044f\u0441\u043d\u043e\u0439 \u043f\u043b\u043e\u0432",
-        "vi": "B\u00e1nh G\u1ea1o Th\u1ecbt"
+        "vi": "Biryani"
     },
     "108420": {
         "chs": "\u7c73\u5706\u5854",
-        "cht": "",
+        "cht": "\u7c73\u5713\u5854",
         "de": "Tahchin",
         "en": "Tahchin",
         "es": "Tahch\u00edn",
@@ -4748,7 +4748,7 @@
     "108423": {
         "chs": "\u5170\u5df4\u5fb7\u9c7c\u5377",
         "cht": "\u862d\u5df4\u5fb7\u9b5a\u6372",
-        "de": "Lambad-Fischr\u00f6llchen\u00df\u00df\u00df",
+        "de": "Lambad-Fischr\u00f6llchen",
         "en": "Lambad Fish Roll",
         "es": "Rollitos de pescado de Lambad",
         "fr": "Rouleau au poisson de Lambad",
@@ -4794,7 +4794,7 @@
         "en": "Potato Boat",
         "es": "Barquitas de papa",
         "fr": "Bateaux de patates",
-        "jp": "\u30dd\u30c6\u30c8\u30dc\u30fc\u30c9",
+        "jp": "\u30dd\u30c6\u30c8\u30dc\u30fc\u30c8",
         "kr": "\uac10\uc790 \ubcf4\ud2b8",
         "th": "Potato Boat",
         "pt": "Navio de Batata",
@@ -4825,7 +4825,7 @@
         "jp": "\u30ec\u30f3\u30b8\u30e3\u30fc\u9577\u306e\u30a4\u30c1\u30aa\u30b7",
         "kr": "\uc232\uc758 \uc21c\ucc30\uad00 \ud2b9\uc120",
         "th": "Forest Ranger's Choice",
-        "pt": "Recomenda\u00e7\u00e3o de Guarda-Florestal",
+        "pt": "Recomenda\u00e7\u00e3o de Patrulheiro Florestal",
         "ru": "\u0412\u044b\u0431\u043e\u0440 \u043b\u0435\u0441\u043d\u043e\u0433\u043e \u0441\u0442\u0440\u0430\u0436\u0430",
         "vi": "Tuy\u1ec3n Ch\u1ecdn C\u1ee7a \u0110\u1ed9i Tr\u01b0\u1edfng Ki\u1ec3m L\u00e2m"
     },
@@ -4838,7 +4838,7 @@
         "fr": "Aspiration",
         "jp": "\u61a7\u308c",
         "kr": "\ub3d9\uacbd",
-        "th": "Vision",
+        "th": "Yearning",
         "pt": "Vis\u00e3o",
         "ru": "\u041c\u0435\u0447\u0442\u0430",
         "vi": "Kh\u00e1t Khao"
@@ -4859,7 +4859,7 @@
     },
     "108441": {
         "chs": "\u8089\u8089\u70e4\u8611\u83c7\u62ab\u8428",
-        "cht": "",
+        "cht": "\u8089\u8089\u70e4\u8611\u83c7\u62ab\u85a9",
         "de": "Pilz- und Fleischpizza",
         "en": "Meat Lovers' Mushroom Pizza",
         "es": "Pizza de carne y champi\u00f1ones",
@@ -4873,7 +4873,7 @@
     },
     "108444": {
         "chs": "\u65e5\u843d\u8393\u8393\u8336",
-        "cht": "",
+        "cht": "\u65e5\u843d\u8393\u8393\u8336",
         "de": "D\u00e4mmerfrucht-Beerentee",
         "en": "Sunset Berry Tea",
         "es": "T\u00e9 de bayas crepusculares",
@@ -5042,7 +5042,7 @@
     "110014": {
         "chs": "\u9999\u8f9b\u6599",
         "cht": "\u9999\u8f9b\u6599",
-        "de": "Harra-W\u00fcrze\u00df\u00df\u00df",
+        "de": "Harra-W\u00fcrze",
         "en": "Spice",
         "es": "Especias",
         "fr": "\u00c9pice",
@@ -6092,7 +6092,7 @@
     "112062": {
         "chs": "\u5931\u6d3b\u83cc\u6838",
         "cht": "\u5931\u6d3b\u83cc\u6838",
-        "de": "Inaktivierter Pilz-Zellkern\u00df\u00df\u00df",
+        "de": "Inaktiver Pilz-Zellkern",
         "en": "Inactivated Fungal Nucleus",
         "es": "N\u00facleo f\u00fangico inerte",
         "fr": "Noyau fongique inactiv\u00e9",
@@ -6120,7 +6120,7 @@
     "112064": {
         "chs": "\u8301\u58ee\u83cc\u6838",
         "cht": "\u8301\u58ef\u83cc\u6838",
-        "de": "Robuster Pilz-Zellkern\u00df\u00df\u00df",
+        "de": "Robuster Pilz-Zellkern",
         "en": "Robust Fungal Nucleus",
         "es": "N\u00facleo f\u00fangico robusto",
         "fr": "Noyau fongique robuste",
@@ -6152,7 +6152,7 @@
         "en": "Trimmed Red Silk",
         "es": "Seda roja bordada",
         "fr": "Soie rouge brod\u00e9e",
-        "jp": "\u7e01\u98fe\u308a\u306e\u8d64\u3044\u7d79",
+        "jp": "\u7e01\u98fe\u306e\u8d64\u3044\u7d79",
         "kr": "\ud14c\ub450\ub9ac \uc7a5\uc2dd\uc774 \uc788\ub294 \ube68\uac04 \ube44\ub2e8",
         "th": "Trimmed Red Silk",
         "pt": "Seda Vermelha Bordada",
@@ -7394,7 +7394,7 @@
     "120011": {
         "chs": "\u67af\u840e\u7684\u82e6\u820d\u6853",
         "cht": "\u67af\u840e\u7684\u82e6\u820d\u6853",
-        "de": "Verwelkter Kusava",
+        "de": "Verwelktes Kusava",
         "en": "Withered Kusava",
         "es": "Kusava marchito",
         "fr": "Kusava fl\u00e9tri",
@@ -7905,7 +7905,7 @@
         "jp": "\u300c\u68ee\u6797\u66f8\u300d",
         "kr": "\u300c\uc232\uc758 \ucc45\u300d",
         "th": "\u0e15\u0e33\u0e23\u0e32\u0e2d\u0e23\u0e31\u0e0d\u0e0d\u0e01\u0e32",
-        "pt": "Livro da Floresta",
+        "pt": "Aranyaka",
         "ru": "\u0410\u0440\u0430\u043d\u044c\u044f\u043a\u0430",
         "vi": "Aranyaka"
     },
@@ -7940,7 +7940,7 @@
     "220059": {
         "chs": "\u300c\u738b\u6811\u745e\u4f51\u300d",
         "cht": "\u300c\u738b\u6a39\u745e\u4f51\u300d",
-        "de": "\u201eSegen des Ashvattha\u00df\u00df\u00df\u201c",
+        "de": "\u201eSegen des Ashvattha\u201c",
         "en": "\"The Boon of the Elder Tree\"",
         "es": "Bendici\u00f3n de Ashvattha",
         "fr": "Faveur de l'arbre a\u00een\u00e9",
@@ -7949,18 +7949,18 @@
         "th": "\"\u0e1c\u0e25\u0e1a\u0e38\u0e0d\u0e08\u0e32\u0e01\u0e15\u0e49\u0e19\u0e23\u0e32\u0e0a\u0e31\u0e19\"",
         "pt": "\"B\u00ean\u00e7\u00e3o da \u00c1rvore Anci\u00e3\"",
         "ru": "\u0411\u043b\u0430\u0433\u043e\u0434\u0435\u044f\u043d\u0438\u0435 \u0432\u0435\u043b\u0438\u043a\u043e\u0433\u043e \u0434\u0435\u0440\u0435\u0432\u0430",
-        "vi": "\"C\u00e2y Vua Ph\u00f9 H\u1ed9\""
+        "vi": "\"Ph\u00f9 H\u1ed9 C\u1ee7a C\u00e2y Vua\""
     },
     "220060": {
         "chs": "\u8bd5\u9a8c\u578b\u8d85\u71c3\u706f",
         "cht": "\u8a66\u9a57\u578b\u8d85\u71c3\u71c8",
-        "de": "Ultrahei\u00dfes Test-Lampenmodell",
+        "de": "Test-Ultrahitzelampe",
         "en": "Ultra-Hot Burner Lamp Test Model",
         "es": "L\u00e1mpara de combusti\u00f3n experimental",
         "fr": "Mod\u00e8le d'essai de lampe \u00e0 ultra-br\u00fbleur",
         "jp": "\u5b9f\u9a13\u578b\u8d85\u71c3\u30e9\u30f3\u30d7",
-        "kr": "\ucd08\uc5f0\ub4f1 \uc2e4\ud5d8 \ubc84\uc804",
-        "th": "Ultra-Heat Burner Lamp Testing Model",
+        "kr": "\ucd08\uc5f0\ub4f1 \ud14c\uc2a4\ud2b8 \ubc84\uc804",
+        "th": "\u0e15\u0e30\u0e40\u0e01\u0e35\u0e22\u0e07\u0e04\u0e27\u0e32\u0e21\u0e23\u0e49\u0e2d\u0e19\u0e2a\u0e39\u0e07\u0e1e\u0e34\u0e40\u0e28\u0e29\u0e23\u0e38\u0e48\u0e19\u0e17\u0e14\u0e25\u0e2d\u0e07",
         "pt": "Modelo Prot\u00f3tipo de Lanterna de Super-Combust\u00e3o",
         "ru": "\u041e\u043f\u044b\u0442\u043d\u044b\u0439 \u043e\u0431\u0440\u0430\u0437\u0435\u0446 \u0433\u043e\u0440\u0435\u043b\u043a\u0438 \u0441\u0432\u0435\u0440\u0445\u0432\u044b\u0441\u043e\u043a\u0438\u0445 \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440",
         "vi": "\u0110\u00e8n \u0110\u1ed1t D\u1ea1ng Th\u00ed Nghi\u1ec7m"
