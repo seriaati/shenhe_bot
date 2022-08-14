@@ -1,0 +1,3 @@
+files:
+  - source: /apps/text_map/maps/shenhe_text_map.yaml
+    translation: /apps/text_map/maps/%two_letters_code%/%original_file_name%.yaml
