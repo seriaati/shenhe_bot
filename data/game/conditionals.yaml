@@ -272,33 +272,12 @@
   description: '行秋開 Q'
   effect: '行秋 E 傷害 +50%'
 - name: KaedeharaKazuha
-  key: swirlhydro
-  value: hydro
+  key: swirlcustom_element
+  value: custom_element
   constellation: null
   ascension: 4
-  description: '觸發水擴散反應後'
-  effect: '提高水元素傷害'
-- name: KaedeharaKazuha
-  key: swirlpyro
-  value: pyro
-  constellation: null
-  ascension: null
-  description: '觸發火擴散反應後'
-  effect: '提高火元素傷害'
-- name: KaedeharaKazuha
-  key: swirlcryo
-  value: cryo
-  constellation: null
-  ascension: null
-  description: '觸發冰擴散反應後'
-  effect: '提高冰元素傷害'
-- name: KaedeharaKazuha
-  key: swirlelectro
-  value: electro
-  constellation: null
-  ascension: null
-  description: '觸發雷擴散反應後'
-  effect: '提高雷元素傷害'
+  description: '觸發元素擴散反應後'
+  effect: '提高元素傷害'
 - name: KaedeharaKazuha
   key: c6
   value: c6

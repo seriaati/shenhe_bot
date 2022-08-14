@@ -478,7 +478,10 @@ class GenshinApp:
         locale = await get_user_locale(user_id, self.db) or locale
         client_locale = to_genshin_py(locale) or 'en-us'
         client.lang = client_locale
-        await client.update_character_names(lang=client._lang)
+        try:
+            await client.update_character_names(lang=client._lang)
+        except genshin.errors.InvalidCookies:
+            await c.execute('DELETE FROM genshin_accounts WHERE user_id = ?', (user_id,))
         return client, uid, user, locale
 
     async def check_user_data(self, user_id: int):

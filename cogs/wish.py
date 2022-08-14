@@ -75,7 +75,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 369, i.locale, user_locale), icon_url=i.user.avatar)
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds).start(embeded=True)
+        await GeneralPaginator(i, embeds, self.bot.db).start()
 
     @app_commands.command(name='luck', description=_('Wish luck analysis', hash=479))
     @app_commands.rename(member=_('user', hash=415))
