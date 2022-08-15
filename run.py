@@ -47,7 +47,10 @@ intents.presences = True
 
 class Translator(app_commands.Translator):
     async def translate(self, string: locale_str, locale: Locale, context: TranslationContext) -> Optional[str]:
-        return text_map.get(string.extras['hash'], locale)
+        try:
+            return text_map.get(string.extras['hash'], locale)
+        except KeyError:
+            return None
 
 
 class ShenheBot(commands.Bot):
