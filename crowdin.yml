@@ -1,5 +1,5 @@
 files:
-  - source: /text_maps/*/
+  - source: /text_maps/en-US
     ignore:
       - /text_maps/de-DE
       - /text_maps/es-ES
