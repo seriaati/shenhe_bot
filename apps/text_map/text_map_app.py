@@ -4,28 +4,16 @@ from typing import Literal
 import discord
 import yaml
 
-from apps.text_map.convert_locale import to_ambr_top, to_paths
+from apps.text_map.convert_locale import to_ambr_top, to_paths, paths
 
 
 class TextMap():
     def __init__(self):
-        langs = ['de-DE', 'en-US', 'es-ES', 'fr-FR', 'ja-JP', 'ko-KR', 'pt-PT', 'ru-RU', 'th-TH', 'vi-VN', 'zh-CN']
-        self.text_maps = {
-            'de-DE': {},
-            'en-US': {},
-            'es-ES': {},
-            'fr-FR': {},
-            'ja-JP': {},
-            'ko-KR': {},
-            'pt-PT': {},
-            'ru-RU': {},
-            'th-TH': {},
-            'vi-VN': {},
-            'zh-CN': {}
-        }
+        langs = paths.values()
+        self.text_maps = {}
         for lang in langs:
             with open(f'text_maps/langs/{lang}.yaml', 'r', encoding='utf-8') as f:
-                self.text_maps[lang] = yaml.full_load(f)
+                self.text_maps[str(lang)] = yaml.full_load(f)
         with open('text_maps/avatar.json', 'r', encoding='utf-8') as f:
             self.avatar = json.load(f)
         with open('text_maps/material.json', 'r', encoding='utf-8') as f:

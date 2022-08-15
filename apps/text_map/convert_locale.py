@@ -75,7 +75,8 @@ paths = {
     'ru': 'ru-RU',
     'th': 'th-TH',
     'vi': 'vi-VN',
-    'zh-CN': 'zh-CN'
+    'zh-CN': 'zh-CN',
+    'zh-TW': 'zh-TW'
 }
 
 
