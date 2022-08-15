@@ -84,7 +84,7 @@
 84: Elemental skills cast
 85: Spiral Abyss Overview
 86: Chamber
-87: '‎'
+87: "‎"
 88: '[First Half]'
 89: '[Second Half]'
 90: 'Build #'
@@ -153,7 +153,7 @@
 144: Primo Log
 145: Mora Log
 146: Floor No.
-147: '‎'
+147: "‎"
 148: Choose abyss floor
 149: Data not public?
 150: "Please go to <https://www.hoyolab.com> and login\n
@@ -196,7 +196,7 @@
 179: Success
 180: Choose your weapon
 181: Set the levels for
-182: '‎'
+182: "‎"
 183: Current level
 184: 'For example: 1'
 185: Target level
@@ -410,11 +410,11 @@
 372: Wish luck analysis
 373: Your luck is better than
 374: of players
-375: '‎'
+375: "‎"
 376: pull(s) in total
-378: '‎'
+378: "‎"
 379: UP five stars in total
-380: '‎'
+380: "‎"
 381: pity pull(s)
 382: Wishing to pull
 383: UP 5 star characters
@@ -435,9 +435,9 @@
 398: Standard banner
 399: Limited-time banner
 400: Weapon banner
-401: '‎'
+401: "‎"
 402: pull(s) per 5 star
-403: '‎'
+403: "‎"
 404: pull(s) from pity
 405: You haven't pulled any 5 star weapons in the weapon banner yet
 406: Start time
