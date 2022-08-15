@@ -705,6 +705,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             await i.followup.send(embed=default_embed().set_author(name=text_map.get(502, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
     @app_commands.command(name='search', description=_('Search anything related to genshin', hash=508))
+    @app_commands.rename(query=_('query', hash=509))
     async def search(self, i: Interaction, query: str):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
