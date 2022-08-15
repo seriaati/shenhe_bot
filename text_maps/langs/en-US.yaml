@@ -84,7 +84,7 @@
 84: Elemental skills cast
 85: Spiral Abyss Overview
 86: Chamber
-87: ''
+87: '‎'
 88: '[First Half]'
 89: '[Second Half]'
 90: 'Build #'
@@ -136,21 +136,15 @@
 135: There was an error
 136: Choose your account
 137: Account registration tutorial
-138: '1.Copy the code below
-
-    2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>
-
-    3.Click the address bar and select all the text there
-
+138: "1.Copy the code below\n
+    2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n
+    3.Click the address bar and select all the text there\n
     4.Enter the word `java`, then paste the code you copied, ensure that the address
-    bar starts with `javascript:`
-
+    bar starts with `javascript:`\n
     5.Press ENTER, a blank page will show up displaying your cookie, select all and
-    copy
-
-    6.Submit your cookie here, use the `/reigster` command
-
-    Too complicated? The image below might help!'
+    copy\n
+    6.Submit your cookie here, use the `/reigster` command\n
+    Too complicated? The image below might help!"
 139: Cookie invalid or is outdated, please logout then login again!
 140: Please use the `/register` command
 141: Account data not found!
@@ -159,23 +153,17 @@
 144: Primo Log
 145: Mora Log
 146: Floor No.
-147: ''
+147: '‎'
 148: Choose abyss floor
 149: Data not public?
-150: 'Please go to <https://www.hoyolab.com> and login
+150: "Please go to <https://www.hoyolab.com> and login\n
+    Follow the steps in the image below\n\n
 
-    Follow the steps in the image below
-
-
-    1. Click the avatar on the top right
-
-    2. Personal homepage
-
-    3. Click `Genshin` on the top right corner
-
-    4. Click the gear icon
-
-    5. Toggle all the switches'
+    1. Click the avatar on the top right\n
+    2. Personal homepage\n
+    3. Click `Genshin` on the top right corner\n
+    4. Click the gear icon\n
+    5. Toggle all the switches"
 151: Resin notification settings
 152: Resin threshold
 153: Shenhe will DM you after your resin exceeds the threshold
@@ -190,11 +178,9 @@
 162: Build
 163: Choose your build
 164: builds
-165: 'This user hasn''t registered their account yet
-
-    `/register` to register'
+165: "This user hasn't registered their account yet\n`/register` to register"
 166: User not found
-167: '''s UID'
+167: "'s UID"
 168: Enter your data
 169: Character target level
 170: 'For example: 90'
@@ -210,7 +196,7 @@
 179: Success
 180: Choose your weapon
 181: Set the levels for
-182: ''
+182: '‎'
 183: Current level
 184: 'For example: 1'
 185: Target level
@@ -424,11 +410,11 @@
 372: Wish luck analysis
 373: Your luck is better than
 374: of players
-375: ''
+375: '‎'
 376: pull(s) in total
-378: ''
+378: '‎'
 379: UP five stars in total
-380: ''
+380: '‎'
 381: pity pull(s)
 382: Wishing to pull
 383: UP 5 star characters
@@ -449,9 +435,9 @@
 398: Standard banner
 399: Limited-time banner
 400: Weapon banner
-401: ''
+401: '‎'
 402: pull(s) per 5 star
-403: ''
+403: '‎'
 404: pull(s) from pity
 405: You haven't pulled any 5 star weapons in the weapon banner yet
 406: Start time
