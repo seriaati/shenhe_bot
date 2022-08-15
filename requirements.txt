@@ -6,7 +6,7 @@ genshin @ git+https://github.com/thesadru/genshin.py@e5920c9e2765cf62c82b45d9eac
 jishaku @git+https://github.com/Gorialis/jishaku
 hmtai==3.2.0
 matplotlib==3.5.3
-numpy==1.23.1
+numpy==1.23.2
 pyppeteer==1.0.2
 python-dotenv==0.20.0
 PyYAML==6.0
