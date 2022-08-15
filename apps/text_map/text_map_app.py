@@ -5,7 +5,6 @@ import discord
 import yaml
 
 from apps.text_map.convert_locale import to_ambr_top, to_paths
-from utility.utils import extract_integer_from_string
 
 
 class TextMap():
@@ -25,7 +24,7 @@ class TextMap():
             'zh-CN': {}
         }
         for lang in langs:
-            with open(f'text_maps/{lang}/text_map.yaml', 'r', encoding='utf-8') as f:
+            with open(f'text_maps/langs/{lang}.yaml', 'r', encoding='utf-8') as f:
                 self.text_maps[lang] = yaml.full_load(f)
         with open('text_maps/avatar.json', 'r', encoding='utf-8') as f:
             self.avatar = json.load(f)
