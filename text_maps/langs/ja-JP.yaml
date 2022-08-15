@@ -18,7 +18,7 @@
 18: 探索派遣がありません。
 19: 完了
 20: 探索派遣
-21: 'さらにの情報は /stuck を 入力してくたさい。'
+21: "さらにの情報は /stuck を 入力してくたさい。"
 22: 權限がありません。
 23: Error
 24: Realtime notes
@@ -32,7 +32,7 @@
 32: 言語を選らんでくたさい。
 33: 言語再設定は完了した。
 34: 現在の言語
-35: 'さらにの情報は /register を 入力してくたさい。'
+35: "さらにの情報は /register を 入力してくたさい。"
 36: 無效の cookie
 37: 登錄した アカウント は キャンセル した。
 38: cookieから キャラが見つかりません。
@@ -85,9 +85,9 @@
 85: 深境螺旋 一覧
 86: 層
 87: "‎"
-88: '[上半]'
-89: '[下半]'
-90: '装備'
+88: "[上半]"
+89: "[下半]"
+90: "装備"
 91: 武器
 92: 聖遺物
 93: メイン効果
@@ -96,8 +96,8 @@
 96: 來源
 97: 聖遺物の おすすめ
 98: 樹脂お知らせも 消しました。
-99: 'ON'
-100: 'OFF'
+99: "ON"
+100: "OFF"
 101: Current Toggle
 102: Resing Threshold
 103: Max. notification number
@@ -167,9 +167,9 @@
 167: "の UID"
 168: Enter your data
 169: Character target level
-170: 'For example: 90'
+170: "For example: 90"
 171: Auto attack target level
-172: 'For example: 5'
+172: "For example: 5"
 173: Elemental skill (E) target level
 174: Elemental burst (Q) target level
 175: Add to todo list
@@ -181,12 +181,12 @@
 181: Set the levels for
 182: "‎"
 183: Current level
-184: 'For example: 1'
+184: "For example: 1"
 185: Target level
-186: 'For example: 90'
+186: "For example: 90"
 187: Please enter a number
-188: 'Character level: Please enter a number between 1 and 90'
-189: 'Talent level: Please enter a number between 1 and 10'
+188: "Character level: Please enter a number between 1 and 90"
+189: "Talent level: Please enter a number between 1 and 10"
 190: Invalid input
 191: Calculation results
 192: Calculation content
@@ -206,7 +206,7 @@
 206: Clear items
 207: Choose the item you wish to remove
 208: Item name
-209: 'For example: mora'
+209: "For example: mora"
 210: Item amount
 211: (Leaving this field blank will remove the item entirely)
 212: You can't remove more items than you have in your dodo list
@@ -300,7 +300,7 @@
 310: Turn the toggle ON
 311: How to unblock DM from servers
 312: Time to farm materials for
-313: '!'
+313: "!"
 314: Items you can farm
 315: Basic information
 316: Birthday
@@ -355,7 +355,7 @@
 365: Choose your platform
 366: "The language of your wish history is based on your current selected language\n\\ \\ changing the language afterward will not change anything"
 367: No wish history data found
-368: '`/wish setkey` to import your wish history'
+368: "`/wish setkey` to import your wish history"
 369: Wish history
 370: Big pity available
 371: Small pity available
@@ -374,8 +374,8 @@
 385: pull(s)
 386: Event wish number prediction
 387: Standard
-388: 'Yes'
-389: 'No'
+388: "Yes"
+389: "No"
 390: Is this the weapon you wanted?
 391: The last 5 star weapon you pulled was
 392: Is this a standard or limited time UP weapon?
@@ -400,10 +400,10 @@
 411: options
 412: Registration tutorial
 413: submit cookie
-414: 'View realtime notes: Current resin, pot, expedition status (need /register)'
+414: "View realtime notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
-417: 'View genshin stats: Active days, oculis, number of chests'
+417: "View genshin stats: Active days, oculis, number of chests"
 418: A user's genshin UID
 419: View area exploration rates
 420: Claim hoyolab daily login reward
@@ -430,9 +430,9 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: 'OFF'
+445: "OFF"
 446: View farmable items today
-447: 'View character builds: Weapons, artifacts, talent levels, stats'
+447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
 449: View characters' artifacts, stats, weapons, talents, and calculate damage
 450: Redeem gift codes (need /register)
@@ -448,8 +448,8 @@
 460: Calcualte materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: 'ON'
-464: 'OFF'
+463: "ON"
+464: "OFF"
 465: Calculate materials needed for upgrading a weapon
 466: weapon type
 467: rarity
