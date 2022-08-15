@@ -1,0 +1,3 @@
+files:
+  - source: /text_maps/langs/en-US.yaml
+    translation: /text_maps/langs/%locale%.yaml
