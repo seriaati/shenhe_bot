@@ -1,11 +1,11 @@
-1: Full
-2: Today's
-3: Tomorrow
-4: Remaining
-5: days
-6: hr
-7: min
-8: sec
+1: フル
+2: 今日
+3: 明日
+4: 残る
+5: 日
+6: 時間
+7: 分
+8: 秒
 9: 使ってできます。
 10: 参量物質変化器がありません。
 11: 完成した デイリー依頼数
@@ -20,8 +20,8 @@
 20: 探索派遣
 21: "さらにの情報は /stuck を 入力してくたさい。"
 22: 權限がありません。
-23: Error
-24: Realtime notes
+23: エラー
+24: リアルタイムノート
 25: 月曜日
 26: 火曜日
 27: 水曜日
@@ -49,31 +49,31 @@
 49: 風神の瞳
 50: 岩神の瞳
 51: 雷神の瞳
-52: Chests
+52: お宝箱
 53: 普通の宝箱
 54: 精巧な宝箱
 55: 豪華な宝箱
-56: Genshin stats
+56: 原神数据
 57: 貴重な宝箱
 58: 世界探索
 59: 原石は先月より
 60: 増えます
 61: 減ります
 62: モラは先月より
-63: Acquired this month
+63: 今月は合計
 64: 先月
 65: 貰った原石
 66: 貰った紀錄
-67: Click the button below
+67: 下のボタンをクリックしてください
 68: 今月最近 30 の 原石 と モラ 紀錄
-69: Traveler's Diary
-70: Primo Log
+69: トラベラーズ日記
+70: 原石日記
 71: 原石
 72: モラ 紀錄
 73: モラ
 74: データ の 更新は /stats を 入力してくたさい。
 75: (この指示は 深境螺旋第9層以上のデータ しかを見せます)
-76: Spiral abyss data not found
+76: 深境螺旋 の データ は見つかえりません
 77: 今期
 78: 最高記録
 79: 戦績
@@ -99,7 +99,7 @@
 99: "ON"
 100: "OFF"
 101: Current Toggle
-102: Resing Threshold
+102: 樹脂值
 103: Max. notification number
 104: 設定完了
 105: 全キャラクター
@@ -107,49 +107,49 @@
 107: 交換コード 無效
 108: 交換コード
 109: 交換コード は 交換 成功しました。
-110: Summer event data not found
-111: Golden Apple Archipelago
-112: Waverider Waypoints Unlocked
-113: Waypoints Unlocked
-114: Treasure Chests Obtained
+110: サマータイムオデッセイ　に関するデーダ　は　見つかりません。
+111: 金リンゴ群島
+112: ボートポイント開放数
+113: ワープポイント
+114: 宝箱開放数
 115: Unfinished
 116: Surfpiercer
-117: Summer Memories
-118: Realm Exploration
-119: Time completed
-120: Successfully challenged
-121: times
-122: Unleashed elemental skill
-123: Custom UID searched
-124: Back to default
-125: By default, shenhe responds you with the same langauge your discord uses
-126: Changing language will override the default langauge
-127: If any text is not translated yet, shenhe will respond you with English
-128: Changing langauge
+117: 夏の記憶
+118: 世界探索
+119: 完了した時間
+120: チャレンジ成功
+121: 回
+122: スキルを解放しました。
+123: カスタム UID が検索されました
+124: デフォルトに戻る
+125: デフォルトでは、Shenhe はあなたの不和音が使用しているのと同じ言語で応答します
+126: 言語を変更するとデフォルトの言語が上書きされます
+127: テキストがまだ翻訳されていない場合、Shenheは英語であなたに返信します。
+128: 言語の変更
 129: モンド
 130: 璃月
 131: 稻妻
-132: Submit your cookie
-133: please paste the text you copied here
-134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
-135: There was an error
-136: Choose your account
-137: Account registration tutorial
+132: クッキーを送信
+133: ここにコピーしたテキストを貼ってください
+134: エラーが発生しました。format@@0(https://github.com/seriaati/shenhe_bot/issues) でこのエラーを報告してください。
+135: エラーが発生しました
+136: アカウントを選択してください
+137: アカウント は登錄成功した。
 138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/reigster` command\n Too complicated? The image below might help!"
 139: Cookie invalid or is outdated, please logout then login again!
-140: Please use the `/register` command
-141: Account data not found!
-142: Choose your element
+140: '`/register`コマンドを使用してください'
+141: アカウントデータが見つかりません！
+142: アカウントを選択してください
 143: You are not the issuer of this command
-144: Primo Log
+144: 原石日記
 145: モラ 紀錄
 146: Floor No.
 147: "‎"
-148: Choose abyss floor
-149: Data not public?
+148: 深境螺旋の層を選べてくたさい。
+149: 權限がありません。
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: Resin notification settings
-152: Resin threshold
+152: 樹脂值
 153: Shenhe will DM you after your resin exceeds the threshold
 154: Max. notification number
 155: DM will stop after this number of times
@@ -159,50 +159,50 @@
 159: Current character notifications
 160: Choose your element
 161: Choosing this character will turn OFF its notifications
-162: Build
-163: Choose your build
-164: builds
+162: 装備
+163: 装備を選択してください
+164: 装備
 165: "This user hasn't registered their account yet\n`/register` to register"
-166: User not found
+166: 参量物質変化器がありません。
 167: "の UID"
-168: Enter your data
-169: Character target level
-170: "For example: 90"
-171: Auto attack target level
-172: "For example: 5"
+168: データを入力してください
+169: キャラクター目標レベル
+170: "例えば： 90"
+171: 普通攻擊の目標 レベル
+172: "例えば： 5"
 173: Elemental skill (E) target level
-174: Elemental burst (Q) target level
-175: Add to todo list
-176: Please remove some materials from your todo list using the `remove materials` button
-177: You have reached the limit of materials you can have in your todo list (125)
-178: Use `/todo` to view your todo list
+174: 元素爆發(Q) の目標レベル
+175: やること帳に追加します。
+176: '「素材を削除します」のボタンを利用して、やること帳內　な素材を削除してください。'
+177: すでに素材に達しています。
+178: '「/todo」を入力して やること帳內一覧を表示しくたさい。'
 179: Success
 180: Choose your weapon
 181: Set the levels for
 182: "‎"
 183: Current level
 184: "For example: 1"
-185: Target level
-186: "For example: 90"
+185: 目標レベル
+186: "例: 90"
 187: Please enter a number
-188: "Character level: Please enter a number between 1 and 90"
-189: "Talent level: Please enter a number between 1 and 10"
-190: Invalid input
-191: Calculation results
-192: Calculation content
-193: Character level
-194: Normal attack level
-195: Elemental skill level
-196: Elemental burst level
-197: No materials needed
-198: Character level-up
-199: Talent level-up
-200: Weapon level
-201: Weapon level-up
-202: Todo list
-203: Add item
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use the `/calc` command to calculate materials for characters and weapons, or use the green button below to add custom items"
-205: Remove item
+188: "キャラクターレベル：１～９０の範囲内で入ってください。"
+189: "天賦レベル：１～１０の範囲内で入ってください。"
+190: 無効入力
+191: 計算結果
+192: 計算内容
+193: キャラクターレベル
+194: 通常攻擊 レベル
+195: 元素スキル レベル
+196: 元素スキル レベル
+197: 必要な材料はありません
+198: キャラクターレベル
+199: 天賦のレベルアップ
+200: 武器レベル
+201: 武器のレベルアップ
+202: やること帳
+203: 追加目標
+204: "おめでとう！　やることもありません！　(ᗒᗨᗕ)/\n\nコマンド ：/calc で入力しように　キャラクター　や　武器　の必要な素材を計算してくたさい。\n\nまた、緑なボタンを利用して、新しの素材入力してくさい。"
+205: 素材を取り除く
 206: Clear items
 207: Choose the item you wish to remove
 208: Item name
@@ -210,33 +210,33 @@
 210: Item amount
 211: (Leaving this field blank will remove the item entirely)
 212: You can't remove more items than you have in your dodo list
-213: Cryo
-214: Geo
-215: Pyro
-216: Anemo
-217: Hydro
-218: Dendro
-219: Electro
+213: 氷元素
+214: 岩元素
+215: 炎元素
+216: 風元素
+217: 水元素
+218: 草元素
+219: 雷元素
 220: 全キャラクター
-221: January
-222: February
-223: March
-224: April
-225: May
-226: June
-227: July
-228: August
-229: September
-230: October
-231: November
-232: December
-234: monday
-235: tuesday
-236: wednesday
-237: thursday
-238: friday
-239: saturday
-240: sunday
+221: 1月
+222: 2月
+223: 3月
+224: 4月
+225: 5月
+226: 6月
+227: 7月
+228: 8月
+229: 9月
+230: 10月
+231: 11月
+232: 12月
+234: 月曜日
+235: 火曜日
+236: 水曜日
+237: 木曜日...
+238: 金曜日
+239: 土曜日
+240: 日曜日
 250: farmable items
 251: Achievement leaderboard
 252: You
@@ -247,26 +247,26 @@
 257: Luck leaderboard
 258: HP
 259: HP%
-260: Atk.
-261: Atk.%
-262: Def.
-263: Def.%
-264: Crit Rate
-265: Crit DMG
-266: Elem. Mastery
-267: Energy Recharge
-268: Base HP
-269: Base Atk.
-270: Base Def.
-271: Healing Bonus
-272: Physic DMG Bonus
-273: Pyro DMG Bonus
-274: Electro DMG Bonus
-275: Hydro DMG Bonus
-276: Dendro DMG Bonus
-277: Anemo DMG Bonus
-278: Geo DMG Bonus
-279: Cryo DMG Bonus
+260: 攻擊力
+261: 攻擊力%
+262: 防禦力
+263: 防禦力%
+264: 会心率
+265: 会心 ダメージ
+266: 元素熟知
+267: 元素チャージ 效能
+268: 基礎HP
+269: 基礎攻擊力
+270: 基礎防禦力
+271: 与える治療效果
+272: 物理ダメージ
+273: 炎元素ダメージ
+274: 雷元素ダメージ
+275: 水元素ダメージ
+276: 草元素ダメージ
+277: 風元素ダメージ
+278: 岩元素ダメージ
+279: 氷元素ダメージ
 280: Base Speed
 281: Speed%
 282: Go back
@@ -276,24 +276,24 @@
 286: Invalid UID
 287: Please turn on the character showcase toggle in game
 288: Player level
-289: World level
-290: Achievement
-291: Spiral abyss
-292: Max HP
-293: Atk.
-294: Def.
-295: Elem. Mastery
-296: Crit Rate
-297: Crit DMG
-298: Energy Recharge
-299: Friendship Level
+289: 世界ランク
+290: アチーブメント
+291: 深境螺旋
+292: 最大HP
+293: 攻擊力
+294: 防禦力
+295: 元素熟知
+296: 会心率
+297: 会心 ダメージ
+298: 元素チャージ 效能
+299: 好感度レベル
 300: The highest artifact score is 99, only +20 artifacts will have scores
 301: Stats
 302: Current threshold
-303: Current resin
+303: 現在の樹脂
 304: Current max. notification number
 305: User /remind to change the settings
-306: Resin is almost full!!
+306: 樹脂はほぼ満杯!!
 307: Talent notification is now turned OFF
 308: Right click any server that has shenhe in it
 309: Click on `privacy settings`
@@ -303,9 +303,9 @@
 313: "!"
 314: Items you can farm
 315: Basic information
-316: Birthday
+316: 誕生日
 317: Affiliation
-318: Constellation
+318: 命ノ星座
 319: Name card
 320: Ascension materials
 321: Ascension to
@@ -313,22 +313,22 @@
 323: Passive Talents
 324: Level-up to
 325: Quick navigation
-326: Normal Atk.
-327: Charged Atk.
-328: Plunging Atk.
-329: Calculating damage...
-330: This requires around 5 to 10 seconds
+326: 普通攻擊
+327: 重擊
+328: 下落攻擊
+329: ダメージ計算中...
+330: 5秒から10秒程度かかります
 331: No reaction
 332: Melt
 333: Vaporize
-334: Avg. DMG
-335: Non Crit DMG
-336: Crit Hit DMG
-337: Select elemental reaction
+334: 平均ダメージ
+335: 会心一擊がない の ダメージ
+336: 会心一擊 の ダメージ
+337: 元素の反応を選択
 338: No team melee infusion
 339: Pyro infusion
 340: Cryo infusion
-341: Bennett C6
+341: ベネット　６命ノ星座
 342: Chongyun Skill
 343: Select team melee infusion
 344: Select teammate(s)
@@ -458,7 +458,7 @@
 470: claymore
 471: bow
 472: polearm
-473: View todo list
+473: やること帳一覧を表示します。
 474: Import wish history
 475: function
 476: Wish history import tutorial
@@ -477,20 +477,20 @@
 489: Requires wish history import using /wish import
 490: Genshin calculations
 491: Calculate materials needed for upgrading characters or weapons
-492: Todo list
+492: やること帳
 493: Waifus
 494: Others
 495: Choose your category
 496: Admin usage only
-497: Genshin stats
+497: 原神数据
 498: View profile
-499: View all characters
-500: Realtime notes
+499: マイ キャラクター
+500: リアルタイムノート
 501: Update self leaderbaord position
 502: Leaderboard position updated
 503: View past updates
-504: 'Made by seria#5334, DM me if you have any questions'
+504: "かわい　美しい　贫乳な　seria#5334を制りました。\n、疑問はDMで話てください。"
 505: View past updates
 506: number
-507: How many 5 star UP characters do you wish to pull?
-508: Search anything genshin related
+507: 5つ星のUPキャラクターは何枚がガチしますか？
+508: 原神に関すること　を検索してくたさい
