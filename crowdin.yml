@@ -1,3 +1,14 @@
 files:
-  - source: /text_maps/en-US/text_map.yaml
+  - source: /text_maps/*/
+    ignore:
+      - /text_maps/de-DE
+      - /text_maps/es-ES
+      - /text_maps/fr-FR
+      - /text_maps/ja-JP
+      - /text_maps/ko-KR
+      - /text_maps/pt-PT
+      - /text_maps/th-TH
+      - /text_maps/vi-VN
+      - /text_maps/ru-RU
+      - /text_maps/zh-CN
     translation: /text_maps/%locale%/%original_file_name%
