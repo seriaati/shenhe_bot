@@ -247,15 +247,15 @@
 257: Luck leaderboard
 258: HP
 259: HP%
-260: Atk.
-261: Atk.%
-262: Def.
+260: 攻擊力
+261: 攻擊力%
+262: 防禦力
 263: 防禦力%
 264: 会心率
 265: 会心 ダメージ
 266: 元素熟知
 267: 元素チャージ 效能
-268: 基礎生命值
+268: 基礎HP
 269: 基礎攻擊力
 270: 基礎防禦力
 271: 与える治療效果
@@ -276,24 +276,24 @@
 286: Invalid UID
 287: Please turn on the character showcase toggle in game
 288: Player level
-289: World level
-290: Achievement
-291: Spiral abyss
-292: Max HP
-293: Atk.
-294: Def.
-295: Elem. Mastery
-296: Crit Rate
-297: Crit DMG
-298: Energy Recharge
-299: Friendship Level
+289: 世界ランク
+290: アチーブメント
+291: 深境螺旋
+292: 最大HP
+293: 攻擊力
+294: 防禦力
+295: 元素熟知
+296: 会心率
+297: 会心 ダメージ
+298: 元素チャージ 效能
+299: 好感度レベル
 300: The highest artifact score is 99, only +20 artifacts will have scores
 301: Stats
 302: Current threshold
-303: Current resin
+303: 現在の樹脂
 304: Current max. notification number
 305: User /remind to change the settings
-306: Resin is almost full!!
+306: 樹脂はほぼ満杯!!
 307: Talent notification is now turned OFF
 308: Right click any server that has shenhe in it
 309: Click on `privacy settings`
@@ -303,9 +303,9 @@
 313: "!"
 314: Items you can farm
 315: Basic information
-316: Birthday
+316: 誕生日
 317: Affiliation
-318: Constellation
+318: 命ノ星座
 319: Name card
 320: Ascension materials
 321: Ascension to
@@ -313,22 +313,22 @@
 323: Passive Talents
 324: Level-up to
 325: Quick navigation
-326: Normal Atk.
-327: Charged Atk.
-328: Plunging Atk.
-329: Calculating damage...
-330: This requires around 5 to 10 seconds
+326: 普通攻擊
+327: 重擊
+328: 下落攻擊
+329: ダメージ計算中...
+330: 5秒から10秒程度かかります
 331: No reaction
 332: Melt
 333: Vaporize
-334: Avg. DMG
-335: Non Crit DMG
-336: Crit Hit DMG
-337: Select elemental reaction
+334: 平均ダメージ
+335: 会心一擊がない の ダメージ
+336: 会心一擊 の ダメージ
+337: 元素の反応を選択
 338: No team melee infusion
 339: Pyro infusion
 340: Cryo infusion
-341: Bennett C6
+341: ベネット　６命ノ星座
 342: Chongyun Skill
 343: Select team melee infusion
 344: Select teammate(s)
