@@ -30,6 +30,7 @@ class TextMap():
         text = text_map.get(textMapHash)
         if text is None:
             print(f'text map hash not found: {textMapHash}')
+            return None
         else:
             return text
 
