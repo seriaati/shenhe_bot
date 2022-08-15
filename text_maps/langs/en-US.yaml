@@ -18,7 +18,7 @@
 18: No expeditions found
 19: Finished
 20: Expeditions
-21: '`/stuck` for more information'
+21: "`/stuck` for more information"
 22: Data not public
 23: Error
 24: Realtime notes
@@ -32,7 +32,7 @@
 32: Choose your language
 33: Langauge changed
 34: Current language
-35: '`/register` for more information'
+35: "`/register` for more information"
 36: Cookie invalid
 37: Account register cancelled
 38: No valid accounts were obtained from the cookie
@@ -85,9 +85,9 @@
 85: Spiral Abyss Overview
 86: Chamber
 87: "‎"
-88: '[First Half]'
-89: '[Second Half]'
-90: 'Build #'
+88: "[First Half]"
+89: "[Second Half]"
+90: "Build #"
 91: Weapon
 92: Artifacts
 93: Main Stats
@@ -96,8 +96,8 @@
 96: Source
 97: Artifact Thoughts
 98: Resin reminder has been turned off
-99: 'ON'
-100: 'OFF'
+99: "ON"
+100: "OFF"
 101: Current Toggle
 102: Resing Threshold
 103: Max. notification number
@@ -131,7 +131,8 @@
 131: Inazuma
 132: Submit your cookie
 133: please paste the text you copied here
-134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues)
+134:
+    There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues)
     to report this error.
 135: There was an error
 136: Choose your account
@@ -183,13 +184,14 @@
 167: "'s UID"
 168: Enter your data
 169: Character target level
-170: 'For example: 90'
+170: "For example: 90"
 171: Auto attack target level
-172: 'For example: 5'
+172: "For example: 5"
 173: Elemental skill (E) target level
 174: Elemental burst (Q) target level
 175: Add to todo list
-176: Please remove some materials from your todo list using the `remove materials`
+176:
+    Please remove some materials from your todo list using the `remove materials`
     button
 177: You have reached the limit of materials you can have in your todo list (125)
 178: Use `/todo` to view your todo list
@@ -198,12 +200,12 @@
 181: Set the levels for
 182: "‎"
 183: Current level
-184: 'For example: 1'
+184: "For example: 1"
 185: Target level
-186: 'For example: 90'
+186: "For example: 90"
 187: Please enter a number
-188: 'Character level: Please enter a number between 1 and 90'
-189: 'Talent level: Please enter a number between 1 and 10'
+188: "Character level: Please enter a number between 1 and 90"
+189: "Talent level: Please enter a number between 1 and 10"
 190: Invalid input
 191: Calculation results
 192: Calculation content
@@ -218,14 +220,13 @@
 201: Weapon level-up
 202: Todo list
 203: Add item
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use the `/calc` command\
-    \ to calculate materials\n for character and weapon level-up\n Or use the green\
-    \ button below to add your custom items"
+204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n
+    Use the `/calc` command to calculate materials for characters and weapons, or use the green button below to add custom items"
 205: Remove item
 206: Clear items
 207: Choose the item you wish to remove
 208: Item name
-209: 'For example: mora'
+209: "For example: mora"
 210: Item amount
 211: (Leaving this field blank will remove the item entirely)
 212: You can't remove more items than you have in your dodo list
@@ -319,7 +320,7 @@
 310: Turn the toggle ON
 311: How to unblock DM from servers
 312: Time to farm materials for
-313: '!'
+313: "!"
 314: Items you can farm
 315: Basic information
 316: Birthday
@@ -364,46 +365,55 @@
 355: Please wait for awhile while shenhe is processing your wish history
 356: Successfully imported wish history
 357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n\
-    \ 2. Open the wish history in the game and wait it to load\n 3. Press START on\
-    \ your keyboard, then search for Powershell\n 4. Click Windows Powershell, then\
-    \ copy & paste the script below to the Powershell\n 5. Press ENTER, and a link\
-    \ will copied to your clipboard\n 6. Submit the link you copied by using the `/wish\
-    \ setkey` command"
+358:
+    "1. Open genshin impact (If you use multiple accounts, please restart the game)\n
+    2. Open the wish history in the game and wait it to load\n
+    3. Press START on your keyboard, then search for Powershell\n
+    4. Click Windows Powershell, then copy & paste the script below to the Powershell\n
+    5. Press ENTER, and a link will copied to your clipboard\n
+    6. Submit the link you copied by using the `/wish import` command"
 359: Importing wish history using your android phone
-360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the\
-    \ entire text, we only want the link here (in step 7)\n 1. Open Wish (in the game)\n\
-    \ 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data\
-    \ connection\n 5. Press refresh on top right corner\n 6. The page should display\
-    \ an error and show you some text with a black font\n 7. Hold the text, select\
-    \ the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit\
-    \ that link here using the `/wish setkey` command"
+360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n
+    The video tutorial copied the entire text, we only want the link here (in step 7)\n\n
+
+    1. Open Wish (in the game)\n
+    2. Press History\n
+    3. Wait for it to load\n
+    4. Turn off your Wi-Fi and data connection\n
+    5. Press refresh on top right corner\n
+    6. The page should display an error and show you some text with a black font\n
+    7. Hold the text, select the link part, then copy\n
+    8. Turn on your Wi-Fi or data connection\n
+    9. Submit that link here using the `/wish import` command"
 361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download\
-    \ Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n\
-    \ 2. Open the app, then allow VPN in system preferences (Settings > General >\
-    \ VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up\
-    \ window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings\
-    \ > General > VPN & Device management > Click on Stream Generated CA and install\n\
-    \ 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to\
-    \ Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin\
-    \ Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back\
-    \ to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that\
-    \ ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click\
-    \ Request tab, then copy the link\n 12. Submit that link here using the `/wish\
-    \ setkey` command"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n
+    1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n
+    2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n
+    3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n
+    4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n
+    5. Open Genshin Impact then open Wish screen, stay on that page\n
+    6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n
+    7. Back to Genshin Impact then open the Wish history page\n
+    8. Wait for page to load\n
+    9. Back to Stream App > Stop Sniffing\n
+    10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n
+    11. Click  Request tab, then copy the link\n
+    12. Submit that link here using the `/wish import` command"
 363: Importing wish history using your Playstation device
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse\
-    \ account then use the pc/mobile instructions)\n (You can only use this method\
-    \ if you have an in-game mail with a QR Code to open the web event)\n 1. Open\
-    \ Genshin Impact on your PlayStation\n 2. Open the event mail that contains the\
-    \ QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using\
-    \ the `/wish setkey` command"
+364:
+    "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n
+    (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n
+
+    1. Open Genshin Impact on your PlayStation\n
+    2. Open the event mail that contains the QR Code\n
+    3. Scan the QR Code with your phone\n
+    4. Submit the link here using the `/wish import` command"
 365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n\
-    \ changing the language afterward will not change anything"
+366:
+    "The language of your wish history is based on your current selected language\n
+    changing the language afterward will have no effect on previous records"
 367: No wish history data found
-368: '`/wish setkey` to import your wish history'
+368: "`/wish import` to import your wish history"
 369: Wish history
 370: Big pity available
 371: Small pity available
@@ -422,8 +432,8 @@
 385: pull(s)
 386: Event wish number prediction
 387: Standard
-388: 'Yes'
-389: 'No'
+388: "Yes"
+389: "No"
 390: Is this the weapon you wanted?
 391: The last 5 star weapon you pulled was
 392: Is this a standard or limited time UP weapon?
@@ -448,10 +458,10 @@
 411: options
 412: Registration tutorial
 413: submit cookie
-414: 'View realtime notes: Current resin, pot, expedition status (need /register)'
+414: "View realtime notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
-417: 'View genshin stats: Active days, oculis, number of chests'
+417: "View genshin stats: Active days, oculis, number of chests"
 418: A user's genshin UID
 419: View area exploration rates
 420: Claim hoyolab daily login reward
@@ -478,9 +488,9 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: 'OFF'
+445: "OFF"
 446: View farmable items today
-447: 'View character builds: Weapons, artifacts, talent levels, stats'
+447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
 449: View characters' artifacts, stats, weapons, talents, and calculate damage
 450: Redeem gift codes (need /register)
@@ -496,8 +506,8 @@
 460: Calcualte materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: 'ON'
-464: 'OFF'
+463: "ON"
+464: "OFF"
 465: Calculate materials needed for upgrading a weapon
 466: weapon type
 467: rarity
