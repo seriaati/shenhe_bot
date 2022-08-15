@@ -1,11 +1,11 @@
-1: Full
-2: Today's
-3: Tomorrow
-4: Remaining
-5: days
-6: hr
-7: min
-8: sec
+1: フル
+2: 今日
+3: 明日
+4: 残る
+5: 日
+6: 時間
+7: 分
+8: 秒
 9: 使ってできます。
 10: 参量物質変化器がありません。
 11: 完成した デイリー依頼数
@@ -20,8 +20,8 @@
 20: 探索派遣
 21: "さらにの情報は /stuck を 入力してくたさい。"
 22: 權限がありません。
-23: Error
-24: Realtime notes
+23: エラー
+24: リアルタイムノート
 25: 月曜日
 26: 火曜日
 27: 水曜日
@@ -49,31 +49,31 @@
 49: 風神の瞳
 50: 岩神の瞳
 51: 雷神の瞳
-52: Chests
+52: お宝箱
 53: 普通の宝箱
 54: 精巧な宝箱
 55: 豪華な宝箱
-56: Genshin stats
+56: 原神数据
 57: 貴重な宝箱
 58: 世界探索
 59: 原石は先月より
 60: 増えます
 61: 減ります
 62: モラは先月より
-63: Acquired this month
+63: 今月は合計
 64: 先月
 65: 貰った原石
 66: 貰った紀錄
-67: Click the button below
+67: 下のボタンをクリックしてください
 68: 今月最近 30 の 原石 と モラ 紀錄
-69: Traveler's Diary
-70: Primo Log
+69: トラベラーズ日記
+70: 原石日記
 71: 原石
 72: モラ 紀錄
 73: モラ
 74: データ の 更新は /stats を 入力してくたさい。
 75: (この指示は 深境螺旋第9層以上のデータ しかを見せます)
-76: Spiral abyss data not found
+76: 深境螺旋 の データ は見つかえりません
 77: 今期
 78: 最高記録
 79: 戦績
@@ -99,7 +99,7 @@
 99: "ON"
 100: "OFF"
 101: Current Toggle
-102: Resing Threshold
+102: 樹脂值
 103: Max. notification number
 104: 設定完了
 105: 全キャラクター
@@ -107,34 +107,34 @@
 107: 交換コード 無效
 108: 交換コード
 109: 交換コード は 交換 成功しました。
-110: Summer event data not found
-111: Golden Apple Archipelago
-112: Waverider Waypoints Unlocked
-113: Waypoints Unlocked
-114: Treasure Chests Obtained
+110: サマータイムオデッセイ　に関するデーダ　は　見つかりません。
+111: 金リンゴ群島
+112: ボートポイント開放数
+113: ワープポイント
+114: 宝箱開放数
 115: Unfinished
 116: Surfpiercer
-117: Summer Memories
-118: Realm Exploration
-119: Time completed
-120: Successfully challenged
-121: times
-122: Unleashed elemental skill
-123: Custom UID searched
-124: Back to default
-125: By default, shenhe responds you with the same langauge your discord uses
-126: Changing language will override the default langauge
-127: If any text is not translated yet, shenhe will respond you with English
-128: Changing langauge
+117: 夏の記憶
+118: 世界探索
+119: 完了した時間
+120: チャレンジ成功
+121: 回
+122: スキルを解放しました。
+123: カスタム UID が検索されました
+124: デフォルトに戻る
+125: デフォルトでは、Shenhe はあなたの不和音が使用しているのと同じ言語で応答します
+126: 言語を変更するとデフォルトの言語が上書きされます
+127: テキストがまだ翻訳されていない場合、Shenheは英語であなたに返信します。
+128: 言語の変更
 129: モンド
 130: 璃月
 131: 稻妻
-132: Submit your cookie
-133: please paste the text you copied here
-134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
-135: There was an error
-136: Choose your account
-137: Account registration tutorial
+132: クッキーを送信
+133: ここにコピーしたテキストを貼ってください
+134: エラーが発生しました。format@@0(https://github.com/seriaati/shenhe_bot/issues) でこのエラーを報告してください。
+135: エラーが発生しました
+136: アカウントを選択してください
+137: アカウント は登錄成功した。
 138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/reigster` command\n Too complicated? The image below might help!"
 139: Cookie invalid or is outdated, please logout then login again!
 140: Please use the `/register` command
@@ -182,22 +182,22 @@
 182: "‎"
 183: Current level
 184: "For example: 1"
-185: Target level
-186: "For example: 90"
+185: 目標レベル
+186: "例: 90"
 187: Please enter a number
-188: "Character level: Please enter a number between 1 and 90"
+188: "キャラクターレベル：１～９０の範囲内で入ってください。"
 189: "Talent level: Please enter a number between 1 and 10"
 190: Invalid input
-191: Calculation results
+191: 計算結果
 192: Calculation content
-193: Character level
-194: Normal attack level
-195: Elemental skill level
-196: Elemental burst level
-197: No materials needed
-198: Character level-up
+193: キャラクターレベル
+194: 通常攻擊 レベル
+195: 元素スキル レベル
+196: 元素スキル レベル
+197: 必要な材料はありません
+198: キャラクターレベル
 199: Talent level-up
-200: Weapon level
+200: 武器レベル
 201: Weapon level-up
 202: Todo list
 203: Add item
@@ -210,28 +210,28 @@
 210: Item amount
 211: (Leaving this field blank will remove the item entirely)
 212: You can't remove more items than you have in your dodo list
-213: Cryo
-214: Geo
-215: Pyro
-216: Anemo
-217: Hydro
-218: Dendro
-219: Electro
+213: 氷元素
+214: 岩元素
+215: 炎元素
+216: 風元素
+217: 水元素
+218: 草元素
+219: 雷元素
 220: 全キャラクター
-221: January
-222: February
-223: March
-224: April
-225: May
-226: June
-227: July
-228: August
-229: September
-230: October
-231: November
-232: December
-234: monday
-235: tuesday
+221: 1月
+222: 2月
+223: 3月
+224: 4月
+225: 5月
+226: 6月
+227: 7月
+228: 8月
+229: 9月
+230: 10月
+231: 11月
+232: 12月
+234: 月曜日
+235: 火曜日
 236: wednesday
 237: thursday
 238: friday
