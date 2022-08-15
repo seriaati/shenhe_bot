@@ -536,9 +536,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                     name=event['type_label'], icon_url=event['tag_icon'])
                 embed.set_image(url=event['banner'])
                 embed.add_field(name=text_map.get(406, i.locale, user_locale), value=format_dt(
-                    parser.parse(event['start_time'])))
+                    parser.parse(event['start_time']), 'R'))
                 embed.add_field(name=text_map.get(407, i.locale, user_locale), value=format_dt(
-                    parser.parse(event['end_time'])))
+                    parser.parse(event['end_time']), 'R'))
                 embed.add_field(name=text_map.get(408, i.locale, user_locale), value=parse_HTML(
                     detail_dict[event['ann_id']])[:1021]+'...', inline=False)
                 embeds[event['type']].append(embed)
