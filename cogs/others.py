@@ -280,7 +280,14 @@ class OthersCog(commands.Cog, name='others'):
             await i.response.send_message(embed=embeds[0], view=view)
         else:
             await i.response.send_message(embed=embeds[0])
-
+            
+    @app_commands.command(name='sync', description=_('Admin usage only', hash=496))
+    async def roles(self, i: Interaction):
+        if i.user.id != 410036441129943050:
+            return await i.response.send_message(embed=error_embed(message='你不是小雪本人').set_author(name='生物驗證失敗', icon_url=i.user.avatar), ephemeral=True)
+        await i.response.defer()
+        await self.bot.tree.sync()
+        await i.followup.send('sync done')
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))
