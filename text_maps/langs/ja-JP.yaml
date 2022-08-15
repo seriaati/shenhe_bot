@@ -157,7 +157,7 @@
 157: Choose your character(s)
 158: There are currently no notifications set for any characters
 159: Current character notifications
-160: Choose your element
+160: アカウントを選択してください
 161: Choosing this character will turn OFF its notifications
 162: 装備
 163: 装備を選択してください
@@ -423,7 +423,7 @@
 434: データ一覧
 435: This season
 436: Last season
-437: Data not public?
+437: 權限がありません。
 438: Set notification features
 439: function
 440: toggle
@@ -495,3 +495,4 @@
 506: number
 507: 5つ星のUPキャラクターは何枚がガチしますか？
 508: 原神に関すること　を検索してくたさい
+509: query
