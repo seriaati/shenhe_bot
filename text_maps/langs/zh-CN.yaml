@@ -1,163 +1,163 @@
-1: 已满
-2: 今天
-3: 明天
-4: 剩余
-5: 天
-6: 小时
-7: 分
-8: 秒
-9: 可使用
-10: 质变仪不存在
-11: 已完成的每日数量
-12: 质变仪剩余时间
-13: 树脂
-14: 目前
-15: 回复时间
-16: 周本减半次数
-17: 尘歌壶
-18: 没有探索派遣
-19: 已完成
-20: 探索派遣
-21: "输入 `/stuck` 来获取更多资讯"
-22: 资料不公开
-23: 错误
-24: 即时便签
-25: 周一
-26: 周二
-27: 周三
-28: 周四
-29: 周五
-30: 周六
-31: 周日
-32: 选择语言
-33: 语言更改成功
-34: 目前语言
-35: "输入 `/register` 来查看设定方式"
-36: 无效的 cookie
-37: 已取消设定帐号
-38: 帐号内没有任何角色
-39: 帐号设定成功
-40: 你已经领取过今天的奖励了！
-41: 获得
-42: 签到成功
-43: 总览
-44: 活跃天数
-45: 角色数量
-46: 成绩数
-47: 深渊已达
-48: 神瞳
-49: 风神瞳
-50: 岩神瞳
-51: 雷神瞳
-52: 宝箱
-53: 普通宝箱
-54: 精致宝箱
-55: 华丽宝箱
-56: 原神数据
-57: 珍贵宝箱
-58: 区域探索度
-59: 原石收入比上个月
-60: 增加了
-61: 减少了
-62: 摩拉收入比上个月
-63: 本月共获得
-64: 上个月
-65: 原石收入分类
-66: 获取记录
-67: 点击下方的按钮
-68: 查看本月近 30 笔的原石或摩拉记录
-69: 旅行者日记
-70: 原石获取记录
-71: 原石
-72: 摩拉获取记录
-73: 摩拉
-74: '“请使用 `/stats` 来刷新资料"'
-75: '“(本指令只显示第9层以上资料)"'
-76: 找不到深渊资料
-77: 期别
-78: 达到
-79: 战绩
-80: 单次最高伤害
-81: 最多击杀
-82: 最高承伤
-83: 最多元素爆发
-84: 最多元素战技
-85: 深渊总览
+1: Full
+2: Today's
+3: Tomorrow
+4: Remaining
+5: days
+6: hr
+7: min
+8: sec
+9: Available
+10: P.T. not found
+11: Dailies finished
+12: P.T. remaining time
+13: Resin
+14: Current
+15: Recovery time
+16: Resin discounts
+17: Serenitea Pot
+18: No expeditions found
+19: Finished
+20: Expeditions
+21: "`/stuck` for more information"
+22: Data not public
+23: Error
+24: Realtime notes
+25: Mon.
+26: Tue.
+27: Wed.
+28: Thu.
+29: Fri.
+30: Sat.
+31: Sun.
+32: Choose your language
+33: Langauge changed
+34: Current language
+35: "`/register` for more information"
+36: Cookie invalid
+37: Account register cancelled
+38: No valid accounts were obtained from the cookie
+39: Account registration successful
+40: You have already claimed today's login reward!
+41: Obtained
+42: Claim successful
+43: Overview
+44: Days Active
+45: Characters
+46: Achievements
+47: Spiral Abyss
+48: Oculi
+49: Anemoculi
+50: Geoculi
+51: Electroculi
+52: Chests
+53: Common Chests
+54: Exquisite Chests
+55: Luxurious Chests
+56: Genshin stats
+57: Precious Chests
+58: World Exploration
+59: Primogem income v.s last month
+60: increased
+61: decreased
+62: Mora income v.s last month
+63: Acquired this month
+64: Last month
+65: Primogems obtained
+66: Diary log
+67: Click the button below
+68: to view the last 30 primo or mora records
+69: Traveler's Diary
+70: Primo Log
+71: primos
+72: Mora Log
+73: mora
+74: Use the `/stats` command to refresh your stats
+75: (This command only shows data above floor 9)
+76: Spiral abyss data not found
+77: Lunar phase
+78: Deepest descent
+79: Challenge Summary
+80: Strongest single strike
+81: Most defeats
+82: Most damage taken
+83: Elemental bursts unleashed
+84: Elemental skills cast
+85: Spiral Abyss Overview
 86: Chamber
 87: "‎"
-88: "[上半]"
-89: "[下半]"
-90: "配置#"
-91: 武器
-92: 圣遗物
-93: 主词条
-94: 天赋
-95: 属性面板
-96: 来源
-97: 圣遗物思路
-98: 树脂提醒已关闭
-99: "开"
-100: "关"
-101: 目前开关
-102: 树脂阀值
-103: 最大提醒数量
-104: 设置成功
-105: 所有角色
-106: 你已经兑换过这个兑换码了!
-107: 兑换码无效
-108: 兑换码
-109: 兑换码兑换成功
-110: 找不到你的海岛活动资料
-111: 金苹果群岛
-112: 浪船锚点
-113: 传送锚点
-114: 宝箱
-115: 尚未完成
-116: 逸速穿浪
-117: 夏日回忆
-118: 迷域探索
-119: 完成时间
-120: 累计成功挑战
-121: 次
-122: 累计释放技能
-123: 自定 UID 搜寻
-124: 返回预设
-125: 申鹤预设时使用你的 dc 语言来回复你
-126: 这里更改后的语言会盖过你的 dc 设定
-127: 如果该语言还没翻译好，会使用英文回复
-128: 更改语言
-129: 蒙德
-130: 璃月
-131: 稻妻
-132: 提交 Cookie
-133: 请贴上刚刚复制的文字
-134: 发生了未知的错误，请至[申鹤的 issue 页面](https://github.com/seriaati/shenhe_bot/issues)回报这个错误
-135: 未知错误
-136: 选择要注册的账号
-137: Cookie 设置流程
-138: "1.先复制底下的整段程式码\n2.电脑或手机使用Chrome开启Hoyolab并登入账号 <https://www.hoyolab.com> \n3.按浏览器上面网址的部分，并确保选取了全部网址\n4.在网址列先输入 `java`, 然后贴上程式码, 确保网址开头变成 `javascript:`\n5.按Enter, 网页会变成显示你的Cookie, 全选然后复制\n6.在这里提交结果, 使用: `/register 提交 cookie` 无法理解吗? 跟着下面的图示操作吧!"
-139: 过期或无效的Cookie, 请先登出账号再重新登入!
+88: "[First Half]"
+89: "[Second Half]"
+90: "Build #"
+91: Weapon
+92: Artifacts
+93: Main Stats
+94: Talents
+95: Character Stats
+96: Source
+97: Artifact Thoughts
+98: Resin reminder has been turned off
+99: "ON"
+100: "OFF"
+101: Current Toggle
+102: Resing Threshold
+103: Max. notification number
+104: Settings saved
+105: Characters
+106: This gift code has already been redeemed!
+107: Gift code invalid
+108: Gift code
+109: Code redeemed
+110: Summer event data not found
+111: Golden Apple Archipelago
+112: Waverider Waypoints Unlocked
+113: Waypoints Unlocked
+114: Treasure Chests Obtained
+115: Unfinished
+116: Surfpiercer
+117: Summer Memories
+118: Realm Exploration
+119: Time completed
+120: Successfully challenged
+121: times
+122: Unleashed elemental skill
+123: Custom UID searched
+124: Back to default
+125: By default, shenhe responds you with the same langauge your discord uses
+126: Changing language will override the default langauge
+127: If any text is not translated yet, shenhe will respond you with English
+128: Changing langauge
+129: Mondstat
+130: Liyue
+131: Inazuma
+132: Submit your cookie
+133: please paste the text you copied here
+134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
+135: There was an error
+136: Choose your account
+137: Account registration tutorial
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/reigster` command\n Too complicated? The image below might help!"
+139: Cookie invalid or is outdated, please logout then login again!
 140: Please use the `/register` command
-141: 找不到账号资料!
-142: 选择元素
-143: 你不是这个指令的发起者
-144: 原石记录
-145: 摩拉记录
-146: 第
+141: Account data not found!
+142: Choose your element
+143: You are not the issuer of this command
+144: Primo Log
+145: Mora Log
+146: Floor No.
 147: "‎"
-148: 楼层导览
-149: 资料不公开?
+148: Choose abyss floor
+149: Data not public?
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: Resin notification settings
 152: Resin threshold
 153: Shenhe will DM you after your resin exceeds the threshold
-154: 最大提醒数量
+154: Max. notification number
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
 157: Choose your character(s)
 158: There are currently no notifications set for any characters
 159: Current character notifications
-160: 选择元素
+160: Choose your element
 161: Choosing this character will turn OFF its notifications
 162: Build
 163: Choose your build
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Electro
-220: 角色数量
+220: Characters
 221: January
 222: February
 223: March
@@ -412,7 +412,7 @@
 423: month
 424: The month you're trying to search with
 425: This month
-426: 上个月
+426: Last month
 427: The month before last month
 428: View abyss data (need /register)
 429: type
@@ -420,10 +420,10 @@
 431: The type of data you wish to view
 432: Which abyss season?
 433: Detailed
-434: 总览
+434: Overview
 435: This season
 436: Last season
-437: 资料不公开?
+437: Data not public?
 438: Set notification features
 439: function
 440: toggle
@@ -431,7 +431,7 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: "关"
+445: "OFF"
 446: View farmable items today
 447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
@@ -449,8 +449,8 @@
 460: Calcualte materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: "开"
-464: "关"
+463: "ON"
+464: "OFF"
 465: Calculate materials needed for upgrading a weapon
 466: weapon type
 467: rarity
@@ -483,10 +483,10 @@
 494: Others
 495: Choose your category
 496: Admin usage only
-497: 原神数据
+497: Genshin stats
 498: View profile
 499: View all characters
-500: 即时便签
+500: Realtime notes
 501: Update self leaderbaord position
 502: Leaderboard position updated
 503: View past updates
@@ -495,3 +495,4 @@
 506: number
 507: How many 5 star UP characters do you wish to pull?
 508: Search anything genshin related
+509: query
