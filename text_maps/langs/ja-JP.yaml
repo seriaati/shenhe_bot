@@ -35,7 +35,7 @@
 35: "さらにの情報は /register を 入力してくたさい。"
 36: 無效の cookie
 37: 登錄した アカウント は キャンセル した。
-38: cookieから キャラが見つかりません。
+38: Cookie から キャラが見つかりません。
 39: アカウント は登錄成功した。
 40: デイリー報酬 もう 受け取りました。
 41: 受け取りました。
@@ -60,20 +60,20 @@
 60: 増えます
 61: 減ります
 62: モラは先月より
-63: 今月は合計
+63: Acquired this month
 64: 先月
 65: 貰った原石
 66: 貰った紀錄
 67: Click the button below
-68: 今月最近３０の 原石 と モラ 紀錄
+68: 今月最近 30 の 原石 と モラ 紀錄
 69: Traveler's Diary
 70: Primo Log
 71: 原石
 72: モラ 紀錄
 73: モラ
 74: データ の 更新は /stats を 入力してくたさい。
-75: この指示は 深境螺旋第9層以上のデータ しかを見せます
-76: 深境螺旋 の データ は見つかえりません
+75: (この指示は 深境螺旋第9層以上のデータ しかを見せます)
+76: Spiral abyss data not found
 77: 今期
 78: 最高記録
 79: 戦績
@@ -201,7 +201,7 @@
 201: Weapon level-up
 202: Todo list
 203: Add item
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use the `/calc` command\\ \\ to calculate materials\n for character and weapon level-up\n Or use the green\\ \\ button below to add your custom items"
+204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use the `/calc` command to calculate materials for characters and weapons, or use the green button below to add custom items"
 205: Remove item
 206: Clear items
 207: Choose the item you wish to remove
@@ -345,17 +345,17 @@
 355: Please wait for awhile while shenhe is processing your wish history
 356: Successfully imported wish history
 357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n\\ \\ 2. Open the wish history in the game and wait it to load\n 3. Press START on\\ \\ your keyboard, then search for Powershell\n 4. Click Windows Powershell, then\\ \\ copy & paste the script below to the Powershell\n 5. Press ENTER, and a link\\ \\ will copied to your clipboard\n 6. Submit the link you copied by using the `/wish\\ \\ setkey` command"
+358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the `/wish import` command"
 359: Importing wish history using your android phone
-360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the\\ \\ entire text, we only want the link here (in step 7)\n 1. Open Wish (in the game)\n\\ \\ 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data\\ \\ connection\n 5. Press refresh on top right corner\n 6. The page should display\\ \\ an error and show you some text with a black font\n 7. Hold the text, select\\ \\ the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit\\ \\ that link here using the `/wish setkey` command"
+360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the `/wish import` command"
 361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download\\ \\ Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n\\ \\ 2. Open the app, then allow VPN in system preferences (Settings > General >\\ \\ VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up\\ \\ window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings\\ \\ > General > VPN & Device management > Click on Stream Generated CA and install\n\\ \\ 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to\\ \\ Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin\\ \\ Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back\\ \\ to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that\\ \\ ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click\\ \\ Request tab, then copy the link\n 12. Submit that link here using the `/wish\\ \\ setkey` command"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the `/wish import` command"
 363: Importing wish history using your Playstation device
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse\\ \\ account then use the pc/mobile instructions)\n (You can only use this method\\ \\ if you have an in-game mail with a QR Code to open the web event)\n 1. Open\\ \\ Genshin Impact on your PlayStation\n 2. Open the event mail that contains the\\ \\ QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using\\ \\ the `/wish setkey` command"
+364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the `/wish import` command"
 365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n\\ \\ changing the language afterward will not change anything"
+366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
 367: No wish history data found
-368: "`/wish setkey` to import your wish history"
+368: "`/wish import` to import your wish history"
 369: Wish history
 370: Big pity available
 371: Small pity available

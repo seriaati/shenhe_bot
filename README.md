@@ -15,8 +15,8 @@
 <a href='https://discord.com/oauth2/authorize?client_id=1000045812522430626&permissions=137439333440&scope=bot%20applications.commands'> [Invite Shenhe] 將申鶴邀請到你的群組 </a>
 
 <h2 align="center">參與翻譯</h2>
-<a title="Crowdin" target="_blank" href="https://crowdin.com/project/shenhebot"><img src="https://badges.crowdin.net/shenhebot/localized.svg"></a> <br>
-本專案已經上架至crowdin: https://crwd.in/shenhebot
+<a title="Crowdin" target="_blank" href="https://crowdin.com/project/shenhe-bot"><img src="https://badges.crowdin.net/shenhe-bot/localized.svg"></a> <br>
+本專案已經上架至crowdin: https://crwd.in/shenhe-bot
 
 <h2 align="center">翻譯致謝</h2>
 <p align="left">
