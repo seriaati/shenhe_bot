@@ -146,18 +146,18 @@
 146: 第
 147: "‎"
 148: 楼层导览
-149: Data not public?
+149: 资料不公开?
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: Resin notification settings
 152: Resin threshold
 153: Shenhe will DM you after your resin exceeds the threshold
-154: Max. notification number
+154: 最大提醒数量
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
 157: Choose your character(s)
 158: There are currently no notifications set for any characters
 159: Current character notifications
-160: Choose your element
+160: 选择元素
 161: Choosing this character will turn OFF its notifications
 162: Build
 163: Choose your build
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Electro
-220: Characters
+220: 角色数量
 221: January
 222: February
 223: March
@@ -412,7 +412,7 @@
 423: month
 424: The month you're trying to search with
 425: This month
-426: Last month
+426: 上个月
 427: The month before last month
 428: View abyss data (need /register)
 429: type
@@ -420,17 +420,17 @@
 431: The type of data you wish to view
 432: Which abyss season?
 433: Detailed
-434: Overview
+434: 总览
 435: This season
 436: Last season
-437: Data not public?
+437: 资料不公开?
 438: Set notification features
 439: function
 441: Resin notification (need /register)
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: 'OFF'
+445: '关'
 446: View farmable items today
 447: 'View character builds: Weapons, artifacts, talent levels, stats'
 448: Search a user's UID
@@ -448,8 +448,8 @@
 460: Calcualte materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: 'ON'
-464: 'OFF'
+463: '开'
+464: '关'
 465: Calculate materials needed for upgrading a weapon
 466: weapon type
 467: rarity
@@ -482,10 +482,10 @@
 494: Others
 495: Choose your category
 496: Admin usage only
-497: Genshin stats
+497: 原神数据
 498: View profile
 499: View all characters
-500: Realtime notes
+500: 即时便签
 501: Update self leaderbaord position
 502: Leaderboard position updated
 503: View past updates
