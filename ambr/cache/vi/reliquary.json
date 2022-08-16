@@ -1,0 +1,623 @@
+{
+    "response": 200,
+    "data": {
+        "items": {
+            "10001": {
+                "id": 10001,
+                "name": "Trái Tim Hành Giả",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100010": "Tấn công tăng 18%",
+                    "2100011": "Tỷ lệ bạo kích của trọng kích tăng 30%"
+                },
+                "icon": "UI_RelicIcon_10001_4",
+                "route": "Resolution of Sojourner",
+                "sortOrder": 10
+            },
+            "10002": {
+                "id": 10002,
+                "name": "Trái Tim Dũng Sĩ",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100020": "Tấn công tăng 18%",
+                    "2100021": "Kẻ địch có HP cao hơn 50%, sát thương gây ra tăng 30%."
+                },
+                "icon": "UI_RelicIcon_10002_4",
+                "route": "Brave Heart",
+                "sortOrder": 16
+            },
+            "10003": {
+                "id": 10003,
+                "name": "Trái Tim Thủ Hộ",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100030": "Phòng ngự tăng 30%.",
+                    "2100031": "Cứ mỗi nhân vật của bản thân có 1 nguyên tố khác trong đội thì bản thân sẽ được nhận 30% kháng Nguyên Tố tương ứng."
+                },
+                "icon": "UI_RelicIcon_10003_4",
+                "route": "Defender's Will",
+                "sortOrder": 15
+            },
+            "10004": {
+                "id": 10004,
+                "name": "Kỳ Tích",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100040": "Tất cả kháng Nguyên Tố tăng 20%.",
+                    "2100041": "Sau khi nhận sát thương Nguyên Tố, kháng tương ứng tăng 30%, kéo dài 10s. Mỗi 10s chỉ thi triển 1 lần."
+                },
+                "icon": "UI_RelicIcon_10004_4",
+                "route": "Tiny Miracle",
+                "sortOrder": 11
+            },
+            "10005": {
+                "id": 10005,
+                "name": "Cuồng Chiến",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100050": "Tỷ lệ bạo kích tăng 12%.",
+                    "2100051": "Khi HP dưới 70%, tỷ lệ bạo kích tăng thêm 24%."
+                },
+                "icon": "UI_RelicIcon_10005_4",
+                "route": "Berserker",
+                "sortOrder": 12
+            },
+            "10006": {
+                "id": 10006,
+                "name": "Võ Nhân",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100060": "Tăng 15% sát thương tấn công thường và trọng kích tạo thành;",
+                    "2100061": "Trong 8s sau khi sử dụng kỹ năng Nguyên Tố, tấn công thường và trọng kích tăng 25% sát thương."
+                },
+                "icon": "UI_RelicIcon_10006_4",
+                "route": "Martial Artist",
+                "sortOrder": 17
+            },
+            "10007": {
+                "id": 10007,
+                "name": "Giáo Quan",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100070": "Tăng 80 điểm tinh thông nguyên tố.",
+                    "2100071": "Sau khi kích hoạt phản ứng Nguyên Tố, tinh thông Nguyên Tố tất cả thành viên đội tăng 120 điểm, kéo dài 8s."
+                },
+                "icon": "UI_RelicIcon_10007_4",
+                "route": "Instructor",
+                "sortOrder": 13
+            },
+            "10008": {
+                "id": 10008,
+                "name": "Con Bạc",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100080": "Sát thương kỹ năng Nguyên Tố tạo thành tăng 20%.",
+                    "2100081": "Khi đánh bại kẻ địch, có tỷ lệ 100% xóa CD kỹ năng Nguyên Tố. Mỗi 15s mới có hiệu quả 1 lần."
+                },
+                "icon": "UI_RelicIcon_10008_4",
+                "route": "Gambler",
+                "sortOrder": 18
+            },
+            "10009": {
+                "id": 10009,
+                "name": "Kẻ Lưu Đày",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100090": "Hiệu Quả Nạp Nguyên Tố tăng 20%",
+                    "2100091": "Sau khi thi triển kỹ năng nộ, mỗi 2 giây sẽ hồi 2 điểm năng lượng nguyên tố cho tất cả nhân vật trong đội (không bao gồm bản thân). Hiệu quả trong 6 giây, không cộng dồn."
+                },
+                "icon": "UI_RelicIcon_10009_4",
+                "route": "The Exile",
+                "sortOrder": 14
+            },
+            "10010": {
+                "id": 10010,
+                "name": "Nhà Mạo Hiểm",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100100": "HP tối đa tăng 1000 điểm.",
+                    "2100101": "5s sau khi mở các loại rương, duy trì hồi 30% HP."
+                },
+                "icon": "UI_RelicIcon_10010_4",
+                "route": "Adventurer",
+                "sortOrder": 1
+            },
+            "10011": {
+                "id": 10011,
+                "name": "Vật May Mắn",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100110": "Phòng ngự tăng 100 điểm.",
+                    "2100111": "Khi nhặt Mora, hồi 300 điểm HP."
+                },
+                "icon": "UI_RelicIcon_10011_4",
+                "route": "Lucky Dog",
+                "sortOrder": 2
+            },
+            "10012": {
+                "id": 10012,
+                "name": "Học Sĩ",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100120": "Hiệu Quả Nạp Nguyên Tố tăng 20%",
+                    "2100121": "Khi nhận Nguyên Tố Hạt Nhân hoặc Nguyên Tố Tinh Cầu, tất cả nhân vật dùng cung tên và Pháp Khí trong đội sẽ hồi thêm 3 Năng Lượng Nguyên Tố. Mỗi 3s mới thi triển 1 lần."
+                },
+                "icon": "UI_RelicIcon_10012_4",
+                "route": "Scholar",
+                "sortOrder": 19
+            },
+            "10013": {
+                "id": 10013,
+                "name": "Thầy Thuốc",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100130": "Tăng 20% hiệu quả trị liệu nhân vật nhận được.",
+                    "2100131": "Khi thi triển Kỹ Năng Nộ, hồi 20% HP."
+                },
+                "icon": "UI_RelicIcon_10013_4",
+                "route": "Traveling Doctor",
+                "sortOrder": 3
+            },
+            "14001": {
+                "id": 14001,
+                "name": "Dũng Sĩ Trong Băng Giá",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140010": "Tăng sát thương nguyên tố Băng 15%",
+                    "2140011": "Khi tấn công kẻ địch đang bị Nguyên Tố Băng ảnh hưởng, sẽ tăng 20% tỷ lệ bạo kích, nếu địch ở trạng thái đóng băng, sẽ tăng thêm 20% tỷ lệ bạo kích."
+                },
+                "icon": "UI_RelicIcon_14001_4",
+                "route": "Blizzard Strayer",
+                "sortOrder": 38
+            },
+            "14002": {
+                "id": 14002,
+                "name": "Tôn Giả Trầm Lặng",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140020": "Kháng nguyên tố Lôi tăng 40%.",
+                    "2140021": "Tăng 35% sát thương tạo thành cho kẻ địch bị ảnh hưởng nguyên tố Lôi."
+                },
+                "icon": "UI_RelicIcon_14002_4",
+                "route": "Thundersoother",
+                "sortOrder": 39
+            },
+            "14003": {
+                "id": 14003,
+                "name": "Hiền Nhân Bốc Lửa",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140030": "Kháng nguyên tố Hỏa tăng 40%.",
+                    "2140031": "Tăng 35% sát thương tạo thành cho kẻ địch bị ảnh hưởng nguyên tố Hỏa."
+                },
+                "icon": "UI_RelicIcon_14003_4",
+                "route": "Lavawalker",
+                "sortOrder": 40
+            },
+            "14004": {
+                "id": 14004,
+                "name": "Thiếu Nữ Đáng Yêu",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140040": "Hiệu quả trị liệu nhân vật tạo ra tăng 15%.",
+                    "2140041": "10s sau khi thi triển kỹ năng Nguyên Tố hoặc Kỹ Năng Nộ, hiệu quả trị liệu tất cả nhân vật trong đội nhận được tăng 20%."
+                },
+                "icon": "UI_RelicIcon_14004_4",
+                "route": "Maiden Beloved",
+                "sortOrder": 41
+            },
+            "15001": {
+                "id": 15001,
+                "name": "Lễ Bế Mạc Của Giác Đấu Sĩ",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150010": "Tấn công tăng 18%",
+                    "2150011": "Khi nhân vật trang bị bộ Thánh Di Vật này dùng kiếm đơn, trọng kiếm, vũ khí cán dài, sát thương tấn công thường nhân vật tạo thành tăng 35%."
+                },
+                "icon": "UI_RelicIcon_15001_4",
+                "route": "Gladiator's Finale",
+                "sortOrder": 42
+            },
+            "15002": {
+                "id": 15002,
+                "name": "Bóng Hình Màu Xanh",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150020": "Nhận 15% buff sát thương nguyên tố Phong.",
+                    "2150021": "Sát thương phản ứng khuếch tán tạo thành tăng 60%. Dựa theo loại Nguyên Tố khuếch tán, giảm 40% kháng Nguyên Tố của kẻ địch bị ảnh hưởng, kéo dài 10s."
+                },
+                "icon": "UI_RelicIcon_15002_4",
+                "route": "Viridescent Venerer",
+                "sortOrder": 43
+            },
+            "15003": {
+                "id": 15003,
+                "name": "Đoàn Hát Lang Thang Đại Lục",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150030": "Tăng 80 điểm tinh thông nguyên tố.",
+                    "2150031": "Khi nhân vật trang bị bộ Thánh Di Vật này dùng pháp khí, cung tên, sát thương trọng kích nhân vật tạo thành tăng 35%."
+                },
+                "icon": "UI_RelicIcon_15003_4",
+                "route": "Wanderer's Troupe",
+                "sortOrder": 44
+            },
+            "15005": {
+                "id": 15005,
+                "name": "Như Sấm Thịnh Nộ",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150050": "Nhận 15% buff sát thương nguyên tố Lôi",
+                    "2150051": "Sát thương phản ứng quá tải, điện cảm, siêu dẫn tăng 40%. Khi kích hoạt những phản ứng nguyên tố này, CD kỹ năng nguyên tố giảm 1s. Hiệu quả này mỗi 0.8s thi triển nhiều nhất một lần."
+                },
+                "icon": "UI_RelicIcon_15005_4",
+                "route": "Thundering Fury",
+                "sortOrder": 45
+            },
+            "15006": {
+                "id": 15006,
+                "name": "Diệm Liệt Ma Nữ Cháy Rực",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150060": "Nhận 15% buff sát thương nguyên tố Hỏa.",
+                    "2150061": "Sát thương phản ứng Quá Tải, Thiêu Đốt gây ra tăng 40%, phản ứng Bốc Hơi, Tan Chảy tăng hệ số buff 15%. 10s sau khi thi triển kỹ năng Nguyên Tố, hiệu quả của 2 món tăng 50%. Hiệu quả này tối đa cộng dồn 3 lần."
+                },
+                "icon": "UI_RelicIcon_15006_4",
+                "route": "Crimson Witch of Flames",
+                "sortOrder": 46
+            },
+            "15007": {
+                "id": 15007,
+                "name": "Nghi Thức Tông Thất Cổ",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150070": "Sát thương Kỹ Năng Nộ tạo thành tăng 20%.",
+                    "2150071": "Sau khi thi triển kỹ năng nộ, tấn công cả đội tăng 20%, kéo dài 12s, hiệu quả này không cộng dồn."
+                },
+                "icon": "UI_RelicIcon_15007_4",
+                "route": "Noblesse Oblige",
+                "sortOrder": 47
+            },
+            "15008": {
+                "id": 15008,
+                "name": "Kỵ Sĩ Đạo Nhuốm Máu",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150080": "Sát thương vật lý tạo thành tăng 25%.",
+                    "2150081": "Trong 10s sau khi đánh bại kẻ địch, khi thi triển trọng kích không tiêu hao thể lực, và sát thương trọng kích tạo thành tăng 50%."
+                },
+                "icon": "UI_RelicIcon_15008_4",
+                "route": "Bloodstained Chivalry",
+                "sortOrder": 48
+            },
+            "15009": {
+                "id": 15009,
+                "name": "Người Tế Hỏa",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150090": "Thời gian duy trì hiệu quả nguyên tố Hỏa kèm theo giảm 40%."
+                },
+                "icon": "UI_RelicIcon_15009_3",
+                "route": "Prayers for Illumination",
+                "sortOrder": 20
+            },
+            "15010": {
+                "id": 15010,
+                "name": "Người Tế Thủy",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150100": "Thời gian duy trì hiệu quả nguyên tố Thủy kèm theo giảm 40%."
+                },
+                "icon": "UI_RelicIcon_15010_3",
+                "route": "Prayers for Destiny",
+                "sortOrder": 21
+            },
+            "15011": {
+                "id": 15011,
+                "name": "Người Tế Lôi",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150110": "Thời gian duy trì hiệu quả nguyên tố Lôi kèm theo giảm 40%."
+                },
+                "icon": "UI_RelicIcon_15011_3",
+                "route": "Prayers for Wisdom",
+                "sortOrder": 22
+            },
+            "15013": {
+                "id": 15013,
+                "name": "Người Tế Băng",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150130": "Thời gian duy trì hiệu quả nguyên tố Băng kèm theo giảm 40%."
+                },
+                "icon": "UI_RelicIcon_15013_3",
+                "route": "Prayers to Springtime",
+                "sortOrder": 23
+            },
+            "15014": {
+                "id": 15014,
+                "name": "Phiến Đá Lâu Đời",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150140": "Nhận 15% buff sát thương nguyên tố Nham.",
+                    "2150141": "Khi nhận được mảnh kết tinh do phản ứng Kết Tinh hình thành, tất cả thành viên đội sẽ được tăng 35% sát thương nguyên tố tương ứng, duy trì 10 giây. Chỉ được nhận một loại tăng sát thương nguyên tố cùng lúc."
+                },
+                "icon": "UI_RelicIcon_15014_4",
+                "route": "Archaic Petra",
+                "sortOrder": 49
+            },
+            "15015": {
+                "id": 15015,
+                "name": "Sao Băng Bay Ngược",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150150": "Hiệu quả khiên tăng 35%",
+                    "2150151": "Khi được khiên bảo vệ, nhận thêm 40% tăng sát thương của tấn công thường và trọng kích."
+                },
+                "icon": "UI_RelicIcon_15015_4",
+                "route": "Retracing Bolide",
+                "sortOrder": 50
+            },
+            "15016": {
+                "id": 15016,
+                "name": "Trái Tim Trầm Luân",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150160": "Nhận 15% buff sát thương nguyên tố Thủy.",
+                    "2150161": "Trong 15s sau khi sử dụng kỹ năng Nguyên Tố, tấn công thường và trọng kích tăng 30% sát thương."
+                },
+                "icon": "UI_RelicIcon_15016_4",
+                "route": "Heart of Depth",
+                "sortOrder": 51
+            },
+            "15017": {
+                "id": 15017,
+                "name": "Thiên Nham Vững Chắc",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150170": "HP tăng 20%",
+                    "2150171": "Sau khi Kỹ Năng Nguyên Tố đánh trúng địch, sẽ tăng 20% tấn công cho tất cả nhân vật trong đội ở gần, tăng 30% hiệu quả Khiên, kéo dài 3s. Hiệu quả này mỗi 0.5s tối đa kích hoạt 1 lần. Khi nhân vật trang bị bộ Thánh Di Vật này ở trong đội nhưng không ra trận, vẫn có thể kích hoạt hiệu quả này."
+                },
+                "icon": "UI_RelicIcon_15017_4",
+                "route": "Tenacity of the Millelith",
+                "sortOrder": 52
+            },
+            "15018": {
+                "id": 15018,
+                "name": "Lửa Trắng Xám",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150180": "Sát thương vật lý tạo thành tăng 25%.",
+                    "2150181": "Sau khi kỹ năng nguyên tố đánh trúng kẻ địch, tấn công tăng 9%, kéo dài 7s, tối đa cộng dồn 2 tầng. Mỗi 0.3s tối đa kích hoạt 1 lần, sau khi tích đầy 2 tầng, hiệu quả bộ 2 món tăng 100%."
+                },
+                "icon": "UI_RelicIcon_15018_4",
+                "route": "Pale Flame",
+                "sortOrder": 53
+            },
+            "15019": {
+                "id": 15019,
+                "name": "Dòng Hồi Ức Bất Tận",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150190": "Tấn công tăng 18%",
+                    "2150191": "Khi thi triển Kỹ Năng Nguyên Tố, nhân vật có Năng Lượng Nguyên Tố cao hơn hoặc bằng 15 điểm thì sẽ mất đi 15 điểm để tăng 50% sát thương tấn công thường, trọng kích và tấn công khi đáp trong 10 giây tiếp theo, trong thời gian duy trì, hiệu quả này sẽ không kích hoạt lần nữa."
+                },
+                "icon": "UI_RelicIcon_15019_4",
+                "route": "Shimenawa's Reminiscence",
+                "sortOrder": 70
+            },
+            "15020": {
+                "id": 15020,
+                "name": "Dấu Ấn Ngăn Cách",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150200": "Hiệu Quả Nạp Nguyên Tố tăng 20%",
+                    "2150201": "Tăng sát thương Kỹ Năng Nộ dựa trên 25% Hiệu Quả Nạp Nguyên Tố. Chỉ có thể tăng tối đa 75% thông qua cách này."
+                },
+                "icon": "UI_RelicIcon_15020_4",
+                "route": "Emblem of Severed Fate",
+                "sortOrder": 71
+            },
+            "15021": {
+                "id": 15021,
+                "name": "Giấc Mộng Phù Hoa",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150210": "Phòng ngự tăng 30%.",
+                    "2150211": "Nhân vật trang bị bộ Thánh Di Vật này sẽ nhận hiệu quả \"Vấn Đáp\" trong các trường hợp sau đây: Sau khi nhân vật trong trận sử dụng tấn công Nguyên Tố Nham đánh trúng kẻ địch sẽ nhận 1 tầng, mỗi 0.3s tối đa kích hoạt 1 lần; trong đội chờ, mỗi 3s nhận 1 tầng. Vấn Đáp cộng dồn tối đa 4 tầng, mỗi tầng sẽ tăng 6% phòng ngự và 6% buff sát thương Nguyên Tố Nham. Mỗi 6s, nếu chưa nhận hiệu quả Vấn Đáp sẽ mất đi 1 tầng."
+                },
+                "icon": "UI_RelicIcon_15021_4",
+                "route": "Husk of Opulent Dreams",
+                "sortOrder": 74
+            },
+            "15022": {
+                "id": 15022,
+                "name": "Xà Cừ Đại Dương",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150220": "Tăng Trị Liệu lên 15%.",
+                    "2150221": "Khi nhân vật trang bị bộ Thánh Di Vật này thực hiện trị liệu cho nhân vật trong đội, sẽ tạo ra Bọt Biển kéo dài 3s, ghi lại lượng HP hồi phục của việc trị liệu (Bao gồm cả lượng vượt mức). Khi kết thúc thời gian duy trì, Bọt Biển sẽ nổ tung, gây cho kẻ địch xung quanh sát thương bằng 90% lượng hồi phục tích lũy (Cách tính sát thương này giống với các phản ứng nguyên tố như Điện Cảm, Siêu Dẫn...nhưng không bị ảnh hưởng bởi Tinh Thông Nguyên Tố, cấp hoặc buff sát thương phản ứng). Mỗi 3.5s tối đa tạo 1 Bọt Biển; Bọt Biển tối đa ghi lại 30,000 điểm hồi phục, bao gồm cả lượng trị liệu vượt mức; đội của bản thân cùng lúc chỉ được tồn tại tối đa 1 Bọt Biển. Khi nhân vật trang bị bộ Thánh Di Vật này ở trong đội chờ, vẫn có thể kích hoạt hiệu quả này."
+                },
+                "icon": "UI_RelicIcon_15022_4",
+                "route": "Ocean-Hued Clam",
+                "sortOrder": 75
+            },
+            "15023": {
+                "id": 15023,
+                "name": "Thần Sa Vãng Sinh Lục",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150230": "Tấn công tăng 18%",
+                    "2150231": "Sau khi thi triển kỹ năng nộ, sẽ sinh ra hiệu quả \"Ánh Sáng Ngầm\" duy trì 16s: Tăng 8% tấn công; đồng thời khi nhân vật bị giảm HP, sẽ tiếp tục tăng 10% tấn công, tối đa tăng 4 lần bằng cách này, mỗi 0.8s tối đa kích hoạt 1 lần. Hiệu quả \"Ánh Sáng Ngầm\" sẽ biến mất khi nhân vật rời trận; thi triển kỹ năng nộ lần nữa khi đang trong thời gian duy trì, sẽ xóa \"Ánh Sáng Ngầm\" đã có."
+                },
+                "icon": "UI_RelicIcon_15023_4",
+                "route": "Vermillion Hereafter",
+                "sortOrder": 78
+            },
+            "15024": {
+                "id": 15024,
+                "name": "Dư Âm Tế Lễ",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150240": "Tấn công tăng 18%",
+                    "2150241": "Khi tấn công thường đánh trúng kẻ địch, sẽ có 36% tỷ lệ kích hoạt \"Nghi Lễ Vực Thẳm\": Tăng sát thương do tấn công thường gây ra, lượng tăng thêm bằng 70% tấn công; 0.05s sau khi tấn công thường gây ra sát thương, hiệu quả này sẽ biến mất. Khi tấn công thường chưa kích hoạt \"Nghi Lễ Vực Thẳm\", sẽ tăng 20% tỷ lệ kích hoạt lần sau, trong 0.2s tối đa kích hoạt 1 lần."
+                },
+                "icon": "UI_RelicIcon_15024_4",
+                "route": "Echoes of an Offering",
+                "sortOrder": 79
+            },
+            "15025": {
+                "id": 15025,
+                "name": "Ký Ức Rừng Sâu",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150250": "Nhận 15% buff sát thương nguyên tố Thảo.",
+                    "2150251": "Kỹ Năng Nguyên Tố hoặc Kỹ Năng Nộ sau khi đánh trúng kẻ địch, Kháng Nguyên Tố Thảo của mục tiêu sẽ giảm 30%, duy trì 8s. Nhân vật trang bị khi không ra trận cũng sẽ kích hoạt hiệu ứng."
+                },
+                "icon": "UI_RelicIcon_15025_4",
+                "route": "Deepwood Memories",
+                "sortOrder": 82,
+                "beta": true
+            },
+            "15026": {
+                "id": 15026,
+                "name": "Giấc Mộng Hoàng Kim",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150260": "Tăng 80 điểm tinh thông nguyên tố.",
+                    "2150261": "Trong 8s sau khi kích hoạt phản ứng nguyên tố, sẽ căn cứ theo loại nguyên tố của các nhân vật khác trong đội để kích hoạt hiệu ứng cho người mang trang bị: Mỗi một nhân vật trong đội có cùng loại nguyên tố với người mang trang bị, sẽ tăng 14% tấn công; mỗi một nhân vật trong đội khác loại nguyên tố với người mang trang bị, sẽ tăng 50 điểm tinh thông nguyên tố. Mỗi loại hiệu ứng bên trên tối đa tính 3 nhân vật. Hiệu quả này mỗi 8s tối đa kích hoạt 1 lần. Khi người trang bị không ra trận, thì vẫn sẽ kích hoạt hiệu ứng này."
+                },
+                "icon": "UI_RelicIcon_15026_4",
+                "route": "Gilded Dreams",
+                "sortOrder": 83,
+                "beta": true
+            }
+        }
+    }
+}
