@@ -23,7 +23,9 @@
     ·
     <a href="https://github.com/seriaati/shenhe_bot/issues">回報錯誤</a>
     ·
-    <a href="https://github.com/seriaati/shenhe_bot/issues">功能請求</a> <br> <br> <br>
+    <a href="https://github.com/seriaati/shenhe_bot/issues">功能請求</a>
+    ·
+    <a href="https://github.com/seriaati/shenhe_bot/blob/main/en_README.md">English README</a> <br> <br> <br>
     <a href="https://bit.ly/shenhe_bot">
       <img src="https://i.imgur.com/QfGbpIU.png" alt="Invite Banner" width="367" height="127">
     </a>
