@@ -1,45 +1,45 @@
-1: Full
-2: Today's
-3: Tomorrow
-4: Remaining
-5: days
-6: hr
-7: min
-8: sec
+1: เต็ม
+2: วันนี้
+3: พรุ่งนี้
+4: คงเหลือ
+5: วัน
+6: ชั่วโมง
+7: นาที
+8: วินาที
 9: Available
-10: P.T. not found
+10: ไม่พบ P.T.
 11: Dailies finished
 12: P.T. remaining time
 13: Resin
 14: Current
 15: Recovery time
-16: Resin discounts
+16: ส่วนลด Resin
 17: Serenitea Pot
 18: No expeditions found
 19: Finished
 20: Expeditions
-21: "`/stuck` for more information"
+21: "`/stuck` สำหรับข้อมูลเพิ่ม"
 22: Data not public
-23: Error
+23: ข้อผิดพลาด
 24: Realtime notes
-25: Mon.
-26: Tue.
-27: Wed.
-28: Thu.
-29: Fri.
-30: Sat.
-31: Sun.
-32: Choose your language
-33: Langauge changed
-34: Current language
-35: "`/register` for more information"
+25: วันจันทร์
+26: วันอังคาร
+27: วันพุธ
+28: วันพฤหัส
+29: วันศุกร์
+30: วันเสาร์
+31: วันอาทิตย์
+32: เลือกภาษาของคุณ
+33: เปลี่ยนภาษาสำเร็จ
+34: ภาษาในปัจจุบัน
+35: "`/register` สำหรับข้อมูลเพิ่ม"
 36: Cookie invalid
 37: Account register cancelled
 38: No valid accounts were obtained from the cookie
-39: Account registration successful
+39: สมัครบัญชีสำเร็จ
 40: You have already claimed today's login reward!
 41: Obtained
-42: Claim successful
+42: รับสำเร็จ
 43: Overview
 44: Days Active
 45: Characters
