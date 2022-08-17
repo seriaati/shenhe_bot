@@ -40,26 +40,26 @@
 40: You have already claimed today's login reward!
 41: Obtained
 42: รับสำเร็จ
-43: Overview
-44: Days Active
-45: Characters
-46: Achievements
+43: ภาพรวม
+44: จำนวนวันใช้งาน
+45: ตัวละคร
+46: ความสำเร็จ
 47: Spiral Abyss
 48: Oculi
 49: Anemoculi
 50: Geoculi
 51: Electroculi
-52: Chests
+52: หีบ
 53: Common Chests
 54: Exquisite Chests
 55: Luxurious Chests
-56: Genshin stats
+56: สถิติ Genshin
 57: Precious Chests
-58: World Exploration
-59: Primogem income v.s last month
-60: increased
-61: decreased
-62: Mora income v.s last month
+58: การสำรวจโลก
+59: รายได้ Primogem v.s เดือนล่าสุด
+60: เพิ่มขึ้น
+61: ลดลง
+62: รายได้ Mora v.s เดือนล่าสุด
 63: Acquired this month
 64: Last month
 65: Primogems obtained
@@ -94,17 +94,17 @@
 94: Talents
 95: Character Stats
 96: Source
-97: Artifact Thoughts
-98: Resin reminder has been turned off
-99: "ON"
-100: "OFF"
+97: เรซิ่น
+98: การแจ้งเตือนเรซิ่นได้ถูกปิดแล้ว
+99: "เปิด"
+100: "ปิด"
 101: Current Toggle
-102: Resing Threshold
-103: Max. notification number
-104: Settings saved
-105: Characters
-106: This gift code has already been redeemed!
-107: Gift code invalid
+102: เกณฑ์เรซิ่น
+103: จำนวนการแจ้งเตือนสูงสุด
+104: ตั้งค่าถูกบันทึก
+105: ตัวละคร
+106: Gift code ได้ถูกใช้ไปแล้ว
+107: รูปแบบ Gift code ไม่ถูกต้อง
 108: Gift code
 109: Code redeemed
 110: Summer event data not found
@@ -151,7 +151,7 @@
 151: Resin notification settings
 152: Resin threshold
 153: Shenhe will DM you after your resin exceeds the threshold
-154: Max. notification number
+154: จำนวนการแจ้งเตือนสูงสุด
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
 157: Choose your character(s)
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Electro
-220: Characters
+220: ตัวละคร
 221: January
 222: February
 223: March
@@ -420,7 +420,7 @@
 431: The type of data you wish to view
 432: Which abyss season?
 433: Detailed
-434: Overview
+434: ภาพรวม
 435: This season
 436: Last season
 437: Data not public?
@@ -431,7 +431,7 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: "OFF"
+445: "ปิด"
 446: View farmable items today
 447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
@@ -449,8 +449,8 @@
 460: Calcualte materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: "ON"
-464: "OFF"
+463: "เปิด"
+464: "ปิด"
 465: Calculate materials needed for upgrading a weapon
 466: type
 467: rarity
@@ -483,7 +483,7 @@
 494: Others
 495: Choose your category
 496: Admin usage only
-497: Genshin stats
+497: สถิติ Genshin
 498: View profile
 499: View all characters
 500: Realtime notes
