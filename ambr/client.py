@@ -51,10 +51,10 @@ class AmbrTopAPI:
 
     def _request_from_cache(self, endpoint: str, static: bool = False) -> Dict:
         if static:
-            with open(f'ambr/cache/{STATIC_ENDPOINTS.get(endpoint)}.json') as f:
+            with open(f'ambr/cache/{STATIC_ENDPOINTS.get(endpoint)}.json', 'r', encoding='utf-8') as f:
                 endpoint_data = json.load(f)
         else:
-            with open(f'ambr/cache/{self.lang}/{ENDPOINTS.get(endpoint)}.json') as f:
+            with open(f'ambr/cache/{self.lang}/{ENDPOINTS.get(endpoint)}.json', 'r', encoding='utf-8') as f:
                 endpoint_data = json.load(f)
 
         return endpoint_data
