@@ -1,0 +1,1181 @@
+{
+    "response": 200,
+    "data": {
+        "types": {
+            "WEAPON_SWORD_ONE_HAND": "Kiếm Đơn",
+            "WEAPON_CLAYMORE": "Trọng Kiếm",
+            "WEAPON_POLE": "Vũ Khí Cán Dài",
+            "WEAPON_CATALYST": "Pháp Khí",
+            "WEAPON_BOW": "Cung"
+        },
+        "items": {
+            "11101": {
+                "id": 11101,
+                "rank": 1,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Vô Phong Kiếm",
+                "icon": "UI_EquipIcon_Sword_Blunt",
+                "route": "Dull Blade"
+            },
+            "11201": {
+                "id": 11201,
+                "rank": 2,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Bạc",
+                "icon": "UI_EquipIcon_Sword_Silver",
+                "route": "Silver Sword"
+            },
+            "11301": {
+                "id": 11301,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Lãnh Nhẫn",
+                "icon": "UI_EquipIcon_Sword_Steel",
+                "route": "Cool Steel"
+            },
+            "11302": {
+                "id": 11302,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Thần Kiếm Lê Minh",
+                "icon": "UI_EquipIcon_Sword_Dawn",
+                "route": "Harbinger of Dawn"
+            },
+            "11303": {
+                "id": 11303,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Lữ Hành",
+                "icon": "UI_EquipIcon_Sword_Traveler",
+                "route": "Traveler's Handy Sword"
+            },
+            "11304": {
+                "id": 11304,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Sắt Đen",
+                "icon": "UI_EquipIcon_Sword_Darker",
+                "route": "Dark Iron Sword"
+            },
+            "11305": {
+                "id": 11305,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Đao Săn Cá",
+                "icon": "UI_EquipIcon_Sword_Sashimi",
+                "route": "Fillet Blade"
+            },
+            "11306": {
+                "id": 11306,
+                "rank": 3,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Phi Thiên",
+                "icon": "UI_EquipIcon_Sword_Mitsurugi",
+                "route": "Skyrider Sword"
+            },
+            "11401": {
+                "id": 11401,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Tây Phong Kiếm",
+                "icon": "UI_EquipIcon_Sword_Zephyrus",
+                "route": "Favonius Sword"
+            },
+            "11402": {
+                "id": 11402,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Sáo",
+                "icon": "UI_EquipIcon_Sword_Troupe",
+                "route": "The Flute"
+            },
+            "11403": {
+                "id": 11403,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Tế Lễ",
+                "icon": "UI_EquipIcon_Sword_Fossil",
+                "route": "Sacrificial Sword"
+            },
+            "11404": {
+                "id": 11404,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Trường Kiếm Tông Thất",
+                "icon": "UI_EquipIcon_Sword_Theocrat",
+                "route": "Royal Longsword"
+            },
+            "11405": {
+                "id": 11405,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Tiếng Hét Của Rồng",
+                "icon": "UI_EquipIcon_Sword_Rockkiller",
+                "route": "Lion's Roar"
+            },
+            "11406": {
+                "id": 11406,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Mẫu Trảm Nham",
+                "icon": "UI_EquipIcon_Sword_Proto",
+                "route": "Prototype Rancour"
+            },
+            "11407": {
+                "id": 11407,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Thiết Phong Kích",
+                "icon": "UI_EquipIcon_Sword_Exotic",
+                "route": "Iron Sting"
+            },
+            "11408": {
+                "id": 11408,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Hắc Nham Trường Kiếm",
+                "icon": "UI_EquipIcon_Sword_Blackrock",
+                "route": "Blackcliff Longsword"
+            },
+            "11409": {
+                "id": 11409,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Đen",
+                "icon": "UI_EquipIcon_Sword_Bloodstained",
+                "route": "The Black Sword"
+            },
+            "11410": {
+                "id": 11410,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Tia Sáng Nơi Hẻm Tối",
+                "icon": "UI_EquipIcon_Sword_Outlaw",
+                "route": "The Alley Flash"
+            },
+            "11412": {
+                "id": 11412,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Giáng Lâm",
+                "icon": "UI_EquipIcon_Sword_Psalmus",
+                "route": "Sword of Descension"
+            },
+            "11413": {
+                "id": 11413,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Răng Nanh Rỉ Sét",
+                "icon": "UI_EquipIcon_Sword_Magnum",
+                "route": "Festering Desire"
+            },
+            "11414": {
+                "id": 11414,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Đoản Đao Amenoma",
+                "icon": "UI_EquipIcon_Sword_Bakufu",
+                "route": "Amenoma Kageuchi"
+            },
+            "11415": {
+                "id": 11415,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Con Thoi Chu Sa",
+                "icon": "UI_EquipIcon_Sword_Opus",
+                "route": "Cinnabar Spindle"
+            },
+            "11416": {
+                "id": 11416,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kagotsurube Isshin",
+                "icon": "UI_EquipIcon_Sword_Youtou",
+                "route": "Kagotsurube Isshin"
+            },
+            "11417": {
+                "id": 11417,
+                "rank": 4,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Gỗ",
+                "icon": "UI_EquipIcon_Sword_Arakalari",
+                "route": "Sapwood Blade",
+                "beta": true
+            },
+            "11501": {
+                "id": 11501,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Phong Ưng Kiếm",
+                "icon": "UI_EquipIcon_Sword_Falcon",
+                "route": "Aquila Favonia"
+            },
+            "11502": {
+                "id": 11502,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Thiên Không Kiếm",
+                "icon": "UI_EquipIcon_Sword_Dvalin",
+                "route": "Skyward Blade"
+            },
+            "11503": {
+                "id": 11503,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Lời Thề Tự Do Cổ Xưa",
+                "icon": "UI_EquipIcon_Sword_Widsith",
+                "route": "Freedom-Sworn"
+            },
+            "11504": {
+                "id": 11504,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Kiếm Chước Phong",
+                "icon": "UI_EquipIcon_Sword_Kunwu",
+                "route": "Summit Shaper"
+            },
+            "11505": {
+                "id": 11505,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Bàn Nham Kết Lục",
+                "icon": "UI_EquipIcon_Sword_Morax",
+                "route": "Primordial Jade Cutter"
+            },
+            "11509": {
+                "id": 11509,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Ánh Sáng Đêm Sương Mù",
+                "icon": "UI_EquipIcon_Sword_Narukami",
+                "route": "Mistsplitter Reforged"
+            },
+            "11510": {
+                "id": 11510,
+                "rank": 5,
+                "type": "WEAPON_SWORD_ONE_HAND",
+                "name": "Haran Geppaku Futsu",
+                "icon": "UI_EquipIcon_Sword_Amenoma",
+                "route": "Haran Geppaku Futsu"
+            },
+            "12101": {
+                "id": 12101,
+                "rank": 1,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Huấn Luyện",
+                "icon": "UI_EquipIcon_Claymore_Aniki",
+                "route": "Waster Greatsword"
+            },
+            "12201": {
+                "id": 12201,
+                "rank": 2,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Dụng Binh",
+                "icon": "UI_EquipIcon_Claymore_Oyaji",
+                "route": "Old Merc's Pal"
+            },
+            "12301": {
+                "id": 12301,
+                "rank": 3,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Thiết Ảnh",
+                "icon": "UI_EquipIcon_Claymore_Glaive",
+                "route": "Ferrous Shadow"
+            },
+            "12302": {
+                "id": 12302,
+                "rank": 3,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Huyết Rồng",
+                "icon": "UI_EquipIcon_Claymore_Siegfry",
+                "route": "Bloodtainted Greatsword"
+            },
+            "12303": {
+                "id": 12303,
+                "rank": 3,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Bạch Thiết",
+                "icon": "UI_EquipIcon_Claymore_Tin",
+                "route": "White Iron Greatsword"
+            },
+            "12305": {
+                "id": 12305,
+                "rank": 3,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Gậy Thu Phục",
+                "icon": "UI_EquipIcon_Claymore_Reasoning",
+                "route": "Debate Club"
+            },
+            "12306": {
+                "id": 12306,
+                "rank": 3,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đại Kiếm Phi Thiên",
+                "icon": "UI_EquipIcon_Claymore_Mitsurugi",
+                "route": "Skyrider Greatsword"
+            },
+            "12401": {
+                "id": 12401,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đại Kiếm Tây Phong",
+                "icon": "UI_EquipIcon_Claymore_Zephyrus",
+                "route": "Favonius Greatsword"
+            },
+            "12402": {
+                "id": 12402,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Chuông",
+                "icon": "UI_EquipIcon_Claymore_Troupe",
+                "route": "The Bell"
+            },
+            "12403": {
+                "id": 12403,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đại Kiếm Tế Lễ",
+                "icon": "UI_EquipIcon_Claymore_Fossil",
+                "route": "Sacrificial Greatsword"
+            },
+            "12404": {
+                "id": 12404,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đại Kiếm Tông Thất",
+                "icon": "UI_EquipIcon_Claymore_Theocrat",
+                "route": "Royal Greatsword"
+            },
+            "12405": {
+                "id": 12405,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Vũ Tài",
+                "icon": "UI_EquipIcon_Claymore_Perdue",
+                "route": "Rainslasher"
+            },
+            "12406": {
+                "id": 12406,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Mẫu Cổ Hoa",
+                "icon": "UI_EquipIcon_Claymore_Proto",
+                "route": "Prototype Archaic"
+            },
+            "12407": {
+                "id": 12407,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Bạch Ảnh",
+                "icon": "UI_EquipIcon_Claymore_Exotic",
+                "route": "Whiteblind"
+            },
+            "12408": {
+                "id": 12408,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Hắc Nham Trảm Đao",
+                "icon": "UI_EquipIcon_Claymore_Blackrock",
+                "route": "Blackcliff Slasher"
+            },
+            "12409": {
+                "id": 12409,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Li Cốt",
+                "icon": "UI_EquipIcon_Claymore_Kione",
+                "route": "Serpent Spine"
+            },
+            "12410": {
+                "id": 12410,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Thiên Nham Cổ Kiếm",
+                "icon": "UI_EquipIcon_Claymore_Lapis",
+                "route": "Lithic Blade"
+            },
+            "12411": {
+                "id": 12411,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Tuyết Vùi Tinh Ngân",
+                "icon": "UI_EquipIcon_Claymore_Dragonfell",
+                "route": "Snow-Tombed Starsilver"
+            },
+            "12412": {
+                "id": 12412,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Vua Biển Hàng Hiệu",
+                "icon": "UI_EquipIcon_Claymore_MillenniaTuna",
+                "route": "Luxurious Sea-Lord"
+            },
+            "12414": {
+                "id": 12414,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Trường Đao Katsuragi",
+                "icon": "UI_EquipIcon_Claymore_Bakufu",
+                "route": "Katsuragikiri Nagamasa"
+            },
+            "12416": {
+                "id": 12416,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Akuoumaru",
+                "icon": "UI_EquipIcon_Claymore_Maria",
+                "route": "Akuoumaru"
+            },
+            "12417": {
+                "id": 12417,
+                "rank": 4,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Vương Khí Rừng Sâu",
+                "icon": "UI_EquipIcon_Claymore_Arakalari",
+                "route": "Forest Regalia",
+                "beta": true
+            },
+            "12501": {
+                "id": 12501,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Thiên Không Kiêu Ngạo",
+                "icon": "UI_EquipIcon_Claymore_Dvalin",
+                "route": "Skyward Pride"
+            },
+            "12502": {
+                "id": 12502,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đường Cùng Của Sói",
+                "icon": "UI_EquipIcon_Claymore_Wolfmound",
+                "route": "Wolf's Gravestone"
+            },
+            "12503": {
+                "id": 12503,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Tiếng Gió Trong Rừng Thông",
+                "icon": "UI_EquipIcon_Claymore_Widsith",
+                "route": "Song of Broken Pines"
+            },
+            "12504": {
+                "id": 12504,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Kiếm Vô Công",
+                "icon": "UI_EquipIcon_Claymore_Kunwu",
+                "route": "The Unforged"
+            },
+            "12505": {
+                "id": 12505,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Đề Ách Ngư",
+                "icon": "UI_EquipIcon_Claymore_Aniki",
+                "route": "Primordial Jade Greatsword"
+            },
+            "12510": {
+                "id": 12510,
+                "rank": 5,
+                "type": "WEAPON_CLAYMORE",
+                "name": "Xích Giác Phá Thạch Đao",
+                "icon": "UI_EquipIcon_Claymore_Itadorimaru",
+                "route": "Redhorn Stonethresher"
+            },
+            "13101": {
+                "id": 13101,
+                "rank": 1,
+                "type": "WEAPON_POLE",
+                "name": "Thương Tân Thủ",
+                "icon": "UI_EquipIcon_Pole_Gewalt",
+                "route": "Beginner's Protector"
+            },
+            "13201": {
+                "id": 13201,
+                "rank": 2,
+                "type": "WEAPON_POLE",
+                "name": "Thương Sắt",
+                "icon": "UI_EquipIcon_Pole_Rod",
+                "route": "Iron Point"
+            },
+            "13301": {
+                "id": 13301,
+                "rank": 3,
+                "type": "WEAPON_POLE",
+                "name": "Thương Bạch Anh",
+                "icon": "UI_EquipIcon_Pole_Ruby",
+                "route": "White Tassel"
+            },
+            "13302": {
+                "id": 13302,
+                "rank": 3,
+                "type": "WEAPON_POLE",
+                "name": "Thuẫn Kích",
+                "icon": "UI_EquipIcon_Pole_Halberd",
+                "route": "Halberd"
+            },
+            "13303": {
+                "id": 13303,
+                "rank": 3,
+                "type": "WEAPON_POLE",
+                "name": "Hắc Anh Thương",
+                "icon": "UI_EquipIcon_Pole_Noire",
+                "route": "Black Tassel"
+            },
+            "13401": {
+                "id": 13401,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Tai Ương Của Rồng",
+                "icon": "UI_EquipIcon_Pole_Stardust",
+                "route": "Dragon's Bane"
+            },
+            "13402": {
+                "id": 13402,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Mẫu Tinh Liêm",
+                "icon": "UI_EquipIcon_Pole_Proto",
+                "route": "Prototype Starglitter"
+            },
+            "13403": {
+                "id": 13403,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Lưu Nguyệt Châm",
+                "icon": "UI_EquipIcon_Pole_Exotic",
+                "route": "Crescent Pike"
+            },
+            "13404": {
+                "id": 13404,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Hắc Nham",
+                "icon": "UI_EquipIcon_Pole_Blackrock",
+                "route": "Blackcliff Pole"
+            },
+            "13405": {
+                "id": 13405,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Quyết Chiến",
+                "icon": "UI_EquipIcon_Pole_Gladiator",
+                "route": "Deathmatch"
+            },
+            "13406": {
+                "id": 13406,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Thiên Nham",
+                "icon": "UI_EquipIcon_Pole_Lapis",
+                "route": "Lithic Spear"
+            },
+            "13407": {
+                "id": 13407,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Tây Phong",
+                "icon": "UI_EquipIcon_Pole_Zephyrus",
+                "route": "Favonius Lance"
+            },
+            "13408": {
+                "id": 13408,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Săn Tông Thất",
+                "icon": "UI_EquipIcon_Pole_Theocrat",
+                "route": "Royal Spear"
+            },
+            "13409": {
+                "id": 13409,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Thương Long Tích",
+                "icon": "UI_EquipIcon_Pole_Everfrost",
+                "route": "Dragonspine Spear"
+            },
+            "13414": {
+                "id": 13414,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Giáo Thập Tự Kitain",
+                "icon": "UI_EquipIcon_Pole_Bakufu",
+                "route": "Kitain Cross Spear"
+            },
+            "13415": {
+                "id": 13415,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Lao Xiên Cá",
+                "icon": "UI_EquipIcon_Pole_Mori",
+                "route": "\"The Catch\""
+            },
+            "13416": {
+                "id": 13416,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Vây Cá Chẻ Sóng",
+                "icon": "UI_EquipIcon_Pole_Maria",
+                "route": "Wavebreaker's Fin"
+            },
+            "13417": {
+                "id": 13417,
+                "rank": 4,
+                "type": "WEAPON_POLE",
+                "name": "Quán Nguyệt Thương",
+                "icon": "UI_EquipIcon_Pole_Arakalari",
+                "route": "Moonpiercer",
+                "beta": true
+            },
+            "13501": {
+                "id": 13501,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Trượng Hộ Ma",
+                "icon": "UI_EquipIcon_Pole_Homa",
+                "route": "Staff of Homa"
+            },
+            "13502": {
+                "id": 13502,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Xương Sống Thiên Không",
+                "icon": "UI_EquipIcon_Pole_Dvalin",
+                "route": "Skyward Spine"
+            },
+            "13504": {
+                "id": 13504,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Giáo Nịnh Thần",
+                "icon": "UI_EquipIcon_Pole_Kunwu",
+                "route": "Vortex Vanquisher"
+            },
+            "13505": {
+                "id": 13505,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Hòa Phác Diên",
+                "icon": "UI_EquipIcon_Pole_Morax",
+                "route": "Primordial Jade Winged-Spear"
+            },
+            "13507": {
+                "id": 13507,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Hủy Diệt",
+                "icon": "UI_EquipIcon_Pole_Santika",
+                "route": "Calamity Queller"
+            },
+            "13509": {
+                "id": 13509,
+                "rank": 5,
+                "type": "WEAPON_POLE",
+                "name": "Đoạn Thảo Trường Đao",
+                "icon": "UI_EquipIcon_Pole_Narukami",
+                "route": "Engulfing Lightning"
+            },
+            "14101": {
+                "id": 14101,
+                "rank": 1,
+                "type": "WEAPON_CATALYST",
+                "name": "Nhật Ký Học Sinh",
+                "icon": "UI_EquipIcon_Catalyst_Apprentice",
+                "route": "Apprentice's Notes"
+            },
+            "14201": {
+                "id": 14201,
+                "rank": 2,
+                "type": "WEAPON_CATALYST",
+                "name": "Số Tay Ma Pháp",
+                "icon": "UI_EquipIcon_Catalyst_Pocket",
+                "route": "Pocket Grimoire"
+            },
+            "14301": {
+                "id": 14301,
+                "rank": 3,
+                "type": "WEAPON_CATALYST",
+                "name": "Tóm Tắt Ma Pháp",
+                "icon": "UI_EquipIcon_Catalyst_Intro",
+                "route": "Magic Guide"
+            },
+            "14302": {
+                "id": 14302,
+                "rank": 3,
+                "type": "WEAPON_CATALYST",
+                "name": "Câu Chuyện Diệt Rồng",
+                "icon": "UI_EquipIcon_Catalyst_Pulpfic",
+                "route": "Thrilling Tales of Dragon Slayers"
+            },
+            "14303": {
+                "id": 14303,
+                "rank": 3,
+                "type": "WEAPON_CATALYST",
+                "name": "Tiểu Thuyết Dị Giới",
+                "icon": "UI_EquipIcon_Catalyst_Lightnov",
+                "route": "Otherworldly Story"
+            },
+            "14304": {
+                "id": 14304,
+                "rank": 3,
+                "type": "WEAPON_CATALYST",
+                "name": "Quả Cầu Ngọc",
+                "icon": "UI_EquipIcon_Catalyst_Jade",
+                "route": "Emerald Orb"
+            },
+            "14305": {
+                "id": 14305,
+                "rank": 3,
+                "type": "WEAPON_CATALYST",
+                "name": "Ngọc Sinh Đôi",
+                "icon": "UI_EquipIcon_Catalyst_Phoney",
+                "route": "Twin Nephrite"
+            },
+            "14401": {
+                "id": 14401,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Tây Phong Mật Điển",
+                "icon": "UI_EquipIcon_Catalyst_Zephyrus",
+                "route": "Favonius Codex"
+            },
+            "14402": {
+                "id": 14402,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Chương Nhạc Lang Thang",
+                "icon": "UI_EquipIcon_Catalyst_Troupe",
+                "route": "The Widsith"
+            },
+            "14403": {
+                "id": 14403,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Mảnh Chương Tế Lễ",
+                "icon": "UI_EquipIcon_Catalyst_Fossil",
+                "route": "Sacrificial Fragments"
+            },
+            "14404": {
+                "id": 14404,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Mật Pháp Tông Thất",
+                "icon": "UI_EquipIcon_Catalyst_Theocrat",
+                "route": "Royal Grimoire"
+            },
+            "14405": {
+                "id": 14405,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Nhật Nguyệt Hạp",
+                "icon": "UI_EquipIcon_Catalyst_Resurrection",
+                "route": "Solar Pearl"
+            },
+            "14406": {
+                "id": 14406,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Mẫu Kim Phách",
+                "icon": "UI_EquipIcon_Catalyst_Proto",
+                "route": "Prototype Amber"
+            },
+            "14407": {
+                "id": 14407,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Hải Đồ Vạn Quốc",
+                "icon": "UI_EquipIcon_Catalyst_Exotic",
+                "route": "Mappa Mare"
+            },
+            "14408": {
+                "id": 14408,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Hắc Nham Phỉ Ngọc",
+                "icon": "UI_EquipIcon_Catalyst_Blackrock",
+                "route": "Blackcliff Agate"
+            },
+            "14409": {
+                "id": 14409,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Chiêu Tâm",
+                "icon": "UI_EquipIcon_Catalyst_Truelens",
+                "route": "Eye of Perception"
+            },
+            "14410": {
+                "id": 14410,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Rượu Và Thơ Nơi Hẻm Tối",
+                "icon": "UI_EquipIcon_Catalyst_Outlaw",
+                "route": "Wine and Song"
+            },
+            "14412": {
+                "id": 14412,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Trái Chịu Lạnh",
+                "icon": "UI_EquipIcon_Catalyst_Everfrost",
+                "route": "Frostbearer"
+            },
+            "14413": {
+                "id": 14413,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Tuyển tập các câu chuyện về Dodoco",
+                "icon": "UI_EquipIcon_Catalyst_Ludiharpastum",
+                "route": "Dodoco Tales"
+            },
+            "14414": {
+                "id": 14414,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Vòng Bạch Thần",
+                "icon": "UI_EquipIcon_Catalyst_Bakufu",
+                "route": "Hakushin Ring"
+            },
+            "14415": {
+                "id": 14415,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Con Ngươi Tuyên Thệ",
+                "icon": "UI_EquipIcon_Catalyst_Jyanome",
+                "route": "Oathsworn Eye"
+            },
+            "14417": {
+                "id": 14417,
+                "rank": 4,
+                "type": "WEAPON_CATALYST",
+                "name": "Quả Mọng",
+                "icon": "UI_EquipIcon_Catalyst_Arakalari",
+                "route": "Fruit of Fulfillment",
+                "beta": true
+            },
+            "14501": {
+                "id": 14501,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Quyển Thiên Không",
+                "icon": "UI_EquipIcon_Catalyst_Dvalin",
+                "route": "Skyward Atlas"
+            },
+            "14502": {
+                "id": 14502,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Điển Tích Tây Phong",
+                "icon": "UI_EquipIcon_Catalyst_Fourwinds",
+                "route": "Lost Prayer to the Sacred Winds"
+            },
+            "14504": {
+                "id": 14504,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Khóa Trần Thế",
+                "icon": "UI_EquipIcon_Catalyst_Kunwu",
+                "route": "Memory of Dust"
+            },
+            "14505": {
+                "id": 14505,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Ngọc Định Thổ",
+                "icon": "UI_EquipIcon_Catalyst_Apprentice",
+                "route": "Primordial Jade Regalia"
+            },
+            "14506": {
+                "id": 14506,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Vầng Trăng Bất Diệt",
+                "icon": "UI_EquipIcon_Catalyst_Kaleido",
+                "route": "Everlasting Moonglow"
+            },
+            "14509": {
+                "id": 14509,
+                "rank": 5,
+                "type": "WEAPON_CATALYST",
+                "name": "Chân Ý Của Kagura",
+                "icon": "UI_EquipIcon_Catalyst_Narukami",
+                "route": "Kagura's Verity"
+            },
+            "15101": {
+                "id": 15101,
+                "rank": 1,
+                "type": "WEAPON_BOW",
+                "name": "Cung Săn Bắn",
+                "icon": "UI_EquipIcon_Bow_Hunters",
+                "route": "Hunter's Bow"
+            },
+            "15201": {
+                "id": 15201,
+                "rank": 2,
+                "type": "WEAPON_BOW",
+                "name": "Cung Săn Bắn Tôi Luyện",
+                "icon": "UI_EquipIcon_Bow_Old",
+                "route": "Seasoned Hunter's Bow"
+            },
+            "15301": {
+                "id": 15301,
+                "rank": 3,
+                "type": "WEAPON_BOW",
+                "name": "Cung Lông Vịt",
+                "icon": "UI_EquipIcon_Bow_Crowfeather",
+                "route": "Raven Bow"
+            },
+            "15302": {
+                "id": 15302,
+                "rank": 3,
+                "type": "WEAPON_BOW",
+                "name": "Lời Thề Xạ Thủ Thần",
+                "icon": "UI_EquipIcon_Bow_Arjuna",
+                "route": "Sharpshooter's Oath"
+            },
+            "15303": {
+                "id": 15303,
+                "rank": 3,
+                "type": "WEAPON_BOW",
+                "name": "Cung Phản Khúc",
+                "icon": "UI_EquipIcon_Bow_Curve",
+                "route": "Recurve Bow"
+            },
+            "15304": {
+                "id": 15304,
+                "rank": 3,
+                "type": "WEAPON_BOW",
+                "name": "Nỏ Kéo",
+                "icon": "UI_EquipIcon_Bow_Sling",
+                "route": "Slingshot"
+            },
+            "15305": {
+                "id": 15305,
+                "rank": 3,
+                "type": "WEAPON_BOW",
+                "name": "Tín Sứ",
+                "icon": "UI_EquipIcon_Bow_Msg",
+                "route": "Messenger"
+            },
+            "15401": {
+                "id": 15401,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Tây Phong",
+                "icon": "UI_EquipIcon_Bow_Zephyrus",
+                "route": "Favonius Warbow"
+            },
+            "15402": {
+                "id": 15402,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Tuyệt Huyền",
+                "icon": "UI_EquipIcon_Bow_Troupe",
+                "route": "The Stringless"
+            },
+            "15403": {
+                "id": 15403,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Tế Lễ",
+                "icon": "UI_EquipIcon_Bow_Fossil",
+                "route": "Sacrificial Bow"
+            },
+            "15404": {
+                "id": 15404,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Trường Cung Tông Thất",
+                "icon": "UI_EquipIcon_Bow_Theocrat",
+                "route": "Royal Bow"
+            },
+            "15405": {
+                "id": 15405,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Rỉ Sét",
+                "icon": "UI_EquipIcon_Bow_Recluse",
+                "route": "Rust"
+            },
+            "15406": {
+                "id": 15406,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Mẫu Đạm Nguyệt",
+                "icon": "UI_EquipIcon_Bow_Proto",
+                "route": "Prototype Crescent"
+            },
+            "15407": {
+                "id": 15407,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Thép",
+                "icon": "UI_EquipIcon_Bow_Exotic",
+                "route": "Compound Bow"
+            },
+            "15408": {
+                "id": 15408,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Hắc Nham",
+                "icon": "UI_EquipIcon_Bow_Blackrock",
+                "route": "Blackcliff Warbow"
+            },
+            "15409": {
+                "id": 15409,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Sắc Xanh",
+                "icon": "UI_EquipIcon_Bow_Viridescent",
+                "route": "The Viridescent Hunt"
+            },
+            "15410": {
+                "id": 15410,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Thợ Săn Hẻm Tối",
+                "icon": "UI_EquipIcon_Bow_Outlaw",
+                "route": "Alley Hunter"
+            },
+            "15411": {
+                "id": 15411,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Lạc Hà",
+                "icon": "UI_EquipIcon_Bow_Fallensun",
+                "route": "Fading Twilight"
+            },
+            "15412": {
+                "id": 15412,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Điệu Van Ban Đêm",
+                "icon": "UI_EquipIcon_Bow_Nachtblind",
+                "route": "Mitternachts Waltz"
+            },
+            "15413": {
+                "id": 15413,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Bài Ca Hoa Gió",
+                "icon": "UI_EquipIcon_Bow_Fleurfair",
+                "route": "Windblume Ode"
+            },
+            "15414": {
+                "id": 15414,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cung Trừ Ma",
+                "icon": "UI_EquipIcon_Bow_Bakufu",
+                "route": "Hamayumi"
+            },
+            "15415": {
+                "id": 15415,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Kẻ Săn Mồi",
+                "icon": "UI_EquipIcon_Bow_Predator",
+                "route": "Predator"
+            },
+            "15416": {
+                "id": 15416,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Ánh Trăng Mouun",
+                "icon": "UI_EquipIcon_Bow_Maria",
+                "route": "Mouun's Moon"
+            },
+            "15417": {
+                "id": 15417,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Cận Vệ Nhà Vua",
+                "icon": "UI_EquipIcon_Bow_Arakalari",
+                "route": "King's Squire",
+                "beta": true
+            },
+            "15418": {
+                "id": 15418,
+                "rank": 4,
+                "type": "WEAPON_BOW",
+                "name": "Sông Cạn",
+                "icon": "UI_EquipIcon_Bow_Fin",
+                "route": "End of the Line",
+                "beta": true
+            },
+            "15501": {
+                "id": 15501,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Cánh Thiên Không",
+                "icon": "UI_EquipIcon_Bow_Dvalin",
+                "route": "Skyward Harp"
+            },
+            "15502": {
+                "id": 15502,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Cung Amos",
+                "icon": "UI_EquipIcon_Bow_Amos",
+                "route": "Amos' Bow"
+            },
+            "15503": {
+                "id": 15503,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Tiếng Thở Dài Vô Tận",
+                "icon": "UI_EquipIcon_Bow_Widsith",
+                "route": "Elegy for the End"
+            },
+            "15504": {
+                "id": 15504,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Rồng Kunwu",
+                "icon": "UI_EquipIcon_Bow_Hunters",
+                "route": "Kunwu's Wyrmbane"
+            },
+            "15505": {
+                "id": 15505,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Cung Huyền Lê",
+                "icon": "UI_EquipIcon_Bow_Hunters",
+                "route": "Primordial Jade Vista"
+            },
+            "15507": {
+                "id": 15507,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Ngôi Sao Cực Đông",
+                "icon": "UI_EquipIcon_Bow_Worldbane",
+                "route": "Polar Star"
+            },
+            "15508": {
+                "id": 15508,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Nhược Thủy",
+                "icon": "UI_EquipIcon_Bow_Kirin",
+                "route": "Aqua Simulacra"
+            },
+            "15509": {
+                "id": 15509,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Sấm Sét Rung Động",
+                "icon": "UI_EquipIcon_Bow_Narukami",
+                "route": "Thundering Pulse"
+            },
+            "15511": {
+                "id": 15511,
+                "rank": 5,
+                "type": "WEAPON_BOW",
+                "name": "Con Đường Thợ Săn",
+                "icon": "UI_EquipIcon_Bow_Ayus",
+                "route": "Hunter's Path",
+                "beta": true
+            }
+        }
+    }
+}

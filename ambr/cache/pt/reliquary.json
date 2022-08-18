@@ -1,0 +1,623 @@
+{
+    "response": 200,
+    "data": {
+        "items": {
+            "10001": {
+                "id": 10001,
+                "name": "Resolução de Sojourner",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100010": "ATQ +18%.",
+                    "2100011": "Aumenta a Taxa Crítica do Ataque Carregado em 30%."
+                },
+                "icon": "UI_RelicIcon_10001_4",
+                "route": "Resolution of Sojourner",
+                "sortOrder": 10
+            },
+            "10002": {
+                "id": 10002,
+                "name": "Coração Valente",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100020": "ATQ +18%.",
+                    "2100021": "Aumenta o Dano em 30% contra os inimigos com mais de 50% de Vida."
+                },
+                "icon": "UI_RelicIcon_10002_4",
+                "route": "Brave Heart",
+                "sortOrder": 16
+            },
+            "10003": {
+                "id": 10003,
+                "name": "Guardião",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100030": "DEF +30%",
+                    "2100031": "Aumenta a própria RES do respectivo elemento em 30% para cada elemento diferente dos seus personagens da equipe."
+                },
+                "icon": "UI_RelicIcon_10003_4",
+                "route": "Defender's Will",
+                "sortOrder": 15
+            },
+            "10004": {
+                "id": 10004,
+                "name": "Pequeno Milagre",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100040": "RES de todos os Elementos +20%.",
+                    "2100041": "O Dano elemental recebido aumenta a RES Elemental correspondente em 30% por 10s. Pode ser lançado uma vez a cada 10s."
+                },
+                "icon": "UI_RelicIcon_10004_4",
+                "route": "Tiny Miracle",
+                "sortOrder": 11
+            },
+            "10005": {
+                "id": 10005,
+                "name": "Berserker",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100050": "Taxa Crítica +12%",
+                    "2100051": "Quando a Vida estiver abaixo de 70%, a Taxa Crítica aumenta 24%."
+                },
+                "icon": "UI_RelicIcon_10005_4",
+                "route": "Berserker",
+                "sortOrder": 12
+            },
+            "10006": {
+                "id": 10006,
+                "name": "Artista Marcial",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100060": "Aumenta o Dano do Ataque Normal e do Ataque Carregado em 15%.",
+                    "2100061": "Após usar uma Habilidade Elemental, aumenta o Dano do Ataque Normal e Ataque Carregado em 25% por 8s."
+                },
+                "icon": "UI_RelicIcon_10006_4",
+                "route": "Martial Artist",
+                "sortOrder": 17
+            },
+            "10007": {
+                "id": 10007,
+                "name": "Instrutor",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100070": "Proficiência Elemental +80",
+                    "2100071": "Após uma Reação Elemental aumenta a Proficiência Elemental de todos os membros da Equipe em 120 por 8s."
+                },
+                "icon": "UI_RelicIcon_10007_4",
+                "route": "Instructor",
+                "sortOrder": 13
+            },
+            "10008": {
+                "id": 10008,
+                "name": "Apostador",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100080": "Aumenta o dano da Habilidade Elemental em 20%.",
+                    "2100081": "Ao derrotar um inimigo, possui 100% de chance de remover a Recarga da Habilidade Elemental. Este efeito pode ser ativado uma vez a cada 15s."
+                },
+                "icon": "UI_RelicIcon_10008_4",
+                "route": "Gambler",
+                "sortOrder": 18
+            },
+            "10009": {
+                "id": 10009,
+                "name": "O Exilado",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100090": "Recarga de Energia +20%",
+                    "2100091": "Ao usar o Supremo, regenera 2 de Energia a todos os personagens da equipe (excluindo o portador) a cada 2s por 6s. Este efeito não pode ser acumulado."
+                },
+                "icon": "UI_RelicIcon_10009_4",
+                "route": "The Exile",
+                "sortOrder": 14
+            },
+            "10010": {
+                "id": 10010,
+                "name": "Aventureiro",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100100": "Vida Máx. +1000",
+                    "2100101": "Abrir um baú recupera 30% de Vida Máxima durante 5 segundos."
+                },
+                "icon": "UI_RelicIcon_10010_4",
+                "route": "Adventurer",
+                "sortOrder": 1
+            },
+            "10011": {
+                "id": 10011,
+                "name": "O Sortudo",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100110": "DEF +100",
+                    "2100111": "Ao coletar Mora, restaura 300 de Vida."
+                },
+                "icon": "UI_RelicIcon_10011_4",
+                "route": "Lucky Dog",
+                "sortOrder": 2
+            },
+            "10012": {
+                "id": 10012,
+                "name": "O Estudioso",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2100120": "Recarga de Energia +20%",
+                    "2100121": "Obter Partículas ou Orbes Elementais confere 3 de Energia a todos os membros da equipe que possuem um arco ou catalisador equipado. Pode ser ativado uma vez a cada 3s."
+                },
+                "icon": "UI_RelicIcon_10012_4",
+                "route": "Scholar",
+                "sortOrder": 19
+            },
+            "10013": {
+                "id": 10013,
+                "name": "O Doutor Viajante",
+                "levelList": [
+                    1,
+                    2,
+                    3
+                ],
+                "affixList": {
+                    "2100130": "Aumenta o efeito de cura em 20%.",
+                    "2100131": "Após usar o Supremo, restaura 20% de Vida."
+                },
+                "icon": "UI_RelicIcon_10013_4",
+                "route": "Traveling Doctor",
+                "sortOrder": 3
+            },
+            "14001": {
+                "id": 14001,
+                "name": "Herói Invernal",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140010": "Bônus de Dano Cryo +15%",
+                    "2140011": "Quando um personagem ataca um inimigo afetado por Cryo, a sua Taxa CRIT aumenta em 20%. Adicionalmente, se o inimigo estiver Congelado, a Taxa CRIT aumenta em mais 20%."
+                },
+                "icon": "UI_RelicIcon_14001_4",
+                "route": "Blizzard Strayer",
+                "sortOrder": 38
+            },
+            "14002": {
+                "id": 14002,
+                "name": "Lançador de Trovões",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140020": "RES Electro +40%",
+                    "2140021": "Aumenta o Dano contra inimigos afetados por Electro em 35%."
+                },
+                "icon": "UI_RelicIcon_14002_4",
+                "route": "Thundersoother",
+                "sortOrder": 39
+            },
+            "14003": {
+                "id": 14003,
+                "name": "Atravessador do Fogo",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140030": "RES Pyro +40%",
+                    "2140031": "Aumenta o Dano contra inimigos afetados por Pyro em 35%."
+                },
+                "icon": "UI_RelicIcon_14003_4",
+                "route": "Lavawalker",
+                "sortOrder": 40
+            },
+            "14004": {
+                "id": 14004,
+                "name": "Donzela Amada",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2140040": "Efeito de Cura do Personagem aumenta em 15%",
+                    "2140041": "Ao usar uma Habilidade Elemental ou Explosão, aumenta a cura recebida por todos os membros da equipe em 20% por 10s."
+                },
+                "icon": "UI_RelicIcon_14004_4",
+                "route": "Maiden Beloved",
+                "sortOrder": 41
+            },
+            "15001": {
+                "id": 15001,
+                "name": "Último Juramento do Gladiador",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150010": "ATQ +18%.",
+                    "2150011": "Se o portador deste conjunto de artefato usar uma Espada, Espadão ou Lança, aumenta o Dano de seus Ataques Normais em 35%."
+                },
+                "icon": "UI_RelicIcon_15001_4",
+                "route": "Gladiator's Finale",
+                "sortOrder": 42
+            },
+            "15002": {
+                "id": 15002,
+                "name": "Sombra Verde",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150020": "Bônus de Dano Anemo +15%",
+                    "2150021": "Aumenta o Dano do Redemoinho em 60%. Dependendo do tipo elemento infundido, diminui a RES Elemental correspondente do oponente em 40% por 10s."
+                },
+                "icon": "UI_RelicIcon_15002_4",
+                "route": "Viridescent Venerer",
+                "sortOrder": 43
+            },
+            "15003": {
+                "id": 15003,
+                "name": "Trupe Itinerante",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150030": "Proficiência Elemental +80",
+                    "2150031": "Aumenta o Dano do Ataque Carregado em 35% se o personagem estiver usando Catalisador ou Arco."
+                },
+                "icon": "UI_RelicIcon_15003_4",
+                "route": "Wanderer's Troupe",
+                "sortOrder": 44
+            },
+            "15005": {
+                "id": 15005,
+                "name": "Trovão Furioso",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150050": "Bônus de Dano Electro +15%",
+                    "2150051": "Aumenta o Dano causado pela Sobrecarga, Eletricamente Carregado e Supercondutor em 40%. Ao ativar estes efeitos, diminui a Recarga da Habilidade Elemental em 1s. Pode ser ativado uma vez a cada 0.8s."
+                },
+                "icon": "UI_RelicIcon_15005_4",
+                "route": "Thundering Fury",
+                "sortOrder": 45
+            },
+            "15006": {
+                "id": 15006,
+                "name": "A Bruxa das Chamas Carmesim",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150060": "Bônus de Dano Pyro +15%",
+                    "2150061": "Aumenta o dano causado por Sobrecarga e Queimadura em 40%, aumenta o dano causado pela Vaporização e Fusão em 15%. Ao usar a Habilidade Elemental aumenta os efeitos do Conjunto de 2 Peças em 50% por 10s. Pode acumular até 3x."
+                },
+                "icon": "UI_RelicIcon_15006_4",
+                "route": "Crimson Witch of Flames",
+                "sortOrder": 46
+            },
+            "15007": {
+                "id": 15007,
+                "name": "Antigo Ritual Real",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150070": "Dano do Supremo +20%",
+                    "2150071": "Usar o Supremo aumenta o ATQ de todos os membros da equipe em 20% por 12s. Este efeito não pode ser acumulado."
+                },
+                "icon": "UI_RelicIcon_15007_4",
+                "route": "Noblesse Oblige",
+                "sortOrder": 47
+            },
+            "15008": {
+                "id": 15008,
+                "name": "Cavaleiro Manchado de Sangue",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150080": "Dano Físico causado +25%",
+                    "2150081": "Após derrotar um oponente, aumenta o Dano do Ataque Carregado em 50% e reduz seu custo de Stamina para 0 por 10s."
+                },
+                "icon": "UI_RelicIcon_15008_4",
+                "route": "Bloodstained Chivalry",
+                "sortOrder": 48
+            },
+            "15009": {
+                "id": 15009,
+                "name": "Xamã do Ritual Pyro",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150090": "Reduz a duração dos efeitos causados por Pyro em 40%."
+                },
+                "icon": "UI_RelicIcon_15009_3",
+                "route": "Prayers for Illumination",
+                "sortOrder": 20
+            },
+            "15010": {
+                "id": 15010,
+                "name": "Orações para o Destino",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150100": "Reduz a duração dos efeitos causados por Hydro em 40%."
+                },
+                "icon": "UI_RelicIcon_15010_3",
+                "route": "Prayers for Destiny",
+                "sortOrder": 21
+            },
+            "15011": {
+                "id": 15011,
+                "name": "Xamã do Ritual Electro",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150110": "Reduz a duração dos efeitos causados por Electro em 40%."
+                },
+                "icon": "UI_RelicIcon_15011_3",
+                "route": "Prayers for Wisdom",
+                "sortOrder": 22
+            },
+            "15013": {
+                "id": 15013,
+                "name": "Orações para a Primavera",
+                "levelList": [
+                    3,
+                    4
+                ],
+                "affixList": {
+                    "2150130": "Reduz a duração dos efeitos causados por Cryo em 40%."
+                },
+                "icon": "UI_RelicIcon_15013_3",
+                "route": "Prayers to Springtime",
+                "sortOrder": 23
+            },
+            "15014": {
+                "id": 15014,
+                "name": "Pedra Arcaica",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150140": "Obtém 15% de Bônus de Dano Geo.",
+                    "2150141": "Ao obter um Fragmento Elemental por meio de uma Reação de Cristalização, todos os personagens na equipe ganham 35% de DMG para esse elemento em particular por 10s. Somente uma forma de Dano Elemental pode ser obtida dessa maneira a qualquer momento."
+                },
+                "icon": "UI_RelicIcon_15014_4",
+                "route": "Archaic Petra",
+                "sortOrder": 49
+            },
+            "15015": {
+                "id": 15015,
+                "name": "Meteoro Invertido",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150150": "Aumenta a efetividade de escudos em 35%",
+                    "2150151": "Ganha um adicional de 40% de Dano Normal e Carregado enquanto estiver sob a proteção de um escudo."
+                },
+                "icon": "UI_RelicIcon_15015_4",
+                "route": "Retracing Bolide",
+                "sortOrder": 50
+            },
+            "15016": {
+                "id": 15016,
+                "name": "Profundezas do Coração",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150160": "Bônus de Dano Hydro +15%",
+                    "2150161": "Após usar uma Habilidade Elemental, aumenta o Dano do Ataque Normal e Carregado em 30% por 15s."
+                },
+                "icon": "UI_RelicIcon_15016_4",
+                "route": "Heart of Depth",
+                "sortOrder": 51
+            },
+            "15017": {
+                "id": 15017,
+                "name": "Millelith Firmes",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150170": "Aumenta a Vida em 20%",
+                    "2150171": "Quando a Habilidade Elemental atinge um oponente, o ATQ de todos os membros da equipe próximos aumenta em 20% e sua Força do Escudo aumenta em 30% por 3s. Esse efeito pode ser ativado uma vez a cada 0,5s. Esse efeito ainda pode ser ativado mesmo quando o personagem que está usando esse conjunto de artefatos não está em campo."
+                },
+                "icon": "UI_RelicIcon_15017_4",
+                "route": "Tenacity of the Millelith",
+                "sortOrder": 52
+            },
+            "15018": {
+                "id": 15018,
+                "name": "Chama Pálida",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150180": "Dano Físico causado +25%",
+                    "2150181": "Quando a Habilidade Elemental atinge um inimigo, o Ataque aumenta em 9% por 7s. Esse efeito acumula até 2 vezes e pode ser desencadeado uma vez a cada 0.3s. Quando se possui 2 acúmulos, o efeito do conjunto de 2 Artefatos é aumentado em 100%."
+                },
+                "icon": "UI_RelicIcon_15018_4",
+                "route": "Pale Flame",
+                "sortOrder": 53
+            },
+            "15019": {
+                "id": 15019,
+                "name": "Reminescência Nostálgica",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150190": "ATQ +18%.",
+                    "2150191": "Ao lançar sua Habilidade Elemental, se a Energia Elemental do Personagem for maior ou igual a 15, ele perderá 15 pontos de Energia Elemental e nos próximos 10s, seus Ataques Normais, Ataques Carregados, Ataques Imersivos terão um aumento de 50% de Dano. Esse efeito só pode ser desencadeado uma vez dentro desse intervalo de tempo."
+                },
+                "icon": "UI_RelicIcon_15019_4",
+                "route": "Shimenawa's Reminiscence",
+                "sortOrder": 70
+            },
+            "15020": {
+                "id": 15020,
+                "name": "Selo da Insulação",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150200": "Recarga de Energia +20%",
+                    "2150201": "Aumenta o Dano do Supremo em 25% da Recarga de Energia. No máximo é possível obter 75% de aumento de Dano dessa maneira."
+                },
+                "icon": "UI_RelicIcon_15020_4",
+                "route": "Emblem of Severed Fate",
+                "sortOrder": 71
+            },
+            "15021": {
+                "id": 15021,
+                "name": "Casca de Sonhos Opulentos",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150210": "DEF +30%",
+                    "2150211": "Um personagem com este conjunto de artefatos equipado obterá o efeito de Curiosidade nas seguintes condições: Quando estiver no campo de batalha, o personagem ganha 1 carga após atingir um adversário com um ataque Geo, isso pode ser desencadeado uma vez a cada 0.3s. Quando fora do campo de batalha, o personagem ganha 1 carga a cada 3s. A Curiosidade pode acumular em até 4 vezes, cada uma fornecendo 6% de DEF e um Bônus de Dano Geo de também 6%. Quando 6 segundos passam sem ganhar um acúmulo de Curiosidade, 1 acúmulo é perdido."
+                },
+                "icon": "UI_RelicIcon_15021_4",
+                "route": "Husk of Opulent Dreams",
+                "sortOrder": 74
+            },
+            "15022": {
+                "id": 15022,
+                "name": "Concha Tingida Pelo Mar",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150220": "Bônus de Cura +15%",
+                    "2150221": "Quando o personagem que equipa este conjunto de artefatos cura outro personagem da sua equipe, ele cria o efeito de \"Bolha de Espuma do Mar\" durante 3s, que registra a quantidade de vida regenerada (incluindo a regenerada acima de 100%). No final da duração do efeito, a Bolha de Espuma do Mar explode, causando dano aos inimigos ao redor com base em 90% da vida regenerada. (Esse Dano é calculado de forma semelhante a reações como Eletricamente Carregado e Supercondutor, mas não é afetado pela Proficiência Elemental, níveis de personagens ou dano bônus de reações.) Apenas se pode criar uma Bolha de Espuma do Mar a cada 3.5s, e esta poderá registrar no máximo 30.000 pontos de vida, incluindo aqueles regenerados acima de 100%. Além disso, apenas uma Bolha de Espuma do Mar pode existir em sua equipe de cada vez. Quando o personagem equipando este conjunto de artefatos está na equipe, mas não em combate, poderá ainda assim ativar este efeito."
+                },
+                "icon": "UI_RelicIcon_15022_4",
+                "route": "Ocean-Hued Clam",
+                "sortOrder": 75
+            },
+            "15023": {
+                "id": 15023,
+                "name": "Além-vida Cinábrio",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150230": "ATQ +18%.",
+                    "2150231": "Depois do Supremo ser usado, será desencadeado o efeito de \"Luz Nascente\" por 16s: o ATQ será aumentado em 8% e quando a Vida do personagem diminuir, o ATQ aumentará mais 10%. Esse aumento pode ocorrer desta forma no máximo 4 vezes, e pode ser desencadeado 1 vez a cada 0.8s. O efeito de \"Luz Nascente\" desaparece quando o personagem sai do campo de batalha. Quando o personagem lança novamente o Supremo durante o efeito, o efeito original de \"Luz Nascente\" será removido."
+                },
+                "icon": "UI_RelicIcon_15023_4",
+                "route": "Vermillion Hereafter",
+                "sortOrder": 78
+            },
+            "15024": {
+                "id": 15024,
+                "name": "Eco do Sacrifício",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150240": "ATQ +18%.",
+                    "2150241": "Quando o Ataque Normal atinge um inimigo, tem 36% de chance de ativar o Rito do Vale: o Ataque Normal aumenta o Dano e o valor de aumento é 70% do ATQ. Esse efeito desaparece nos 0.05s após o Ataque Normal causar dano. Quando o Ataque Normal não ativar o Rito do Vale, aumenta a probabilidade em 20% no próximo lançamento. Essa ativação pode ocorrer 1 vez a cada 0.2s."
+                },
+                "icon": "UI_RelicIcon_15024_4",
+                "route": "Echoes of an Offering",
+                "sortOrder": 79
+            },
+            "15025": {
+                "id": 15025,
+                "name": "Memórias da Floresta",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150250": "Bônus de Dano Dendro +15%",
+                    "2150251": "Depois que as Habilidades Elementais ou Supremos acertam os oponentes, a RES Dendro dos alvos serão reduzidas em 30% por 8s. Esse efeito pode ser desencadeado mesmo se o personagem equipando este conjunto não estiver em campo."
+                },
+                "icon": "UI_RelicIcon_15025_4",
+                "route": "Deepwood Memories",
+                "sortOrder": 82,
+                "beta": true
+            },
+            "15026": {
+                "id": 15026,
+                "name": "Sonhos Dourados",
+                "levelList": [
+                    4,
+                    5
+                ],
+                "affixList": {
+                    "2150260": "Proficiência Elemental +80",
+                    "2150261": "Dentro de 8s após causar uma Reação Elemental, o personagem equipando este conjunto irá obter aprimoramentos baseados no Tipo Elemental dos outros membros da equipe. O ATQ é aumentado em 14% para cada membro da equipe cujo Tipo Elemental seja o mesmo que o personagem equipando o conjunto. A Proficiência Elemental é aumentada em 50 para cada membro da equipe com Tipos Elementais diferentes. Cada um desses aprimoramentos mencionados anteriormente irá contar para até 3 personagens. Esse efeito pode ser desencadeado uma vez a cada 8s. O personagem que equipar este conjunto ainda pode ativar seu efeito mesmo que não esteja em campo."
+                },
+                "icon": "UI_RelicIcon_15026_4",
+                "route": "Gilded Dreams",
+                "sortOrder": 83,
+                "beta": true
+            }
+        }
+    }
+}

@@ -30,7 +30,8 @@ class OthersCog(commands.Cog, name='others'):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embed = default_embed(message=f'{text_map.get(125, i.locale, user_locale)}\n'
                               f'{text_map.get(126, i.locale, user_locale)}\n'
-                              f'{text_map.get(127, i.locale, user_locale)}')
+                              f'{text_map.get(127, i.locale, user_locale)}\n'
+                              f'{text_map.get(511, i.locale, user_locale)}')
         embed.set_author(name='更改語言', icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=ChangeLang.View(i.locale, user_locale, self.bot.db), ephemeral=True)
 

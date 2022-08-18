@@ -2,10 +2,15 @@ import json
 from datetime import datetime
 from pprint import pprint
 from typing import Dict, List
-
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 import aiosqlite
 import GGanalysislib
 import yaml
+from time import time
+from ambr.client import AmbrTopAPI
+from ambr.models import Character, Weapon
+from apps.draw import draw_domain_card, draw_item_icons_on_domain_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (calculate_artifact_score, get_artifact,
                                 get_character, get_farm_dict, get_fight_prop,
@@ -18,7 +23,7 @@ from data.game.elements import elements
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from dateutil import parser
-from discord import Interaction, Member, SelectOption, User, app_commands
+from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -31,7 +36,7 @@ from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
                                  EventTypeChooser, ResinNotification,
                                  ShowAllCharacters, TalentNotification)
 from utility.paginator import GeneralPaginator
-from utility.utils import default_embed, divide_chunks, error_embed, parse_HTML
+from utility.utils import default_embed, divide_chunks, divide_dict, error_embed, parse_HTML
 
 
 class GenshinCog(commands.Cog, name='genshin'):
@@ -292,41 +297,53 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.command(name='farm', description=_("View today's farmable items", hash=446))
     async def farm(self, i: Interaction):
         await i.response.defer()
-        embeds = []
+        result = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_locale = user_locale or i.locale
-        farm_dict, daily_dungeon = await get_farm_dict(self.bot.session, user_locale)
-        today_farmable = {}
-
-        for dungeon, dungeon_info in daily_dungeon[get_weekday_name(datetime.today().weekday(), 'en-US', None, True)].items():
-            if dungeon_info['id'] not in today_farmable:
-                today_farmable[dungeon_info['id']] = []
-            for character_id, character_items in farm_dict['avatar'].items():
-                for item_id in list(character_items.keys()):
-                    if int(item_id) in dungeon_info['reward'] and character_id not in today_farmable[dungeon_info['id']]:
-                        today_farmable[dungeon_info['id']].append(character_id)
-            for weapon_id, weapon_items in farm_dict['weapon'].items():
-                for item_id in list(weapon_items.keys()):
-                    if int(item_id) in dungeon_info['reward'] and weapon_id not in today_farmable[dungeon_info['id']]:
-                        today_farmable[dungeon_info['id']].append(weapon_id)
-
-        # pprint(today_farmable)
-
-        for domain_id, farmable_list in today_farmable.items():
-            embed = default_embed(
-                f'{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}')
-            value = ''
-            for farmable in farmable_list:
-                emoji = get_weapon(farmable)['emoji'] if len(
-                    farmable) == 5 else get_character(farmable)['emoji']
-                name = text_map.get_weapon_name(farmable, i.locale, user_locale) if len(
-                    farmable) == 5 else text_map.get_character_name(farmable, i.locale, user_locale)
-                value += f'{emoji} {name}\n'
-            embed.add_field(name=text_map.get_domain_name(
-                domain_id, i.locale, user_locale), value=value)
+        locale = user_locale or i.locale
+        locale = to_ambr_top(locale)
+        client = AmbrTopAPI(self.bot.session, lang=locale)
+        domains = client.get_domain()
+        character_upgrades = client.get_character_upgrade()
+        weapon_upgrades = client.get_weapon_upgrade()
+        
+        today_domains = []
+        for domain in domains:
+            if domain.weekday == datetime.today().weekday():
+                today_domains.append(domain)
+        
+        for domain in today_domains:
+            characters: Dict[int, Character] = {}
+            for reward in domain.rewards:
+                for upgrade in character_upgrades:
+                    for item in upgrade.items:
+                        if item.id == reward.id:
+                            characters[upgrade.character_id] = client.get_character(upgrade.character_id)[0]
+            
+            
+            weapons: Dict[int, Weapon] = {}
+            for reward in domain.rewards:
+                for upgrade in weapon_upgrades:
+                    for item in upgrade.items:
+                        if item.id == reward.id:
+                            weapons[upgrade.weapon_id] = client.get_weapon(upgrade.weapon_id)[0]
+            
+            
+            # merge two dicts
+            items = characters | weapons
+            chunks = list(divide_dict(items, 12))
+            
+            for chunk in chunks:
+                domain_card = draw_domain_card(domain)
+                domain_card = await draw_item_icons_on_domain_card(domain_card, chunk, self.bot.session)
+                result.append(domain_card)
+                
+        embeds = []
+        for index, fp in enumerate(result):
+            embed = default_embed(f'{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}')
+            embed.set_image(url=f"attachment://{index}.jpeg")
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
+        await GeneralPaginator(i, embeds, self.bot.db, files=result).start(followup=True)
 
     @app_commands.command(name='build', description=_("View character builds: Talent levels, artifacts, weapons", hash=447))
     async def build(self, i: Interaction):
