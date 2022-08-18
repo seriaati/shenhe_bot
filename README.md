@@ -98,9 +98,7 @@
 <!-- CONTACT -->
 ## 聯絡方式
 
-
-
-專案連結: [https://github.com/seriaati/shenhe_bot](https://github.com/seriaati/shenhe_bot)
+discord: seria#5334
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
