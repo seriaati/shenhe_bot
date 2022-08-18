@@ -148,6 +148,6 @@ log.txt
 playground.py
 shenhe.db
 test.py
-resources/images/character
-resources/images/material
-resources/images/weapon
+resources/images/character/*
+resources/images/material/*
+resources/images/weapon/*
