@@ -1,4 +1,9 @@
 change_log_en = {
+    'v4.7.0':
+        "• Shenhe knows how to draw images now! `/farm` would be her first try\n"
+        "• Shenhe now has an official website: shenhe.bot.nu\n"
+        "• Changed `/wiki` to `/search`\n"
+        "• Added translations for Japanese, Chinese (Simplified), and Thai | (crowdin)[https://crowdin.com/project/shenhe-bot]\n",
     'v4.6.3':
         "• Optimize `/version` [#103](https://github.com/seriaati/shenhe_bot/pull/103)\n"
         "• Capitalization!!! by @MoMuAlt [#105](https://github.com/seriaati/shenhe_bot/pull/105)\n\n"

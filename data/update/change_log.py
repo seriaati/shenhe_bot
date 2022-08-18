@@ -1,4 +1,9 @@
 change_log = {
+    'v4.7.0':
+        "• 申鶴會畫圖了, `/farm` 是第一個應用\n"
+        "• 申鶴有官網了: shenhe.bot.nu\n"
+        "• 將 `/wiki` 改成了 `/search`\n"
+        "• 新增了日文、泰文、以及簡體中文的部份翻譯，感謝翻譯人員的參與 | (crowdin)[https://crowdin.com/project/shenhe-bot]\n",
     'v4.6.3':
         "• 優化 `/version` [#103](https://github.com/seriaati/shenhe_bot/pull/103)\n"
         "• 大寫!!! by @MoMuAlt [#105](https://github.com/seriaati/shenhe_bot/pull/105)\n\n"
