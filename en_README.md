@@ -14,7 +14,7 @@
     <img src="https://i.imgur.com/bwWfOJH.png" alt="Logo" width="400" height="400">
   </a>
 
-<h3 align="center">申鶴</h3>
+<h3 align="center">Shenhe</h3>
 
   <p align="center">
     A feature-rich, powerful genshin discord bot
@@ -34,7 +34,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>目錄</summary>
+  <summary>Table of contents</summary>
   <ol>
     <li><a href="#Feature Highlights">Feature Highlights</a></li>
     <li><a href="#Contributing">Contributing</a></li>
@@ -114,6 +114,7 @@ Huge thank you to these people! If you're not listed here, please let me know.
 * [discord.py](https://github.com/Rapptz/discord.py)
 * [paginator](https://github.com/soosBot-com/Pagination)
 * [wish analysis](https://github.com/OneBST/GGanalysis)
+* [enkanetwork.py](https://github.com/mrwan200/EnkaNetwork.py)
 
 <p align="right">(<a href="#readme-top">Back to top</a>)</p>
 
