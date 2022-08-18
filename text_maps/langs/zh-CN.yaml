@@ -83,7 +83,7 @@
 83: 最多元素爆发
 84: 最多元素战技
 85: 深渊总览
-86: Chamber
+86: 層
 87: "‎"
 88: "[上半]"
 89: "[下半]"
@@ -137,7 +137,7 @@
 137: Cookie 设置流程
 138: "1.先复制底下的整段程式码\n2.电脑或手机使用Chrome开启Hoyolab并登入账号 <https://www.hoyolab.com> \n3.按浏览器上面网址的部分，并确保选取了全部网址\n4.在网址列先输入 `java`, 然后贴上程式码, 确保网址开头变成 `javascript:`\n5.按Enter, 网页会变成显示你的Cookie, 全选然后复制\n6.在这里提交结果, 使用: `/register 提交 cookie` 无法理解吗? 跟着下面的图示操作吧!"
 139: 过期或无效的Cookie, 请先登出账号再重新登入!
-140: Please use the `/register` command
+140: 请使用 `/register` 指令来注册账号
 141: 找不到账号资料!
 142: 选择元素
 143: 你不是这个指令的发起者
@@ -496,3 +496,4 @@
 507: How many 5 star UP characters do you wish to pull?
 508: Search anything genshin related
 509: query
+510: Sumeru
