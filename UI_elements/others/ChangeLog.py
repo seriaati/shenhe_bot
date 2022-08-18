@@ -26,4 +26,8 @@ class ChangeLogButton(Button):
             label='Discord', url='https://discord.gg/ryfamUykRw', row=2)
         github = Button(
             label='Github', url='https://github.com/seriaati/shenhe_bot', row=2)
-        await GeneralPaginator(i, self.view.embeds[1:], self.view.db, [discord, github]).start(ephemeral=True)
+        crowdin = Button(
+            label='Crowdin', url='https://crowdin.com/project/shenhe-bot', row=2)
+        website = Button(
+            label='Website', url='https://seriaati.github.io/shenhe_website/', row=2)
+        await GeneralPaginator(i, self.view.embeds[1:], self.view.db, [discord, github, crowdin, website]).start(ephemeral=True)
