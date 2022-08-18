@@ -1,6 +1,7 @@
+from itertools import islice
 import re
 from datetime import datetime
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import discord
 from dateutil import parser
@@ -73,6 +74,11 @@ def parse_HTML(HTML_string: str):
         HTML_string = HTML_string.replace(match, format_dt(datetime_obj))
 
     return HTML_string
+
+def divide_dict(d: Dict, size: int):
+    it = iter(d)
+    for i in range(0, len(d), size):
+        yield {k:d[k] for k in islice(it, size)}
 
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
