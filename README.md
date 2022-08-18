@@ -109,10 +109,11 @@ discord: seria#5334
 感謝這些大佬們！如果我遺漏了你，請務必告訴我
 
 * [KT 的原神小幫手](https://github.com/KT-Yeh/Genshin-Discord-Bot)
-* [原神 API](https://github.com/thesadru/genshin.py)
+* [genshin.py](https://github.com/thesadru/genshin.py)
 * [discord.py](https://github.com/Rapptz/discord.py)
 * [翻頁](https://github.com/soosBot-com/Pagination)
 * [祈願分析](https://github.com/OneBST/GGanalysis)
+* [enkanetwork.py](https://github.com/mrwan200/EnkaNetwork.py)
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
