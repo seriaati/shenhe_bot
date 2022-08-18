@@ -7,7 +7,7 @@ import aiohttp
 
 from ambr.constants import CITIES, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
-from ambr.models import CharacterUpgrade, City, Domain, Material
+from ambr.models import Character, CharacterUpgrade, City, Domain, Material, Weapon, WeaponUpgrade
 
 
 class AmbrTopAPI:
@@ -85,21 +85,64 @@ class AmbrTopAPI:
                 result.append(Material(**material_info))
 
         return result
+    
+    def get_character(self, id: Optional[str] = None) -> List[Character]:
+        result = []
+        data = self._get_cache('character')
+        for character_id, character_info in data['data']['items'].items():
+            if id is not None:
+                if id == character_id:
+                    result.append(Character(**character_info))
+            else:
+                result.append(Character(**character_info))
+                
+        return result
+    
+    def get_weapon(self, id: Optional[int] = None) -> List[Weapon]:
+        result = []
+        data = self._get_cache('weapon')
+        for weapon_id, weapon_info in data['data']['items'].items():
+            if id is not None:
+                if id == int(weapon_id):
+                    result.append(Weapon(**weapon_info))
+            else:
+                result.append(Weapon(**weapon_info))
+                
+        return result
 
-    def get_character_upgrade(self, id: Optional[int] = None) -> List[CharacterUpgrade]:
+    def get_character_upgrade(self, character_id: Optional[str] = None) -> List[CharacterUpgrade]:
         result = []
         data = self._get_cache('upgrade', static=True)
         for upgrade_id, upgrade_info in data['data']['avatar'].items():
-            items = []
+            item_list = []
             for material_id, rarity in upgrade_info['items'].items():
                 material = self.get_material(id=int(material_id))
-                items.append(material[0])
-            upgrade_info['items'] = items
-            if id is not None:
-                if id == int(upgrade_id):
+                item_list.append(material[0])
+            upgrade_info['item_list'] = item_list
+            upgrade_info['character_id'] = upgrade_id
+            if character_id is not None:
+                if character_id == upgrade_id:
                     result.append(CharacterUpgrade(**upgrade_info))
             else:
                 result.append(CharacterUpgrade(**upgrade_info))
+                
+        return result
+    
+    def get_weapon_upgrade(self, character_id: Optional[str] = None) -> List[WeaponUpgrade]:
+        result = []
+        data = self._get_cache('upgrade', static=True)
+        for upgrade_id, upgrade_info in data['data']['weapon'].items():
+            item_list = []
+            for material_id, rarity in upgrade_info['items'].items():
+                material = self.get_material(id=int(material_id))
+                item_list.append(material[0])
+            upgrade_info['item_list'] = item_list
+            upgrade_info['weapon_id'] = upgrade_id
+            if character_id is not None:
+                if character_id == upgrade_id:
+                    result.append(WeaponUpgrade(**upgrade_info))
+            else:
+                result.append(WeaponUpgrade(**upgrade_info))
                 
         return result
 
