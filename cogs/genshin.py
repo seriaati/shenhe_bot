@@ -567,42 +567,48 @@ class GenshinCog(commands.Cog, name='genshin'):
         description=_('View different leaderbaords', hash=453))
     @app_commands.rename(type=_('option', hash=429))
     @app_commands.choices(type=[
-        Choice(name=_('Achievement leaderboard', hash=453), value=0),
-        Choice(name=_('Artifact substat leaderboard', hash=454), value=1),
-        Choice(name=_('Wish luck leaderboard', hash=455), value=2),
+        Choice(name=_('Achievement leaderboard', hash=454), value=0),
+        Choice(name=_('Artifact substat leaderboard', hash=455), value=1),
+        Choice(name=_('Wish luck leaderboard', hash=456), value=2),
         Choice(name=_('Update self leaderboard position', hash=501), value=3)])
     async def leaderboard(self, i: Interaction, type: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
 
         if type == 0:
+            # fetch the leaderboard from database
             await c.execute('SELECT user_id, achievements FROM leaderboard')
             leaderboard = await c.fetchall()
+            
+            # check if the leaderboard is empty
             if len(leaderboard) == 0:
                 return await i.response.send_message(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            
+            # sort the leaderboard
+            leaderboard.sort(key=lambda tup: tup[1], reverse=True)
 
-            leaderboard_dict = {}
-            for index, tuple in enumerate(leaderboard):
-                member = i.guild.get_member(tuple[0])
-                if member is not None:
-                    leaderboard_dict[tuple[0]] = tuple[1]
-            leaderboard_dict = dict(
-                sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True))
-
-            leaderboard_str_list = []
+            # convert data into str
+            str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for user_id, achievement_num in leaderboard_dict.items():
+            for index, tuple in enumerate(leaderboard):
+                user_id = tuple[0]
+                achievement_num = tuple[1]
                 member = i.guild.get_member(user_id)
-                if member.id == i.user.id:
-                    user_rank = str(f'#{rank}')
-                leaderboard_str_list.append(
+                if member is None:
+                    continue
+                if i.user.id == member.id:
+                    user_rank = f'#{rank}'
+                str_list.append(
                     f'{rank}. {member.display_name} - {achievement_num}\n')
                 rank += 1
-            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+            
+            # 10 str per page
+            str_list = list(divide_chunks(str_list, 10))
 
+            # write the str into embed
             embeds = []
-            for str_list in leaderboard_str_list:
+            for str_list in str_list:
                 message = ''
                 for string in str_list:
                     message += string
@@ -618,14 +624,14 @@ class GenshinCog(commands.Cog, name='genshin'):
             await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
             await view.wait()
 
-            await c.execute('SELECT * FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
+            await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
             if len(leaderboard) == 0:
                 return await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
-            leaderboard.sort(key=lambda index: float(
-                str(index[5]).replace('%', '')), reverse=True)
+            
+            leaderboard.sort(key=lambda tup: float(str(tup[4]).replace('%', '')), reverse=True)
 
-            leaderboard_str_list = []
+            str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
             for index, tuple in enumerate(leaderboard):
@@ -633,17 +639,20 @@ class GenshinCog(commands.Cog, name='genshin'):
                 avatar_id = tuple[1]
                 artifact_name = tuple[2]
                 equip_type = tuple[3]
-                sub_stat_value = tuple[5]
+                sub_stat_value = tuple[4]
                 member = i.guild.get_member(user_id)
+                if member is None:
+                    continue
                 if member.id == i.user.id:
-                    user_rank = str(f'#{rank}')
-                leaderboard_str_list.append(
+                    user_rank = f'#{rank}'
+                str_list.append(
                     f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n')
                 rank += 1
-            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
+                
+            str_list = divide_chunks(str_list, 10)
 
             embeds = []
-            for str_list in leaderboard_str_list:
+            for str_list in str_list:
                 message = ''
                 for string in str_list:
                     message += string
@@ -668,8 +677,10 @@ class GenshinCog(commands.Cog, name='genshin'):
                     player_luck = round(100*player.luck_evaluate(
                         get_num=up_five_star_num,
                         use_pull=use_pull, left_pull=left_pull), 2)
-                    if player_luck != 0.0:
+                    
+                    if player_luck > 0:
                         leaderboard_dict[tuple[0]] = player_luck
+                        
             leaderboard_dict = dict(
                 sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True))
             if len(leaderboard_dict) == 0:
@@ -678,13 +689,17 @@ class GenshinCog(commands.Cog, name='genshin'):
             leaderboard_str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
+            
             for user_id, luck in leaderboard_dict.items():
                 member = i.guild.get_member(user_id)
-                if member.id == i.user.id:
-                    user_rank = str(f'#{rank}')
+                if member is None:
+                    continue
+                if i.user.id == member.id:
+                    user_rank = f'#{rank}'
                 leaderboard_str_list.append(
                     f'{rank}. {member.display_name} - {luck}%\n')
                 rank += 1
+                
             leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
 
             embeds = []
@@ -707,19 +722,20 @@ class GenshinCog(commands.Cog, name='genshin'):
             try:
                 await self.bot.enka_client.set_language('cht')
                 data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid[0])
-            except:
-                return
-            achievement = data.player.achievement
-            await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
-            if data.characters is not None:
-                for character in data.characters:
-                    for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
-                        for substat in artifact.detail.substats:
-                            await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
-                            sub_stat_value = await c.fetchone()
-                            if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
-                                await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
-            await i.followup.send(embed=default_embed().set_author(name=text_map.get(502, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+                achievement = data.player.achievement
+                await c.execute('INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?', (i.user.id, achievement, i.user.id, achievement))
+                if data.characters is not None:
+                    for character in data.characters:
+                        for artifact in filter(lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments):
+                            for substat in artifact.detail.substats:
+                                await c.execute('SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?', (substat.prop_id, i.user.id))
+                                sub_stat_value = await c.fetchone()
+                                if sub_stat_value is None or float(str(sub_stat_value[0]).replace('%', '')) < substat.value:
+                                    await c.execute('INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?', (i.user.id, character.id, artifact.detail.name, artifact.detail.artifact_type, substat.prop_id, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", character.id, artifact.detail.name, artifact.detail.artifact_type, f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", i.user.id, substat.prop_id))
+            except Exception as e:
+                return await i.followup.send(embed=error_embed(message=f'```py\n{e}\n```').set_author(name=text_map.get(512, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            else:
+                await i.followup.send(embed=default_embed().set_author(name=text_map.get(502, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
 
     @app_commands.command(name='search', description=_('Search anything related to genshin', hash=508))
     @app_commands.rename(query=_('query', hash=509))
