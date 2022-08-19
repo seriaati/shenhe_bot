@@ -6,7 +6,7 @@
 6: 時間
 7: 分
 8: 秒
-9: 使ってできます。
+9: 利用可能
 10: 参量物質変化器がありません。
 11: 完成した デイリー依頼数
 12: 参量物質変化器の残る冷卻時間。
@@ -37,7 +37,7 @@
 37: 登錄した アカウント は キャンセル した。
 38: Cookie から キャラが見つかりません。
 39: アカウント は登錄成功した。
-40: デイリー報酬 もう 受け取りました。
+40: 既にログインボーナスを受け取っています！
 41: 受け取りました。
 42: デイリーログインは 完了した。
 43: データ一覧
@@ -72,7 +72,7 @@
 72: モラ 紀錄
 73: モラ
 74: データ の 更新は /stats を 入力してくたさい。
-75: (この指示は 深境螺旋第9層以上のデータ しかを見せます)
+75: (このコマンドは 深境螺旋第9層以上のデータ のみ表示します)
 76: 深境螺旋 の データ は見つかえりません
 77: 今期
 78: 最高記録
@@ -84,7 +84,7 @@
 84: 元素スキル使用回数
 85: 深境螺旋 一覧
 86: 層
-87: "‎"
+87: "間"
 88: "[上半]"
 89: "[下半]"
 90: "装備"
@@ -98,9 +98,9 @@
 98: 樹脂お知らせも 消しました。
 99: "ON"
 100: "OFF"
-101: Current Toggle
+101: 現在の設定
 102: 樹脂值
-103: Max. notification number
+103: 最大通知件数
 104: 設定完了
 105: 全キャラクター
 106: この交換コードも交換しました。
@@ -112,8 +112,8 @@
 112: ボートポイント開放数
 113: ワープポイント
 114: 宝箱開放数
-115: Unfinished
-116: Surfpiercer
+115: 未完了
+116: 砕波神速
 117: 夏の記憶
 118: 世界探索
 119: 完了した時間
@@ -136,29 +136,29 @@
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
 138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、 <https://www.hoyolab.com>　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、`/reigster`コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
-139: Cookie invalid or is outdated, please logout then login again!
+139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
 140: '`/register`コマンドを使用してください'
 141: アカウントデータが見つかりません！
 142: アカウントを選択してください
-143: You are not the issuer of this command
+143: あなたはこのコマンドの実行者ではありません
 144: 原石日記
 145: モラ 紀錄
-146: Floor No.
-147: "‎"
+146: 第
+147: "層"
 148: 深境螺旋の層を選べてくたさい。
 149: 權限がありません。
-150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
-151: Resin notification settings
+150: "<https://www.hoyolab.com>にアクセスし、ログインしてください。\n 以下の画像のステップに従ってください。\n\n 1. 右上のアバターをクリック\n 2.マイページ\n 3. 右上の「原神」をクリックします。\n 4. 歯車のアイコンをクリックします。\n 5. すべてのスイッチをONにする"
+151: 樹脂通知設定
 152: 樹脂值
-153: Shenhe will DM you after your resin exceeds the threshold
-154: Max. notification number
-155: DM will stop after this number of times
-156: Choosing a character that already has notification ON will remove its notification
-157: Choose your character(s)
-158: There are currently no notifications set for any characters
-159: Current character notifications
+153: 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
+154: 最大通知件数
+155: この回数でDMが停止します
+156: 既に通知をONにしているキャラクターを選択すると通知がOFFになります
+157: キャラクターを選択
+158: 現在、どのキャラクターにも通知は設定されていません。
+159: 現在有効なキャラクター通知
 160: アカウントを選択してください
-161: Choosing this character will turn OFF its notifications
+161: キャラクターを選択すると、そのキャラクターの通知がOFFになります。
 162: 装備
 163: 装備を選択してください
 164: 装備
@@ -170,21 +170,21 @@
 170: "例えば： 90"
 171: 普通攻擊の目標 レベル
 172: "例えば： 5"
-173: Elemental skill (E) target level
+173: 元素スキル (E) の目標レベル
 174: 元素爆發(Q) の目標レベル
 175: やること帳に追加します。
 176: '「素材を削除します」のボタンを利用して、やること帳內　な素材を削除してください。'
 177: すでに素材に達しています。
 178: '「/todo」を入力して やること帳內一覧を表示しくたさい。'
-179: Success
-180: Choose your weapon
-181: Set the levels for
+179: 成功
+180: 武器を選択してください
+181: レベルを設定：
 182: "‎"
-183: Current level
-184: "For example: 1"
+183: 現在のレベル
+184: "例: 1"
 185: 目標レベル
 186: "例: 90"
-187: Please enter a number
+187: 数字を入力してください
 188: "キャラクターレベル：１～９０の範囲内で入ってください。"
 189: "天賦レベル：１～１０の範囲内で入ってください。"
 190: 無効入力
@@ -200,16 +200,16 @@
 200: 武器レベル
 201: 武器のレベルアップ
 202: やること帳
-203: 追加目標
+203: 素材を追加
 204: "おめでとう！　やることもありません！　(ᗒᗨᗕ)/\n\nコマンド ：/calc で入力しように　キャラクター　や　武器　の必要な素材を計算してくたさい。\n\nまた、緑なボタンを利用して、新しの素材入力してくさい。"
 205: 素材を取り除く
-206: Clear items
-207: Choose the item you wish to remove
-208: Item name
-209: "For example: mora"
-210: Item amount
-211: (Leaving this field blank will remove the item entirely)
-212: You can't remove more items than you have in your dodo list
+206: アイテムをクリア
+207: 削除したいアイテムを選択
+208: アイテム名
+209: "例: モラ"
+210: アイテム量
+211: (この項目を空白のままにするとアイテムが完全に削除されます)
+212: Todo リストよりも多くのアイテムを削除することはできません。
 213: 氷元素
 214: 岩元素
 215: 炎元素
@@ -237,14 +237,14 @@
 238: 金曜日
 239: 土曜日
 240: 日曜日
-250: farmable items
-251: Achievement leaderboard
-252: You
-253: N/A
-254: This leaderboard is currently empty
-255: Choose the substat leaderboard you with to view
-256: Substat leaderboard
-257: Luck leaderboard
+250: 周回可能な素材
+251: アチーブメント数ランキング
+252: あなた
+253: 該当なし
+254: このランキングは現在空です
+255: 表示するサブステータス リーダーボードを選択してください。
+256: サブステータスランキング
+257: 祈願ランキング
 258: HP
 259: HP%
 260: 攻擊力
@@ -267,10 +267,10 @@
 277: 風元素ダメージ
 278: 岩元素ダメージ
 279: 氷元素ダメージ
-280: Base Speed
-281: Speed%
-282: Go back
-283: Or enter your UID in the options
+280: 基本速度
+281: 速度%
+282: 戻る
+283: または、オプションにUIDを入力してください
 284: 無効なアカウント
 285: メインキャラクターのいないアカウントです
 286: Invalid UID
@@ -349,47 +349,47 @@
 359: Importing wish history using your android phone
 360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the `/wish import` command"
 361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the `/wish import` command"
-363: Importing wish history using your Playstation device
+362: "[解説動画](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. App StoreでStreamをダウンロード[here](https://apps.apple.com/app/stream/id1312141691)\n 2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)\n 3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)\n 4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。\n 5. 原神を起動し、祈願画面を開き、そのページにとどまります。\n 6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ\n 7. 原神に戻り、祈願履歴ページを開く\n 8. ページが読み込まれるのを待つ\n 9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）\n 10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） \n 11. Requestタブをクリックし、リンクをコピーする\n 12. `/wish import`コマンドを使用して、そのリンクをここに送信します。"
+363: プレイステーションでの祈願履歴のインポート
 364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. `/wish import`コマンドを使用して、ここにリンクを送信する。"
-365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
-367: No wish history data found
-368: "`/wish import` to import your wish history"
-369: Wish history
-370: Big pity available
-371: Small pity available
-372: Wish luck analysis
-373: Your luck is better than
-374: of players
-375: "‎"
-376: pull(s) in total
-378: "‎"
-379: UP five stars in total
-380: "‎"
-381: pity pull(s)
-382: Wishing to pull
-383: UP 5 star characters
-384: Expecting to finish after
-385: pull(s)
-386: Event wish number prediction
-387: Standard
-388: "Yes"
-389: "No"
-390: Is this the weapon you wanted?
-391: The last 5 star weapon you pulled was
-392: Is this a standard or limited time UP weapon?
-393: Weapon wish number prediction
-394: Wishing to pull
-395: weapon(s) you want
-396: That is
-397: primogems
-398: Standard banner
+365: プラットフォームを選択してください
+366: "祈願履歴の言語は、現在選択されている言語に基づいて表示されます。\n 言語を変更しても、以前の記録には影響しません"
+367: 祈願履歴データが見つかりません
+368: "祈願履歴をインポートするには `/wish import` を実行します"
+369: 祈願履歴
+370: 天井あり（確定限定星５)
+371: 天井あり（星５）
+372: 祈願履歴の分析
+373: あなたの運は他のプレイヤーの
+374: より運が良いです
+375: "間"
+376: 回　祈願しています (合計)
+378: "間"
+379: 個 ― 限定星５所持数
+380: "間"
+381: 回 ― 天井で引いた回数
+382: 引きたいと思う
+383: 限定星５キャラクター
+384: 予測される祈願回数
+385: 回
+386: イベント祈願回数予測
+387: 通常
+388: "はい"
+389: "いいえ"
+390: これはあなたが欲しかった武器ですか？
+391: 前回引いた星5武器は
+392: これは通常武器または限定武器ですか？
+393: 武器祈願回数予測
+394: 引きたいと思う
+395: 引きたいと思う星５武器
+396: それは
+397: 原石
+398: 通常祈願
 399: Limited-time banner
 400: Weapon banner
-401: "‎"
+401: "間"
 402: pull(s) per 5 star
-403: "‎"
+403: "間"
 404: pull(s) from pity
 405: You haven't pulled any 5 star weapons in the weapon banner yet
 406: Start time
@@ -440,7 +440,7 @@
 451: code
 452: View ongoing events in genshin
 453: View leaderboard
-454: Achievement leaderboard
+454: アチーブメント数ランキング
 455: Artifact substat leaderboard
 456: Wish luck leaderboard
 457: Genshin wiki
@@ -498,3 +498,4 @@
 509: クエリ
 510: スメール
 511: 原神のキャラクターや武器などのゲームの要素の名前は自動翻訳されます
+512: Leaderboard position update failed
