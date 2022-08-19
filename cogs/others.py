@@ -28,11 +28,12 @@ class OthersCog(commands.Cog, name='others'):
     @app_commands.command(name='lang', description=_('Change the langauge shenhe responds you with', hash=485))
     async def lang(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        embed = default_embed(message=f'{text_map.get(125, i.locale, user_locale)}\n'
-                              f'{text_map.get(126, i.locale, user_locale)}\n'
-                              f'{text_map.get(127, i.locale, user_locale)}\n'
-                              f'{text_map.get(511, i.locale, user_locale)}')
-        embed.set_author(name='更改語言', icon_url=i.user.avatar)
+        embed = default_embed(message=f'• {text_map.get(125, i.locale, user_locale)}\n'
+                              f'• {text_map.get(126, i.locale, user_locale)}\n'
+                              f'• {text_map.get(127, i.locale, user_locale)}\n'
+                              f'• {text_map.get(511, i.locale, user_locale)}\n\n'
+                              '[crowdin](https://crowdin.com/project/shenhe-bot)')
+        embed.set_author(name=text_map.get(128, i.locale, user_locale), icon_url=i.user.avatar)
         await i.response.send_message(embed=embed, view=ChangeLang.View(i.locale, user_locale, self.bot.db), ephemeral=True)
 
     @app_commands.command(name='update', description=_('Admin usage only', hash=496))

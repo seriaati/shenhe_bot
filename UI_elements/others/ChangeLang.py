@@ -29,8 +29,12 @@ class LangSelect(Select):
                 'emoji': '🇺🇸'
             },
             'ja': {
-                'name': '日本語 | 33%',
+                'name': '日本語 | 100%',
                 'emoji': '🇯🇵'
+            },
+            'zh-CN': {
+                'name': '简体中文 | 23%',
+                'emoji': '🇨🇳'
             },
             'de': {
                 'name': 'deutsch | 0%',
@@ -63,10 +67,6 @@ class LangSelect(Select):
             'vi': {
                 'name': 'Tiếng Việt | 0%',
                 'emoji': '🇻🇳'
-            },
-            'zh-CN': {
-                'name': '简体中文 | 23%',
-                'emoji': '🇨🇳'
             }
                 
         }
