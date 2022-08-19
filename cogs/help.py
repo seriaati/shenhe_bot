@@ -37,9 +37,12 @@ class Dropdown(Select):
                 selected_option = option
                 index = index
                 break
+        command_cog = self.bot.get_cog(cogs[index])
+        commands = command_cog.__cog_app_commands__
+        app_command_group = command_cog.__cog_is_app_commands_group__
+        group_name = command_cog.__cog_group_name__
         embed = default_embed(
-            f'{selected_option.emoji} {selected_option.label}', selected_option.description)
-        commands = self.bot.get_cog(cogs[index]).__cog_app_commands__
+            f'{selected_option.emoji} {selected_option.label}')
         for command in commands:
             if len(command.checks) != 0:
                 continue
@@ -49,10 +52,16 @@ class Dropdown(Select):
                 value = text_map.get(hash, i.locale, user_locale)
             except (ValueError, KeyError):
                 value = command.description
-            embed.add_field(
-                name=f'`/{command.name}`',
-                value=value
-            )
+            if app_command_group:
+                embed.add_field(
+                    name=f'`/{group_name} {command.name}`',
+                    value=value
+                )
+            else:
+                embed.add_field(
+                    name=f'`/{command.name}`',
+                    value=value
+                )
         await i.response.send_message(embed=embed, ephemeral=True)
 
 
@@ -66,7 +75,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='help', description=_("Get an overview of shenhe commands", hash=486))
+    @app_commands.command(name='help', description=_("Get an overview of shenhe's commands", hash=486))
     async def help(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         view = DropdownView(self.bot, i.locale, user_locale)
