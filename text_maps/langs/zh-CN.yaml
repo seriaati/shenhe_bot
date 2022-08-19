@@ -30,7 +30,7 @@
 30: 周六
 31: 周日
 32: 选择语言
-33: 语言更改成功
+33: Language changed
 34: 目前语言
 35: "输入 `/register` 来查看设定方式"
 36: 无效的 cookie
@@ -84,7 +84,7 @@
 84: 最多元素战技
 85: 深渊总览
 86: 層
-87: "‎"
+87: "<EMPTY_CHARACTER>"
 88: "[上半]"
 89: "[下半]"
 90: "配置#"
@@ -122,10 +122,10 @@
 122: 累计释放技能
 123: 自定 UID 搜寻
 124: 返回预设
-125: 申鹤预设时使用你的 dc 语言来回复你
-126: 这里更改后的语言会盖过你的 dc 设定
+125: By default, shenhe responds you with the same language your discord uses
+126: Changing language will override the default language
 127: 如果该语言还没翻译好，会使用英文回复
-128: 更改语言
+128: Changing language
 129: 蒙德
 130: 璃月
 131: 稻妻
@@ -135,7 +135,7 @@
 135: 未知错误
 136: 选择要注册的账号
 137: Cookie 设置流程
-138: "1.先复制底下的整段程式码\n2.电脑或手机使用Chrome开启Hoyolab并登入账号 <https://www.hoyolab.com> \n3.按浏览器上面网址的部分，并确保选取了全部网址\n4.在网址列先输入 `java`, 然后贴上程式码, 确保网址开头变成 `javascript:`\n5.按Enter, 网页会变成显示你的Cookie, 全选然后复制\n6.在这里提交结果, 使用: `/register 提交 cookie` 无法理解吗? 跟着下面的图示操作吧!"
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/register` command\n Too complicated? The image below might help!"
 139: 过期或无效的Cookie, 请先登出账号再重新登入!
 140: 请使用 `/register` 指令来注册账号
 141: 找不到账号资料!
@@ -144,7 +144,7 @@
 144: 原石记录
 145: 摩拉记录
 146: 第
-147: "‎"
+147: "<EMPTY_CHARACTER>"
 148: 楼层导览
 149: 资料不公开?
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
@@ -179,7 +179,7 @@
 179: Success
 180: Choose your weapon
 181: Set the levels for
-182: "‎"
+182: "<EMPTY_CHARACTER>"
 183: Current level
 184: "For example: 1"
 185: Target level
@@ -362,11 +362,11 @@
 372: Wish luck analysis
 373: Your luck is better than
 374: of players
-375: "‎"
+375: "<EMPTY_CHARACTER>"
 376: pull(s) in total
-378: "‎"
+378: "<EMPTY_CHARACTER>"
 379: UP five stars in total
-380: "‎"
+380: "<EMPTY_CHARACTER>"
 381: pity pull(s)
 382: Wishing to pull
 383: UP 5 star characters
@@ -387,9 +387,9 @@
 398: Standard banner
 399: Limited-time banner
 400: Weapon banner
-401: "‎"
+401: "<EMPTY_CHARACTER>"
 402: pull(s) per 5 star
-403: "‎"
+403: "<EMPTY_CHARACTER>"
 404: pull(s) from pity
 405: You haven't pulled any 5 star weapons in the weapon banner yet
 406: Start time
@@ -400,7 +400,7 @@
 411: options
 412: Registration tutorial
 413: submit cookie
-414: "View realtime notes: Current resin, pot, expedition status (need /register)"
+414: "View real time notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
 417: "View genshin stats: Active days, oculis, number of chests"
@@ -416,7 +416,7 @@
 427: The month before last month
 428: View abyss data (need /register)
 429: type
-430: seson
+430: season
 431: The type of data you wish to view
 432: Which abyss season?
 433: Detailed
@@ -446,7 +446,7 @@
 457: Genshin wiki
 458: character
 459: View past genshin event stats
-460: Calcualte materials needed for upgrading a character
+460: Calculate materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
 463: "开"
@@ -471,13 +471,13 @@
 482: How many 5 star UP characters do you wish to pull?
 483: Predict change of pulling a weapon
 484: View wish overview
-485: Change the langauge shenhe responds you with
+485: Change the language shenhe responds you with
 486: View all commands
 487: Genshin
-488: Genshin wishes
+488: Genshin wish
 489: Requires wish history import using /wish import
-490: Genshin calculations
-491: Calculate materials needed for upgrading characters or weapons
+490: Enhancement progress calculator
+491: Calculate upgrade materials
 492: Todo list
 493: Waifus
 494: Others
@@ -487,7 +487,7 @@
 498: View profile
 499: View all characters
 500: 即时便签
-501: Update self leaderbaord position
+501: Update self leaderboard position
 502: Leaderboard position updated
 503: View past updates
 504: 'Made by seria#5334, DM me if you have any questions'
