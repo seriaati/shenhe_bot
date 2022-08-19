@@ -151,13 +151,13 @@
 151: 樹脂通知設定
 152: 樹脂值
 153: 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
-154: 最大通知件数
+154: 最大リマインダー通知件数
 155: この回数でDMが停止します
 156: 既に通知をONにしているキャラクターを選択すると通知がOFFになります
 157: キャラクターを選択
 158: 現在、どのキャラクターにも通知は設定されていません。
 159: 現在有効なキャラクター通知
-160: アカウントを選択してください
+160: 元素を選択してください
 161: キャラクターを選択すると、そのキャラクターの通知がOFFになります。
 162: 装備
 163: 装備を選択してください
@@ -273,9 +273,9 @@
 283: または、オプションにUIDを入力してください
 284: 無効なアカウント
 285: メインキャラクターのいないアカウントです
-286: Invalid UID
-287: Please turn on the character showcase toggle in game
-288: Player level
+286: 無効なUID
+287: ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
+288: プレイヤーレベル
 289: 世界ランク
 290: アチーブメント
 291: 深境螺旋
@@ -287,68 +287,68 @@
 297: 会心 ダメージ
 298: 元素チャージ 效能
 299: 好感度レベル
-300: The highest artifact score is 99, only +20 artifacts will have scores
-301: Stats
-302: Current threshold
+300: 聖遺物の最高スコアは99点で、20レベル以上の聖遺物のみがスコアを持ちます
+301: ステータス
+302: 現在のしきい値
 303: 現在の樹脂
-304: Current max. notification number
-305: User /remind to change the settings
+304: 現在の最大リマインダー通知件数
+305: 設定を変更する場合は、/remind を実行してください
 306: 樹脂はほぼ満杯!!
-307: Talent notification is now turned OFF
-308: Right click any server that has shenhe in it
-309: Click on `privacy settings`
-310: Turn the toggle ON
-311: How to unblock DM from servers
-312: Time to farm materials for
-313: "!"
-314: Items you can farm
-315: Basic information
+307: 天賦のリマインダーをOFFにしました
+308: 申鶴がいるサーバーで右クリック
+309: '`プライバシー設定`をクリックしてください'
+310: トグルをオンにする
+311: 申鶴からのDMを受け取るにはどうすればいいですか？
+312: ' '
+313: "のための素材の周回時間です！"
+314: 周回可能な素材
+315: 基本情報
 316: 誕生日
-317: Affiliation
+317: 所属
 318: 命ノ星座
-319: Name card
-320: Ascension materials
-321: Ascension to
-322: Talent level-up materials
-323: Passive Talents
-324: Level-up to
-325: Quick navigation
+319: 名刺
+320: レベル突破素材
+321: 'レベル突破 : '
+322: 天賦レベル素材
+323: 固有天賦
+324: 'レベルアップ :'
+325: クイックナビゲーション
 326: 普通攻擊
 327: 重擊
 328: 下落攻擊
 329: ダメージ計算中...
 330: 5秒から10秒程度かかります
-331: No reaction
-332: Melt
-333: Vaporize
+331: 反応がありませんでした
+332: 溶解
+333: 蒸発
 334: 平均ダメージ
 335: 会心一擊がない の ダメージ
 336: 会心一擊 の ダメージ
 337: 元素の反応を選択
-338: No team melee infusion
-339: Pyro infusion
-340: Cryo infusion
+338: パーティーによる近接攻撃の元素付着なし
+339: 炎元素付着
+340: 氷元素付着
 341: ベネット　６命ノ星座
-342: Chongyun Skill
-343: Select team melee infusion
-344: Select teammate(s)
-345: Team
-346: Conditions
-347: Effects
-348: Calculate Damage
-349: Artifact and weapon effects are not included for now
-350: melt
-351: vaporize
-352: Authkey URL
-353: Importing wish history
-354: Please paste the link here
-355: Please wait for awhile while shenhe is processing your wish history
-356: Successfully imported wish history
-357: Importing wish history using PC
+342: 重雲スキル
+343: パーティーによる近接攻撃元素付着を選択
+344: パーティーを選択
+345: パーティー
+346: 条件
+347: 現在の効果
+348: 計算されたダメージ
+349: 聖遺物と武器効果は現在含まれていません
+350: 溶解
+351: 蒸発
+352: 祈願記録のURL
+353: 祈願記録をインポート中
+354: リンクをここに貼り付けてください
+355: 申鶴が祈願履歴を処理中です...
+356: 祈願履歴のインポートに成功しました！
+357: PCを使用した祈願履歴のインポート
 358: "1. 原神を開く（複数アカウントを使用している場合は、ゲームを再起動してください。）\n 2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ\n 3. キーボードの「START」を押し、「Powershell」を検索する。\n 4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。\n 5. ENTERを押すと、リンクがクリップボードにコピーされます。\n 6. コピーしたリンクを `/wish import` コマンドで送信します。"
-359: Importing wish history using your android phone
-360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the `/wish import` command"
-361: Importing wish history using your IOS device
+359: Android端末を使用した祈願履歴のインポート
+360: "[解説動画](https://youtu.be/pe_aROJ8Av8)\n 解説動画ではテキスト全体がコピーされていますが、リンクのみを選択し、コピーします（ステップ7）\n\n 1. 祈願画面を開く(原神)\n 2. 祈願履歴を押す\n 3. ロードされるのを待つ\n 4. Wi-Fiとデータ接続をオフにする\n 5. 右上の更新を押す\n 6. ページがエラーを表示し、黒いフォントでいくつかのテキストが表示されます。\n 7. テキストを長押しして、リンク部分を選択し、コピーする。\n 8. Wi-Fiまたはデータ接続をオンにする\n 9. `/wish import`コマンドでそのリンクをここに送信する。"
+361: iOS端末を使用した祈願履歴のインポート
 362: "[解説動画](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. App StoreでStreamをダウンロード[here](https://apps.apple.com/app/stream/id1312141691)\n 2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)\n 3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)\n 4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。\n 5. 原神を起動し、祈願画面を開き、そのページにとどまります。\n 6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ\n 7. 原神に戻り、祈願履歴ページを開く\n 8. ページが読み込まれるのを待つ\n 9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）\n 10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） \n 11. Requestタブをクリックし、リンクをコピーする\n 12. `/wish import`コマンドを使用して、そのリンクをここに送信します。"
 363: プレイステーションでの祈願履歴のインポート
 364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. `/wish import`コマンドを使用して、ここにリンクを送信する。"
@@ -385,51 +385,51 @@
 396: それは
 397: 原石
 398: 通常祈願
-399: Limited-time banner
-400: Weapon banner
+399: イベント祈願・キャラクター
+400: イベント祈願・武器
 401: "間"
-402: pull(s) per 5 star
+402: 回あたりの星５
 403: "間"
-404: pull(s) from pity
-405: You haven't pulled any 5 star weapons in the weapon banner yet
-406: Start time
-407: End time
-408: Details
-409: Choose event type
+404: 回 ― 天井からの回数
+405: まだあなたは星５武器を武器ガチャで引いたことがありません
+406: 開始時間
+407: 終了時間
+408: 詳細
+409: イベントの種類を選択
 410: 原神アカウント情報を必要とするコマンドを使用するために、原神アカウント情報を登録します。
-411: options
-412: Registration tutorial
-413: submit cookie
-414: "View realtime notes: Current resin, pot, expedition status (need /register)"
-415: user
-416: Check other user's data
-417: "View genshin stats: Active days, oculis, number of chests"
-418: A user's genshin UID
-419: View area exploration rates
-420: Claim hoyolab daily login reward
-421: View all owned characters (need /register)
-422: View traveler's diary (need /register)
-423: month
-424: The month you're trying to search with
-425: This month
+411: オプション
+412: 登録チュートリアル
+413: cookieを送信する
+414: "リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( '/register' で登録している必要があります)"
+415: ユーザー
+416: 他のユーザーのデータを確認
+417: "原神の統計の表示：アクティブ日数、神の瞳、宝箱の数"
+418: ユーザーの原神 UID
+419: 探索度の表示
+420: Hoyolabの毎日のログインボーナスを受け取ります (登録が必要)
+421: 所有しているすべてのキャラクターを表示（/register が必要）
+422: 旅人手帳を表示 (/register が必要）
+423: 月
+424: 検索しようとしている月
+425: 今月の
 426: 先月
-427: The month before last month
-428: View abyss data (need /register)
-429: type
-430: seson
-431: The type of data you wish to view
-432: Which abyss season?
-433: Detailed
+427: 先々月
+428: 深境螺旋戦績を表示 (/register が必要）
+429: タイプ
+430: 周期
+431: 表示したいデータの種類
+432: どの期間の深境螺旋ですか？
+433: 詳細
 434: データ一覧
-435: This season
-436: Last season
+435: 今期
+436: 前期
 437: 權限がありません。
-438: Set notification features
-439: function
-440: toggle
-441: Resin notification (need /register)
-442: Talent notification
-443: Check privacy settings
+438: リマインダーを設定
+439: 関数
+440: トグル
+441: 天然樹脂リマインダー (/registerが必要)
+442: 天賦素材リマインダー
+443: リマインダーを有効にする前に、プライバシー設定を確認してください
 444: ON (or change settings)
 445: "OFF"
 446: View farmable items today
