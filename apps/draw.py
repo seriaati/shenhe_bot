@@ -1,13 +1,16 @@
 from typing import Dict
 
 import aiohttp
+from discord import Locale
 from ambr.models import Character, Domain, Weapon
 from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
+from data.draw.fonts import FONTS
 
 
-def draw_domain_card(domain: Domain) -> Image:
+def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
     text = domain.name
+    font_family = FONTS.get(str(locale))
 
     # get domain template image
     background_paths = ['', 'Mondstat', 'Liyue', 'Inazuma', 'Sumeru']
@@ -16,11 +19,10 @@ def draw_domain_card(domain: Domain) -> Image:
 
     # dynamic font size
     fontsize = 50
-    font = ImageFont.truetype('resources/fonts/NotoSansTC-Regular.otf', fontsize)
+    font = ImageFont.truetype(f'resources/fonts/{font_family}', fontsize)
     while font.getsize(text)[0] < 0.5*domain_image.size[0]:
         fontsize += 1
-        font = ImageFont.truetype(
-            'resources/fonts/NotoSansTC-Regular.otf', fontsize)
+        font = ImageFont.truetype(f'resources/fonts/{font_family}', fontsize)
 
     # draw the domain text
     draw = ImageDraw.Draw(domain_image)
@@ -45,7 +47,7 @@ async def draw_item_icons_on_domain_card(domain_card: Image, items: Dict[int, Ch
         try:
             icon = Image.open(path)
             icon = icon.convert('RGBA')
-            
+
         # if not found then download it
         except FileNotFoundError:
             async with session.get(item.icon) as r:
@@ -53,17 +55,17 @@ async def draw_item_icons_on_domain_card(domain_card: Image, items: Dict[int, Ch
             icon = Image.open(bytes_obj)
             icon = icon.convert('RGBA')
             icon.save(path, 'PNG')
-            
+
         # resize the icon
         icon.thumbnail((180, 180))
-        
+
         # draw the icon on to the domain card
         domain_card.paste(icon, offset, icon)
-        
+
         # change offset
         offset = list(offset)
         offset[0] += 400
-        
+
         # if four in a row, move to next row
         if count % 4 == 0:
             offset[0] = 150
