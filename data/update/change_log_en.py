@@ -1,4 +1,12 @@
 change_log_en = {
+    'v4.7.1':
+        "• Updated the primo and mor emojis in `/diary`\n"
+        "• Fixed artifact leaderbaord not working and improved code\n"
+        "• Fixed font rendering issues in `/farm` for Thai, TC, SC, Japanese, and Korean\n"
+        "• Fixed `/wish overview` missing some of the limited banner data （thank you to 永恆#9040）\n"
+        "• Improved `/help`\n"
+        "• Fixed spelling mistakes\n"
+        "• Added FULL translations for Japanese （Huge thank you to kakaka#7100）\n",
     'v4.7.0':
         "• Shenhe knows how to draw images now! `/farm` would be her first try\n"
         "• Shenhe now has an official website: shenhe.bot.nu\n"
