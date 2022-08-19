@@ -430,23 +430,23 @@
 441: 天然樹脂リマインダー (/registerが必要)
 442: 天賦素材リマインダー
 443: リマインダーを有効にする前に、プライバシー設定を確認してください
-444: ON (or change settings)
+444: ON (または設定を変更)
 445: "OFF"
-446: View farmable items today
-447: "View character builds: Weapons, artifacts, talent levels, stats"
-448: Search a user's UID
-449: View characters' artifacts, stats, weapons, talents, and calculate damage
-450: Redeem gift codes (need /register)
-451: code
-452: View ongoing events in genshin
-453: View leaderboard
+446: 今日の周回可能な素材を表示
+447: "キャラクターのビルドを表示: 武器、聖遺物、天賦レベル、ステータス"
+448: ユーザーの UID を検索
+449: キャラクターの聖遺物、ステータス、武器、天賦、ダメージ計算
+450: 交換コードを引き換える　(/register　が必要)
+451: コード
+452: 原神で開催中のイベントを表示
+453: ランキングを表示
 454: アチーブメント数ランキング
-455: Artifact substat leaderboard
-456: Wish luck leaderboard
-457: Genshin wiki
-458: character
-459: View past genshin event stats
-460: Calcualte materials needed for upgrading a character
+455: 聖遺物のサブステータスのリーダーボード
+456: 祈願運ランキング
+457: 原神Wiki
+458: キャラクター
+459: 原神の過去のイベント統計を表示
+460: キャラクターの育成に必要な素材を計算する
 461: 同期
 462: ゲーム内データと同期（レベルは自動入力）
 463: "ON"
@@ -498,4 +498,4 @@
 509: クエリ
 510: スメール
 511: 原神のキャラクターや武器などのゲームの要素の名前は自動翻訳されます
-512: Leaderboard position update failed
+512: ランキングの更新に失敗しました
