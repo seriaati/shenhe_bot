@@ -27,7 +27,8 @@ class TextMap():
         locale = user_locale or locale 
         path = to_paths(locale)
         text_map = self.text_maps[path]
-        text = text_map.get(textMapHash)
+        text: str = text_map.get(textMapHash)
+        text = text.replace('<EMPTY_CHARACTER>', '')
         if text is None:
             print(f'text map hash not found: {textMapHash}')
             return None
