@@ -205,8 +205,8 @@ class WishCog(commands.GroupCog, name='wish'):
             embed.add_field(
                 name=f'{banner_names[index]}',
                 value=f'• {text_map.get(375, i.locale, user_locale)} **{banner["total"]}** {text_map.get(376, i.locale, user_locale)}\n({banner["total"]*160} <:PRIMO:1010048703312171099> {text_map.get(397, i.locale, user_locale)})\n'
-                f'• 5 <:white_star:982456919224615002>: **{banner["five_star"]}**\n'
-                f'• 4 <:white_star:982456919224615002>: **{banner["four_star"]}**\n'
+                f'• 5<:white_star:982456919224615002> **{banner["five_star"]}**\n'
+                f'• 4<:white_star:982456919224615002> **{banner["four_star"]}**\n'
                 f'• {text_map.get(401, i.locale, user_locale)} **{average}** {text_map.get(402, i.locale, user_locale)}\n'
                 f'• {text_map.get(403, i.locale, user_locale)} **{(80 if index == 2 else 90)-banner["left_pull"]}** {text_map.get(404, i.locale, user_locale)}',
             )

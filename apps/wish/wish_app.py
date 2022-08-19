@@ -128,9 +128,15 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
 
         five_star = 0
         four_star = 0
-        await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 5', (user_id, banner_id))
+        if banner_id == 301:
+            await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND (wish_banner_type = ? OR wish_banner_type = 400) AND wish_rarity = 5', (user_id, banner_id))
+        else:
+            await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 5', (user_id, banner_id))
         five_star = (await c.fetchone())[0]
-        await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 4', (user_id, banner_id))
+        if banner_id == 301:
+            await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND (wish_banner_type = ? OR wish_banner_type = 400) AND wish_rarity = 4', (user_id, banner_id))
+        else:
+            await c.execute('SELECT COUNT (wish_id) FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND wish_rarity = 4', (user_id, banner_id))
         four_star = (await c.fetchone())[0]
 
         result[banner_id] = {
