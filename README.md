@@ -60,7 +60,7 @@
 - 養成計算機
 - 角色配置
 - 角色展示
-- [功能列表](https://github.com/seriaati/shenhe_bot/blob/public/features.md)
+- [功能列表](https://seriaati.github.io/shenhe_website/features.html)
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
