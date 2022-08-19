@@ -58,6 +58,7 @@
 - 每日自動 hoyolab 網頁簽到
 - 代辦清單
 - 養成計算機
+- 傷害計算器
 - 角色配置
 - 角色展示
 - [功能列表](https://seriaati.github.io/shenhe_website/features.html)
