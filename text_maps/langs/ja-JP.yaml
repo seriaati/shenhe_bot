@@ -135,7 +135,7 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/reigster` command\n Too complicated? The image below might help!"
+138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、 <https://www.hoyolab.com>　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、`/reigster`コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
 139: Cookie invalid or is outdated, please logout then login again!
 140: '`/register`コマンドを使用してください'
 141: アカウントデータが見つかりません！
@@ -162,7 +162,7 @@
 162: 装備
 163: 装備を選択してください
 164: 装備
-165: "This user hasn't registered their account yet\n`/register` to register"
+165: "このユーザーはまだアカウント登録をしていません\n登録するには `/register` をしてください。"
 166: 参量物質変化器がありません。
 167: "の UID"
 168: データを入力してください
@@ -271,8 +271,8 @@
 281: Speed%
 282: Go back
 283: Or enter your UID in the options
-284: Invalid account
-285: This is an account without a main character
+284: 無効なアカウント
+285: メインキャラクターのいないアカウントです
 286: Invalid UID
 287: Please turn on the character showcase toggle in game
 288: Player level
@@ -345,13 +345,13 @@
 355: Please wait for awhile while shenhe is processing your wish history
 356: Successfully imported wish history
 357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the `/wish import` command"
+358: "1. 原神を開く（複数アカウントを使用している場合は、ゲームを再起動してください。）\n 2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ\n 3. キーボードの「START」を押し、「Powershell」を検索する。\n 4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。\n 5. ENTERを押すと、リンクがクリップボードにコピーされます。\n 6. コピーしたリンクを `/wish import` コマンドで送信します。"
 359: Importing wish history using your android phone
 360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the `/wish import` command"
 361: Importing wish history using your IOS device
 362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the `/wish import` command"
 363: Importing wish history using your Playstation device
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the `/wish import` command"
+364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. `/wish import`コマンドを使用して、ここにリンクを送信する。"
 365: Choose your platform
 366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
 367: No wish history data found
@@ -396,7 +396,7 @@
 407: End time
 408: Details
 409: Choose event type
-410: Register your genshin account to use commands that require one
+410: 原神アカウント情報を必要とするコマンドを使用するために、原神アカウント情報を登録します。
 411: options
 412: Registration tutorial
 413: submit cookie
@@ -448,53 +448,53 @@
 459: View past genshin event stats
 460: Calcualte materials needed for upgrading a character
 461: 同期
-462: sync with in-game data (autofill the levels)
+462: ゲーム内データと同期（レベルは自動入力）
 463: "ON"
 464: "OFF"
-465: Calculate materials needed for upgrading a weapon
-466: type
-467: rarity
-468: sword
-469: catalyst
-470: claymore
-471: bow
-472: polearm
+465: 武器のレベルアップに必要な素材を計算します
+466: タイプ
+467: レアリティ
+468: 片手剣
+469: 法器
+470: 両手剣
+471: 弓
+472: 長柄武器
 473: やること帳一覧を表示します。
-474: Import wish history
-475: function
-476: Wish history import tutorial
-477: Submit link
-478: View wish history
-479: Wish luck analysis
-480: Predict chance of pulling a character
-481: number
-482: How many 5 star UP characters do you wish to pull?
-483: Predict change of pulling a weapon
-484: View wish overview
-485: Change the langauge shenhe responds you with
-486: View all commands
-487: Genshin
-488: Genshin wishes
-489: Requires wish history import using /wish import
-490: Genshin calculations
-491: Calculate materials needed for upgrading characters or weapons
+474: 祈願記録をインポート
+475: 関数
+476: 祈願履歴のインポート方法
+477: リンクを送信
+478: 祈願履歴を表示
+479: 祈願履歴の分析
+480: キャラクターを引く確率を予想
+481: 数値
+482: 星5UPキャラを何体引きたいか？
+483: 武器を引く確率を予想
+484: 祈願の概要を見る
+485: 申鶴(このbot)があなたに反応する際の言語を変更します
+486: すべてのコマンドを表示
+487: 原神
+488: 原神の祈願
+489: /wish import を使用して履歴をインポートする必要があります
+490: 原神の計算
+491: キャラクターや武器のレベルアップに必要な材料を計算する
 492: やること帳
-493: Waifus
-494: Others
-495: Choose your category
-496: Admin usage only
+493: 推し！
+494: その他
+495: カテゴリを選択
+496: アドミンのみ可能
 497: 原神数据
-498: View profile
+498: プロフィールを表示
 499: マイ キャラクター
 500: リアルタイムノート
-501: Update self leaderbaord position
-502: Leaderboard position updated
-503: View past updates
+501: リーダーボードの位置を更新
+502: リーダーボードの位置が更新されました
+503: 過去の更新を表示
 504: "かわい　美しい　贫乳な　seria#5334を制りました。\n、疑問はDMで話てください。"
-505: View past updates
-506: number
+505: 過去の更新を表示
+506: 数値
 507: 5つ星のUPキャラクターは何枚がガチしますか？
 508: 原神に関すること　を検索してくたさい
-509: query
-510: Sumeru
-511: Names of genshin characters, weapons, and other game elements will be translated automatically
+509: クエリ
+510: スメール
+511: 原神のキャラクターや武器などのゲームの要素の名前は自動翻訳されます
