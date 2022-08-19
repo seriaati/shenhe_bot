@@ -27,7 +27,7 @@ class View(DefaultView):
 
 class Primo(Button):
     def __init__(self, label: str):
-        super().__init__(label=label, emoji='<:primo:958555698596290570>')
+        super().__init__(label=label, emoji='<:PRIMO:1010048703312171099>')
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -40,7 +40,7 @@ class Primo(Button):
 
 class Mora(Button):
     def __init__(self, label: str):
-        super().__init__(label=label, emoji='<:mora:958577933650362468>')
+        super().__init__(label=label, emoji='<:MORA:1010048704901828638>')
 
     async def callback(self, i: Interaction):
         self.view: View

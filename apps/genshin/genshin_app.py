@@ -210,8 +210,8 @@ class GenshinApp:
             )
             result.add_field(
                 name=text_map.get(63, locale, user_locale),
-                value=f'<:primo:958555698596290570> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {text_map.get(64, locale, user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
-                f'<:mora:958577933650362468> {d.current_mora} • {text_map.get(64, locale, user_locale)}: {d.last_mora}',
+                value=f'<:PRIMO:1010048703312171099> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {text_map.get(64, locale, user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n'
+                f'<:MORA:1010048704901828638> {d.current_mora} • {text_map.get(64, locale, user_locale)}: {d.last_mora}',
                 inline=False
             )
             msg = ''
