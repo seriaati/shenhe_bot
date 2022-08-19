@@ -30,7 +30,7 @@
 30: 土曜日
 31: 日曜日
 32: 言語を選らんでくたさい。
-33: 言語再設定は完了した。
+33: Language changed
 34: 現在の言語
 35: "さらにの情報は /register を 入力してくたさい。"
 36: 無效の cookie
@@ -84,7 +84,7 @@
 84: 元素スキル使用回数
 85: 深境螺旋 一覧
 86: 層
-87: "間"
+87: "<EMPTY_CHARACTER>"
 88: "[上半]"
 89: "[下半]"
 90: "装備"
@@ -122,10 +122,10 @@
 122: スキルを解放しました。
 123: カスタム UID が検索されました
 124: デフォルトに戻る
-125: デフォルトでは、Shenhe はあなたの不和音が使用しているのと同じ言語で応答します
-126: 言語を変更するとデフォルトの言語が上書きされます
+125: By default, shenhe responds you with the same language your discord uses
+126: Changing language will override the default language
 127: テキストがまだ翻訳されていない場合、Shenheは英語であなたに返信します。
-128: 言語の変更
+128: Changing language
 129: モンド
 130: 璃月
 131: 稻妻
@@ -135,7 +135,7 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、 <https://www.hoyolab.com>　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、`/reigster`コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/register` command\n Too complicated? The image below might help!"
 139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
 140: '`/register`コマンドを使用してください'
 141: アカウントデータが見つかりません！
@@ -144,7 +144,7 @@
 144: 原石日記
 145: モラ 紀錄
 146: 第
-147: "層"
+147: "<EMPTY_CHARACTER>"
 148: 深境螺旋の層を選べてくたさい。
 149: 權限がありません。
 150: "<https://www.hoyolab.com>にアクセスし、ログインしてください。\n 以下の画像のステップに従ってください。\n\n 1. 右上のアバターをクリック\n 2.マイページ\n 3. 右上の「原神」をクリックします。\n 4. 歯車のアイコンをクリックします。\n 5. すべてのスイッチをONにする"
@@ -179,7 +179,7 @@
 179: 成功
 180: 武器を選択してください
 181: レベルを設定：
-182: "‎"
+182: "<EMPTY_CHARACTER>"
 183: 現在のレベル
 184: "例: 1"
 185: 目標レベル
@@ -362,11 +362,11 @@
 372: 祈願履歴の分析
 373: あなたの運は他のプレイヤーの
 374: より運が良いです
-375: "間"
+375: "<EMPTY_CHARACTER>"
 376: 回　祈願しています (合計)
-378: "間"
+378: "<EMPTY_CHARACTER>"
 379: 個 ― 限定星５所持数
-380: "間"
+380: "<EMPTY_CHARACTER>"
 381: 回 ― 天井で引いた回数
 382: 引きたいと思う
 383: 限定星５キャラクター
@@ -387,9 +387,9 @@
 398: 通常祈願
 399: イベント祈願・キャラクター
 400: イベント祈願・武器
-401: "間"
+401: "<EMPTY_CHARACTER>"
 402: 回あたりの星５
-403: "間"
+403: "<EMPTY_CHARACTER>"
 404: 回 ― 天井からの回数
 405: まだあなたは星５武器を武器ガチャで引いたことがありません
 406: 開始時間
@@ -400,7 +400,7 @@
 411: オプション
 412: 登録チュートリアル
 413: cookieを送信する
-414: "リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( '/register' で登録している必要があります)"
+414: "View real time notes: Current resin, pot, expedition status (need /register)"
 415: ユーザー
 416: 他のユーザーのデータを確認
 417: "原神の統計の表示：アクティブ日数、神の瞳、宝箱の数"
@@ -416,7 +416,7 @@
 427: 先々月
 428: 深境螺旋戦績を表示 (/register が必要）
 429: タイプ
-430: 周期
+430: season
 431: 表示したいデータの種類
 432: どの期間の深境螺旋ですか？
 433: 詳細
@@ -446,7 +446,7 @@
 457: 原神Wiki
 458: キャラクター
 459: 原神の過去のイベント統計を表示
-460: キャラクターの育成に必要な素材を計算する
+460: Calculate materials needed for upgrading a character
 461: 同期
 462: ゲーム内データと同期（レベルは自動入力）
 463: "ON"
@@ -471,13 +471,13 @@
 482: 星5UPキャラを何体引きたいか？
 483: 武器を引く確率を予想
 484: 祈願の概要を見る
-485: 申鶴(このbot)があなたに反応する際の言語を変更します
+485: Change the language shenhe responds you with
 486: すべてのコマンドを表示
 487: 原神
-488: 原神の祈願
+488: Genshin wish
 489: /wish import を使用して履歴をインポートする必要があります
-490: 原神の計算
-491: キャラクターや武器のレベルアップに必要な材料を計算する
+490: Enhancement progress calculator
+491: Calculate upgrade materials
 492: やること帳
 493: 推し！
 494: その他
@@ -487,7 +487,7 @@
 498: プロフィールを表示
 499: マイ キャラクター
 500: リアルタイムノート
-501: リーダーボードの位置を更新
+501: Update self leaderboard position
 502: リーダーボードの位置が更新されました
 503: 過去の更新を表示
 504: "かわい　美しい　贫乳な　seria#5334を制りました。\n、疑問はDMで話てください。"
