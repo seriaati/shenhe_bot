@@ -1,6 +1,6 @@
 import traceback
 
-from discord import ButtonStyle, HTTPException, Interaction
+from discord import ButtonStyle, Forbidden, HTTPException, Interaction
 from discord.ui import Button, View, button
 
 from apps.text_map.text_map_app import text_map
@@ -29,10 +29,16 @@ class DefaultView(View):
             135, i.locale), icon_url=i.user.avatar)
         traceback_message = traceback.format_exc()
         view = DebugView(traceback_message)
-        await i.channel.send(embed=embed, view=view)
+        try:
+            await i.channel.send(embed=embed, view=view)
+        except Forbidden:
+            print(traceback_message)
         
     async def on_timeout(self) -> None:
         for item in self.children:
             item.disabled = True
         
-        await self.message.edit(view=self)
+        try:
+            await self.message.edit(view=self)
+        except AttributeError:
+            print(self.children)
