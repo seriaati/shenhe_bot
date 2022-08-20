@@ -19,7 +19,8 @@ class View(DefaultView):
 
 class ChangeLogButton(Button):
     def __init__(self, locale: Locale, user_locale: str | None):
-        super().__init__(label=text_map.get(505, locale, user_locale), custom_id='change_log_button')
+        super().__init__(label=text_map.get(505, locale,
+                                            user_locale), custom_id='change_log_button')
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
@@ -31,4 +32,4 @@ class ChangeLogButton(Button):
             label='Crowdin', url='https://crowdin.com/project/shenhe-bot', row=2)
         website = Button(
             label='Website', url='https://seriaati.github.io/shenhe_website/', row=2)
-        await GeneralPaginator(i, self.view.embeds[1:], self.view.db, await i.original_response(),[discord, github, crowdin, website]).start(ephemeral=True)
+        await GeneralPaginator(i, self.view.embeds[1:], self.view.db, [discord, github, crowdin, website]).start(ephemeral=True)
