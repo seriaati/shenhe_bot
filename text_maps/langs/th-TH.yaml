@@ -6,22 +6,22 @@
 6: ชั่วโมง
 7: นาที
 8: วินาที
-9: Available
+9: มีอยู่
 10: ไม่พบ P.T.
-11: Dailies finished
-12: P.T. remaining time
-13: Resin
+11: จำนวนภารกิจรายวันที่สำเร็จ
+12: P.T. เวลาคงเหลือ
+13: เรซิน
 14: Current
 15: Recovery time
 16: ส่วนลด Resin
 17: Serenitea Pot
 18: No expeditions found
-19: Finished
+19: เสร็จเรียบร้อย
 20: Expeditions
 21: "`/stuck` สำหรับข้อมูลเพิ่ม"
 22: Data not public
 23: ข้อผิดพลาด
-24: Realtime notes
+24: บันทึกเรียลไทม์
 25: วันจันทร์
 26: วันอังคาร
 27: วันพุธ
@@ -30,15 +30,15 @@
 30: วันเสาร์
 31: วันอาทิตย์
 32: เลือกภาษาของคุณ
-33: Language changed
+33: เปลี่ยนภาษาสำเร็จ
 34: ภาษาในปัจจุบัน
 35: "`/register` สำหรับข้อมูลเพิ่ม"
-36: Cookie invalid
-37: Account register cancelled
+36: รูปแบบคุกกี้ไม่ถูกต้อง
+37: การลงทะเบียนบัญชีของคุณถูกยกเลิก
 38: No valid accounts were obtained from the cookie
 39: สมัครบัญชีสำเร็จ
-40: You have already claimed today's login reward!
-41: Obtained
+40: คุณได้รับรางวัลล็อกอินวันนี้แล้ว!
+41: ได้รับ
 42: รับสำเร็จ
 43: ภาพรวม
 44: จำนวนวันใช้งาน
@@ -139,16 +139,16 @@
 139: Cookie invalid or is outdated, please logout then login again!
 140: Please use the `/register` command
 141: Account data not found!
-142: Choose your element
+142: โปรดเลือกธาตุของคุณ
 143: You are not the issuer of this command
 144: Primo Log
-145: Mora Log
-146: Floor No.
-147: "<FLOOR>"
+145: บันทึกโมร่า
+146: ลำดับชั้น
+147: "<ชั้นที่>"
 148: Choose abyss floor
 149: Data not public?
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
-151: Resin notification settings
+151: การตั้งค่าการแจ้งเตือนเรซิน
 152: Resin threshold
 153: Shenhe will DM you after your resin exceeds the threshold
 154: จำนวนการแจ้งเตือนสูงสุด
@@ -157,7 +157,7 @@
 157: Choose your character(s)
 158: There are currently no notifications set for any characters
 159: Current character notifications
-160: Choose your element
+160: โปรดเลือกธาตุของคุณ
 161: Choosing this character will turn OFF its notifications
 162: Build
 163: Choose your build
@@ -486,7 +486,7 @@
 497: สถิติ Genshin
 498: View profile
 499: View all characters
-500: Realtime notes
+500: บันทึกเรียลไทม์
 501: Update self leaderboard position
 502: Leaderboard position updated
 503: View past updates
