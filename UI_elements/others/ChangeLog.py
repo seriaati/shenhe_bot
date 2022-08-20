@@ -19,7 +19,8 @@ class View(DefaultView):
 
 class ChangeLogButton(Button):
     def __init__(self, locale: Locale, user_locale: str | None):
-        super().__init__(label=text_map.get(505, locale, user_locale), custom_id='change_log_button')
+        super().__init__(label=text_map.get(505, locale,
+                                            user_locale), custom_id='change_log_button')
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View

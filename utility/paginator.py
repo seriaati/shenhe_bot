@@ -33,12 +33,6 @@ class _view(View):
         if i.user.id != self.author.id:
             await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         return i.user.id == self.author.id
-    
-    async def on_timeout(self) -> None:
-        for item in self.children:
-            item.disabled = True
-        
-        await self.message.edit(view=self)
 
     async def update_children(self, interaction: Interaction):
         self.next.disabled = (self.current_page + 1 == len(self.embeds))
@@ -128,3 +122,8 @@ class GeneralPaginator:
             await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
+        
+        for item in view.children:
+            item.disabled = True
+        
+        await view.message.edit(view=view)
