@@ -9,7 +9,7 @@ from typing import Optional
 
 import aiohttp
 import aiosqlite
-from discord import (Game, Intents, Interaction, Locale, Message, Status,
+from discord import (Forbidden, Game, Intents, Interaction, Locale, Message, Status,
                      app_commands)
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
@@ -20,8 +20,7 @@ from pyppeteer import launch
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DebugView
-from UI_elements.others import ChangeLog, Roles
-from utility import paginator
+from UI_elements.others import Roles
 from utility.utils import error_embed, log
 
 load_dotenv()
@@ -126,11 +125,17 @@ tree = bot.tree
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     user_locale = await get_user_locale(i.user.id, bot.db)
     embed = error_embed(message=text_map.get(
-        134, i.locale, user_locale))
+        513, i.locale, user_locale))
     embed.set_author(name=text_map.get(
         135, i.locale, user_locale), icon_url=i.user.avatar)
     traceback_message = traceback.format_exc()
     view = DebugView(traceback_message)
-    await i.channel.send(embed=embed, view=view)
+    seria = bot.get_user(410036441129943050)
+    try:
+        await i.channel.send(embed=embed, view=view)
+    except Forbidden:
+        pass
+    
+    await seria.send(embed=embed, view=view)
 
 bot.run(token)
