@@ -122,6 +122,7 @@ class GeneralPaginator:
             await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
+        view.message = await self.interaction.original_response()
         
         for item in view.children:
             item.disabled = True
