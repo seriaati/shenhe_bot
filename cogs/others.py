@@ -34,7 +34,9 @@ class OthersCog(commands.Cog, name='others'):
                               f'• {text_map.get(511, i.locale, user_locale)}\n\n'
                               '[crowdin](https://crowdin.com/project/shenhe-bot)')
         embed.set_author(name=text_map.get(128, i.locale, user_locale), icon_url=i.user.avatar)
-        await i.response.send_message(embed=embed, view=ChangeLang.View(i.locale, user_locale, self.bot.db), ephemeral=True)
+        view=ChangeLang.View(i.locale, user_locale, self.bot.db)
+        await i.response.send_message(embed=embed, view=view, ephemeral=True)
+        view.message = await i.original_response()
 
     @app_commands.command(name='update', description=_('Admin usage only', hash=496))
     async def update(self, i: Interaction):
@@ -280,6 +282,7 @@ class OthersCog(commands.Cog, name='others'):
         if i.channel.id != 965964989875757156:
             view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale)
             await i.response.send_message(embed=embeds[0], view=view)
+            view.message = await i.original_response()
         else:
             await i.response.send_message(embed=embeds[0])
             

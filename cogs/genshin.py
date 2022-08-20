@@ -206,7 +206,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         if not success:
             await i.response.send_message(embed=result, ephemeral=not success)
         else:
-            await i.response.send_message(embed=result, view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale))
+            view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale)
+            await i.response.send_message(embed=result, view=view)
+            view.message = await i.original_response()
 
     @app_commands.command(name='abyss', description=_('View abyss information (needs /register)', hash=428))
     @app_commands.rename(overview=_('type', hash=429), previous=_('season', hash=430), member=_('user', hash=415))
@@ -232,7 +234,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         if overview:
             return await i.response.send_message(embed=result)
         else:
-            await i.response.send_message(embed=result[0], view=Abyss.View(i.user, result, i.locale, user_locale, self.bot.db))
+            view=Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
+            await i.response.send_message(embed=result[0], view=view)
+            view.message = await i.original_response()
 
     @app_commands.command(name='stuck', description=_('Data not public?', hash=437))
     async def stuck(self, i: Interaction):
@@ -282,7 +286,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                 value = await self.genshin_app.get_user_talent_notification_enabled_str(i.user.id, i.locale)
                 embed.add_field(name=text_map.get(
                     159, i.locale, user_locale), value=value)
-                await i.response.send_message(embed=embed, view=TalentNotification.View(i.user, i.locale, user_locale, self.bot.db, self.genshin_app, self.bot.session))
+                view = TalentNotification.View(i.user, i.locale, user_locale, self.bot.db, self.genshin_app, self.bot.session)
+                await i.response.send_message(embed=embed, view=view)
+                view.message = await i.original_response()
 
         elif function == 2:
             embed = default_embed(
@@ -347,7 +353,9 @@ class GenshinCog(commands.Cog, name='genshin'):
 
     @app_commands.command(name='build', description=_("View character builds: Talent levels, artifacts, weapons", hash=447))
     async def build(self, i: Interaction):
-        await i.response.send_message(view=Build.View(i.user, self.bot.db))
+        view = Build.View(i.user, self.bot.db)
+        await i.response.send_message(view=view)
+        view.message = await i.original_response()
 
     @app_commands.command(name='uid', description=_("Search a user's genshin UID (if they registered in shenhe)", hash=448))
     @app_commands.rename(player=_('user', hash=415))
@@ -504,6 +512,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         view = EnkaProfile.View(embeds, artifact_embeds, options,
                                 data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
+        view.message = await i.original_response()
 
     @app_commands.command(name='redeem', description=_('Redeem a gift code (needs /register)', hash=450))
     @app_commands.rename(code=_('code', hash=451))
@@ -622,7 +631,10 @@ class GenshinCog(commands.Cog, name='genshin'):
             view = ArtifactLeaderboard.View(
                 i.user, self.bot.db, i.locale, user_locale)
             await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
+            view.message = await i.original_response()
             await view.wait()
+            if view.sub_stat is None:
+                return
 
             await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()

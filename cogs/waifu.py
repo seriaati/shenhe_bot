@@ -99,7 +99,10 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             return await i.response.send_message(embed=error_embed().set_author(name='不可大於 30 張', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='sfw')
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.tag is None:
+            return
         x = view.tag.split('/')
         libs = ast.literal_eval(x[0])
         tag = x[1]
@@ -144,7 +147,10 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             return await i.response.send_message(embed=error_embed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='nsfw')
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.tag is None:
+            return
         x = view.tag.split('/')
         libs = ast.literal_eval(x[0])
         tag = x[1]
@@ -168,7 +174,9 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
-                await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
+                view = WaifuCog.DeleteImageView(i.user)
+                await i.channel.send(file=file, view=view)
+                view.message = await i.original_response()
             await i.delete_original_response()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
@@ -186,6 +194,8 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
                 await i.followup.send(view=view)
                 await view.wait()
+            if len(view.tags) == 0:
+                return
             if many == 0:
                 if tags == 1:
                     try:

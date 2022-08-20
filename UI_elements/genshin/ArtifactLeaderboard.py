@@ -59,6 +59,9 @@ class GoBack(Button):
             i.user, self.db, i.locale, user_locale)
         await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
         await view.wait()
+        view.message = await i.original_response()
+        if view.sub_stat is None:
+            return
 
         await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
         leaderboard = await c.fetchall()
