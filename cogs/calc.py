@@ -40,7 +40,10 @@ class CalcCog(commands.GroupCog, name='calc'):
         view = CalcCharacter.View(
             i.user, self.bot.session, self.bot.db, characters)
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.character_id == '':
+            return
         valid, error_message = check_level_validity(
             view.levels, user_locale or i.locale)
         if not valid:
@@ -112,6 +115,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         view = AddToTodo.View(self.bot.db, disabled, i.user,
                               materials, i.locale, user_locale)
         await i.edit_original_response(embed=embed, view=view)
+        view.message = await i.original_response()
 
     @app_commands.command(name='weapon', description=_('Calcualte materials needed for upgrading a weapon', hash=465))
     @app_commands.rename(types=_('type', hash=466), rarities=_('rarity', hash=467))
@@ -138,6 +142,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         view = CalcWeapon.View(
             weapons, i.user, self.bot.db, i.locale, user_locale)
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
 
         valid, error_message = check_level_validity(
@@ -179,6 +184,7 @@ class CalcCog(commands.GroupCog, name='calc'):
         view = AddToTodo.View(self.bot.db, disabled, i.user,
                               materials, i.locale, user_locale)
         await i.edit_original_response(embed=embed, view=view)
+        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:

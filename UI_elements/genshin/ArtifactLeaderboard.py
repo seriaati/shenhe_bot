@@ -58,7 +58,10 @@ class GoBack(Button):
         view = View(
             i.user, self.db, i.locale, user_locale)
         await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.sub_stat is None:
+            return
 
         await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
         leaderboard = await c.fetchall()
@@ -96,4 +99,4 @@ class GoBack(Button):
                 f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds, self.db, [GoBack(text_map.get(282, i.locale, user_locale), self.db)]).start(edit=True)
+        await GeneralPaginator(i, embeds, self.db, await i.original_response(), [GoBack(text_map.get(282, i.locale, user_locale), self.db)]).start(edit=True)

@@ -121,3 +121,4 @@ async def element_button_callback(i: Interaction, element: str, view: View):
     view.add_item(CharacterSelect(options, placeholder, builds, element))
     view.add_item(GoBack('element'))
     await i.response.edit_message(embed=None, view=view)
+    view.message = await i.original_response()

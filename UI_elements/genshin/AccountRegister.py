@@ -32,7 +32,9 @@ class Modal(Modal):
         if not success:
             return await i.followup.send(embed=result, ephemeral=True)
         if isinstance(result, list):  # 有多個帳號
-            await i.followup.send(view=View(self, result), ephemeral=True)
+            view = View(self, result)
+            await i.followup.send(view=view, ephemeral=True)
+            view.message = await i.original_response()
         else:  # 一個帳號而已
             await i.followup.send(embed=result, ephemeral=True)
 

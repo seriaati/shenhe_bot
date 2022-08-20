@@ -33,6 +33,7 @@ class WishCog(commands.GroupCog, name='wish'):
             embed = default_embed(text_map.get(365, i.locale, user_locale))
             embed.set_footer(text=text_map.get(366, i.locale, user_locale))
             await i.response.send_message(embed=embed, view=view, ephemeral=True)
+            view.message = await i.original_response()
         else:
             await i.response.send_modal(SetAuthKey.Modal(self.bot.db, i.locale, user_locale))
 
@@ -75,7 +76,7 @@ class WishCog(commands.GroupCog, name='wish'):
                 369, i.locale, user_locale), icon_url=i.user.avatar)
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds, self.bot.db).start()
+        await GeneralPaginator(i, embeds, self.bot.db, await i.original_response()).start()
 
     @app_commands.command(name='luck', description=_('Wish luck analysis', hash=479))
     @app_commands.rename(member=_('user', hash=415))
@@ -151,7 +152,10 @@ class WishCog(commands.GroupCog, name='wish'):
                               f'**{last_name}**\n'
                               f'{text_map.get(392, i.locale, user_locale)}\n')
         await i.response.send_message(embed=embed, view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.up is None:
+            return
 
         if view.up:  # 是UP
             if view.want:  # 是想要的UP
