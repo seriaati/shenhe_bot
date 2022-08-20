@@ -84,7 +84,7 @@
 84: Elemental skills cast
 85: Spiral Abyss Overview
 86: Chamber
-87: "<EMPTY_CHARACTER>"
+87: "<CHAMBER>"
 88: "[First Half]"
 89: "[Second Half]"
 90: "Build #"
@@ -144,7 +144,7 @@
 144: Primo Log
 145: Mora Log
 146: Floor No.
-147: "<EMPTY_CHARACTER>"
+147: "<FLOOR>"
 148: Choose abyss floor
 149: Data not public?
 150: "Please go to <https://www.hoyolab.com> and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
@@ -179,7 +179,7 @@
 179: Success
 180: Choose your weapon
 181: Set the levels for
-182: "<EMPTY_CHARACTER>"
+182: "<'S LEVEL>"
 183: Current level
 184: "For example: 1"
 185: Target level
@@ -362,11 +362,11 @@
 372: Wish luck analysis
 373: Your luck is better than
 374: of players
-375: "<EMPTY_CHARACTER>"
+375: "<TOTAL>"
 376: pull(s) in total
-378: "<EMPTY_CHARACTER>"
+378: "<TOTAL>"
 379: UP five stars in total
-380: "<EMPTY_CHARACTER>"
+380: "<FROM PITY>"
 381: pity pull(s)
 382: Wishing to pull
 383: UP 5 star characters
@@ -387,9 +387,9 @@
 398: Standard banner
 399: Limited-time banner
 400: Weapon banner
-401: "<EMPTY_CHARACTER>"
+401: "<AVERAGE>"
 402: pull(s) per 5 star
-403: "<EMPTY_CHARACTER>"
+403: "<FROM PITY>"
 404: pull(s) from pity
 405: You haven't pulled any 5 star weapons in the weapon banner yet
 406: Start time
@@ -399,7 +399,7 @@
 410: Register your genshin account to use commands that require one
 411: options
 412: Registration tutorial
-413: submit cookie
+413: Submit cookie
 414: "View real time notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
