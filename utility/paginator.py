@@ -1,3 +1,5 @@
+import config
+
 __all__ = ['GeneralPaginator']
 
 
@@ -15,7 +17,7 @@ from utility.utils import error_embed
 
 class _view(View):
     def __init__(self, author: User, embeds: List[Embed], db: aiosqlite.Connection, check: bool = True, files: Optional[List[BytesIO]] = []):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.embeds = embeds
         self.check = check
@@ -31,6 +33,12 @@ class _view(View):
         if i.user.id != self.author.id:
             await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         return i.user.id == self.author.id
+    
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+        
+        await self.message.edit(view=self)
 
     async def update_children(self, interaction: Interaction):
         self.next.disabled = (self.current_page + 1 == len(self.embeds))
