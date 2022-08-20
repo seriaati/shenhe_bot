@@ -2,8 +2,7 @@ import importlib
 import json
 import pprint
 import sys
-from UI_elements.calc.CalcCharacter import View
-from discord.ui import button, Button
+
 from apps.genshin.utils import get_dummy_client
 from apps.text_map.convert_locale import to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
@@ -19,7 +18,6 @@ from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.others import ChangeLang, ChangeLog, Roles
-from debug import DefaultView
 from utility.utils import default_embed, error_embed
 
 
@@ -36,9 +34,7 @@ class OthersCog(commands.Cog, name='others'):
                               f'• {text_map.get(511, i.locale, user_locale)}\n\n'
                               '[crowdin](https://crowdin.com/project/shenhe-bot)')
         embed.set_author(name=text_map.get(128, i.locale, user_locale), icon_url=i.user.avatar)
-        view = ChangeLang.View(i.locale, user_locale, self.bot.db)
-        await i.response.send_message(embed=embed, view=view, ephemeral=True)
-        view.message = await i.original_response()
+        await i.response.send_message(embed=embed, view=ChangeLang.View(i.locale, user_locale, self.bot.db), ephemeral=True)
 
     @app_commands.command(name='update', description=_('Admin usage only', hash=496))
     async def update(self, i: Interaction):
@@ -284,7 +280,6 @@ class OthersCog(commands.Cog, name='others'):
         if i.channel.id != 965964989875757156:
             view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale)
             await i.response.send_message(embed=embeds[0], view=view)
-            view.message = await i.original_response()
         else:
             await i.response.send_message(embed=embeds[0])
             

@@ -80,7 +80,6 @@ class HelpCog(commands.Cog):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         view = DropdownView(self.bot, i.locale, user_locale)
         await i.response.send_message(view=view)
-        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:

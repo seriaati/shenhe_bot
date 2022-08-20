@@ -1,21 +1,20 @@
 import json
 from datetime import datetime
-from io import BytesIO
 from pprint import pprint
-from time import time
 from typing import Dict, List
-
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 import aiosqlite
 import GGanalysislib
 import yaml
+from time import time
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
 from apps.draw import draw_domain_card, draw_item_icons_on_domain_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (calculate_artifact_score, get_artifact,
                                 get_character, get_farm_dict, get_fight_prop,
-                                get_material, get_weapon,
-                                parse_character_wiki_embed)
+                                get_material, get_weapon, parse_character_wiki_embed)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
@@ -32,14 +31,12 @@ from discord.utils import format_dt
 from enkanetwork import (EnkaNetworkAPI, EnkaNetworkResponse, UIDNotFounded,
                          VaildateUIDError)
 from enkanetwork.enum import DigitType, EquipmentsType
-from PIL import Image, ImageDraw, ImageFont
 from UI_elements.genshin import (Abyss, AccountRegister, ArtifactLeaderboard,
                                  Build, CharacterWiki, Diary, EnkaProfile,
                                  EventTypeChooser, ResinNotification,
                                  ShowAllCharacters, TalentNotification)
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, divide_dict,
-                           error_embed, parse_HTML)
+from utility.utils import default_embed, divide_chunks, divide_dict, error_embed, parse_HTML
 
 
 class GenshinCog(commands.Cog, name='genshin'):
@@ -188,7 +185,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         placeholder = text_map.get(142, i.locale, user_locale)
-        await GeneralPaginator(i, result['embeds'], self.bot.db, await i.original_response(),[ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(check=False, ephemeral=ephemeral)
+        await GeneralPaginator(i, result['embeds'], self.bot.db, [ShowAllCharacters.ElementSelect(result['options'], placeholder)]).start(check=False, ephemeral=ephemeral)
 
     @app_commands.command(name='diary', description=_("View your traveler's diary: primo and mora income (needs /regsiter)", hash=422))
     @app_commands.rename(month=_('month', hash=423), member=_('user', hash=415))
@@ -209,9 +206,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         if not success:
             await i.response.send_message(embed=result, ephemeral=not success)
         else:
-            view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale)
-            await i.response.send_message(embed=result, view=view)
-            view.message = await i.original_response()
+            await i.response.send_message(embed=result, view=Diary.View(i.user, member, self.genshin_app, i.locale, user_locale))
 
     @app_commands.command(name='abyss', description=_('View abyss information (needs /register)', hash=428))
     @app_commands.rename(overview=_('type', hash=429), previous=_('season', hash=430), member=_('user', hash=415))
@@ -237,9 +232,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         if overview:
             return await i.response.send_message(embed=result)
         else:
-            view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            await i.response.send_message(embed=result[0], view=view)
-            view.message = await i.original_response()
+            await i.response.send_message(embed=result[0], view=Abyss.View(i.user, result, i.locale, user_locale, self.bot.db))
 
     @app_commands.command(name='stuck', description=_('Data not public?', hash=437))
     async def stuck(self, i: Interaction):
@@ -289,9 +282,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 value = await self.genshin_app.get_user_talent_notification_enabled_str(i.user.id, i.locale)
                 embed.add_field(name=text_map.get(
                     159, i.locale, user_locale), value=value)
-                view = TalentNotification.View(i.user, i.locale, user_locale, self.bot.db, self.genshin_app, self.bot.session)
-                await i.response.send_message(embed=embed, view=view)
-                view.message = await i.original_response()
+                await i.response.send_message(embed=embed, view=TalentNotification.View(i.user, i.locale, user_locale, self.bot.db, self.genshin_app, self.bot.session))
 
         elif function == 2:
             embed = default_embed(
@@ -352,13 +343,11 @@ class GenshinCog(commands.Cog, name='genshin'):
             embed.set_image(url=f"attachment://{index}.jpeg")
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds, self.bot.db, await i.original_response(), files=result).start(followup=True)
+        await GeneralPaginator(i, embeds, self.bot.db, files=result).start(followup=True)
 
     @app_commands.command(name='build', description=_("View character builds: Talent levels, artifacts, weapons", hash=447))
     async def build(self, i: Interaction):
-        view = Build.View(i.user, self.bot.db)
-        await i.response.send_message(view=view)
-        view.message = await i.original_response()
+        await i.response.send_message(view=Build.View(i.user, self.bot.db))
 
     @app_commands.command(name='uid', description=_("Search a user's genshin UID (if they registered in shenhe)", hash=448))
     @app_commands.rename(player=_('user', hash=415))
@@ -515,7 +504,6 @@ class GenshinCog(commands.Cog, name='genshin'):
         view = EnkaProfile.View(embeds, artifact_embeds, options,
                                 data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
-        view.message = await i.original_response()
 
     @app_commands.command(name='redeem', description=_('Redeem a gift code (needs /register)', hash=450))
     @app_commands.rename(code=_('code', hash=451))
@@ -572,7 +560,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     detail_dict[event['ann_id']])[:1021]+'...', inline=False)
                 embeds[event['type']].append(embed)
 
-        await GeneralPaginator(i, embeds[first_id], self.bot.db, await i.original_response(), [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(followup=True)
+        await GeneralPaginator(i, embeds[first_id], self.bot.db, [EventTypeChooser.Select(options, embeds, i.locale, user_locale)]).start(followup=True)
 
     @app_commands.command(
         name='leaderboard',
@@ -628,16 +616,13 @@ class GenshinCog(commands.Cog, name='genshin'):
                     f'🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
 
-            await GeneralPaginator(i, embeds, self.bot.db, await i.original_response()).start()
+            await GeneralPaginator(i, embeds, self.bot.db).start()
 
         elif type == 1:
             view = ArtifactLeaderboard.View(
                 i.user, self.bot.db, i.locale, user_locale)
             await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
-            view.message = await i.original_response()
             await view.wait()
-            if view.sub_stat is None:
-                return
 
             await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
             leaderboard = await c.fetchall()
@@ -675,7 +660,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
 
-            await GeneralPaginator(i, embeds, self.bot.db, await i.original_response(), [ArtifactLeaderboard.GoBack(text_map.get(282, i.locale, user_locale), self.bot.db)]).start(edit=True)
+            await GeneralPaginator(i, embeds, self.bot.db, [ArtifactLeaderboard.GoBack(text_map.get(282, i.locale, user_locale), self.bot.db)]).start(edit=True)
 
         elif type == 2:
             await c.execute('SELECT DISTINCT user_id FROM wish_history')
@@ -726,7 +711,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                     f'🏆 {text_map.get(257, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})', message)
                 embeds.append(embed)
 
-            await GeneralPaginator(i, embeds, self.bot.db, await i.original_response()).start()
+            await GeneralPaginator(i, embeds, self.bot.db).start()
 
         elif type == 3:
             await i.response.defer(ephemeral=True)
@@ -768,7 +753,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             async with self.bot.session.get(f'https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}') as r:
                 avatar = await r.json()
             embeds, material_embed, options = parse_character_wiki_embed(avatar, query, i.locale, user_locale)
-            await GeneralPaginator(i, embeds, self.bot.db, await i.original_response(), [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(322, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(followup=True)
+            await GeneralPaginator(i, embeds, self.bot.db, [CharacterWiki.ShowTalentMaterials(material_embed, text_map.get(322, i.locale, user_locale)), CharacterWiki.QuickNavigation(options, text_map.get(315, i.locale, user_locale))]).start(followup=True)
 
     @search.autocomplete('query')
     async def query_autocomplete(self, i: Interaction, current: str) -> List[Choice[str]]:
@@ -800,7 +785,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         result, success = await self.genshin_app.get_activities(member.id, custom_uid, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result, self.bot.db, await i.original_response()).start()
+        await GeneralPaginator(i, result, self.bot.db).start()
 
 
 async def setup(bot: commands.Bot) -> None:
