@@ -825,7 +825,35 @@
         "ru": "\u041f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u0438\u0446\u0430",
         "vi": "Nh\u00e0 L\u1eef H\u00e0nh"
     },
+    "10000007": {
+        "chs": "\u65c5\u884c\u8005",
+        "cht": "\u65c5\u884c\u8005",
+        "de": "Reisende",
+        "en": "Traveler",
+        "es": "Viajera",
+        "fr": "Voyageuse",
+        "jp": "\u65c5\u4eba",
+        "kr": "\uc5ec\ud589\uc790",
+        "th": "\u0e19\u0e31\u0e01\u0e40\u0e14\u0e34\u0e19\u0e17\u0e32\u0e07",
+        "pt": "Viajante",
+        "ru": "\u041f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u0438\u0446\u0430",
+        "vi": "Nh\u00e0 L\u1eef H\u00e0nh"
+    },
     "10000005-dendro": {
+        "chs": "\u65c5\u884c\u8005",
+        "cht": "\u65c5\u884c\u8005",
+        "de": "Reisender",
+        "en": "Traveler",
+        "es": "Viajero",
+        "fr": "Voyageur",
+        "jp": "\u65c5\u4eba",
+        "kr": "\uc5ec\ud589\uc790",
+        "th": "\u0e19\u0e31\u0e01\u0e40\u0e14\u0e34\u0e19\u0e17\u0e32\u0e07",
+        "pt": "Viajante",
+        "ru": "\u041f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u0438\u043a",
+        "vi": "Nh\u00e0 L\u1eef H\u00e0nh"
+    },
+    "10000005": {
         "chs": "\u65c5\u884c\u8005",
         "cht": "\u65c5\u884c\u8005",
         "de": "Reisender",
