@@ -17,7 +17,6 @@ class Todo(commands.Cog, name='todo'):
         view = TodoList.View(self.bot.db, disabled,
                              i.user, i.locale, user_locale)
         await i.response.send_message(embed=embed, view=view)
-        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:
