@@ -2,7 +2,7 @@ import ast
 import io
 import random
 from typing import Any, List
-
+import config
 import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
@@ -35,7 +35,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class TagSelectorView(DefaultView):
         def __init__(self, choices: List, author: Member):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.short_timeout)
             self.add_item(WaifuCog.TagSelector(choices))
             self.tags = []
             self.author = author
@@ -57,7 +57,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class ChooseTagView(DefaultView):
         def __init__(self, author: Member, type: str):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.short_timeout)
             self.author = author
             self.tag = None
             options = []
@@ -118,7 +118,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class DeleteImageView(DefaultView):
         def __init__(self, author: Member):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.long_timeout)
             self.author = author
 
         async def interaction_check(self, interaction: Interaction) -> bool:

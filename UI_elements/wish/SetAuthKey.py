@@ -9,6 +9,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.text_map.convert_locale import to_genshin_py
 from utility.utils import default_embed, error_embed, log
+import config
 
 
 class Modal(Modal):
@@ -20,7 +21,7 @@ class Modal(Modal):
     )
 
     def __init__(self, db: aiosqlite.Connection, locale: Locale, user_locale: str | None):
-        super().__init__(title=text_map.get(353, locale, user_locale), timeout=None, custom_id='authkey_modal')
+        super().__init__(title=text_map.get(353, locale, user_locale), timeout=config.mid_timeout, custom_id='authkey_modal')
         self.db = db
         self.url.placeholder = text_map.get(132, locale, user_locale)
         

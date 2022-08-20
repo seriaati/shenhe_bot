@@ -6,10 +6,11 @@ from discord.ui import Select
 from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed
 from typing import Any
+import config
 
 class View(DefaultView):
     def __init__(self, author: Member, embeds: list[Embed], locale: Locale, user_locale: str, db: aiosqlite.Connection):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.db = db 
         

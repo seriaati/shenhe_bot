@@ -11,11 +11,12 @@ from discord import ButtonStyle, Interaction, Locale, Member
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.sub_stat = None
         self.db = db
