@@ -9,7 +9,7 @@ from typing import List, Optional, Union
 import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import ButtonStyle, Embed, File, Interaction, User
+from discord import ButtonStyle, Embed, File, Interaction, NotFound, User
 from discord.ui import Button, Select, View, button
 
 from utility.utils import error_embed
@@ -17,7 +17,7 @@ from utility.utils import error_embed
 
 class _view(View):
     def __init__(self, author: User, embeds: List[Embed], db: aiosqlite.Connection, check: bool = True, files: Optional[List[BytesIO]] = []):
-        super().__init__(timeout=config.mid_timeout)
+        super().__init__(timeout=5)
         self.author = author
         self.embeds = embeds
         self.check = check
@@ -122,9 +122,6 @@ class GeneralPaginator:
             await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
-        view.message = await self.interaction.original_response()
-        
         for item in view.children:
             item.disabled = True
-        
-        await view.message.edit(view=view)
+        await self.interaction.edit_original_response(view=view)

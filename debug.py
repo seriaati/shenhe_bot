@@ -1,6 +1,7 @@
 import traceback
 
-from discord import ButtonStyle, Forbidden, HTTPException, Interaction
+from discord import (ButtonStyle, Forbidden, HTTPException, Interaction,
+                     NotFound)
 from discord.ui import Button, View, button
 
 from apps.text_map.text_map_app import text_map
@@ -45,3 +46,5 @@ class DefaultView(View):
             await self.message.edit(view=self)
         except AttributeError:
             print('attributeError:'+self.children)
+        except NotFound:
+            pass

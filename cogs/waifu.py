@@ -7,7 +7,7 @@ import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
-from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
+from discord import (ButtonStyle, File, Interaction, Member, PartialMessageable, SelectOption,
                      app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
@@ -180,15 +180,17 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             await i.delete_original_response()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
-    @app_commands.guild_only()
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
     @app_commands.choices(sese=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], many=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], tags=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')
     async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer()
         async with WaifuAioClient() as wf:
-            if not i.channel.nsfw and sese == 1:
-                return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
+            if isinstance(i.channel, PartialMessageable):
+                pass
+            else:
+                if not i.channel.nsfw and sese == 1:
+                    return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
             is_nsfw = 'True' if sese == 1 else 'False'
             if tags == 1:
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
