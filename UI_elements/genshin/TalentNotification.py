@@ -12,11 +12,12 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, author: Member, locale: Locale, user_locale: str, db: aiosqlite.Connection, genshin_app: GenshinApp, session: aiohttp.ClientSession):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.locale = locale
         self.user_locale = user_locale

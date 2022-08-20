@@ -4,11 +4,12 @@ from discord.ui import Button
 from apps.text_map.text_map_app import text_map
 from apps.genshin.genshin_app import GenshinApp
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, author: Member, member: Member, genshin_app: GenshinApp, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.member = member
         self.genshin_app = genshin_app

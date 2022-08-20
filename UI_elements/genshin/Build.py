@@ -9,11 +9,12 @@ from discord.ui import Button, Select
 from utility.utils import error_embed
 from apps.text_map.text_map_app import text_map
 from data.game.elements import convert_elements, elements
+import config
 
 
 class View(DefaultView):
     def __init__(self, author: Member, db: aiosqlite.Connection):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.db = db
 

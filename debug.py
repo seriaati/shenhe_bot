@@ -30,3 +30,9 @@ class DefaultView(View):
         traceback_message = traceback.format_exc()
         view = DebugView(traceback_message)
         await i.channel.send(embed=embed, view=view)
+        
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+        
+        await self.message.edit(view=self)

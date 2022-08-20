@@ -6,11 +6,12 @@ from debug import DefaultView
 from discord import Embed, Interaction, Locale
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
+import config
 
 
 class View(DefaultView):
     def __init__(self, db: aiosqlite.Connection, embeds: List[Embed], locale: Locale, user_locale: str | None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.mid_timeout)
         self.db = db
         self.embeds = embeds
         self.add_item(ChangeLogButton(locale, user_locale))

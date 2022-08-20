@@ -8,7 +8,7 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed
-
+import config
 
 class Modal(Modal):
     cookie = TextInput(
@@ -18,7 +18,7 @@ class Modal(Modal):
     )
 
     def __init__(self, genshin_app: GenshinApp, locale: Locale, user_locale: str) -> None:
-        super().__init__(title='CookieModal', timeout=None, custom_id='cookie_modal')
+        super().__init__(title='CookieModal', timeout=config.mid_timeout, custom_id='cookie_modal')
         self.title = text_map.get(132, locale, user_locale)
         self.cookie.placeholder = text_map.get(
             133, locale, user_locale)
@@ -49,7 +49,7 @@ class Modal(Modal):
 
 class View(DefaultView):
     def __init__(self, cookie_modal: Modal, options: list[SelectOption]) -> None:
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.cookie = cookie_modal.cookie
         self.genshin_app = cookie_modal.genshin_app
         self.locale = cookie_modal.locale

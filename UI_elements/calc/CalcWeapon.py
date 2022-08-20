@@ -1,18 +1,19 @@
 from typing import Any, List
 
 import aiosqlite
+import config
 from apps.genshin.utils import get_weapon
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from debug import DefaultView
 from discord import Interaction, Locale, Member, SelectOption
 from discord.ui import Modal, Select, TextInput
-from apps.text_map.utils import get_user_locale
-from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed
 
 
 class View(DefaultView):
     def __init__(self, weapons: List, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.db = db
         self.levels = {}
@@ -56,7 +57,7 @@ class LevelModal(Modal):
 
     def __init__(self, weapon_id: str, locale: Locale, user_locale: str) -> None:
         super().__init__(
-            title=f'{text_map.get(181, locale, user_locale)} {text_map.get_weapon_name(weapon_id, locale, user_locale)} {text_map.get(182, locale, user_locale)}', timeout=None)
+            title=f'{text_map.get(181, locale, user_locale)} {text_map.get_weapon_name(weapon_id, locale, user_locale)} {text_map.get(182, locale, user_locale)}', timeout=config.mid_timeout)
         self.current.label = text_map.get(183, locale, user_locale)
         self.current.placeholder = text_map.get(184, locale, user_locale)
         self.target.label = text_map.get(185, locale, user_locale)

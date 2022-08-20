@@ -9,11 +9,12 @@ from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
 from apps.todo import get_todo_embed
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, db: aiosqlite.Connection, disabled: bool, author: Member, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.long_timeout)
         self.db = db
         self.author = author
         self.add_item(AddItem(text_map.get(203, locale, user_locale)))
@@ -101,7 +102,7 @@ class AddItemModal(Modal):
     )
 
     def __init__(self, locale: Locale, user_locale: str) -> None:
-        super().__init__(title=text_map.get(203, locale, user_locale), timeout=None)
+        super().__init__(title=text_map.get(203, locale, user_locale), timeout=config.mid_timeout)
         self.item.label = text_map.get(208, locale, user_locale)
         self.item.placeholder = text_map.get(209, locale, user_locale)
         self.count.label = text_map.get(210, locale, user_locale)
@@ -120,7 +121,7 @@ class RemoveItemModal(Modal):
     )
 
     def __init__(self, locale: Locale, user_locale: str) -> None:
-        super().__init__(title=text_map.get(205, locale, user_locale), timeout=None)
+        super().__init__(title=text_map.get(205, locale, user_locale), timeout=config.mid_timeout)
         self.count.label = text_map.get(210, locale, user_locale)
         self.count.placeholder = text_map.get(211, locale, user_locale)
 

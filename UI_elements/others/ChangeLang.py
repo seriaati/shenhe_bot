@@ -6,10 +6,11 @@ from discord.ui import Select
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed
+import config
 
 class View(DefaultView):
     def __init__(self, locale: Locale, user_locale: str, db: aiosqlite.Connection):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.db = db
         self.add_item(LangSelect(locale, user_locale))
     

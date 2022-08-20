@@ -1,4 +1,5 @@
 import aiosqlite
+import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
@@ -9,7 +10,7 @@ from utility.utils import default_embed, error_embed
 
 class View(DefaultView):
     def __init__(self, db: aiosqlite.Connection, author: Member, locale: Locale, user_locale: str | None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.db = db
         self.up = None
         self.want = None

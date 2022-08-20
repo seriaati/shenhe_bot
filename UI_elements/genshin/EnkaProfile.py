@@ -12,11 +12,12 @@ from enkanetwork import EnkaNetworkResponse
 from pyppeteer.browser import Browser
 from UI_elements.genshin import EnkaDamageCalculator
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, embeds: Dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
         self.artifact_embeds = artifact_embeds
         self.character_options = character_options
