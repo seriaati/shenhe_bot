@@ -30,7 +30,7 @@
 30: 週六
 31: 週日
 32: 選擇語言
-33: Language changed
+33: 語言更改成功
 34: 目前語言
 35: "輸入 `/register` 來查看設定方式"
 36: 無效的 cookie
@@ -84,7 +84,7 @@
 84: 最多元素戰技
 85: 深淵總覽
 86: 第
-87: "<EMPTY_CHARACTER>"
+87: "間"
 88: "[上半]"
 89: "[下半]"
 90: "配置#"
@@ -122,10 +122,10 @@
 122: 累計釋放技能
 123: 自訂 UID 搜尋
 124: 返回預設
-125: By default, shenhe responds you with the same language your discord uses
-126: Changing language will override the default language
+125: 申鶴預設是使用你的 dc 語言來回覆你
+126: 這裡更改後的語言會蓋過你的 dc 設定
 127: 如果該語言還沒翻譯好, 會使用英文回覆
-128: Changing language
+128: 更改語言
 129: 蒙德
 130: 璃月
 131: 稻妻
@@ -135,7 +135,7 @@
 135: 未知錯誤
 136: 選擇要註冊的帳號
 137: Cookie 設置流程
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the `/register` command\n Too complicated? The image below might help!"
+138: "1.先複製底下的整段程式碼\n 2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 <https://www.hoyolab.com>\n 3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n 4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n 5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n 6.在這裡提交結果, 使用：`/register 提交 cookie`\n 無法理解嗎? 跟著下面的圖示操作吧!"
 139: 過期或無效的Cookie, 請先登出帳號再重新登入!
 140: 請使用 `/register` 指令來註冊帳號
 141: 找不到帳號資料!
@@ -144,7 +144,7 @@
 144: 原石紀錄
 145: 摩拉紀錄
 146: 第
-147: "<EMPTY_CHARACTER>"
+147: "間"
 148: 樓層導覽
 149: 資料不公開?
 150: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n 跟著下方圖片中的步驟操作\n\n 1. 點選右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
@@ -179,7 +179,7 @@
 179: 新增成功
 180: 選擇武器
 181: 設置
-182: "<EMPTY_CHARACTER>"
+182: "的等級"
 183: 目前等級
 184: "例如: 1"
 185: 目標等級
@@ -362,11 +362,11 @@
 372: 歐氣值分析
 373: 你的運氣擊敗了
 374: 的玩家
-375: "<EMPTY_CHARACTER>"
+375: "共"
 376: 抽
-378: "<EMPTY_CHARACTER>"
+378: "共"
 379: 個 UP 五星
-380: "<EMPTY_CHARACTER>"
+380: "間"
 381: 抽
 382: 想要抽出
 383: 個 UP 五星角色
@@ -387,9 +387,9 @@
 398: 常駐池
 399: 角色池
 400: 武器池
-401: "<EMPTY_CHARACTER>"
+401: "平均"
 402: 抽出一金
-403: "<EMPTY_CHARACTER>"
+403: "距離保底"
 404: 抽
 405: 你還沒有在武器池抽中過五星武器
 406: 活動開始時間
@@ -400,7 +400,7 @@
 411: 選項
 412: 註冊教學
 413: 提交 cookie
-414: "View real time notes: Current resin, pot, expedition status (need /register)"
+414: "查看即時便籤: 目前樹脂、洞天寶錢、探索派遣 (需註冊)"
 415: 使用者
 416: 查看其他使用者該指令提供的資料
 417: "查看原神資料: 活躍時間、神瞳數量、寶箱數量"
@@ -416,7 +416,7 @@
 427: 上上個月
 428: 查看深淵資料 (需註冊)
 429: 類別
-430: season
+430: 期別
 431: 想要查看的資料類別
 432: 哪一期的深淵?
 433: 詳細
@@ -446,7 +446,7 @@
 457: 原神百科
 458: 角色
 459: 查看原神歷來活動數據
-460: Calculate materials needed for upgrading a character
+460: 計算角色升級所需素材
 461: 同步
 462: 與遊戲資料同步, 將會自動填入角色及天賦等級 (開啟時無法計算自己不擁有的角色)
 463: "開啟"
@@ -471,13 +471,13 @@
 482: 想要抽到幾個五星 UP 角色?
 483: 預測抽到武器的機率
 484: 查看原神祈願總覽
-485: Change the language shenhe responds you with
+485: 更改申鶴回覆你的語言
 486: 查看申鶴的所有指令
 487: 原神
-488: Genshin wish
+488: 原神祈願
 489: 需要先匯入祈願紀錄
-490: Enhancement progress calculator
-491: Calculate upgrade materials
+490: 養成計算機
+491: 計算升級所需素材
 492: 代辦清單
 493: 二次元
 494: 其他
@@ -487,7 +487,7 @@
 498: 查看 profile
 499: 查看所有角色
 500: 即時便籤
-501: Update self leaderboard position
+501: 更新自身排名
 502: 排名更新成功
 503: 查看申鶴歷來的更新
 504: '由 seria#5334 製作, 有疑問可以私訊'
@@ -498,4 +498,4 @@
 509: 關鍵詞
 510: 須彌
 511: 原神遊戲元素（武器、角色等）的字串將會自動翻譯
-512: 排行榜排名更新失敗
+512: 排名更新成功
