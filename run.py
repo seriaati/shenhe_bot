@@ -16,6 +16,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from enkanetwork import EnkaNetworkAPI
 from pyppeteer import launch
+from ambr.client import AmbrTopAPI
 
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -71,6 +72,7 @@ class ShenheBot(commands.Bot):
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI()
+        self.ambr_client = AmbrTopAPI(self.session)
         
         # load jishaku
         await self.load_extension('jishaku')

@@ -307,7 +307,8 @@ class GenshinCog(commands.Cog, name='genshin'):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         locale = user_locale or i.locale
         locale = to_ambr_top(locale)
-        client = AmbrTopAPI(self.bot.session, lang=locale)
+        client: AmbrTopAPI = self.bot.ambr_client
+        client.lang = locale
         domains = client.get_domain()
         character_upgrades = client.get_character_upgrade()
         weapon_upgrades = client.get_weapon_upgrade()
