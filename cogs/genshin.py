@@ -96,8 +96,8 @@ class GenshinCog(commands.Cog, name='genshin'):
     @app_commands.command(name='register', description=_("Register your genshin account in shenhe's database to use commands that require one", hash=410))
     @app_commands.rename(option=_('option', hash=411))
     @app_commands.choices(option=[
-        Choice(name=_('registration tutorial', hash=412), value=0),
-        Choice(name=_('submit cookie', has=413), value=1)])
+        Choice(name=_('Registration tutorial', hash=412), value=0),
+        Choice(name=_('Submit cookie', hash=413), value=1)])
     async def slash_cookie(self, i: Interaction, option: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if option == 0:
