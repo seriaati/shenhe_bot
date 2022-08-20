@@ -127,6 +127,6 @@ class GeneralPaginator:
         try:
             view.message = await self.interaction.original_response()
         except NotFound:
-            pass
-        else:
             await self.interaction.edit_original_response(view=view)
+        else:
+            await view.message.edit(view=view)
