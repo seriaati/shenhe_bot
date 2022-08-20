@@ -34,15 +34,14 @@ class DefaultView(View):
             await i.channel.send(embed=embed, view=view)
         except Forbidden:
             pass
-        
+        embed.set_footer(text=f'{i.user.name}#{i.user.discriminator}')
         await seria.send(embed=embed, view=view)
-        
-        
+
     async def on_timeout(self) -> None:
         for item in self.children:
             item.disabled = True
-        
+
         try:
             await self.message.edit(view=self)
         except AttributeError:
-            print(self.children)
+            print('attributeError:'+self.children)
