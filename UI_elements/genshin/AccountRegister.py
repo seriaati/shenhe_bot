@@ -47,7 +47,6 @@ class Modal(Modal):
         traceback_message = traceback.format_exc()
         view = DebugView(traceback_message)
         await i.followup.send(embed=embed, view=view)
-        view.message = await i.original_response()
 
 
 class View(DefaultView):
