@@ -9,7 +9,7 @@ from typing import List, Optional, Union
 import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import ButtonStyle, Embed, File, Interaction, User
+from discord import ButtonStyle, Embed, File, Interaction, NotFound, User
 from discord.ui import Button, Select, View, button
 
 from utility.utils import error_embed
@@ -124,5 +124,9 @@ class GeneralPaginator:
         await view.wait()
         for item in view.children:
             item.disabled = True
-            
-        await self.interaction.edit_original_response(view=view)
+        try:
+            view.message = await self.interaction.original_response()
+        except NotFound:
+            pass
+        else:
+            await self.interaction.edit_original_response(view=view)
