@@ -91,7 +91,7 @@
 <!-- LICENSE -->
 ## 使用許可
 
-根據 MIT 許可分發. 更多信息請參閱 `LICENSE.txt`
+根據 MIT 許可分發. 更多信息請參閱 `LICENSE.md`
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
@@ -132,6 +132,6 @@ discord: seria#5334
 [issues-shield]: https://img.shields.io/github/issues/seriaati/shenhe_bot.svg?style=for-the-badge
 [issues-url]: https://github.com/seriaati/shenhe_bot/issues
 [license-shield]: https://img.shields.io/github/license/seriaati/shenhe_bot.svg?style=for-the-badge
-[license-url]: https://github.com/seriaati/shenhe_bot/blob/master/LICENSE.txt
+[license-url]: https://github.com/seriaati/shenhe_bot/blob/master/LICENSE.md
 [invite-image]: https://i.imgur.com/QfGbpIU.png
 [invite-url]: https://bit.ly/shenhe_bot
