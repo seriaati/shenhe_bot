@@ -1,7 +1,7 @@
 from itertools import islice
 import re
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import discord
 from dateutil import parser
@@ -10,13 +10,11 @@ from discord.utils import format_dt
 
 def default_embed(title: str = '', message: str = ''):
     embed = discord.Embed(title=title, description=message, color=0xa68bd3)
-    embed.set_footer(text='/version 來查看最近更新')
     return embed
 
 
 def error_embed(title: str = '', message: str = ''):
     embed = discord.Embed(title=title, description=message, color=0xfc5165)
-    embed.set_footer(text='discord: seria#5334')
     return embed
 
 
