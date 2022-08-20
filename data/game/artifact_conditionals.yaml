@@ -33,3 +33,8 @@
   value: custom_element
   description: 擴散元素
   effect: 對應元素 40% 減抗
+- name: HuskOfOpulentDreams
+  key: 'stack'
+  value: '4'
+  description: 華館4層
+  effect: 防禦力+24%, 岩元素傷害+24%
