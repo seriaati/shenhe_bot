@@ -90,7 +90,7 @@ Feature requests and bug reports can be opened on the [issue page](https://githu
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT license, more information can be found in `LICENSE.txt`
+Distributed under the MIT license, more information can be found in `LICENSE.md`
 
 <p align="right">(<a href="#readme-top">Back to top</a>)</p>
 
@@ -131,6 +131,6 @@ Huge thank you to these people! If you're not listed here, please let me know.
 [issues-shield]: https://img.shields.io/github/issues/seriaati/shenhe_bot.svg?style=for-the-badge
 [issues-url]: https://github.com/seriaati/shenhe_bot/issues
 [license-shield]: https://img.shields.io/github/license/seriaati/shenhe_bot.svg?style=for-the-badge
-[license-url]: https://github.com/seriaati/shenhe_bot/blob/master/LICENSE.txt
+[license-url]: https://github.com/seriaati/shenhe_bot/blob/master/LICENSE.md
 [invite-image]: https://i.imgur.com/QfGbpIU.png
 [invite-url]: https://bit.ly/shenhe_bot
