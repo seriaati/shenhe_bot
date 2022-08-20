@@ -194,8 +194,8 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
                 await i.followup.send(view=view)
                 await view.wait()
-            if len(view.tags) == 0:
-                return
+                if len(view.tags) == 0:
+                    return
             if many == 0:
                 if tags == 1:
                     try:
