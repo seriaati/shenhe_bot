@@ -1,9 +1,9 @@
 import json
-from typing import Literal
+import re
+from typing import Dict, Literal
 
 import discord
 import yaml
-
 from apps.text_map.convert_locale import to_ambr_top, to_paths, paths
 
 
@@ -26,9 +26,9 @@ class TextMap():
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
         locale = user_locale or locale 
         path = to_paths(locale)
-        text_map = self.text_maps[path]
-        text: str = text_map.get(textMapHash)
-        text = text.replace('<EMPTY_CHARACTER>', '')
+        text_map: Dict = self.text_maps[path]
+        text = text_map.get(textMapHash)
+        text = re.sub(r"<[^>]*>", "", text)
         if text is None:
             print(f'text map hash not found: {textMapHash}')
             return None
