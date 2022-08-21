@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from typing import Dict, KeysView, List, Optional
+from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -31,7 +31,7 @@ class AmbrTopAPI:
             
         return cache
     
-    def _get_cache(self, endpoint: str, static: bool = False) -> Dict:
+    async def _get_cache(self, endpoint: str, static: bool = False) -> Dict:
         if static:
             return self.cache[endpoint]
         else:
@@ -76,7 +76,7 @@ class AmbrTopAPI:
 
     async def get_material(self, id: Optional[int] = None) -> List[Material]:
         result = []
-        data = self._get_cache('material')
+        data = await self._get_cache('material')
         for material_id, material_info in data['data']['items'].items():
             if id is not None:
                 if id == material_info['id']:
@@ -88,7 +88,7 @@ class AmbrTopAPI:
     
     async def get_character(self, id: Optional[str] = None) -> List[Character]:
         result = []
-        data = self._get_cache('character')
+        data = await self._get_cache('character')
         for character_id, character_info in data['data']['items'].items():
             if id is not None:
                 if id == character_id:
@@ -100,7 +100,7 @@ class AmbrTopAPI:
     
     async def get_weapon(self, id: Optional[int] = None) -> List[Weapon]:
         result = []
-        data = self._get_cache('weapon')
+        data = await self._get_cache('weapon')
         for weapon_id, weapon_info in data['data']['items'].items():
             if id is not None:
                 if id == int(weapon_id):
@@ -112,7 +112,7 @@ class AmbrTopAPI:
 
     async def get_character_upgrade(self, character_id: Optional[str] = None) -> List[CharacterUpgrade]:
         result = []
-        data = self._get_cache('upgrade', static=True)
+        data = await self._get_cache('upgrade', static=True)
         for upgrade_id, upgrade_info in data['data']['avatar'].items():
             item_list = []
             for material_id, rarity in upgrade_info['items'].items():
@@ -130,7 +130,7 @@ class AmbrTopAPI:
     
     async def get_weapon_upgrade(self, character_id: Optional[str] = None) -> List[WeaponUpgrade]:
         result = []
-        data = self._get_cache('upgrade', static=True)
+        data = await self._get_cache('upgrade', static=True)
         for upgrade_id, upgrade_info in data['data']['weapon'].items():
             item_list = []
             for material_id, rarity in upgrade_info['items'].items():
@@ -148,7 +148,7 @@ class AmbrTopAPI:
 
     async def get_domain(self, id: Optional[int] = None) -> List[Domain]:
         result = []
-        data = self._get_cache('domain')
+        data = await self._get_cache('domain')
         for weekday, domain_dict in data['data'].items():
             weekday_int = time.strptime(weekday, "%A").tm_wday
             for domain_full_name, domain_info in domain_dict.items():
