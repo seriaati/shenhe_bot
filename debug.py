@@ -45,6 +45,6 @@ class DefaultView(View):
         try:
             await self.message.edit(view=self)
         except AttributeError:
-            print('attributeError:'+self.children)
-        except NotFound:
+            print('attributeError:'+str(self.children))
+        except (NotFound, HTTPException):
             pass

@@ -36,25 +36,25 @@ class TextMap():
             return text
 
     def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Literal[None, 'str']:
-        avatarText = self.avatar.get(str(character_id))
-        if avatarText is None:
+        avatar_text = self.avatar.get(str(character_id))
+        if avatar_text is None:
             print(f'character not found: {character_id}')
             return character_id
         else:
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
-            return avatarText[str(ambr_locale)]
+            return avatar_text[str(ambr_locale)]
 
     def get_material_name(self, material_id: int, locale: discord.Locale, user_locale: str = None):
-        avatarText = self.material.get(str(material_id))
-        if avatarText is None:
+        material_text = self.material.get(str(material_id))
+        if material_text is None:
             if str(material_id).isnumeric():
                 print(f'material not found: {material_id}')
             return material_id
         else:
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
-            return avatarText[str(ambr_locale)]
+            return material_text[str(ambr_locale)]
         
     def get_material_id_with_name(self, material_name: str) -> str | int:
         for material_id, material_name_dict in self.material.items():
