@@ -221,6 +221,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                   Choice(name=_('Last season', hash=436), value=1)]
     )
     async def abyss(self, i: Interaction, overview: int = 1, previous: int = 0, member: User = None):
+        await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         exists = await self.genshin_app.check_user_data(member.id)
@@ -230,14 +231,14 @@ class GenshinCog(commands.Cog, name='genshin'):
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.get_abyss(member.id, previous, overview, i.locale)
         if not success:
-            return await i.response.send_message(embed=result, ephemeral=True)
+            return await i.followup.send(embed=result, ephemeral=True)
         if overview:
-            return await i.response.send_message(embed=result)
+            return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale,
                               user_locale, self.bot.db)
-            await i.response.send_message(embed=result[0], view=view)
-            view.message = await i.original_response()
+            message = await i.followup.send(embed=result[0], view=view)
+            view.message = message
 
     @app_commands.command(name='stuck', description=_('Data not public?', hash=437))
     async def stuck(self, i: Interaction):
