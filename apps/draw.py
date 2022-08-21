@@ -104,7 +104,7 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
         text_map.get(297, locale): character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol(),
         text_map.get(298, locale): character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
         text_map.get(295, locale): character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(),
-        text_map.get(513, locale): character.stats.FIGHT_PROP_ELEC_ADD_HURT.to_percentage_symbol()
+        text_map.get(514, locale): character.stats.FIGHT_PROP_ELEC_ADD_HURT.to_percentage_symbol()
     }
     
     # write character stats

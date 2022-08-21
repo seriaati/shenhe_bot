@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Any, Dict
 
 import aiosqlite
@@ -5,13 +6,13 @@ from apps.genshin.damage_calculator import return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import (ButtonStyle, Embed, Interaction, Locale, Member,
+from discord import (ButtonStyle, Embed, File, Interaction, Locale, Member,
                      SelectOption)
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from pyppeteer.browser import Browser
 from UI_elements.genshin import EnkaDamageCalculator
-from utility.utils import error_embed
+from utility.utils import default_embed, error_embed
 import config
 
 
@@ -44,11 +45,31 @@ class PageSelect(Select):
         super().__init__(placeholder=plceholder, options=character_options)
 
     async def callback(self, i: Interaction) -> Any:
-        disabled = True if self.values[0] == '0' else False
-        self.view.children[0].disabled = disabled
-        self.view.children[1].disabled = disabled
+        self.view: View
+        artifact_disabled = False
+        damage_calc_disabled = False
+        card = False
+        
+        if self.values[0] == '0':
+            artifact_disabled = True
+            damage_calc_disabled = True
+        else:
+            if not isinstance(self.view.embeds[self.values[0]], Embed):
+                artifact_disabled = True
+                card = True
+        self.view.children[0].disabled = artifact_disabled
+        self.view.children[1].disabled = damage_calc_disabled
         self.view.character_id = self.values[0]
-        await i.response.edit_message(embed=self.view.embeds[self.values[0]], view=self.view)
+        
+        if card:
+            embed = default_embed()
+            embed.set_image(url=f"attachment://card.jpeg")
+            fp: BytesIO = self.view.embeds[self.values[0]]
+            fp.seek(0)
+            file = File(fp, 'card.jpeg')
+            await i.response.edit_message(embed=embed, view=self.view, attachments=[file])
+        else:
+            await i.response.edit_message(embed=self.view.embeds[self.values[0]], view=self.view, attachments=[])
 
 class ViewArtifacts(Button):
     def __init__(self, label: str):

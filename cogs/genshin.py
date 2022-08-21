@@ -446,10 +446,11 @@ class GenshinCog(commands.Cog, name='genshin'):
                                 emoji='<:SCORE:983948729293897779>')]
         artifact_embeds = {}
         for character in data.characters:
-            # card = await draw_character_card(character, user_locale or i.locale, self.bot.session)
-            if True:
-                options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
-                                            value=character.id, emoji=get_character(character.id)['emoji']))
+            options.append(SelectOption(
+                label=f'{character.name} | Lvl. {character.level}',
+                value=character.id, emoji=get_character(character.id)['emoji']))
+            card = await draw_character_card(character, user_locale or i.locale, self.bot.session)
+            if card is None:
                 embed = default_embed(
                     f'{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
                 )
@@ -515,7 +516,9 @@ class GenshinCog(commands.Cog, name='genshin'):
                         text=text_map.get(300, i.locale, user_locale))
                     index += 1
                 artifact_embeds[str(character.id)] = artifact_embed
-            # else:
+            else:
+                embeds[str(character.id)] = card
+                artifact_embeds[str(character.id)] = None
 
         view = EnkaProfile.View(embeds, artifact_embeds, options,
                                 data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
