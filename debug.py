@@ -35,7 +35,7 @@ class DefaultView(View):
             await i.channel.send(embed=embed, view=view)
         except Forbidden:
             pass
-        embed.set_footer(text=f'{i.user.name}#{i.user.discriminator}')
+        embed.set_footer(text=f'{i.user.name}#{i.user.discriminator} {i.user.id}')
         await seria.send(embed=embed, view=view)
 
     async def on_timeout(self) -> None:

@@ -136,7 +136,7 @@ async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     except Forbidden:
         pass
     
-    embed.set_footer(text=f'{i.user.name}#{i.user.discriminator}')
+    embed.set_footer(text=f'{i.user.name}#{i.user.discriminator} {i.user.id}')
     await seria.send(embed=embed, view=view)
 
 bot.run(token)
