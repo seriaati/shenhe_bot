@@ -226,7 +226,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         exists = await self.genshin_app.check_user_data(member.id)
         if not exists:
-            return await i.response.send_message(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
+            return await i.followup.send(embed=error_embed(message=text_map.get(140, i.locale, user_locale)).set_author(name=text_map.get(141, i.locale, user_locale), icon_url=member.avatar), ephemeral=True)
         previous = True if previous == 1 else False
         overview = True if overview == 1 else False
         result, success = await self.genshin_app.get_abyss(member.id, previous, overview, i.locale)
