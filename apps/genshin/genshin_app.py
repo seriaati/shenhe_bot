@@ -395,7 +395,8 @@ class GenshinApp:
         except genshin.errors.DataNotPublic:
             return error_embed(message=text_map.get(21, locale, user_locale)).set_author(name=text_map.get(22, locale, user_locale), icon_url=user.avatar), False
         except Exception as e:
-            return error_embed(message=f'```{e}```').set_author(name=text_map.get(23, locale, user_locale), icon_url=user.avatar), False
+            print(e)
+            return error_embed().set_author(name=text_map.get(23, locale, user_locale), icon_url=user.avatar), False
         else:
             summer = activities.summertime_odyssey
             if summer is None:
