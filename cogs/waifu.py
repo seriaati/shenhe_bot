@@ -2,12 +2,13 @@ import ast
 import io
 import random
 from typing import Any, List
+
 import config
 import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
-from discord import (ButtonStyle, File, Interaction, Member, PartialMessageable, SelectOption,
+from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
                      app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
@@ -137,13 +138,12 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             await i.message.delete()
 
     @app_commands.command(name='nsfw', description='透過選擇標籤來產出色色的圖片', nsfw=True)
-    @app_commands.guild_only()
     @app_commands.rename(num='張數')
     @app_commands.describe(num='上限 5 張')
     async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(embed=error_embed().set_author(name='上限為 5 張', icon_url=i.user.avatar), ephemeral=True)
-        if not i.channel.nsfw:
+        if i.channel.guild is not None and not i.channel.nsfw:
             return await i.response.send_message(embed=error_embed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='nsfw')
         await i.response.send_message(view=view)
@@ -185,73 +185,70 @@ class WaifuCog(commands.GroupCog, name='waifu'):
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')
     async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer()
-        async with WaifuAioClient() as wf:
-            if isinstance(i.channel, PartialMessageable):
-                pass
-            else:
-                if not i.channel.nsfw and sese == 1:
-                    return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
-            is_nsfw = 'True' if sese == 1 else 'False'
+        wf = WaifuAioClient(self.bot.session)
+        if i.channel.guild is not None and not i.channel.nsfw and sese == 1:
+            return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
+        is_nsfw = 'True' if sese == 1 else 'False'
+        if tags == 1:
+            view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
+            await i.followup.send(view=view)
+            await view.wait()
+            if len(view.tags) == 0:
+                return
+        if many == 0:
             if tags == 1:
-                view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
-                await i.followup.send(view=view)
-                await view.wait()
-                if len(view.tags) == 0:
-                    return
-            if many == 0:
+                try:
+                    image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
+                except waifuim.exceptions.APIException:
+                    return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+            else:
+                image = await wf.random(is_nsfw=[is_nsfw])
+            if sese == 1:
+                async with self.bot.session.get(str(image)) as resp:
+                    bytes_obj = io.BytesIO(await resp.read())
+                    file = File(
+                        bytes_obj, filename='waifu_image.gif', spoiler=True)
                 if tags == 1:
-                    try:
-                        image = await wf.random(is_nsfw=[is_nsfw], selected_tags=view.tags[0])
-                    except waifuim.exceptions.APIException:
-                        return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+                    await i.edit_original_response(attachments=[file], view=None)
                 else:
-                    image = await wf.random(is_nsfw=[is_nsfw])
-                if sese == 1:
-                    async with self.bot.session.get(str(image)) as resp:
+                    await i.followup.send(file=file)
+            else:
+                embed = default_embed('您的老婆已送達')
+                embed.set_image(url=image)
+                if tags == 1:
+                    await i.edit_original_response(embed=embed, view=None)
+                else:
+                    await i.followup.send(embed=embed)
+
+        else:
+            if tags == 1:
+                try:
+                    images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
+                except waifuim.exceptions.APIException:
+                    return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
+            else:
+                images = await wf.random(is_nsfw=[is_nsfw], many=True)
+            if sese == 1:
+                for index, image in enumerate(images):
+                    if index > 5:
+                        break
+                    async with self.bot.session.get(str(images[index])) as resp:
                         bytes_obj = io.BytesIO(await resp.read())
                         file = File(
                             bytes_obj, filename='waifu_image.gif', spoiler=True)
-                    if tags == 1:
-                        await i.edit_original_response(attachments=[file], view=None)
-                    else:
-                        await i.followup.send(file=file)
-                else:
-                    embed = default_embed('您的老婆已送達')
-                    embed.set_image(url=image)
-                    if tags == 1:
-                        await i.edit_original_response(embed=embed, view=None)
-                    else:
-                        await i.followup.send(embed=embed)
-
+                    if index == 0:
+                        await (await i.original_response()).delete()
+                    await i.channel.send(file=file)
             else:
-                if tags == 1:
-                    try:
-                        images = await wf.random(is_nsfw=[is_nsfw], many=True, selected_tags=view.tags[0])
-                    except waifuim.exceptions.APIException:
-                        return await i.edit_original_response(embed=error_embed(message='您所指定的老婆條件要求太高\n請試試別的標籤').set_author(name='找不到老婆', icon_url=i.user.avatar), view=None)
-                else:
-                    images = await wf.random(is_nsfw=[is_nsfw], many=True)
-                if sese == 1:
-                    for index, image in enumerate(images):
-                        if index > 5:
-                            break
-                        async with self.bot.session.get(str(images[index])) as resp:
-                            bytes_obj = io.BytesIO(await resp.read())
-                            file = File(
-                                bytes_obj, filename='waifu_image.gif', spoiler=True)
-                        if index == 0:
-                            await (await i.original_response()).delete()
-                        await i.channel.send(file=file)
-                else:
-                    embeds = []
-                    count = 0
-                    for image in images:
-                        count += 1
-                        embed = default_embed(f'{i.user.display_name} 的後宮')
-                        embed.set_image(url=image)
-                        embed.set_footer(text=f'第 {count}/30 位老婆')
-                        embeds.append(embed)
-                    await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
+                embeds = []
+                count = 0
+                for image in images:
+                    count += 1
+                    embed = default_embed(f'{i.user.display_name} 的後宮')
+                    embed.set_image(url=image)
+                    embed.set_footer(text=f'第 {count}/30 位老婆')
+                    embeds.append(embed)
+                await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
 
 
 async def setup(bot: commands.Bot) -> None:
