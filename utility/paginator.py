@@ -128,5 +128,3 @@ class GeneralPaginator:
             view.message = await self.interaction.original_response()
         except (NotFound, HTTPException):
             pass
-        else:
-            await view.message.edit(view=view)

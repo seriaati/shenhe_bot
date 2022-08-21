@@ -16,7 +16,7 @@ import config
 
 class View(DefaultView):
     def __init__(self, author: Member, session: aiohttp.ClientSession, db: aiosqlite.Connection, characters: Sequence[BaseCharacter]):
-        super().__init__(timeout=config.short_timeout)
+        super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.session = session
         self.db = db
@@ -100,7 +100,8 @@ class LevelModal(Modal):
     )
 
     def __init__(self, character_id: str, locale: Literal['Locale', 'str']) -> None:
-        super().__init__(title=f'{text_map.get(181, locale)} {text_map.get_character_name(character_id, locale)} {text_map.get(182, locale)}', timeout=config.mid_timeout)
+        super().__init__(
+            title=f'{text_map.get(181, locale)} {text_map.get_character_name(character_id, locale)} {text_map.get(182, locale)}', timeout=config.mid_timeout)
         self.target.label = text_map.get(169, locale)
         self.target.placeholder = text_map.get(170, locale)
         self.a.label = text_map.get(171, locale)

@@ -1,3 +1,3 @@
-long_timeout = 1800
+long_timeout = 900
 mid_timeout = 600
-short_timeout = 120
+short_timeout = 180

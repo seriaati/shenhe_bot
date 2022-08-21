@@ -18,7 +18,7 @@ from apps.wish.wish_app import get_user_event_wish
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from dateutil import parser
-from discord import Embed, Interaction, Member, SelectOption, User, app_commands
+from discord import DMChannel, Embed, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -400,7 +400,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if custom_uid is None:
-            if i.guild.id == 916838066117824553:
+            if not isinstance(i.channel, DMChannel) and i.guild.id == 916838066117824553:
                 c: aiosqlite.Cursor = await self.bot.main_db.cursor()
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()
@@ -449,7 +449,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             # card = await draw_character_card(character, user_locale or i.locale, self.bot.session)
             if True:
                 options.append(SelectOption(label=f'{character.name} | Lvl. {character.level}',
-                            value=character.id, emoji=get_character(character.id)['emoji']))
+                                            value=character.id, emoji=get_character(character.id)['emoji']))
                 embed = default_embed(
                     f'{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}'
                 )
@@ -488,7 +488,8 @@ class GenshinCog(commands.Cog, name='genshin'):
                     inline=False
                 )
                 embed.set_thumbnail(url=character.image.icon)
-                embed.set_author(name=member.display_name, icon_url=member.avatar)
+                embed.set_author(name=member.display_name,
+                                 icon_url=member.avatar)
                 embeds[str(character.id)] = embed
 
                 # artifacts
@@ -515,14 +516,10 @@ class GenshinCog(commands.Cog, name='genshin'):
                     index += 1
                 artifact_embeds[str(character.id)] = artifact_embed
             # else:
-                
 
         view = EnkaProfile.View(embeds, artifact_embeds, options,
                                 data, self.bot.browser, eng_data, i.user, self.bot.db, i.locale, user_locale)
         await i.followup.send(embed=embeds['0'], view=view, ephemeral=ephemeral)
-        e: Embed
-        for e in embeds.values():
-            print(e.image.url)
         view.message = await i.original_response()
 
     @app_commands.command(name='redeem', description=_('Redeem a gift code (needs /register)', hash=450))
