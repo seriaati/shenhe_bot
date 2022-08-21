@@ -123,7 +123,7 @@ tree = bot.tree
 
 @tree.error
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
-    if isinstance(e, NotFound) and e.code == 10062:
+    if e.code == 10062:
         return
     user_locale = await get_user_locale(i.user.id, bot.db)
     embed = error_embed(message=text_map.get(
