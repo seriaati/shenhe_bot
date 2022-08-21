@@ -326,16 +326,14 @@ class GenshinCog(commands.Cog, name='genshin'):
                 for upgrade in character_upgrades:
                     for item in upgrade.items:
                         if item.id == reward.id:
-                            characters[upgrade.character_id] = await client.get_character(upgrade.character_id)[
-                                0]
+                            characters[upgrade.character_id] = (await client.get_character(upgrade.character_id))[0]
 
             weapons: Dict[int, Weapon] = {}
             for reward in domain.rewards:
                 for upgrade in weapon_upgrades:
                     for item in upgrade.items:
                         if item.id == reward.id:
-                            weapons[upgrade.weapon_id] = await client.get_weapon(upgrade.weapon_id)[
-                                0]
+                            weapons[upgrade.weapon_id] = (await client.get_weapon(upgrade.weapon_id))[0]
 
             # merge two dicts
             items = characters | weapons
