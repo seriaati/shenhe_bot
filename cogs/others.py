@@ -84,6 +84,20 @@ class OthersCog(commands.Cog, name='others'):
                     "ru": "Опыт героя",
                     "vi": "Kinh Nghiệm Anh Hùng"
                 }
+                dict['104013'] = {
+                    "chs": "精锻用魔矿",
+                    "cht": "精鍛用魔礦",
+                    "de": "Mystisches Verstärkungserz",
+                    "en": "Mystic Enhancement Ore",
+                    "es": "Mineral de refinamiento místico",
+                    "fr": "Minerai de renforcement mystique",
+                    "jp": "仕上げ用魔鉱",
+                    "kr": "정제용 마법 광물",
+                    "th": "Mystic Enhancement Ore",
+                    "pt": "Minério de Refinamento Místico",
+                    "ru": "Волшебная руда усиления",
+                    "vi": "Ma Khoáng Tinh Đúc"
+                }
             with open(f'text_maps/{thing}.json', 'w+', encoding='utf-8') as f:
                 json.dump(dict, f, indent=4, ensure_ascii=False)
 
