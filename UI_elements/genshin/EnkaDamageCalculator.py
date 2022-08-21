@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Any, List
 
 from apps.genshin.damage_calculator import DamageCalculator, return_damage
@@ -5,9 +6,9 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.GO_modes import hit_modes
 from debug import DefaultView
-from discord import ButtonStyle, Interaction, Locale, SelectOption
+from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from utility.utils import error_embed
+from utility.utils import default_embed, error_embed
 import config
 
 
@@ -81,7 +82,17 @@ class GoBack(Button):
         self.view: View
         for item in self.view.enka_view.children:
             item.disabled = False
-        await i.response.edit_message(embed=self.view.enka_view.embeds[self.view.enka_view.character_id], view=self.view.enka_view)
+        if not isinstance(self.view.enka_view.embeds[self.view.enka_view.character_id], Embed):
+            self.view.enka_view.children[0].disabled = True
+            embed = default_embed()
+            embed.set_image(url=f"attachment://card.jpeg")
+            fp: BytesIO = self.view.enka_view.embeds[self.view.enka_view.character_id]
+            fp.seek(0)
+            file = File(fp, 'card.jpeg')
+            await i.response.edit_message(embed=embed, view=self.view.enka_view, attachments=[file])
+        else:
+            embed = self.view.enka_view.embeds[self.view.enka_view.character_id]
+            await i.response.edit_message(embed=embed, view=self.view.enka_view, attachments=[])
 
 
 class HitModeButton(Button):

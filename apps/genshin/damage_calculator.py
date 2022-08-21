@@ -378,7 +378,7 @@ async def return_damage(i: discord.Interaction, view):
     for item in view.children:
         item.disabled = True
     view.children[0].disabled = False
-    await i.response.edit_message(embed=default_embed(f'<a:LOADER:982128111904776242> {text_map.get(329, i.locale, user_locale)}', text_map.get(330, i.locale, user_locale)), view=view)
+    await i.response.edit_message(embed=default_embed(f'<a:LOADER:982128111904776242> {text_map.get(329, i.locale, user_locale)}', text_map.get(330, i.locale, user_locale)), view=view, attachments=[])
     embed = await calculator.run()
     for item in view.children:
         item.disabled = False
@@ -388,4 +388,4 @@ async def return_damage(i: discord.Interaction, view):
     if character_element in reaction_mode_elements or calculator.infusion_aura in reaction_mode_elements:
         reaction_mode_disabled = False
     view.children[4].disabled = reaction_mode_disabled
-    await i.edit_original_response(embed=embed, view=view)
+    await i.edit_original_response(embed=embed, view=view, attachments=[])

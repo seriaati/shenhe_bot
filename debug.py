@@ -24,6 +24,8 @@ class DebugView(View):
 
 class DefaultView(View):
     async def on_error(self, i: Interaction, e: Exception, item) -> None:
+        if isinstance(e, NotFound) and e.code == 10062:
+            return
         embed = error_embed(message=text_map.get(
             513, i.locale))
         embed.set_author(name=text_map.get(

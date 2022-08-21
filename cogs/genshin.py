@@ -398,7 +398,7 @@ class GenshinCog(commands.Cog, name='genshin'):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if custom_uid is None:
-            if not isinstance(i.channel, DMChannel) and i.guild.id == 916838066117824553:
+            if i.guild is not None and i.guild.id == 916838066117824553:
                 c: aiosqlite.Cursor = await self.bot.main_db.cursor()
                 await c.execute('SELECT uid FROM genshin_accounts WHERE user_id = ?', (member.id,))
                 uid = await c.fetchone()

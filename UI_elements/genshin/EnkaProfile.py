@@ -77,7 +77,7 @@ class ViewArtifacts(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.disabled = True
-        await i.response.edit_message(embed=self.view.artifact_embeds[self.view.character_id], view=self.view)
+        await i.response.edit_message(embed=self.view.artifact_embeds[self.view.character_id], view=self.view, attachments=[])
 
 class CalculateDamageButton(Button):
     def __init__(self, label: str):
