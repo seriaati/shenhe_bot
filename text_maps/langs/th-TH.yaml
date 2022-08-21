@@ -261,7 +261,7 @@
 271: Healing Bonus
 272: Physic DMG Bonus
 273: Pyro DMG Bonus
-274: Electro DMG Bonus
+274: Elec DMG Bonus
 275: Hydro DMG Bonus
 276: Dendro DMG Bonus
 277: Anemo DMG Bonus
@@ -500,4 +500,6 @@
 511: Names of genshin characters, weapons, and other game elements will be translated automatically
 512: Leaderboard position update failed
 513: 'I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix'
-514: Elemental DMG Bonus
+514: Realm currency reminder
+515: Realm currency notif. settings
+516: Realm currency threshold
