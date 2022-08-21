@@ -1,4 +1,5 @@
 import ast
+from datetime import datetime, timezone
 from typing import Literal
 
 import aiosqlite
@@ -80,6 +81,7 @@ class GenshinApp:
             return self.parse_resin_embed(notes, locale, user_locale).set_author(name=text_map.get(24, locale, user_locale), icon_url=user.avatar), True
 
     def parse_resin_embed(self, notes: genshin.models.Notes, locale: Locale, user_locale: str) -> Embed:
+        now = datetime.now(timezone.utc)
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, locale, user_locale)
         else:
@@ -90,9 +92,8 @@ class GenshinApp:
         else:
             realm_recover_time = format_dt(
                 notes.realm_currency_recovery_time, 'R')
-
         if notes.transformer_recovery_time is not None:
-            if notes.transformer_recovery_time == 0:
+            if (now-notes.transformer_recovery_time).total_seconds() < 60:
                 transformer_recover_time = text_map.get(
                     9, locale, user_locale)
             else:
