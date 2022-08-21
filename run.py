@@ -9,7 +9,7 @@ from typing import Optional
 
 import aiohttp
 import aiosqlite
-from discord import (Game, Intents, Interaction, Locale, Message, Status,
+from discord import (Forbidden, Game, Intents, Interaction, Locale, Message, Status,
                      app_commands)
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
@@ -20,8 +20,7 @@ from pyppeteer import launch
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DebugView
-from UI_elements.others import ChangeLog, Roles
-from utility import paginator
+from UI_elements.others import Roles
 from utility.utils import error_embed, log
 
 load_dotenv()
@@ -63,6 +62,7 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         user = getpass.getuser()
+        
         # bot variables
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect('shenhe.db')
@@ -70,24 +70,17 @@ class ShenheBot(commands.Bot):
         self.browser = await launch({'headless': True, 'autoClose': False, "args": ['--proxy-server="direct://"', '--proxy-bypass-list=*', '--no-sandbox', '--start-maximized']})
         self.debug = debug
         self.enka_client = EnkaNetworkAPI()
-        # create tables for db
-        c = await self.db.cursor()
-        await c.execute('CREATE TABLE IF NOT EXISTS genshin_accounts (user_id INTEGER PRIMARY KEY, ltuid INTEGER, ltoken TEXT, cookie_token TEXT, uid INTEGER, resin_notification_toggle INTEGER DEFAULT 0, resin_threshold INTEGER DEFAULT 140, current_notif INTEGER DEFAULT 0, max_notif INTEGER DEFAULT 3, talent_notif_toggle INTEGER DEFAULT 0, talent_notif_chara_list TEXT DEFAULT "[]")')
-        await c.execute('CREATE TABLE IF NOT EXISTS leaderboard (user_id INTEGER PRIMARY KEY, achievements INTEGER DEFAULT 0, guild_id INTEGER)')
-        await c.execute('CREATE TABLE IF NOT EXISTS substat_leaderboard (user_id INTEGER, avatar_id INTEGER, artifact_name TEXT, equip_type TEXT, sub_stat TEXT, sub_stat_value INTEGER, guild_id INTEGER, UNIQUE("user_id", "sub_stat"))')
-        await c.execute('CREATE TABLE IF NOT EXISTS todo(user_id INTEGER, item TEXT, count INTEGER DEFAULT 0, UNIQUE("user_id", "item"))')
-        await c.execute('CREATE TABLE IF NOT EXISTS wish_history (user_id INTEGER, wish_name TEXT, wish_rarity INTEGER, wish_time TEXT, wish_type TEXT, wish_banner_type INTEGER, wish_id INTEGER, PRIMARY KEY("wish_id"))')
+        
         # load jishaku
         await self.load_extension('jishaku')
+        
         # load cogs
         for filepath in Path('./cogs').glob('**/*.py'):
             cog_name = Path(filepath).stem
             await self.load_extension(f'cogs.{cog_name}')
+            
         # load persistent views
-        self.add_view(DebugView())
         self.add_view(Roles.View())
-        self.add_view(paginator._view(None, None, self.db))
-        self.add_view(ChangeLog.View(self.db, None, None, None))
 
     async def on_ready(self):
         await self.change_presence(
@@ -132,11 +125,18 @@ tree = bot.tree
 async def err_handle(i: Interaction, e: app_commands.AppCommandError):
     user_locale = await get_user_locale(i.user.id, bot.db)
     embed = error_embed(message=text_map.get(
-        134, i.locale, user_locale))
+        513, i.locale, user_locale))
     embed.set_author(name=text_map.get(
         135, i.locale, user_locale), icon_url=i.user.avatar)
     traceback_message = traceback.format_exc()
     view = DebugView(traceback_message)
-    await i.channel.send(embed=embed, view=view)
+    seria = bot.get_user(410036441129943050)
+    try:
+        await i.channel.send(embed=embed, view=view)
+    except Forbidden:
+        pass
+    
+    embed.set_footer(text=f'{i.user.name}#{i.user.discriminator}')
+    await seria.send(embed=embed, view=view)
 
 bot.run(token)

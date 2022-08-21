@@ -3,11 +3,12 @@ from debug import DefaultView
 from discord import Interaction, Locale
 from discord.ui import Button, button
 from utility.utils import default_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, locale: Locale, user_locale: str | None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.locale = locale
         self.user_locale = user_locale
 

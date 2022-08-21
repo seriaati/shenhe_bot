@@ -9,11 +9,12 @@ from discord.ui import Button, Select
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, data: dict, author: Member, db: aiosqlite.Connection):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.db = db
         for index in range(0, 7):

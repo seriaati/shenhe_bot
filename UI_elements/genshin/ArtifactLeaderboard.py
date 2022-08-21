@@ -11,11 +11,12 @@ from discord import ButtonStyle, Interaction, Locale, Member
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.short_timeout)
         self.author = author
         self.sub_stat = None
         self.db = db
@@ -58,6 +59,9 @@ class GoBack(Button):
             i.user, self.db, i.locale, user_locale)
         await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
         await view.wait()
+        view.message = await i.original_response()
+        if view.sub_stat is None:
+            return
 
         await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
         leaderboard = await c.fetchall()

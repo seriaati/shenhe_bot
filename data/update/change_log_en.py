@@ -29,7 +29,7 @@ change_log_en = {
         "• `/leaderboard` rewrite [#88](https://github.com/seriaati/shenhe_bot/pull/88)\n"
         "• Fixed `/build` unable to go back to element selection [#89](https://github.com/seriaati/shenhe_bot/issues/89)",
     'v4.6.0':
-        "• Fixed `/wish setkey` not returning when an error has occured\n"
+        "• Fixed `/wish import` not returning when an error has occured\n"
         "• Fixed language issues of `/profile`  [#77](https://github.com/seriaati/shenhe_bot/issues/77)\n"
         "• Fixed `/build` unable to show anemo builds [#81](https://github.com/seriaati/shenhe_bot/issues/81)\n"
         "• `/wish` commands localization + rewrite [#76](https://github.com/seriaati/shenhe_bot/pull/76)\n"

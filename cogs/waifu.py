@@ -2,12 +2,12 @@ import ast
 import io
 import random
 from typing import Any, List
-
+import config
 import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
-from discord import (ButtonStyle, File, Interaction, Member, SelectOption,
+from discord import (ButtonStyle, File, Interaction, Member, PartialMessageable, SelectOption,
                      app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
@@ -35,7 +35,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class TagSelectorView(DefaultView):
         def __init__(self, choices: List, author: Member):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.short_timeout)
             self.add_item(WaifuCog.TagSelector(choices))
             self.tags = []
             self.author = author
@@ -57,7 +57,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class ChooseTagView(DefaultView):
         def __init__(self, author: Member, type: str):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.short_timeout)
             self.author = author
             self.tag = None
             options = []
@@ -99,7 +99,10 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             return await i.response.send_message(embed=error_embed().set_author(name='不可大於 30 張', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='sfw')
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.tag is None:
+            return
         x = view.tag.split('/')
         libs = ast.literal_eval(x[0])
         tag = x[1]
@@ -118,7 +121,7 @@ class WaifuCog(commands.GroupCog, name='waifu'):
 
     class DeleteImageView(DefaultView):
         def __init__(self, author: Member):
-            super().__init__(timeout=None)
+            super().__init__(timeout=config.long_timeout)
             self.author = author
 
         async def interaction_check(self, interaction: Interaction) -> bool:
@@ -144,7 +147,10 @@ class WaifuCog(commands.GroupCog, name='waifu'):
             return await i.response.send_message(embed=error_embed().set_author(name='只能在色色台色色哦', icon_url=i.user.avatar), ephemeral=True)
         view = WaifuCog.ChooseTagView(i.user, type='nsfw')
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
         await view.wait()
+        if view.tag is None:
+            return
         x = view.tag.split('/')
         libs = ast.literal_eval(x[0])
         tag = x[1]
@@ -168,24 +174,30 @@ class WaifuCog(commands.GroupCog, name='waifu'):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(
                         bytes_obj, filename='waifu_image.gif', spoiler=True)
-                await i.channel.send(file=file, view=WaifuCog.DeleteImageView(i.user))
+                view = WaifuCog.DeleteImageView(i.user)
+                await i.channel.send(file=file, view=view)
+                view.message = await i.original_response()
             await i.delete_original_response()
 
     @app_commands.command(name='waifu', description='利用 waifu API 隨機產生一張二次元老婆的照片')
-    @app_commands.guild_only()
     @app_commands.rename(sese='色色模式', many='多情模式', tags='標籤選擇')
     @app_commands.choices(sese=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], many=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)], tags=[Choice(name='開啟', value=1), Choice(name='關閉', value=0)])
     @app_commands.describe(sese='是否要色色', many='產生 30 張老婆的照片 (色色模式開啟時5張', tags='透過標籤找到更符合你的需求的老婆')
     async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer()
         async with WaifuAioClient() as wf:
-            if not i.channel.nsfw and sese == 1:
-                return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
+            if isinstance(i.channel, PartialMessageable):
+                pass
+            else:
+                if not i.channel.nsfw and sese == 1:
+                    return await i.followup.send(embed=error_embed().set_author(name='只能在色色台開啟色色模式哦', icon_url=i.user.avatar), ephemeral=True)
             is_nsfw = 'True' if sese == 1 else 'False'
             if tags == 1:
                 view = WaifuCog.TagSelectorView(await WaifuCog.waifu_tags(sese, self.bot), i.user)
                 await i.followup.send(view=view)
                 await view.wait()
+                if len(view.tags) == 0:
+                    return
             if many == 0:
                 if tags == 1:
                     try:

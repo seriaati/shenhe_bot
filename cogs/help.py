@@ -46,12 +46,16 @@ class Dropdown(Select):
         for command in commands:
             if len(command.checks) != 0:
                 continue
-            hash = command._locale_description.extras['hash']
-            value = ''
             try:
-                value = text_map.get(hash, i.locale, user_locale)
-            except (ValueError, KeyError):
+                hash = command._locale_description.extras['hash']
+            except KeyError:
                 value = command.description
+            else:
+                value = ''
+                try:
+                    value = text_map.get(hash, i.locale, user_locale)
+                except (ValueError, KeyError):
+                    value = command.description
             if app_command_group:
                 embed.add_field(
                     name=f'`/{group_name} {command.name}`',
@@ -80,6 +84,7 @@ class HelpCog(commands.Cog):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         view = DropdownView(self.bot, i.locale, user_locale)
         await i.response.send_message(view=view)
+        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:

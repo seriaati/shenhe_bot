@@ -9,11 +9,12 @@ from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
 from apps.todo import get_todo_embed
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, db: aiosqlite.Connection, disabled: bool, author: Member, locale: Locale, user_locale: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.long_timeout)
         self.db = db
         self.author = author
         self.add_item(AddItem(text_map.get(203, locale, user_locale)))
@@ -51,6 +52,7 @@ class AddItem(Button):
         embed, empty = await get_todo_embed(self.view.db, i.user, i.locale)
         view = View(self.view.db, empty, i.user, i.locale, user_locale)
         await i.edit_original_response(embed=embed, view=view)
+        view.message = await i.original_response()
 
 
 class RemoveItem(Button):
@@ -87,6 +89,7 @@ class ClearItems(Button):
         view = View(self.view.db, True, i.user, i.locale, user_locale)
         embed = (await get_todo_embed(self.view.db, i.user, i.locale))[0]
         await i.response.edit_message(embed=embed, view=view)
+        view.message = await i.original_response()
 
 
 class AddItemModal(Modal):
@@ -101,7 +104,7 @@ class AddItemModal(Modal):
     )
 
     def __init__(self, locale: Locale, user_locale: str) -> None:
-        super().__init__(title=text_map.get(203, locale, user_locale), timeout=None)
+        super().__init__(title=text_map.get(203, locale, user_locale), timeout=config.mid_timeout)
         self.item.label = text_map.get(208, locale, user_locale)
         self.item.placeholder = text_map.get(209, locale, user_locale)
         self.count.label = text_map.get(210, locale, user_locale)
@@ -120,7 +123,7 @@ class RemoveItemModal(Modal):
     )
 
     def __init__(self, locale: Locale, user_locale: str) -> None:
-        super().__init__(title=text_map.get(205, locale, user_locale), timeout=None)
+        super().__init__(title=text_map.get(205, locale, user_locale), timeout=config.mid_timeout)
         self.count.label = text_map.get(210, locale, user_locale)
         self.count.placeholder = text_map.get(211, locale, user_locale)
 
@@ -156,3 +159,4 @@ class RemoveItemSelect(Select):
         embed, disabled = await get_todo_embed(self.view.db, i.user, i.locale)
         view = View(self.view.db, disabled, i.user, i.locale, user_locale)
         await i.edit_original_response(embed=embed, view=view)
+        view.message = await i.original_response()

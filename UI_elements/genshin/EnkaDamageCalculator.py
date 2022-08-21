@@ -8,11 +8,12 @@ from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from utility.utils import error_embed
+import config
 
 
 class View(DefaultView):
     def __init__(self, enka_view, locale: Locale, user_locale: str | None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=config.long_timeout)
         # defining damage calculation variables
         self.enka_view = enka_view
         character_name = ''
