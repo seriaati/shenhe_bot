@@ -311,9 +311,9 @@ class GenshinCog(commands.Cog, name='genshin'):
         locale = user_locale or i.locale
         locale = to_ambr_top(locale)
         client = AmbrTopAPI(self.bot.session, lang=locale)
-        domains = client.get_domain()
-        character_upgrades = client.get_character_upgrade()
-        weapon_upgrades = client.get_weapon_upgrade()
+        domains = await client.get_domain()
+        character_upgrades = await client.get_character_upgrade()
+        weapon_upgrades = await client.get_weapon_upgrade()
 
         today_domains = []
         for domain in domains:
@@ -326,7 +326,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 for upgrade in character_upgrades:
                     for item in upgrade.items:
                         if item.id == reward.id:
-                            characters[upgrade.character_id] = client.get_character(upgrade.character_id)[
+                            characters[upgrade.character_id] = await client.get_character(upgrade.character_id)[
                                 0]
 
             weapons: Dict[int, Weapon] = {}
@@ -334,7 +334,7 @@ class GenshinCog(commands.Cog, name='genshin'):
                 for upgrade in weapon_upgrades:
                     for item in upgrade.items:
                         if item.id == reward.id:
-                            weapons[upgrade.weapon_id] = client.get_weapon(upgrade.weapon_id)[
+                            weapons[upgrade.weapon_id] = await client.get_weapon(upgrade.weapon_id)[
                                 0]
 
             # merge two dicts
@@ -342,7 +342,7 @@ class GenshinCog(commands.Cog, name='genshin'):
             chunks = list(divide_dict(items, 12))
 
             for chunk in chunks:
-                domain_card = draw_domain_card(domain, user_locale or i.locale)
+                domain_card = await draw_domain_card(domain, user_locale or i.locale)
                 domain_card = await draw_item_icons_on_domain_card(domain_card, chunk, self.bot.session)
                 result.append(domain_card)
 

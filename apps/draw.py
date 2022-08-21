@@ -11,7 +11,7 @@ from enkanetwork.enum import DigitType, EquipmentsType
 from apps.text_map.text_map_app import text_map
 
 
-def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
+async def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
     text = domain.name
     font_family = FONTS.get(str(locale))
 
