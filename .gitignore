@@ -151,4 +151,5 @@ test.py
 resources/images/character/*
 resources/images/material/*
 resources/images/weapon/*
+resources/images/artifact/*
 !/**/.gitkeep
