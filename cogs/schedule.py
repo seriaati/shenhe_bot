@@ -2,7 +2,6 @@ import ast
 import asyncio
 from datetime import datetime, timedelta
 import random
-
 import aiosqlite
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import get_character, get_farm_dict, get_material
@@ -71,17 +70,24 @@ class Schedule(commands.Cog):
         else:
             log(True, False, 'Claim Reward', f'Ended, {count} success')
 
-    @tasks.loop(hours=2)
+    @tasks.loop(hours=1)
     async def resin_notification(self):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif FROM genshin_accounts WHERE resin_notification_toggle = 1')
+        await c.execute('SELECT user_id, resin_threshold, current_notif, max_notif, last_resin_notif_time FROM genshin_accounts WHERE resin_notification_toggle = 1')
         users = await c.fetchall()
         count = 0
+        now = datetime.now()
         for index, tuple in enumerate(users):
             user_id = tuple[0]
             resin_threshold = tuple[1]
             current_notif = tuple[2]
             max_notif = tuple[3]
+            last_notif_time = tuple[4]
+            last_notif_time = datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            time_diff = now-last_notif_time
+            if time_diff.total_seconds() < 7200:
+                continue
+            
             client, uid, user, user_locale = await self.genshin_app.get_user_data(user_id)
             try:
                 notes = await client.get_notes(uid)
@@ -107,7 +113,8 @@ class Schedule(commands.Cog):
                         await user.send(embed=embed)
                     except Forbidden:
                         await c.execute('UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?', (user_id,))
-                    await c.execute('UPDATE genshin_accounts SET current_notif = ? WHERE user_id = ?', (current_notif+1, user_id))
+                    else:
+                        await c.execute('UPDATE genshin_accounts SET current_notif = ?, last_resin_notif_time = ? WHERE user_id = ?', (current_notif+1, datetime.strftime(now, "%Y/%m/%d %H:%M:%S"), user_id))
                 if resin < resin_threshold:
                     await c.execute('UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?', (user_id,))
             await asyncio.sleep(3.0)
