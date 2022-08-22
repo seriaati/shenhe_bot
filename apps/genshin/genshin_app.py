@@ -397,9 +397,7 @@ class GenshinApp:
             result.append(embed)
         return result, True
 
-    async def get_abyss(
-        self, user_id: int, previous: bool, overview: bool, locale: Locale
-    ):
+    async def get_abyss(self, user_id: int, previous: bool, locale: Locale):
         client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         try:
             abyss = await client.get_spiral_abyss(uid, previous=previous)
@@ -418,6 +416,7 @@ class GenshinApp:
                 False,
             )
         else:
+            result = []
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
                 result = error_embed(
@@ -428,12 +427,12 @@ class GenshinApp:
                     name=text_map.get(76, locale, user_locale), icon_url=user.avatar
                 )
                 return result, False
-            result = default_embed(
+            overview = default_embed(
                 f"{text_map.get(77, locale, user_locale)} {abyss.season}",
                 f"{text_map.get(78, locale, user_locale)} {abyss.max_floor}\n"
                 f"✦ {abyss.total_stars}",
             )
-            result.add_field(
+            overview.add_field(
                 name=text_map.get(79, locale, user_locale),
                 value=f"{get_character(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, user_locale)}: {rank.strongest_strike[0].value}\n"
                 f"{get_character(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, user_locale)}: {rank.most_kills[0].value}\n"
@@ -441,12 +440,11 @@ class GenshinApp:
                 f"{get_character(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, user_locale)}: {rank.most_bursts_used[0].value}\n"
                 f"{get_character(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, user_locale)}: {rank.most_skills_used[0].value}",
             )
-            result.set_author(
+            overview.set_author(
                 name=text_map.get(85, locale, user_locale), icon_url=user.avatar
             )
-            if overview:
-                return result, True
-            result = []
+            result.append(overview)
+
             for floor in abyss.floors:
                 embed = default_embed().set_author(
                     name=f"{text_map.get(146, locale, user_locale)} {floor.floor} {text_map.get(147, locale, user_locale)} (✦ {floor.stars}/9)"
@@ -472,6 +470,7 @@ class GenshinApp:
                         inline=False,
                     )
                 result.append(embed)
+
             return result, True
 
     async def set_resin_notification(

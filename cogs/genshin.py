@@ -344,28 +344,20 @@ class GenshinCog(commands.Cog, name="genshin"):
         description=_("View abyss information (needs /register)", hash=428),
     )
     @app_commands.rename(
-        overview=_("type", hash=429),
         previous=_("season", hash=430),
         member=_("user", hash=415),
     )
     @app_commands.describe(
-        overview=_("The data type you're trying to view", hash=431),
         previous=_("Which abyss season?", hash=432),
         member=_("check other user's data", hash=416),
     )
     @app_commands.choices(
-        overview=[
-            Choice(name=_("Detailed", hash=433), value=0),
-            Choice(name=_("Overview", hash=434), value=1),
-        ],
         previous=[
             Choice(name=_("Current season", hash=435), value=0),
             Choice(name=_("Last season", hash=436), value=1),
         ],
     )
-    async def abyss(
-        self, i: Interaction, overview: int = 1, previous: int = 0, member: User = None
-    ):
+    async def abyss(self, i: Interaction, previous: int = 0, member: User = None):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -381,14 +373,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ephemeral=True,
             )
         previous = True if previous == 1 else False
-        overview = True if overview == 1 else False
         result, success = await self.genshin_app.get_abyss(
-            member.id, previous, overview, i.locale
+            member.id, previous, i.locale
         )
         if not success:
             return await i.followup.send(embed=result, ephemeral=True)
-        if overview:
-            return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
             message = await i.followup.send(embed=result[0], view=view)
