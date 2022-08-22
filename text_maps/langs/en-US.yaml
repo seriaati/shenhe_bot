@@ -312,7 +312,7 @@
 302: Current threshold
 303: Current resin
 304: Current max. notification number
-305: User /remind to change the settings
+305: Use /remind to change the settings
 306: Resin is almost full!!
 307: Talent notification is now turned OFF
 308: Right click any server that has shenhe in it
@@ -558,6 +558,8 @@
 511: Names of genshin characters, weapons, and other game elements will be translated automatically
 512: Leaderboard position update failed
 513: I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix
-514: Realm currency reminder
+514: Realm currency reminder (needs /register)
 515: Realm currency notif. settings
 516: Realm currency threshold
+517: Realm currency reminder disabled
+518: Realm currency is almost full!
