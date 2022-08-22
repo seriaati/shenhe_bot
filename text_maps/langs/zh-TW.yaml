@@ -150,7 +150,7 @@
 150: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n 跟著下方圖片中的步驟操作\n\n 1. 點選右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
 151: 樹脂提醒設定
 152: 樹脂閥值
-153: 當樹脂數量超過這個數字後，申鶴會私訊提醒你
+153: Shenhe will DM you after resin exceeds this number
 154: 最大提醒值
 155: 申鶴最多提醒你的次數
 156: 選擇已經設置過的角色將移除該角色的提醒
@@ -292,7 +292,7 @@
 302: 目前設定閥值
 303: 目前樹脂
 304: 目前最大提醒值
-305: 輸入 /remind 來更改設定
+305: Use /remind to change the settings
 306: 樹脂要滿出來啦!!
 307: 天賦提醒功能已關閉
 308: 右鍵任意一個有申鶴在內的群組
@@ -500,6 +500,8 @@
 511: 原神遊戲元素（武器、角色等）的字串將會自動翻譯
 512: 排名更新成功
 513: '非常抱歉，這個錯誤已經自動回報至 seria#5334，請耐心等待修復'
-514: 塵歌壺寶錢提醒
+514: Realm currency reminder (needs /register)
 515: 塵歌壺寶錢提醒設定
 516: 寶錢閥值
+517: Realm currency reminder disabled
+518: Realm currency is almost full!
