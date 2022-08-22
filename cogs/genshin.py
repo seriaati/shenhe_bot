@@ -27,20 +27,12 @@ from apps.wish.wish_app import get_user_event_wish
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from dateutil import parser
-from discord import (
-    DMChannel,
-    Embed,
-    Interaction,
-    Member,
-    SelectOption,
-    User,
-    app_commands,
-)
+from discord import Interaction, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
-from enkanetwork import EnkaNetworkResponse, UIDNotFounded, VaildateUIDError
+from enkanetwork import EnkaNetworkAPI, UIDNotFounded, VaildateUIDError
 from enkanetwork.enum import DigitType, EquipmentsType
 from UI_elements.genshin import (
     Abyss,
@@ -522,7 +514,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.response.send_modal(modal)
                 await modal.wait()
                 result, success = await self.genshin_app.set_pot_nofitication(
-                    i.user.id, i.locale, 1, int(modal.threshold.value), int(modal.max_notif.value)
+                    i.user.id,
+                    i.locale,
+                    1,
+                    int(modal.threshold.value),
+                    int(modal.max_notif.value),
                 )
                 await i.followup.send(embed=result, ephemeral=not success)
 
@@ -717,35 +713,35 @@ class GenshinCog(commands.Cog, name="genshin"):
                 uid = await c.fetchone()
         uid = custom_uid or uid[0]
         enka_locale = to_enka(user_locale or i.locale)
-        await self.bot.enka_client.set_language(enka_locale)
-        try:
-            data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(uid)
-        except KeyError:
-            return await i.followup.send(
-                embed=error_embed(
-                    message=text_map.get(285, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(284, i.locale, user_locale),
-                    icon_url=i.user.avatar,
-                ),
-                ephemeral=True,
-            )
-        except UIDNotFounded:
-            return await i.followup.send(
-                embed=error_embed().set_author(
-                    name=text_map.get(286, i.locale, user_locale),
-                    icon_url=i.user.avatar,
-                ),
-                ephemeral=True,
-            )
-        except VaildateUIDError:
-            return await i.followup.send(
-                embed=error_embed().set_author(
-                    name=text_map.get(286, i.locale, user_locale),
-                    icon_url=i.user.avatar,
-                ),
-                ephemeral=True,
-            )
+        async with EnkaNetworkAPI(enka_locale) as enka:
+            try:
+                data = await enka.fetch_user(uid)
+            except KeyError:
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(285, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(284, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+            except UIDNotFounded:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+            except VaildateUIDError:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
         if data.characters is None:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -756,8 +752,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-        await self.bot.enka_client.set_language("en")
-        eng_data = await self.bot.enka_client.fetch_user(uid)
+
+        async with EnkaNetworkAPI() as enka:
+            eng_data = await enka.fetch_user(uid)
+
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
         overview = default_embed(
@@ -769,7 +767,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
         )
         overview.set_author(name=member.display_name, icon_url=member.avatar)
-        overview.set_image(url=data.player.namecard.banner)
+        overview.set_image(url=data.player.namecard.banner.url)
         embeds["0"] = overview
         options = [
             SelectOption(
@@ -819,7 +817,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 weapon = character.equipments[-1]
                 weapon_sub_stats = ""
                 for substat in weapon.detail.substats:
-                    weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {text_map.get(fight_prop.get(substat.prop_id)['text_map_hash'], i.locale, user_locale)} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
+                    weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
                 embed.add_field(
                     name=text_map.get(91, i.locale, user_locale),
                     value=f'{get_weapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
@@ -827,7 +825,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     f"{weapon_sub_stats}",
                     inline=False,
                 )
-                embed.set_thumbnail(url=character.image.icon)
+                embed.set_thumbnail(url=character.image.icon.url)
                 embed.set_author(name=member.display_name, icon_url=member.avatar)
                 embeds[str(character.id)] = embed
 
@@ -850,7 +848,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         name=f"{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}",
                         value=artifact_sub_stats,
                     )
-                    artifact_embed.set_thumbnail(url=character.image.icon)
+                    artifact_embed.set_thumbnail(url=character.image.icon.url)
                     artifact_embed.set_author(
                         name=member.display_name, icon_url=member.avatar
                     )
@@ -1191,10 +1189,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ephemeral=True,
                 )
             try:
-                await self.bot.enka_client.set_language("cht")
-                data: EnkaNetworkResponse = await self.bot.enka_client.fetch_user(
-                    uid[0]
-                )
+                async with EnkaNetworkAPI("cht") as enka:
+                    data = await enka.fetch_user(uid[0])
                 achievement = data.player.achievement
                 await c.execute(
                     "INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?",
