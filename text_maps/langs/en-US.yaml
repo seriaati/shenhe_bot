@@ -167,7 +167,7 @@
     5. Toggle all the switches"
 151: Resin notification settings
 152: Resin threshold
-153: Shenhe will DM you after your resin exceeds the threshold
+153: Shenhe will DM you after resin exceeds this number
 154: Max. notification number
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
