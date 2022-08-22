@@ -5,7 +5,7 @@ from discord import Locale
 from ambr.models import Character, Domain, Weapon
 from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
-from data.draw.fonts import FONTS
+from data.draw.fonts import get_font
 from enkanetwork.model.character import CharacterInfo
 from enkanetwork.enum import DigitType, EquipmentsType
 from apps.text_map.text_map_app import text_map
@@ -13,7 +13,7 @@ from apps.text_map.text_map_app import text_map
 
 async def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
     text = domain.name
-    font_family = FONTS.get(str(locale))
+    font_family = get_font(locale)
 
     # get domain template image
     background_paths = ['', 'Mondstat', 'Liyue', 'Inazuma', 'Sumeru']
@@ -84,7 +84,7 @@ async def draw_item_icons_on_domain_card(domain_card: Image, items: Dict[int, Ch
 
 async def draw_character_card(character: CharacterInfo, locale: Locale | str, session: aiohttp.ClientSession) -> BytesIO:
     # load font
-    font_family = FONTS.get(str(locale))
+    font_family = get_font(locale)
     
     # try to get the template
     try:
@@ -95,6 +95,18 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
     draw = ImageDraw.Draw(card)
     font = ImageFont.truetype(f'resources/fonts/{font_family}', 50)
     
+    element = character.element.name
+    element_text_map = {
+        'Pyro': 273,
+        'Electro': 274,
+        'Hydro': 275,
+        'Dendro': 276,
+        'Anemo': 277,
+        'Geo': 278,
+        'Cryo': 279
+    }
+    element_text_map_hash = element_text_map.get(element)
+    
     # character stats
     texts = {
         text_map.get(292, locale): character.stats.FIGHT_PROP_MAX_HP.to_rounded(),
@@ -104,7 +116,7 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
         text_map.get(297, locale): character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol(),
         text_map.get(298, locale): character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
         text_map.get(295, locale): character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(),
-        text_map.get(514, locale): character.stats.FIGHT_PROP_ELEC_ADD_HURT.to_percentage_symbol()
+        text_map.get(element_text_map_hash, locale): character.stats.FIGHT_PROP_ELEC_ADD_HURT.to_percentage_symbol()
     }
     
     # write character stats
