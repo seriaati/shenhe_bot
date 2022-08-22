@@ -1,3 +1,6 @@
+import discord
+
+
 FONTS = {
     'zh-CN': 'NotoSansSC-Regular.otf',
     'zh-TW': 'NotoSansTC-Regular.otf',
@@ -12,3 +15,6 @@ FONTS = {
     'ru': 'NotoSans-Regular.otf',
     'vi': 'NotoSans-Regular.otf'
 }
+
+def get_font(locale: discord.Locale | str):
+    return FONTS.get(str(locale)) or 'NotoSans-Regular.ttf'
