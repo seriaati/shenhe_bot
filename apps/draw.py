@@ -150,27 +150,28 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
     # write weapon name
     draw.text((1220, 785), weapon.detail.name, fill='#212121', font=font)
 
-    # draw weapon substat icon
-    substat = weapon.detail.substats[0]
-    fight_prop = Image.open(
-        f'resources/images/fight_props/{substat.prop_id}.png')
-    fight_prop.thumbnail((50, 50))
-    card.paste(fight_prop, (1220, 890), fight_prop)
-    
-    # write weapon substat text
-    draw.text(
-        (1300, 875), f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
-
     # draw weapon mainstat icon
     mainstat = weapon.detail.mainstats
     fight_prop = Image.open(
         f'resources/images/fight_props/{mainstat.prop_id}.png')
     fight_prop.thumbnail((50, 50))
-    card.paste(fight_prop, (1490, 890), fight_prop)
+    card.paste(fight_prop, (1220, 890), fight_prop)
 
     # write weapon mainstat text
     draw.text(
-        (1560, 875), f"{mainstat.value}{'%' if mainstat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
+        (1300, 875), f"{mainstat.value}{'%' if mainstat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
+
+    # draw weapon substat icon
+    if len(weapon.detail.substats) != 0:
+        substat = weapon.detail.substats[0]
+        fight_prop = Image.open(
+            f'resources/images/fight_props/{substat.prop_id}.png')
+        fight_prop.thumbnail((50, 50))
+        card.paste(fight_prop, (1490, 890), fight_prop)
+    
+        # write weapon substat text
+        draw.text(
+            (1560, 875), f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
 
     # write weapon level text
     draw.text((1220, 960), f'Lvl. {weapon.level}', font=font, fill='#212121')
