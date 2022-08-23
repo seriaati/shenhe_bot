@@ -4,7 +4,6 @@ import discord
 
 from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed
-import logging
 
 
 class DebugView(discord.ui.View):
@@ -47,6 +46,6 @@ class DefaultView(discord.ui.View):
         try:
             await self.message.edit(view=self)
         except AttributeError:
-            logging.error(f'attribute error: {self.children}')
+            print(f'attribute error: {self.children}')
         except (discord.NotFound, discord.HTTPException):
             pass
