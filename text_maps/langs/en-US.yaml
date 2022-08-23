@@ -138,7 +138,7 @@
 136: Choose your account
 137: Account registration tutorial
 138: "1.Copy the code below\n
-    2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n
+    2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n
     3.Click the address bar and select all the text there\n
     4.Enter the word `java`, then paste the code you copied, ensure that the address
     bar starts with `javascript:`\n
@@ -157,7 +157,7 @@
 147: "<FLOOR>"
 148: Choose abyss floor
 149: Data not public?
-150: "Please go to <https://www.hoyolab.com> and login\n
+150: "Please go to https://www.hoyolab.com/home and login\n
     Follow the steps in the image below\n\n
 
     1. Click the avatar on the top right\n
