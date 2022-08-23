@@ -201,7 +201,7 @@
 201: 武器のレベルアップ
 202: やること帳
 203: 素材を追加
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items"
+204: "おめでとう！　やることはなにもありません！　(ᗒᗨᗕ)/\n</calc character:1000187020892700793> や </calc weapon:1000187020892700793> でキャラクターや武器の必要素材を計算できます。下の緑色のボタンを押すことで任意の素材を追加できます。"
 205: 素材を取り除く
 206: アイテムをクリア
 207: 削除したいアイテムを選択
@@ -345,17 +345,17 @@
 355: 申鶴が祈願履歴を処理中です...
 356: 祈願履歴のインポートに成功しました！
 357: PCを使用した祈願履歴のインポート
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command"
+358: "1. 原神を開く（複数アカウントを使用している場合は、ゲームを再起動してください。）\n 2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ\n 3. キーボードの「START」を押し、「Powershell」を検索する。\n 4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。\n 5. ENTERを押すと、リンクがクリップボードにコピーされます。\n 6. コピーしたリンクを</wish import:1000187021635104890> コマンドで送信します。"
 359: Android端末を使用した祈願履歴のインポート
-360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the </wish import:1000187021635104890> command"
+360: "[解説動画](https://youtu.be/pe_aROJ8Av8)\n 解説動画ではテキスト全体がコピーされていますが、リンクのみを選択し、コピーします（ステップ7）\n\n 1. 祈願画面を開く(原神)\n 2. 祈願履歴を押す\n 3. ロードされるのを待つ\n 4. Wi-Fiとデータ接続をオフにする\n 5. 右上の更新を押す\n 6. ページがエラーを表示し、黒いフォントでいくつかのテキストが表示されます。\n 7. テキストを長押しして、リンク部分を選択し、コピーする。\n 8. Wi-Fiまたはデータ接続をオンにする\n 9. </wish import:1000187021635104890>コマンドでそのリンクをここに送信する。"
 361: iOS端末を使用した祈願履歴のインポート
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
+362: "[解説動画](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. App StoreでStreamをダウンロード[here](https://apps.apple.com/app/stream/id1312141691)\n 2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)\n 3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)\n 4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。\n 5. 原神を起動し、祈願画面を開き、そのページにとどまります。\n 6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ\n 7. 原神に戻り、祈願履歴ページを開く\n 8. ページが読み込まれるのを待つ\n 9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）\n 10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） \n 11. Requestタブをクリックし、リンクをコピーする\n 12. </wish import:1000187021635104890>コマンドを使用して、そのリンクをここに送信します。"
 363: プレイステーションでの祈願履歴のインポート
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
+364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. </wish import:1000187021635104890>コマンドを使用して、リンクを送信する。"
 365: プラットフォームを選択してください
 366: "祈願履歴の言語は、現在選択されている言語に基づいて表示されます。\n 言語を変更しても、以前の記録には影響しません"
 367: 祈願履歴データが見つかりません
-368: "</wish import:1000187021635104890> to import your wish history"
+368: "</wish import:1000187021635104890>で祈願履歴をインポート"
 369: 祈願履歴
 370: 天井あり（確定限定星５)
 371: 天井あり（星５）
@@ -500,8 +500,8 @@
 511: 原神のキャラクターや武器などのゲームの要素の名前は自動翻訳されます
 512: ランキングの更新に失敗しました
 513: 'ご迷惑をおかけして申し訳ございません。このエラーは自動的にseria#5334に報告されました。修正までしばらくお待ち下さい。'
-514: Realm currency reminder (needs /register)
-515: Realm currency notif. settings
-516: Realm currency threshold
-517: Realm currency reminder disabled
-518: Realm currency is almost full!
+514: 洞天宝銭のリマインダー　(/register　で登録が必要)
+515: 現在の洞天宝銭リマインダーの設定
+516: 洞天宝銭通知のしきい値
+517: 洞天宝銭リマインダーは無効になっています
+518: 洞天宝銭が溢れそうです！！
