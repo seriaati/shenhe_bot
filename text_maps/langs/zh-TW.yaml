@@ -18,7 +18,7 @@
 18: 沒有探索派遣
 19: 已完成
 20: 探索派遣
-21: "</stuck:1006486283725590536> for more information"
+21: "</stuck:1006486283725590536> 來獲取更多資訊"
 22: 資料不公開
 23: 錯誤
 24: 即時便籤
@@ -32,7 +32,7 @@
 32: 選擇語言
 33: 語言更改成功
 34: 目前語言
-35: "</register:1006486283725590528> for more information"
+35: "</register:1006486283725590528> 來獲取更多資訊"
 36: 無效的 cookie
 37: 已取消設定帳號
 38: 帳號內沒有任何角色
@@ -71,7 +71,7 @@
 71: 原石
 72: 摩拉獲取紀錄
 73: 摩拉
-74: Use the </stats:1006486283725590530> command to refresh your stats
+74: 使用 </stats:1006486283725590530> 指令來更新你的資料
 75: (本指令只顯示第9層以上資料)
 76: 找不到深淵資料
 77: 期別
@@ -135,9 +135,9 @@
 135: 未知錯誤
 136: 選擇要註冊的帳號
 137: Cookie 設置流程
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+138: "1.先複製底下的整段程式碼\n 2.電腦或手機使用Chrome開啟Hoyolab並登入帳號 https://www.hoyolab.com\n 3.按瀏覽器上面網址的部分, 並確保選取了全部網址\n 4.在網址列先輸入 `java`, 然後貼上程式碼, 確保網址開頭變成 `javascript:`\n 5.按Enter, 網頁會變成顯示你的Cookie, 全選然後複製\n 6.在這裡提交結果, 使用 </register:1006486283725590528> \n 無法理解嗎? 跟著下面的圖示操作吧!"
 139: 過期或無效的Cookie, 請先登出帳號再重新登入!
-140: Please use the </register:1006486283725590528> command
+140: 請使用 </register:1006486283725590528> 指令
 141: 找不到帳號資料!
 142: 選擇元素
 143: 你不是這個指令的發起者
@@ -147,7 +147,7 @@
 147: "層"
 148: 樓層導覽
 149: 資料不公開?
-150: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n 跟著下方圖片中的步驟操作\n\n 1. 點選右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
+150: "請至 https://www.hoyolab.com 登入你的hoyoverse帳號\n 跟著下方圖片中的步驟操作\n\n 1. 點選右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
 151: 樹脂提醒設定
 152: 樹脂閥值
 153: 申鶴會在樹脂超過這個數字後提醒你
@@ -162,7 +162,7 @@
 162: 配置
 163: 選擇配置
 164: 種配置
-165: "This user hasn't registered their account yet\n</register:1006486283725590528> to register"
+165: "這個使用者還沒有註冊過帳號\n</register:1006486283725590528> 來註冊帳號"
 166: 查無使用者
 167: "的 UID"
 168: 計算資料輸入
@@ -175,7 +175,7 @@
 175: 新增到代辦清單
 176: 請輸入 `/todo` 並使用「刪除素材」按鈕
 177: 代辦清單可存素材數量已達最大值 (125)
-178: Use </todo:1006486283855605804> to view your todo list
+178: 使用 </todo:1006486283855605804> 來查看你的代辦清單
 179: 新增成功
 180: 選擇武器
 181: 設置
@@ -201,7 +201,7 @@
 201: 武器升級
 202: 代辦清單
 203: 新增素材
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items"
+204: "太好了, 沒有需要蒐集的素材 ˋ( ° ▽、° ) \n 使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 指令來計算升級所需素材，\n 或是使用下方的按鈕來新增素材"
 205: 刪除素材
 206: 清空代辦清單
 207: 選擇要刪除的素材
@@ -345,17 +345,17 @@
 355: 請稍等, 處理數據中...
 356: 祈願紀錄匯入成功
 357: PC 設置方式
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command"
+358: "1. 在電腦開啟原神 (如果你使用多組帳號，請重新啟動遊戲)\n 2. 打開祈願紀錄並等待讀取\n 3. 在鍵盤點選「開始」鍵 (Windows鍵), 並搜尋 Powershell\n 4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell\n 5. 按Enter鍵, 接著連結會自動複製到剪貼簿\n 6. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令"
 359: Android 設置方式
-360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the </wish import:1000187021635104890> command"
+360: "[影片教學](https://youtu.be/pe_aROJ8Av8)\n 影片教學中複製了所有文本, 請只複製連結(步驟7)\n 1. 打開祈願界面 (遊戲內)\n 2. 點擊歷史記錄\n 3. 等待載入\n 4. 斷網(關閉wifi或行動數據)\n 5. 點擊右上角刷新按鈕\n 6. 此時頁面應該提示錯誤, 並顯示一些文字\n 7. 長按並複製「只有連結」的部份(粗體字)\n 8. 連網(接回wifi或行動數據)\n 9. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令"
 361: IOS 教學
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
+362: "[影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. 在App Store 下載 Stream  [點我](https://apps.apple.com/app/stream/id1312141691)\n 2. 開啟app, 接著在系統設定 (設定  > 一般 > VPN與裝置管理) 中同意 VPN\n 3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝  CA > CA 就下載好了\n 4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install\n 5. 開啟原神，接著打開祈願畫面，並在這個畫面等待\n 6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕\n 7. 回到原神，接著開啟祈願歷史紀錄\n 8. 等候頁面載入\n 9. 回到 Stream App > 停止抓包\n 10. 按 抓包歷史 > 選擇一個以.json結尾的歷史紀錄(該連結前面會像是  https://hk4e-api-os.mihoyo.com/)\n 11. 點選 「請求」 分頁, 接著複製連結\n 12. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令"
 363: Playstation 設置流程
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
+364: "(如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式)\n 1. 在你的 PlayStation 裡打開原神\n 2. 打開你的信箱 QR Code\n 3. 用手機掃描 QR Code 得到連結\n 4. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令"
 365: 選擇你的平台
 366: "祈願紀錄的語言是根據你目前設置的語言決定的\n 之後更改語言不會改變先前紀錄的語言"
 367: 找不到任何祈願紀錄
-368: "</wish import:1000187021635104890> to import your wish history"
+368: "使用 </wish import:1000187021635104890> 指令來匯入你的祈願紀錄"
 369: 祈願紀錄
 370: 有大保底
 371: 有小保底
