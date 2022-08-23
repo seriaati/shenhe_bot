@@ -974,7 +974,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             for index, tuple in enumerate(leaderboard):
                 user_id = tuple[0]
                 achievement_num = tuple[1]
-                member = i.guild.get_member(user_id)
+                if i.guild is None:
+                    member = i.client.get_user(user_id)
+                else:
+                    member = i.guild.get_member(user_id)
                 if member is None:
                     continue
                 if i.user.id == member.id:
@@ -1040,7 +1043,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                 artifact_name = tuple[2]
                 equip_type = tuple[3]
                 sub_stat_value = tuple[4]
-                member = i.guild.get_member(user_id)
+                if i.guild is None:
+                    member = i.client.get_user(user_id)
+                else:
+                    member = i.guild.get_member(user_id)
                 if member is None:
                     continue
                 if member.id == i.user.id:
@@ -1121,7 +1127,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             user_rank = text_map.get(253, i.locale, user_locale)
 
             for user_id, luck in leaderboard_dict.items():
-                member = i.guild.get_member(user_id)
+                if i.guild is None:
+                    member = i.client.get_user(user_id)
+                else:
+                    member = i.guild.get_member(user_id)
                 if member is None:
                     continue
                 if i.user.id == member.id:
