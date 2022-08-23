@@ -964,16 +964,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             await c.execute("SELECT user_id, achievements FROM leaderboard")
             leaderboard = await c.fetchall()
 
-            # check if the leaderboard is empty
-            if len(leaderboard) == 0:
-                return await i.response.send_message(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
-                    ),
-                    ephemeral=True,
-                )
-
             # sort the leaderboard
             leaderboard.sort(key=lambda tup: tup[1], reverse=True)
 
@@ -1006,8 +996,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                     message,
                 )
                 embeds.append(embed)
-
-            await GeneralPaginator(i, embeds, self.bot.db).start()
+            try:
+                await GeneralPaginator(i, embeds, self.bot.db).start()
+            except ValueError:
+                await i.response.send_message(
+                    embed=error_embed().set_author(
+                        name=text_map.get(254, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
 
         elif type == 1:
             view = ArtifactLeaderboard.View(i.user, self.bot.db, i.locale, user_locale)
@@ -1028,14 +1026,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                 (view.sub_stat,),
             )
             leaderboard = await c.fetchall()
-            if len(leaderboard) == 0:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
-                    ),
-                    ephemeral=True,
-                )
 
             leaderboard.sort(
                 key=lambda tup: float(str(tup[4]).replace("%", "")), reverse=True
@@ -1072,29 +1062,30 @@ class GenshinCog(commands.Cog, name="genshin"):
                     message,
                 )
                 embeds.append(embed)
-
-            await GeneralPaginator(
-                i,
-                embeds,
-                self.bot.db,
-                [
-                    ArtifactLeaderboard.GoBack(
-                        text_map.get(282, i.locale, user_locale), self.bot.db
-                    )
-                ],
-            ).start(edit=True)
-
-        elif type == 2:
-            await c.execute("SELECT DISTINCT user_id FROM wish_history")
-            leaderboard = await c.fetchall()
-            if len(leaderboard) == 0:
-                return await i.response.send_message(
+            try:
+                await GeneralPaginator(
+                    i,
+                    embeds,
+                    self.bot.db,
+                    [
+                        ArtifactLeaderboard.GoBack(
+                            text_map.get(282, i.locale, user_locale), self.bot.db
+                        )
+                    ],
+                ).start(edit=True)
+            except ValueError:
+                await i.response.send_message(
                     embed=error_embed().set_author(
                         name=text_map.get(254, i.locale, user_locale),
                         icon_url=i.user.avatar,
                     ),
                     ephemeral=True,
                 )
+
+        elif type == 2:
+            await c.execute("SELECT DISTINCT user_id FROM wish_history")
+
+            leaderboard = await c.fetchall()
 
             leaderboard_dict = {}
             for index, tuple in enumerate(leaderboard):
@@ -1124,14 +1115,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             leaderboard_dict = dict(
                 sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True)
             )
-            if len(leaderboard_dict) == 0:
-                return await i.response.send_message(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
-                    ),
-                    ephemeral=True,
-                )
 
             leaderboard_str_list = []
             rank = 1
@@ -1161,7 +1144,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embeds.append(embed)
 
-            await GeneralPaginator(i, embeds, self.bot.db).start()
+            try:
+                await GeneralPaginator(i, embeds, self.bot.db).start()
+            except ValueError:
+                await i.response.send_message(
+                    embed=error_embed().set_author(
+                        name=text_map.get(254, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
 
         elif type == 3:
             await i.response.defer(ephemeral=True)

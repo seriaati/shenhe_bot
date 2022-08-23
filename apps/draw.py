@@ -135,7 +135,7 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
         icon = Image.open(path)
         icon = icon.convert('RGBA')
     except FileNotFoundError:
-        async with session.get(weapon.detail.icon) as r:
+        async with session.get(weapon.detail.icon.url) as r:
             bytes_obj = BytesIO(await r.read())
         icon = Image.open(bytes_obj)
         icon = icon.convert('RGBA')
@@ -200,9 +200,8 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
         try:
             icon = Image.open(path)
             icon = icon.convert('RGBA')
-
         except FileNotFoundError:
-            async with session.get(artifact.detail.icon) as r:
+            async with session.get(artifact.detail.icon.url) as r:
                 bytes_obj = BytesIO(await r.read())
             icon = Image.open(bytes_obj)
             icon = icon.convert('RGBA')
