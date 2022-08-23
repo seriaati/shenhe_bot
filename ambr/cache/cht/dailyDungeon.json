@@ -82,6 +82,33 @@
                     114028
                 ],
                 "city": 3
+            },
+            "domainofMasteryFullMoon": {
+                "id": 4433,
+                "name": "精通秘境：圓鏡",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104329,
+                    104330,
+                    104331
+                ],
+                "city": 4
+            },
+            "domainofForgeryTaintedClouds": {
+                "id": 4373,
+                "name": "煉武秘境：雲垢",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114037,
+                    114038,
+                    114039,
+                    114040
+                ],
+                "city": 4
             }
         },
         "tuesday": {
@@ -165,6 +192,33 @@
                     114032
                 ],
                 "city": 3
+            },
+            "domainofMasteryWitticism": {
+                "id": 4443,
+                "name": "精通秘境：妙語",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104332,
+                    104333,
+                    104334
+                ],
+                "city": 4
+            },
+            "domainofForgeryObsession": {
+                "id": 4377,
+                "name": "煉武秘境：思惑",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114041,
+                    114042,
+                    114043,
+                    114044
+                ],
+                "city": 4
             }
         },
         "wednesday": {
@@ -248,6 +302,33 @@
                     114036
                 ],
                 "city": 3
+            },
+            "domainofMasteryBasketofDiscipline": {
+                "id": 4453,
+                "name": "精通秘境：律藏",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104335,
+                    104336,
+                    104337
+                ],
+                "city": 4
+            },
+            "domainofForgeryLeadingKarma": {
+                "id": 4381,
+                "name": "煉武秘境：引業",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114045,
+                    114046,
+                    114047,
+                    114048
+                ],
+                "city": 4
             }
         },
         "thursday": {
@@ -331,6 +412,33 @@
                     114028
                 ],
                 "city": 3
+            },
+            "domainofMasteryFullMoon": {
+                "id": 4433,
+                "name": "精通秘境：圓鏡",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104329,
+                    104330,
+                    104331
+                ],
+                "city": 4
+            },
+            "domainofForgeryTaintedClouds": {
+                "id": 4373,
+                "name": "煉武秘境：雲垢",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114037,
+                    114038,
+                    114039,
+                    114040
+                ],
+                "city": 4
             }
         },
         "friday": {
@@ -414,6 +522,33 @@
                     114032
                 ],
                 "city": 3
+            },
+            "domainofMasteryWitticism": {
+                "id": 4443,
+                "name": "精通秘境：妙語",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104332,
+                    104333,
+                    104334
+                ],
+                "city": 4
+            },
+            "domainofForgeryObsession": {
+                "id": 4377,
+                "name": "煉武秘境：思惑",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114041,
+                    114042,
+                    114043,
+                    114044
+                ],
+                "city": 4
             }
         },
         "saturday": {
@@ -497,6 +632,33 @@
                     114036
                 ],
                 "city": 3
+            },
+            "domainofMasteryBasketofDiscipline": {
+                "id": 4453,
+                "name": "精通秘境：律藏",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104335,
+                    104336,
+                    104337
+                ],
+                "city": 4
+            },
+            "domainofForgeryLeadingKarma": {
+                "id": 4381,
+                "name": "煉武秘境：引業",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114045,
+                    114046,
+                    114047,
+                    114048
+                ],
+                "city": 4
             }
         },
         "sunday": {
@@ -742,6 +904,87 @@
                     114036
                 ],
                 "city": 3
+            },
+            "domainofMasteryFullMoon": {
+                "id": 4433,
+                "name": "精通秘境：圓鏡",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104329,
+                    104330,
+                    104331
+                ],
+                "city": 4
+            },
+            "domainofMasteryWitticism": {
+                "id": 4443,
+                "name": "精通秘境：妙語",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104332,
+                    104333,
+                    104334
+                ],
+                "city": 4
+            },
+            "domainofMasteryBasketofDiscipline": {
+                "id": 4453,
+                "name": "精通秘境：律藏",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    104335,
+                    104336,
+                    104337
+                ],
+                "city": 4
+            },
+            "domainofForgeryTaintedClouds": {
+                "id": 4373,
+                "name": "煉武秘境：雲垢",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114037,
+                    114038,
+                    114039,
+                    114040
+                ],
+                "city": 4
+            },
+            "domainofForgeryObsession": {
+                "id": 4377,
+                "name": "煉武秘境：思惑",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114041,
+                    114042,
+                    114043,
+                    114044
+                ],
+                "city": 4
+            },
+            "domainofForgeryLeadingKarma": {
+                "id": 4381,
+                "name": "煉武秘境：引業",
+                "reward": [
+                    102,
+                    202,
+                    105,
+                    114045,
+                    114046,
+                    114047,
+                    114048
+                ],
+                "city": 4
             }
         }
     }
