@@ -18,7 +18,7 @@
 18: 探索派遣がありません。
 19: 完了
 20: 探索派遣
-21: "</stuck:1006486283725590536> for more information"
+21: "詳細は</stuck:1006486283725590536>で確認してください"
 22: 權限がありません。
 23: エラー
 24: リアルタイムノート
@@ -32,7 +32,7 @@
 32: 言語を選らんでくたさい。
 33: 言語を変更しました
 34: 現在の言語
-35: "</register:1006486283725590528> for more information"
+35: "詳細は</register:1006486283725590528>で確認してください"
 36: 無效の cookie
 37: 登錄した アカウント は キャンセル した。
 38: Cookie から キャラが見つかりません。
@@ -71,7 +71,7 @@
 71: 原石
 72: モラ 紀錄
 73: モラ
-74: Use the </stats:1006486283725590530> command to refresh your stats
+74: 統計情報を更新するには </stats:1006486283725590530> コマンドを使用します
 75: (このコマンドは 深境螺旋第9層以上のデータ のみ表示します)
 76: 深境螺旋 の データ は見つかえりません
 77: 今期
@@ -135,9 +135,9 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
 139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
-140: Please use the </register:1006486283725590528> command
+140: </register:1006486283725590528> コマンドを使用してください
 141: アカウントデータが見つかりません！
 142: アカウントを選択してください
 143: あなたはこのコマンドの実行者ではありません
@@ -147,7 +147,7 @@
 147: "層"
 148: 深境螺旋の層を選べてくたさい。
 149: 權限がありません。
-150: "<https://www.hoyolab.com>にアクセスし、ログインしてください。\n 以下の画像のステップに従ってください。\n\n 1. 右上のアバターをクリック\n 2.マイページ\n 3. 右上の「原神」をクリックします。\n 4. 歯車のアイコンをクリックします。\n 5. すべてのスイッチをONにする"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: 樹脂通知設定
 152: 樹脂值
 153: 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
