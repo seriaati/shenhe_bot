@@ -1,4 +1,21 @@
 change_log_en = {
+    'v4.7.2':
+        "Thank you all so much for using shenhe, she is now in 250 servers! (the maximum number)\n"
+        "Because discord thinks shenhe's growth is too fast, they prohibit me from verifying the bot.\n"
+        "I will verify shenhe as soon as I can, sorry for causing the inconvinience.\n\n"
+        "• Added traveler data\n"
+        "• Added 3.0 data\n"
+        "• Added missing artifact effects to damage calculator (</profile:1006486283805265953>)\n"
+        "• To save system resources, UI elements will be timed out after certain period of time.\n"
+        "• Removed the option `overview` and `detailed` in </abyss:1006486283725590535>, both will show at the same time right now.\n"
+        "• Added number of standards pulled for </wish overview:1000187021635104890>\n"
+        "• Commands in </help:1006486283805265959> and other messages are now clickable.\n"
+        "• Fixed hoyolab link missing in the tutorials of </wish import:1000187021635104890>\n"
+        "• Added character cards for </profile:1006486283805265953>\n"
+        "• Swapped the texts of `no crit hit` and `average damage` in damage calculator (</profile:1006486283805265953>)\n"
+        "• Fixed artifacts missing in damage calcualtor (</profile:1006486283805265953>)\n"
+        "• Fixed </farm:1006486283805265950> not usable when client language is not recognized by shenhe."
+        "• Fixed a lot of other bugs, thank you all for the bug reports.\n",
     'v4.7.1':
         "• Updated the primo and mor emojis in `/diary`\n"
         "• Fixed artifact leaderbaord not working and improved code\n"
