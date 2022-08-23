@@ -964,5 +964,54 @@ weapons_map = {
         "rarity": 1,
         "icon": "https://uploadstatic-sea.hoyoverse.com/hk4e/e20200928calculate/item_icon_u68dmc/d1130e6606f4565cb7603e4858c8734c.png",
         "eng": "Dull Blade"
+    },
+    "11417": {
+        "emoji": "<:11417:1011765304340267058>",
+        "eng": "Sapwood Blade",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Sword_Arakalari.png",
+        "name": "\u539f\u6728\u5200",
+        "rarity": 4
+    },
+    "12417": {
+        "emoji": "<:12417:1011765409835393154>",
+        "eng": "Forest Regalia",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Claymore_Arakalari.png",
+        "name": "\u68ee\u6797\u738b\u5668",
+        "rarity": 4
+    },
+    "13417": {
+        "emoji": "<:13417:1011765622109110373>",
+        "eng": "Moonpiercer",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Pole_Arakalari.png",
+        "name": "\u8cab\u6708\u77e2",
+        "rarity": 4
+    },
+    "14417": {
+        "emoji": "<:14417:1011765754804310016>",
+        "eng": "Fruit of Fulfillment",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Catalyst_Arakalari.png",
+        "name": "\u76c8\u6eff\u4e4b\u5be6",
+        "rarity": 4
+    },
+    "15417": {
+        "emoji": "<:15417:1011765869384323083>",
+        "eng": "King's Squire",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Arakalari.png",
+        "name": "\u738b\u4e0b\u8fd1\u4f8d",
+        "rarity": 4
+    },
+    "15418": {
+        "emoji": "<:15418:1011765871800225833>",
+        "eng": "End of the Line",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Fin.png",
+        "name": "\u7aed\u6fa4",
+        "rarity": 4
+    },
+    "15511": {
+        "emoji": "<:15511:1011765874656563372>",
+        "eng": "Hunter's Path",
+        "icon": "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Ayus.png",
+        "name": "\u7375\u4eba\u4e4b\u5f91",
+        "rarity": 5
     }
 }

@@ -83,6 +83,34 @@
         "ru": "Воля: Песчаная бездна",
         "vi": "Bí Cảnh Luyện Võ: Vực Trầm Sa"
     },
+    "4433": {
+        "chs": "精通秘境：圆镜",
+        "cht": "精通秘境：圓鏡",
+        "de": "Sphäre des Verständnisses: Vollmond",
+        "en": "Domain of Mastery: Full Moon",
+        "es": "Dominio de la maestría: Adarshajñana",
+        "fr": "Donjon de la maîtrise : Pleine lune",
+        "jp": "熟知秘境：円鏡",
+        "kr": "숙달 비경: 원경",
+        "th": "ดันเจี้ยนแห่งการพัฒนา: กระจกกลมมน",
+        "pt": "Domínio da Proficiência: Lua Cheia",
+        "ru": "Мастерство: Полная луна",
+        "vi": "Mật Cảnh Tinh Thông: Viên Kính"
+    },
+    "4373": {
+        "chs": "炼武秘境：云垢",
+        "cht": "煉武秘境：雲垢",
+        "de": "Sphäre der Kriegskunst: Trübe Wolken",
+        "en": "Domain of Forgery: Tainted Clouds",
+        "es": "Dominio de la forja: Nubes ponzoñosas",
+        "fr": "Donjon d'entraînement : Nuages souillés",
+        "jp": "煉武秘境：雲纏",
+        "kr": "연무 비경: 운구",
+        "th": "ดันเจี้ยนแห่งการต่อสู้: เมฆามัวหมอง",
+        "pt": "Domínio da Forja: Nuvens Contaminadas",
+        "ru": "Воля: Скверные тучи",
+        "vi": "Bí Cảnh Luyện Võ: Mây Bẩn"
+    },
     "5261": {
         "chs": "精通秘境：深炎之底",
         "cht": "精通秘境：深炎之底",
@@ -167,6 +195,34 @@
         "ru": "Воля: Песчаный алтарь",
         "vi": "Bí Cảnh Luyện Võ: Tế Đàn Cát"
     },
+    "4443": {
+        "chs": "精通秘境：妙语",
+        "cht": "精通秘境：妙語",
+        "de": "Sphäre des Verständnisses: Gewitztheit",
+        "en": "Domain of Mastery: Witticism",
+        "es": "Dominio de la maestría: Dharani",
+        "fr": "Donjon de la maîtrise : Trait d'esprit",
+        "jp": "熟知秘境：妙語",
+        "kr": "숙달 비경: 묘언",
+        "th": "ดันเจี้ยนแห่งการพัฒนา: วาทศิลป์",
+        "pt": "Domínio da Proficiência: Sarcasmo",
+        "ru": "Мастерство: Умные речи",
+        "vi": "Mật Cảnh Tinh Thông: Diệu Ngữ"
+    },
+    "4377": {
+        "chs": "炼武秘境：思惑",
+        "cht": "煉武秘境：思惑",
+        "de": "Sphäre der Kriegskunst: Besessenheit",
+        "en": "Domain of Forgery: Obsession",
+        "es": "Dominio de la forja: Raga",
+        "fr": "Donjon d'entraînement : Obsession",
+        "jp": "煉武秘境：思惑",
+        "kr": "연무 비경: 사혹",
+        "th": "ดันเจี้ยนแห่งการต่อสู้: กิเลส",
+        "pt": "Domínio da Forja: Obsessão",
+        "ru": "Воля: Искушение",
+        "vi": "Bí Cảnh Luyện Võ: Tư Hoặc"
+    },
     "5265": {
         "chs": "精通秘境：焚尽之环",
         "cht": "精通秘境：焚盡之環",
@@ -250,5 +306,33 @@
         "pt": "Domínio da Forja: Sepultura da Areia Movediça",
         "ru": "Воля: Песчаная могила",
         "vi": "Bí Cảnh Luyện Võ: Tang Lễ Của Cát"
+    },
+    "4453": {
+        "chs": "精通秘境：律藏",
+        "cht": "精通秘境：律藏",
+        "de": "Sphäre des Verständnisses: Disziplin",
+        "en": "Domain of Mastery: Basket of Discipline",
+        "es": "Dominio de la maestría: Tripitaka",
+        "fr": "Donjon de la maîtrise : Discipline",
+        "jp": "熟知秘境：律蔵",
+        "kr": "숙달 비경: 율장",
+        "th": "ดันเจี้ยนแห่งการพัฒนา: ศีล",
+        "pt": "Domínio da Proficiência: Cânone Páli",
+        "ru": "Мастерство: Корзина дисциплины",
+        "vi": "Mật Cảnh Tinh Thông: Kho Luật"
+    },
+    "4381": {
+        "chs": "炼武秘境：引业",
+        "cht": "煉武秘境：引業",
+        "de": "Sphäre der Kriegskunst: Anleitendes Karma",
+        "en": "Domain of Forgery: Leading Karma",
+        "es": "Dominio de la forja: Karma prarabdha",
+        "fr": "Donjon d'entraînement : Karma",
+        "jp": "煉武秘境：引業",
+        "kr": "연무 비경: 인업",
+        "th": "ดันเจี้ยนแห่งการต่อสู้: กฎแห่งกรรม",
+        "pt": "Domínio da Forja: Prarabdha Karma",
+        "ru": "Воля: Ведущая карма",
+        "vi": "Bí Cảnh Luyện Võ: Dẫn Nghiệp"
     }
 }

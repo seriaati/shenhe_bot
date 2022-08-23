@@ -458,4 +458,44 @@ characters_map = {
         "emoji": "<:10000059:996671191509123073>",
         "eng":"Shikanoin Heizou"
     },
+    "10000005-dendro": {
+        "element": "Dendro",
+        "emoji": "<:10000005:990114640048574484>",
+        "eng": "Traveler",
+        "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerBoy.png",
+        "name": "\u65c5\u884c\u8005",
+        "rarity": 5
+    },
+    "10000007-dendro": {
+        "element": "Dendro",
+        "emoji": "<:10000007:990114645903814716>",
+        "eng": "Traveler",
+        "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerGirl.png",
+        "name": "\u65c5\u884c\u8005",
+        "rarity": 5
+    },
+    "10000067": {
+        "element": "Dendro",
+        "emoji": "<:10000067:1011764746657218691>",
+        "eng": "Collei",
+        "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_Collei.png",
+        "name": "\u67ef\u840a",
+        "rarity": 4
+    },
+    "10000068": {
+        "element": "Electro",
+        "emoji": "<:10000068:1011764832090988625>",
+        "eng": "Dori",
+        "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_Dori.png",
+        "name": "\u591a\u8389",
+        "rarity": 4
+    },
+    "10000069": {
+        "element": "Dendro",
+        "emoji": "<:10000069:1011764998596481074>",
+        "eng": "Tighnari",
+        "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_Tighnari.png",
+        "name": "\u63d0\u7d0d\u91cc",
+        "rarity": 5
+    }
 }

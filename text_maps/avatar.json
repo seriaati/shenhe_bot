@@ -783,6 +783,20 @@
         "ru": "Путешественник",
         "vi": "Nhà Lữ Hành"
     },
+    "10000005-dendro": {
+        "chs": "旅行者",
+        "cht": "旅行者",
+        "de": "Reisender",
+        "en": "Traveler",
+        "es": "Viajero",
+        "fr": "Voyageur",
+        "jp": "旅人",
+        "kr": "여행자",
+        "th": "นักเดินทาง",
+        "pt": "Viajante",
+        "ru": "Путешественник",
+        "vi": "Nhà Lữ Hành"
+    },
     "10000007-anemo": {
         "chs": "旅行者",
         "cht": "旅行者",
@@ -823,20 +837,6 @@
         "th": "นักเดินทาง",
         "pt": "Viajante",
         "ru": "Путешественница",
-        "vi": "Nhà Lữ Hành"
-    },
-    "10000005-dendro": {
-        "chs": "旅行者",
-        "cht": "旅行者",
-        "de": "Reisender",
-        "en": "Traveler",
-        "es": "Viajero",
-        "fr": "Voyageur",
-        "jp": "旅人",
-        "kr": "여행자",
-        "th": "นักเดินทาง",
-        "pt": "Viajante",
-        "ru": "Путешественник",
         "vi": "Nhà Lữ Hành"
     },
     "10000007-dendro": {
