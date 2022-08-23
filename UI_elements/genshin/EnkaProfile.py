@@ -63,6 +63,7 @@ class PageSelect(Select):
         
         if card:
             embed = default_embed()
+            embed.set_author(name=i.user.display_name, icon_url=i.user.avatar)
             embed.set_image(url=f"attachment://card.jpeg")
             fp: BytesIO = self.view.embeds[self.values[0]]
             fp.seek(0)
