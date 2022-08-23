@@ -167,11 +167,11 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
         fight_prop = Image.open(
             f'resources/images/fight_props/{substat.prop_id}.png')
         fight_prop.thumbnail((50, 50))
-        card.paste(fight_prop, (1490, 890), fight_prop)
+        card.paste(fight_prop, (1450, 890), fight_prop)
     
         # write weapon substat text
         draw.text(
-            (1560, 875), f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
+            (1520, 875), f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}", fill='#212121', font=font)
 
     # write weapon level text
     draw.text((1220, 960), f'Lvl. {weapon.level}', font=font, fill='#212121')
@@ -183,7 +183,9 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
     # write talent levels
     x_pos = 1132
     y_pos = 1180
-    for talent in character.skills:
+    for index, talent in enumerate(character.skills):
+        if (character.id == 10000002 or character.id == 10000041) and index == 2:
+            continue
         draw.text((x_pos, y_pos),
                   f'Lvl. {talent.level}', font=font, fill='#212121')
         y_pos += 165
