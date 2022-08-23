@@ -1,12 +1,12 @@
 hit_modes = {
-    'hit': '平均傷害',
-    'avgHit': '沒暴擊傷害',
+    'hit': '沒暴擊傷害',
+    'avgHit': '平均傷害',
     'critHit': '暴擊傷害'
 }
 
 hit_mode_texts = {
-    'hit': 334,
-    'avgHit': 335,
+    'hit': 335,
+    'avgHit': 334,
     'critHit': 336
 }
 
