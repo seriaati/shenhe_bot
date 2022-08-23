@@ -230,7 +230,7 @@ class DamageCalculator:
                         'setKey': artifact.detail.artifact_name_set.replace("'", '').title().replace(' ', '').replace('-', ''),
                         'rarity': artifact.detail.rarity,
                         'level': artifact.level,
-                        'slotKey': 'plume' if artifact.detail.artifact_type.lower() == 'feather' else artifact.detail.artifact_type.lower(),
+                        'slotKey': 'plume' if artifact.detail.artifact_type.name.lower() == 'feather' else artifact.detail.artifact_type.name.lower(),
                         'mainStatKey': good_stats.get(artifact.detail.mainstats.prop_id),
                         'substats': substats,
                         'location': (text_map.get_character_name(character.id, 'en-US')).replace(' ', ''),
