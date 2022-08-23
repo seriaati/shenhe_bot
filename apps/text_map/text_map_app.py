@@ -28,7 +28,7 @@ class TextMap():
         path = to_paths(locale)
         text_map: Dict = self.text_maps[path]
         text = text_map.get(textMapHash)
-        text = re.sub(r"<[^>]*>", "", text)
+        text = re.sub(r"<[^\/][^>]*>", "", text)
         if text is None:
             print(f'text map hash not found: {textMapHash}')
             return None

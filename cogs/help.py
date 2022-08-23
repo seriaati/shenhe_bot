@@ -39,8 +39,13 @@ class Dropdown(Select):
                 break
         command_cog = self.bot.get_cog(cogs[index])
         commands = command_cog.__cog_app_commands__
-        app_command_group = command_cog.__cog_is_app_commands_group__
+        is_group = command_cog.__cog_is_app_commands_group__
         group_name = command_cog.__cog_group_name__
+        app_commands = await self.bot.tree.fetch_commands()
+        app_command_dict = {}
+        for app_command in app_commands:
+            app_command_dict[app_command.name] = app_command.id
+            
         embed = default_embed(
             f'{selected_option.emoji} {selected_option.label}')
         for command in commands:
@@ -56,14 +61,14 @@ class Dropdown(Select):
                     value = text_map.get(hash, i.locale, user_locale)
                 except (ValueError, KeyError):
                     value = command.description
-            if app_command_group:
+            if is_group:
                 embed.add_field(
-                    name=f'`/{group_name} {command.name}`',
+                    name=f'</{group_name} {command.name}:{app_command_dict[group_name]}>',
                     value=value
                 )
             else:
                 embed.add_field(
-                    name=f'`/{command.name}`',
+                    name=f'</{command.name}:{app_command_dict[command.name]}>',
                     value=value
                 )
         await i.response.send_message(embed=embed, ephemeral=True)

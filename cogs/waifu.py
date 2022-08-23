@@ -43,7 +43,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
-                    embed=error_embed(message="輸入 `/waifu` 來自行選擇標籤").set_author(
+                    embed=error_embed(message="輸入 </waifu waifu:1000187021635104889> 來自行選擇標籤").set_author(
                         name="這不是你的操控視窗", icon_url=interaction.user.avatar
                     ),
                     ephemeral=True,
