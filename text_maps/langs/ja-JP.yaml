@@ -135,7 +135,7 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、https://www.hoyolab.com/home　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、 </register:1006486283725590528>コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
 139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
 140: </register:1006486283725590528> コマンドを使用してください
 141: アカウントデータが見つかりません！
@@ -147,7 +147,7 @@
 147: "層"
 148: 深境螺旋の層を選べてくたさい。
 149: 權限がありません。
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
+150: "https://www.hoyolab.com/home にアクセスし、ログインしてください。\n 以下の画像のステップに従ってください。\n\n 1. 右上のアバターをクリック\n 2.マイページ\n 3. 右上の「原神」をクリックします。\n 4. 歯車のアイコンをクリックします。\n 5. すべてのスイッチをONにする"
 151: 樹脂通知設定
 152: 樹脂值
 153: 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
@@ -175,7 +175,7 @@
 175: やること帳に追加します。
 176: '「素材を削除します」のボタンを利用して、やること帳內　な素材を削除してください。'
 177: すでに素材に達しています。
-178: Use </todo:1006486283855605804> to view your todo list
+178: </todo:1006486283855605804> を使用してTODOリストを表示します
 179: 成功
 180: 武器を選択してください
 181: レベルを設定：
