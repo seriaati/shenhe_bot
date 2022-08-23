@@ -731,6 +731,14 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
+            except TimeoutError:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(519, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
         if data.characters is None:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -1180,7 +1188,42 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             try:
                 async with EnkaNetworkAPI("cht") as enka:
-                    data = await enka.fetch_user(uid[0])
+                    try:
+                        data = await enka.fetch_user(uid[0])
+                    except KeyError:
+                        return await i.followup.send(
+                            embed=error_embed(
+                                message=text_map.get(285, i.locale, user_locale)
+                            ).set_author(
+                                name=text_map.get(284, i.locale, user_locale),
+                                icon_url=i.user.avatar,
+                            ),
+                            ephemeral=True,
+                        )
+                    except UIDNotFounded:
+                        return await i.followup.send(
+                            embed=error_embed().set_author(
+                                name=text_map.get(286, i.locale, user_locale),
+                                icon_url=i.user.avatar,
+                            ),
+                            ephemeral=True,
+                        )
+                    except VaildateUIDError:
+                        return await i.followup.send(
+                            embed=error_embed().set_author(
+                                name=text_map.get(286, i.locale, user_locale),
+                                icon_url=i.user.avatar,
+                            ),
+                            ephemeral=True,
+                        )
+                    except TimeoutError:
+                        return await i.followup.send(
+                            embed=error_embed().set_author(
+                                name=text_map.get(519, i.locale, user_locale),
+                                icon_url=i.user.avatar,
+                            ),
+                            ephemeral=True,
+                        )
                 achievement = data.player.achievement
                 await c.execute(
                     "INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?",
