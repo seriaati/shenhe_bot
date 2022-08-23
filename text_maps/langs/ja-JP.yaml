@@ -18,7 +18,7 @@
 18: 探索派遣がありません。
 19: 完了
 20: 探索派遣
-21: "さらにの情報は /stuck を 入力してくたさい。"
+21: "</stuck:1006486283725590536> for more information"
 22: 權限がありません。
 23: エラー
 24: リアルタイムノート
@@ -32,7 +32,7 @@
 32: 言語を選らんでくたさい。
 33: 言語を変更しました
 34: 現在の言語
-35: "さらにの情報は /register を 入力してくたさい。"
+35: "</register:1006486283725590528> for more information"
 36: 無效の cookie
 37: 登錄した アカウント は キャンセル した。
 38: Cookie から キャラが見つかりません。
@@ -71,7 +71,7 @@
 71: 原石
 72: モラ 紀錄
 73: モラ
-74: データ の 更新は /stats を 入力してくたさい。
+74: Use the </stats:1006486283725590530> command to refresh your stats
 75: (このコマンドは 深境螺旋第9層以上のデータ のみ表示します)
 76: 深境螺旋 の データ は見つかえりません
 77: 今期
@@ -135,9 +135,9 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、 <https://www.hoyolab.com>　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、`/reigster`コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
 139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
-140: '`/register`コマンドを使用してください'
+140: Please use the </register:1006486283725590528> command
 141: アカウントデータが見つかりません！
 142: アカウントを選択してください
 143: あなたはこのコマンドの実行者ではありません
@@ -162,7 +162,7 @@
 162: 装備
 163: 装備を選択してください
 164: 装備
-165: "このユーザーはまだアカウント登録をしていません\n登録するには `/register` をしてください。"
+165: "This user hasn't registered their account yet\n</register:1006486283725590528> to register"
 166: 参量物質変化器がありません。
 167: "の UID"
 168: データを入力してください
@@ -175,7 +175,7 @@
 175: やること帳に追加します。
 176: '「素材を削除します」のボタンを利用して、やること帳內　な素材を削除してください。'
 177: すでに素材に達しています。
-178: '「/todo」を入力して やること帳內一覧を表示しくたさい。'
+178: Use </todo:1006486283855605804> to view your todo list
 179: 成功
 180: 武器を選択してください
 181: レベルを設定：
@@ -201,7 +201,7 @@
 201: 武器のレベルアップ
 202: やること帳
 203: 素材を追加
-204: "おめでとう！　やることもありません！　(ᗒᗨᗕ)/\n\nコマンド ：/calc で入力しように　キャラクター　や　武器　の必要な素材を計算してくたさい。\n\nまた、緑なボタンを利用して、新しの素材入力してくさい。"
+204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items"
 205: 素材を取り除く
 206: アイテムをクリア
 207: 削除したいアイテムを選択
@@ -345,17 +345,17 @@
 355: 申鶴が祈願履歴を処理中です...
 356: 祈願履歴のインポートに成功しました！
 357: PCを使用した祈願履歴のインポート
-358: "1. 原神を開く（複数アカウントを使用している場合は、ゲームを再起動してください。）\n 2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ\n 3. キーボードの「START」を押し、「Powershell」を検索する。\n 4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。\n 5. ENTERを押すと、リンクがクリップボードにコピーされます。\n 6. コピーしたリンクを `/wish import` コマンドで送信します。"
+358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command"
 359: Android端末を使用した祈願履歴のインポート
-360: "[解説動画](https://youtu.be/pe_aROJ8Av8)\n 解説動画ではテキスト全体がコピーされていますが、リンクのみを選択し、コピーします（ステップ7）\n\n 1. 祈願画面を開く(原神)\n 2. 祈願履歴を押す\n 3. ロードされるのを待つ\n 4. Wi-Fiとデータ接続をオフにする\n 5. 右上の更新を押す\n 6. ページがエラーを表示し、黒いフォントでいくつかのテキストが表示されます。\n 7. テキストを長押しして、リンク部分を選択し、コピーする。\n 8. Wi-Fiまたはデータ接続をオンにする\n 9. `/wish import`コマンドでそのリンクをここに送信する。"
+360: "[Video tutorial](https://youtu.be/pe_aROJ8Av8)\n The video tutorial copied the entire text, we only want the link here (in step 7)\n\n 1. Open Wish (in the game)\n 2. Press History\n 3. Wait for it to load\n 4. Turn off your Wi-Fi and data connection\n 5. Press refresh on top right corner\n 6. The page should display an error and show you some text with a black font\n 7. Hold the text, select the link part, then copy\n 8. Turn on your Wi-Fi or data connection\n 9. Submit that link here using the </wish import:1000187021635104890> command"
 361: iOS端末を使用した祈願履歴のインポート
-362: "[解説動画](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. App StoreでStreamをダウンロード[here](https://apps.apple.com/app/stream/id1312141691)\n 2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)\n 3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)\n 4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。\n 5. 原神を起動し、祈願画面を開き、そのページにとどまります。\n 6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ\n 7. 原神に戻り、祈願履歴ページを開く\n 8. ページが読み込まれるのを待つ\n 9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）\n 10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） \n 11. Requestタブをクリックし、リンクをコピーする\n 12. `/wish import`コマンドを使用して、そのリンクをここに送信します。"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
 363: プレイステーションでの祈願履歴のインポート
-364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. `/wish import`コマンドを使用して、ここにリンクを送信する。"
+364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
 365: プラットフォームを選択してください
 366: "祈願履歴の言語は、現在選択されている言語に基づいて表示されます。\n 言語を変更しても、以前の記録には影響しません"
 367: 祈願履歴データが見つかりません
-368: "祈願履歴をインポートするには `/wish import` を実行します"
+368: "</wish import:1000187021635104890> to import your wish history"
 369: 祈願履歴
 370: 天井あり（確定限定星５)
 371: 天井あり（星５）
