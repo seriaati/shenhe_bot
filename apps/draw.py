@@ -86,9 +86,15 @@ async def draw_character_card(character: CharacterInfo, locale: Locale | str, se
     # load font
     font_family = get_font(locale)
     
+    character_id = character.id
+    
+    # traveler
+    if character.id == 10000005 or character.id == 10000007:
+        character_id = f'{character.id}-{character.element.name.lower()}'
+    
     # try to get the template
     try:
-        card = Image.open(f'resources/images/templates/build_cards/{character.id}.png')
+        card = Image.open(f'resources/images/templates/build_cards/{character_id}.png')
     except FileNotFoundError:
         return None
     
