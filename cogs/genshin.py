@@ -1,3 +1,4 @@
+import asyncio
 import json
 from datetime import datetime
 from typing import Dict, List
@@ -731,7 +732,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-            except TimeoutError:
+            except asyncio.exceptions.TimeoutError:
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(519, i.locale, user_locale),
@@ -1216,7 +1217,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             ),
                             ephemeral=True,
                         )
-                    except TimeoutError:
+                    except asyncio.exceptions.TimeoutError:
                         return await i.followup.send(
                             embed=error_embed().set_author(
                                 name=text_map.get(519, i.locale, user_locale),
