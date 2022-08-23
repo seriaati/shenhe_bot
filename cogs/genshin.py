@@ -532,10 +532,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         locale = user_locale or i.locale
         locale = to_ambr_top(locale)
-        client = AmbrTopAPI(self.bot.session, lang=locale)
-        domains = await client.get_domain()
-        character_upgrades = await client.get_character_upgrade()
-        weapon_upgrades = await client.get_weapon_upgrade()
+        ambr = AmbrTopAPI(session=self.bot.session, lang=locale)
+        domains = await ambr.get_domain()
+        character_upgrades = await ambr.get_character_upgrade()
+        weapon_upgrades = await ambr.get_weapon_upgrade()
 
         today_domains = []
         for domain in domains:
@@ -549,7 +549,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     for item in upgrade.items:
                         if item.id == reward.id:
                             characters[upgrade.character_id] = (
-                                await client.get_character(upgrade.character_id)
+                                await ambr.get_character(upgrade.character_id)
                             )[0]
 
             weapons: Dict[int, Weapon] = {}
@@ -558,7 +558,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     for item in upgrade.items:
                         if item.id == reward.id:
                             weapons[upgrade.weapon_id] = (
-                                await client.get_weapon(upgrade.weapon_id)
+                                await ambr.get_weapon(upgrade.weapon_id)
                             )[0]
 
             # merge two dicts
