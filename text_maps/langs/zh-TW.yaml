@@ -135,7 +135,7 @@
 135: 未知錯誤
 136: 選擇要註冊的帳號
 137: Cookie 設置流程
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on <https://www.hoyolab.com>\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
 139: 過期或無效的Cookie, 請先登出帳號再重新登入!
 140: Please use the </register:1006486283725590528> command
 141: 找不到帳號資料!
@@ -147,7 +147,7 @@
 147: "層"
 148: 樓層導覽
 149: 資料不公開?
-150: "請至<https://www.hoyolab.com>登入你的hoyoverse帳號\n 跟著下方圖片中的步驟操作\n\n 1. 點選右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: 樹脂提醒設定
 152: 樹脂閥值
 153: 申鶴會在樹脂超過這個數字後提醒你
