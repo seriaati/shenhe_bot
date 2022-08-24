@@ -122,9 +122,13 @@ class Schedule(commands.Cog):
                 coin = notes.current_realm_currency
                 locale = user_locale or "zh-TW"
                 if coin > threshold and current_notif < max_notif:
+                    if notes.current_realm_currency == notes.max_realm_currency:
+                        realm_recover_time = text_map.get(1, locale, user_locale)
+                    else:
+                        realm_recover_time = format_dt(notes.realm_currency_recovery_time, "R")
                     embed = default_embed(
                         message=f"{text_map.get(14, locale)}: {coin}/{notes.max_realm_currency}\n"
-                        f'{text_map.get(15, locale)}: {format_dt(notes.realm_currency_recovery_time, "R")}\n'
+                        f'{text_map.get(15, locale)}: {realm_recover_time}\n'
                         f"{text_map.get(302, locale)}: {threshold}\n"
                         f"{text_map.get(304, locale)}: {max_notif}"
                     )
@@ -194,9 +198,13 @@ class Schedule(commands.Cog):
                 locale = user_locale or "zh-TW"
                 resin = notes.current_resin
                 if resin >= threshold and current_notif < max_notif:
+                    if resin == notes.max_resin:
+                        resin_recover_time = text_map.get(1, locale, user_locale)
+                    else:
+                        resin_recover_time = format_dt(notes.resin_recovery_time, "R")
                     embed = default_embed(
                         message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                        f'{text_map.get(15, locale)}: {format_dt(notes.resin_recovery_time, "R")}\n'
+                        f'{text_map.get(15, locale)}: {resin_recover_time}\n'
                         f"{text_map.get(302, locale)}: {threshold}\n"
                         f"{text_map.get(304, locale)}: {max_notif}"
                     )
