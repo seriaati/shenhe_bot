@@ -106,6 +106,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -135,6 +142,13 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
                     name=text_map.get(22, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
@@ -229,6 +243,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -289,6 +310,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -327,6 +355,13 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
                     name=text_map.get(22, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
@@ -381,6 +416,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -430,6 +472,13 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
                     name=text_map.get(22, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
@@ -521,6 +570,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -581,6 +637,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -626,6 +689,13 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
                     name=text_map.get(22, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
@@ -682,6 +752,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
@@ -712,6 +789,13 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
                     name=text_map.get(22, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
+        except genshin.errors.InvalidCookies:
+            return (
+                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
+                    name=text_map.get(36, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
