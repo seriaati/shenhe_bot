@@ -304,6 +304,10 @@ class Schedule(commands.Cog):
     @resin_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
+        
+    @pot_notification.before_loop
+    async def before_check(self):
+        await self.bot.wait_until_ready()
 
     @talent_notification.before_loop
     async def before_notif(self):
