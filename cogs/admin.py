@@ -1,13 +1,22 @@
 import asyncio
 import importlib
+import json
 import sys
-
+from apps.genshin.utils import get_dummy_client
+from apps.text_map.convert_locale import to_ambr_top_dict
 from discord import Forbidden, Interaction, app_commands, HTTPException
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 import sentry_sdk
 from UI_elements.others import Roles
 from utility.utils import default_embed, error_embed, log
+from apps.genshin.utils import get_dummy_client
+from apps.text_map.convert_locale import to_ambr_top_dict
+from data.game.artifacts import artifacts_map
+from data.game.characters import characters_map
+from data.game.consumables import consumables_map
+from data.game.elements import convert_elements
+from data.game.weapons import weapons_map
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -62,9 +71,9 @@ class AdminCog(commands.Cog, name="admin"):
         await i.response.defer()
         await self.bot.tree.sync()
         await i.followup.send("sync done")
-        
+
     @is_seria()
-    @app_commands.command(name='annouce', description=_("Admin usage only", hash=496))
+    @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
     async def annouce(self, i: Interaction, message: str):
         await i.response.defer()
         total = 0
@@ -75,30 +84,378 @@ class AdminCog(commands.Cog, name="admin"):
                 if member.id not in sent and member.id != self.bot.user.id:
                     total += 1
                     try:
-                        await member.send(message.replace('%n','\n'))
+                        await member.send(message.replace("%n", "\n"))
                         sent.append(member.id)
                         await asyncio.sleep(2.0)
                     except (Forbidden, HTTPException):
                         continue
                     except Exception as e:
-                        log.warning(f"[EXCEPTION][{i.user.id}][View Error]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}")
+                        log.warning(
+                            f"[EXCEPTION][{i.user.id}][View Error]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                        )
                         sentry_sdk.capture_exception(e)
                         continue
                     count += 1
-        await i.followup.send(f'complete: {count}/{total}')
-                    
+        await i.followup.send(f"complete: {count}/{total}")
+
     @is_seria()
-    @app_commands.command(name='status', description=_("Admin usage only", hash=496))
+    @app_commands.command(name="status", description=_("Admin usage only", hash=496))
     async def status(self, i: Interaction):
         await i.response.defer()
         embed = default_embed()
-        embed.add_field(name='Latency', value=f'{round(self.bot.latency*1000)} ms')
-        embed.add_field(name='Servers', value=f'Connected to {len(self.bot.guilds)} servers')
+        embed.add_field(name="Latency", value=f"{round(self.bot.latency*1000)} ms")
+        embed.add_field(
+            name="Servers", value=f"Connected to {len(self.bot.guilds)} servers"
+        )
         count = 0
         for guild in self.bot.guilds:
             count += len(guild.members)
-        embed.add_field(name='Users', value=f'{count} users')
+        embed.add_field(name="Users", value=f"{count} users")
         await i.followup.send(embed=embed)
+
+    @is_seria()
+    @app_commands.command(name="update", description=_("Admin usage only", hash=496))
+    async def update(self, i: Interaction):
+        if i.user.id != 410036441129943050:
+            return await i.response.send_message(
+                embed=error_embed(message="你不是小雪本人").set_author(
+                    name="生物驗證失敗", icon_url=i.user.avatar
+                ),
+                ephemeral=True,
+            )
+        await i.response.send_message(
+            embed=default_embed().set_author(name="更新資料開始", icon_url=i.user.avatar)
+        )
+
+        # character, weapon, material, artifact text map
+        things_to_update = ["avatar", "weapon", "material", "reliquary"]
+        for thing in things_to_update:
+            dict = {}
+            for lang in list(to_ambr_top_dict.values()):
+                async with self.bot.session.get(
+                    f"https://api.ambr.top/v2/{lang}/{thing}"
+                ) as r:
+                    data = await r.json()
+                for character_id, character_info in data["data"]["items"].items():
+                    if character_id not in dict:
+                        dict[character_id] = {}
+                    dict[character_id][lang] = character_info["name"]
+            if thing == "avatar":
+                dict["10000007"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
+                dict["10000005"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
+            if thing == "material":
+                dict["202"] = {
+                    "chs": "摩拉",
+                    "cht": "摩拉",
+                    "de": "Mora",
+                    "en": "Mora",
+                    "es": "Mora",
+                    "fr": "Mora",
+                    "jp": "モラ",
+                    "kr": "모라",
+                    "th": "Mora",
+                    "pt": "Mora",
+                    "ru": "Mopa",
+                    "vi": "Mora",
+                }
+                dict["104003"] = {
+                    "chs": "大英雄的经验",
+                    "cht": "大英雄的經驗",
+                    "de": "Eines Helden Weisheit",
+                    "en": "Mora",
+                    "es": "Ingenio del héroe",
+                    "fr": "Leçons du héros",
+                    "jp": "大英雄の経験",
+                    "kr": "영웅의 경험",
+                    "th": "Hero's Wit",
+                    "pt": "EXP do Herói",
+                    "ru": "Опыт героя",
+                    "vi": "Kinh Nghiệm Anh Hùng",
+                }
+                dict["104013"] = {
+                    "chs": "精锻用魔矿",
+                    "cht": "精鍛用魔礦",
+                    "de": "Mystisches Verstärkungserz",
+                    "en": "Mystic Enhancement Ore",
+                    "es": "Mineral de refinamiento místico",
+                    "fr": "Minerai de renforcement mystique",
+                    "jp": "仕上げ用魔鉱",
+                    "kr": "정제용 마법 광물",
+                    "th": "Mystic Enhancement Ore",
+                    "pt": "Minério de Refinamento Místico",
+                    "ru": "Волшебная руда усиления",
+                    "vi": "Ma Khoáng Tinh Đúc",
+                }
+            with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
+                json.dump(dict, f, indent=4, ensure_ascii=False)
+
+        await i.followup.send(
+            embed=default_embed().set_author(
+                name="角色、武器、素材、聖遺物 text map 更新成功", icon_url=i.user.avatar
+            )
+        )
+
+        # daily dungeon text map
+        dict = {}
+        for lang in list(to_ambr_top_dict.values()):
+            async with self.bot.session.get(
+                f"https://api.ambr.top/v2/{lang}/dailyDungeon"
+            ) as r:
+                data = await r.json()
+            for weekday, domains in data["data"].items():
+                for domain, domain_info in domains.items():
+                    if str(domain_info["id"]) not in dict:
+                        dict[str(domain_info["id"])] = {}
+                    dict[str(domain_info["id"])][lang] = domain_info["name"]
+        with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
+            json.dump(dict, f, indent=4, ensure_ascii=False)
+
+        await i.followup.send(
+            embed=default_embed().set_author(
+                name="秘境關卡 text map 更新成功", icon_url=i.user.avatar
+            )
+        )
+
+        client = get_dummy_client()
+        client.lang = "zh-tw"
+
+        # artifacts
+        result = {}
+        artifacts = await client.get_calculator_artifacts()
+        for artifact in artifacts:
+            if str(artifact.id) in artifacts_map:
+                continue
+            result[str(artifact.id)] = {
+                "name": artifact.name,
+                "icon": artifact.icon,
+                "ratity": artifact.rarity,
+                "artifacts": [],
+                "emoji": "",
+            }
+            other_artifacts = await client.get_complete_artifact_set(artifact.id)
+            for other_artifact in other_artifacts:
+                result[str(artifact.id)]["artifacts"].append(other_artifact.name)
+
+        result = json.dumps(result, indent=4, sort_keys=True)
+
+        await i.followup.send(
+            embed=default_embed(message=f"```py\n{result}\n```").set_author(
+                name="聖遺物", icon_url=i.user.avatar
+            )
+        )
+
+        # characters
+        result = {}
+        characters = await client.get_calculator_characters()
+        for character in characters:
+            if str(character.id) in characters_map:
+                continue
+            result[str(character.id)] = {
+                "name": character.name,
+                "icon": character.icon,
+                "element": character.element,
+                "rarity": character.rarity,
+                "emoji": "",
+                "eng": "",
+            }
+        # character english names
+        client.lang = "en-us"
+        characters = await client.get_calculator_characters()
+        for character in characters:
+            if str(character.id) in result:
+                result[str(character.id)]["eng"] = character.name
+
+        async with self.bot.session.get(f"https://api.ambr.top/v2/cht/avatar") as r:
+            characters = await r.json()
+
+        for character_id, character_info in characters["data"]["items"].items():
+            if "beta" not in character_info and character_id not in characters_map:
+                result[character_id] = {
+                    "name": character_info["name"],
+                    "icon": f'https://api.ambr.top/assets/UI/{character_info["icon"]}.png',
+                    "rarity": character_info["rank"],
+                    "emoji": "",
+                    "element": convert_elements.get(character_info["element"]),
+                    "eng": "",
+                }
+
+        async with self.bot.session.get(f"https://api.ambr.top/v2/en/avatar") as r:
+            characters = await r.json()
+
+        for character_id, character_info in characters["data"]["items"].items():
+            if character_id in result:
+                result[character_id]["eng"] = character_info["name"]
+
+        result = json.dumps(result, indent=4, sort_keys=True)
+
+        await i.followup.send(
+            embed=default_embed(message=f"```py\n{result}\n```").set_author(
+                name="角色", icon_url=i.user.avatar
+            )
+        )
+
+        # weapons
+        client.lang = "zh-tw"
+        result = {}
+        weapons = await client.get_calculator_weapons()
+        for weapon in weapons:
+            if str(weapon.id) in weapons_map:
+                continue
+            result[str(weapon.id)] = {
+                "name": weapon.name,
+                "icon": weapon.icon,
+                "rarity": weapon.rarity,
+                "emoji": "",
+                "eng": "",
+            }
+        client.lang = "en-us"
+        weapons = await client.get_calculator_weapons()
+        for weapon in weapons:
+            if str(weapon.id) in result:
+                result[str(weapon.id)]["eng"] = weapon.name
+
+        async with self.bot.session.get(f"https://api.ambr.top/v2/cht/weapon") as r:
+            weapons = await r.json()
+
+        for weapon_id, weapon_info in weapons["data"]["items"].items():
+            if "beta" not in weapon_info and weapon_id not in weapons_map:
+                result[weapon_id] = {
+                    "name": weapon_info["name"],
+                    "icon": f'https://api.ambr.top/assets/UI/{weapon_info["icon"]}.png',
+                    "rarity": weapon_info["rank"],
+                    "emoji": "",
+                    "eng": "",
+                }
+
+        async with self.bot.session.get(f"https://api.ambr.top/v2/en/weapon") as r:
+            weapons = await r.json()
+
+        for weapon_id, weapon_info in weapons["data"]["items"].items():
+            if weapon_id in result:
+                result[weapon_id]["eng"] = weapon_info["name"]
+
+        result = json.dumps(result, indent=4, sort_keys=True)
+
+        await i.followup.send(
+            embed=default_embed(message=f"```py\n{result}\n```").set_author(
+                name="武器", icon_url=i.user.avatar
+            )
+        )
+
+        # materials
+        # result = {}
+
+        # async with self.bot.session.get(f"https://api.ambr.top/v2/cht/material") as r:
+        #     materials = await r.json()
+
+        # needed = [
+        #     "forgingOre",
+        #     "localSpecialtyMondstadt",
+        #     "localSpecialtyLiyue",
+        #     "localSpecialtyInazuma",
+        #     "characterLevelUpMaterial",
+        #     "weaponAscensionMaterial",
+        #     "talentLevelUpMaterial",
+        #     "sumeruRegionalSpecialty",
+        #     "talentLevelUpMaterials",
+        # ]
+
+        # for material_id, material_info in materials["data"]["items"].items():
+        #     if (
+        #         "beta" not in material_info
+        #         and material_id not in consumables_map
+        #         and material_info["type"] in needed
+        #     ):
+        #         result[material_id] = {
+        #             "name": material_info["name"],
+        #             "icon": f'https://api.ambr.top/assets/UI/{material_info["icon"]}.png',
+        #             "emoji": "",
+        #         }
+
+        # result = json.dumps(result, indent=4, sort_keys=True)
+
+        # if len(result) > 4096:
+        #     pprint.pprint(result)
+        # else:
+        #     await i.followup.send(
+        #         embed=default_embed(message=f"```py\n{result}\n```").set_author(
+        #             name="素材", icon_url=i.user.avatar
+        #         )
+        #     )
+
+        # check emojis
+        message = ""
+        for artifact, artifact_info in artifacts_map.items():
+            message += artifact_info["emoji"]
+        await i.followup.send(
+            embed=default_embed(message=message).set_author(
+                name="聖遺物 emoji", icon_url=i.user.avatar
+            )
+        )
+
+        message = ""
+        for character, character_info in characters_map.items():
+            message += character_info["emoji"]
+        await i.followup.send(
+            embed=default_embed(message=message).set_author(
+                name="角色 emoji", icon_url=i.user.avatar
+            )
+        )
+
+        message = ""
+        for weapon, weapon_info in weapons_map.items():
+            message += weapon_info["emoji"]
+        await i.followup.send(
+            embed=default_embed(message=message).set_author(
+                name="武器 emoji", icon_url=i.user.avatar
+            )
+        )
+
+        messages = []
+        message = ""
+        for consumable, consumable_info in consumables_map.items():
+            if (len(message) + len(consumable_info["emoji"])) > 4096:
+                messages.append(message)
+                message = ""
+            message += consumable_info["emoji"]
+        messages.append(message)
+
+        for message in messages:
+            await i.followup.send(
+                embed=default_embed(message=message).set_author(
+                    name="素材 emoji", icon_url=i.user.avatar
+                )
+            )
+
+        await i.followup.send(
+            embed=default_embed().set_author(name="更新資料完畢", icon_url=i.user.avatar)
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
