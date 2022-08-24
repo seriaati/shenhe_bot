@@ -107,8 +107,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -135,8 +139,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -222,8 +230,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -278,8 +290,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -315,8 +331,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -362,8 +382,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -410,8 +434,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -494,8 +522,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -550,8 +582,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -594,8 +630,12 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
-                error_embed(message=f"```{e}```").set_author(
+                error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
@@ -642,16 +682,13 @@ class GenshinApp:
                 ),
                 False,
             )
-        except genshin.errors.GenshinException:
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
                 error_embed().set_author(
-                    name=text_map.get(107, locale, user_locale), icon_url=user.avatar
-                ),
-                False,
-            )
-        except Exception as e:
-            return (
-                error_embed(message=f"```{e}```").set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
