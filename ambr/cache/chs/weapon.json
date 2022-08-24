@@ -199,8 +199,7 @@
                 "type": "WEAPON_SWORD_ONE_HAND",
                 "name": "原木刀",
                 "icon": "UI_EquipIcon_Sword_Arakalari",
-                "route": "Sapwood Blade",
-                "beta": true
+                "route": "Sapwood Blade"
             },
             "11501": {
                 "id": 11501,
@@ -432,8 +431,7 @@
                 "type": "WEAPON_CLAYMORE",
                 "name": "森林王器",
                 "icon": "UI_EquipIcon_Claymore_Arakalari",
-                "route": "Forest Regalia",
-                "beta": true
+                "route": "Forest Regalia"
             },
             "12501": {
                 "id": 12501,
@@ -625,8 +623,7 @@
                 "type": "WEAPON_POLE",
                 "name": "贯月矢",
                 "icon": "UI_EquipIcon_Pole_Arakalari",
-                "route": "Moonpiercer",
-                "beta": true
+                "route": "Moonpiercer"
             },
             "13501": {
                 "id": 13501,
@@ -850,8 +847,7 @@
                 "type": "WEAPON_CATALYST",
                 "name": "盈满之实",
                 "icon": "UI_EquipIcon_Catalyst_Arakalari",
-                "route": "Fruit of Fulfillment",
-                "beta": true
+                "route": "Fruit of Fulfillment"
             },
             "14501": {
                 "id": 14501,
@@ -1091,8 +1087,7 @@
                 "type": "WEAPON_BOW",
                 "name": "王下近侍",
                 "icon": "UI_EquipIcon_Bow_Arakalari",
-                "route": "King's Squire",
-                "beta": true
+                "route": "King's Squire"
             },
             "15418": {
                 "id": 15418,
@@ -1100,8 +1095,7 @@
                 "type": "WEAPON_BOW",
                 "name": "竭泽",
                 "icon": "UI_EquipIcon_Bow_Fin",
-                "route": "End of the Line",
-                "beta": true
+                "route": "End of the Line"
             },
             "15501": {
                 "id": 15501,
@@ -1173,8 +1167,7 @@
                 "type": "WEAPON_BOW",
                 "name": "猎人之径",
                 "icon": "UI_EquipIcon_Bow_Ayus",
-                "route": "Hunter's Path",
-                "beta": true
+                "route": "Hunter's Path"
             }
         }
     }

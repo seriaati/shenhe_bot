@@ -314,7 +314,7 @@
                 ],
                 "affixList": {
                     "2150050": "Erhöht den Elektro-Schaden um 15 %.",
-                    "2150051": "Erhöht den mit den Effekten „Überladen“, „Unter Strom“ und „Supraleiter“ verursachten Schaden um 40 %. Verringert die Abklingzeit der Elementarfähigkeit beim Auslösen dieser Elementareffekte um 1 s. 0,8 s Abklingzeit."
+                    "2150051": "Erhöht den mit den Reaktionen „Überladen“, „Unter Strom“, „Supraleiter“ und „Supraspross“ verursachten Schaden um 40 %. Erhöht den Effekt des ANG-Bonus der Reaktion „Suprawuchs“ um 20 %. Verkürzt die Abklingzeit der Elementarfähigkeit beim Auslösen dieser Elementarreaktionen und der Reaktion „Urwuchs“ um 1 s. 0,8 s Abklingzeit."
                 },
                 "icon": "UI_RelicIcon_15005_4",
                 "route": "Thundering Fury",
@@ -329,7 +329,7 @@
                 ],
                 "affixList": {
                     "2150060": "Erhöht den Pyro-Schaden um 15 %.",
-                    "2150061": "Erhöht den mit den Reaktionen „Überladen“ und „In Flammen“ verursachten Schaden um 40 % und den von den Reaktionen „Verdampfen“ und „Schmelzen“ betroffenen Gegnern zugefügten Schaden um 15 %. Erhöht den Effekt eines 2er-Sets bei Anwendung von Elementarfähigkeiten 10 s lang um 50 %, 3-fach stapelbar."
+                    "2150061": "Erhöht den mit den Reaktionen „Überladen“, „In Flammen“ und „Flammenspross“ verursachten Schaden um 40 % und den den von den Reaktionen „Verdampfen“ und „Schmelzen“ betroffenen Gegnern zugefügten Schaden um 15 %. Erhöht den Effekt eines 2er-Sets bei Anwendung von Elementarfähigkeiten 10 s lang um 50 %, 3-fach stapelbar."
                 },
                 "icon": "UI_RelicIcon_15006_4",
                 "route": "Crimson Witch of Flames",
@@ -599,8 +599,7 @@
                 },
                 "icon": "UI_RelicIcon_15025_4",
                 "route": "Deepwood Memories",
-                "sortOrder": 82,
-                "beta": true
+                "sortOrder": 82
             },
             "15026": {
                 "id": 15026,
@@ -615,8 +614,7 @@
                 },
                 "icon": "UI_RelicIcon_15026_4",
                 "route": "Gilded Dreams",
-                "sortOrder": 83,
-                "beta": true
+                "sortOrder": 83
             }
         }
     }

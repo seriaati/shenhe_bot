@@ -314,7 +314,7 @@
                 ],
                 "affixList": {
                     "2150050": "Nhận 15% buff sát thương nguyên tố Lôi",
-                    "2150051": "Sát thương phản ứng quá tải, điện cảm, siêu dẫn tăng 40%. Khi kích hoạt những phản ứng nguyên tố này, CD kỹ năng nguyên tố giảm 1s. Hiệu quả này mỗi 0.8s thi triển nhiều nhất một lần."
+                    "2150051": "Sát thương tạo thành từ phản ứng Quá Tải, Điện Cảm, Siêu Dẫn, Nở Rộ tăng 40%; sát thương từ phản ứng Tăng Cường tăng 20%. Khi kích hoạt phản ứng Sinh Trưởng hoặc những phản ứng nêu trên, CD Kỹ Năng Nguyên Tố giảm 1s. Hiệu quả này mỗi 0.8s tối đa kích hoạt một lần."
                 },
                 "icon": "UI_RelicIcon_15005_4",
                 "route": "Thundering Fury",
@@ -329,7 +329,7 @@
                 ],
                 "affixList": {
                     "2150060": "Nhận 15% buff sát thương nguyên tố Hỏa.",
-                    "2150061": "Sát thương phản ứng Quá Tải, Thiêu Đốt gây ra tăng 40%, phản ứng Bốc Hơi, Tan Chảy tăng hệ số buff 15%. 10s sau khi thi triển kỹ năng Nguyên Tố, hiệu quả của 2 món tăng 50%. Hiệu quả này tối đa cộng dồn 3 lần."
+                    "2150061": "Sát thương phản ứng Quá Tải, Thiêu Đốt, Bung Tỏa gây ra tăng 40%, phản ứng Bốc Hơi, Tan Chảy tăng hệ số buff 15%. 10s sau khi thi triển kỹ năng Nguyên Tố, hiệu quả của 2 món tăng 50%. Hiệu quả này tối đa cộng dồn 3 lần."
                 },
                 "icon": "UI_RelicIcon_15006_4",
                 "route": "Crimson Witch of Flames",
@@ -599,8 +599,7 @@
                 },
                 "icon": "UI_RelicIcon_15025_4",
                 "route": "Deepwood Memories",
-                "sortOrder": 82,
-                "beta": true
+                "sortOrder": 82
             },
             "15026": {
                 "id": 15026,
@@ -615,8 +614,7 @@
                 },
                 "icon": "UI_RelicIcon_15026_4",
                 "route": "Gilded Dreams",
-                "sortOrder": 83,
-                "beta": true
+                "sortOrder": 83
             }
         }
     }

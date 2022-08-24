@@ -3,43 +3,46 @@
     "data": {
         "types": {
             "forgingOre": "Quặng Đúc",
-            "food": "Thực phẩm",
             "cookingIngredient": "Nguyên Liệu Thực Phẩm",
-            "localSpecialtyMondstadt": "Đặc Sản Khu Vực Mondstadt",
             "material": "Nguyên Liệu",
+            "localSpecialtyMondstadt": "Đặc Sản Khu Vực Mondstadt",
             "localSpecialtyLiyue": "Đặc Sản Khu Vực Liyue",
             "localSpecialtyInazuma": "Đặc Sản Khu Vực Inazuma",
+            "sumeruRegionalSpecialty": "Đặc Sản Khu Vực Sumeru",
             "potion": "Thuốc",
             "characterLevelUpMaterial": "Nguyên Liệu Bồi Dưỡng Nhân Vật",
             "weaponAscensionMaterial": "Nguyên Liệu Đột Phá Vũ Khí",
             "questItem": "Đạo Cụ Nhiệm Vụ",
             "talentLevelUpMaterial": "Nguyên Liệu Bồi Dưỡng Thiên Phú",
+            "talentLevelUpMaterials": "Nguyên Liệu Bồi Dưỡng Thiên Phú",
             "adventureItem": "Đạo Cụ Mạo Hiểm",
             "consumable": "Vật Phẩm Tiêu Hao",
-            "gadget": "Đạo Cụ Nhỏ",
-            "sumeruRegionalSpecialty": "Đặc Sản Khu Vực Sumeru",
-            "talentLevelUpMaterials": "Nguyên Liệu Bồi Dưỡng Thiên Phú"
+            "gadget": "Đạo cụ nhỏ",
+            "specialCurrency": "Tiền Hiếm",
+            "commonCurrency": "Tiền Thông Dụng",
+            "characterexpMaterial": "Nguyên Liệu EXP Nhân Vật",
+            "weaponEnhancementMaterial": "Nguyên Liệu Cường Hóa Vũ Khí"
         },
         "items": {
-            "100001": {
-                "id": 100001,
-                "name": "Táo",
-                "type": "food",
+            "201": {
+                "id": 201,
+                "name": "Nguyên Thạch",
+                "type": "specialCurrency",
                 "recipe": false,
                 "mapMark": false,
-                "icon": "UI_ItemIcon_100001",
-                "rank": 1,
-                "route": "Apple"
+                "icon": "UI_ItemIcon_201",
+                "rank": 5,
+                "route": "Primogem"
             },
-            "100002": {
-                "id": 100002,
-                "name": "Quả Nhật Lạc",
-                "type": "food",
+            "202": {
+                "id": 202,
+                "name": "Mora",
+                "type": "commonCurrency",
                 "recipe": false,
                 "mapMark": false,
-                "icon": "UI_ItemIcon_100002",
-                "rank": 1,
-                "route": "Sunsettia"
+                "icon": "UI_ItemIcon_202",
+                "rank": 3,
+                "route": "Mora"
             },
             "100011": {
                 "id": 100011,
@@ -831,16 +834,6 @@
                 "rank": 1,
                 "route": "Lavender Melon"
             },
-            "101212": {
-                "id": 101212,
-                "name": "Nấm Sao",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_101212",
-                "rank": 1,
-                "route": "Starshroom"
-            },
             "101213": {
                 "id": 101213,
                 "name": "Nấm Thánh Rukkhashava",
@@ -849,8 +842,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101213",
                 "rank": 1,
-                "route": "Rukkhashava Mushrooms",
-                "beta": true
+                "route": "Rukkhashava Mushrooms"
             },
             "101214": {
                 "id": 101214,
@@ -860,8 +852,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101214",
                 "rank": 1,
-                "route": "Padisarah",
-                "beta": true
+                "route": "Padisarah"
             },
             "101215": {
                 "id": 101215,
@@ -871,8 +862,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101215",
                 "rank": 1,
-                "route": "Nilotpala Lotus",
-                "beta": true
+                "route": "Nilotpala Lotus"
             },
             "101216": {
                 "id": 101216,
@@ -882,8 +872,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101216",
                 "rank": 1,
-                "route": "Harra Fruit",
-                "beta": true
+                "route": "Harra Fruit"
             },
             "101217": {
                 "id": 101217,
@@ -893,8 +882,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101217",
                 "rank": 1,
-                "route": "Kalpalata Lotus",
-                "beta": true
+                "route": "Kalpalata Lotus"
             },
             "101218": {
                 "id": 101218,
@@ -904,8 +892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101218",
                 "rank": 1,
-                "route": "Zaytun Peach",
-                "beta": true
+                "route": "Zaytun Peach"
             },
             "101219": {
                 "id": 101219,
@@ -915,8 +902,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101219",
                 "rank": 1,
-                "route": "Sumeru Rose",
-                "beta": true
+                "route": "Sumeru Rose"
             },
             "101228": {
                 "id": 101228,
@@ -926,8 +912,67 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101228",
                 "rank": 1,
-                "route": "Viparyas",
-                "beta": true
+                "route": "Viparyas"
+            },
+            "104001": {
+                "id": 104001,
+                "name": "Kinh Nghiệm Kẻ Lang Thang",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104001",
+                "rank": 2,
+                "route": "Wanderer's Advice"
+            },
+            "104002": {
+                "id": 104002,
+                "name": "EXP Nhà Mạo Hiểm",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104002",
+                "rank": 3,
+                "route": "Adventurer's Experience"
+            },
+            "104003": {
+                "id": 104003,
+                "name": "Kinh Nghiệm Anh Hùng",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104003",
+                "rank": 4,
+                "route": "Hero's Wit"
+            },
+            "104011": {
+                "id": 104011,
+                "name": "Tạp Khoáng Tinh Đúc",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104011",
+                "rank": 1,
+                "route": "Enhancement Ore"
+            },
+            "104012": {
+                "id": 104012,
+                "name": "Lương Khoáng Tinh Đúc",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104012",
+                "rank": 2,
+                "route": "Fine Enhancement Ore"
+            },
+            "104013": {
+                "id": 104013,
+                "name": "Ma Khoáng Tinh Đúc",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104013",
+                "rank": 3,
+                "route": "Mystic Enhancement Ore"
             },
             "104101": {
                 "id": 104101,
@@ -1053,7 +1098,7 @@
                 "id": 104131,
                 "name": "Vụn Ngọc Bích Sinh Trưởng",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104131",
                 "rank": 2,
@@ -1063,7 +1108,7 @@
                 "id": 104132,
                 "name": "Mảnh Ngọc Bích Sinh Trưởng",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104132",
                 "rank": 3,
@@ -1073,7 +1118,7 @@
                 "id": 104133,
                 "name": "Miếng Ngọc Bích Sinh Trưởng",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104133",
                 "rank": 4,
@@ -1083,7 +1128,7 @@
                 "id": 104134,
                 "name": "Ngọc Bích Sinh Trưởng",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104134",
                 "rank": 5,
@@ -1541,102 +1586,93 @@
             },
             "104329": {
                 "id": 104329,
-                "name": "???",
+                "name": "Bài Giảng Của \"Khuyên Nhủ\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104329",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Admonition"
             },
             "104330": {
                 "id": 104330,
-                "name": "???",
+                "name": "Hướng Dẫn Của \"Khuyên Nhủ\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104330",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Admonition"
             },
             "104331": {
                 "id": 104331,
-                "name": "???",
+                "name": "Triết Học Của \"Khuyên Nhủ\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104331",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Admonition"
             },
             "104332": {
                 "id": 104332,
-                "name": "???",
+                "name": "Bài Giảng Của \"Tinh Tế\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104332",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Ingenuity"
             },
             "104333": {
                 "id": 104333,
-                "name": "???",
+                "name": "Hướng Dẫn Của \"Tinh Tế\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104333",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Ingenuity"
             },
             "104334": {
                 "id": 104334,
-                "name": "???",
+                "name": "Triết Học Của \"Tinh Tế\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104334",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Ingenuity"
             },
             "104335": {
                 "id": 104335,
-                "name": "???",
+                "name": "Bài Giảng Của \"Thực Hành\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104335",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Praxis"
             },
             "104336": {
                 "id": 104336,
-                "name": "???",
+                "name": "Hướng Dẫn Của \"Thực Hành\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104336",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Praxis"
             },
             "104337": {
                 "id": 104337,
-                "name": "???",
+                "name": "Triết Học Của \"Thực Hành\"",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104337",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Praxis"
             },
             "107001": {
                 "id": 107001,
@@ -1677,2066 +1713,6 @@
                 "icon": "UI_ItemIcon_107014",
                 "rank": 1,
                 "route": "Electroculus"
-            },
-            "108003": {
-                "id": 108003,
-                "name": "Bánh Người Cá",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1001",
-                "rank": 2,
-                "route": "Fisherman's Toast",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108006": {
-                "id": 108006,
-                "name": "Trứng Chiên Teyvat",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2001",
-                "rank": 1,
-                "route": "Teyvat Fried Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108009": {
-                "id": 108009,
-                "name": "Sườn Nướng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3001",
-                "rank": 1,
-                "route": "Steak",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108010": {
-                "id": 108010,
-                "name": "Thịt Nướng Kỵ Sĩ Trinh Thám!",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108010",
-                "rank": 1,
-                "route": "Outrider's Champion Steak!",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108013": {
-                "id": 108013,
-                "name": "Xiên Thịt Gà Nấm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1002",
-                "rank": 1,
-                "route": "Chicken-Mushroom Skewer",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108014": {
-                "id": 108014,
-                "name": "Xiên Rau Củ Nướng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108014",
-                "rank": 1,
-                "route": "Fruity Skewers",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108017": {
-                "id": 108017,
-                "name": "Mỳ Sốt Thịt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1003",
-                "rank": 2,
-                "route": "Flaming Red Bolognese",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108018": {
-                "id": 108018,
-                "name": "Mì Tương Ma Pháp",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108018",
-                "rank": 2,
-                "route": "Mysterious Bolognese",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108021": {
-                "id": 108021,
-                "name": "Canh Rau Củ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3002",
-                "rank": 1,
-                "route": "Radish Veggie Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108024": {
-                "id": 108024,
-                "name": "Bánh Xốp",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4001",
-                "rank": 2,
-                "route": "Tea Break Pancake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108027": {
-                "id": 108027,
-                "name": "Củ Cải Viên Chiên",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4002",
-                "rank": 2,
-                "route": "Fried Radish Balls",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108030": {
-                "id": 108030,
-                "name": "Gỏi Mãn Nguyện",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4003",
-                "rank": 2,
-                "route": "Satisfying Salad",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108033": {
-                "id": 108033,
-                "name": "Gà Nấu Hoa Ngọt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1004",
-                "rank": 2,
-                "route": "Sweet Madame",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108036": {
-                "id": 108036,
-                "name": "Gà Xông Khói Phía Bắc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2002",
-                "rank": 2,
-                "route": "Northern Smoked Chicken",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108039": {
-                "id": 108039,
-                "name": "Rau Củ Hầm Kem",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2003",
-                "rank": 2,
-                "route": "Cream Stew",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108040": {
-                "id": 108040,
-                "name": "Cà Rốt Cay Xè",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108040",
-                "rank": 2,
-                "route": "Spicy Stew",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108043": {
-                "id": 108043,
-                "name": "Pizza Nấm Rơm Nướng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1005",
-                "rank": 3,
-                "route": "Mushroom Pizza",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108044": {
-                "id": 108044,
-                "name": "Pizza Tỉnh Táo",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108044",
-                "rank": 3,
-                "route": "Invigorating Pizza",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108047": {
-                "id": 108047,
-                "name": "Bánh Khoai Tây Mondstadt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3003",
-                "rank": 3,
-                "route": "Mondstadt Hash Brown",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108048": {
-                "id": 108048,
-                "name": "Bánh Khoai Tây",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108048",
-                "rank": 3,
-                "route": "Puppy-Paw Hash Brown",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108051": {
-                "id": 108051,
-                "name": "Súp Hải Sản Hoa Calla Lily",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1006",
-                "rank": 3,
-                "route": "Calla Lily Seafood Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108054": {
-                "id": 108054,
-                "name": "Nhung Tùng Rán Bơ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1007",
-                "rank": 3,
-                "route": "Sautéed Matsutake",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108057": {
-                "id": 108057,
-                "name": "Pile 'Em Up",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3004",
-                "rank": 3,
-                "route": "\"Pile 'Em Up\"",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108058": {
-                "id": 108058,
-                "name": "Truyện Kể Mondstadt",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108058",
-                "rank": 3,
-                "route": "\"Once Upon a Time in Mondstadt\"",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108061": {
-                "id": 108061,
-                "name": "Thịt Lạnh",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2004",
-                "rank": 3,
-                "route": "Cold Cut Platter",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108064": {
-                "id": 108064,
-                "name": "Thịt Nướng Mật Ong",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2005",
-                "rank": 3,
-                "route": "Sticky Honey Roast",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108067": {
-                "id": 108067,
-                "name": "Bánh Rau Giăm Bông Gạch Cua",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2006",
-                "rank": 3,
-                "route": "Crab, Ham & Veggie Bake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108070": {
-                "id": 108070,
-                "name": "Túi Thập Cẩm Phỉ Ngọc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4004",
-                "rank": 4,
-                "route": "Jade Parcels",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108073": {
-                "id": 108073,
-                "name": "Lòng Trung Nguyên",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108072",
-                "rank": 3,
-                "route": "Zhongyuan Chop Suey",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108076": {
-                "id": 108076,
-                "name": "Cá Chép Đen Hấp",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108075",
-                "rank": 3,
-                "route": "Black-Back Perch Stew",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108079": {
-                "id": 108079,
-                "name": "Cá Đuôi Sóc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108078",
-                "rank": 3,
-                "route": "Squirrel Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108082": {
-                "id": 108082,
-                "name": "Đậu Hũ Hạnh Nhân",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_100428",
-                "rank": 2,
-                "route": "Almond Tofu",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108085": {
-                "id": 108085,
-                "name": "Gà Cay Thơm Mềm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108084",
-                "rank": 2,
-                "route": "Jueyun Chili Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108088": {
-                "id": 108088,
-                "name": "Canh Trân Châu Phỉ Thúy Bạch Ngọc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108087",
-                "rank": 2,
-                "route": "Jewelry Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108091": {
-                "id": 108091,
-                "name": "Nhung Tùng Ủ Thịt Cuộn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108090",
-                "rank": 2,
-                "route": "Matsutake Meat Rolls",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108094": {
-                "id": 108094,
-                "name": "Thịt Mora",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108093",
-                "rank": 1,
-                "route": "Mora Meat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108097": {
-                "id": 108097,
-                "name": "Cá Nướng Mondstadt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108096",
-                "rank": 1,
-                "route": "Mondstadt Grilled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108100": {
-                "id": 108100,
-                "name": "Thịt Xào Ớt Tuyệt Vân",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108099",
-                "rank": 1,
-                "route": "Stir-Fried Filet",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108103": {
-                "id": 108103,
-                "name": "Cua Hoàng Kim",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108102",
-                "rank": 4,
-                "route": "Golden Crab",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108106": {
-                "id": 108106,
-                "name": "Tôm Pha Lê",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108105",
-                "rank": 2,
-                "route": "Crystal Shrimp",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108109": {
-                "id": 108109,
-                "name": "Cá Hổ Nướng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108108",
-                "rank": 1,
-                "route": "Grilled Tiger Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108112": {
-                "id": 108112,
-                "name": "Thập Cẩm Phong Thần",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108111",
-                "rank": 3,
-                "route": "Barbatos Ratatouille",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108113": {
-                "id": 108113,
-                "name": "Chân - Thập Cẩm Phong Thần",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108113",
-                "rank": 3,
-                "route": "A Buoyant Breeze",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108114": {
-                "id": 108114,
-                "name": "Thông Minh Tột Đỉnh (Cuộc Sống)",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108114",
-                "rank": 2,
-                "route": "Der Weisheit Letzter Schluss (Life)",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108115": {
-                "id": 108115,
-                "name": "Bánh Cá Thơm Ngon",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108115",
-                "rank": 2,
-                "route": "Fish-Flavored Toast",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108116": {
-                "id": 108116,
-                "name": "Trứng Chiên Teyvat Cháy",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108116",
-                "rank": 1,
-                "route": "Teyvat Charred Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108117": {
-                "id": 108117,
-                "name": "Bản Giao Hưởng Chúc Phúc",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108117",
-                "rank": 3,
-                "route": "Die Heilige Sinfonie",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108118": {
-                "id": 108118,
-                "name": "Bánh Quế Mây Dày",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108118",
-                "rank": 2,
-                "route": "Lighter-Than-Air Pancake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108121": {
-                "id": 108121,
-                "name": "Canh Trứng Hạt Sen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108120",
-                "rank": 2,
-                "route": "Lotus Seed and Bird Egg Soup",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108124": {
-                "id": 108124,
-                "name": "Tiên Nhảy Tường",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108123",
-                "rank": 5,
-                "route": "Adeptus' Temptation",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108127": {
-                "id": 108127,
-                "name": "Tôm Viên Tơ Vàng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108126",
-                "rank": 3,
-                "route": "Golden Shrimp Balls",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108130": {
-                "id": 108130,
-                "name": "Món Nhà Nông Khinh Sách",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108129",
-                "rank": 3,
-                "route": "Qingce Stir Fry",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108133": {
-                "id": 108133,
-                "name": "Món Nào Nào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108132",
-                "rank": 3,
-                "route": "Come and Get It",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108134": {
-                "id": 108134,
-                "name": "Không Phải Món Nhậu",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108134",
-                "rank": 1,
-                "route": "Definitely Not Bar Food!",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108135": {
-                "id": 108135,
-                "name": "Cá Luộc Vạn Dân Đường",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108135",
-                "rank": 3,
-                "route": "Wanmin Restaurant's Boiled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108136": {
-                "id": 108136,
-                "name": "Giang Hồ Bách Vị",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108136",
-                "rank": 2,
-                "route": "All-Delicacy Parcels",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108137": {
-                "id": 108137,
-                "name": "Giấc Mộng Đẹp",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108137",
-                "rank": 2,
-                "route": "\"Sweet Dream\"",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108138": {
-                "id": 108138,
-                "name": "Thịt Xào Ớt",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108138",
-                "rank": 1,
-                "route": "Flash-Fried Filet",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108139": {
-                "id": 108139,
-                "name": "Thịt Mora Càn Khôn",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108139",
-                "rank": 1,
-                "route": "Qiankun Mora Meat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108140": {
-                "id": 108140,
-                "name": "Món Không Tương Lai",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108140",
-                "rank": 3,
-                "route": "No Tomorrow",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108143": {
-                "id": 108143,
-                "name": "Mì Nóng Bát Bửu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108142",
-                "rank": 2,
-                "route": "Noodles with Mountain Delicacies",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108144": {
-                "id": 108144,
-                "name": "Mì Lạnh Bát Bửu",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108144",
-                "rank": 2,
-                "route": "Cold Noodles with Mountain Delicacies",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108145": {
-                "id": 108145,
-                "name": "Cá Nướng Không Lối Thoát",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108145",
-                "rank": 1,
-                "route": "Survival Grilled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108146": {
-                "id": 108146,
-                "name": "Cơm Dinh Dưỡng 593",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108146",
-                "rank": 3,
-                "route": "Nutritious Meal (V.593)",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108147": {
-                "id": 108147,
-                "name": "Nước Thánh",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108147",
-                "rank": 3,
-                "route": "Holy Water"
-            },
-            "108148": {
-                "id": 108148,
-                "name": "Chén Trà Lớn",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108148",
-                "rank": 1,
-                "route": "Pop's Teas"
-            },
-            "108149": {
-                "id": 108149,
-                "name": "Nước Ép Quả Móc Câu",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108149",
-                "rank": 2,
-                "route": "Wolfhook Juice"
-            },
-            "108150": {
-                "id": 108150,
-                "name": "Nước Dâu Bạc Hà",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108150",
-                "rank": 2,
-                "route": "Berry & Mint Burst"
-            },
-            "108151": {
-                "id": 108151,
-                "name": "Nước Táo Lên Men",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108151",
-                "rank": 2,
-                "route": "Apple Cider"
-            },
-            "108154": {
-                "id": 108154,
-                "name": "Măng Chua Tươi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108153",
-                "rank": 3,
-                "route": "Bamboo Shoot Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108157": {
-                "id": 108157,
-                "name": "Khấu Tam Tư",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108156",
-                "rank": 3,
-                "route": "Triple-Layered Consommé",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108160": {
-                "id": 108160,
-                "name": "Thịt Thiên Khu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108159",
-                "rank": 4,
-                "route": "Tianshu Meat",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108163": {
-                "id": 108163,
-                "name": "Bánh Hoa Sen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108162",
-                "rank": 3,
-                "route": "Lotus Flower Crisp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108166": {
-                "id": 108166,
-                "name": "Bánh Trung Thu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108165",
-                "rank": 4,
-                "route": "Moon Pie",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108169": {
-                "id": 108169,
-                "name": "Trứng Ốp Nhà Mạo Hiểm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108168",
-                "rank": 3,
-                "route": "Adventurer's Breakfast Sandwich",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108172": {
-                "id": 108172,
-                "name": "Thịt Om Táo Đất Bắc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108171",
-                "rank": 3,
-                "route": "Northern Apple Stew",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108173": {
-                "id": 108173,
-                "name": "Măng Chua Tươi Lửa Nhỏ",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108173",
-                "rank": 3,
-                "route": "Slow-Cooked Bamboo Shoot Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108174": {
-                "id": 108174,
-                "name": "Gà Rock and Roll!",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108174",
-                "rank": 2,
-                "route": "Rockin' Riffin' Chicken!",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108175": {
-                "id": 108175,
-                "name": "Lưỡi Câu Cực Phẩm",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108175",
-                "rank": 3,
-                "route": "A Prize Catch",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108178": {
-                "id": 108178,
-                "name": "Đậu Hũ Gạch Cua",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108177",
-                "rank": 2,
-                "route": "Crab Roe Tofu",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108181": {
-                "id": 108181,
-                "name": "Trứng Minh Nguyệt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108180",
-                "rank": 3,
-                "route": "Fullmoon Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108184": {
-                "id": 108184,
-                "name": "Thịt Xông Khói Xào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108183",
-                "rank": 3,
-                "route": "Cured Pork Dry Hotpot",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108187": {
-                "id": 108187,
-                "name": "Phở Xào Cá",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108186",
-                "rank": 2,
-                "route": "Stir-Fried Fish Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108190": {
-                "id": 108190,
-                "name": "Bào Ngư Chay",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108189",
-                "rank": 2,
-                "route": "Vegetarian Abalone",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108193": {
-                "id": 108193,
-                "name": "Nham Cảng Tam Tiên",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108192",
-                "rank": 2,
-                "route": "Stone Harbor Delicacies",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108196": {
-                "id": 108196,
-                "name": "Tôm Khô Xào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108195",
-                "rank": 3,
-                "route": "Stir-Fried Shrimp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108199": {
-                "id": 108199,
-                "name": "Bánh Gạo",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108198",
-                "rank": 1,
-                "route": "Rice Buns",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108200": {
-                "id": 108200,
-                "name": "Đại Hành Quân U U",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108200",
-                "rank": 2,
-                "route": "Ghostly March",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108203": {
-                "id": 108203,
-                "name": "Thế Giới Hòa Bình",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108202",
-                "rank": 3,
-                "route": "Universal Peace",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108206": {
-                "id": 108206,
-                "name": "Thịt Hầm Sốt Rau Củ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108205",
-                "rank": 2,
-                "route": "Goulash",
-                "effectIcon": "UI_Buff_Item_Climate_Heat"
-            },
-            "108209": {
-                "id": 108209,
-                "name": "Cá Chiên Bơ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108208",
-                "rank": 3,
-                "route": "Sunshine Sprat",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108212": {
-                "id": 108212,
-                "name": "Cơm Cháy Tuyệt Vân",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108211",
-                "rank": 3,
-                "route": "Jueyun Guoba",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108213": {
-                "id": 108213,
-                "name": "Thái Bình Thịnh Thế",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108213",
-                "rank": 3,
-                "route": "Prosperous Peace",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108214": {
-                "id": 108214,
-                "name": "Giấc Mơ Của Rừng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108214",
-                "rank": 3,
-                "route": "Woodland Dream",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108224": {
-                "id": 108224,
-                "name": "Giỏ Khoai Giòn Tôm Tươi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108223",
-                "rank": 3,
-                "route": "Crispy Potato Shrimp Platter",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108227": {
-                "id": 108227,
-                "name": "Thạch Bạc Hà",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108226",
-                "rank": 1,
-                "route": "Mint Jelly",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108230": {
-                "id": 108230,
-                "name": "Rau Trộn Bạc Hà",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108229",
-                "rank": 2,
-                "route": "Mint Salad",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108233": {
-                "id": 108233,
-                "name": "Thịt Rừng Cuộn Bạc Hà",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108232",
-                "rank": 3,
-                "route": "Minty Meat Rolls",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108234": {
-                "id": 108234,
-                "name": "Bữa Tối Phán Quyết",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108234",
-                "rank": 2,
-                "route": "Dinner of Judgment",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108237": {
-                "id": 108237,
-                "name": "Gà Vàng Khổng Lồ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108236",
-                "rank": 4,
-                "route": "Golden Fried Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108240": {
-                "id": 108240,
-                "name": "Burger Gà Giòn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108239",
-                "rank": 3,
-                "route": "Golden Chicken Burger",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108243": {
-                "id": 108243,
-                "name": "Khoai Tây Nghiền",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108242",
-                "rank": 3,
-                "route": "Fragrant Mashed Potatoes",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108244": {
-                "id": 108244,
-                "name": "\"Chuẩn Khuôn Khổ\"",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108244",
-                "rank": 2,
-                "route": "\"My Way\"",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108245": {
-                "id": 108245,
-                "name": "Bánh Gợn Sóng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108245",
-                "rank": 4,
-                "route": "Stormcrest Pie",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108248": {
-                "id": 108248,
-                "name": "Gà Nấu Đậu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108247",
-                "rank": 4,
-                "route": "Chicken Tofu Pudding",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108251": {
-                "id": 108251,
-                "name": "Sushi Cá Ngừ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108250",
-                "rank": 2,
-                "route": "Tuna Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108254": {
-                "id": 108254,
-                "name": "Dango Ba Màu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108253",
-                "rank": 3,
-                "route": "Tricolor Dango",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108257": {
-                "id": 108257,
-                "name": "Cơm Nắm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108256",
-                "rank": 2,
-                "route": "Onigiri",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108260": {
-                "id": 108260,
-                "name": "Sashimi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108259",
-                "rank": 4,
-                "route": "Sashimi Platter",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108263": {
-                "id": 108263,
-                "name": "Ramen Xương Hầm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108262",
-                "rank": 3,
-                "route": "Tonkotsu Ramen",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108266": {
-                "id": 108266,
-                "name": "Trứng Cuộn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108265",
-                "rank": 1,
-                "route": "Egg Roll",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108269": {
-                "id": 108269,
-                "name": "Cá Nướng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108268",
-                "rank": 1,
-                "route": "Dry-Braised Salted Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108272": {
-                "id": 108272,
-                "name": "Cua Phủ Bơ",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108271",
-                "rank": 4,
-                "route": "Butter Crab",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108275": {
-                "id": 108275,
-                "name": "Xiên Que Ba Vị",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108274",
-                "rank": 3,
-                "route": "Tri-Flavored Skewer",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108278": {
-                "id": 108278,
-                "name": "Súp Miso",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108277",
-                "rank": 1,
-                "route": "Miso Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108281": {
-                "id": 108281,
-                "name": "Thịt Torai",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108280",
-                "rank": 3,
-                "route": "Imported Poultry",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108284": {
-                "id": 108284,
-                "name": "Bánh Anh Đào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108283",
-                "rank": 3,
-                "route": "Sakura Mochi",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108287": {
-                "id": 108287,
-                "name": "Món Konda",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108286",
-                "rank": 3,
-                "route": "Konda Cuisine",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108290": {
-                "id": 108290,
-                "name": "Zoni Đường Phố",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108289",
-                "rank": 3,
-                "route": "Rice Cake Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108293": {
-                "id": 108293,
-                "name": "Mì Xào Thập Cẩm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108292",
-                "rank": 2,
-                "route": "Mixed Yakisoba",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108296": {
-                "id": 108296,
-                "name": "Gạch Cua Xào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108295",
-                "rank": 2,
-                "route": "Crab Roe Kourayaki",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108299": {
-                "id": 108299,
-                "name": "Tempura Anh Đào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108298",
-                "rank": 3,
-                "route": "Sakura Tempura",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108300": {
-                "id": 108300,
-                "name": "Lò Hồng Chấm Tuyết",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108300",
-                "rank": 3,
-                "route": "\"Snow on the Hearth\"",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108301": {
-                "id": 108301,
-                "name": "Tuyệt Tác Thế Gian",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108301",
-                "rank": 1,
-                "route": "All-Weather Beauty",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108302": {
-                "id": 108302,
-                "name": "Cá Mùa Hạ",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108302",
-                "rank": 3,
-                "route": "Summer Festival Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108303": {
-                "id": 108303,
-                "name": "Chống Nhức Đầu",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108303",
-                "rank": 2,
-                "route": "Dizziness-Be-Gone no Jutsu Version 2.0",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108304": {
-                "id": 108304,
-                "name": "Pizza Nấm Rơm Nướng Đặc Biệt",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108304",
-                "rank": 3,
-                "route": "Special Mushroom Pizza"
-            },
-            "108305": {
-                "id": 108305,
-                "name": "Sữa Dango",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_101514",
-                "rank": 2,
-                "route": "Dango Milk"
-            },
-            "108308": {
-                "id": 108308,
-                "name": "Pudding Gạo",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108307",
-                "rank": 3,
-                "route": "Rice Pudding",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108311": {
-                "id": 108311,
-                "name": "Thịt Rừng Kho Tàu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108310",
-                "rank": 3,
-                "route": "Braised Meat",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108314": {
-                "id": 108314,
-                "name": "Đậu Hũ Tâm Ý",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108313",
-                "rank": 3,
-                "route": "Oncidium Tofu",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108317": {
-                "id": 108317,
-                "name": "Bánh Ngô Thịt Cay",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108316",
-                "rank": 4,
-                "route": "Chili-Mince Cornbread Buns",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108320": {
-                "id": 108320,
-                "name": "Cơm Mèo Năng Động",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108319",
-                "rank": 3,
-                "route": "Invigorating Kitty Meal",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108323": {
-                "id": 108323,
-                "name": "Sushi Tôm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108322",
-                "rank": 1,
-                "route": "Sweet Shrimp Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108326": {
-                "id": 108326,
-                "name": "Sushi Trứng Chim",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108325",
-                "rank": 1,
-                "route": "Bird Egg Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108329": {
-                "id": 108329,
-                "name": "Cơm Cuộn Trứng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108328",
-                "rank": 3,
-                "route": "Omelette Rice",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108332": {
-                "id": 108332,
-                "name": "Bánh Cá Hoàng Hôn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108331",
-                "rank": 3,
-                "route": "Taiyaki",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108335": {
-                "id": 108335,
-                "name": "Toto Nướng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108334",
-                "rank": 3,
-                "route": "More-and-More",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108338": {
-                "id": 108338,
-                "name": "Thịt Lươn Kabayaki",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108337",
-                "rank": 2,
-                "route": "Grilled Unagi Fillet",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108339": {
-                "id": 108339,
-                "name": "Gel No Bụng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108339",
-                "rank": 1,
-                "route": "Satiety Gel",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108340": {
-                "id": 108340,
-                "name": "\"Kế Sách Kỳ Diệu\"",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108340",
-                "rank": 1,
-                "route": "A Stunning Stratagem",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108341": {
-                "id": 108341,
-                "name": "Tín Ngưỡng Vĩnh Hằng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108341",
-                "rank": 1,
-                "route": "Faith Eternal",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108344": {
-                "id": 108344,
-                "name": "Cá Tươi Hầm Củ Cải",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108343",
-                "rank": 2,
-                "route": "Radish and Fish Stew",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108347": {
-                "id": 108347,
-                "name": "Món Wakatakeni",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108346",
-                "rank": 2,
-                "route": "Wakatakeni",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108350": {
-                "id": 108350,
-                "name": "Mochi Mâm Xôi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108349",
-                "rank": 2,
-                "route": "Berry Mizu Manjuu",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108353": {
-                "id": 108353,
-                "name": "Mì Soba",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108352",
-                "rank": 1,
-                "route": "Soba Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108354": {
-                "id": 108354,
-                "name": "\"Ấm Áp\"",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108354",
-                "rank": 1,
-                "route": "\"Warmth\"",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108357": {
-                "id": 108357,
-                "name": "Cơm Trà Xanh Thịt Lươn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108356",
-                "rank": 3,
-                "route": "Unagi Chazuke",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108360": {
-                "id": 108360,
-                "name": "Dưa Muối Ngũ Bảo",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108359",
-                "rank": 3,
-                "route": "Five Pickled Treasures",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108363": {
-                "id": 108363,
-                "name": "Senbei Tôm Anh Đào",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108362",
-                "rank": 3,
-                "route": "Sakura Shrimp Crackers",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108364": {
-                "id": 108364,
-                "name": "Đạo Lý Của Kẻ Mạnh",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108364",
-                "rank": 2,
-                "route": "Way of the Strong",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108365": {
-                "id": 108365,
-                "name": "Thường Thắng Truyền Thuyết",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108365",
-                "rank": 3,
-                "route": "Victorious Legend",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108368": {
-                "id": 108368,
-                "name": "Phúc Lộc Tràn Đầy",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108367",
-                "rank": 4,
-                "route": "Bountiful Year",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108371": {
-                "id": 108371,
-                "name": "Mì Râu Rồng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108370",
-                "rank": 3,
-                "route": "Dragon Beard Noodles",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108372": {
-                "id": 108372,
-                "name": "Mì Liên Tâm",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108372",
-                "rank": 3,
-                "route": "Heartstring Noodles",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108373": {
-                "id": 108373,
-                "name": "Vân Già Ngọc",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108373",
-                "rank": 2,
-                "route": "Cloud-Shrouded Jade",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108376": {
-                "id": 108376,
-                "name": "Sangayaki",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108375",
-                "rank": 2,
-                "route": "Sangayaki",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108379": {
-                "id": 108379,
-                "name": "Mì Udon",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108378",
-                "rank": 2,
-                "route": "Udon Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108380": {
-                "id": 108380,
-                "name": "Mì Udon Fukuuchi",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108380",
-                "rank": 2,
-                "route": "Fukuuchi Udon",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108383": {
-                "id": 108383,
-                "name": "Sandwich Katsu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108382",
-                "rank": 2,
-                "route": "Katsu Sandwich",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108386": {
-                "id": 108386,
-                "name": "Tử Uyển Cầu Vồng",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108385",
-                "rank": 3,
-                "route": "Rainbow Aster",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108387": {
-                "id": 108387,
-                "name": "Tĩnh Lặng Trang Nhã",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108387",
-                "rank": 3,
-                "route": "Quiet Elegance",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108388": {
-                "id": 108388,
-                "name": "Vũ Điệu Cơm Cuộn Trứng",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108388",
-                "rank": 3,
-                "route": "Omurice Waltz",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108389": {
-                "id": 108389,
-                "name": "Tôm Nhuốm Sương",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108389",
-                "rank": 3,
-                "route": "Dew-Dipped Shrimp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108390": {
-                "id": 108390,
-                "name": "Chân Tướng Duy Nhất",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108390",
-                "rank": 2,
-                "route": "The Only Truth",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108393": {
-                "id": 108393,
-                "name": "Gà Áp Chảo",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108392",
-                "rank": 3,
-                "route": "Butter Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108396": {
-                "id": 108396,
-                "name": "Cuốn Shawarma",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108395",
-                "rank": 2,
-                "route": "Shawarma Wrap",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108399": {
-                "id": 108399,
-                "name": "Salad Nhiệt Đới",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108398",
-                "rank": 2,
-                "route": "Selva Salad",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume",
-                "beta": true
-            },
-            "108402": {
-                "id": 108402,
-                "name": "Viên Phô Mai Masala",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108401",
-                "rank": 2,
-                "route": "Masala Cheese Balls",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate",
-                "beta": true
-            },
-            "108405": {
-                "id": 108405,
-                "name": "Nấm Thập Cẩm",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108404",
-                "rank": 2,
-                "route": "Mushroom Hodgepodge",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108408": {
-                "id": 108408,
-                "name": "Bánh Túi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108407",
-                "rank": 3,
-                "route": "Pita Pocket",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108411": {
-                "id": 108411,
-                "name": "Panipuri",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108410",
-                "rank": 2,
-                "route": "Panipuri",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108414": {
-                "id": 108414,
-                "name": "Canh Đậu Bạc Hà",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108413",
-                "rank": 1,
-                "route": "Minty Bean Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108417": {
-                "id": 108417,
-                "name": "Biryani",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108416",
-                "rank": 4,
-                "route": "Biryani",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108420": {
-                "id": 108420,
-                "name": "Tahchin",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108419",
-                "rank": 3,
-                "route": "Tahchin",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll",
-                "beta": true
-            },
-            "108423": {
-                "id": 108423,
-                "name": "Cuốn Cá Lambad",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108422",
-                "rank": 1,
-                "route": "Lambad Fish Roll",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108426": {
-                "id": 108426,
-                "name": "Tôm Cà Ri",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108425",
-                "rank": 2,
-                "route": "Curry Shrimp",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108429": {
-                "id": 108429,
-                "name": "Gà Nướng Tandoori",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108428",
-                "rank": 4,
-                "route": "Tandoori Roast Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108432": {
-                "id": 108432,
-                "name": "Thuyền Khoai Tây",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108431",
-                "rank": 3,
-                "route": "Potato Boat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108435": {
-                "id": 108435,
-                "name": "Cá Tươi Sốt Kem",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108434",
-                "rank": 2,
-                "route": "Fish with Cream Sauce",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll",
-                "beta": true
-            },
-            "108436": {
-                "id": 108436,
-                "name": "Tuyển Chọn Của Đội Trưởng Kiểm Lâm",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108436",
-                "rank": 2,
-                "route": "Forest Watcher's Choice",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108437": {
-                "id": 108437,
-                "name": "Khát Khao",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108437",
-                "rank": 3,
-                "route": "Yearning",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108438": {
-                "id": 108438,
-                "name": "Mora Đến Đây Nhanh",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108438",
-                "rank": 3,
-                "route": "Show Me the Mora",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108441": {
-                "id": 108441,
-                "name": "Pizza Nấm Thịt",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108440",
-                "rank": 4,
-                "route": "Meat Lovers' Mushroom Pizza",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108444": {
-                "id": 108444,
-                "name": "Trà Nhật Lạc",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108443",
-                "rank": 3,
-                "route": "Sunset Berry Tea",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108447": {
-                "id": 108447,
-                "name": "Tháp Nấm Sữa Giòn",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108446",
-                "rank": 3,
-                "route": "Milky Mushroom Crisp Tower",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
             },
             "110001": {
                 "id": 110001,
@@ -3846,8 +1822,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_110014",
                 "rank": 1,
-                "route": "Spice",
-                "beta": true
+                "route": "Spice"
             },
             "111006": {
                 "id": 111006,
@@ -3917,8 +1892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_111012",
                 "rank": 3,
-                "route": "Dendrocide Potion",
-                "beta": true
+                "route": "Dendrocide Potion"
             },
             "111013": {
                 "id": 111013,
@@ -3988,8 +1962,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_111019",
                 "rank": 3,
-                "route": "Forest Essential Oil",
-                "beta": true
+                "route": "Forest Essential Oil"
             },
             "112002": {
                 "id": 112002,
@@ -4599,8 +2572,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112062",
                 "rank": 2,
-                "route": "Inactivated Fungal Nucleus",
-                "beta": true
+                "route": "Inactivated Fungal Nucleus"
             },
             "112063": {
                 "id": 112063,
@@ -4610,8 +2582,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112063",
                 "rank": 3,
-                "route": "Dormant Fungal Nucleus",
-                "beta": true
+                "route": "Dormant Fungal Nucleus"
             },
             "112064": {
                 "id": 112064,
@@ -4621,8 +2592,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112064",
                 "rank": 4,
-                "route": "Robust Fungal Nucleus",
-                "beta": true
+                "route": "Robust Fungal Nucleus"
             },
             "112065": {
                 "id": 112065,
@@ -4632,8 +2602,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112065",
                 "rank": 1,
-                "route": "Faded Red Satin",
-                "beta": true
+                "route": "Faded Red Satin"
             },
             "112066": {
                 "id": 112066,
@@ -4643,8 +2612,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112066",
                 "rank": 2,
-                "route": "Trimmed Red Silk",
-                "beta": true
+                "route": "Trimmed Red Silk"
             },
             "112067": {
                 "id": 112067,
@@ -4654,8 +2622,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112067",
                 "rank": 3,
-                "route": "Rich Red Brocade",
-                "beta": true
+                "route": "Rich Red Brocade"
             },
             "112068": {
                 "id": 112068,
@@ -4665,8 +2632,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112068",
                 "rank": 2,
-                "route": "Chaos Storage",
-                "beta": true
+                "route": "Chaos Storage"
             },
             "112069": {
                 "id": 112069,
@@ -4676,8 +2642,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112069",
                 "rank": 3,
-                "route": "Chaos Module",
-                "beta": true
+                "route": "Chaos Module"
             },
             "112070": {
                 "id": 112070,
@@ -4687,8 +2652,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112070",
                 "rank": 4,
-                "route": "Chaos Bolt",
-                "beta": true
+                "route": "Chaos Bolt"
             },
             "113001": {
                 "id": 113001,
@@ -5038,8 +3002,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_113036",
                 "rank": 4,
-                "route": "Majestic Hooked Beak",
-                "beta": true
+                "route": "Majestic Hooked Beak"
             },
             "113037": {
                 "id": 113037,
@@ -5049,8 +3012,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_113037",
                 "rank": 4,
-                "route": "Thunderclap Fruitcore",
-                "beta": true
+                "route": "Thunderclap Fruitcore"
             },
             "114001": {
                 "id": 114001,
@@ -5414,135 +3376,123 @@
             },
             "114037": {
                 "id": 114037,
-                "name": "???",
+                "name": "Bùa Rừng Xanh Sương Đọng - Đồng",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114037",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Copper Talisman of the Forest Dew"
             },
             "114038": {
                 "id": 114038,
-                "name": "???",
+                "name": "Bùa Rừng Xanh Sương Đọng - Sắt",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114038",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Iron Talisman of the Forest Dew"
             },
             "114039": {
                 "id": 114039,
-                "name": "???",
+                "name": "Bùa Rừng Xanh Sương Đọng - Bạc",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114039",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Silver Talisman of the Forest Dew"
             },
             "114040": {
                 "id": 114040,
-                "name": "???",
+                "name": "Bùa Rừng Xanh Sương Đọng - Vàng",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114040",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Golden Talisman of the Forest Dew"
             },
             "114041": {
                 "id": 114041,
-                "name": "???",
+                "name": "Hồi Ức Vườn Hoa Ốc Đảo",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114041",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Reminiscence"
             },
             "114042": {
                 "id": 114042,
-                "name": "???",
+                "name": "Ân Huệ Vườn Hoa Ốc Đảo",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114042",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Kindness"
             },
             "114043": {
                 "id": 114043,
-                "name": "???",
+                "name": "Nỗi Buồn Vườn Hoa Ốc Đảo",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114043",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Mourning"
             },
             "114044": {
                 "id": 114044,
-                "name": "???",
+                "name": "Chân Lý Vườn Hoa Ốc Đảo",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114044",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Truth"
             },
             "114045": {
                 "id": 114045,
-                "name": "???",
+                "name": "Dư Âm Của Ánh Nắng Quyền Uy",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114045",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Echo of Scorching Might"
             },
             "114046": {
                 "id": 114046,
-                "name": "???",
+                "name": "Tia Sáng Của Ánh Nắng Quyền Uy",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114046",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Remnant Glow of Scorching Might"
             },
             "114047": {
                 "id": 114047,
-                "name": "???",
+                "name": "Mơ Ước Của Ánh Nắng Quyền Uy",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114047",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Dream of Scorching Might"
             },
             "114048": {
                 "id": 114048,
-                "name": "???",
+                "name": "Quá Khứ Của Ánh Nắng Quyền Uy",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114048",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Olden Days of Scorching Might"
             },
             "120011": {
                 "id": 120011,
@@ -5552,8 +3502,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_120011",
                 "rank": 1,
-                "route": "Withered Kusava",
-                "beta": true
+                "route": "Withered Kusava"
             },
             "220001": {
                 "id": 220001,
@@ -5913,8 +3862,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220055",
                 "rank": 4,
-                "route": "Aranyaka",
-                "beta": true
+                "route": "Aranyaka"
             },
             "220057": {
                 "id": 220057,
@@ -5924,8 +3872,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220057",
                 "rank": 3,
-                "route": "Dendroculus Resonance Stone",
-                "beta": true
+                "route": "Dendroculus Resonance Stone"
             },
             "220058": {
                 "id": 220058,
@@ -5935,8 +3882,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220058",
                 "rank": 4,
-                "route": "Dendro Treasure Compass",
-                "beta": true
+                "route": "Dendro Treasure Compass"
             },
             "220059": {
                 "id": 220059,
@@ -5946,8 +3892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220059",
                 "rank": 4,
-                "route": "\"The Boon of the Elder Tree\"",
-                "beta": true
+                "route": "\"The Boon of the Elder Tree\""
             },
             "220060": {
                 "id": 220060,
@@ -5957,8 +3902,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220060",
                 "rank": 4,
-                "route": "Ultra-Hot Burner Lamp Test Model",
-                "beta": true
+                "route": "Ultra-Hot Burner Lamp Test Model"
             },
             "220062": {
                 "id": 220062,
@@ -5968,8 +3912,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220062",
                 "rank": 4,
-                "route": "Mini Seelie: Moss",
-                "beta": true
+                "route": "Mini Seelie: Moss"
             },
             "220065": {
                 "id": 220065,
@@ -5979,8 +3922,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220065",
                 "rank": 4,
-                "route": "Fishing Line Stabilizer",
-                "beta": true
+                "route": "Fishing Line Stabilizer"
             },
             "220066": {
                 "id": 220066,
@@ -5990,8 +3932,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220066",
                 "rank": 4,
-                "route": "Vintage Lyre",
-                "beta": true
+                "route": "Vintage Lyre"
             }
         }
     }

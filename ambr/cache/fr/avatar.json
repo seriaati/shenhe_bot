@@ -720,9 +720,8 @@
                     5,
                     8
                 ],
-                "release": 1657659600,
-                "route": "Collei",
-                "beta": true
+                "release": 1661288400,
+                "route": "Collei"
             },
             "10000068": {
                 "id": 10000068,
@@ -735,9 +734,8 @@
                     12,
                     21
                 ],
-                "release": 1657659600,
-                "route": "Dori",
-                "beta": true
+                "release": 1662735600,
+                "route": "Dori"
             },
             "10000069": {
                 "id": 10000069,
@@ -750,9 +748,8 @@
                     12,
                     29
                 ],
-                "release": 1657659600,
-                "route": "Tighnari",
-                "beta": true
+                "release": 1661288400,
+                "route": "Tighnari"
             },
             "10000005-anemo": {
                 "id": "10000005-anemo",
@@ -794,6 +791,20 @@
                 "route": "Electro Traveler Boy",
                 "release": 1626814800
             },
+            "10000005-dendro": {
+                "id": "10000005-dendro",
+                "rank": 5,
+                "name": "Voyageur",
+                "element": "Grass",
+                "weaponType": "WEAPON_SWORD_ONE_HAND",
+                "icon": "UI_AvatarIcon_PlayerBoy",
+                "birthday": [
+                    0,
+                    0
+                ],
+                "route": "Dendro Traveler Boy",
+                "release": 1657659600
+            },
             "10000007-anemo": {
                 "id": "10000007-anemo",
                 "rank": 5,
@@ -834,21 +845,6 @@
                 "route": "Electro Traveler Girl",
                 "release": 1626814800
             },
-            "10000005-dendro": {
-                "id": "10000005-dendro",
-                "rank": 5,
-                "name": "Voyageur",
-                "element": "Grass",
-                "weaponType": "WEAPON_SWORD_ONE_HAND",
-                "icon": "UI_AvatarIcon_PlayerBoy",
-                "birthday": [
-                    0,
-                    0
-                ],
-                "route": "Dendro Traveler Boy",
-                "release": 1657659600,
-                "beta": true
-            },
             "10000007-dendro": {
                 "id": "10000007-dendro",
                 "rank": 5,
@@ -861,8 +857,7 @@
                     0
                 ],
                 "route": "Dendro Traveler Girl",
-                "release": 1657659600,
-                "beta": true
+                "release": 1657659600
             }
         }
     }
