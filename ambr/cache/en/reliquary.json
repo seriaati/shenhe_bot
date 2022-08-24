@@ -314,7 +314,7 @@
                 ],
                 "affixList": {
                     "2150050": "Electro DMG Bonus +15%",
-                    "2150051": "Increases damage caused by Overloaded, Electro-Charged and Superconduct by 40%. Triggering such effects decreases Elemental Skill CD by 1s. Can only occur once every 0.8s."
+                    "2150051": "Increases DMG caused by Overloaded, Electro-Charged, Superconduct, and Hyperbloom by 40%, and the DMG Bonus conferred by Aggravate is increased by 20%. When Quicken or the aforementioned Elemental Reactions are triggered, Elemental Skill CD is decreased by 1s. Can only occur once every 0.8s."
                 },
                 "icon": "UI_RelicIcon_15005_4",
                 "route": "Thundering Fury",
@@ -329,7 +329,7 @@
                 ],
                 "affixList": {
                     "2150060": "Pyro DMG Bonus +15%",
-                    "2150061": "Increases Overloaded and Burning DMG by 40%. Increases Vaporize and Melt DMG by 15%. Using Elemental Skill increases the 2-Piece Set Bonus by 50% of its starting value for 10s. Max 3 stacks."
+                    "2150061": "Increases Overloaded and Burning, and Burgeon DMG by 40%. Increases Vaporize and Melt DMG by 15%. Using Elemental Skill increases the 2-Piece Set Bonus by 50% of its starting value for 10s. Max 3 stacks."
                 },
                 "icon": "UI_RelicIcon_15006_4",
                 "route": "Crimson Witch of Flames",
@@ -599,8 +599,7 @@
                 },
                 "icon": "UI_RelicIcon_15025_4",
                 "route": "Deepwood Memories",
-                "sortOrder": 82,
-                "beta": true
+                "sortOrder": 82
             },
             "15026": {
                 "id": 15026,
@@ -615,8 +614,7 @@
                 },
                 "icon": "UI_RelicIcon_15026_4",
                 "route": "Gilded Dreams",
-                "sortOrder": 83,
-                "beta": true
+                "sortOrder": 83
             }
         }
     }

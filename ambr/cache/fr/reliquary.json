@@ -56,7 +56,7 @@
                 ],
                 "affixList": {
                     "2100040": "Augmente toutes les RÉS élémentaires de 20 %.",
-                    "2100041": "Les DÉG élémentaires subis augmentent la RÉS à l'élément correspondant de 30 % pendant 10 s. Cet effet peut être déclenché une fois toutes les 10 s."
+                    "2100041": "Les DGT élémentaires subis augmentent la RÉS à l'élément correspondant de 30 % pendant 10 s. Cet effet peut être déclenché une fois toutes les 10 s."
                 },
                 "icon": "UI_RelicIcon_10004_4",
                 "route": "Tiny Miracle",
@@ -314,7 +314,7 @@
                 ],
                 "affixList": {
                     "2150050": "Confère un bonus de DGT Électro de 15 %.",
-                    "2150051": "Augmente les DGT infligés par Surcharge, Électrocution et Supraconduction de 40 %. Lorsque vous déclenchez ces réactions élémentaires, le TdR de la compétence élémentaire est réduit de 1 s. Cet effet peut être déclenché une fois toutes les 0,8 s."
+                    "2150051": "Augmente les DGT infligés par Surcharge, Électrocution, Supraconduction et Exubérance de 40 % et le bonus de DGT accordée par Suractivation de 20 %. Au déclenchement de ces réactions élémentaires ou d'une réaction de Stimulation, le TdR de la compétence élémentaire est réduit de 1 s. Cet effet peut être déclenché une fois toutes les 0,8 s."
                 },
                 "icon": "UI_RelicIcon_15005_4",
                 "route": "Thundering Fury",
@@ -329,7 +329,7 @@
                 ],
                 "affixList": {
                     "2150060": "Confère un bonus de DGT Pyro de 15 %.",
-                    "2150061": "Augmente les DGT infligés par Surcharge et Brûlure de 40 % et ceux d'Évaporation et de Fonte de 15 %. L'utilisation d'une compétence élémentaire augmente pendant 10 s l'effet du set de 2 pièces de 50 %. Cet effet peut être cumulé 3 fois maximum."
+                    "2150061": "Augmente les DGT infligés par Surcharge, Brûlure et Bourgeonnement de 40 % et ceux d'Évaporation et de Fonte de 15 %. L'utilisation d'une compétence élémentaire augmente pendant 10 s l'effet du set de 2 pièces de 50 %. Cet effet peut être cumulé 3 fois maximum."
                 },
                 "icon": "UI_RelicIcon_15006_4",
                 "route": "Crimson Witch of Flames",
@@ -520,7 +520,7 @@
                 ],
                 "affixList": {
                     "2150200": "Augmente la recharge d'énergie de 20 %.",
-                    "2150201": "Augmente les DGT infligés par le déchaînement élémentaire d'une valeur équivalant à 25 % de la recharge d'énergie. Les DGT peuvent être augmentés de 75 % max de cette manière."
+                    "2150201": "Augmente les DGT infligés par le déchaînement élémentaire d'une valeur équivalant à 25 % de la recharge d'énergie. Les DGT peuvent être augmentés d'un maximum de 75 % de cette manière."
                 },
                 "icon": "UI_RelicIcon_15020_4",
                 "route": "Emblem of Severed Fate",
@@ -599,8 +599,7 @@
                 },
                 "icon": "UI_RelicIcon_15025_4",
                 "route": "Deepwood Memories",
-                "sortOrder": 82,
-                "beta": true
+                "sortOrder": 82
             },
             "15026": {
                 "id": 15026,
@@ -611,12 +610,11 @@
                 ],
                 "affixList": {
                     "2150260": "Augmente la maîtrise élémentaire de 80 pts.",
-                    "2150261": "Déclencher une réaction élémentaire confère pendant 8 s au personnage équipé de l'artéfact des bonus en fonction du nombre de types élémentaires des autres personnages de l'équipe : son ATQ augmente de 14 % pour chaque membre du même type élémentaire que le sien ; sa maîtrise élémentaire augmente de 50 pts pour chaque membre de type élémentaire différent du sien. Chacun des bonus susmentionnés compte un maximum de 3 personnages. Cet effet peut être déclenché une fois toutes les 8 s, même si le personnage équipé de l'arme fait partie de l'équipe mais n'est pas déployé."
+                    "2150261": "Déclencher une réaction élémentaire confère pendant 8 s au personnage équipé de l'artéfact des bonus en fonction du nombre de types élémentaires des autres personnages de l'équipe : son ATQ augmente de 14 % pour chaque membre du même type élémentaire que le sien, et sa maîtrise élémentaire augmente de 50 pts pour chaque membre de type élémentaire différent du sien. Chacun des bonus susmentionnés compte un maximum de 3 personnages. Cet effet peut être déclenché une fois toutes les 8 s, même si le personnage équipé de l'arme fait partie de l'équipe mais n'est pas déployé."
                 },
                 "icon": "UI_RelicIcon_15026_4",
                 "route": "Gilded Dreams",
-                "sortOrder": 83,
-                "beta": true
+                "sortOrder": 83
             }
         }
     }

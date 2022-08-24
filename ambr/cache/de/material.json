@@ -3,43 +3,46 @@
     "data": {
         "types": {
             "forgingOre": "Zum Schmieden geeignetes Erz",
-            "food": "Nahrung",
             "cookingIngredient": "Zutat",
-            "localSpecialtyMondstadt": "Regionale Besonderheit aus Mondstadt",
             "material": "Material",
+            "localSpecialtyMondstadt": "Regionale Besonderheit aus Mondstadt",
             "localSpecialtyLiyue": "Regionale Besonderheit aus Liyue",
             "localSpecialtyInazuma": "Regionale Besonderheit von Inazuma",
+            "sumeruRegionalSpecialty": "Regionale Besonderheiten von Sumeru",
             "potion": "Trank",
             "characterLevelUpMaterial": "Material zur Verbesserung von Figuren",
             "weaponAscensionMaterial": "Material zum Aufstieg von Waffen",
             "questItem": "Auftragsobjekt",
             "talentLevelUpMaterial": "Material zur Verbesserung von Talenten",
+            "talentLevelUpMaterials": "Material zur Verbesserung von Talenten",
             "adventureItem": "Abenteuerobjekt",
             "consumable": "Verbrauchsgegenstand",
             "gadget": "Hilfsmittel",
-            "sumeruRegionalSpecialty": "Regionale Besonderheiten von Sumeru",
-            "talentLevelUpMaterials": "Material zur Verbesserung von Talenten"
+            "specialCurrency": "Seltene Währung",
+            "commonCurrency": "Universelle Währung",
+            "characterexpMaterial": "Material für Figuren-EP",
+            "weaponEnhancementMaterial": "Material zur Waffenverstärkung"
         },
         "items": {
-            "100001": {
-                "id": 100001,
-                "name": "Apfel",
-                "type": "food",
+            "201": {
+                "id": 201,
+                "name": "Urgestein",
+                "type": "specialCurrency",
                 "recipe": false,
                 "mapMark": false,
-                "icon": "UI_ItemIcon_100001",
-                "rank": 1,
-                "route": "Apple"
+                "icon": "UI_ItemIcon_201",
+                "rank": 5,
+                "route": "Primogem"
             },
-            "100002": {
-                "id": 100002,
-                "name": "Dämmerfrucht",
-                "type": "food",
+            "202": {
+                "id": 202,
+                "name": "Mora",
+                "type": "commonCurrency",
                 "recipe": false,
                 "mapMark": false,
-                "icon": "UI_ItemIcon_100002",
-                "rank": 1,
-                "route": "Sunsettia"
+                "icon": "UI_ItemIcon_202",
+                "rank": 3,
+                "route": "Mora"
             },
             "100011": {
                 "id": 100011,
@@ -831,16 +834,6 @@
                 "rank": 1,
                 "route": "Lavender Melon"
             },
-            "101212": {
-                "id": 101212,
-                "name": "Sternpilz",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_101212",
-                "rank": 1,
-                "route": "Starshroom"
-            },
             "101213": {
                 "id": 101213,
                 "name": "Rukkhashava-Pilz",
@@ -849,8 +842,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101213",
                 "rank": 1,
-                "route": "Rukkhashava Mushrooms",
-                "beta": true
+                "route": "Rukkhashava Mushrooms"
             },
             "101214": {
                 "id": 101214,
@@ -860,8 +852,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101214",
                 "rank": 1,
-                "route": "Padisarah",
-                "beta": true
+                "route": "Padisarah"
             },
             "101215": {
                 "id": 101215,
@@ -871,8 +862,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101215",
                 "rank": 1,
-                "route": "Nilotpala Lotus",
-                "beta": true
+                "route": "Nilotpala Lotus"
             },
             "101216": {
                 "id": 101216,
@@ -882,19 +872,17 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101216",
                 "rank": 1,
-                "route": "Harra Fruit",
-                "beta": true
+                "route": "Harra Fruit"
             },
             "101217": {
                 "id": 101217,
-                "name": "Kalpalata",
+                "name": "Kalpalata-Lotos",
                 "type": "sumeruRegionalSpecialty",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101217",
                 "rank": 1,
-                "route": "Kalpalata Lotus",
-                "beta": true
+                "route": "Kalpalata Lotus"
             },
             "101218": {
                 "id": 101218,
@@ -904,8 +892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101218",
                 "rank": 1,
-                "route": "Zaytun Peach",
-                "beta": true
+                "route": "Zaytun Peach"
             },
             "101219": {
                 "id": 101219,
@@ -915,8 +902,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101219",
                 "rank": 1,
-                "route": "Sumeru Rose",
-                "beta": true
+                "route": "Sumeru Rose"
             },
             "101228": {
                 "id": 101228,
@@ -926,8 +912,67 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_101228",
                 "rank": 1,
-                "route": "Viparyas",
-                "beta": true
+                "route": "Viparyas"
+            },
+            "104001": {
+                "id": 104001,
+                "name": "Eines Streuners Gedanken",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104001",
+                "rank": 2,
+                "route": "Wanderer's Advice"
+            },
+            "104002": {
+                "id": 104002,
+                "name": "Eines Abenteurers Worte",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104002",
+                "rank": 3,
+                "route": "Adventurer's Experience"
+            },
+            "104003": {
+                "id": 104003,
+                "name": "Eines Helden Weisheit",
+                "type": "characterEXPMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104003",
+                "rank": 4,
+                "route": "Hero's Wit"
+            },
+            "104011": {
+                "id": 104011,
+                "name": "Minderwertiges Verstärkungserz",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104011",
+                "rank": 1,
+                "route": "Enhancement Ore"
+            },
+            "104012": {
+                "id": 104012,
+                "name": "Hochwertiges Verstärkungserz",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104012",
+                "rank": 2,
+                "route": "Fine Enhancement Ore"
+            },
+            "104013": {
+                "id": 104013,
+                "name": "Mystisches Verstärkungserz",
+                "type": "weaponEnhancementMaterial",
+                "recipe": false,
+                "mapMark": false,
+                "icon": "UI_ItemIcon_104013",
+                "rank": 3,
+                "route": "Mystic Enhancement Ore"
             },
             "104101": {
                 "id": 104101,
@@ -1053,7 +1098,7 @@
                 "id": 104131,
                 "name": "Nagadus-Smaragd-Splitter",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104131",
                 "rank": 2,
@@ -1063,7 +1108,7 @@
                 "id": 104132,
                 "name": "Nagadus-Smaragd-Bruchstück",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104132",
                 "rank": 3,
@@ -1073,7 +1118,7 @@
                 "id": 104133,
                 "name": "Nagadus-Smaragd-Brocken",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104133",
                 "rank": 4,
@@ -1083,7 +1128,7 @@
                 "id": 104134,
                 "name": "Nagadus-Smaragd",
                 "type": "characterLevelUpMaterial",
-                "recipe": false,
+                "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104134",
                 "rank": 5,
@@ -1541,102 +1586,93 @@
             },
             "104329": {
                 "id": 104329,
-                "name": "???",
+                "name": "Lehren der „Ermahnung“",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104329",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Admonition"
             },
             "104330": {
                 "id": 104330,
-                "name": "???",
+                "name": "Anleitung zur „Ermahnung“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104330",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Admonition"
             },
             "104331": {
                 "id": 104331,
-                "name": "???",
+                "name": "Philosophie der „Ermahnung“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104331",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Admonition"
             },
             "104332": {
                 "id": 104332,
-                "name": "???",
+                "name": "Lehren der „Findigkeit“",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104332",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Ingenuity"
             },
             "104333": {
                 "id": 104333,
-                "name": "???",
+                "name": "Anleitung zur „Findigkeit“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104333",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Ingenuity"
             },
             "104334": {
                 "id": 104334,
-                "name": "???",
+                "name": "Philosophie der „Findigkeit“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104334",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Ingenuity"
             },
             "104335": {
                 "id": 104335,
-                "name": "???",
+                "name": "Lehren der „Praxis“",
                 "type": "talentLevelUpMaterials",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104335",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Teachings of Praxis"
             },
             "104336": {
                 "id": 104336,
-                "name": "???",
+                "name": "Anleitung zur „Praxis“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104336",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Guide to Praxis"
             },
             "104337": {
                 "id": 104337,
-                "name": "???",
+                "name": "Philosophie der „Praxis“",
                 "type": "talentLevelUpMaterials",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_104337",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Philosophies of Praxis"
             },
             "107001": {
                 "id": 107001,
@@ -1677,2066 +1713,6 @@
                 "icon": "UI_ItemIcon_107014",
                 "rank": 1,
                 "route": "Electroculus"
-            },
-            "108003": {
-                "id": 108003,
-                "name": "Fischerschnitte",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1001",
-                "rank": 2,
-                "route": "Fisherman's Toast",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108006": {
-                "id": 108006,
-                "name": "Teyvat-Spiegelei",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2001",
-                "rank": 1,
-                "route": "Teyvat Fried Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108009": {
-                "id": 108009,
-                "name": "Steak",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3001",
-                "rank": 1,
-                "route": "Steak",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108010": {
-                "id": 108010,
-                "name": "Kundschaftersteak!",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108010",
-                "rank": 1,
-                "route": "Outrider's Champion Steak!",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108013": {
-                "id": 108013,
-                "name": "Spieß mit Pilzen und Hühnchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1002",
-                "rank": 1,
-                "route": "Chicken-Mushroom Skewer",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108014": {
-                "id": 108014,
-                "name": "Fruchtiger Spieß",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108014",
-                "rank": 1,
-                "route": "Fruity Skewers",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108017": {
-                "id": 108017,
-                "name": "Feurige Nudeln",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1003",
-                "rank": 2,
-                "route": "Flaming Red Bolognese",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108018": {
-                "id": 108018,
-                "name": "Nudeln mit zauberhafter Fleischsoße",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108018",
-                "rank": 2,
-                "route": "Mysterious Bolognese",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108021": {
-                "id": 108021,
-                "name": "Rettichsuppe",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3002",
-                "rank": 1,
-                "route": "Radish Veggie Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108024": {
-                "id": 108024,
-                "name": "Landeierkuchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4001",
-                "rank": 2,
-                "route": "Tea Break Pancake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108027": {
-                "id": 108027,
-                "name": "Frittierte Rettichbällchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4002",
-                "rank": 2,
-                "route": "Fried Radish Balls",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108030": {
-                "id": 108030,
-                "name": "Sättigender Salat",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4003",
-                "rank": 2,
-                "route": "Satisfying Salad",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108033": {
-                "id": 108033,
-                "name": "Süß mariniertes Hühnchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1004",
-                "rank": 2,
-                "route": "Sweet Madame",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108036": {
-                "id": 108036,
-                "name": "Räuchergeflügel nach Art des Nordens",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2002",
-                "rank": 2,
-                "route": "Northern Smoked Chicken",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108039": {
-                "id": 108039,
-                "name": "Sahneeintopf",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2003",
-                "rank": 2,
-                "route": "Cream Stew",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108040": {
-                "id": 108040,
-                "name": "Feuriger Eintopf",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108040",
-                "rank": 2,
-                "route": "Spicy Stew",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108043": {
-                "id": 108043,
-                "name": "Pilzza",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1005",
-                "rank": 3,
-                "route": "Mushroom Pizza",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108044": {
-                "id": 108044,
-                "name": "Belebende Pizza",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108044",
-                "rank": 3,
-                "route": "Invigorating Pizza",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108047": {
-                "id": 108047,
-                "name": "Kartoffelpuffer nach Mondstadt-Art",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3003",
-                "rank": 3,
-                "route": "Mondstadt Hash Brown",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108048": {
-                "id": 108048,
-                "name": "Kratztoffelpuffer",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108048",
-                "rank": 3,
-                "route": "Puppy-Paw Hash Brown",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108051": {
-                "id": 108051,
-                "name": "Meeresfrüchtesuppe mit Wasserlilie",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1006",
-                "rank": 3,
-                "route": "Calla Lily Seafood Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108054": {
-                "id": 108054,
-                "name": "Kurzgebratene Matsutake",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_1007",
-                "rank": 3,
-                "route": "Sautéed Matsutake",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108057": {
-                "id": 108057,
-                "name": "Hochgestapeltes",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_3004",
-                "rank": 3,
-                "route": "\"Pile 'Em Up\"",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108058": {
-                "id": 108058,
-                "name": "„Es war einmal in Mondstadt“",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108058",
-                "rank": 3,
-                "route": "\"Once Upon a Time in Mondstadt\"",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108061": {
-                "id": 108061,
-                "name": "Kalte Fleischplatte",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2004",
-                "rank": 3,
-                "route": "Cold Cut Platter",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108064": {
-                "id": 108064,
-                "name": "Honigmöhren-Fleischpfanne",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2005",
-                "rank": 3,
-                "route": "Sticky Honey Roast",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108067": {
-                "id": 108067,
-                "name": "Geschmorter Schinken mit Krebsgemüse",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_2006",
-                "rank": 3,
-                "route": "Crab, Ham & Veggie Bake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108070": {
-                "id": 108070,
-                "name": "Gefüllte Jadetaschen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_Recipe_4004",
-                "rank": 4,
-                "route": "Jade Parcels",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108073": {
-                "id": 108073,
-                "name": "Eingelegtes Allerlei",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108072",
-                "rank": 3,
-                "route": "Zhongyuan Chop Suey",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108076": {
-                "id": 108076,
-                "name": "Gekochter Schwarzrückenbarsch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108075",
-                "rank": 3,
-                "route": "Black-Back Perch Stew",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108079": {
-                "id": 108079,
-                "name": "Eichhörnchenfisch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108078",
-                "rank": 3,
-                "route": "Squirrel Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108082": {
-                "id": 108082,
-                "name": "Mandeltofu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_100428",
-                "rank": 2,
-                "route": "Almond Tofu",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108085": {
-                "id": 108085,
-                "name": "Kalte Geflügelhäppchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108084",
-                "rank": 2,
-                "route": "Jueyun Chili Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108088": {
-                "id": 108088,
-                "name": "Juwelensuppe",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108087",
-                "rank": 2,
-                "route": "Jewelry Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108091": {
-                "id": 108091,
-                "name": "Mit Matsutake gefüllte Fleischröllchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108090",
-                "rank": 2,
-                "route": "Matsutake Meat Rolls",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108094": {
-                "id": 108094,
-                "name": "Mora-Medaillon",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108093",
-                "rank": 1,
-                "route": "Mora Meat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108097": {
-                "id": 108097,
-                "name": "Gegrillter Fischspieß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108096",
-                "rank": 1,
-                "route": "Mondstadt Grilled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108100": {
-                "id": 108100,
-                "name": "Scharfes Geschnetzeltes",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108099",
-                "rank": 1,
-                "route": "Stir-Fried Filet",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108103": {
-                "id": 108103,
-                "name": "Goldkrebs",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108102",
-                "rank": 4,
-                "route": "Golden Crab",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108106": {
-                "id": 108106,
-                "name": "Kristallgarnelen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108105",
-                "rank": 2,
-                "route": "Crystal Shrimp",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108109": {
-                "id": 108109,
-                "name": "Gegrillter Tigerfisch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108108",
-                "rank": 1,
-                "route": "Grilled Tiger Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108112": {
-                "id": 108112,
-                "name": "Windgott-Ragout",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108111",
-                "rank": 3,
-                "route": "Barbatos Ratatouille",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108113": {
-                "id": 108113,
-                "name": "Wahrhaftiges Windgott-Ragout",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108113",
-                "rank": 3,
-                "route": "A Buoyant Breeze",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108114": {
-                "id": 108114,
-                "name": "Der Weisheit letzter Schluss (Leben)",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108114",
-                "rank": 2,
-                "route": "Der Weisheit Letzter Schluss (Life)",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108115": {
-                "id": 108115,
-                "name": "Fischhäppchen auf Brot",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108115",
-                "rank": 2,
-                "route": "Fish-Flavored Toast",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108116": {
-                "id": 108116,
-                "name": "Angebranntes Teyvat-Spiegelei",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108116",
-                "rank": 1,
-                "route": "Teyvat Charred Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108117": {
-                "id": 108117,
-                "name": "Heilige Sinfonie",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108117",
-                "rank": 3,
-                "route": "Die Heilige Sinfonie",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108118": {
-                "id": 108118,
-                "name": "Luftige Eierkuchen",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108118",
-                "rank": 2,
-                "route": "Lighter-Than-Air Pancake",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108121": {
-                "id": 108121,
-                "name": "Gedämpftes Ei mit Lotossamen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108120",
-                "rank": 2,
-                "route": "Lotus Seed and Bird Egg Soup",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108124": {
-                "id": 108124,
-                "name": "Versuchung der Adepten",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108123",
-                "rank": 5,
-                "route": "Adeptus' Temptation",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108127": {
-                "id": 108127,
-                "name": "Goldene Garnelenhäppchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108126",
-                "rank": 3,
-                "route": "Golden Shrimp Balls",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108130": {
-                "id": 108130,
-                "name": "Bauerngemüse nach Qingce-Art",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108129",
-                "rank": 3,
-                "route": "Qingce Stir Fry",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108133": {
-                "id": 108133,
-                "name": "Schüssel Buntes",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108132",
-                "rank": 3,
-                "route": "Come and Get It",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108134": {
-                "id": 108134,
-                "name": "Verträgt sich nicht mit Alkohol",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108134",
-                "rank": 1,
-                "route": "Definitely Not Bar Food!",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108135": {
-                "id": 108135,
-                "name": "Fischsuppe nach Art des Hauses Wanmin",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108135",
-                "rank": 3,
-                "route": "Wanmin Restaurant's Boiled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108136": {
-                "id": 108136,
-                "name": "Rustikale Häppchen",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108136",
-                "rank": 2,
-                "route": "All-Delicacy Parcels",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108137": {
-                "id": 108137,
-                "name": "Träumchen",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108137",
-                "rank": 2,
-                "route": "\"Sweet Dream\"",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108138": {
-                "id": 108138,
-                "name": "Würzige Fleischpfanne",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108138",
-                "rank": 1,
-                "route": "Flash-Fried Filet",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108139": {
-                "id": 108139,
-                "name": "Qiankun-Mora-Medaillon",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108139",
-                "rank": 1,
-                "route": "Qiankun Mora Meat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108140": {
-                "id": 108140,
-                "name": "Mahlzeit ohne Zukunft",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108140",
-                "rank": 3,
-                "route": "No Tomorrow",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108143": {
-                "id": 108143,
-                "name": "Nudeln mit Fleischsoße und Pilzen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108142",
-                "rank": 2,
-                "route": "Noodles with Mountain Delicacies",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108144": {
-                "id": 108144,
-                "name": "Kalte Bergnudeln",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108144",
-                "rank": 2,
-                "route": "Cold Noodles with Mountain Delicacies",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108145": {
-                "id": 108145,
-                "name": "Lebensrettender Grillfisch",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108145",
-                "rank": 1,
-                "route": "Survival Grilled Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108146": {
-                "id": 108146,
-                "name": "Nahrhafte Kost Nr. 593",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108146",
-                "rank": 3,
-                "route": "Nutritious Meal (V.593)",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108147": {
-                "id": 108147,
-                "name": "Geheiligtes Wasser",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108147",
-                "rank": 3,
-                "route": "Holy Water"
-            },
-            "108148": {
-                "id": 108148,
-                "name": "Große Schüssel Tee",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108148",
-                "rank": 1,
-                "route": "Pop's Teas"
-            },
-            "108149": {
-                "id": 108149,
-                "name": "Wolfshakensaft",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108149",
-                "rank": 2,
-                "route": "Wolfhook Juice"
-            },
-            "108150": {
-                "id": 108150,
-                "name": "Beeren-Minz-Spritz",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108150",
-                "rank": 2,
-                "route": "Berry & Mint Burst"
-            },
-            "108151": {
-                "id": 108151,
-                "name": "Apfelschorle",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108151",
-                "rank": 2,
-                "route": "Apple Cider"
-            },
-            "108154": {
-                "id": 108154,
-                "name": "Bambussuppe mit Fleischeinlage",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108153",
-                "rank": 3,
-                "route": "Bamboo Shoot Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108157": {
-                "id": 108157,
-                "name": "Gestreiftes Dreierlei",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108156",
-                "rank": 3,
-                "route": "Triple-Layered Consommé",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108160": {
-                "id": 108160,
-                "name": "Tianshu-Braten",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108159",
-                "rank": 4,
-                "route": "Tianshu Meat",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108163": {
-                "id": 108163,
-                "name": "Knusperlotos",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108162",
-                "rank": 3,
-                "route": "Lotus Flower Crisp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108166": {
-                "id": 108166,
-                "name": "Mondkuchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108165",
-                "rank": 4,
-                "route": "Moon Pie",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108169": {
-                "id": 108169,
-                "name": "Verlorene Eier auf Brot",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108168",
-                "rank": 3,
-                "route": "Adventurer's Breakfast Sandwich",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108172": {
-                "id": 108172,
-                "name": "Apfelschmorfleisch aus dem Norden",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108171",
-                "rank": 3,
-                "route": "Northern Apple Stew",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108173": {
-                "id": 108173,
-                "name": "Langsam gegarte Bambussuppe mit Fleischeinlage",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108173",
-                "rank": 3,
-                "route": "Slow-Cooked Bamboo Shoot Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108174": {
-                "id": 108174,
-                "name": "Höllenhühnchen!",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108174",
-                "rank": 2,
-                "route": "Rockin' Riffin' Chicken!",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108175": {
-                "id": 108175,
-                "name": "Guter Fang",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108175",
-                "rank": 3,
-                "route": "A Prize Catch",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108178": {
-                "id": 108178,
-                "name": "Krebsrogentofu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108177",
-                "rank": 2,
-                "route": "Crab Roe Tofu",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108181": {
-                "id": 108181,
-                "name": "Vollmondei",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108180",
-                "rank": 3,
-                "route": "Fullmoon Egg",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108184": {
-                "id": 108184,
-                "name": "Pökeltopf",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108183",
-                "rank": 3,
-                "route": "Cured Pork Dry Hotpot",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108187": {
-                "id": 108187,
-                "name": "Gebratene Bandnudeln mit Fisch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108186",
-                "rank": 2,
-                "route": "Stir-Fried Fish Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108190": {
-                "id": 108190,
-                "name": "Vegetarische Seeohren",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108189",
-                "rank": 2,
-                "route": "Vegetarian Abalone",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108193": {
-                "id": 108193,
-                "name": "Drei Köstlichkeiten vom Steinhafen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108192",
-                "rank": 2,
-                "route": "Stone Harbor Delicacies",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108196": {
-                "id": 108196,
-                "name": "Gebratene Garnelen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108195",
-                "rank": 3,
-                "route": "Stir-Fried Shrimp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108199": {
-                "id": 108199,
-                "name": "Klebreisbällchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108198",
-                "rank": 1,
-                "route": "Rice Buns",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108200": {
-                "id": 108200,
-                "name": "Geistermarsch",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108200",
-                "rank": 2,
-                "route": "Ghostly March",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108203": {
-                "id": 108203,
-                "name": "Weltfrieden",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108202",
-                "rank": 3,
-                "route": "Universal Peace",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108206": {
-                "id": 108206,
-                "name": "Gulaschsuppe mit Gemüse",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108205",
-                "rank": 2,
-                "route": "Goulash",
-                "effectIcon": "UI_Buff_Item_Climate_Heat"
-            },
-            "108209": {
-                "id": 108209,
-                "name": "Butterbratling",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108208",
-                "rank": 3,
-                "route": "Sunshine Sprat",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108212": {
-                "id": 108212,
-                "name": "Jueyun-Schinkenreis",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108211",
-                "rank": 3,
-                "route": "Jueyun Guoba",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108213": {
-                "id": 108213,
-                "name": "Florierender Frieden",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108213",
-                "rank": 3,
-                "route": "Prosperous Peace",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108214": {
-                "id": 108214,
-                "name": "Waldtraum",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108214",
-                "rank": 3,
-                "route": "Woodland Dream",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108224": {
-                "id": 108224,
-                "name": "Garnelen auf krossem Kartoffelbett",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108223",
-                "rank": 3,
-                "route": "Crispy Potato Shrimp Platter",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108227": {
-                "id": 108227,
-                "name": "Minzgötterspeise",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108226",
-                "rank": 1,
-                "route": "Mint Jelly",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108230": {
-                "id": 108230,
-                "name": "Minzsalat",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108229",
-                "rank": 2,
-                "route": "Mint Salad",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108233": {
-                "id": 108233,
-                "name": "Minzröllchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108232",
-                "rank": 3,
-                "route": "Minty Meat Rolls",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108234": {
-                "id": 108234,
-                "name": "Henkersmahlzeit",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108234",
-                "rank": 2,
-                "route": "Dinner of Judgment",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108237": {
-                "id": 108237,
-                "name": "Golden frittierte Hühnerhappen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108236",
-                "rank": 4,
-                "route": "Golden Fried Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108240": {
-                "id": 108240,
-                "name": "Knuspriges Hühnerfilet auf Brot",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108239",
-                "rank": 3,
-                "route": "Golden Chicken Burger",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108243": {
-                "id": 108243,
-                "name": "Deftiger Kartoffelbrei",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108242",
-                "rank": 3,
-                "route": "Fragrant Mashed Potatoes",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108244": {
-                "id": 108244,
-                "name": "„Mein Kreis, der hat vier Ecken“",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108244",
-                "rank": 2,
-                "route": "\"My Way\"",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108245": {
-                "id": 108245,
-                "name": "Stürmische Calzone",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108245",
-                "rank": 4,
-                "route": "Stormcrest Pie",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108248": {
-                "id": 108248,
-                "name": "Hühnerpudding",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108247",
-                "rank": 4,
-                "route": "Chicken Tofu Pudding",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108251": {
-                "id": 108251,
-                "name": "Thunfisch-Sushi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108250",
-                "rank": 2,
-                "route": "Tuna Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108254": {
-                "id": 108254,
-                "name": "Dreifarbige Klößchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108253",
-                "rank": 3,
-                "route": "Tricolor Dango",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108257": {
-                "id": 108257,
-                "name": "Onigiri",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108256",
-                "rank": 2,
-                "route": "Onigiri",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108260": {
-                "id": 108260,
-                "name": "Sashimi-Platte",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108259",
-                "rank": 4,
-                "route": "Sashimi Platter",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108263": {
-                "id": 108263,
-                "name": "Tonkotsu-Ramen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108262",
-                "rank": 3,
-                "route": "Tonkotsu Ramen",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108266": {
-                "id": 108266,
-                "name": "Eierrolle",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108265",
-                "rank": 1,
-                "route": "Egg Roll",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108269": {
-                "id": 108269,
-                "name": "Gerösteter Trockenfisch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108268",
-                "rank": 1,
-                "route": "Dry-Braised Salted Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108272": {
-                "id": 108272,
-                "name": "Butterkrebs",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108271",
-                "rank": 4,
-                "route": "Butter Crab",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108275": {
-                "id": 108275,
-                "name": "Spieß mit drei Aromen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108274",
-                "rank": 3,
-                "route": "Tri-Flavored Skewer",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108278": {
-                "id": 108278,
-                "name": "Miso-Suppe",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108277",
-                "rank": 1,
-                "route": "Miso Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108281": {
-                "id": 108281,
-                "name": "Importiertes Geflügel",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108280",
-                "rank": 3,
-                "route": "Imported Poultry",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108284": {
-                "id": 108284,
-                "name": "Sakuramochi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108283",
-                "rank": 3,
-                "route": "Sakura Mochi",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108287": {
-                "id": 108287,
-                "name": "Konda-Küche",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108286",
-                "rank": 3,
-                "route": "Konda Cuisine",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108290": {
-                "id": 108290,
-                "name": "Klebreissuppe",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108289",
-                "rank": 3,
-                "route": "Rice Cake Soup",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108293": {
-                "id": 108293,
-                "name": "Gemischte Yakisoba",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108292",
-                "rank": 2,
-                "route": "Mixed Yakisoba",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108296": {
-                "id": 108296,
-                "name": "Krebsrogen-Kourayaki",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108295",
-                "rank": 2,
-                "route": "Crab Roe Kourayaki",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108299": {
-                "id": 108299,
-                "name": "Sakura-Tempura",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108298",
-                "rank": 3,
-                "route": "Sakura Tempura",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108300": {
-                "id": 108300,
-                "name": "„Schnee auf dem Herd“",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108300",
-                "rank": 3,
-                "route": "\"Snow on the Hearth\"",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108301": {
-                "id": 108301,
-                "name": "Allwetter-Schönheit",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108301",
-                "rank": 1,
-                "route": "All-Weather Beauty",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108302": {
-                "id": 108302,
-                "name": "Sommerfest-Fisch",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108302",
-                "rank": 3,
-                "route": "Summer Festival Fish",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108303": {
-                "id": 108303,
-                "name": "Technik zur Vermeidung von Schwindel – Version 2.0",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108303",
-                "rank": 2,
-                "route": "Dizziness-Be-Gone no Jutsu Version 2.0",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108304": {
-                "id": 108304,
-                "name": "Spezielle Pilzza",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108304",
-                "rank": 3,
-                "route": "Special Mushroom Pizza"
-            },
-            "108305": {
-                "id": 108305,
-                "name": "Kloßmilch",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_101514",
-                "rank": 2,
-                "route": "Dango Milk"
-            },
-            "108308": {
-                "id": 108308,
-                "name": "Reispudding",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108307",
-                "rank": 3,
-                "route": "Rice Pudding",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108311": {
-                "id": 108311,
-                "name": "Fleischeintopf",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108310",
-                "rank": 3,
-                "route": "Braised Meat",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108314": {
-                "id": 108314,
-                "name": "Oncidium-Tofu",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108313",
-                "rank": 3,
-                "route": "Oncidium Tofu",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108317": {
-                "id": 108317,
-                "name": "Scharfe Fleischmaisbällchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108316",
-                "rank": 4,
-                "route": "Chili-Mince Cornbread Buns",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108320": {
-                "id": 108320,
-                "name": "Belebende Katzenmahlzeit",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108319",
-                "rank": 3,
-                "route": "Invigorating Kitty Meal",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108323": {
-                "id": 108323,
-                "name": "Süßgarnelen-Sushi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108322",
-                "rank": 1,
-                "route": "Sweet Shrimp Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108326": {
-                "id": 108326,
-                "name": "Vogelei-Sushi",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108325",
-                "rank": 1,
-                "route": "Bird Egg Sushi",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108329": {
-                "id": 108329,
-                "name": "Omelette-Reis",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108328",
-                "rank": 3,
-                "route": "Omelette Rice",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108332": {
-                "id": 108332,
-                "name": "Taiyaki",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108331",
-                "rank": 3,
-                "route": "Taiyaki",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108335": {
-                "id": 108335,
-                "name": "Nochvielmehr",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108334",
-                "rank": 3,
-                "route": "More-and-More",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108338": {
-                "id": 108338,
-                "name": "Gegrilltes Unagi-Filet",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108337",
-                "rank": 2,
-                "route": "Grilled Unagi Fillet",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108339": {
-                "id": 108339,
-                "name": "Sättigungsgel",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108339",
-                "rank": 1,
-                "route": "Satiety Gel",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108340": {
-                "id": 108340,
-                "name": "Atemberaubende Kriegslist",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108340",
-                "rank": 1,
-                "route": "A Stunning Stratagem",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108341": {
-                "id": 108341,
-                "name": "Ewiger Glaube",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108341",
-                "rank": 1,
-                "route": "Faith Eternal",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108344": {
-                "id": 108344,
-                "name": "Fischtopf mit Rettich",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108343",
-                "rank": 2,
-                "route": "Radish and Fish Stew",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate"
-            },
-            "108347": {
-                "id": 108347,
-                "name": "Wakatakeni",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108346",
-                "rank": 2,
-                "route": "Wakatakeni",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108350": {
-                "id": 108350,
-                "name": "Beeren-Mizu-Dampfbrötchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108349",
-                "rank": 2,
-                "route": "Berry Mizu Manjuu",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108353": {
-                "id": 108353,
-                "name": "Soba",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108352",
-                "rank": 1,
-                "route": "Soba Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108354": {
-                "id": 108354,
-                "name": "„Wärme“",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108354",
-                "rank": 1,
-                "route": "\"Warmth\"",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll"
-            },
-            "108357": {
-                "id": 108357,
-                "name": "Unagi-Chazuke",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108356",
-                "rank": 3,
-                "route": "Unagi Chazuke",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108360": {
-                "id": 108360,
-                "name": "Fünf Essigschätze",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108359",
-                "rank": 3,
-                "route": "Five Pickled Treasures",
-                "effectIcon": "UI_Buff_Item_Other_SPAdd"
-            },
-            "108363": {
-                "id": 108363,
-                "name": "Sakura-Garnelen-Kekse",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108362",
-                "rank": 3,
-                "route": "Sakura Shrimp Crackers",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108364": {
-                "id": 108364,
-                "name": "Pfad des Stärksten",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108364",
-                "rank": 2,
-                "route": "Way of the Strong",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108365": {
-                "id": 108365,
-                "name": "Legende der Unbesiegbarkeit",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108365",
-                "rank": 3,
-                "route": "Victorious Legend",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd"
-            },
-            "108368": {
-                "id": 108368,
-                "name": "Jahresfisch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108367",
-                "rank": 4,
-                "route": "Bountiful Year",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108371": {
-                "id": 108371,
-                "name": "Drachenbartnudeln",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108370",
-                "rank": 3,
-                "route": "Dragon Beard Noodles",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108372": {
-                "id": 108372,
-                "name": "Herznudeln",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108372",
-                "rank": 3,
-                "route": "Heartstring Noodles",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108373": {
-                "id": 108373,
-                "name": "Wolkenumhüllte Jade",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108373",
-                "rank": 2,
-                "route": "Cloud-Shrouded Jade",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108376": {
-                "id": 108376,
-                "name": "Sangayaki",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108375",
-                "rank": 2,
-                "route": "Sangayaki",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108379": {
-                "id": 108379,
-                "name": "Udon-Nudeln",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108378",
-                "rank": 2,
-                "route": "Udon Noodles",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108380": {
-                "id": 108380,
-                "name": "Fukuuchi-Udon",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108380",
-                "rank": 2,
-                "route": "Fukuuchi Udon",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive"
-            },
-            "108383": {
-                "id": 108383,
-                "name": "Schnitzelbrötchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108382",
-                "rank": 2,
-                "route": "Katsu Sandwich",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108386": {
-                "id": 108386,
-                "name": "Lila Wolken",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108385",
-                "rank": 3,
-                "route": "Rainbow Aster",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108387": {
-                "id": 108387,
-                "name": "Stille Eleganz",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108387",
-                "rank": 3,
-                "route": "Quiet Elegance",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108388": {
-                "id": 108388,
-                "name": "Omelette-Reis-Walzer",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108388",
-                "rank": 3,
-                "route": "Omurice Waltz",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume"
-            },
-            "108389": {
-                "id": 108389,
-                "name": "Morgentau-Garnelen",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108389",
-                "rank": 3,
-                "route": "Dew-Dipped Shrimp",
-                "effectIcon": "UI_Buff_Item_Def_Add"
-            },
-            "108390": {
-                "id": 108390,
-                "name": "Nichts als die Wahrheit",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108390",
-                "rank": 2,
-                "route": "The Only Truth",
-                "effectIcon": "UI_Buff_Item_Atk_Add"
-            },
-            "108393": {
-                "id": 108393,
-                "name": "Butterhühnchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108392",
-                "rank": 3,
-                "route": "Butter Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108396": {
-                "id": 108396,
-                "name": "Schawarma-Rolle",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108395",
-                "rank": 2,
-                "route": "Shawarma Wrap",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108399": {
-                "id": 108399,
-                "name": "Selva-Salat",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108398",
-                "rank": 2,
-                "route": "Selva Salad",
-                "effectIcon": "UI_Buff_Item_Other_SPReduceConsume",
-                "beta": true
-            },
-            "108402": {
-                "id": 108402,
-                "name": "Masala-Käsebällchenßßß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108401",
-                "rank": 2,
-                "route": "Masala Cheese Balls",
-                "effectIcon": "UI_Buff_Item_Atk_CritRate",
-                "beta": true
-            },
-            "108405": {
-                "id": 108405,
-                "name": "Pilzeintopfßßß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108404",
-                "rank": 2,
-                "route": "Mushroom Hodgepodge",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108408": {
-                "id": 108408,
-                "name": "Taschenfladen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108407",
-                "rank": 3,
-                "route": "Pita Pocket",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108411": {
-                "id": 108411,
-                "name": "Panipuri",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108410",
-                "rank": 2,
-                "route": "Panipuri",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108414": {
-                "id": 108414,
-                "name": "Minzbohnensuppe",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108413",
-                "rank": 1,
-                "route": "Minty Bean Soup",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108417": {
-                "id": 108417,
-                "name": "Tierische Reispufferßßß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108416",
-                "rank": 4,
-                "route": "Biryani",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108420": {
-                "id": 108420,
-                "name": "Tahchin",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108419",
-                "rank": 3,
-                "route": "Tahchin",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll",
-                "beta": true
-            },
-            "108423": {
-                "id": 108423,
-                "name": "Lambad-Fischröllchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108422",
-                "rank": 1,
-                "route": "Lambad Fish Roll",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108426": {
-                "id": 108426,
-                "name": "Currygarnelen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108425",
-                "rank": 2,
-                "route": "Curry Shrimp",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108429": {
-                "id": 108429,
-                "name": "Tandoori-Brathähnchen",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108428",
-                "rank": 4,
-                "route": "Tandoori Roast Chicken",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108432": {
-                "id": 108432,
-                "name": "Kartoffelbootßßß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108431",
-                "rank": 3,
-                "route": "Potato Boat",
-                "effectIcon": "UI_Buff_Item_Recovery_Revive",
-                "beta": true
-            },
-            "108435": {
-                "id": 108435,
-                "name": "Frischer Fisch mit Milch",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108434",
-                "rank": 2,
-                "route": "Fish with Cream Sauce",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAddAll",
-                "beta": true
-            },
-            "108436": {
-                "id": 108436,
-                "name": "Wahlßßß des Waldhütermeisters",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108436",
-                "rank": 2,
-                "route": "Forest Watcher's Choice",
-                "effectIcon": "UI_Buff_Item_Def_Add",
-                "beta": true
-            },
-            "108437": {
-                "id": 108437,
-                "name": "Visionßßß",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108437",
-                "rank": 3,
-                "route": "Yearning",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
-            },
-            "108438": {
-                "id": 108438,
-                "name": "Mora kommt herbeißßß",
-                "type": "food",
-                "recipe": false,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108438",
-                "rank": 3,
-                "route": "Show Me the Mora",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108441": {
-                "id": 108441,
-                "name": "Pilz- und Fleischpizza",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108440",
-                "rank": 4,
-                "route": "Meat Lovers' Mushroom Pizza",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108444": {
-                "id": 108444,
-                "name": "Dämmerfrucht-Beerentee",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108443",
-                "rank": 3,
-                "route": "Sunset Berry Tea",
-                "effectIcon": "UI_Buff_Item_Atk_Add",
-                "beta": true
-            },
-            "108447": {
-                "id": 108447,
-                "name": "Kross gebratener Milchpilzturmßßß",
-                "type": "food",
-                "recipe": true,
-                "mapMark": false,
-                "icon": "UI_ItemIcon_108446",
-                "rank": 3,
-                "route": "Milky Mushroom Crisp Tower",
-                "effectIcon": "UI_Buff_Item_Recovery_HpAdd",
-                "beta": true
             },
             "110001": {
                 "id": 110001,
@@ -3846,8 +1822,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_110014",
                 "rank": 1,
-                "route": "Spice",
-                "beta": true
+                "route": "Spice"
             },
             "111006": {
                 "id": 111006,
@@ -3917,8 +1892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_111012",
                 "rank": 3,
-                "route": "Dendrocide Potion",
-                "beta": true
+                "route": "Dendrocide Potion"
             },
             "111013": {
                 "id": 111013,
@@ -3988,8 +1962,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_111019",
                 "rank": 3,
-                "route": "Forest Essential Oil",
-                "beta": true
+                "route": "Forest Essential Oil"
             },
             "112002": {
                 "id": 112002,
@@ -4593,36 +2566,33 @@
             },
             "112062": {
                 "id": 112062,
-                "name": "Inaktiver Pilz-Zellkern",
+                "name": "Inaktives Sklerotium",
                 "type": "characterLevelUpMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112062",
                 "rank": 2,
-                "route": "Inactivated Fungal Nucleus",
-                "beta": true
+                "route": "Inactivated Fungal Nucleus"
             },
             "112063": {
                 "id": 112063,
-                "name": "Schlafender Pilz-Zellkernßßß",
+                "name": "Schlafendes Sklerotium",
                 "type": "characterLevelUpMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112063",
                 "rank": 3,
-                "route": "Dormant Fungal Nucleus",
-                "beta": true
+                "route": "Dormant Fungal Nucleus"
             },
             "112064": {
                 "id": 112064,
-                "name": "Robuster Pilz-Zellkern",
+                "name": "Robustes Sklerotium",
                 "type": "characterLevelUpMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112064",
                 "rank": 4,
-                "route": "Robust Fungal Nucleus",
-                "beta": true
+                "route": "Robust Fungal Nucleus"
             },
             "112065": {
                 "id": 112065,
@@ -4632,8 +2602,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112065",
                 "rank": 1,
-                "route": "Faded Red Satin",
-                "beta": true
+                "route": "Faded Red Satin"
             },
             "112066": {
                 "id": 112066,
@@ -4643,30 +2612,27 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112066",
                 "rank": 2,
-                "route": "Trimmed Red Silk",
-                "beta": true
+                "route": "Trimmed Red Silk"
             },
             "112067": {
                 "id": 112067,
-                "name": "Goldverwobene rote Seite",
+                "name": "Goldverwobene rote Seide",
                 "type": "characterLevelUpMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112067",
                 "rank": 3,
-                "route": "Rich Red Brocade",
-                "beta": true
+                "route": "Rich Red Brocade"
             },
             "112068": {
                 "id": 112068,
-                "name": "Chaos-Speicherßßß",
+                "name": "Chaos-Speicher",
                 "type": "characterLevelUpMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112068",
                 "rank": 2,
-                "route": "Chaos Storage",
-                "beta": true
+                "route": "Chaos Storage"
             },
             "112069": {
                 "id": 112069,
@@ -4676,19 +2642,17 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112069",
                 "rank": 3,
-                "route": "Chaos Module",
-                "beta": true
+                "route": "Chaos Module"
             },
             "112070": {
                 "id": 112070,
-                "name": "Chaos-Ankerßßß",
+                "name": "Chaos-Anker",
                 "type": "characterLevelUpMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_112070",
                 "rank": 4,
-                "route": "Chaos Bolt",
-                "beta": true
+                "route": "Chaos Bolt"
             },
             "113001": {
                 "id": 113001,
@@ -5032,25 +2996,23 @@
             },
             "113036": {
                 "id": 113036,
-                "name": "Hakenschnabel des Pilzkönigsßßß",
+                "name": "Hakenschnabel des Pilzkönigs",
                 "type": "characterLevelUpMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_113036",
                 "rank": 4,
-                "route": "Majestic Hooked Beak",
-                "beta": true
+                "route": "Majestic Hooked Beak"
             },
             "113037": {
                 "id": 113037,
-                "name": "Donnerknall-Fruchtkernßßß",
+                "name": "Donnerknall-Fruchtkern",
                 "type": "characterLevelUpMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_113037",
                 "rank": 4,
-                "route": "Thunderclap Fruitcore",
-                "beta": true
+                "route": "Thunderclap Fruitcore"
             },
             "114001": {
                 "id": 114001,
@@ -5414,135 +3376,123 @@
             },
             "114037": {
                 "id": 114037,
-                "name": "???",
+                "name": "Kupfertalisman des Waldtaus",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114037",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Copper Talisman of the Forest Dew"
             },
             "114038": {
                 "id": 114038,
-                "name": "???",
+                "name": "Eisentalisman des Waldtaus",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114038",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Iron Talisman of the Forest Dew"
             },
             "114039": {
                 "id": 114039,
-                "name": "???",
+                "name": "Silbertalisman des Waldtaus",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114039",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Silver Talisman of the Forest Dew"
             },
             "114040": {
                 "id": 114040,
-                "name": "???",
+                "name": "Goldtalisman des Waldtaus",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114040",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Golden Talisman of the Forest Dew"
             },
             "114041": {
                 "id": 114041,
-                "name": "???",
+                "name": "Reminiszenz der Oase der blühenden Blumen",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114041",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Reminiscence"
             },
             "114042": {
                 "id": 114042,
-                "name": "???",
+                "name": "Gnade der Oase der blühenden Blumen",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114042",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Kindness"
             },
             "114043": {
                 "id": 114043,
-                "name": "???",
+                "name": "Trauer der Oase der blühenden Blumen",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114043",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Mourning"
             },
             "114044": {
                 "id": 114044,
-                "name": "???",
+                "name": "Wahrheit der Oase der blühenden Blumen",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114044",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Oasis Garden's Truth"
             },
             "114045": {
                 "id": 114045,
-                "name": "???",
+                "name": "Echo der sengenden Macht",
                 "type": "weaponAscensionMaterial",
                 "recipe": false,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114045",
                 "rank": 2,
-                "route": "???",
-                "beta": true
+                "route": "Echo of Scorching Might"
             },
             "114046": {
                 "id": 114046,
-                "name": "???",
+                "name": "Nachglimmen der sengenden Macht",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114046",
                 "rank": 3,
-                "route": "???",
-                "beta": true
+                "route": "Remnant Glow of Scorching Might"
             },
             "114047": {
                 "id": 114047,
-                "name": "???",
+                "name": "Traum der sengenden Macht",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114047",
                 "rank": 4,
-                "route": "???",
-                "beta": true
+                "route": "Dream of Scorching Might"
             },
             "114048": {
                 "id": 114048,
-                "name": "???",
+                "name": "Vergangenheit der sengenden Macht",
                 "type": "weaponAscensionMaterial",
                 "recipe": true,
                 "mapMark": false,
                 "icon": "UI_ItemIcon_114048",
                 "rank": 5,
-                "route": "???",
-                "beta": true
+                "route": "Olden Days of Scorching Might"
             },
             "120011": {
                 "id": 120011,
@@ -5552,8 +3502,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_120011",
                 "rank": 1,
-                "route": "Withered Kusava",
-                "beta": true
+                "route": "Withered Kusava"
             },
             "220001": {
                 "id": 220001,
@@ -5913,8 +3862,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220055",
                 "rank": 4,
-                "route": "Aranyaka",
-                "beta": true
+                "route": "Aranyaka"
             },
             "220057": {
                 "id": 220057,
@@ -5924,8 +3872,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220057",
                 "rank": 3,
-                "route": "Dendroculus Resonance Stone",
-                "beta": true
+                "route": "Dendroculus Resonance Stone"
             },
             "220058": {
                 "id": 220058,
@@ -5935,8 +3882,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220058",
                 "rank": 4,
-                "route": "Dendro Treasure Compass",
-                "beta": true
+                "route": "Dendro Treasure Compass"
             },
             "220059": {
                 "id": 220059,
@@ -5946,8 +3892,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220059",
                 "rank": 4,
-                "route": "\"The Boon of the Elder Tree\"",
-                "beta": true
+                "route": "\"The Boon of the Elder Tree\""
             },
             "220060": {
                 "id": 220060,
@@ -5957,8 +3902,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220060",
                 "rank": 4,
-                "route": "Ultra-Hot Burner Lamp Test Model",
-                "beta": true
+                "route": "Ultra-Hot Burner Lamp Test Model"
             },
             "220062": {
                 "id": 220062,
@@ -5968,8 +3912,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220062",
                 "rank": 4,
-                "route": "Mini Seelie: Moss",
-                "beta": true
+                "route": "Mini Seelie: Moss"
             },
             "220065": {
                 "id": 220065,
@@ -5979,8 +3922,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220065",
                 "rank": 4,
-                "route": "Fishing Line Stabilizer",
-                "beta": true
+                "route": "Fishing Line Stabilizer"
             },
             "220066": {
                 "id": 220066,
@@ -5990,8 +3932,7 @@
                 "mapMark": false,
                 "icon": "UI_ItemIcon_220066",
                 "rank": 4,
-                "route": "Vintage Lyre",
-                "beta": true
+                "route": "Vintage Lyre"
             }
         }
     }

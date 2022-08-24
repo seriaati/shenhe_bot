@@ -314,7 +314,7 @@
                 ],
                 "affixList": {
                     "2150050": "Bônus de Dano Electro +15%",
-                    "2150051": "Aumenta o Dano causado pela Sobrecarga, Eletricamente Carregado e Supercondutor em 40%. Ao ativar estes efeitos, diminui a Recarga da Habilidade Elemental em 1s. Pode ser ativado uma vez a cada 0.8s."
+                    "2150051": "Aumenta o Dano causado por Sobrecarga, Eletricamente Carregado, Supercondutor e Superflorescimento em 40%, e o Bônus de Dano causado pela Intensificação é aumentado em 20%. Quando Aceleração ou as outras reações elementais mencionadas anteriormente são desencadeadas, o Tempo de Recarga das Habilidades Elementais é reduzido em 1s. Podendo acontecer apenas uma vez a cada 0.8s."
                 },
                 "icon": "UI_RelicIcon_15005_4",
                 "route": "Thundering Fury",
@@ -329,7 +329,7 @@
                 ],
                 "affixList": {
                     "2150060": "Bônus de Dano Pyro +15%",
-                    "2150061": "Aumenta o dano causado por Sobrecarga e Queimadura em 40%, aumenta o dano causado pela Vaporização e Fusão em 15%. Ao usar a Habilidade Elemental aumenta os efeitos do Conjunto de 2 Peças em 50% por 10s. Pode acumular até 3x."
+                    "2150061": "Aumenta o Dano causado por Sobrecarga, Queimaduras e Germinação em 40%. Aumenta o Dano causado por Vaporização e Fusão em 15%. Usar Habilidades Elementais aumenta o efeito de Bônus de Conjunto de 2 Peças em 50% do seu valor inicial por 10s. Máximo de 3 acúmulos."
                 },
                 "icon": "UI_RelicIcon_15006_4",
                 "route": "Crimson Witch of Flames",
@@ -599,8 +599,7 @@
                 },
                 "icon": "UI_RelicIcon_15025_4",
                 "route": "Deepwood Memories",
-                "sortOrder": 82,
-                "beta": true
+                "sortOrder": 82
             },
             "15026": {
                 "id": 15026,
@@ -615,8 +614,7 @@
                 },
                 "icon": "UI_RelicIcon_15026_4",
                 "route": "Gilded Dreams",
-                "sortOrder": 83,
-                "beta": true
+                "sortOrder": 83
             }
         }
     }
