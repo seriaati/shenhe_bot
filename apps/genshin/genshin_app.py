@@ -756,6 +756,10 @@ class GenshinApp:
             return (
                 error_embed(message=text_map.get(35, locale, user_locale)).set_author(
                     name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+        except genshin.errors.RedemptionInvalid:
+            return (
+                error_embed().set_author(
+                    name=text_map.get(107, locale, user_locale), icon_url=user.avatar
                 ),
                 False,
             )
