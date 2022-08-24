@@ -20,9 +20,9 @@ class View(DefaultView):
 
         element_names = list(convert_elements.values())
         element_emojis = list(elements.values())
-        for index in range(0, 6):
+        for index in range(0, 7):
             self.add_item(ElementButton(
-                element_names[index], element_emojis[index], index//3))
+                element_names[index], element_emojis[index], index//4))
 
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
@@ -89,9 +89,9 @@ class GoBack(Button):
         if self.place_to_go_back == 'element':
             element_names = list(convert_elements.values())
             element_emojis = list(elements.values())
-            for index in range(0, 6):
+            for index in range(0, 7):
                 self.view.add_item(ElementButton(
-                    element_names[index], element_emojis[index], index//3))
+                    element_names[index], element_emojis[index], index//4))
             await i.response.edit_message(view=self.view)
         elif self.place_to_go_back == 'character':
             await element_button_callback(i, self.element, self.view)
