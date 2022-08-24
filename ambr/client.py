@@ -48,11 +48,13 @@ class AmbrTopAPI:
         else:
             return self.cache[self.lang][endpoint]
 
-    async def _request_from_endpoint(self, endpoint: str, static: bool = False) -> Dict:
+    async def _request_from_endpoint(
+        self, endpoint: str, lang: str, static: bool = False
+    ) -> Dict:
         if static:
             endpoint_url = f"{BASE}static/{STATIC_ENDPOINTS.get(endpoint)}"
         else:
-            endpoint_url = f"{BASE}{self.lang}/{ENDPOINTS.get(endpoint)}"
+            endpoint_url = f"{BASE}{lang}/{ENDPOINTS.get(endpoint)}"
         async with self.session.get(endpoint_url) as r:
             endpoint_data = await r.json()
         if "code" in endpoint_data:
@@ -78,23 +80,27 @@ class AmbrTopAPI:
         return endpoint_data
 
     async def _update_cache(self) -> None:
+        langs = list(LANGS.keys())
         endpoints = list(ENDPOINTS.keys())
-        for endpoint in endpoints:
-            data = await self._request_from_endpoint(endpoint)
-            path = f"ambr/cache/{self.lang}"
-            if not os.path.exists(path):
-                os.makedirs(path)
-            with open(
-                f"ambr/cache/{self.lang}/{ENDPOINTS.get(endpoint)}.json", "w+"
-            ) as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-        static_endpoints = list(STATIC_ENDPOINTS.keys())
-        for static_endpoint in static_endpoints:
-            data = await self._request_from_endpoint(static_endpoint, static=True)
-            with open(
-                f"ambr/cache/{STATIC_ENDPOINTS.get(static_endpoint)}.json", "w+"
-            ) as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+        for lang in langs:
+            for endpoint in endpoints:
+                data = await self._request_from_endpoint(endpoint, lang)
+                path = f"ambr/cache/{lang}"
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                with open(
+                    f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json", "w+"
+                ) as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+            static_endpoints = list(STATIC_ENDPOINTS.keys())
+            for static_endpoint in static_endpoints:
+                data = await self._request_from_endpoint(
+                    static_endpoint, lang, static=True
+                )
+                with open(
+                    f"ambr/cache/{STATIC_ENDPOINTS.get(static_endpoint)}.json", "w+"
+                ) as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
 
     async def get_material(self, id: Optional[int] = None) -> List[Material]:
         result = []
