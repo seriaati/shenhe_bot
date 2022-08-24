@@ -8,7 +8,6 @@ from apps.genshin.utils import (
     get_area_emoji,
     get_character,
     get_dummy_client,
-    get_element,
     trim_cookie,
 )
 from apps.text_map.convert_locale import to_genshin_py
@@ -18,6 +17,7 @@ from discord import Embed, Locale, Member, SelectOption
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, log
+from data.game.elements import element_emojis
 
 import genshin
 
@@ -723,7 +723,7 @@ class GenshinApp:
             for element, characters in organized_characters.items():
                 result["options"].append(
                     SelectOption(
-                        emoji=get_element(element)["emoji"],
+                        emoji=element_emojis.get(element),
                         label=f"{get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}",
                         value=index,
                     )
@@ -732,7 +732,7 @@ class GenshinApp:
                 for character in characters:
                     message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
                 embed = default_embed(
-                    f'{get_element(element)["emoji"]} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}',
+                    f'{element_emojis(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}',
                     message,
                 ).set_author(
                     name=text_map.get(105, locale, user_locale), icon_url=user.avatar

@@ -8,6 +8,16 @@ elements = {
     'Grass': '<:GRASS_ADD_HURT:982138222891110432>'
 }
 
+element_emojis = {
+    'Anemo': '<:WIND_ADD_HURT:982138235239137290>',
+    'Cryo': '<:ICE_ADD_HURT:982138229140635648>',
+    'Electro': '<:ELEC_ADD_HURT:982138220248711178>',
+    'Geo': '<:ROCK_ADD_HURT:982138232391237632>',
+    'Hydro': '<:WATER_ADD_HURT:982138233813098556>',
+    'Pyro': '<:FIRE_ADD_HURT:982138221569900585>',
+    'Dendro': '<:GRASS_ADD_HURT:982138222891110432>'
+}
+
 convert_elements = {
     'Wind': 'Anemo',
     'Ice': 'Cryo',
