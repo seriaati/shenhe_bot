@@ -682,6 +682,13 @@ class GenshinApp:
                 ),
                 False,
             )
+        except genshin.errors.RedemptionInvalid:
+            return (
+                error_embed().set_author(
+                    name=text_map.get(107, locale, user_locale), icon_url=user.avatar
+                ),
+                False,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
