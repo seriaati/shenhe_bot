@@ -121,6 +121,17 @@ sentry_sdk.init(
 )
 
 bot = ShenheBot()
+
+
+@bot.listen()
+async def on_message_edit(before: Message, after: Message):
+    if before.content == after.content:
+        return
+    if before.author.id != bot.owner_id:
+        return
+    return await bot.process_commands(after)
+
+
 tree = bot.tree
 
 
