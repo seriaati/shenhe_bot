@@ -46,8 +46,6 @@ class DamageCalculator:
 
     async def calculate_damage(self) -> Tuple[Dict, str, str]:
         character_name = self.current_character.name.replace(' ', '')
-        log(True, False, 'calculateDamage',
-            f'Calculating damage for {character_name}')
         talents_to_calculate = ['Normal Atk.', 'Charged Atk.',
                                 'Plunging Atk.', 'Ele. Skill', 'Ele. Burst']
         no_ele_burst = ['Xiao', 'AratakiItto']

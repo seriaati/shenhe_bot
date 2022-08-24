@@ -30,7 +30,7 @@ class GenshinApp:
     async def set_cookie(
         self, user_id: int, cookie: str, locale: Locale, uid: int = None
     ):
-        log(False, False, "set_cookie", f"{user_id} ({cookie})")
+        log.info(f'[INFO][Set Cookie Start][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
         user = self.bot.get_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
@@ -51,7 +51,15 @@ class GenshinApp:
             account_id=cookie[0],
             cookie_token=cookie[2],
         )
-        accounts = await client.get_game_accounts()
+        try:
+            accounts = await client.get_game_accounts()
+        except genshin.InvalidCookies:
+            result = error_embed(
+                message=text_map.get(35, locale, user_locale)
+            ).set_author(
+                name=text_map.get(36, locale, user_locale), icon_url=user.avatar
+            )
+            return result, False
         if uid is None:
             if len(accounts) == 0:
                 result = error_embed(
@@ -92,7 +100,7 @@ class GenshinApp:
             name=text_map.get(39, locale, user_locale), icon_url=user.avatar
         )
         await self.db.commit()
-        log(True, False, "set_cookie", f"{user_id} set_cookie success")
+        log.info(f'[INFO][Set Cookie][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
         return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):

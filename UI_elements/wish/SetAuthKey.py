@@ -36,7 +36,7 @@ class Modal(Modal):
         client.lang = to_genshin_py(user_locale or i.locale) or 'en-US'
         url = self.url.value
         authkey = genshin.utility.extract_authkey(url)
-        log(True, False, 'wish import', f'{i.user.id} (key={authkey})')
+        log.info(f'[INFO][Wish Import][{i.user.id}]: [Authkey][{authkey}]')
         client.authkey = authkey
         await i.response.send_message(embed=default_embed(
             f'<a:LOADER:982128111904776242> {text_map.get(355, i.locale, user_locale)}'), ephemeral=True)

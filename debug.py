@@ -8,7 +8,7 @@ from utility.utils import error_embed, log
 class DefaultView(discord.ui.View):
     async def on_error(self, i: discord.Interaction, e: Exception, item) -> None:
         sentry_sdk.capture_exception(e)
-        
+
         await i.response.send_message(
             embed=error_embed().set_author(
                 name=text_map.get(135, i.locale), icon_url=i.user.avatar
@@ -25,4 +25,17 @@ class DefaultView(discord.ui.View):
         except AttributeError:
             log.warning(f"[EXCEPTION][Attribute Error]: [children]{self.children}")
         except Exception as e:
-            log.warning(f"[EXCEPTION][Edit View Erorr]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}")
+            log.warning(
+                f"[EXCEPTION][Edit View Erorr]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
+
+
+class DefaultModal(discord.ui.Modal):
+    async def on_error(self, i: discord.Interaction, e: Exception) -> None:
+        sentry_sdk.capture_exception(e)
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )
