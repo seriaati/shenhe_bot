@@ -165,7 +165,7 @@ class GenshinApp:
             )
         else:
             return (
-                await self.parse_resin_embed(notes, locale, user_locale).set_author(
+                (await self.parse_resin_embed(notes, locale, user_locale)).set_author(
                     name=text_map.get(24, locale, user_locale), icon_url=user.avatar
                 ),
                 True,
