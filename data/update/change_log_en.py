@@ -1,4 +1,19 @@
 change_log_en = {
+    'v4.7.3':
+        "Note: </wish import:1000187021635104890> has stopped working after 3.0, please wait for future updates\n\n"
+        "Mainly bug fixes:\n"
+        "• Fixed </redeem:1006486283805265954> not working\n"
+        "• Added two error messages that will show when code redeem fails\n"
+        "• Fixed issues that caused registers to fail\n"
+        "• Added error message when cookie is invalid\n"
+        "• Fixed </check:1006486283725590529>\n"
+        "• Fixed </characters:1006486283725590533> unusable when the user has 3.0 characters\n"
+        "• Realm currency and resin notification will now show `full` when they are full\n"
+        "• Updated data to 3.0\n"
+        "• Fixed some features unusable due to logging issues\n"
+        "• </todo:1006486283855605804> now uses cards\n"
+        "• </calc character:1000187020892700793> and </calc weapon:1000187020892700793> now uses cards\n\n"
+        "• Updated character builds in </build:1006486283805265951>\n",
     'v4.7.2':
         "Thank you all so much for using shenhe, she is now in 250 servers! (the maximum number)\n"
         "Because discord thinks shenhe's growth is too fast, they prohibit me from verifying the bot.\n"

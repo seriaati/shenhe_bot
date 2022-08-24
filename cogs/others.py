@@ -46,6 +46,8 @@ class OthersCog(commands.Cog, name="others"):
         else:
             display_change_log = change_log_en
         for version, log in display_change_log.items():
+            if self.bot.debug:
+                log = f'`{log}`'
             embed = default_embed(version, log)
             embed.set_thumbnail(url=self.bot.user.avatar)
             embed.set_footer(
