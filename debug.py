@@ -7,7 +7,6 @@ from utility.utils import error_embed, log
 
 class DefaultView(discord.ui.View):
     async def on_error(self, i: discord.Interaction, e: Exception, item) -> None:
-        log.warning(f"[EXCEPTION][{i.user.id}][View Error]: [original]{e.original} [error message]{e.msg}")
         sentry_sdk.capture_exception(e)
         
         await i.response.send_message(
