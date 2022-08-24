@@ -213,8 +213,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(bytes_obj, filename="waifu_image.gif", spoiler=True)
             view = WaifuCog.DeleteImageView(i.user)
-            await i.edit_original_response(embed=None, attachments=[file], view=view)
-            view.message = await i.original_response()
+            view.message = await i.edit_original_response(embed=None, attachments=[file], view=view)
         else:
             await i.edit_original_response(
                 embed=default_embed(
@@ -231,8 +230,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                     bytes_obj = io.BytesIO(await resp.read())
                     file = File(bytes_obj, filename="waifu_image.gif", spoiler=True)
                 view = WaifuCog.DeleteImageView(i.user)
-                await i.channel.send(file=file, view=view)
-                view.message = await i.original_response()
+                view.message = await i.channel.send(file=file, view=view)
             await i.delete_original_response()
 
     @app_commands.command(name="waifu", description="利用 waifu API 隨機產生一張二次元老婆的照片")
