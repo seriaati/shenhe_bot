@@ -2,13 +2,12 @@ from typing import List
 
 import aiosqlite
 import sentry_sdk
-from apps.genshin.utils import get_material
 from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
 from discord.ui import Button, Modal, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
-from apps.todo import get_todo_embed
+from apps.todo_app import get_todo_embed, return_todo
 from utility.utils import error_embed, log
 import config
 
@@ -33,7 +32,7 @@ class View(DefaultView):
 
 class AddItem(Button):
     def __init__(self, label: str):
-        super().__init__(label=label, style=ButtonStyle.green)
+        super().__init__(label=label, style=ButtonStyle.green, row=2)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -50,15 +49,14 @@ class AddItem(Button):
             return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET count = count + ? WHERE user_id = ? AND item = ?', (i.user.id, text_map.get_material_id_with_name(modal.item.value), int(modal.count.value), int(modal.count.value), i.user.id, text_map.get_material_id_with_name(modal.item.value)))
         await self.view.db.commit()
-        embed, empty = await get_todo_embed(self.view.db, i.user, i.locale)
+        result, empty = await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
         view = View(self.view.db, empty, i.user, i.locale, user_locale)
-        await i.edit_original_response(embed=embed, view=view)
-        view.message = await i.original_response()
+        await return_todo(result, i, view, i.client.db)
 
 
 class RemoveItem(Button):
     def __init__(self, disabled: bool, label: str):
-        super().__init__(label=label, style=ButtonStyle.red, disabled=disabled)
+        super().__init__(label=label, style=ButtonStyle.red, disabled=disabled, row=2)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -70,7 +68,7 @@ class RemoveItem(Button):
         options = []
         for index, tuple in enumerate(todos):
             options.append(SelectOption(
-                label=text_map.get_material_name(tuple[0], i.locale, user_locale), value=tuple[0], emoji=get_material(tuple[0])['emoji']))
+                label=text_map.get_material_name(tuple[0], i.locale, user_locale), value=tuple[0]))
         self.view.clear_items()
         self.view.add_item(RemoveItemSelect(
             options, text_map.get(207, i.locale, user_locale)))
@@ -79,7 +77,7 @@ class RemoveItem(Button):
 
 class ClearItems(Button):
     def __init__(self, disabled: bool, label: str):
-        super().__init__(label=label, disabled=disabled)
+        super().__init__(label=label, disabled=disabled, row=2)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -88,9 +86,8 @@ class ClearItems(Button):
         await c.execute('DELETE FROM todo WHERE user_id = ?', (i.user.id,))
         await self.view.db.commit()
         view = View(self.view.db, True, i.user, i.locale, user_locale)
-        embed = (await get_todo_embed(self.view.db, i.user, i.locale))[0]
-        await i.response.edit_message(embed=embed, view=view)
-        view.message = await i.original_response()
+        result = (await get_todo_embed(self.view.db, i.user, i.locale, i.client.session))[0]
+        await return_todo(result, i, view, i.client.db)
 
 
 class AddItemModal(Modal):
@@ -181,7 +178,6 @@ class RemoveItemSelect(Select):
             await c.execute('UPDATE todo SET count = ? WHERE user_id = ? AND item = ?', (count[0]-int(modal.count.value), i.user.id, self.values[0]))
             await c.execute('DELETE FROM todo WHERE count = 0 AND user_id = ?', (i.user.id,))
         await self.view.db.commit()
-        embed, disabled = await get_todo_embed(self.view.db, i.user, i.locale)
+        result, disabled = await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
         view = View(self.view.db, disabled, i.user, i.locale, user_locale)
-        await i.edit_original_response(embed=embed, view=view)
-        view.message = await i.original_response()
+        await return_todo(result, i, view, i.client.db)
