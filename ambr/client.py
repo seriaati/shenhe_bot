@@ -63,25 +63,38 @@ class AmbrTopAPI:
 
     def _request_from_cache(self, endpoint: str, static: bool = False) -> Dict:
         if static:
-            with open(
-                f"ambr/cache/{STATIC_ENDPOINTS.get(endpoint)}.json",
-                "r",
-                encoding="utf-8",
-            ) as f:
-                endpoint_data = json.load(f)
+            try:
+                with open(
+                    f"ambr/cache/{STATIC_ENDPOINTS.get(endpoint)}.json",
+                    "r",
+                    encoding="utf-8",
+                ) as f:
+                    endpoint_data = json.load(f)
+            except FileNotFoundError:
+                endpoint_data = {}
         else:
-            with open(
-                f"ambr/cache/{self.lang}/{ENDPOINTS.get(endpoint)}.json",
-                "r",
-                encoding="utf-8",
-            ) as f:
-                endpoint_data = json.load(f)
+            try:
+                with open(
+                    f"ambr/cache/{self.lang}/{ENDPOINTS.get(endpoint)}.json",
+                    "r",
+                    encoding="utf-8",
+                ) as f:
+                    endpoint_data = json.load(f)
+            except FileNotFoundError:
+                endpoint_data = {}
 
         return endpoint_data
 
-    async def _update_cache(self) -> None:
-        langs = list(LANGS.keys())
-        endpoints = list(ENDPOINTS.keys())
+    async def _update_cache(self, all: bool = False, endpoint: str = None) -> None:
+        if all:
+            langs = list(LANGS.keys())
+        else:
+            langs = [self.lang]
+        if endpoint is None:
+            endpoints = list(ENDPOINTS.keys())
+        else:
+            endpoints = [endpoint]
+            
         for lang in langs:
             for endpoint in endpoints:
                 data = await self._request_from_endpoint(endpoint, lang)
@@ -102,7 +115,7 @@ class AmbrTopAPI:
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
 
-    async def get_material(self, id: Optional[int] = None) -> List[Material]:
+    async def get_material(self, id: Optional[int] = None, retry: bool = False) -> List[Material]:
         result = []
         data = await self._get_cache("material")
         for material_id, material_info in data["data"]["items"].items():
@@ -111,10 +124,14 @@ class AmbrTopAPI:
                     result.append(Material(**material_info))
             else:
                 result.append(Material(**material_info))
-
+                
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='material')
+            result = await self.get_material(id=id, retry=True)
+        
         return result
 
-    async def get_character(self, id: Optional[str] = None) -> List[Character]:
+    async def get_character(self, id: Optional[str] = None, retry: bool = False) -> List[Character]:
         result = []
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
@@ -124,9 +141,13 @@ class AmbrTopAPI:
             else:
                 result.append(Character(**character_info))
 
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='character')
+            result = await self.get_character(id=id, retry=True)
+        
         return result
 
-    async def get_weapon(self, id: Optional[int] = None) -> List[Weapon]:
+    async def get_weapon(self, id: Optional[int] = None, retry: bool = False) -> List[Weapon]:
         result = []
         data = await self._get_cache("weapon")
         for weapon_id, weapon_info in data["data"]["items"].items():
@@ -136,10 +157,14 @@ class AmbrTopAPI:
             else:
                 result.append(Weapon(**weapon_info))
 
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='weapon')
+            result = await self.get_weapon(id=id, retry=True)
+
         return result
 
     async def get_character_upgrade(
-        self, character_id: Optional[str] = None
+        self, character_id: Optional[str] = None, retry: bool = False
     ) -> List[CharacterUpgrade]:
         result = []
         data = await self._get_cache("upgrade", static=True)
@@ -156,10 +181,14 @@ class AmbrTopAPI:
             else:
                 result.append(CharacterUpgrade(**upgrade_info))
 
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='upgrade')
+            result = await self.get_character_upgrade(id=character_id, retry=True)
+
         return result
 
     async def get_weapon_upgrade(
-        self, character_id: Optional[str] = None
+        self, weapon_id: Optional[str] = None, retry: bool = False
     ) -> List[WeaponUpgrade]:
         result = []
         data = await self._get_cache("upgrade", static=True)
@@ -170,15 +199,19 @@ class AmbrTopAPI:
                 item_list.append(material[0])
             upgrade_info["item_list"] = item_list
             upgrade_info["weapon_id"] = upgrade_id
-            if character_id is not None:
-                if character_id == upgrade_id:
+            if weapon_id is not None:
+                if weapon_id == upgrade_id:
                     result.append(WeaponUpgrade(**upgrade_info))
             else:
                 result.append(WeaponUpgrade(**upgrade_info))
 
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='upgrade')
+            result = await self.get_weapon_upgrade(id=weapon_id, retry=True)
+
         return result
 
-    async def get_domain(self, id: Optional[int] = None) -> List[Domain]:
+    async def get_domain(self, id: Optional[int] = None, retry: bool = False) -> List[Domain]:
         result = []
         data = await self._get_cache("domain")
         for weekday, domain_dict in data["data"].items():
@@ -199,5 +232,9 @@ class AmbrTopAPI:
                         result.append(Domain(**domain_info))
                 else:
                     result.append(Domain(**domain_info))
+
+        if len(result) == 0 and not retry:
+            self._update_cache(endpoint='domain')
+            result = await self.get_domain(id=id, retry=True)
 
         return result

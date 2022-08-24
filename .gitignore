@@ -152,4 +152,5 @@ resources/images/character/*
 resources/images/material/*
 resources/images/weapon/*
 resources/images/artifact/*
+ambr/cache/*
 !/**/.gitkeep
