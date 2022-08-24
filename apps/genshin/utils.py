@@ -23,9 +23,6 @@ def get_dummy_client() -> genshin.Client:
     cookies = {"ltuid": os.getenv('ltuid'),
                "ltoken": os.getenv('ltoken')}
     client = genshin.Client(cookies)
-    client.lang = "zh-tw"
-    client.default_game = genshin.Game.GENSHIN
-    client.uids[genshin.Game.GENSHIN] = 901211014
     return client
 
 def calculate_artifact_score(substats: dict):
@@ -230,7 +227,6 @@ def get_character(id: int = '', name: str = '', eng: str = ''):
     for character_id, character_info in characters_map.items():
         if str(id) == character_id or character_info['name'] == name or character_info['eng'] == eng:
             return character_info
-    # print(f'Invalid character {id}{name}')
     return {'name': f'{id}{name}{eng}', 'element': 'Cryo', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'emoji': '<:WARNING:992552271378386944>', 'eng': 'Unknown'}
 
 
@@ -238,7 +234,6 @@ def get_weapon(id: int = '', name: str = ''):
     for weapon_id, weapon_info in weapons_map.items():
         if weapon_id == str(id) or weapon_info['name'] == name:
             return weapon_info
-    # print(f'Invalid weapon {id}{name}')
     return {'name': f'{id}{name}', 'emoji': '⚠️', 'rarity': 5, 'icon': 'https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png', 'eng': 'Unknown'}
 
 

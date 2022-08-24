@@ -2,6 +2,7 @@ import sqlite3
 
 import aiosqlite
 import genshin
+import sentry_sdk
 from apps.genshin.utils import get_dummy_client
 from discord import Interaction, Locale, TextStyle
 from discord.ui import Modal, TextInput
@@ -52,3 +53,15 @@ class Modal(Modal):
                 pass
         await self.db.commit()
         await i.edit_original_response(embed=default_embed(f'<:wish:982419859117838386> {text_map.get(356, i.locale, user_locale)}'))
+
+    async def on_error(self, i: Interaction, e: Exception) -> None:
+        log.warning(
+            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+        )
+        sentry_sdk.capture_exception(e)
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )

@@ -1,6 +1,7 @@
 from typing import Any, List
 
 import aiosqlite
+import sentry_sdk
 import config
 from apps.genshin.utils import get_weapon
 from apps.text_map.text_map_app import text_map
@@ -8,7 +9,7 @@ from apps.text_map.utils import get_user_locale
 from debug import DefaultView
 from discord import Interaction, Locale, Member, SelectOption
 from discord.ui import Modal, Select, TextInput
-from utility.utils import error_embed
+from utility.utils import error_embed, log
 
 
 class View(DefaultView):
@@ -66,3 +67,15 @@ class LevelModal(Modal):
     async def on_submit(self, i: Interaction) -> None:
         await i.response.defer()
         self.stop()
+
+    async def on_error(self, i: Interaction, e: Exception) -> None:
+        log.warning(
+            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+        )
+        sentry_sdk.capture_exception(e)
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )

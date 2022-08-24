@@ -350,8 +350,6 @@ class Conditional():
                         description += f'• {conditional["description"]}\n'
                         effect += f"• {conditional['effect']}\n"
 
-        # pprint(result)
-
         return result, description, effect
 
     def get(self, character: CharacterInfo, current_character: CharacterInfo) -> Tuple[Dict, str, str]:

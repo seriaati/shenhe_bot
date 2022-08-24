@@ -71,6 +71,35 @@ class OthersCog(commands.Cog, name="others"):
                     if character_id not in dict:
                         dict[character_id] = {}
                     dict[character_id][lang] = character_info["name"]
+            if thing == "avatar":
+                dict["10000007"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
+                dict["10000005"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
             if thing == "material":
                 dict["202"] = {
                     "chs": "摩拉",
@@ -271,45 +300,45 @@ class OthersCog(commands.Cog, name="others"):
         )
 
         # materials
-        result = {}
+        # result = {}
 
-        async with self.bot.session.get(f"https://api.ambr.top/v2/cht/material") as r:
-            materials = await r.json()
+        # async with self.bot.session.get(f"https://api.ambr.top/v2/cht/material") as r:
+        #     materials = await r.json()
 
-        needed = [
-            "forgingOre",
-            "localSpecialtyMondstadt",
-            "localSpecialtyLiyue",
-            "localSpecialtyInazuma",
-            "characterLevelUpMaterial",
-            "weaponAscensionMaterial",
-            "talentLevelUpMaterial",
-            "sumeruRegionalSpecialty",
-            "talentLevelUpMaterials",
-        ]
+        # needed = [
+        #     "forgingOre",
+        #     "localSpecialtyMondstadt",
+        #     "localSpecialtyLiyue",
+        #     "localSpecialtyInazuma",
+        #     "characterLevelUpMaterial",
+        #     "weaponAscensionMaterial",
+        #     "talentLevelUpMaterial",
+        #     "sumeruRegionalSpecialty",
+        #     "talentLevelUpMaterials",
+        # ]
 
-        for material_id, material_info in materials["data"]["items"].items():
-            if (
-                "beta" not in material_info
-                and material_id not in consumables_map
-                and material_info["type"] in needed
-            ):
-                result[material_id] = {
-                    "name": material_info["name"],
-                    "icon": f'https://api.ambr.top/assets/UI/{material_info["icon"]}.png',
-                    "emoji": "",
-                }
+        # for material_id, material_info in materials["data"]["items"].items():
+        #     if (
+        #         "beta" not in material_info
+        #         and material_id not in consumables_map
+        #         and material_info["type"] in needed
+        #     ):
+        #         result[material_id] = {
+        #             "name": material_info["name"],
+        #             "icon": f'https://api.ambr.top/assets/UI/{material_info["icon"]}.png',
+        #             "emoji": "",
+        #         }
 
-        result = json.dumps(result, indent=4, sort_keys=True)
+        # result = json.dumps(result, indent=4, sort_keys=True)
 
-        if len(result) > 4096:
-            pprint.pprint(result)
-        else:
-            await i.followup.send(
-                embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                    name="素材", icon_url=i.user.avatar
-                )
-            )
+        # if len(result) > 4096:
+        #     pprint.pprint(result)
+        # else:
+        #     await i.followup.send(
+        #         embed=default_embed(message=f"```py\n{result}\n```").set_author(
+        #             name="素材", icon_url=i.user.avatar
+        #         )
+        #     )
 
         # check emojis
         message = ""
@@ -359,47 +388,6 @@ class OthersCog(commands.Cog, name="others"):
             embed=default_embed().set_author(name="更新資料完畢", icon_url=i.user.avatar)
         )
 
-    @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
-    @app_commands.rename(module_name="名稱")
-    async def realod(self, i: Interaction, module_name: str):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(
-                embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.avatar
-                ),
-                ephemeral=True,
-            )
-        try:
-            importlib.reload(sys.modules[module_name])
-        except KeyError:
-            return await i.response.send_message(
-                embed=error_embed(message=module_name).set_author(
-                    name="查無 module", icon_url=i.user.avatar
-                ),
-                ephemeral=True,
-            )
-        else:
-            return await i.response.send_message(
-                embed=default_embed(message=module_name).set_author(
-                    name="重整成功", icon_url=i.user.avatar
-                ),
-                ephemeral=True,
-            )
-
-    @app_commands.command(name="roles", description=_("Admin usage only", hash=496))
-    async def roles(self, i: Interaction):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(
-                embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.avatar
-                ),
-                ephemeral=True,
-            )
-        role = i.guild.get_role(1006906916678684752)
-        embed = default_embed("身份組 Roles", f"{role.mention}: {len(role.members)}")
-        await i.response.defer(ephemeral=True)
-        await i.channel.send(embed=embed, view=Roles.View())
-
     @app_commands.command(
         name="version", description=_("View shenhe's change logs", hash=503)
     )
@@ -425,19 +413,6 @@ class OthersCog(commands.Cog, name="others"):
             view.message = await i.original_response()
         else:
             await i.response.send_message(embed=embeds[0])
-
-    @app_commands.command(name="sync", description=_("Admin usage only", hash=496))
-    async def roles(self, i: Interaction):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(
-                embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.avatar
-                ),
-                ephemeral=True,
-            )
-        await i.response.defer()
-        await self.bot.tree.sync()
-        await i.followup.send("sync done")
 
 
 async def setup(bot: commands.Bot) -> None:

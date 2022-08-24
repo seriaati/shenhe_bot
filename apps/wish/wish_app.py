@@ -152,6 +152,4 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
             'left_pull': left_pull,
             'std': std
         }
-
-    # pprint(result)
     return result

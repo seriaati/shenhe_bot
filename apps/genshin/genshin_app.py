@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Literal
 
 import aiosqlite
+import sentry_sdk
 from apps.genshin.utils import (
     get_area_emoji,
     get_character,
@@ -678,7 +679,10 @@ class GenshinApp:
                 False,
             )
         except Exception as e:
-            print(e)
+            sentry_sdk.capture_exception(e)
+            log.warning(
+                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            )
             return (
                 error_embed().set_author(
                     name=text_map.get(23, locale, user_locale), icon_url=user.avatar

@@ -1,6 +1,7 @@
 from typing import List
 
 import aiosqlite
+import sentry_sdk
 from apps.genshin.utils import get_material
 from debug import DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
@@ -8,7 +9,7 @@ from discord.ui import Button, Modal, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
 from apps.todo import get_todo_embed
-from utility.utils import error_embed
+from utility.utils import error_embed, log
 import config
 
 
@@ -113,6 +114,18 @@ class AddItemModal(Modal):
     async def on_submit(self, interaction: Interaction) -> None:
         await interaction.response.defer()
         self.stop()
+        
+    async def on_error(self, i: Interaction, e: Exception) -> None:
+        log.warning(
+            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+        )
+        sentry_sdk.capture_exception(e)
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )
 
 
 class RemoveItemModal(Modal):
@@ -130,6 +143,18 @@ class RemoveItemModal(Modal):
     async def on_submit(self, interaction: Interaction) -> None:
         await interaction.response.defer()
         self.stop()
+        
+    async def on_error(self, i: Interaction, e: Exception) -> None:
+        log.warning(
+            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+        )
+        sentry_sdk.capture_exception(e)
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )
 
 
 class RemoveItemSelect(Select):
