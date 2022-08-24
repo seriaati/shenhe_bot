@@ -1,9 +1,11 @@
+import asyncio
 import importlib
 import sys
 
-from discord import Interaction, app_commands
+from discord import Forbidden, Interaction, app_commands, HTTPException
 from discord.app_commands import locale_str as _
 from discord.ext import commands
+import sentry_sdk
 from UI_elements.others import Roles
 from utility.utils import default_embed, error_embed, log
 
@@ -65,20 +67,25 @@ class AdminCog(commands.Cog, name="admin"):
     @app_commands.command(name='annouce', description=_("Admin usage only", hash=496))
     async def annouce(self, i: Interaction, message: str):
         await i.response.defer()
+        total = 0
         count = 0
+        sent = []
         for guild in self.bot.guilds:
-            for text_channel in guild.text_channels:
-                if text_channel.permissions_for(guild.me).send_messages:
+            for member in guild.members:
+                if member.id not in sent and member.id != self.bot.user.id:
+                    total += 1
                     try:
-                        await text_channel.send(message)
-                    except Exception as e:
-                        log.error(f'[Exception][Admin]annouce: Annouce failed [server]{guild} [exception]{e}')
+                        await member.send(message.replace('%n','\n'))
+                        sent.append(member.id)
+                        await asyncio.sleep(2.0)
+                    except (Forbidden, HTTPException):
                         continue
-                    else:
-                        count += 1
-                        break
-                    
-        await i.edit_original_response(content=f'Annouced message to {count} / {len(self.bot.guilds)} servers')
+                    except Exception as e:
+                        log.warning(f"[EXCEPTION][{i.user.id}][View Error]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}")
+                        sentry_sdk.capture_exception(e)
+                        continue
+                    count += 1
+        await i.followup.send(f'complete: {count}/{total}')
                     
     @is_seria()
     @app_commands.command(name='status', description=_("Admin usage only", hash=496))
