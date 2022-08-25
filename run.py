@@ -84,7 +84,7 @@ class ShenheBot(commands.Bot):
             try:
                 await self.load_extension(f"cogs.{cog_name}")
             except Exception as e:
-                log.warning(f"[EXCEPTION][Cog Load Error]: [Cog name]{cog_name} [Exception]{e}")
+                log.warning(f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}")
                 sentry_sdk.capture_exception(e)
 
         # load persistent views
@@ -94,8 +94,8 @@ class ShenheBot(commands.Bot):
         await self.change_presence(status=Status.online, activity=Game(name=f"/help"))
         tree = self.tree
         await tree.set_translator(Translator())
-        log.info(f"[INFO][System]on_ready: You have logged in as {self.user}")
-        log.info(f"[INFO][System]on_ready: Total {len(self.guilds)} servers connected")
+        log.info(f"[System]on_ready: You have logged in as {self.user}")
+        log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
 
     async def on_message(self, message: Message):
         if message.author.id == self.user.id:
@@ -110,7 +110,7 @@ class ShenheBot(commands.Bot):
         if isinstance(error, ignored):
             return
         else:
-            log.warning(f"[EXCEPTION][{ctx.author.id}]on_command_error: {error}")
+            log.warning(f"[{ctx.author.id}]on_command_error: {error}")
             sentry_sdk.capture_exception(error)
 
     async def close(self) -> None:
@@ -136,12 +136,35 @@ async def on_message_edit(before: Message, after: Message):
     return await bot.process_commands(after)
 
 
+@bot.listen()
+async def on_interaction(i: Interaction):
+    if i.command is None:
+        return
+
+    c = await bot.db.cursor()
+    await c.execute(
+        "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET count = count + 1 WHERE user_id = ?",
+        (i.user.id, i.user.id),
+    )
+    await bot.db.commit()
+
+    if isinstance(i.command, app_commands.Command):
+        if i.command.parent is None:
+            log.info(f"[Command][{i.user.id}][{i.command.name}]")
+        else:
+            log.info(
+                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]"
+            )
+    else:
+        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
+
+
 tree = bot.tree
 
 
 @tree.error
 async def on_error(i: Interaction, e: app_commands.AppCommandError):
-    log.warning(f"[EXCEPTION][{i.user.id}]{type(e)}: {e}")
+    log.warning(f"[{i.user.id}]{type(e)}: {e}")
     sentry_sdk.capture_exception(e)
 
 

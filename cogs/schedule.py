@@ -49,7 +49,7 @@ class Schedule(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        log.info("[INFO][Schedule] Claim Reward Start")
+        log.info("[Schedule] Claim Reward Start")
         try:
             count = 0
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -78,12 +78,12 @@ class Schedule(commands.Cog):
         except Exception as e:
             sentry_sdk.capture_exception(e)
         else:
-            log.info("[INFO][Schedule]Claim Reward Ended")
+            log.info("[Schedule]Claim Reward Ended")
 
     @tasks.loop(hours=1)
     async def pot_notification(self):
         try:
-            log.info("[INFO][Schedule] Pot Notification Start")
+            log.info("[Schedule] Pot Notification Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
                 "SELECT user_id, pot_threshold, pot_current_notif, pot_max_notif, last_pot_notif_time FROM genshin_accounts WHERE pot_notif_toggle = 1"
@@ -162,14 +162,14 @@ class Schedule(commands.Cog):
 
                 await asyncio.sleep(3.0)
             await self.bot.db.commit()
-            log.info("[INFO][Schedule] Pot Notification Ended")
+            log.info("[Schedule] Pot Notification Ended")
         except Exception as e:
             sentry_sdk.capture_exception(e)
 
     @tasks.loop(hours=1)
     async def resin_notification(self):
         try:
-            log.info("[INFO][Schedule] Resin Notification Start")
+            log.info("[Schedule] Resin Notification Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
                 "SELECT user_id, resin_threshold, current_notif, max_notif, last_resin_notif_time FROM genshin_accounts WHERE resin_notification_toggle = 1"
@@ -246,14 +246,14 @@ class Schedule(commands.Cog):
                         )
                 await asyncio.sleep(3.0)
             await self.bot.db.commit()
-            log.info("[INFO][Schedule] Resin Notifiaction Ended")
+            log.info("[Schedule] Resin Notifiaction Ended")
         except Exception as e:
             sentry_sdk.capture_exception(e)
 
     @tasks.loop(hours=24)
     async def talent_notification(self):
         try:
-            log.info("[INFO][Schedule] Talent Notification Start")
+            log.info("[Schedule] Talent Notification Start")
             today_weekday = datetime.today().weekday()
             farm_dict = (await get_farm_dict(self.bot.session, "zh-TW"))[0]
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -288,7 +288,7 @@ class Schedule(commands.Cog):
                         name=text_map.get(314, "zh-TW", user_locale), value=value
                     )
                     await user.send(embed=embed)
-            log.info("[INFO][Schedule] Talent Notifiaction Ended")
+            log.info("[Schedule] Talent Notifiaction Ended")
         except Exception as e:
             sentry_sdk.capture_exception(e)
 

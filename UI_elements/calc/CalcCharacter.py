@@ -138,7 +138,7 @@ class LevelModal(DefaultModal):
 
     async def on_error(self, i: Interaction, e: Exception) -> None:
         log.warning(
-            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
         )
         sentry_sdk.capture_exception(e)
         await i.response.send_message(

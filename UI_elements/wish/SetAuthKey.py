@@ -37,7 +37,7 @@ class Modal(DefaultModal):
         client.lang = to_genshin_py(user_locale or i.locale) or 'en-US'
         url = self.url.value
         authkey = genshin.utility.extract_authkey(url)
-        log.info(f'[INFO][Wish Import][{i.user.id}]: [Authkey][{authkey}]')
+        log.info(f'[Wish Import][{i.user.id}]: [Authkey][{authkey}]')
         client.authkey = authkey
         await i.response.send_message(embed=default_embed(
             f'<a:LOADER:982128111904776242> {text_map.get(355, i.locale, user_locale)}'), ephemeral=True)
@@ -57,7 +57,7 @@ class Modal(DefaultModal):
 
     async def on_error(self, i: Interaction, e: Exception) -> None:
         log.warning(
-            f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+            f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
         )
         sentry_sdk.capture_exception(e)
         await i.response.send_message(

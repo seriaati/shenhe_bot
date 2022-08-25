@@ -23,10 +23,10 @@ class DefaultView(discord.ui.View):
         try:
             await self.message.edit(view=self)
         except AttributeError:
-            log.warning(f"[EXCEPTION][Attribute Error]: [children]{self.children}")
+            log.warning(f"[Attribute Error]: [children]{self.children}")
         except Exception as e:
             log.warning(
-                f"[EXCEPTION][Edit View Erorr]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f"[Edit View Erorr]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
 
 

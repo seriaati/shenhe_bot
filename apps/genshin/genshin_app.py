@@ -30,7 +30,7 @@ class GenshinApp:
     async def set_cookie(
         self, user_id: int, cookie: str, locale: Locale, uid: int = None
     ):
-        log.info(f'[INFO][Set Cookie Start][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
+        log.info(f'[Set Cookie Start][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
         user = self.bot.get_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
@@ -100,7 +100,7 @@ class GenshinApp:
             name=text_map.get(39, locale, user_locale), icon_url=user.avatar
         )
         await self.db.commit()
-        log.info(f'[INFO][Set Cookie][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
+        log.info(f'[Set Cookie][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
         return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
@@ -124,7 +124,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -163,7 +163,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -261,7 +261,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -328,7 +328,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -376,7 +376,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -434,7 +434,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -493,7 +493,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -588,7 +588,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -655,7 +655,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -710,7 +710,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -777,7 +777,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
@@ -817,7 +817,7 @@ class GenshinApp:
         except Exception as e:
             sentry_sdk.capture_exception(e)
             log.warning(
-                f"[EXCEPTION]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
+                f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
             )
             return (
                 error_embed().set_author(
