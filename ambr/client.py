@@ -94,7 +94,7 @@ class AmbrTopAPI:
             endpoints = list(ENDPOINTS.keys())
         else:
             endpoints = [endpoint]
-            
+
         for lang in langs:
             for endpoint in endpoints:
                 data = await self._request_from_endpoint(endpoint, lang)
@@ -102,7 +102,9 @@ class AmbrTopAPI:
                 if not os.path.exists(path):
                     os.makedirs(path)
                 with open(
-                    f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json", "w+"
+                    f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json",
+                    "w+",
+                    encoding="utf-8",
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
             static_endpoints = list(STATIC_ENDPOINTS.keys())
@@ -111,11 +113,15 @@ class AmbrTopAPI:
                     static_endpoint, lang, static=True
                 )
                 with open(
-                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json", "w+"
+                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json",
+                    "w+",
+                    encoding="utf-8",
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
 
-    async def get_material(self, id: Optional[int] = None, retry: bool = False) -> List[Material]:
+    async def get_material(
+        self, id: Optional[int] = None, retry: bool = False
+    ) -> List[Material]:
         result = []
         data = await self._get_cache("material")
         for material_id, material_info in data["data"]["items"].items():
@@ -124,14 +130,16 @@ class AmbrTopAPI:
                     result.append(Material(**material_info))
             else:
                 result.append(Material(**material_info))
-                
+
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='material')
+            self._update_cache(endpoint="material")
             result = await self.get_material(id=id, retry=True)
-        
+
         return result
 
-    async def get_character(self, id: Optional[str] = None, retry: bool = False) -> List[Character]:
+    async def get_character(
+        self, id: Optional[str] = None, retry: bool = False
+    ) -> List[Character]:
         result = []
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
@@ -142,12 +150,14 @@ class AmbrTopAPI:
                 result.append(Character(**character_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='character')
+            self._update_cache(endpoint="character")
             result = await self.get_character(id=id, retry=True)
-        
+
         return result
 
-    async def get_weapon(self, id: Optional[int] = None, retry: bool = False) -> List[Weapon]:
+    async def get_weapon(
+        self, id: Optional[int] = None, retry: bool = False
+    ) -> List[Weapon]:
         result = []
         data = await self._get_cache("weapon")
         for weapon_id, weapon_info in data["data"]["items"].items():
@@ -158,7 +168,7 @@ class AmbrTopAPI:
                 result.append(Weapon(**weapon_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='weapon')
+            self._update_cache(endpoint="weapon")
             result = await self.get_weapon(id=id, retry=True)
 
         return result
@@ -182,7 +192,7 @@ class AmbrTopAPI:
                 result.append(CharacterUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='upgrade')
+            self._update_cache(endpoint="upgrade")
             result = await self.get_character_upgrade(id=character_id, retry=True)
 
         return result
@@ -206,12 +216,14 @@ class AmbrTopAPI:
                 result.append(WeaponUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='upgrade')
+            self._update_cache(endpoint="upgrade")
             result = await self.get_weapon_upgrade(id=weapon_id, retry=True)
 
         return result
 
-    async def get_domain(self, id: Optional[int] = None, retry: bool = False) -> List[Domain]:
+    async def get_domain(
+        self, id: Optional[int] = None, retry: bool = False
+    ) -> List[Domain]:
         result = []
         data = await self._get_cache("domain")
         for weekday, domain_dict in data["data"].items():
@@ -234,7 +246,7 @@ class AmbrTopAPI:
                     result.append(Domain(**domain_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint='domain')
+            self._update_cache(endpoint="domain")
             result = await self.get_domain(id=id, retry=True)
 
         return result
