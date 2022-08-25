@@ -149,14 +149,22 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
+        option_msg = ''
+                
         if i.command.parent is None:
-            log.info(f"[Command][{i.user.id}][{i.command.name}]")
+            if 'options' in i.data:
+                for option in i.data['options']:
+                    option_msg += f"[{option['name']}] {option['value']} "
+            log.info(f"[Command][{i.user.id}][{i.command.name}]: {option_msg}")
         else:
+            if 'options' in i.data:
+                for option in i.data['options'][0]['options']:
+                    option_msg += f"[{option['name']}] {option['value']} "
             log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]"
+                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]: {option_msg}"
             )
     else:
-        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
+        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]: {option_msg}")
 
 
 tree = bot.tree
