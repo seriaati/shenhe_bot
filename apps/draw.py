@@ -126,6 +126,18 @@ async def draw_character_card(
     }
     element_text_map_hash = element_text_map.get(element)
 
+    add_hurt_dict = {
+        "Pyro": character.stats.FIGHT_PROP_FIRE_ADD_HURT,
+        "Electro": character.stats.FIGHT_PROP_ELEC_ADD_HURT,
+        "Hydro": character.stats.FIGHT_PROP_WATER_ADD_HURT,
+        "Dendro": character.stats.FIGHT_PROP_GRASS_ADD_HURT,
+        "Anemo": character.stats.FIGHT_PROP_WIND_ADD_HURT,
+        "Geo": character.stats.FIGHT_PROP_ROCK_ADD_HURT,
+        "Cryo": character.stats.FIGHT_PROP_ICE_ADD_HURT,
+    }
+
+    add_hurt_text = (add_hurt_dict.get(element)).to_percentage_symbol()
+
     # character stats
     texts = {
         text_map.get(292, locale): character.stats.FIGHT_PROP_MAX_HP.to_rounded(),
@@ -143,9 +155,7 @@ async def draw_character_card(
         text_map.get(
             295, locale
         ): character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(),
-        text_map.get(
-            element_text_map_hash, locale
-        ): character.stats.FIGHT_PROP_ELEC_ADD_HURT.to_percentage_symbol(),
+        text_map.get(element_text_map_hash, locale): add_hurt_text,
     }
 
     # write character stats
