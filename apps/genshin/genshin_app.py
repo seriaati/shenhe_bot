@@ -740,7 +740,7 @@ class GenshinApp:
                 for character in characters:
                     message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
                 embed = default_embed(
-                    f'{element_emojis(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}',
+                    f'{element_emojis.get(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}',
                     message,
                 ).set_author(
                     name=text_map.get(105, locale, user_locale), icon_url=user.avatar
