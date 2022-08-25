@@ -14,7 +14,7 @@ import config
 
 class View(DefaultView):
     def __init__(self, author: Member, db: aiosqlite.Connection):
-        super().__init__(timeout=config.short_timeout)
+        super().__init__(timeout=config.long_timeout)
         self.author = author
         self.db = db
 
