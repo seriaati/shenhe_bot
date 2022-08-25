@@ -125,6 +125,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         option=[
             Choice(name=_("Registration tutorial", hash=412), value=0),
             Choice(name=_("Submit cookie", hash=413), value=1),
+            Choice(name=_("Remove account data", hash=521), value=1),
         ]
     )
     async def slash_cookie(self, i: Interaction, option: int):
@@ -141,6 +142,20 @@ class GenshinCog(commands.Cog, name="genshin"):
         elif option == 1:
             await i.response.send_modal(
                 AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
+            )
+        elif option == 2:
+            await i.response.defer(ephemeral=True)
+            c: aiosqlite.Cursor = await self.bot.db.cursor()
+            await c.execute(
+                "DELETE FROM genshin_accounts WHERE user_id = ?", (i.user.id,)
+            )
+            await self.bot.db.commit()
+            await i.followup.send(
+                embed=default_embed().set_author(
+                    name=text_map.get(522, i.locale, user_locale),
+                    icon_url=i.user.avatar,
+                ),
+                ephemeral=True,
             )
 
     @app_commands.command(
