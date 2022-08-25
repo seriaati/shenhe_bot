@@ -81,7 +81,11 @@ class ShenheBot(commands.Bot):
         # load cogs
         for filepath in Path("./cogs").glob("**/*.py"):
             cog_name = Path(filepath).stem
-            await self.load_extension(f"cogs.{cog_name}")
+            try:
+                await self.load_extension(f"cogs.{cog_name}")
+            except Exception as e:
+                log.warning(f"[EXCEPTION][Cog Load Error]: [Cog name]{cog_name} [Exception]{e}")
+                sentry_sdk.capture_exception(e)
 
         # load persistent views
         self.add_view(Roles.View())
