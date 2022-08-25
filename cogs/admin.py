@@ -1,14 +1,17 @@
-import asyncio
 import importlib
 import json
 import sys
+
+import sentry_sdk
+from apps.text_map.text_map_app import text_map
+import aiosqlite
 from apps.genshin.utils import get_dummy_client
 from apps.text_map.convert_locale import to_ambr_top_dict
-from discord import Forbidden, Interaction, app_commands, HTTPException
+from discord import Forbidden, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-import sentry_sdk
 from UI_elements.others import Roles
+from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed, log
 from apps.genshin.utils import get_dummy_client
 from apps.text_map.convert_locale import to_ambr_top_dict
@@ -77,15 +80,53 @@ class AdminCog(commands.Cog, name="admin"):
     async def status(self, i: Interaction):
         await i.response.defer()
         embed = default_embed()
-        embed.add_field(name="Latency", value=f"{round(self.bot.latency*1000)} ms")
         embed.add_field(
-            name="Servers", value=f"Connected to {len(self.bot.guilds)} servers"
+            name="Latency", value=f"{round(self.bot.latency*1000)} ms", inline=False
+        )
+        embed.add_field(
+            name="Servers",
+            value=f"Connected to {len(self.bot.guilds)} servers",
+            inline=False,
         )
         count = 0
         for guild in self.bot.guilds:
             count += len(guild.members)
-        embed.add_field(name="Users", value=f"{count} users")
+        embed.add_field(name="Users", value=f"{count} users", inline=False)
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute("SELECT COUNT(user_id) FROM active_users")
+        (count,) = await c.fetchone()
+        embed.add_field(name="Active Users", value=f"{count} users", inline=False)
         await i.followup.send(embed=embed)
+
+    @is_seria()
+    @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
+    async def annouce(self, i: Interaction, title: str, description: str):
+        await i.response.defer(ephemeral=True)
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute("SELECT user_id FROM active_users")
+        user_ids = await c.fetchall()
+        for index, tuple in enumerate(user_ids):
+            user_id = tuple[0]
+            user = i.client.get_user(user_id)
+            if user is None:
+                await c.execute(
+                    "DELETE FROM active_users WHERE user_id = ?", (user_id,)
+                )
+                continue
+            user_locale = await get_user_locale(user_id, i.client.db)
+            seria = i.client.get_user(410036441129943050)
+            embed = default_embed(
+                title.replace("%n", "\n"), description.replace("%n", "\n")
+            )
+            embed.set_author(name=seria.name, icon_url=seria.avatar)
+            embed.set_footer(text=text_map.get(524, 'zh-TW', user_locale))
+            try:
+                await user.send(embed=embed)
+            except Forbidden:
+                pass
+            except Exception as e:
+                sentry_sdk.capture_exception(e)
+        await i.followup.send('complete.', ephemeral=True)
 
     @is_seria()
     @app_commands.command(name="update", description=_("Admin usage only", hash=496))
