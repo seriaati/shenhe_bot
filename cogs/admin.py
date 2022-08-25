@@ -118,7 +118,7 @@ class AdminCog(commands.Cog, name="admin"):
             embed = default_embed(
                 title.replace("%n", "\n"), description.replace("%n", "\n")
             )
-            embed.set_author(name=seria.name, icon_url=seria.avatar)
+            embed.set_author(name='seria#5334', icon_url=seria.avatar)
             embed.set_footer(text=text_map.get(524, 'zh-TW', user_locale))
             embed.set_image(url=url)
             try:
