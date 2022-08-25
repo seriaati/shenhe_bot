@@ -38,6 +38,7 @@ class WishCog(commands.GroupCog, name="wish"):
         ]
     )
     async def set_key(self, i: Interaction, function: str):
+        return await i.response.send_message(embed=error_embed(message='原神 3.0 更改了祈願紀錄的匯入方式，我需要時間來處理這部份\nThe 3.0 update changes the way how wish history imports work, I need some time to update this part.').set_author(name='這個功能目前還不能使用\nThis feature is currently disabled'))
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if function == "help":
             view = ChoosePlatform.View(i.locale, user_locale)
