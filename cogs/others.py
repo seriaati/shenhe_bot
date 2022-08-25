@@ -1,8 +1,10 @@
+import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.update.change_log import change_log
 from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
+from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.others import ChangeLang, ChangeLog
@@ -47,7 +49,7 @@ class OthersCog(commands.Cog, name="others"):
             display_change_log = change_log_en
         for version, log in display_change_log.items():
             if self.bot.debug:
-                log = f'`{log}`'
+                log = f"`{log}`"
             embed = default_embed(version, log)
             embed.set_thumbnail(url=self.bot.user.avatar)
             embed.set_footer(
@@ -60,6 +62,31 @@ class OthersCog(commands.Cog, name="others"):
             view.message = await i.original_response()
         else:
             await i.response.send_message(embed=embeds[0])
+
+    @app_commands.command(
+        name="devmsg",
+        description=_("Stop receiving message from the developer", hash=523),
+    )
+    @app_commands.rename(toggle=_("toggle", hash=440))
+    @app_commands.choices(
+        toggle=[Choice(name=_("ON", hash=463), value=1), Choice(name=_("OFF", hash=464), value=0)]
+    )
+    async def devmsg(self, i: Interaction, toggle: int):
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "UPDATE active_users SET toggle = ? WHERE user_id = ?",
+            (toggle, i.user.id),
+        )
+        await i.client.db.commit()
+        await i.response.send_message(
+            embed=default_embed(
+                message=f"{text_map.get(101, i.locale ,user_locale)}: {text_map.get(99, i.locale, user_locale) if toggle==1 else text_map.get(100, i.locale, user_locale)}"
+            ).set_author(
+                name=text_map.get(104, i.locale, user_locale), icon_url=i.user.avatar
+            ),
+            ephemeral=True,
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
