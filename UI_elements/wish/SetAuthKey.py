@@ -5,15 +5,16 @@ import genshin
 import sentry_sdk
 from apps.genshin.utils import get_dummy_client
 from discord import Interaction, Locale, TextStyle
-from discord.ui import Modal, TextInput
+from discord.ui import TextInput
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.text_map.convert_locale import to_genshin_py
+from debug import DefaultModal
 from utility.utils import default_embed, error_embed, log
 import config
 
 
-class Modal(Modal):
+class Modal(DefaultModal):
     url = TextInput(
         label='Auth Key URL',
         placeholder='請ctrl+v貼上複製的連結',

@@ -1,8 +1,9 @@
 import discord
 from apps.text_map.text_map_app import text_map
+from debug import DefaultModal
 
 
-class Modal(discord.ui.Modal):
+class Modal(DefaultModal):
     threshold = discord.ui.TextInput(label="寶錢閥值")
     max_notif = discord.ui.TextInput(label="最大提醒值")
 

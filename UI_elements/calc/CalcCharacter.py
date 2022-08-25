@@ -8,7 +8,7 @@ from apps.genshin.utils import get_character
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import convert_elements, elements
-from debug import DefaultView
+from debug import DefaultModal, DefaultView
 from discord import Interaction, Member, SelectOption
 from discord.ui import Button, Modal, Select, TextInput
 from genshin.models import BaseCharacter
@@ -97,7 +97,7 @@ class CharacterSelect(Select):
         self.view.stop()
 
 
-class LevelModal(Modal):
+class LevelModal(DefaultModal):
     target = TextInput(
         label="character_level_target",
         placeholder="like: 90",

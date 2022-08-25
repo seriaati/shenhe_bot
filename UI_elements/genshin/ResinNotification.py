@@ -1,11 +1,12 @@
 import sentry_sdk
 from apps.text_map.text_map_app import text_map
 from discord import Interaction, Locale
-from discord.ui import Modal, TextInput
+from discord.ui import TextInput
+from debug import DefaultModal
 from utility.utils import error_embed, log
 
 
-class Modal(Modal):
+class Modal(DefaultModal):
     resin_threshold = TextInput(label="樹脂閥值", placeholder="例如: 140 (不得大於 160)")
     max_notif = TextInput(label="最大提醒值", placeholder="例如: 5")
 
