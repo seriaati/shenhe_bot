@@ -65,7 +65,7 @@ class AmbrTopAPI:
         if static:
             try:
                 with open(
-                    f"ambr/cache/{STATIC_ENDPOINTS.get(endpoint)}.json",
+                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(endpoint)}.json",
                     "r",
                     encoding="utf-8",
                 ) as f:
@@ -111,7 +111,7 @@ class AmbrTopAPI:
                     static_endpoint, lang, static=True
                 )
                 with open(
-                    f"ambr/cache/{STATIC_ENDPOINTS.get(static_endpoint)}.json", "w+"
+                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json", "w+"
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
 
