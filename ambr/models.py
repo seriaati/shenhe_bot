@@ -19,7 +19,7 @@ class Weapon(BaseModel):
 
     @validator('icon')
     def get_icon_url(cls, v):
-        icon_url = f'https://enka.network/ui/{v}.png'
+        icon_url = f'https://api.ambr.top/assets/UI/{v}.png'
         return icon_url
 
 

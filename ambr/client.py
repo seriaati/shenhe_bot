@@ -49,7 +49,7 @@ class AmbrTopAPI:
             return self.cache[self.lang][endpoint]
 
     async def _request_from_endpoint(
-        self, endpoint: str, lang: str, static: bool = False
+        self, endpoint: str, lang: str = None, static: bool = False
     ) -> Dict:
         if static:
             endpoint_url = f"{BASE}static/{STATIC_ENDPOINTS.get(endpoint)}"
@@ -107,17 +107,16 @@ class AmbrTopAPI:
                     encoding="utf-8",
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
-            static_endpoints = list(STATIC_ENDPOINTS.keys())
-            for static_endpoint in static_endpoints:
-                data = await self._request_from_endpoint(
-                    static_endpoint, lang, static=True
-                )
-                with open(
-                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json",
-                    "w+",
-                    encoding="utf-8",
-                ) as f:
-                    json.dump(data, f, ensure_ascii=False, indent=4)
+
+        static_endpoints = list(STATIC_ENDPOINTS.keys())
+        for static_endpoint in static_endpoints:
+            data = await self._request_from_endpoint(static_endpoint, static=True)
+            with open(
+                f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json",
+                "w+",
+                encoding="utf-8",
+            ) as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
 
     async def get_material(
         self, id: Optional[int] = None, retry: bool = False
