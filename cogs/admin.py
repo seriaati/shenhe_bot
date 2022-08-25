@@ -100,7 +100,7 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
-    async def annouce(self, i: Interaction, title: str, description: str):
+    async def annouce(self, i: Interaction, title: str, description: str, url: str = None):
         await i.response.defer(ephemeral=True)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute("SELECT user_id FROM active_users")
@@ -120,6 +120,7 @@ class AdminCog(commands.Cog, name="admin"):
             )
             embed.set_author(name=seria.name, icon_url=seria.avatar)
             embed.set_footer(text=text_map.get(524, 'zh-TW', user_locale))
+            embed.set_image(url=url)
             try:
                 await user.send(embed=embed)
             except Forbidden:
