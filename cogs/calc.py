@@ -1,10 +1,10 @@
+from genshin import InvalidCookies
 from apps.draw import draw_todo_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     check_level_validity,
     get_character,
     get_dummy_client,
-    get_material,
     get_weapon,
 )
 from apps.text_map.convert_locale import to_genshin_py
@@ -65,7 +65,17 @@ class CalcCog(commands.GroupCog, name="calc"):
             client = get_dummy_client()
             client.lang = to_genshin_py(user_locale or i.locale)
 
-        characters = await client.get_calculator_characters(sync=sync)
+        try:
+            characters = await client.get_calculator_characters(sync=sync)
+        except InvalidCookies:
+            return await i.response.send_message(
+                embed=error_embed(
+                    message=text_map.get(35, i.locale, user_locale)
+                ).set_author(
+                    name=text_map.get(36, i.locale, user_locale), icon_url=i.user.avatar
+                )
+            )
+            
         view = CalcCharacter.View(i.user, self.bot.session, self.bot.db, characters)
         await i.response.send_message(view=view)
         view.message = await i.original_response()
@@ -263,10 +273,10 @@ class CalcCog(commands.GroupCog, name="calc"):
             items.append((material_id, material_amount))
 
         result = await draw_todo_card(items, user_locale or i.locale, self.bot.session)
-        
+
         if len(result) == 0:
             embeds.append(embed)
-            
+
         for index in range(len(result)):
             if index == 0:
                 pass
