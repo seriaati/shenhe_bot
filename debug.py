@@ -23,11 +23,12 @@ class DefaultView(discord.ui.View):
         try:
             await self.message.edit(view=self)
         except AttributeError:
-            log.warning(f"[Attribute Error]: [children]{self.children}")
+            log.warning(f"[Attribute Error][Edit View]: [children]{self.children}")
+        except discord.HTTPException as e:
+            log.warning(f"[HTTPException][Edit View]: [children]{self.children} [code]{e.code} [message]{e.text}")
         except Exception as e:
-            log.warning(
-                f"[Edit View Erorr]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
-            )
+            sentry_sdk.capture_event(e)
+            log.warning(f"[Edit View]{e}")
 
 
 class DefaultModal(discord.ui.Modal):
