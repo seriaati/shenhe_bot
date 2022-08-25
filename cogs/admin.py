@@ -73,32 +73,6 @@ class AdminCog(commands.Cog, name="admin"):
         await i.followup.send("sync done")
 
     @is_seria()
-    @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
-    async def annouce(self, i: Interaction, message: str):
-        await i.response.defer()
-        total = 0
-        count = 0
-        sent = []
-        for guild in self.bot.guilds:
-            for member in guild.members:
-                if member.id not in sent and member.id != self.bot.user.id:
-                    total += 1
-                    try:
-                        await member.send(message.replace("%n", "\n"))
-                        sent.append(member.id)
-                        await asyncio.sleep(2.0)
-                    except (Forbidden, HTTPException):
-                        continue
-                    except Exception as e:
-                        log.warning(
-                            f"[EXCEPTION][{i.user.id}][View Error]: [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
-                        )
-                        sentry_sdk.capture_exception(e)
-                        continue
-                    count += 1
-        await i.followup.send(f"complete: {count}/{total}")
-
-    @is_seria()
     @app_commands.command(name="status", description=_("Admin usage only", hash=496))
     async def status(self, i: Interaction):
         await i.response.defer()
