@@ -347,7 +347,7 @@ async def draw_todo_card(
         for index, tuple in enumerate(todo_item):
             item_id: str = tuple[0]
             count = tuple[1]
-            if not item_id.isnumeric():
+            if isinstance(item_id, str) and not item_id.isnumeric():
                 item = Material(
                     id=0,
                     name=item_id,
