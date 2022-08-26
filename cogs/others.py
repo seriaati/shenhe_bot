@@ -65,18 +65,21 @@ class OthersCog(commands.Cog, name="others"):
 
     @app_commands.command(
         name="devmsg",
-        description=_("Stop receiving message from the developer", hash=523),
+        description=_("Stop receiving messages from the developer", hash=523),
     )
     @app_commands.rename(toggle=_("toggle", hash=440))
     @app_commands.choices(
-        toggle=[Choice(name=_("ON", hash=463), value=1), Choice(name=_("OFF", hash=464), value=0)]
+        toggle=[
+            Choice(name=_("ON", hash=463), value=1),
+            Choice(name=_("OFF", hash=464), value=0),
+        ]
     )
     async def devmsg(self, i: Interaction, toggle: int):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "UPDATE active_users SET toggle = ? WHERE user_id = ?",
-            (toggle, i.user.id),
+            "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET toggle = ? WHERE user_id = ?",
+            (i.user.id, toggle, i.user.id),
         )
         await i.client.db.commit()
         await i.response.send_message(
