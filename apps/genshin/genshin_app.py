@@ -1,9 +1,10 @@
 import ast
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Dict, Literal, Tuple
 
 import aiosqlite
 import sentry_sdk
+from apps.draw import draw_stats_card
 from apps.genshin.utils import (
     get_area_emoji,
     get_character,
@@ -13,7 +14,7 @@ from apps.genshin.utils import (
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
-from discord import Embed, Locale, Member, SelectOption
+from discord import Embed, File, Locale, Member, SelectOption
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, log
@@ -30,7 +31,7 @@ class GenshinApp:
     async def set_cookie(
         self, user_id: int, cookie: str, locale: Locale, uid: int = None
     ):
-        log.info(f'[Set Cookie Start][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
+        log.info(f"[Set Cookie Start][{user_id}]: [Cookie]{cookie} [UID][{uid}]")
         user = self.bot.get_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
@@ -100,7 +101,7 @@ class GenshinApp:
             name=text_map.get(39, locale, user_locale), icon_url=user.avatar
         )
         await self.db.commit()
-        log.info(f'[Set Cookie][{user_id}]: [Cookie]{cookie} [UID][{uid}]')
+        log.info(f"[Set Cookie][{user_id}]: [Cookie]{cookie} [UID][{uid}]")
         return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
@@ -238,12 +239,17 @@ class GenshinApp:
         return result
 
     async def get_stats(
-        self, user_id: int, custom_uid: Literal["int", None], locale: Locale
-    ):
+        self,
+        user_id: int,
+        custom_uid: int | None,
+        locale: Locale,
+        namecard_url: str,
+        avatar_url: str,
+    ) -> Tuple[Embed | Dict, bool]:
         client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
-            genshinUser = await client.get_partial_genshin_user(uid)
+            genshin_user = await client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
@@ -270,39 +276,13 @@ class GenshinApp:
                 False,
             )
         else:
-            characters = await client.get_calculator_characters()
-            result = default_embed()
-            result.add_field(
-                name=text_map.get(43, locale, user_locale),
-                value=f"{text_map.get(44, locale, user_locale)}: {genshinUser.stats.days_active}\n"
-                f"{text_map.get(45, locale, user_locale)}: {genshinUser.stats.characters}/{len(characters)}\n"
-                f"{text_map.get(46, locale, user_locale)}: {genshinUser.stats.achievements}\n"
-                f"{text_map.get(47, locale, user_locale)}: {genshinUser.stats.spiral_abyss}",
-                inline=False,
+            characters = await client.get_calculator_characters(include_traveler=True)
+            embed = default_embed()
+            embed.set_image(url="attachment://stat_card.jpeg")
+            fp = await draw_stats_card(
+                genshin_user.stats, namecard_url, avatar_url, len(characters)
             )
-            result.add_field(
-                name=text_map.get(48, locale, user_locale),
-                value=f"<:anemoculus:1004648487016734730> {text_map.get(49, locale, user_locale)}: {genshinUser.stats.anemoculi}/66\n"
-                f"<:geoculus:1004648479525707776> {text_map.get(50, locale, user_locale)}: {genshinUser.stats.geoculi}/131\n"
-                f"<:electroculus:1004648483149594664> {text_map.get(51, locale, user_locale)}: {genshinUser.stats.electroculi}/181",
-                inline=False,
-            )
-            result.add_field(
-                name=text_map.get(52, locale, user_locale),
-                value=f"{text_map.get(53, locale, user_locale)}: {genshinUser.stats.common_chests}\n"
-                f"{text_map.get(54, locale, user_locale)}: {genshinUser.stats.exquisite_chests}\n"
-                f"{text_map.get(57, locale, user_locale)}: {genshinUser.stats.precious_chests}\n"
-                f"{text_map.get(55, locale, user_locale)}: {genshinUser.stats.luxurious_chests}",
-                inline=False,
-            )
-            result.set_author(
-                name=text_map.get(56, locale, user_locale), icon_url=user.avatar
-            )
-            if custom_uid is not None:
-                result.set_footer(
-                    text=f"{text_map.get(123, locale, user_locale)}: {custom_uid}"
-                )
-            return result, True
+            return {"embed": embed, "fp": fp}, True
 
     async def get_area(
         self, user_id: int, custom_uid: Literal["int", None], locale: Locale
@@ -740,7 +720,7 @@ class GenshinApp:
                 for character in characters:
                     message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
                 embed = default_embed(
-                    f'{element_emojis.get(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}',
+                    f"{element_emojis.get(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}",
                     message,
                 ).set_author(
                     name=text_map.get(105, locale, user_locale), icon_url=user.avatar
@@ -971,3 +951,14 @@ class GenshinApp:
             for character_id in character_list:
                 enabled_characters_str += f"• {text_map.get_character_name(character_id, locale, user_locale)}\n"
         return enabled_characters_str
+
+    async def get_user_uid(self, user_id: int) -> int | None:
+        c = await self.db.cursor()
+        await c.execute(
+            "SELECT uid FROM genshin_accounts WHERE user_id = ?", (user_id,)
+        )
+        uid = await c.fetchone()
+        if uid is None:
+            return None
+        else:
+            return uid[0]
