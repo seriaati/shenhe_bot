@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 
 import aiohttp
 from discord import Locale
+import genshin
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Material, Weapon
 from PIL import Image, ImageFont, ImageDraw
@@ -359,7 +360,7 @@ async def draw_todo_card(
             else:
                 item = await client.get_material(int(item_id))
                 item = item[0]
-                
+
             path = f"resources/images/material/{item_id}.png"
             # try to use local image
             try:
@@ -394,3 +395,71 @@ async def draw_todo_card(
         result.append(fp)
 
     return result
+
+
+async def draw_stats_card(
+    user_stats: genshin.models.Stats,
+    namecard_url: str,
+    pfp_url: str,
+    character_num: int,
+) -> BytesIO:
+    stats = {
+        "active_days": user_stats.days_active,
+        "characters": f'{user_stats.characters}/{character_num}',
+        "achievements": user_stats.achievements,
+        "abyss": user_stats.spiral_abyss,
+        "anemo": user_stats.anemoculi,
+        "geo": user_stats.geoculi,
+        "electro": user_stats.electroculi,
+        "dendro": user_stats.dendroculi,
+        "normal": user_stats.common_chests,
+        "rare": user_stats.precious_chests,
+        "gold": user_stats.exquisite_chests,
+        "lux": user_stats.luxurious_chests,
+    }
+    session = aiohttp.ClientSession()
+    stat_card = Image.open("resources/images/templates/stats/Stat Card Template.png")
+    async with session.get(namecard_url) as r:
+        bytes_obj = BytesIO(await r.read())
+    namecard = Image.open(bytes_obj)
+    w, h = namecard.size
+    factor = 2.56
+    namecard = namecard.resize((int(w * factor), int(h * factor)))
+    w, h = namecard.size
+    namecard = namecard.crop((0, 190, w, h - 190))
+    stat_card.paste(namecard, (112, 96))
+    async with session.get(pfp_url) as r:
+        bytes_obj = BytesIO(await r.read())
+    pfp = Image.open(bytes_obj)
+    mask = Image.new("L", pfp.size, 0)
+    empty = Image.new("RGBA", pfp.size, 0)
+    draw = ImageDraw.Draw(mask)
+    x, y = pfp.size
+    eX, eY = pfp.size
+    bbox = (x / 2 - eX / 2, y / 2 - eY / 2, x / 2 + eX / 2, y / 2 + eY / 2)
+    draw.ellipse(bbox, fill=255)
+    pfp = Image.composite(pfp, empty, mask)
+    pfp = pfp.resize((412, 412))
+    stat_card.paste(pfp, (979, 462), pfp)
+    draw = ImageDraw.Draw(stat_card)
+    font = ImageFont.truetype("resources/fonts/NotoSans-Regular.ttf", 90)
+    fill = "#333"
+    x, y = 415, 1360
+    count = 1
+    for text in list(stats.values()):
+        draw.text((x, y), str(text), fill, font, anchor="mm")
+        if count == 4:
+            x = 415
+            y += 625
+        elif count == 8:
+            x = 415
+            y += 650
+        else:
+            x += 514
+        count += 1
+
+    stat_card = stat_card.convert("RGB")
+    fp = BytesIO()
+    stat_card.save(fp, "JPEG", optimize=True, quality=40)
+    await session.close()
+    return fp

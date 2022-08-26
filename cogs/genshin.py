@@ -28,7 +28,7 @@ from apps.wish.wish_app import get_user_event_wish
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from dateutil import parser
-from discord import Interaction, SelectOption, User, app_commands
+from discord import File, Interaction, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -216,15 +216,87 @@ class GenshinCog(commands.Cog, name="genshin"):
         custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
     async def stats(self, i: Interaction, member: User = None, custom_uid: int = None):
-        member = member or i.user
-        result, success = await self.genshin_app.get_stats(
-            member.id, custom_uid, i.locale
-        )
-        await i.response.send_message(embed=result, ephemeral=not success)
+        await self.stats_command(i, member, custom_uid)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
-        result, success = await self.genshin_app.get_stats(member.id, None, i.locale)
-        await i.response.send_message(embed=result, ephemeral=True)
+        await self.stats_command(i, member, context_command=True)
+
+    async def stats_command(
+        self,
+        i: Interaction,
+        member: User = None,
+        custom_uid: int = None,
+        context_command: bool = False,
+    ) -> None:
+        await i.response.defer()
+        member = member or i.user
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = custom_uid or uid
+        if uid is None:
+            return await i.followup.send(
+                embed=error_embed(
+                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
+                ).set_author(
+                    name=text_map.get(141, i.locale, user_locale),
+                    icon_url=member.avatar,
+                ),
+                ephemeral=True,
+            )
+        async with EnkaNetworkAPI() as enka:
+            try:
+                data = await enka.fetch_user(uid)
+            except KeyError:
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(285, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(284, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+            except UIDNotFounded:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+            except VaildateUIDError:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+            except asyncio.exceptions.TimeoutError:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(519, i.locale, user_locale),
+                        icon_url=i.user.avatar,
+                    ),
+                    ephemeral=True,
+                )
+
+            namecard_url = data.player.namecard.banner.url
+
+        result, success = await self.genshin_app.get_stats(
+            member.id, custom_uid, i.locale, namecard_url, member.display_avatar.url
+        )
+        if not success:
+            await i.followup.send(embed=result, ephemeral=True)
+        else:
+            fp = result["fp"]
+            fp.seek(0)
+            file = File(fp, "stat_card.jpeg")
+            await i.followup.send(
+                embed=result["embed"],
+                ephemeral=False if not context_command else True,
+                files=[file],
+            )
 
     @app_commands.command(
         name="area",
