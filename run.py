@@ -33,9 +33,6 @@ else:
 prefix = ["?"]
 intents = Intents.default()
 intents.members = True
-intents.reactions = True
-intents.message_content = True
-intents.presences = True
 
 
 class Translator(app_commands.Translator):
@@ -51,7 +48,7 @@ class Translator(app_commands.Translator):
 class ShenheBot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=prefix, intents=intents, application_id=application_id
+            command_prefix=commands.when_mentioned, intents=intents, application_id=application_id
         )
 
     async def setup_hook(self) -> None:
@@ -153,18 +150,20 @@ async def on_interaction(i: Interaction):
                 
         if i.command.parent is None:
             if 'options' in i.data:
+                option_msg = ': '
                 for option in i.data['options']:
                     option_msg += f"[{option['name']}] {option['value']} "
-            log.info(f"[Command][{i.user.id}][{i.command.name}]: {option_msg}")
+            log.info(f"[Command][{i.user.id}][{i.command.name}]{option_msg}")
         else:
             if 'options' in i.data:
+                option_msg = ': '
                 for option in i.data['options'][0]['options']:
                     option_msg += f"[{option['name']}] {option['value']} "
             log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]: {option_msg}"
+                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{option_msg}"
             )
     else:
-        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]: {option_msg}")
+        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 
 
 tree = bot.tree
