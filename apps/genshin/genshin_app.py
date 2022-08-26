@@ -512,8 +512,8 @@ class GenshinApp:
             result.append(overview)
 
             for floor in abyss.floors:
-                embed = default_embed().set_author(
-                    name=f"{text_map.get(146, locale, user_locale)} {floor.floor} {text_map.get(147, locale, user_locale)} (✦ {floor.stars}/9)"
+                embed = default_embed(
+                    f"{text_map.get(146, locale, user_locale)} {floor.floor} {text_map.get(147, locale, user_locale)} (✦ {floor.stars}/9)"
                 )
                 for chamber in floor.chambers:
                     name = f"{text_map.get(86, locale, user_locale)} {chamber.chamber} {text_map.get(87, locale, user_locale)} ✦ {chamber.stars}"

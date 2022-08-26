@@ -7,6 +7,7 @@ from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed
 from typing import Any
 import config
+from utility.utils import log
 
 
 class View(DefaultView):
@@ -54,8 +55,8 @@ class FloorSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         for e in self.embeds:
-            print(e.title)
-        print(self.values[0])
+            log.info(f'[Embed Title]{e.title} [Embed Name]{e.author.name}')
+        log.info(f'[Self Value]{self.values[0]}')
         if self.values[0] == 'overview':
             await i.response.edit_message(embed=self.embeds[0])
         else:
