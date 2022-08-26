@@ -53,6 +53,9 @@ class FloorSelect(Select):
         self.embeds = embeds
 
     async def callback(self, i: Interaction) -> Any:
+        for e in self.embeds:
+            print(e.title)
+        print(self.values[0])
         if self.values[0] == 'overview':
             await i.response.edit_message(embed=self.embeds[0])
         else:
