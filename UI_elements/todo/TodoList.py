@@ -4,7 +4,7 @@ import aiosqlite
 import sentry_sdk
 from debug import DefaultModal, DefaultView
 from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
-from discord.ui import Button, Modal, Select, TextInput
+from discord.ui import Button, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
 from apps.todo_app import get_todo_embed, return_todo
@@ -168,10 +168,10 @@ class RemoveItemSelect(Select):
         if modal.count.value != '':
             await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, self.values[0]))
             count = await c.fetchone()
-            if (count is not None) and (int(modal.count.value) > int(count[0])):
-                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(212, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
             if not modal.count.value.isnumeric():
                 return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            if (count is not None) and (int(modal.count.value) > int(count[0])):
+                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(212, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
         if modal.count.value == '':
             await c.execute('DELETE FROM todo WHERE item = ? AND user_id = ?', (self.values[0], i.user.id))
         else:

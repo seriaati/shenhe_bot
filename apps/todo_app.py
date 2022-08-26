@@ -42,9 +42,9 @@ async def return_todo(
     interacted = i.response.is_done()
     if isinstance(result, Embed):
         if interacted:
-            await i.edit_original_response(embed=result, view=view)
+            await i.edit_original_response(embed=result, view=view, attachments=[])
         else:
-            await i.response.send_message(embed=result, view=view)
+            await i.response.send_message(embed=result, view=view, files=[])
     else:
         embeds = []
         for index in range(len(result)):
