@@ -54,9 +54,14 @@ class Material(BaseModel):
     beta: bool = False
 
     @validator('icon')
-    def get_icon_url(cls, v):
-        icon_url = f'https://api.ambr.top/assets/UI/{v}.png'
-        return icon_url
+    def get_icon_url(cls, v, values):
+        if values['type'] == 'custom':
+            return 'https://i.imgur.com/ByIyBa7.png'
+        elif values['id'] == 202:
+            return "https://i.imgur.com/EbXcKOk.png"
+        else:
+            icon_url = f'https://api.ambr.top/assets/UI/{v}.png'
+            return icon_url
 
 
 class Domain(BaseModel):

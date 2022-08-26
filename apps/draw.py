@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 import aiohttp
 from discord import Locale
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Domain, Weapon
+from ambr.models import Character, Domain, Material, Weapon
 from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
 from data.draw.fonts import get_font
@@ -344,10 +344,22 @@ async def draw_todo_card(
         draw = ImageDraw.Draw(todo_card)
 
         for index, tuple in enumerate(todo_item):
-            item_id = tuple[0]
+            item_id: str = tuple[0]
             count = tuple[1]
-            item = await client.get_material(int(item_id))
-            item = item[0]
+            if not item_id.isnumeric():
+                item = Material(
+                    id=0,
+                    name=item_id,
+                    type="custom",
+                    recipe=False,
+                    mapMark=False,
+                    icon="",
+                    rank=0,
+                )
+            else:
+                item = await client.get_material(int(item_id))
+                item = item[0]
+                
             path = f"resources/images/material/{item_id}.png"
             # try to use local image
             try:
@@ -356,12 +368,7 @@ async def draw_todo_card(
 
             # if not found then download it
             except FileNotFoundError:
-                url = item.icon
-
-                # use a different icon for mora
-                if item.id == 202:
-                    url = "https://i.imgur.com/EbXcKOk.png"
-                async with session.get(url) as r:
+                async with session.get(item.icon) as r:
                     bytes_obj = BytesIO(await r.read())
                 icon = Image.open(bytes_obj)
                 icon = icon.convert("RGBA")
