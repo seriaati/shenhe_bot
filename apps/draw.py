@@ -10,6 +10,7 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Material, Weapon
 from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
+from apps.text_map.convert_locale import to_ambr_top
 from data.draw.fonts import get_font
 from enkanetwork.model.character import CharacterInfo
 from enkanetwork.enum import DigitType, EquipmentsType
@@ -405,7 +406,7 @@ async def draw_stats_card(
 ) -> BytesIO:
     stats = {
         "active_days": user_stats.days_active,
-        "characters": f'{user_stats.characters}/{character_num}',
+        "characters": f"{user_stats.characters}/{character_num}",
         "achievements": user_stats.achievements,
         "abyss": user_stats.spiral_abyss,
         "anemo": user_stats.anemoculi,
@@ -461,5 +462,59 @@ async def draw_stats_card(
     stat_card = stat_card.convert("RGB")
     fp = BytesIO()
     stat_card.save(fp, "JPEG", optimize=True, quality=40)
+    await session.close()
+    return fp
+
+
+async def draw_talent_reminder_card(item_ids: List[int], locale: str):
+    session = aiohttp.ClientSession()
+    font_family = get_font(locale)
+    font = ImageFont.truetype(f"resources/fonts/{font_family}", 50)
+    fill = "#333"
+
+    locale = to_ambr_top(locale)
+    client = AmbrTopAPI(session, lang=locale)
+
+    reminder_card = Image.open(
+        "resources/images/templates/remind/Talent Reminder Template.png"
+    )
+    icon_x, icon_y = 100, 100
+    count = 1
+
+    for item_id in item_ids:
+        item = await client.get_material(item_id)
+        item = item[0]
+
+        path = f"resources/images/material/{item.id}.png"
+        # try to use local image
+        try:
+            icon = Image.open(path)
+            icon = icon.convert("RGBA")
+
+        # if not found then download it
+        except FileNotFoundError:
+            async with session.get(item.icon) as r:
+                bytes_obj = BytesIO(await r.read())
+            icon = Image.open(bytes_obj)
+            icon = icon.convert("RGBA")
+            icon.save(path, "PNG")
+
+        # resize the icon
+        icon.thumbnail((120, 120))
+        if count == 2:
+            icon_y += 210
+        elif count == 3:
+            icon_y += 220
+        reminder_card.paste(icon, (icon_x, icon_y), icon)
+        count += 1
+
+        draw = ImageDraw.Draw(reminder_card)
+        draw.text(
+            (icon_x + 670, icon_y + 55), item.name, fill=fill, font=font, anchor="mm"
+        )
+
+    reminder_card = reminder_card.convert("RGB")
+    fp = BytesIO()
+    reminder_card.save(fp, "JPEG", optimize=True, quality=40)
     await session.close()
     return fp
