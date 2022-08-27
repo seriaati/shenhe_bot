@@ -275,14 +275,12 @@ class Schedule(commands.Cog):
                     for domain in domains:
                         if domain.weekday == today_weekday:
                             for item in domain.rewards:
-                                for upgrade in character_upgrades:
-                                    if upgrade.character_id != character_id:
-                                        continue
-                                    if item in upgrade.items:
-                                        if character_id not in notified:
-                                            notified[character_id] = []
-                                        if item.id not in notified[character_id]:
-                                            notified[character_id].append(item.id)
+                                upgrade = await client.get_character_upgrade(character_id)
+                                if item in upgrade.items:
+                                    if character_id not in notified:
+                                        notified[character_id] = []
+                                    if item.id not in notified[character_id]:
+                                        notified[character_id].append(item.id)
 
                 for character_id, materials in notified.items():
                     [character] = await client.get_character(character_id)
