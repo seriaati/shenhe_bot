@@ -178,6 +178,8 @@ tree = bot.tree
 
 @tree.error
 async def on_error(i: Interaction, e: app_commands.AppCommandError):
+    if isinstance(e, app_commands.errors.CheckFailure):
+        return
     log.warning(f"[{i.user.id}]{type(e)}: {e}")
     sentry_sdk.capture_exception(e)
 
