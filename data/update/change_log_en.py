@@ -1,4 +1,25 @@
 change_log_en = {
+    'v4.7.4':
+        "</wish import:1000187021635104890>\n"
+        "• Added support for genshin 3.0\n"
+        "• Removed support for Playstation\n"
+        "• Text tutorials for Android are coming soon\n\n"
+        "• Added card for </stats:1006486283725590530>\n"
+        "• Fixed </abyss:1006486283725590535> not working when player hasn't reached floor 12\n"
+        "• Removed some ugly </todo:1006486283855605804> cards\n"
+        "• Added dendro element for </calc character:1000187020892700793>\n"
+        "• Fixed element DMG bonus being displayed incorrectly in </profile:1006486283805265953>\n"
+        "• Optimized cache logic\n"
+        "• Added a way to remove account data using </register:1006486283725590528>\n"
+        "• Added a way to push notification to users, you can use </devmsg:1012317291930734612> to disable it\n"
+        "• Extended UI element timeouts for </build:1006486283805265951>\n"
+        "• Added error message for invalid cookies\n"
+        "• Fixed </characters:1006486283725590533> not working\n"
+        "• Added build cards for Candace, Cyno, and Nilou\n"
+        "• Fixed </todo:1006486283855605804> crashing when adding a custom item\n"
+        "• Added card for talent reminder in </remind:1006486283725590537>\n"
+        "• Optimized notification logic for talent reminder\n"
+        "• Fixed font issues in </todo:1006486283855605804> for some languages\n",
     'v4.7.3':
         "Note: </wish import:1000187021635104890> has stopped working after 3.0, please wait for future updates\n\n"
         "Mainly bug fixes:\n"
