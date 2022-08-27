@@ -5,8 +5,10 @@ from datetime import datetime, timedelta
 
 import aiosqlite
 import sentry_sdk
+from ambr.client import AmbrTopAPI
+from apps.draw import draw_talent_reminder_card
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import get_character, get_farm_dict, get_material
+from discord import File
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -255,7 +257,9 @@ class Schedule(commands.Cog):
         try:
             log.info("[Schedule] Talent Notification Start")
             today_weekday = datetime.today().weekday()
-            farm_dict = (await get_farm_dict(self.bot.session, "zh-TW"))[0]
+            client = AmbrTopAPI(self.bot.session, "cht")
+            domains = await client.get_domain()
+            character_upgrades = await client.get_character_upgrade()
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
                 "SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1"
@@ -268,26 +272,35 @@ class Schedule(commands.Cog):
                 user_notification_list = ast.literal_eval(tuple[1])
                 notified = {}
                 for character_id in user_notification_list:
-                    for item_id, item_info in farm_dict["avatar"][character_id].items():
-                        if today_weekday in item_info["weekday"]:
-                            if character_id not in notified:
-                                notified[character_id] = []
-                            if item_id not in notified[character_id]:
-                                notified[character_id].append(item_id)
+                    for domain in domains:
+                        if domain.weekday == today_weekday:
+                            for item in domain.rewards:
+                                for upgrade in character_upgrades:
+                                    if upgrade.character_id != character_id:
+                                        continue
+                                    if item in upgrade.items:
+                                        if character_id not in notified:
+                                            notified[character_id] = []
+                                        if item.id not in notified[character_id]:
+                                            notified[character_id].append(item.id)
+
                 for character_id, materials in notified.items():
-                    embed = default_embed()
+                    [character] = await client.get_character(character_id)
+
+                    fp = await draw_talent_reminder_card(materials, user_locale or 'zh-TW')
+                    fp.seek(0)
+                    file = File(fp, "reminder_card.jpeg")
+                    embed = default_embed(
+                        message=text_map.get(314, "zh-TW", user_locale)
+                    )
                     embed.set_author(
-                        name=f"{text_map.get(312, 'zh-TW', user_locale)} {text_map.get_character_name(character_id, 'zh-TW', user_locale)} {text_map.get(313, 'zh-TW', user_locale)}",
-                        icon_url=user.avatar,
+                        name=text_map.get(313, "zh-TW", user_locale),
+                        icon_url=character.icon,
                     )
-                    embed.set_thumbnail(url=get_character(character_id)["icon"])
-                    value = ""
-                    for material in materials:
-                        value += f"{get_material(material)['emoji']} {text_map.get_material_name(material, 'zh-TW', user_locale)}\n"
-                    embed.add_field(
-                        name=text_map.get(314, "zh-TW", user_locale), value=value
-                    )
-                    await user.send(embed=embed)
+                    embed.set_image(url="attachment://reminder_card.jpeg")
+
+                    await user.send(embed=embed, files=[file])
+
             log.info("[Schedule] Talent Notifiaction Ended")
         except Exception as e:
             sentry_sdk.capture_exception(e)
@@ -304,10 +317,11 @@ class Schedule(commands.Cog):
     @resin_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-        
+
     @pot_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
+        await asyncio.sleep(120)
 
     @talent_notification.before_loop
     async def before_notif(self):
