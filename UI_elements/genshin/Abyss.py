@@ -41,7 +41,7 @@ class View(DefaultView):
 class FloorSelect(Select):
     def __init__(self, embeds: list[Embed], locale: Locale, user_locale: str):
         options = [SelectOption(label=text_map.get(43, locale, user_locale), value="overview")]
-        for index in range(0, len(embeds)):
+        for index in range(0, len(embeds)-1):
             options.append(
                 SelectOption(
                     label=f"{text_map.get(146, locale, user_locale)} {9+index} {text_map.get(147, locale, user_locale)}",
@@ -54,9 +54,6 @@ class FloorSelect(Select):
         self.embeds = embeds
 
     async def callback(self, i: Interaction) -> Any:
-        for e in self.embeds:
-            log.info(f'[Embed Title]{e.title} [Embed Name]{e.author.name}')
-        log.info(f'[Self Value]{self.values[0]}')
         if self.values[0] == 'overview':
             await i.response.edit_message(embed=self.embeds[0])
         else:

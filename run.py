@@ -12,7 +12,7 @@ from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
 from pyppeteer import launch
-
+from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
 from UI_elements.others import Roles
 from utility.utils import log, sentry_logging
@@ -48,7 +48,10 @@ class Translator(app_commands.Translator):
 class ShenheBot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned, intents=intents, application_id=application_id
+            command_prefix=commands.when_mentioned,
+            intents=intents,
+            application_id=application_id,
+            chunk_guild_at_startup=False,
         )
 
     async def setup_hook(self) -> None:
@@ -123,6 +126,10 @@ sentry_sdk.init(
 
 bot = ShenheBot()
 
+@bot.before_invoke
+async def before_invoke(ctx: Context):
+    if ctx.guild is not None and not ctx.guild.chunked:
+        await ctx.guild.chunk()
 
 @bot.listen()
 async def on_message_edit(before: Message, after: Message):
@@ -146,18 +153,18 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
-        option_msg = ''
-                
+        option_msg = ""
+
         if i.command.parent is None:
-            if 'options' in i.data:
-                option_msg = ': '
-                for option in i.data['options']:
+            if "options" in i.data:
+                option_msg = ": "
+                for option in i.data["options"]:
                     option_msg += f"[{option['name']}] {option['value']} "
             log.info(f"[Command][{i.user.id}][{i.command.name}]{option_msg}")
         else:
-            if 'options' in i.data:
-                option_msg = ': '
-                for option in i.data['options'][0]['options']:
+            if "options" in i.data:
+                option_msg = ": "
+                for option in i.data["options"][0]["options"]:
                     option_msg += f"[{option['name']}] {option['value']} "
             log.info(
                 f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{option_msg}"
