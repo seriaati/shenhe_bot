@@ -323,9 +323,11 @@ async def draw_todo_card(
     session: aiohttp.ClientSession,
 ) -> List[BytesIO]:
     result = []
-    client = AmbrTopAPI(session, "cht")
     font_family = get_font(locale)
     font = ImageFont.truetype(f"resources/fonts/{font_family}", 64)
+
+    locale = to_ambr_top(locale)
+    client = AmbrTopAPI(session, locale)
 
     # get templates
     file_names = [
