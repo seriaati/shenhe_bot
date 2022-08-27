@@ -18,7 +18,7 @@ class View(DefaultView):
             text_map.get(357, self.locale, self.user_locale),
             text_map.get(358, self.locale, self.user_locale)
         )
-        code_message = "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/41853f2b76dcb845cf8cb0c44174fb63459920f4/getlink_global.ps1'))"
+        code_message = "iex(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/d40fa0fd74d85d692543c1621669f5f9375b5975/getlink.ps1)"
         await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.followup.send(content=f'```{code_message}```', ephemeral=True)
 
@@ -35,13 +35,5 @@ class View(DefaultView):
         embed = default_embed(
             text_map.get(361, self.locale, self.user_locale),
             text_map.get(362, self.locale, self.user_locale)
-        )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-    @button(emoji='<:playstation:1005601741338841148>')
-    async def ps(self, interaction: Interaction, button: Button):
-        embed = default_embed(
-            text_map.get(363, self.locale, self.user_locale),
-            text_map.get(364, self.locale, self.user_locale)
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
