@@ -33,7 +33,7 @@ class View(DefaultView):
 
         element_names = list(convert_elements.values())
         element_emojis = list(elements.values())
-        for index in range(0, 6):
+        for index in range(0, 7):
             self.add_item(
                 ElementButton(element_names[index], element_emojis[index], index // 3)
             )
