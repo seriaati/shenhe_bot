@@ -179,49 +179,6 @@ class AdminCog(commands.Cog, name="admin"):
                     "ru": "Путешественница",
                     "vi": "Nhà Lữ Hành",
                 }
-            if thing == "material":
-                dict["202"] = {
-                    "chs": "摩拉",
-                    "cht": "摩拉",
-                    "de": "Mora",
-                    "en": "Mora",
-                    "es": "Mora",
-                    "fr": "Mora",
-                    "jp": "モラ",
-                    "kr": "모라",
-                    "th": "Mora",
-                    "pt": "Mora",
-                    "ru": "Mopa",
-                    "vi": "Mora",
-                }
-                dict["104003"] = {
-                    "chs": "大英雄的经验",
-                    "cht": "大英雄的經驗",
-                    "de": "Eines Helden Weisheit",
-                    "en": "Mora",
-                    "es": "Ingenio del héroe",
-                    "fr": "Leçons du héros",
-                    "jp": "大英雄の経験",
-                    "kr": "영웅의 경험",
-                    "th": "Hero's Wit",
-                    "pt": "EXP do Herói",
-                    "ru": "Опыт героя",
-                    "vi": "Kinh Nghiệm Anh Hùng",
-                }
-                dict["104013"] = {
-                    "chs": "精锻用魔矿",
-                    "cht": "精鍛用魔礦",
-                    "de": "Mystisches Verstärkungserz",
-                    "en": "Mystic Enhancement Ore",
-                    "es": "Mineral de refinamiento místico",
-                    "fr": "Minerai de renforcement mystique",
-                    "jp": "仕上げ用魔鉱",
-                    "kr": "정제용 마법 광물",
-                    "th": "Mystic Enhancement Ore",
-                    "pt": "Minério de Refinamento Místico",
-                    "ru": "Волшебная руда усиления",
-                    "vi": "Ma Khoáng Tinh Đúc",
-                }
             with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
                 json.dump(dict, f, indent=4, ensure_ascii=False)
 
@@ -377,47 +334,6 @@ class AdminCog(commands.Cog, name="admin"):
                 name="武器", icon_url=i.user.avatar
             )
         )
-
-        # materials
-        # result = {}
-
-        # async with self.bot.session.get(f"https://api.ambr.top/v2/cht/material") as r:
-        #     materials = await r.json()
-
-        # needed = [
-        #     "forgingOre",
-        #     "localSpecialtyMondstadt",
-        #     "localSpecialtyLiyue",
-        #     "localSpecialtyInazuma",
-        #     "characterLevelUpMaterial",
-        #     "weaponAscensionMaterial",
-        #     "talentLevelUpMaterial",
-        #     "sumeruRegionalSpecialty",
-        #     "talentLevelUpMaterials",
-        # ]
-
-        # for material_id, material_info in materials["data"]["items"].items():
-        #     if (
-        #         "beta" not in material_info
-        #         and material_id not in consumables_map
-        #         and material_info["type"] in needed
-        #     ):
-        #         result[material_id] = {
-        #             "name": material_info["name"],
-        #             "icon": f'https://api.ambr.top/assets/UI/{material_info["icon"]}.png',
-        #             "emoji": "",
-        #         }
-
-        # result = json.dumps(result, indent=4, sort_keys=True)
-
-        # if len(result) > 4096:
-        #     pprint.pprint(result)
-        # else:
-        #     await i.followup.send(
-        #         embed=default_embed(message=f"```py\n{result}\n```").set_author(
-        #             name="素材", icon_url=i.user.avatar
-        #         )
-        #     )
 
         # check emojis
         message = ""
