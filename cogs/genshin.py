@@ -1,6 +1,7 @@
 import asyncio
 import json
 from datetime import datetime
+from time import process_time
 from typing import Dict, List
 
 import aiosqlite
@@ -281,10 +282,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ephemeral=True,
                 )
 
-            namecard_url = data.player.namecard.banner.url
-
+            namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
-            member.id, custom_uid, i.locale, namecard_url, member.display_avatar.url
+            member.id, custom_uid, i.locale, namecard, member.display_avatar
         )
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
@@ -606,7 +606,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                 f"3. {text_map.get(310, i.locale, user_locale)}"
             )
             embed.set_author(
-                name=text_map.get(311, i.locale, user_locale), icon_url=i.user.display_avatar.url
+                name=text_map.get(311, i.locale, user_locale),
+                icon_url=i.user.display_avatar.url,
             )
             embed.set_image(url="https://i.imgur.com/sYg4SpD.gif")
             await i.response.send_message(embed=embed, ephemeral=True)

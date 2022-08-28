@@ -2,10 +2,12 @@ from os import listdir
 from os.path import join, isfile
 from random import choice
 from typing import Dict, List, Tuple
-
+from time import process_time
+from utility.utils import log
 import aiohttp
 from discord import Locale
 import genshin
+from discord import Asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Material, Weapon
 from PIL import Image, ImageFont, ImageDraw
@@ -13,12 +15,14 @@ from io import BytesIO
 from apps.text_map.convert_locale import to_ambr_top
 from data.draw.fonts import get_font
 from enkanetwork.model.character import CharacterInfo
+from enkanetwork.model.assets import IconAsset
 from enkanetwork.enum import DigitType, EquipmentsType
 from apps.text_map.text_map_app import text_map
 from utility.utils import divide_chunks
 
 
 async def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
+    start = process_time()
     text = domain.name
     font_family = get_font(locale)
 
@@ -39,6 +43,8 @@ async def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
     draw = ImageDraw.Draw(domain_image)
     draw.text((987, 139), text, fill="#333", font=font, anchor="mm")
 
+    end = process_time()
+    log.info(f'[Draw][Domain Card]: [Time]{end-start} s')
     return domain_image
 
 
@@ -98,6 +104,7 @@ async def draw_item_icons_on_domain_card(
 async def draw_character_card(
     character: CharacterInfo, locale: Locale | str, session: aiohttp.ClientSession
 ) -> BytesIO:
+    start = process_time()
     # load font
     font_family = get_font(locale)
 
@@ -314,6 +321,8 @@ async def draw_character_card(
     fp = BytesIO()
     card.save(fp, "JPEG", optimize=True, quality=40)
 
+    end = process_time()
+    log.info(f'[Draw][Character Card]: [Time]{end-start} s')
     return fp
 
 
@@ -322,6 +331,7 @@ async def draw_todo_card(
     locale: Locale | str,
     session: aiohttp.ClientSession,
 ) -> List[BytesIO]:
+    start = process_time()
     result = []
     font_family = get_font(locale)
     font = ImageFont.truetype(f"resources/fonts/{font_family}", 64)
@@ -397,15 +407,18 @@ async def draw_todo_card(
         todo_card.save(fp, "JPEG", optimize=True, quality=40)
         result.append(fp)
 
+    end = process_time()
+    log.info(f'[Draw][Todo Card]: [Time]{end-start} s')
     return result
 
 
 async def draw_stats_card(
     user_stats: genshin.models.Stats,
-    namecard_url: str,
-    pfp_url: str,
+    namecard: IconAsset,
+    pfp: Asset,
     character_num: int,
 ) -> BytesIO:
+    start = process_time()
     stats = {
         "active_days": user_stats.days_active,
         "characters": f"{user_stats.characters}/{character_num}",
@@ -422,18 +435,27 @@ async def draw_stats_card(
     }
     session = aiohttp.ClientSession()
     stat_card = Image.open("resources/images/templates/stats/Stat Card Template.png")
-    async with session.get(namecard_url) as r:
-        bytes_obj = BytesIO(await r.read())
-    namecard = Image.open(bytes_obj)
+    
+    path = f"resources/images/namecard/{namecard.filename}.png"
+    try:
+        namecard = Image.open(path)
+    except FileNotFoundError:
+        async with session.get(namecard.url) as r:
+            bytes_obj = BytesIO(await r.read())
+        namecard = Image.open(bytes_obj)
+        namecard.save(path, "PNG")
+
     w, h = namecard.size
     factor = 2.56
     namecard = namecard.resize((int(w * factor), int(h * factor)))
     w, h = namecard.size
     namecard = namecard.crop((0, 190, w, h - 190))
     stat_card.paste(namecard, (112, 96))
-    async with session.get(pfp_url) as r:
+    
+    async with session.get(pfp.url) as r:
         bytes_obj = BytesIO(await r.read())
     pfp = Image.open(bytes_obj)
+        
     mask = Image.new("L", pfp.size, 0)
     empty = Image.new("RGBA", pfp.size, 0)
     draw = ImageDraw.Draw(mask)
@@ -465,10 +487,13 @@ async def draw_stats_card(
     fp = BytesIO()
     stat_card.save(fp, "JPEG", optimize=True, quality=40)
     await session.close()
+    end = process_time()
+    log.info(f'[Draw][Stats Card]: [Time]{end-start} s')
     return fp
 
 
 async def draw_talent_reminder_card(item_ids: List[int], locale: str):
+    start = process_time()
     session = aiohttp.ClientSession()
     font_family = get_font(locale)
     font = ImageFont.truetype(f"resources/fonts/{font_family}", 50)
@@ -519,4 +544,6 @@ async def draw_talent_reminder_card(item_ids: List[int], locale: str):
     fp = BytesIO()
     reminder_card.save(fp, "JPEG", optimize=True, quality=40)
     await session.close()
+    end = process_time()
+    log.info(f'[Draw][Talent Reminder Card]: [Time]{end-start} s')
     return fp
