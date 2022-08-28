@@ -167,4 +167,5 @@ ambr/cache/th/*
 ambr/cache/vi/*
 ambr/cache/static/*
 resources/images/namecard/*
+resources/images/domain_cards/*
 !/**/.gitkeep

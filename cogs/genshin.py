@@ -11,7 +11,6 @@ from ambr.models import Character, Weapon
 from apps.draw import (
     draw_character_card,
     draw_domain_card,
-    draw_item_icons_on_domain_card,
 )
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
@@ -616,6 +615,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: Interaction):
+        start = process_time()
         await i.response.defer()
         result = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -655,9 +655,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             chunks = list(divide_dict(items, 12))
 
             for chunk in chunks:
-                domain_card = await draw_domain_card(domain, user_locale or i.locale)
-                domain_card = await draw_item_icons_on_domain_card(
-                    domain_card, chunk, self.bot.session
+                domain_card = await draw_domain_card(
+                    domain, user_locale or i.locale, chunk
                 )
                 result.append(domain_card)
 
@@ -669,6 +668,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.set_image(url=f"attachment://{index}.jpeg")
             embeds.append(embed)
 
+        end = process_time()
+        print(end-start)
         await GeneralPaginator(i, embeds, self.bot.db, files=result).start(
             followup=True
         )

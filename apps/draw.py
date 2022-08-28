@@ -19,85 +19,97 @@ from enkanetwork.model.assets import IconAsset
 from enkanetwork.enum import DigitType, EquipmentsType
 from apps.text_map.text_map_app import text_map
 from utility.utils import divide_chunks
+import uuid
+import yaml
 
 
-async def draw_domain_card(domain: Domain, locale: Locale | str) -> Image:
-    start = process_time()
-    text = domain.name
-    font_family = get_font(locale)
-
-    # get domain template image
-    background_paths = ["", "Mondstat", "Liyue", "Inazuma", "Sumeru"]
-    domain_image = Image.open(
-        f"resources/images/templates/{background_paths[domain.city.id]} Farm.png"
-    )
-
-    # dynamic font size
-    fontsize = 50
-    font = ImageFont.truetype(f"resources/fonts/{font_family}", fontsize)
-    while font.getsize(text)[0] < 0.5 * domain_image.size[0]:
-        fontsize += 1
-        font = ImageFont.truetype(f"resources/fonts/{font_family}", fontsize)
-
-    # draw the domain text
-    draw = ImageDraw.Draw(domain_image)
-    draw.text((987, 139), text, fill="#333", font=font, anchor="mm")
-
-    end = process_time()
-    log.info(f'[Draw][Domain Card]: [Time]{end-start} s')
-    return domain_image
-
-
-async def draw_item_icons_on_domain_card(
-    domain_card: Image,
+async def draw_domain_card(
+    domain: Domain,
+    locale: Locale | str,
     items: Dict[int, Character | Weapon],
-    session: aiohttp.ClientSession,
-) -> BytesIO:
-    # initialize variables
-    count = 1
-    offset = (150, 340)
+) -> Image:
+    with open("data/draw/domain_card_map.yaml", "r+") as f:
+        card_map = yaml.full_load(f)
 
-    for item_id, item in items.items():
-        # get path based on object
-        if isinstance(item, Weapon):
-            path = f"resources/images/weapon/{item.id}.png"
-        else:
-            path = f"resources/images/character/{item.id}.png"
+    if card_map.get(str(items)) is not None:
+        domain_card = Image.open(
+            f"resources/images/domain_cards/{card_map[str(items)]}.jpeg"
+        )
+        fp = BytesIO()
+        domain_card.save(fp, "JPEG", optimize=True, quality=40)
 
-        # try to use local image
-        try:
-            icon = Image.open(path)
-            icon = icon.convert("RGBA")
+    else:
+        session = aiohttp.ClientSession()
+        text = domain.name
+        font_family = get_font(locale)
 
-        # if not found then download it
-        except FileNotFoundError:
-            async with session.get(item.icon) as r:
-                bytes_obj = BytesIO(await r.read())
-            icon = Image.open(bytes_obj)
-            icon = icon.convert("RGBA")
-            icon.save(path, "PNG")
+        # get domain template image
+        background_paths = ["", "Mondstat", "Liyue", "Inazuma", "Sumeru"]
+        domain_card = Image.open(
+            f"resources/images/templates/{background_paths[domain.city.id]} Farm.png"
+        )
 
-        # resize the icon
-        icon.thumbnail((180, 180))
+        # dynamic font size
+        fontsize = 50
+        font = ImageFont.truetype(f"resources/fonts/{font_family}", fontsize)
+        while font.getsize(text)[0] < 0.5 * domain_card.size[0]:
+            fontsize += 1
+            font = ImageFont.truetype(f"resources/fonts/{font_family}", fontsize)
 
-        # draw the icon on to the domain card
-        domain_card.paste(icon, offset, icon)
+        # draw the domain text
+        draw = ImageDraw.Draw(domain_card)
+        draw.text((987, 139), text, fill="#333", font=font, anchor="mm")
+        # initialize variables
+        count = 1
+        offset = (150, 340)
 
-        # change offset
-        offset = list(offset)
-        offset[0] += 400
+        for item_id, item in items.items():
+            # get path based on object
+            if isinstance(item, Weapon):
+                path = f"resources/images/weapon/{item.id}.png"
+            else:
+                path = f"resources/images/character/{item.id}.png"
 
-        # if four in a row, move to next row
-        if count % 4 == 0:
-            offset[0] = 150
-            offset[1] += 250
-        offset = tuple(offset)
+            # try to use local image
+            try:
+                icon = Image.open(path)
+                icon = icon.convert("RGBA")
 
-        count += 1
+            # if not found then download it
+            except FileNotFoundError:
+                async with session.get(item.icon) as r:
+                    bytes_obj = BytesIO(await r.read())
+                icon = Image.open(bytes_obj)
+                icon = icon.convert("RGBA")
+                icon.save(path, "PNG")
 
-    domain_card = domain_card.convert("RGB")
-    fp = BytesIO()
-    domain_card.save(fp, "JPEG", optimize=True, quality=40)
+            # resize the icon
+            icon.thumbnail((180, 180))
+
+            # draw the icon on to the domain card
+            domain_card.paste(icon, offset, icon)
+
+            # change offset
+            offset = list(offset)
+            offset[0] += 400
+
+            # if four in a row, move to next row
+            if count % 4 == 0:
+                offset[0] = 150
+                offset[1] += 250
+            offset = tuple(offset)
+
+            count += 1
+
+        uuid_str = str(uuid.uuid4())
+        card_map[str(items)] = uuid_str
+        domain_card = domain_card.convert("RGB")
+        fp = BytesIO()
+        domain_card.save(fp, "JPEG", optimize=True, quality=40)
+        domain_card.save(f"resources/images/domain_cards/{uuid_str}.jpeg", "JPEG")
+        with open("data/draw/domain_card_map.yaml", "w+") as f:
+            yaml.dump(card_map, f)
+        await session.close()
     return fp
 
 
@@ -322,7 +334,7 @@ async def draw_character_card(
     card.save(fp, "JPEG", optimize=True, quality=40)
 
     end = process_time()
-    log.info(f'[Draw][Character Card]: [Time]{end-start} s')
+    log.info(f"[Draw][Character Card]: [Time]{end-start} s")
     return fp
 
 
@@ -408,7 +420,7 @@ async def draw_todo_card(
         result.append(fp)
 
     end = process_time()
-    log.info(f'[Draw][Todo Card]: [Time]{end-start} s')
+    log.info(f"[Draw][Todo Card]: [Time]{end-start} s")
     return result
 
 
@@ -435,7 +447,7 @@ async def draw_stats_card(
     }
     session = aiohttp.ClientSession()
     stat_card = Image.open("resources/images/templates/stats/Stat Card Template.png")
-    
+
     path = f"resources/images/namecard/{namecard.filename}.png"
     try:
         namecard = Image.open(path)
@@ -451,11 +463,11 @@ async def draw_stats_card(
     w, h = namecard.size
     namecard = namecard.crop((0, 190, w, h - 190))
     stat_card.paste(namecard, (112, 96))
-    
+
     async with session.get(pfp.url) as r:
         bytes_obj = BytesIO(await r.read())
     pfp = Image.open(bytes_obj)
-        
+
     mask = Image.new("L", pfp.size, 0)
     empty = Image.new("RGBA", pfp.size, 0)
     draw = ImageDraw.Draw(mask)
@@ -488,7 +500,7 @@ async def draw_stats_card(
     stat_card.save(fp, "JPEG", optimize=True, quality=40)
     await session.close()
     end = process_time()
-    log.info(f'[Draw][Stats Card]: [Time]{end-start} s')
+    log.info(f"[Draw][Stats Card]: [Time]{end-start} s")
     return fp
 
 
@@ -545,5 +557,5 @@ async def draw_talent_reminder_card(item_ids: List[int], locale: str):
     reminder_card.save(fp, "JPEG", optimize=True, quality=40)
     await session.close()
     end = process_time()
-    log.info(f'[Draw][Talent Reminder Card]: [Time]{end-start} s')
+    log.info(f"[Draw][Talent Reminder Card]: [Time]{end-start} s")
     return fp
