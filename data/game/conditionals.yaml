@@ -821,7 +821,7 @@
   key: p1AfterWreath
   value: 'on'
   constellation: null
-  ascention: 1
+  ascension: 1
   description: 發射花筥箭
   effect: + 元素精通
 - name: Tighnari
