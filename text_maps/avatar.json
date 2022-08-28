@@ -741,6 +741,48 @@
         "ru": "Тигнари",
         "vi": "Tighnari"
     },
+    "10000070": {
+        "chs": "妮露",
+        "cht": "妮露",
+        "de": "Nilou",
+        "en": "Nilou",
+        "es": "Nilou",
+        "fr": "Nilou",
+        "jp": "ニィロウ",
+        "kr": "닐루",
+        "th": "Nilou",
+        "pt": "Nilou",
+        "ru": "Нилу",
+        "vi": "Nilou"
+    },
+    "10000071": {
+        "chs": "赛诺",
+        "cht": "賽諾",
+        "de": "Cyno",
+        "en": "Cyno",
+        "es": "Cyno",
+        "fr": "Cyno",
+        "jp": "セノ",
+        "kr": "사이노",
+        "th": "Cyno",
+        "pt": "Cyno",
+        "ru": "Сайно",
+        "vi": "Cyno"
+    },
+    "10000072": {
+        "chs": "坎蒂丝",
+        "cht": "坎蒂絲",
+        "de": "Candace",
+        "en": "Candace",
+        "es": "Candace",
+        "fr": "Candace",
+        "jp": "キャンディス",
+        "kr": "캔디스",
+        "th": "Candace",
+        "pt": "Candace",
+        "ru": "Кандакия",
+        "vi": "Candace"
+    },
     "10000005-anemo": {
         "chs": "旅行者",
         "cht": "旅行者",
@@ -840,6 +882,34 @@
         "vi": "Nhà Lữ Hành"
     },
     "10000007-dendro": {
+        "chs": "旅行者",
+        "cht": "旅行者",
+        "de": "Reisende",
+        "en": "Traveler",
+        "es": "Viajera",
+        "fr": "Voyageuse",
+        "jp": "旅人",
+        "kr": "여행자",
+        "th": "นักเดินทาง",
+        "pt": "Viajante",
+        "ru": "Путешественница",
+        "vi": "Nhà Lữ Hành"
+    },
+    "10000007": {
+        "chs": "旅行者",
+        "cht": "旅行者",
+        "de": "Reisende",
+        "en": "Traveler",
+        "es": "Viajera",
+        "fr": "Voyageuse",
+        "jp": "旅人",
+        "kr": "여행자",
+        "th": "นักเดินทาง",
+        "pt": "Viajante",
+        "ru": "Путешественница",
+        "vi": "Nhà Lữ Hành"
+    },
+    "10000005": {
         "chs": "旅行者",
         "cht": "旅行者",
         "de": "Reisende",

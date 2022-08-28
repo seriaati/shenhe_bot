@@ -335,6 +335,20 @@
         "ru": "Деревянный клинок",
         "vi": "Kiếm Gỗ"
     },
+    "11418": {
+        "chs": "西福斯的月光",
+        "cht": "西福斯的月光",
+        "de": "Mondlicht von Xiphosßßß",
+        "en": "Xiphos' Moonlight",
+        "es": "Luz Lunar de Sísifo",
+        "fr": "Clair de lune de Xiphos",
+        "jp": "サイフォスの月明かり",
+        "kr": "크시포스의 달빛",
+        "th": "Xiphos' Moonlight",
+        "pt": "Luz Lunar de Xiphos",
+        "ru": "Лунное сияние ксифоса",
+        "vi": "Ánh Trăng Xiphos"
+    },
     "11501": {
         "chs": "风鹰剑",
         "cht": "風鷹劍",
@@ -432,6 +446,20 @@
         "pt": "Maremoto da Lua de Futsu",
         "ru": "Харан гэппаку фуцу",
         "vi": "Haran Geppaku Futsu"
+    },
+    "11511": {
+        "chs": "圣显之钥",
+        "cht": "聖顯之鑰",
+        "de": "Schlüssel der Hierophanießßß",
+        "en": "Key of Hierophany",
+        "es": "Llave de la Hierofanía",
+        "fr": "Clé de hiérophanie",
+        "jp": "ヒエロファニーの鍵",
+        "kr": "성현의 열쇠",
+        "th": "Key of Heirophany",
+        "pt": "Chave de Hierofania",
+        "ru": "Ключ иерофании",
+        "vi": "Chìa Khóa Thần Thánh"
     },
     "12101": {
         "chs": "训练大剑",
@@ -712,6 +740,20 @@
         "pt": "Espada Grande de Katsuragi",
         "ru": "Кацурагикири Нагамаса",
         "vi": "Trường Đao Katsuragi"
+    },
+    "12415": {
+        "chs": "玛海菈的水色",
+        "cht": "瑪海菈的水色",
+        "de": "Aquamarin von Maharaßßß",
+        "en": "Mahara Aquamarine",
+        "es": "Aguamarina de Mahara",
+        "fr": "Aigue-marine de Mahara",
+        "jp": "マカイラの水色",
+        "kr": "마하라 물의 색",
+        "th": "Mahara Aquamarine",
+        "pt": "Água-marinha de Mahara",
+        "ru": "Аквамарин Махары",
+        "vi": "Sắc Nước Mahara"
     },
     "12416": {
         "chs": "恶王丸",
@@ -1077,6 +1119,20 @@
         "ru": "Пронзающий луну",
         "vi": "Quán Nguyệt Thương"
     },
+    "13419": {
+        "chs": "风信之锋",
+        "cht": "風信之鋒",
+        "de": "Klinge saisonaler Winde",
+        "en": "Shifting Windblade",
+        "es": "Púa del Viento Estacional",
+        "fr": "Lame du vent saisonnier",
+        "jp": "風信の刃",
+        "kr": "바람의 칼날",
+        "th": "Shifting Windblade",
+        "pt": "Lâmina do Vento Mensageiro",
+        "ru": "Клинок перемены ветров",
+        "vi": "Mũi Nhọn Của Gió"
+    },
     "13501": {
         "chs": "护摩之杖",
         "cht": "護摩之杖",
@@ -1160,6 +1216,20 @@
         "pt": "Luz do Cortador de Grama",
         "ru": "Сияющая жатва",
         "vi": "Đoạn Thảo Trường Đao"
+    },
+    "13511": {
+        "chs": "赤沙之杖",
+        "cht": "赤沙之杖",
+        "de": "Stab roter Sandeßßß",
+        "en": "Staff of the Scarlet Sands",
+        "es": "Báculo de las Arenas Escarlatas",
+        "fr": "Bâton des sables écarlates",
+        "jp": "スカーレットサンドの杖",
+        "kr": "적색 사막의 지팡이",
+        "th": "Staff of the Scarlet Sands",
+        "pt": "Báculo das Areias Escarlates",
+        "ru": "Посох алых песков",
+        "vi": "Quyền Trượng Cát Đỏ"
     },
     "14101": {
         "chs": "学徒笔记",
@@ -1454,6 +1524,20 @@
         "pt": "Olho do Juramento",
         "ru": "Око клятвы",
         "vi": "Con Ngươi Tuyên Thệ"
+    },
+    "14416": {
+        "chs": "流浪的晚星",
+        "cht": "流浪的晚星",
+        "de": "Abendstern wandernder Seelenßßß",
+        "en": "Wandering Evenstar",
+        "es": "Estrella Errabunda",
+        "fr": "Étoile du soir errante",
+        "jp": "彷徨いし星",
+        "kr": "방랑하는 저녁별",
+        "th": "Wandering Evenstar",
+        "pt": "Estrela Itinerante",
+        "ru": "Скитающаяся звезда",
+        "vi": "Sao Đêm Rong Ruổi"
     },
     "14417": {
         "chs": "盈满之实",

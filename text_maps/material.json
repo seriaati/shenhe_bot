@@ -24,7 +24,7 @@
         "kr": "모라",
         "th": "Mora",
         "pt": "Mora",
-        "ru": "Mopa",
+        "ru": "Мора",
         "vi": "Mora"
     },
     "100011": {
@@ -1231,6 +1231,48 @@
         "ru": "Сумерская роза",
         "vi": "Tường Vi Sumeru"
     },
+    "101220": {
+        "chs": "赤念果",
+        "cht": "",
+        "de": "Weißdornfruchtßßß",
+        "en": "Redcrest",
+        "es": "Añoraescarlata",
+        "fr": "Quandong",
+        "jp": "ヘナベリー",
+        "kr": "적념과",
+        "th": "",
+        "pt": "",
+        "ru": "Фрукт чини",
+        "vi": "Quả Xích Niệm"
+    },
+    "101221": {
+        "chs": "枣椰",
+        "cht": "",
+        "de": "Dattel",
+        "en": "Ajilenakh",
+        "es": "Dátil",
+        "fr": "Datte",
+        "jp": "ナツメヤシ",
+        "kr": "대추야자",
+        "th": "Ajilenakh Nut",
+        "pt": "",
+        "ru": "Орехи аджиленах",
+        "vi": "Chà Là"
+    },
+    "101225": {
+        "chs": "圣金虫",
+        "cht": "",
+        "de": "Skarabäusßßß",
+        "en": "Scarab",
+        "es": "Escarabajo dorado",
+        "fr": "Scarabée",
+        "jp": "聖金虫",
+        "kr": "황금 딱정벌레",
+        "th": "Scarab",
+        "pt": "",
+        "ru": "Золотой скарабей",
+        "vi": "Bọ Thánh Kim"
+    },
     "101228": {
         "chs": "毗波耶",
         "cht": "毗波耶",
@@ -1277,7 +1319,7 @@
         "chs": "大英雄的经验",
         "cht": "大英雄的經驗",
         "de": "Eines Helden Weisheit",
-        "en": "Mora",
+        "en": "Hero's Wit",
         "es": "Ingenio del héroe",
         "fr": "Leçons du héros",
         "jp": "大英雄の経験",
@@ -3681,6 +3723,48 @@
         "ru": "Анкер хаоса",
         "vi": "Chốt Neo Hỗn Độn"
     },
+    "112071": {
+        "chs": "破缺棱晶",
+        "cht": "",
+        "de": "Zerbrochenes Prisma",
+        "en": "Damaged Prism",
+        "es": "Prisma dañado",
+        "fr": "Prisme endommagé",
+        "jp": "壊れたプリズム",
+        "kr": "파손된 결정",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": "Lăng Tinh Bị Hỏng"
+    },
+    "112072": {
+        "chs": "混浊棱晶",
+        "cht": "",
+        "de": "Trübes Prisma",
+        "en": "Turbid Prism",
+        "es": "Prisma enturbiado",
+        "fr": "Prisme trouble",
+        "jp": "濁りプリズム",
+        "kr": "혼탁한 결정",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": "Lăng Tinh Bụi Bẩn"
+    },
+    "112073": {
+        "chs": "辉光棱晶",
+        "cht": "",
+        "de": "Leuchtendes Prisma",
+        "en": "Radiant Prism",
+        "es": "Prisma radiante",
+        "fr": "Prisme radieux",
+        "jp": "輝きプリズム",
+        "kr": "찬란하게 빛나는 결정",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": "Lăng Tinh Phát Sáng"
+    },
     "113001": {
         "chs": "飓风之种",
         "cht": "颶風之種",
@@ -4184,6 +4268,34 @@
         "pt": "Fruto do Trovão",
         "ru": "Плод грома",
         "vi": "Hạt Tụ Sấm"
+    },
+    "113038": {
+        "chs": "永续机芯",
+        "cht": "",
+        "de": "Ewiges Uhrwerkßßß",
+        "en": "Perpetual Caliber",
+        "es": "Resorte perpetuo",
+        "fr": "Calibre perpétuel",
+        "jp": "永续コア",
+        "kr": "영구동력 칩",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": "Lõi Chuyển Động Vĩnh Viễn"
+    },
+    "113039": {
+        "chs": "导光四面体",
+        "cht": "",
+        "de": "Lichtgesteuerter Tetraederßßß",
+        "en": "Light Guiding Tetrahedron",
+        "es": "Tetraedro guialuz",
+        "fr": "Tétraèdre de lumière",
+        "jp": "導光四面体",
+        "kr": "빛 인도 사면체",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": "Khối Tứ Diện Dẫn Sáng"
     },
     "114001": {
         "chs": "高塔孤王的破瓦",
@@ -5472,5 +5584,47 @@
         "pt": "Lira Antiga",
         "ru": "Старинная лира",
         "vi": "Đàn Cổ"
+    },
+    "220067": {
+        "chs": "？？？",
+        "cht": "？？？",
+        "de": "？？？",
+        "en": "？？？",
+        "es": "？？？",
+        "fr": "？？？",
+        "jp": "？？？",
+        "kr": "？？？",
+        "th": "？？？",
+        "pt": "？？？",
+        "ru": "？？？",
+        "vi": "？？？"
+    },
+    "220069": {
+        "chs": "赤沙石板",
+        "cht": "",
+        "de": "Steintafel roter Sandeßßß",
+        "en": "Scarlet Sand Slate",
+        "es": "",
+        "fr": "Stèle des sables écarlates",
+        "jp": "",
+        "kr": "",
+        "th": "",
+        "pt": "",
+        "ru": "",
+        "vi": ""
+    },
+    "220074": {
+        "chs": "？？？",
+        "cht": "？？？",
+        "de": "？？？",
+        "en": "？？？",
+        "es": "？？？",
+        "fr": "？？？",
+        "jp": "？？？",
+        "kr": "？？？",
+        "th": "？？？",
+        "pt": "？？？",
+        "ru": "？？？",
+        "vi": "？？？"
     }
 }
