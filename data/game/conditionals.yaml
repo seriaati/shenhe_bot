@@ -445,7 +445,7 @@
   constellation: null
   ascension: null
   description: '神里綾人「瀧廻鑑花」狀態'
-  effect: '神里綾人普攻傷害轉為水元素範圍傷害'
+  effect: '神里綾人普攻轉為範圍水傷'
 - name: KamisatoAyato
   key: c4AfterBurst
   value: 'on'
@@ -823,7 +823,7 @@
   constellation: null
   ascension: 1
   description: 發射花筥箭
-  effect: + 元素精通
+  effect: 提升元素精通
 - name: Tighnari
   key: c2EnemyField
   value: 'on'
