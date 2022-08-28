@@ -10,9 +10,8 @@ from apps.text_map.convert_locale import to_ambr_top_dict
 from discord import Forbidden, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.others import Roles
 from apps.text_map.utils import get_user_locale
-from utility.utils import default_embed, error_embed, log
+from utility.utils import default_embed, error_embed
 from apps.genshin.utils import get_dummy_client
 from apps.text_map.convert_locale import to_ambr_top_dict
 from data.game.artifacts import artifacts_map
@@ -31,7 +30,7 @@ class AdminCog(commands.Cog, name="admin"):
             if i.user.id != 410036441129943050:
                 await i.response.send_message(
                     embed=error_embed(message="你不是小雪本人").set_author(
-                        name="生物驗證失敗", icon_url=i.user.avatar
+                        name="生物驗證失敗", icon_url=i.user.display_avatar.url
                     ),
                     ephemeral=True,
                 )
@@ -48,14 +47,14 @@ class AdminCog(commands.Cog, name="admin"):
         except KeyError:
             return await i.response.send_message(
                 embed=error_embed(message=module_name).set_author(
-                    name="查無 module", icon_url=i.user.avatar
+                    name="查無 module", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
         else:
             return await i.response.send_message(
                 embed=default_embed(message=module_name).set_author(
-                    name="重整成功", icon_url=i.user.avatar
+                    name="重整成功", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -129,12 +128,12 @@ class AdminCog(commands.Cog, name="admin"):
         if i.user.id != 410036441129943050:
             return await i.response.send_message(
                 embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.avatar
+                    name="生物驗證失敗", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
         await i.response.send_message(
-            embed=default_embed().set_author(name="更新資料開始", icon_url=i.user.avatar)
+            embed=default_embed().set_author(name="更新資料開始", icon_url=i.user.display_avatar.url)
         )
 
         # character, weapon, material, artifact text map
@@ -184,7 +183,7 @@ class AdminCog(commands.Cog, name="admin"):
 
         await i.followup.send(
             embed=default_embed().set_author(
-                name="角色、武器、素材、聖遺物 text map 更新成功", icon_url=i.user.avatar
+                name="角色、武器、素材、聖遺物 text map 更新成功", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -205,7 +204,7 @@ class AdminCog(commands.Cog, name="admin"):
 
         await i.followup.send(
             embed=default_embed().set_author(
-                name="秘境關卡 text map 更新成功", icon_url=i.user.avatar
+                name="秘境關卡 text map 更新成功", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -233,7 +232,7 @@ class AdminCog(commands.Cog, name="admin"):
 
         await i.followup.send(
             embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="聖遺物", icon_url=i.user.avatar
+                name="聖遺物", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -283,7 +282,7 @@ class AdminCog(commands.Cog, name="admin"):
 
         await i.followup.send(
             embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="角色", icon_url=i.user.avatar
+                name="角色", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -331,7 +330,7 @@ class AdminCog(commands.Cog, name="admin"):
 
         await i.followup.send(
             embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="武器", icon_url=i.user.avatar
+                name="武器", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -341,7 +340,7 @@ class AdminCog(commands.Cog, name="admin"):
             message += artifact_info["emoji"]
         await i.followup.send(
             embed=default_embed(message=message).set_author(
-                name="聖遺物 emoji", icon_url=i.user.avatar
+                name="聖遺物 emoji", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -350,7 +349,7 @@ class AdminCog(commands.Cog, name="admin"):
             message += character_info["emoji"]
         await i.followup.send(
             embed=default_embed(message=message).set_author(
-                name="角色 emoji", icon_url=i.user.avatar
+                name="角色 emoji", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -359,7 +358,7 @@ class AdminCog(commands.Cog, name="admin"):
             message += weapon_info["emoji"]
         await i.followup.send(
             embed=default_embed(message=message).set_author(
-                name="武器 emoji", icon_url=i.user.avatar
+                name="武器 emoji", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -375,12 +374,12 @@ class AdminCog(commands.Cog, name="admin"):
         for message in messages:
             await i.followup.send(
                 embed=default_embed(message=message).set_author(
-                    name="素材 emoji", icon_url=i.user.avatar
+                    name="素材 emoji", icon_url=i.user.display_avatar.url
                 )
             )
 
         await i.followup.send(
-            embed=default_embed().set_author(name="更新資料完畢", icon_url=i.user.avatar)
+            embed=default_embed().set_author(name="更新資料完畢", icon_url=i.user.display_avatar.url)
         )
 
 

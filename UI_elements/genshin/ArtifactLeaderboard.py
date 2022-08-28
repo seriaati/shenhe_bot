@@ -30,7 +30,7 @@ class View(DefaultView):
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         return i.user.id == self.author.id
 
 
@@ -57,7 +57,7 @@ class GoBack(Button):
         
         view = View(
             i.user, self.db, i.locale, user_locale)
-        await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.avatar), view=view)
+        await i.response.send_message(embed=default_embed().set_author(name=text_map.get(255, i.locale, user_locale), icon_url=i.user.display_avatar.url), view=view)
         await view.wait()
         view.message = await i.original_response()
         if view.sub_stat is None:
@@ -66,7 +66,7 @@ class GoBack(Button):
         await c.execute('SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?', (view.sub_stat,))
         leaderboard = await c.fetchall()
         if len(leaderboard) == 0:
-            return await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            return await i.followup.send(embed=error_embed().set_author(name=text_map.get(254, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         
         leaderboard.sort(key=lambda tup: float(str(tup[4]).replace('%', '')), reverse=True)
 

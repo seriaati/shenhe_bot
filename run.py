@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 from pyppeteer import launch
 from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
-from UI_elements.others import Roles
 from utility.utils import log, sentry_logging
 
 load_dotenv()
@@ -87,9 +86,6 @@ class ShenheBot(commands.Bot):
                 log.warning(f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}")
                 sentry_sdk.capture_exception(e)
 
-        # load persistent views
-        self.add_view(Roles.View())
-
     async def on_ready(self):
         await self.change_presence(status=Status.online, activity=Game(name=f"/help"))
         tree = self.tree
@@ -126,10 +122,12 @@ sentry_sdk.init(
 
 bot = ShenheBot()
 
+
 @bot.before_invoke
 async def before_invoke(ctx: Context):
     if ctx.guild is not None and not ctx.guild.chunked:
         await ctx.guild.chunk()
+
 
 @bot.listen()
 async def on_message_edit(before: Message, after: Message):

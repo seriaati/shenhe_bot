@@ -44,7 +44,7 @@ class View(DefaultView):
             await i.response.send_message(
                 embed=error_embed().set_author(
                     name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -143,7 +143,7 @@ class LevelModal(DefaultModal):
         sentry_sdk.capture_exception(e)
         await i.response.send_message(
             embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )

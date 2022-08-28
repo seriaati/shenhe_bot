@@ -15,7 +15,7 @@ async def check_user_wish_data(user_id: int, i: Interaction, db: aiosqlite.Conne
     await c.execute('SELECT wish_name FROM wish_history WHERE user_id = ?', (user_id,))
     result = await c.fetchone()
     embed = error_embed(message=text_map.get(368, i.locale, user_locale)).set_author(
-        name=text_map.get(367, i.locale, user_locale), icon_url=i.user.avatar)
+        name=text_map.get(367, i.locale, user_locale), icon_url=i.user.display_avatar.url)
     if result is None:
         return False, embed
     else:

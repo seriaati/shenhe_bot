@@ -54,7 +54,7 @@ class CalcCog(commands.GroupCog, name="calc"):
                     message=text_map.get(140, i.locale, user_locale)
                 ).set_author(
                     name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -72,7 +72,7 @@ class CalcCog(commands.GroupCog, name="calc"):
                 embed=error_embed(
                     message=text_map.get(35, i.locale, user_locale)
                 ).set_author(
-                    name=text_map.get(36, i.locale, user_locale), icon_url=i.user.avatar
+                    name=text_map.get(36, i.locale, user_locale), icon_url=i.user.display_avatar.url
                 )
             )
             
@@ -90,7 +90,7 @@ class CalcCog(commands.GroupCog, name="calc"):
             return await i.followup.send(
                 embed=error_embed(message=error_message).set_author(
                     name=text_map.get(190, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -98,7 +98,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         embeds = []
         embed = default_embed()
         embed.set_author(
-            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         embed.set_thumbnail(url=get_character(view.character_id)["icon"])
 
@@ -236,7 +236,7 @@ class CalcCog(commands.GroupCog, name="calc"):
             return await i.followup.send(
                 embed=error_embed(message=error_message).set_author(
                     name=text_map.get(190, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -251,7 +251,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         embeds = []
         embed = default_embed()
         embed.set_author(
-            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         embed.set_thumbnail(url=get_weapon(view.weapon_id)["icon"])
         embed.add_field(

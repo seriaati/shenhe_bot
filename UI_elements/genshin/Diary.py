@@ -22,7 +22,7 @@ class View(DefaultView):
 
     async def interaction_check(self, i: Interaction) -> bool:
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, self.locale, self.user_locale), icon_url=i.user.avatar))
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, self.locale, self.user_locale), icon_url=i.user.display_avatar.url))
         return self.author.id == i.user.id
 
 

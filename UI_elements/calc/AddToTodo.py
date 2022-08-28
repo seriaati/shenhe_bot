@@ -31,7 +31,7 @@ class AddToTodo(Button):
                     message=text_map.get(176, i.locale, user_locale)
                 ).set_author(
                     name=text_map.get(177, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 )
             )
         for item_id, item_count in self.materials.items():
@@ -44,7 +44,7 @@ class AddToTodo(Button):
             embed=default_embed(
                 message=text_map.get(178, i.locale, user_locale)
             ).set_author(
-                name=text_map.get(179, i.locale, user_locale), icon_url=i.user.avatar
+                name=text_map.get(179, i.locale, user_locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )

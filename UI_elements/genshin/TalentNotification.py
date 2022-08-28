@@ -48,7 +48,7 @@ class View(DefaultView):
             await i.response.send_message(
                 embed=error_embed().set_author(
                     name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -66,7 +66,7 @@ class ElementButton(Button):
 
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale
@@ -126,7 +126,7 @@ class GoBack(Button):
             )
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale
@@ -164,7 +164,7 @@ class CharacterSelect(Select):
 
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale

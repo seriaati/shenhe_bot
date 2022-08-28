@@ -24,7 +24,7 @@ class View(DefaultView):
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         return i.user.id == self.author.id
 
 
@@ -38,7 +38,7 @@ class IsUP(Button):
         self.view.clear_items()
         self.view.add_item(Want(self.view.locale, self.view.user_locale))
         self.view.add_item(NotWant(self.view.locale, self.view.user_locale))
-        await i.response.edit_message(embed=default_embed().set_author(name=text_map.get(390, self.view.locale, self.view.user_locale), icon_url=i.user.avatar), view=self.view)
+        await i.response.edit_message(embed=default_embed().set_author(name=text_map.get(390, self.view.locale, self.view.user_locale), icon_url=i.user.display_avatar.url), view=self.view)
 
 
 class IsStandard(Button):
@@ -51,7 +51,7 @@ class IsStandard(Button):
         self.view.clear_items()
         self.view.add_item(Want(self.view.locale, self.view.user_locale))
         self.view.add_item(NotWant(self.view.locale, self.view.user_locale))
-        await i.response.edit_message(embed=default_embed().set_author(name=text_map.get(390, self.view.locale, self.view.user_locale), icon_url=i.user.avatar), view=self.view)
+        await i.response.edit_message(embed=default_embed().set_author(name=text_map.get(390, self.view.locale, self.view.user_locale), icon_url=i.user.display_avatar.url), view=self.view)
 
 
 class Want(Button):

@@ -93,4 +93,4 @@ class LangSelect(Select):
                 current_language = option.label
                 break
         user_locale = await get_user_locale(i.user.id, self.view.db)
-        await i.response.edit_message(embed=default_embed(message=f"{text_map.get(34, self.locale, user_locale)}: {lang_flag} {current_language}").set_author(name=(text_map.get(33, self.locale, user_locale)), icon_url=i.user.avatar), view=None)
+        await i.response.edit_message(embed=default_embed(message=f"{text_map.get(34, self.locale, user_locale)}: {lang_flag} {current_language}").set_author(name=(text_map.get(33, self.locale, user_locale)), icon_url=i.user.display_avatar.url), view=None)

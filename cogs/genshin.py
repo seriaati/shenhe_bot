@@ -153,7 +153,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.followup.send(
                 embed=default_embed().set_author(
                     name=text_map.get(522, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
@@ -252,7 +252,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         message=text_map.get(285, i.locale, user_locale)
                     ).set_author(
                         name=text_map.get(284, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -260,7 +260,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -268,7 +268,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -276,7 +276,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(519, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -508,7 +508,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             message=text_map.get(140, i.locale, user_locale)
                         ).set_author(
                             name=text_map.get(141, i.locale, user_locale),
-                            icon_url=i.user.avatar,
+                            icon_url=i.user.display_avatar.url,
                         )
                     )
                 result, success = await self.genshin_app.set_resin_notification(
@@ -539,7 +539,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed = default_embed()
                 embed.set_author(
                     name=text_map.get(307, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 )
                 await i.response.send_message(embed=embed)
             else:
@@ -551,7 +551,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed = default_embed(message=text_map.get(156, i.locale, user_locale))
                 embed.set_author(
                     name=text_map.get(157, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 )
                 value = await self.genshin_app.get_user_talent_notification_enabled_str(
                     i.user.id, i.locale
@@ -579,7 +579,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             message=text_map.get(140, i.locale, user_locale)
                         ).set_author(
                             name=text_map.get(141, i.locale, user_locale),
-                            icon_url=i.user.avatar,
+                            icon_url=i.user.display_avatar.url,
                         )
                     )
                 result, success = await self.genshin_app.set_pot_nofitication(
@@ -606,7 +606,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 f"3. {text_map.get(310, i.locale, user_locale)}"
             )
             embed.set_author(
-                name=text_map.get(311, i.locale, user_locale), icon_url=i.user.avatar
+                name=text_map.get(311, i.locale, user_locale), icon_url=i.user.display_avatar.url
             )
             embed.set_image(url="https://i.imgur.com/sYg4SpD.gif")
             await i.response.send_message(embed=embed, ephemeral=True)
@@ -799,7 +799,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         message=text_map.get(285, i.locale, user_locale)
                     ).set_author(
                         name=text_map.get(284, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -807,7 +807,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -815,7 +815,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -823,7 +823,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(519, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -832,7 +832,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 default_embed(message=text_map.get(287, i.locale, user_locale))
                 .set_author(
                     name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 )
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
@@ -974,7 +974,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     message=text_map.get(140, i.locale, user_locale)
                 ).set_author(
                     name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 )
             )
         result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
@@ -1101,7 +1101,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.response.send_message(
                     embed=error_embed().set_author(
                         name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -1111,7 +1111,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.response.send_message(
                 embed=default_embed().set_author(
                     name=text_map.get(255, i.locale, user_locale),
-                    icon_url=i.user.avatar,
+                    icon_url=i.user.display_avatar.url,
                 ),
                 view=view,
             )
@@ -1179,7 +1179,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.response.send_message(
                     embed=error_embed().set_author(
                         name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -1255,7 +1255,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.response.send_message(
                     embed=error_embed().set_author(
                         name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -1270,7 +1270,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(141, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -1284,7 +1284,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                                 message=text_map.get(285, i.locale, user_locale)
                             ).set_author(
                                 name=text_map.get(284, i.locale, user_locale),
-                                icon_url=i.user.avatar,
+                                icon_url=i.user.display_avatar.url,
                             ),
                             ephemeral=True,
                         )
@@ -1292,7 +1292,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         return await i.followup.send(
                             embed=error_embed().set_author(
                                 name=text_map.get(286, i.locale, user_locale),
-                                icon_url=i.user.avatar,
+                                icon_url=i.user.display_avatar.url,
                             ),
                             ephemeral=True,
                         )
@@ -1300,7 +1300,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         return await i.followup.send(
                             embed=error_embed().set_author(
                                 name=text_map.get(286, i.locale, user_locale),
-                                icon_url=i.user.avatar,
+                                icon_url=i.user.display_avatar.url,
                             ),
                             ephemeral=True,
                         )
@@ -1308,7 +1308,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         return await i.followup.send(
                             embed=error_embed().set_author(
                                 name=text_map.get(519, i.locale, user_locale),
-                                icon_url=i.user.avatar,
+                                icon_url=i.user.display_avatar.url,
                             ),
                             ephemeral=True,
                         )
@@ -1355,7 +1355,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 return await i.followup.send(
                     embed=error_embed(message=f"```py\n{e}\n```").set_author(
                         name=text_map.get(512, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -1363,7 +1363,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.followup.send(
                     embed=default_embed().set_author(
                         name=text_map.get(502, i.locale, user_locale),
-                        icon_url=i.user.avatar,
+                        icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )

@@ -137,7 +137,7 @@ class Schedule(commands.Cog):
                             f"{text_map.get(304, locale)}: {max_notif}"
                         )
                         embed.set_author(
-                            name=text_map.get(518, locale), icon_url=user.avatar
+                            name=text_map.get(518, locale), icon_url=user.display_avatar.url
                         )
                         embed.set_footer(text=text_map.get(305, locale))
                         try:
@@ -223,7 +223,7 @@ class Schedule(commands.Cog):
                         )
                         embed.set_footer(text=text_map.get(305, locale))
                         embed.set_author(
-                            name=text_map.get(306, locale), icon_url=user.avatar
+                            name=text_map.get(306, locale), icon_url=user.display_avatar.url
                         )
                         try:
                             await user.send(embed=embed)
@@ -341,7 +341,7 @@ class Schedule(commands.Cog):
         await i.response.defer(ephemeral=True)
         await self.claim_reward()
         await i.followup.send(
-            embed=default_embed().set_author(name="claimed", icon_url=i.user.avatar),
+            embed=default_embed().set_author(name="claimed", icon_url=i.user.display_avatar.url),
             ephemeral=True,
         )
 

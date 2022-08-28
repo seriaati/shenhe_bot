@@ -25,7 +25,7 @@ async def get_todo_embed(
     if len(todo) == 0:
         embed = default_embed(message=text_map.get(204, locale, user_locale))
         embed.set_author(
-            name=text_map.get(202, locale, user_locale), icon_url=user.avatar
+            name=text_map.get(202, locale, user_locale), icon_url=user.display_avatar.url
         )
         return embed, True
     else:

@@ -29,7 +29,7 @@ class OthersCog(commands.Cog, name="others"):
             "[crowdin](https://crowdin.com/project/shenhe-bot)"
         )
         embed.set_author(
-            name=text_map.get(128, i.locale, user_locale), icon_url=i.user.avatar
+            name=text_map.get(128, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         view = ChangeLang.View(i.locale, user_locale, self.bot.db)
         await i.response.send_message(embed=embed, view=view, ephemeral=True)
@@ -51,7 +51,7 @@ class OthersCog(commands.Cog, name="others"):
             if self.bot.debug:
                 log = f"`{log}`"
             embed = default_embed(version, log)
-            embed.set_thumbnail(url=self.bot.user.avatar)
+            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
             embed.set_footer(
                 text=text_map.get(504, i.locale, user_locale), icon_url=seria.avatar
             )
@@ -86,7 +86,7 @@ class OthersCog(commands.Cog, name="others"):
             embed=default_embed(
                 message=f"{text_map.get(101, i.locale ,user_locale)}: {text_map.get(99, i.locale, user_locale) if toggle==1 else text_map.get(100, i.locale, user_locale)}"
             ).set_author(
-                name=text_map.get(104, i.locale, user_locale), icon_url=i.user.avatar
+                name=text_map.get(104, i.locale, user_locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )

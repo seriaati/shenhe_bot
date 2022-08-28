@@ -37,7 +37,7 @@ class View(DefaultView):
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
         if self.author.id != i.user.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         return self.author.id == i.user.id
 
 class PageSelect(Select):

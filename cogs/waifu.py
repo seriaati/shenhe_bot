@@ -44,7 +44,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
                     embed=error_embed(message="輸入 </waifu waifu:1000187021635104889> 來自行選擇標籤").set_author(
-                        name="這不是你的操控視窗", icon_url=interaction.user.avatar
+                        name="這不是你的操控視窗", icon_url=interaction.user.display_avatar.url
                     ),
                     ephemeral=True,
                 )
@@ -100,7 +100,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
                     embed=error_embed().set_author(
-                        name="輸入 /waifu 來尋找你的二次元老婆", icon_url=interaction.user.avatar
+                        name="輸入 /waifu 來尋找你的二次元老婆", icon_url=interaction.user.display_avatar.url
                     ),
                     ephemeral=True,
                 )
@@ -122,7 +122,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         if num > 30:
             return await i.response.send_message(
                 embed=error_embed().set_author(
-                    name="不可大於 30 張", icon_url=i.user.avatar
+                    name="不可大於 30 張", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -164,7 +164,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
                     embed=error_embed().set_author(
-                        name="你不是這個指令的發起人", icon_url=interaction.user.avatar
+                        name="你不是這個指令的發起人", icon_url=interaction.user.display_avatar.url
                     ),
                     ephemeral=True,
                 )
@@ -181,13 +181,13 @@ class WaifuCog(commands.GroupCog, name="waifu"):
     async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(
-                embed=error_embed().set_author(name="上限為 5 張", icon_url=i.user.avatar),
+                embed=error_embed().set_author(name="上限為 5 張", icon_url=i.user.display_avatar.url),
                 ephemeral=True,
             )
         if i.channel.guild is not None and not i.channel.nsfw:
             return await i.response.send_message(
                 embed=error_embed().set_author(
-                    name="請先開啟此頻道的年齡限制設定", icon_url=i.user.avatar
+                    name="請先開啟此頻道的年齡限制設定", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -248,7 +248,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         if i.channel.guild is not None and not i.channel.nsfw and sese == 1:
             return await i.followup.send(
                 embed=error_embed().set_author(
-                    name="請先開啟此頻道的年齡限制設定", icon_url=i.user.avatar
+                    name="請先開啟此頻道的年齡限制設定", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -272,7 +272,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                         return await i.edit_original_response(
                             embed=error_embed(
                                 message="您所指定的老婆條件要求太高\n請試試別的標籤"
-                            ).set_author(name="找不到老婆", icon_url=i.user.avatar),
+                            ).set_author(name="找不到老婆", icon_url=i.user.display_avatar.url),
                             view=None,
                         )
                 else:
@@ -303,7 +303,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                         return await i.edit_original_response(
                             embed=error_embed(
                                 message="您所指定的老婆條件要求太高\n請試試別的標籤"
-                            ).set_author(name="找不到老婆", icon_url=i.user.avatar),
+                            ).set_author(name="找不到老婆", icon_url=i.user.display_avatar.url),
                             view=None,
                         )
                 else:

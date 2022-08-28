@@ -26,7 +26,7 @@ class View(DefaultView):
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         return i.user.id == self.author.id
 
 
@@ -41,12 +41,12 @@ class AddItem(Button):
         await c.execute('SELECT COUNT(item) FROM todo WHERE user_id = ?', (i.user.id,))
         count = (await c.fetchone())[0]
         if count >= 125:
-            return await i.response.send_message(embed=error_embed(message=text_map.get(176, i.locale, user_locale)).set_author(name=text_map.get(177, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            return await i.response.send_message(embed=error_embed(message=text_map.get(176, i.locale, user_locale)).set_author(name=text_map.get(177, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         modal = AddItemModal(i.locale, user_locale)
         await i.response.send_modal(modal)
         await modal.wait()
         if not modal.count.value.isnumeric():
-            return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         await c.execute('INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET count = count + ? WHERE user_id = ? AND item = ?', (i.user.id, text_map.get_material_id_with_name(modal.item.value), int(modal.count.value), int(modal.count.value), i.user.id, text_map.get_material_id_with_name(modal.item.value)))
         await self.view.db.commit()
         result, empty = await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
@@ -119,7 +119,7 @@ class AddItemModal(DefaultModal):
         sentry_sdk.capture_exception(e)
         await i.response.send_message(
             embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )
@@ -148,7 +148,7 @@ class RemoveItemModal(DefaultModal):
         sentry_sdk.capture_exception(e)
         await i.response.send_message(
             embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )
@@ -169,9 +169,9 @@ class RemoveItemSelect(Select):
             await c.execute('SELECT count FROM todo WHERE user_id = ? AND item = ?', (i.user.id, self.values[0]))
             count = await c.fetchone()
             if not modal.count.value.isnumeric():
-                return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+                return await i.followup.send(embed=error_embed(message=text_map.get(187, i.locale, user_locale)).set_author(name=text_map.get(190, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
             if (count is not None) and (int(modal.count.value) > int(count[0])):
-                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(212, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+                return await i.followup.send(embed=error_embed().set_author(name=text_map.get(212, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         if modal.count.value == '':
             await c.execute('DELETE FROM todo WHERE item = ? AND user_id = ?', (self.values[0], i.user.id))
         else:

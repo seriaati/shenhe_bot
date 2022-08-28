@@ -25,7 +25,7 @@ class View(DefaultView):
     async def interaction_check(self, i: Interaction) -> bool:
         user_locale = await get_user_locale(i.user.id, self.db)
         if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.avatar), ephemeral=True)
+            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
         return i.user.id == self.author.id
 
 
@@ -75,7 +75,7 @@ class LevelModal(DefaultModal):
         sentry_sdk.capture_exception(e)
         await i.response.send_message(
             embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.avatar
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )
