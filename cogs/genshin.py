@@ -228,6 +228,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         custom_uid: int = None,
         context_command: bool = False,
     ) -> None:
+        start = process_time()
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -285,12 +286,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         result, success = await self.genshin_app.get_stats(
             member.id, custom_uid, i.locale, namecard, member.display_avatar
         )
+        end = process_time()
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
         else:
             fp = result["fp"]
             fp.seek(0)
             file = File(fp, "stat_card.jpeg")
+            result['embed'].set_footer(text=f'Time elapsed: {end-start} s')
             await i.followup.send(
                 embed=result["embed"],
                 ephemeral=False if not context_command else True,
@@ -659,17 +662,17 @@ class GenshinCog(commands.Cog, name="genshin"):
                     domain, user_locale or i.locale, chunk
                 )
                 result.append(domain_card)
-
+                
+        end = process_time()
         embeds = []
         for index, fp in enumerate(result):
             embed = default_embed(
                 f"{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
             )
             embed.set_image(url=f"attachment://{index}.jpeg")
+            embed.set_footer(text=f'Time elapsed: {end-start} s')
             embeds.append(embed)
 
-        end = process_time()
-        print(end-start)
         await GeneralPaginator(i, embeds, self.bot.db, files=result).start(
             followup=True
         )
@@ -756,6 +759,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         custom_uid: int = None,
         ephemeral: bool = True,
     ):
+        start = process_time()
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
