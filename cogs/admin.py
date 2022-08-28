@@ -61,14 +61,6 @@ class AdminCog(commands.Cog, name="admin"):
             )
 
     @is_seria()
-    @app_commands.command(name="roles", description=_("Admin usage only", hash=496))
-    async def roles(self, i: Interaction):
-        role = i.guild.get_role(1006906916678684752)
-        embed = default_embed("身份組 Roles", f"{role.mention}: {len(role.members)}")
-        await i.response.defer(ephemeral=True)
-        await i.channel.send(embed=embed, view=Roles.View())
-
-    @is_seria()
     @app_commands.command(name="sync", description=_("Admin usage only", hash=496))
     async def roles(self, i: Interaction):
         await i.response.defer()
@@ -100,7 +92,9 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
-    async def annouce(self, i: Interaction, title: str, description: str, url: str = None):
+    async def annouce(
+        self, i: Interaction, title: str, description: str, url: str = None
+    ):
         await i.response.defer(ephemeral=True)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute("SELECT user_id FROM active_users")
@@ -118,8 +112,8 @@ class AdminCog(commands.Cog, name="admin"):
             embed = default_embed(
                 title.replace("%n", "\n"), description.replace("%n", "\n")
             )
-            embed.set_author(name='seria#5334', icon_url=seria.avatar)
-            embed.set_footer(text=text_map.get(524, 'zh-TW', user_locale))
+            embed.set_author(name="seria#5334", icon_url=seria.avatar)
+            embed.set_footer(text=text_map.get(524, "zh-TW", user_locale))
             embed.set_image(url=url)
             try:
                 await user.send(embed=embed)
@@ -127,7 +121,7 @@ class AdminCog(commands.Cog, name="admin"):
                 pass
             except Exception as e:
                 sentry_sdk.capture_exception(e)
-        await i.followup.send('complete.', ephemeral=True)
+        await i.followup.send("complete.", ephemeral=True)
 
     @is_seria()
     @app_commands.command(name="update", description=_("Admin usage only", hash=496))
