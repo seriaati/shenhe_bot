@@ -817,3 +817,45 @@
   ascension: null
   description: '敵人受冰元素影響'
   effect: '七七普攻重擊傷害 +15%'
+- name: Tighnari
+  key: p1AfterWreath
+  value: 'on'
+  constellation: null
+  ascention: 1
+  description: 發射花筥箭
+  effect: + 元素精通
+- name: Tighnari
+  key: c2EnemyField
+  value: 'on'
+  constellation: 2
+  ascension: null
+  description: E 範圍內有敵人
+  effect: 20%草元素傷害加成
+- name: Tighnari
+  key: 'c4'
+  value: 'react'
+  constellation: 4
+  ascension: null
+  description: 造成草元素反應
+  effect: +120 元素精通
+- name: Traveler
+  key: 'a1Stacks'
+  value: '10'
+  constellation: null
+  ascension: 1
+  description: 蓮光遍照效果
+  effect: +60 元素精通
+- name: Traveler
+  key: 'c6BurstEffect'
+  value: 'on'
+  constellation: 6
+  ascension: null
+  description: 角色在旅行者 Q 內
+  effect: 草傷 +12%
+- name: Traveler
+  key: 'c6BurstEle'
+  value: 'custom_element'
+  constellation: 6
+  ascension: null
+  description: 草燈蓮發生過蓮光幻變轉化
+  effect: 元素傷害 +12%
