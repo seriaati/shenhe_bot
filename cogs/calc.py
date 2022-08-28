@@ -66,7 +66,7 @@ class CalcCog(commands.GroupCog, name="calc"):
             client.lang = to_genshin_py(user_locale or i.locale)
 
         try:
-            characters = await client.get_calculator_characters(sync=sync)
+            characters = await client.get_calculator_characters(sync=sync, include_traveler=True)
         except InvalidCookies:
             return await i.response.send_message(
                 embed=error_embed(
