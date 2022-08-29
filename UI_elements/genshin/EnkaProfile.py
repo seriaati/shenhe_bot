@@ -66,7 +66,8 @@ class PageSelect(Select):
         if card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            embed.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}')
+            if self.view.user_uid is not None:
+                embed.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}')
             fp: BytesIO = self.view.embeds[self.values[0]]
             fp.seek(0)
             file = File(fp, 'card.jpeg')
