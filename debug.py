@@ -7,6 +7,7 @@ from utility.utils import error_embed, log
 
 class DefaultView(discord.ui.View):
     async def on_error(self, i: discord.Interaction, e: Exception, item) -> None:
+        log.warning(f'[View Error][{i.user.id}]: [type]{type(e)} [e]{e} [item]{item}')
         sentry_sdk.capture_exception(e)
         try:
             await i.response.send_message(
@@ -42,10 +43,21 @@ class DefaultView(discord.ui.View):
 
 class DefaultModal(discord.ui.Modal):
     async def on_error(self, i: discord.Interaction, e: Exception) -> None:
+        log.warning(f'[Modal Error][{i.user.id}]: [type]{type(e)} [e]{e}')
         sentry_sdk.capture_exception(e)
-        await i.response.send_message(
-            embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
+        try:
+            await i.response.send_message(
+                embed=error_embed().set_author(
+                    name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+                ),
+                ephemeral=True,
+            )
+        except discord.InteractionResponded:
+            await i.followup.send(
+                embed=error_embed().set_author(
+                    name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+                ),
+                ephemeral=True,
+            )
+        except discord.NotFound:
+            pass
