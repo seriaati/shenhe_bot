@@ -827,7 +827,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
         )
         if custom_uid is not None:
-            overview.set_footer(embed.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}'))
+            overview.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}')
         else:
             overview.set_author(name=member.display_name, icon_url=member.display_avatar.url)
         overview.set_image(url=data.player.namecard.banner.url)
