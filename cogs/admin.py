@@ -133,78 +133,8 @@ class AdminCog(commands.Cog, name="admin"):
                 ephemeral=True,
             )
         await i.response.send_message(
-            embed=default_embed().set_author(name="更新資料開始", icon_url=i.user.display_avatar.url)
-        )
-
-        # character, weapon, material, artifact text map
-        things_to_update = ["avatar", "weapon", "material", "reliquary"]
-        for thing in things_to_update:
-            dict = {}
-            for lang in list(to_ambr_top_dict.values()):
-                async with self.bot.session.get(
-                    f"https://api.ambr.top/v2/{lang}/{thing}"
-                ) as r:
-                    data = await r.json()
-                for character_id, character_info in data["data"]["items"].items():
-                    if character_id not in dict:
-                        dict[character_id] = {}
-                    dict[character_id][lang] = character_info["name"]
-            if thing == "avatar":
-                dict["10000007"] = {
-                    "chs": "旅行者",
-                    "cht": "旅行者",
-                    "de": "Reisende",
-                    "en": "Traveler",
-                    "es": "Viajera",
-                    "fr": "Voyageuse",
-                    "jp": "旅人",
-                    "kr": "여행자",
-                    "th": "นักเดินทาง",
-                    "pt": "Viajante",
-                    "ru": "Путешественница",
-                    "vi": "Nhà Lữ Hành",
-                }
-                dict["10000005"] = {
-                    "chs": "旅行者",
-                    "cht": "旅行者",
-                    "de": "Reisende",
-                    "en": "Traveler",
-                    "es": "Viajera",
-                    "fr": "Voyageuse",
-                    "jp": "旅人",
-                    "kr": "여행자",
-                    "th": "นักเดินทาง",
-                    "pt": "Viajante",
-                    "ru": "Путешественница",
-                    "vi": "Nhà Lữ Hành",
-                }
-            with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
-                json.dump(dict, f, indent=4, ensure_ascii=False)
-
-        await i.followup.send(
             embed=default_embed().set_author(
-                name="角色、武器、素材、聖遺物 text map 更新成功", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        # daily dungeon text map
-        dict = {}
-        for lang in list(to_ambr_top_dict.values()):
-            async with self.bot.session.get(
-                f"https://api.ambr.top/v2/{lang}/dailyDungeon"
-            ) as r:
-                data = await r.json()
-            for weekday, domains in data["data"].items():
-                for domain, domain_info in domains.items():
-                    if str(domain_info["id"]) not in dict:
-                        dict[str(domain_info["id"])] = {}
-                    dict[str(domain_info["id"])][lang] = domain_info["name"]
-        with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
-            json.dump(dict, f, indent=4, ensure_ascii=False)
-
-        await i.followup.send(
-            embed=default_embed().set_author(
-                name="秘境關卡 text map 更新成功", icon_url=i.user.display_avatar.url
+                name="更新資料開始", icon_url=i.user.display_avatar.url
             )
         )
 
@@ -379,7 +309,9 @@ class AdminCog(commands.Cog, name="admin"):
             )
 
         await i.followup.send(
-            embed=default_embed().set_author(name="更新資料完畢", icon_url=i.user.display_avatar.url)
+            embed=default_embed().set_author(
+                name="更新資料完畢", icon_url=i.user.display_avatar.url
+            )
         )
 
 
