@@ -44,7 +44,7 @@ async def return_todo(
         if interacted:
             await i.edit_original_response(embed=result, view=view, attachments=[])
         else:
-            await i.response.send_message(embed=result, view=view, files=[])
+            await i.response.edit_message(embed=result, view=view, files=[])
     else:
         embeds = []
         for index in range(len(result)):
