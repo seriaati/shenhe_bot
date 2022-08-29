@@ -273,7 +273,6 @@ class Schedule(commands.Cog):
             today_weekday = datetime.today().weekday()
             client = AmbrTopAPI(self.bot.session, "cht")
             domains = await client.get_domain()
-            character_upgrades = await client.get_character_upgrade()
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
                 "SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1"
@@ -282,6 +281,10 @@ class Schedule(commands.Cog):
             for index, tuple in enumerate(users):
                 user_id = tuple[0]
                 user = self.bot.get_user(user_id)
+                if user is None:
+                    await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
+                    await self.bot.db.commit()
+                    continue
                 user_locale = await get_user_locale(user_id, self.bot.db)
                 user_notification_list = ast.literal_eval(tuple[1])
                 notified = {}
