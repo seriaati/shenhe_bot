@@ -102,7 +102,7 @@
 102: Limite de Resing
 103: Número máximo de notificação
 104: Configurações gravadas
-105: Personagens
+105: Characters
 106: Este código de vale-presente já foi resgatado!
 107: Código de presente inválido
 108: Código do presente
@@ -141,7 +141,7 @@
 141: Dados da conta não encontrados!
 142: Escolha o seu elemento
 143: Você não é o emissor deste comando
-144: Registro de Primos
+144: Primo Log
 145: Mora Log
 146: Núm. Piso
 147: "<FLOOR>"
@@ -151,13 +151,13 @@
 151: Resina configurações de notificação
 152: Resina no limite
 153: MD vai te dar uma volta depois de reresin exceder este número
-154: Número máximo de notificação
+154: Max. notification number
 155: DM será interrompido após este número de vezes
 156: Escolher um caractere que já tenha notificação irá remover sua notificação
 157: Escolha seu(s) personagem(s)
 158: Atualmente, não há notificações definidas para nenhum caractere
 159: Notificações atuais do personagem
-160: Escolha o seu elemento
+160: Choose your element
 161: Escolher este personagem irá desligar suas notificações
 162: Construir
 163: Escolha a sua construção
@@ -183,7 +183,7 @@
 183: Nível atual
 184: "Por exemplo: 1"
 185: Target level
-186: "Por exemplo: 90"
+186: "For example: 90"
 187: Por favor, digite um número
 188: "Nível do personagem: Insira um número entre 1 e 90"
 189: "Nível de talento: Insira um número entre 1 e 10"
@@ -217,7 +217,7 @@
 217: Hidro
 218: Dendro
 219: Elétrico
-220: Personagens
+220: Characters
 221: janeiro
 222: fevereiro
 223: março
@@ -282,10 +282,10 @@
 292: Vida Máx
 293: Atk.
 294: Def.
-295: Elem. Maestria
-296: Taxa Crítica
-297: Danos Crítico
-298: Recarga de Energia
+295: Elem. Mastery
+296: Crit Rate
+297: Crit DMG
+298: Energy Recharge
 299: Nível de amizade
 300: A maior pontuação de artefato é de 99, apenas +20 artefatos terão pontuações
 301: Estatísticas
@@ -380,7 +380,7 @@
 391: A última arma de 5 estrelas que você puxou foi
 392: Esta é uma arma padrão ou em tempo limitado?
 393: Previsão número de desejos da arma
-394: Desejando para puxar
+394: Wishing to pull
 395: arma(s) que você quer
 396: Isso é
 397: primogems
@@ -412,7 +412,7 @@
 423: mês
 424: O mês em que você está tentando pesquisar
 425: Este Mês
-426: Mês anterior
+426: Last month
 427: O mês anterior ao mês passado
 428: Ver dados do abismo (necessário /registrar)
 429: Tipo
@@ -420,10 +420,10 @@
 431: O tipo de dados que você deseja visualizar
 432: Qual estação do abismo?
 433: Detalhado
-434: Geral
+434: Overview
 435: Nesta temporada
 436: Última temporada
-437: Dados não públicos?
+437: Data not public?
 438: Definir recursos de notificação
 439: função
 440: alternar
@@ -431,7 +431,7 @@
 442: Notificação de talento
 443: Verifique as configurações de privacidade
 444: Ligado (ou alterar as configurações)
-445: "DESATIVADO"
+445: "OFF"
 446: Ver itens coletáveis hoje
 447: "Ver construções de personagens: Armas, Artefatos, níveis de talentos, estatísticas"
 448: Buscar UID de um usuário
@@ -440,7 +440,7 @@
 451: Código
 452: Ver eventos em curso no genshin
 453: Ver ranking
-454: Placar de conquistas
+454: Achievement leaderboard
 455: Classificação dos artefatos
 456: Desejo a classificação da sorte
 457: Genshin wiki
@@ -449,10 +449,10 @@
 460: Calcular os materiais necessários para melhorar um personagem
 461: sincronizar
 462: sincronização com dados no jogo (preencha automaticamente os níveis)
-463: "LIGADO"
-464: "DESATIVADO"
+463: "ON"
+464: "OFF"
 465: Calcule os materiais necessários para melhorar uma arma
-466: Tipo
+466: type
 467: raridade
 468: espada
 469: catalisador
@@ -461,11 +461,11 @@
 472: polearm
 473: Ver lista de tarefas
 474: Importar histórico de desejos
-475: função
+475: function
 476: Tutorial de importação do histórico de desejos
 477: Enviar link
 478: Visualizar histórico de desejos
-479: Análise de sorte
+479: Wish luck analysis
 480: Chance prevista de puxar um personagem
 481: Número
 482: Quantos personagens com 5 estrelas UP você deseja puxar?
@@ -478,7 +478,7 @@
 489: Requer importação do histórico de desejos usando /wish import
 490: Aprimoramento da calculadora de progresso
 491: Calcular materiais de aprimoramento
-492: Lista de tarefas
+492: Todo list
 493: Waifus
 494: Outros
 495: Escolha sua categoria
@@ -486,14 +486,14 @@
 497: Genshin stats
 498: Ver perfil
 499: Ver todos os caracteres
-500: Notas do tempo real
+500: Realtime notes
 501: Atualizar posição do próprio ranking
 502: Posição da classificação atualizada
 503: Ver atualizações anteriores
 504: 'Feito por série #5334, DM me se você tiver alguma dúvida'
-505: Ver atualizações anteriores
-506: Número
-507: Quantos personagens com 5 estrelas UP você deseja puxar?
+505: View past updates
+506: number
+507: How many 5 star UP characters do you wish to pull?
 508: Procure qualquer genshin relacionado
 509: consulta
 510: Sumeru
