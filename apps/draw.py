@@ -441,8 +441,8 @@ async def draw_stats_card(
         "electro": f"{user_stats.electroculi}/181",
         "dendro": f"{user_stats.dendroculi}/110",
         "normal": user_stats.common_chests,
-        "rare": user_stats.precious_chests,
-        "gold": user_stats.exquisite_chests,
+        "rare": user_stats.exquisite_chests,
+        "gold": user_stats.precious_chests,
         "lux": user_stats.luxurious_chests,
     }
     session = aiohttp.ClientSession()
