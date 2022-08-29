@@ -1415,16 +1415,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         self, i: Interaction, current: str
     ) -> List[Choice[str]]:
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        ambr_top_locale = to_ambr_top(user_locale)
-        user_ambr_top_locale = to_ambr_top(i.locale)
+        ambr_top_locale = to_ambr_top(user_locale or i.locale)
         everything_dict = {}
         query_list = []
         for queries in self.text_map_files:
             for query_id, query_names in queries.items():
                 everything_dict[query_names[ambr_top_locale]] = query_id
-                everything_dict[query_names[user_ambr_top_locale]] = query_id
                 query_list.append(query_names[ambr_top_locale])
-                query_list.append(query_names[user_ambr_top_locale])
 
         query_list = list(dict.fromkeys(query_list))
 
