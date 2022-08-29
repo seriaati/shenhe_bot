@@ -1155,7 +1155,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ],
                 ).start(edit=True)
             except ValueError:
-                await i.response.send_message(
+                await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(254, i.locale, user_locale),
                         icon_url=i.user.display_avatar.url,
