@@ -102,7 +102,7 @@
 102: Seuil de Resing
 103: Numéro de notification max.
 104: Paramètres enregistrés
-105: Caractères
+105: Characters
 106: Ce code cadeau a déjà été utilisé !
 107: Code cadeau invalide
 108: Code cadeau
@@ -141,8 +141,8 @@
 141: Données de compte introuvables !
 142: Choisissez votre élément
 143: Vous n'êtes pas l'émetteur de cette commande
-144: Journal de Primo
-145: Journal de Mora
+144: Primo Log
+145: Mora Log
 146: N° de sol
 147: "<FLOOR>"
 148: Choisir un sol abyssal
@@ -151,13 +151,13 @@
 151: Rétablir les paramètres de notification
 152: Seuil de résinage
 153: Shenhe vous DM après que la résine dépasse ce nombre
-154: Numéro de notification max.
+154: Max. notification number
 155: DM s'arrêtera après ce nombre de fois
 156: Choisir un caractère qui a déjà une notification sur ON supprimera sa notification
 157: Choisissez votre/vos personnage(s)
 158: Il n'y a actuellement aucune notification définie pour les caractères
 159: Notifications de caractères actuelles
-160: Choisissez votre élément
+160: Choose your element
 161: Choisir ce personnage désactivera ses notifications
 162: Construire
 163: Choisissez votre version
@@ -183,7 +183,7 @@
 183: Niveau actuel
 184: "Par exemple : 1"
 185: Target level
-186: "Par exemple : 90"
+186: "For example: 90"
 187: Veuillez saisir un nombre
 188: "Niveau de caractère: Veuillez entrer un nombre entre 1 et 90"
 189: "Niveau de Talent : Entrez un nombre entre 1 et 10"
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Electro
-220: Caractères
+220: Characters
 221: Janvier
 222: Février
 223: Marche
@@ -281,11 +281,11 @@
 291: Spiral abyss
 292: PV Max
 293: Atk.
-294: Déf.
-295: Maîtrise des élém.
-296: Taux de Crit
-297: DMG Crit
-298: Recharge d'énergie
+294: Def.
+295: Elem. Mastery
+296: Crit Rate
+297: Crit DMG
+298: Energy Recharge
 299: Niveau d'Amitié
 300: Le score d'artefact le plus élevé est 99, seuls les artefacts +20 auront des scores
 301: Stats
@@ -380,7 +380,7 @@
 391: La dernière arme 5 étoiles que vous avez tirée a été
 392: S'agit-il d'une arme UP standard ou à durée limitée ?
 393: Prédiction du numéro d'arme
-394: Vœux de tirer
+394: Wishing to pull
 395: arme(s) que vous voulez
 396: C'est
 397: primogems
@@ -412,7 +412,7 @@
 423: mois
 424: Le mois avec lequel vous essayez de rechercher
 425: Ce mois-ci
-426: Le mois dernier
+426: Last month
 427: Le mois avant le mois dernier
 428: Voir les données abyss (besoin /register)
 429: Type de type
@@ -420,10 +420,10 @@
 431: Le type de données que vous souhaitez voir
 432: Quelle saison abyssale ?
 433: Détaillé
-434: Aperçu
+434: Overview
 435: Cette saison
 436: Dernière saison
-437: Données non publiques?
+437: Data not public?
 438: Définir les fonctionnalités de notification
 439: fonction
 440: activer/désactiver
@@ -431,7 +431,7 @@
 442: Notification de Talent
 443: Vérifier les paramètres de confidentialité
 444: ON (ou modifier les paramètres)
-445: "Désactivé"
+445: "OFF"
 446: Voir les objets fermables aujourd'hui
 447: "Voir les bâtiments des personnages: Armes, artefacts, niveaux de talents, statistiques"
 448: Rechercher l'UID d'un utilisateur
@@ -440,7 +440,7 @@
 451: Code
 452: Voir les événements en cours dans genshin
 453: Voir le classement
-454: Classement des Succès
+454: Achievement leaderboard
 455: Contenu de l'artefact du classement
 456: Souhaiter de la chance au classement
 457: Genshin wiki
@@ -449,10 +449,10 @@
 460: Calculer les matériaux nécessaires pour améliorer un personnage
 461: Synchroniser
 462: Synchroniser avec les données en jeu (remplir automatiquement les niveaux)
-463: "Activé"
-464: "Désactivé"
+463: "ON"
+464: "OFF"
 465: Calculer les matériaux nécessaires pour améliorer une arme
-466: Type de type
+466: type
 467: rareté
 468: épée
 469: catalyseur
@@ -461,11 +461,11 @@
 472: polearm
 473: Voir la liste des tâches
 474: Importer l'historique des souhaits
-475: fonction
+475: function
 476: Tutoriel d'importation de l'historique des souhaits
 477: Soumettre un lien
 478: Voir l'historique des souhaits
-479: Analyse des souhaits de chance
+479: Wish luck analysis
 480: Prédire une chance de tirer un personnage
 481: N°
 482: Combien de caractères 5 étoiles souhaitez-vous tirer vers le haut ?
@@ -478,7 +478,7 @@
 489: Nécessite l'importation de l'historique des souhaits en utilisant /wish import
 490: Calculatrice de progression de l'amélioration
 491: Calculer les matériaux d'amélioration
-492: Liste des tâches
+492: Todo list
 493: Waifus
 494: Autres
 495: Choisissez votre catégorie
@@ -486,14 +486,14 @@
 497: Genshin stats
 498: Voir le profil
 499: Voir tous les caractères
-500: Notes en temps réel
+500: Realtime notes
 501: Mettre à jour la position du classement automatique
 502: Position du classement mise à jour
 503: Voir les mises à jour précédentes
 504: 'Fait par seria#5334, DM me si vous avez des questions'
-505: Voir les mises à jour précédentes
-506: N°
-507: Combien de caractères 5 étoiles souhaitez-vous tirer vers le haut ?
+505: View past updates
+506: number
+507: How many 5 star UP characters do you wish to pull?
 508: Rechercher n'importe quoi de genshin lié
 509: Requête
 510: Sumeru
