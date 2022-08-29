@@ -2,14 +2,14 @@ import ast
 import asyncio
 import random
 from datetime import datetime, timedelta
-
+import json
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
 from apps.draw import draw_talent_reminder_card
 from apps.genshin.genshin_app import GenshinApp
 from discord import File
-from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.convert_locale import to_genshin_py, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import Forbidden, Game, Interaction, app_commands
@@ -108,6 +108,12 @@ class Schedule(commands.Cog):
                 client, uid, user, user_locale = await self.genshin_app.get_user_data(
                     user_id
                 )
+                if user is None:
+                    await c.execute(
+                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
+                        (user_id,),
+                    )
+                    continue
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
@@ -137,7 +143,8 @@ class Schedule(commands.Cog):
                             f"{text_map.get(304, locale)}: {max_notif}"
                         )
                         embed.set_author(
-                            name=text_map.get(518, locale), icon_url=user.display_avatar.url
+                            name=text_map.get(518, locale),
+                            icon_url=user.display_avatar.url,
                         )
                         embed.set_footer(text=text_map.get(305, locale))
                         try:
@@ -194,6 +201,12 @@ class Schedule(commands.Cog):
                 client, uid, user, user_locale = await self.genshin_app.get_user_data(
                     user_id
                 )
+                if user is None:
+                    await c.execute(
+                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
+                        (user_id,),
+                    )
+                    continue
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
@@ -223,7 +236,8 @@ class Schedule(commands.Cog):
                         )
                         embed.set_footer(text=text_map.get(305, locale))
                         embed.set_author(
-                            name=text_map.get(306, locale), icon_url=user.display_avatar.url
+                            name=text_map.get(306, locale),
+                            icon_url=user.display_avatar.url,
                         )
                         try:
                             await user.send(embed=embed)
@@ -275,7 +289,9 @@ class Schedule(commands.Cog):
                     for domain in domains:
                         if domain.weekday == today_weekday:
                             for item in domain.rewards:
-                                upgrade = await client.get_character_upgrade(character_id)
+                                [upgrade] = await client.get_character_upgrade(
+                                    character_id
+                                )
                                 if item in upgrade.items:
                                     if character_id not in notified:
                                         notified[character_id] = []
@@ -285,7 +301,9 @@ class Schedule(commands.Cog):
                 for character_id, materials in notified.items():
                     [character] = await client.get_character(character_id)
 
-                    fp = await draw_talent_reminder_card(materials, user_locale or 'zh-TW')
+                    fp = await draw_talent_reminder_card(
+                        materials, user_locale or "zh-TW"
+                    )
                     fp.seek(0)
                     file = File(fp, "reminder_card.jpeg")
                     embed = default_embed(
@@ -300,6 +318,72 @@ class Schedule(commands.Cog):
                     await user.send(embed=embed, files=[file])
 
             log.info("[Schedule] Talent Notifiaction Ended")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+
+    @tasks.loop(hours=24)
+    async def update_text_map(self):
+        try:
+            log.info("[Schedule][Update Text Map] Start")
+            # character, weapon, material, artifact text map
+            things_to_update = ["avatar", "weapon", "material", "reliquary"]
+            for thing in things_to_update:
+                dict = {}
+                for lang in list(to_ambr_top_dict.values()):
+                    async with self.bot.session.get(
+                        f"https://api.ambr.top/v2/{lang}/{thing}"
+                    ) as r:
+                        data = await r.json()
+                    for character_id, character_info in data["data"]["items"].items():
+                        if character_id not in dict:
+                            dict[character_id] = {}
+                        dict[character_id][lang] = character_info["name"]
+                if thing == "avatar":
+                    dict["10000007"] = {
+                        "chs": "旅行者",
+                        "cht": "旅行者",
+                        "de": "Reisende",
+                        "en": "Traveler",
+                        "es": "Viajera",
+                        "fr": "Voyageuse",
+                        "jp": "旅人",
+                        "kr": "여행자",
+                        "th": "นักเดินทาง",
+                        "pt": "Viajante",
+                        "ru": "Путешественница",
+                        "vi": "Nhà Lữ Hành",
+                    }
+                    dict["10000005"] = {
+                        "chs": "旅行者",
+                        "cht": "旅行者",
+                        "de": "Reisende",
+                        "en": "Traveler",
+                        "es": "Viajera",
+                        "fr": "Voyageuse",
+                        "jp": "旅人",
+                        "kr": "여행자",
+                        "th": "นักเดินทาง",
+                        "pt": "Viajante",
+                        "ru": "Путешественница",
+                        "vi": "Nhà Lữ Hành",
+                    }
+                with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
+                    json.dump(dict, f, indent=4, ensure_ascii=False)
+
+            # daily dungeon text map
+            dict = {}
+            for lang in list(to_ambr_top_dict.values()):
+                async with self.bot.session.get(
+                    f"https://api.ambr.top/v2/{lang}/dailyDungeon"
+                ) as r:
+                    data = await r.json()
+                for weekday, domains in data["data"].items():
+                    for domain, domain_info in domains.items():
+                        if str(domain_info["id"]) not in dict:
+                            dict[str(domain_info["id"])] = {}
+                        dict[str(domain_info["id"])][lang] = domain_info["name"]
+            with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
+                json.dump(dict, f, indent=4, ensure_ascii=False)
         except Exception as e:
             sentry_sdk.capture_exception(e)
 
@@ -334,6 +418,15 @@ class Schedule(commands.Cog):
     async def before_check(self):
         await self.bot.wait_until_ready()
 
+    @update_text_map.before_loop
+    async def before_update(self):
+        await self.bot.wait_until_ready()
+        now = datetime.now().astimezone()
+        next_run = now.replace(hour=2, minute=0, second=0)  # 等待到早上2點
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await sleep_until(next_run)
+
     @app_commands.command(
         name="instantclaim", description=_("Admin usage only", hash=496)
     )
@@ -341,7 +434,9 @@ class Schedule(commands.Cog):
         await i.response.defer(ephemeral=True)
         await self.claim_reward()
         await i.followup.send(
-            embed=default_embed().set_author(name="claimed", icon_url=i.user.display_avatar.url),
+            embed=default_embed().set_author(
+                name="claimed", icon_url=i.user.display_avatar.url
+            ),
             ephemeral=True,
         )
 

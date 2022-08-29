@@ -2,18 +2,15 @@ import os
 import re
 from typing import Dict, List, Literal, Tuple, Union
 
-import aiohttp
-from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
-from data.game.consumables import consumables_map
-from data.game.elements import convert_elements, elements
+from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapons import weapons_map
 from discord import Embed, Locale, SelectOption
 from dotenv import load_dotenv
-from utility.utils import default_embed, get_weekday_int_with_name, parse_HTML
+from utility.utils import default_embed, parse_HTML
 
 import genshin
 

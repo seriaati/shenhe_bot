@@ -22,6 +22,8 @@ class DefaultView(discord.ui.View):
                 ),
                 ephemeral=True,
             )
+        except discord.NotFound:
+            pass
 
     async def on_timeout(self) -> None:
         for item in self.children:
