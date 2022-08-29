@@ -138,7 +138,7 @@ class WishCog(commands.GroupCog, name="wish"):
             f"• {guarantee}"
         )
         embed.set_author(
-            name=text_map.get(372, i.locale, user_locale), icon_url=member.avatar
+            name=text_map.get(372, i.locale, user_locale), icon_url=member.display_avatar.url
         )
         await i.response.send_message(embed=embed)
 
@@ -305,7 +305,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 f'• {text_map.get(403, i.locale, user_locale)} **{(80 if index == 2 else 90)-banner["left_pull"]}** {text_map.get(404, i.locale, user_locale)}\n'
                 f"{std_str}",
             )
-        embed.set_author(name=member, icon_url=member.avatar)
+        embed.set_author(name=member, icon_url=member.display_avatar.url)
         await i.response.send_message(embed=embed)
 
 

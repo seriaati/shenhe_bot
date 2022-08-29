@@ -361,7 +361,7 @@ class DamageCalculator:
             )
         if effect != "":
             embed.add_field(name=text_map.get(347, self.locale), value=effect)
-        embed.set_author(name=member.display_name, icon_url=member.avatar)
+        embed.set_author(name=member.display_name, icon_url=member.display_avatar.url)
         embed.set_thumbnail(url=get_character(self.character_id)["icon"])
         return embed
 
