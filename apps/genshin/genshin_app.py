@@ -32,9 +32,7 @@ class GenshinApp:
         user_id = int(user_id)
         try:
             cookie = dict(item.split("=") for item in cookie.split("; "))
-        except Exception as e:
-            log.warning(f"[Set Cookie][Failed][{user_id}]: [type]{type(e)} [error]{e}")
-            sentry_sdk.capture_exception(e)
+        except KeyError:
             result = error_embed(
                 message=text_map.get(35, locale, user_locale)
             ).set_author(
@@ -42,6 +40,14 @@ class GenshinApp:
                 icon_url=user.display_avatar.url,
             )
             return result, False
+        except Exception as e:
+            log.warning(f"[Set Cookie][Failed][{user_id}]: [type]{type(e)} [error]{e}")
+            sentry_sdk.capture_exception(e)
+            embed = error_embed().set_author(
+                name=text_map.get(135, locale, user_locale),
+                icon_url=user.display_avatar.url,
+            )
+            return embed, False
 
         client = genshin.Client()
         user_locale = user_locale or locale
@@ -97,7 +103,8 @@ class GenshinApp:
                 ),
             )
             result = default_embed().set_author(
-                name=text_map.get(39, locale, user_locale), icon_url=user.display_avatar.url
+                name=text_map.get(39, locale, user_locale),
+                icon_url=user.display_avatar.url,
             )
             await self.db.commit()
             log.info(f"[Set Cookie][Success][{user_id}]: [Cookie]{cookie} [UID][{uid}]")
