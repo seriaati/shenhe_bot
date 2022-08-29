@@ -18,7 +18,7 @@
 18: 没有探索派遣
 19: 已完成
 20: 探索派遣
-21: "</stuck:1006486283725590536> for more information"
+21: "</stuck:1006486283725590536> 获取更多信息"
 22: 资料不公开
 23: 错误
 24: 即时便签
@@ -30,9 +30,9 @@
 30: 周六
 31: 周日
 32: 选择语言
-33: 语言更改成功
+33: 语言已更改
 34: 目前语言
-35: "</register:1006486283725590528> for more information"
+35: "</register:1006486283725590528> 获取更多信息"
 36: 无效的 cookie
 37: 已取消设定帐号
 38: 帐号内没有任何角色
@@ -71,7 +71,7 @@
 71: 原石
 72: 摩拉获取记录
 73: 摩拉
-74: Use the </stats:1006486283725590530> command to refresh your stats
+74: 使用 </stats:1006486283725590530> 指令刷新角色信息
 75: '“(本指令只显示第9层以上资料)"'
 76: 找不到深渊资料
 77: 期别
@@ -122,10 +122,10 @@
 122: 累计释放技能
 123: 自定 UID 搜寻
 124: 返回预设
-125: By default, shenhe responds you with the same language your discord uses
-126: Changing language will override the default language
+125: 默认情况下，申鹤根据你的Discord设定的语言进行回复。
+126: 更改语言会覆盖默认语言
 127: 如果该语言还没翻译好，会使用英文回复
-128: Changing language
+128: 更改语言
 129: 蒙德
 130: 璃月
 131: 稻妻
@@ -135,130 +135,130 @@
 135: 未知错误
 136: 选择要注册的账号
 137: Cookie 设置流程
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+138: "1.复制以下链接\n 2.在您的设备上打开Chrome 并在 https://www.hoyolab.com/home登录你的账户\n 3。 点击地址栏并框选所有文本\n 4。 输入 `java`, 然后粘贴你复制的文本, 确保地址栏以 `javascript:`为开头\n 5摁下确定 之后， 空白页面将显示您的 cookie, 选择所有文本并进行复制\n 6使用命令 </register:1006486283725590528> 来提交你的cookie\n 太复杂了吗？下面图片也许会帮到你。"
 139: 过期或无效的Cookie, 请先登出账号再重新登入!
-140: Please use the </register:1006486283725590528> command
+140: 请使用命令 </register:1006486283725590528>
 141: 找不到账号资料!
 142: 选择元素
 143: 你不是这个指令的发起者
 144: 原石记录
 145: 摩拉记录
 146: 第
-147: "<FLOOR>"
+147: "<FLOOR>层"
 148: 楼层导览
 149: 资料不公开?
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
-151: Resin notification settings
-152: Resin threshold
-153: Shenhe will DM you after resin exceeds this number
+150: "请访问 https://www.hoyolab.com/home 并登录\n 按照下方图片展示的步骤\n\n 1.点击右上角的头像\n 2 个人主页\n 3 点击右上角的 `Genshin`\n 4.点击装备图标\n 5 打开所有开关"
+151: 树脂提醒设置
+152: 树脂已满
+153: 当树脂超过所设定数值时，申鹤会私聊消息给你。
 154: 最大提醒数量
-155: DM will stop after this number of times
-156: Choosing a character that already has notification ON will remove its notification
-157: Choose your character(s)
-158: There are currently no notifications set for any characters
-159: Current character notifications
+155: 私聊消息将会在数次后停止。
+156: 选择通知已开启的角色会关闭提醒。
+157: 选择您的角色
+158: 当前没有设置任何字符的通知
+159: 当前字符通知
 160: 选择元素
-161: Choosing this character will turn OFF its notifications
-162: Build
-163: Choose your build
-164: builds
-165: "This user hasn't registered their account yet\n</register:1006486283725590528> to register"
-166: User not found
+161: 选择此字符将关闭其通知
+162: 构建...
+163: 选择你的建筑
+164: 版本
+165: "此用户尚未注册他们的账户\n</register:1006486283725590528>"
+166: 找不到用户
 167: "'s UID"
-168: Enter your data
-169: Character target level
-170: "For example: 90"
-171: Auto attack target level
-172: "For example: 5"
-173: Elemental skill (E) target level
-174: Elemental burst (Q) target level
-175: Add to todo list
-176: Please remove some materials from your todo list using the `remove materials` button
-177: You have reached the limit of materials you can have in your todo list (125)
-178: Use </todo:1006486283855605804> to view your todo list
-179: Success
-180: Choose your weapon
-181: Set the levels for
+168: 输入您的数据
+169: 字符目标级别
+170: "例如：90"
+171: 自动攻击目标级别
+172: "例如：5"
+173: 元素技能(E) 目标级别
+174: 元素爆裂(Q)目标级别
+175: 添加到待办事项列表
+176: 请使用“移除材料”按钮从待办事项列表中删除一些材料
+177: 您已经达到了待办事项列表中的材料上限(125)
+178: 使用 </todo:1006486283855605804> 查看您的待办事项列表
+179: 成功
+180: 选择您的武器
+181: 设置级别为
 182: "<'S LEVEL>"
-183: Current level
-184: "For example: 1"
+183: 当前水平
+184: "例如：1"
 185: Target level
-186: "For example: 90"
-187: Please enter a number
-188: "Character level: Please enter a number between 1 and 90"
-189: "Talent level: Please enter a number between 1 and 10"
+186: "例如：90"
+187: 请输入一个数字
+188: "字符级别：请输入介于 1 到 90 之间的数字"
+189: "天赋等级：请输入介于 1 到 10 之间的数字"
 190: Invalid input
-191: Calculation results
-192: Calculation content
-193: Character level
-194: Normal attack level
-195: Elemental skill level
-196: Elemental burst level
-197: No materials needed
-198: Character level-up
-199: Talent level-up
-200: Weapon level
-201: Weapon level-up
-202: Todo list
-203: Add item
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items"
-205: Remove item
-206: Clear items
-207: Choose the item you wish to remove
-208: Item name
-209: "For example: mora"
-210: Item amount
-211: (Leaving this field blank will remove the item entirely)
-212: You can't remove more items than you have in your dodo list
+191: 计算结果
+192: 计算内容
+193: 字符级别
+194: 正常攻击级别
+195: 元素技能水平
+196: 元素爆裂级别
+197: 无需材料
+198: 角色升级
+199: 天赋升级
+200: 武器等级
+201: 武器升级
+202: 待办事项列表
+203: 添加项目
+204: "惊人！目前没有什么事可做！ squ( ° oncerose, ° ) \n 使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 来计算字符和武器的材料 或者使用下面的绿色按钮添加自定义项"
+205: 删除项目
+206: 清除项目
+207: 选择您想要删除的项目
+208: 项目名称
+209: "例如：莫拉"
+210: 项目金额
+211: (离开此字段空白将完全删除该项目)
+212: 您不能移除比您在dodo列表中的更多项目
 213: Cryo
-214: Geo
+214: 吉奥省
 215: Pyro
-216: Anemo
-217: Hydro
+216: 阿内莫文
+217: Hydrao
 218: Dendro
 219: Electro
 220: 角色数量
-221: January
-222: February
-223: March
-224: April
-225: May
-226: June
-227: July
-228: August
-229: September
-230: October
-231: November
-232: December
-234: monday
-235: tuesday
-236: wednesday
-237: thursday
-238: friday
-239: saturday
-240: sunday
-250: farmable items
-251: Achievement leaderboard
-252: You
-253: N/A
-254: This leaderboard is currently empty
-255: Choose the substat leaderboard you with to view
-256: Substat leaderboard
-257: Luck leaderboard
-258: HP
+221: 1 月
+222: 2 月
+223: 3 月
+224: 4 月
+225: 5 月
+226: 6 月
+227: 7 月
+228: 8 月
+229: 9 月
+230: 10 月
+231: 11 月
+232: 十二月
+234: 周一
+235: 教学日
+236: 婚礼日
+237: 护士日
+238: 弗里德
+239: 饱和日
+240: 日日
+250: 可磨损物品
+251: 成就排行榜
+252: 你
+253: 无
+254: 此排行榜目前为空
+255: 选择您要查看的潜在站点排行榜
+256: 潜行排行榜
+257: 幸运排行榜
+258: 生命值
 259: HP%
 260: Atk.
 261: Atk.%
-262: Def.
-263: Def.%
-264: Crit Rate
+262: 十二月
+263: 防守%
+264: 粉碎率
 265: Crit DMG
-266: Elem. Mastery
-267: Energy Recharge
-268: Base HP
-269: Base Atk.
-270: Base Def.
-271: Healing Bonus
+266: 元素大师
+267: 能量充值
+268: 基础HP
+269: 基础Atk。
+270: 基础防线。
+271: 治疗加成
 272: Physic DMG Bonus
 273: Pyro DMG Bonus
 274: Elec DMG Bonus
@@ -267,251 +267,251 @@
 277: Anemo DMG Bonus
 278: Geo DMG Bonus
 279: Cryo DMG Bonus
-280: Base Speed
-281: Speed%
-282: Go back
-283: Or enter your UID in the options
-284: Invalid account
-285: This is an account without a main character
-286: Invalid UID
-287: Please turn on the character showcase toggle in game
-288: Player level
-289: World level
-290: Achievement
+280: 基速度
+281: 速度%
+282: 后退
+283: 或者在选项中输入您的 UID
+284: 无效的帐户
+285: 这是一个没有主字符的帐户
+286: 无效的 UID
+287: 请在游戏中开启角色展示开关
+288: 玩家级别
+289: 世界一级
+290: 成就
 291: Spiral abyss
-292: Max HP
+292: 最大 HP
 293: Atk.
-294: Def.
-295: Elem. Mastery
-296: Crit Rate
+294: 十二月
+295: 元素大师
+296: 粉碎率
 297: Crit DMG
-298: Energy Recharge
-299: Friendship Level
-300: The highest artifact score is 99, only +20 artifacts will have scores
-301: Stats
-302: Current threshold
-303: Current resin
-304: Current max. notification number
-305: Use /remind to change the settings
-306: Resin is almost full!!
-307: Talent notification is now turned OFF
-308: Right click any server that has shenhe in it
-309: Click on `privacy settings`
-310: Turn the toggle ON
-311: How to unblock DM from servers
-312: Time to farm materials for
+298: 能量充值
+299: 友谊级别
+300: 工件得分最高为99，只有+20工件得分
+301: 统计信息
+302: 当前阈值
+303: 当前树脂量
+304: 当前最大通知号
+305: 使用/提醒更改设置
+306: 重置几乎已满！
+307: 天赋通知已关闭
+308: 右键单击任何有shenhe 的服务器
+309: 点击 "隐私设置"
+310: 开启开关
+311: 如何解除从服务器中屏蔽DM
+312: 耕作材料时间
 313: "!"
-314: Items you can farm
-315: Basic information
-316: Birthday
-317: Affiliation
-318: Constellation
-319: Name card
-320: Ascension materials
-321: Ascension to
-322: Talent level-up materials
-323: Passive Talents
-324: Level-up to
-325: Quick navigation
-326: Normal Atk.
-327: Charged Atk.
-328: Plunging Atk.
-329: Calculating damage...
-330: This requires around 5 to 10 seconds
-331: No reaction
-332: Melt
-333: Vaporize
-334: Avg. DMG
+314: 你可以耕种的物品
+315: 基本信息
+316: 生日
+317: 从属关系
+318: 星团
+319: 姓名卡
+320: 阿森松材料
+321: 阿森松到
+322: 天赋平板材料
+323: 被动天赋功能
+324: 级别到
+325: 快速导航
+326: 普通阿特克斯。
+327: 已充电的 Atk。
+328: 正在填充Atk。
+329: 正在计算伤害...
+330: 这需要大约5至10秒
+331: 无反应
+332: 熔化
+333: 蒸发量
+334: 平均DMG
 335: Non Crit DMG
-336: Crit Hit DMG
-337: Select elemental reaction
-338: No team melee infusion
-339: Pyro infusion
-340: Cryo infusion
-341: Bennett C6
+336: 撞击DMG
+337: 选择元素反应
+338: 没有队近战注入资金
+339: Pyro 注入
+340: 寒冷注入宝箱
+341: 本内特·C6
 342: Chongyun Skill
-343: Select team melee infusion
-344: Select teammate(s)
-345: Team
-346: Conditions
-347: Effects
-348: Calculate Damage
-349: Artifact and weapon effects are not included for now
-350: melt
-351: vaporize
-352: Authkey URL
-353: Importing wish history
-354: Please paste the link here
-355: Please wait for awhile while shenhe is processing your wish history
-356: Successfully imported wish history
-357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
-359: Importing wish history using your android phone
-360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
-361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
-363: Importing wish history using your Playstation device
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
-365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
-367: No wish history data found
-368: "</wish import:1000187021635104890> to import your wish history"
-369: Wish history
-370: Big pity available
-371: Small pity available
-372: Wish luck analysis
-373: Your luck is better than
-374: of players
+343: 选择队近战注入量
+344: 选择队友(s)
+345: 团队
+346: 条件
+347: 效果
+348: 计算伤害
+349: 古神器和武器效果现在不包括在内。
+350: 熔化
+351: 蒸发量
+352: 作者密钥 URL
+353: 导入愿望历史记录
+354: 请将链接粘贴到这里
+355: 请等待 shenhe 正在处理您的愿望历史
+356: 成功导入愿望历史记录
+357: 使用 PC 导入愿望历史记录
+358: "1. 打开genshin impact (如果您使用多个帐户，请重启游戏)\n 2。 在游戏中打开愿望历史并等待它加载\n 3。 在您的键盘上按START，然后搜索Powershell\n 4。 点击 Windows Powershell, 然后复制并粘贴下面的脚本到 Powershell\n 5。 按 ENTER，链接将复制到剪贴板\n 6。 使用 </wish import:1000187021635104890> 命令\n\n [视频教程](https://www.youtube.com/watch?v=FCwZkHeezw) 提交您复制的链接"
+359: 使用您的 android 手机导入愿望历史记录
+360: "[使用 Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [如果上述方法不能工作，请点击我](https://www.youtube.com/watch?v=jAKq94KpGHA)"
+361: 正在导入愿望历史使用您的 IOS 设备
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBprraUq41c)\n 1。在App Store 上下载Stream [here](https://apps.aplle)。 om/app/stream/id1312141691)\n 2. 打开应用程序，然后在系统首选项中允许 VPN (设置 > General > VPN)\n 安装 CA (点击Stream App > 安装 CA > 弹出窗口将出现并选择允许 > 现在CA 下载\n 转到“设置 > 通用>VPN & 设备管理 > 点击生成的 CA流并安装\n 打开Genshin Impact 然后打开愿望屏幕，请保持在该页面\n 6。 返回流应用 > 选择我信任的 > 点击 Sniff Now 按钮\n 返回Genshin Impact 然后打开愿望历史页面\n 8。等待页面加载\n 返回流应用程序 > 停止狙击\n 点击 Sniff 历史记录 > 选择一个结束于 .json 的请求(链接以 https://hk4e-api-os开头)。 ihoyo.com/)\n 11点击请求标签，然后复制链接\n 12 使用 </wish import:1000187021635104890> 命令在此提交此链接"
+363: 正在使用您的播放站设备导入愿望历史记录
+364: "(如果下面的步骤不起作用) 您可以将您的PS账户与HoYVerse账户链接，然后使用pc/mobile 指令)\n (只有当您有一个带有二维码的游戏内邮件来打开网页事件时才能使用此方法)\n\n 1。 打开对您的游戏站的Genshin影响\n 2. 打开包含二维码的事件邮件\n 用您的手机扫描二维码\n 4。用 </wish import:1000187021635104890> 命令在这里提交链接"
+365: 选择您的平台
+366: "您愿望历史的语言基于您当前选中的语言\n 随后更改语言将不会对以前的记录产生影响"
+367: 未找到愿望历史数据
+368: "</wish import:1000187021635104890> 导入您的愿望历史"
+369: 愿望历史
+370: 可使用的大悲度
+371: 小悲伤可用
+372: 希望运气分析
+373: 你的幸运好于你的
+374: 玩家的
 375: "<TOTAL>"
-376: pull(s) in total
+376: 总脉冲(s)
 378: "<TOTAL>"
-379: UP five stars in total
+379: 总共五星UP
 380: "<FROM PITY>"
 381: pity pull(s)
-382: Wishing to pull
-383: UP 5 star characters
-384: Expecting to finish after
-385: pull(s)
-386: Event wish number prediction
-387: Standard
-388: "Yes"
-389: "No"
-390: Is this the weapon you wanted?
-391: The last 5 star weapon you pulled was
-392: Is this a standard or limited time UP weapon?
-393: Weapon wish number prediction
-394: Wishing to pull
-395: weapon(s) you want
-396: That is
+382: 正在拉取
+383: UP 5 恒星字符
+384: 正在等待完成
+385: 脉冲宽度(千兆字节)
+386: 事件愿望编号预测
+387: 标准的
+388: "否"
+389: "否"
+390: 这是你想要的武器吗？
+391: 你拿起的最后五星武器是
+392: 这是标准的还是有限时间的UP武器？
+393: 武器希望号码预测
+394: 正在拉取
+395: 你想要的武器
+396: 那是
 397: primogems
-398: Standard banner
-399: Limited-time banner
-400: Weapon banner
+398: 标准素材
+399: 限时横幅
+400: 武器素材
 401: "<AVERAGE>"
-402: pull(s) per 5 star
+402: 脉冲每5星
 403: "<FROM PITY>"
-404: pull(s) from pity
-405: You haven't pulled any 5 star weapons in the weapon banner yet
-406: Start time
-407: End time
-408: Details
-409: Choose event type
-410: Register your genshin account to use commands that require one
-411: options
-412: Registration tutorial
-413: Submit cookie (Global Servers)
-414: "View real time notes: Current resin, pot, expedition status (need /register)"
-415: user
-416: Check other user's data
-417: "View genshin stats: Active days, oculis, number of chests"
-418: A user's genshin UID
-419: View area exploration rates
-420: Claim hoyolab daily login reward
-421: View all owned characters (need /register)
-422: View traveler's diary (need /register)
-423: month
-424: The month you're trying to search with
-425: This month
+404: 脉冲（s）
+405: 你还没有在武器横幅中拉取任何5星武器
+406: 开始时间
+407: 结束时间
+408: 详细信息
+409: 选择事件类型
+410: 注册您的 genshin 帐户以使用需要一个的命令
+411: 选项
+412: 注册教程
+413: 提交 cookie (全局服务器)
+414: "查看实时笔记：当前树脂、便捷状态 (需要/注册)"
+415: 用户
+416: 检查其他用户的数据
+417: "查看Genshin状态：活动天数、引导天数，箱子数量"
+418: 用户的genshin UID
+419: 查看区域勘探率
+420: 索取热拉布每天登录奖励
+421: 查看所有拥有的字符 (需要 /register)
+422: 查看旅行者日记(需要/注册)
+423: 月
+424: 您试图搜索的月份：
+425: 本月
 426: 上个月
-427: The month before last month
-428: View abyss data (need /register)
-429: type
-430: season
-431: The type of data you wish to view
-432: Which abyss season?
-433: Detailed
+427: 上个月前
+428: 查看深色数据 (需要 /register)
+429: 类型
+430: 季数
+431: 您想要查看的数据类型
+432: 哪个深渊季节？
+433: 详细信息
 434: 总览
-435: This season
-436: Last season
+435: 本季：
+436: 最后一季：
 437: 资料不公开?
-438: Set notification features
-439: function
-440: toggle
-441: Resin notification (need /register)
-442: Talent notification
-443: Check privacy settings
-444: ON (or change settings)
+438: 设置通知功能
+439: 函数
+440: 切换
+441: 重置通知 (需要 /register)
+442: 天赋通知
+443: 检查隐私设置
+444: 开启(或更改设置)
 445: "关"
-446: View farmable items today
-447: "View character builds: Weapons, artifacts, talent levels, stats"
-448: Search a user's UID
-449: View characters' artifacts, stats, weapons, talents, and calculate damage
-450: Redeem gift codes (need /register)
-451: code
-452: View ongoing events in genshin
-453: View leaderboard
-454: Achievement leaderboard
-455: Artifact substat leaderboard
-456: Wish luck leaderboard
+446: 今天查看可怕的项目
+447: "查看角色构建：武器、艺术品、天赋水平、统计信息"
+448: 搜索用户的 UID
+449: 查看字符的艺术品、 统计、 武器、天才以及损伤的计算
+450: 兑换礼品代码 (需要/register)
+451: 代码
+452: 以genshin 查看正在进行的事件
+453: 查看排行榜
+454: 成就排行榜
+455: 上古神器潜行排行榜
+456: 祝运排行榜
 457: Genshin wiki
-458: character
-459: View past genshin event stats
-460: Calculate materials needed for upgrading a character
-461: sync
-462: sync with in-game data (autofill the levels)
+458: 字符
+459: 查看过去的 genshin 事件统计
+460: 计算升级字符所需的材料
+461: 同步
+462: 与游戏内数据同步 (自动填写级别)
 463: "开"
 464: "关"
-465: Calculate materials needed for upgrading a weapon
-466: type
-467: rarity
-468: sword
-469: catalyst
-470: claymore
-471: bow
+465: 计算升级武器所需的材料
+466: 类型
+467: 稀有度
+468: 剑
+469: 催化剂
+470: 克莱莫尔
+471: 弓箭手
 472: polearm
-473: View todo list
-474: Import wish history
-475: function
-476: Wish history import tutorial
-477: Submit link
-478: View wish history
-479: Wish luck analysis
-480: Predict chance of pulling a character
-481: number
-482: How many 5 star UP characters do you wish to pull?
-483: Predict change of pulling a weapon
-484: View wish overview
-485: Change the language shenhe responds you with
-486: View all commands
+473: 查看待办事项列表
+474: 导入愿望历史记录
+475: 函数
+476: 愿望历史导入教程
+477: 提交链接
+478: 查看愿望历史记录
+479: 希望运气分析
+480: 预测拉取一个字符的概率
+481: 数字
+482: 您想要拉取多少5星UP 字符？
+483: 预测拿起武器的变化
+484: 查看愿望概述
+485: 更改语言shenhe响应你
+486: 查看所有命令
 487: Genshin
-488: Genshin wish
-489: Requires wish history import using /wish import
-490: Enhancement progress calculator
-491: Calculate upgrade materials
-492: Todo list
-493: Waifus
-494: Others
-495: Choose your category
-496: Admin usage only
+488: Genshin的心情
+489: 需要使用 /wish 导入历史记录
+490: 增强进度计算器
+491: 计算升级材料
+492: 待办事项列表
+493: 怀福斯
+494: 其 他
+495: 选择您的类别
+496: 仅管理员使用
 497: 原神数据
-498: View profile
-499: View all characters
+498: 查看资料
+499: 查看所有字符
 500: 即时便签
-501: Update self leaderboard position
-502: Leaderboard position updated
-503: View past updates
-504: 'Made by seria#5334, DM me if you have any questions'
-505: View past updates
-506: number
-507: How many 5 star UP characters do you wish to pull?
-508: Search anything genshin related
-509: query
+501: 更新自己的排行榜位置
+502: 排行榜位置已更新
+503: 查看过去的更新
+504: '如果你有任何疑问，请通过 seria#5334，DM 我'
+505: 查看过去的更新
+506: 数字
+507: 您想要拉取多少5星UP 字符？
+508: 搜索任何相关的genshin
+509: 查询
 510: Sumeru
-511: Names of genshin characters, weapons, and other game elements will be translated automatically
-512: Leaderboard position update failed
-513: 'I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix'
-514: Realm currency reminder (needs /register)
-515: Realm currency notif. settings
-516: Realm currency threshold
-517: Realm currency reminder disabled
-518: Realm currency is almost full!
-519: The Enka API is proobably down right now, please wait patiently until it's back
+511: genshin字符、武器和其他游戏元素的名称将被自动翻译
+512: 排行榜位置更新失败
+513: '很抱歉，错误已自动报告到seria#5334，请耐心等待修复。'
+514: 领域货币提醒 (需要 /register)
+515: 领域货币通知设置
+516: 领域货币阈值
+517: 领域货币提醒已禁用
+518: 领域货币几乎已满！
+519: Enka API 现在已经被证明已经倒下，请耐心等待，直到返回了
 520: Dendroculus
-521: Remove account data
-522: Account data removed
-523: Stop receiving message from the developer
-524: Don't want to see this? Use /devmsg
-525: Spread
-526: Aggravate
-527: Hydro infusion
+521: 删除帐户数据
+522: 帐户数据已删除
+523: 停止接收开发者的消息
+524: 不想看到这么？请使用 /devmsg
+525: 扩展
+526: 渐变
+527: Hydro 注入
 528: 提交 cookie (中国服)
