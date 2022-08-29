@@ -17,7 +17,7 @@ import config
 
 
 class View(DefaultView):
-    def __init__(self, embeds: Dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
+    def __init__(self, embeds: Dict[int, Embed], artifact_embeds: dict[int, Embed], character_options: list[SelectOption], data: EnkaNetworkResponse, browser: Browser, eng_data: EnkaNetworkResponse, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str, user_uid: str):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
         self.artifact_embeds = artifact_embeds
@@ -28,6 +28,7 @@ class View(DefaultView):
         self.data = data
         self.eng_data = eng_data
         self.db = db
+        self.user_uid = user_uid
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
         self.add_item(PageSelect(character_options, text_map.get(157, locale, user_locale)))
@@ -45,6 +46,7 @@ class PageSelect(Select):
         super().__init__(placeholder=plceholder, options=character_options)
 
     async def callback(self, i: Interaction) -> Any:
+        user_locale = await get_user_locale(i.user.id, self.view.db)
         self.view: View
         artifact_disabled = False
         damage_calc_disabled = False
@@ -64,6 +66,7 @@ class PageSelect(Select):
         if card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
+            embed.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}')
             fp: BytesIO = self.view.embeds[self.values[0]]
             fp.seek(0)
             file = File(fp, 'card.jpeg')
