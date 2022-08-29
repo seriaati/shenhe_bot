@@ -164,13 +164,6 @@ def get_weapon(id: int = "", name: str = ""):
     }
 
 
-def get_material(id: int = "", name: str = ""):
-    for consumable_id, consumable_info in consumables_map.items():
-        if consumable_id == str(id) or consumable_info["name"] == name:
-            return consumable_info
-    return {"name": "自訂素材", "emoji": "<:white_star:982456919224615002>"}
-
-
 def get_artifact(id: int = "", name: str = ""):
     for artifact_id, artifact_info in artifacts_map.items():
         if (
@@ -236,7 +229,7 @@ def parse_character_wiki_embed(
     for promoteLevel in avatar_data["upgrade"]["promote"][1:]:
         value = ""
         for item_id, item_count in promoteLevel["costItems"].items():
-            value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
+            value += f"{text_map.get_material_name(item_id, locale, user_locale)} x{item_count}\n"
         value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
         embed.add_field(
             name=f'{text_map.get(321, locale, user_locale)} lvl.{promoteLevel["unlockMaxLevel"]}',
@@ -268,7 +261,7 @@ def parse_character_wiki_embed(
                     continue
                 value = ""
                 for item_id, item_count in promote_info["costItems"].items():
-                    value += f'{(get_material(id=item_id))["emoji"]} x{item_count}\n'
+                    value += f"{text_map.get_material_name(item_id, locale, user_locale)} x{item_count}\n"
                 value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
                 material_embed.add_field(
                     name=f"{text_map.get(324, locale, user_locale)} lvl.{level}",
