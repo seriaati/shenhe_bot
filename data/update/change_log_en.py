@@ -1,4 +1,20 @@
 change_log_en = {
+    'v4.7.5':
+        "Known Issues\n"
+        "• Dendro element in </calc character:1000187020892700793> only has Tignahri right now, and Ayato is in there for some reason, this is probably an API error by mihoyo\n\n"
+        "Damage Calculator\n"
+        "• Added Tighnari, Collei, and Dendro Traveler\n"
+        "• Added spread and aggaggravate reaction\n\n"
+        "Optimizations and Fixes\n"
+        "• Users that don't have an avatar will now have there default avatar shown\n"
+        "• Sped up generation time of </stats:1006486283725590530> cards by caching name card images\n"
+        "• Added maximum oculi number for </stats:1006486283725590530> cards\n"
+        "• Significantly shortened generation time of </farm:1006486283805265950> cards by caching images\n"
+        "• Added traveler into </calc character:1000187020892700793>\n"
+        "• Fixed chest number texts reverse in </stats:1006486283725590530>\n"
+        "• Changed language priority for </search:1009710440626016337>\n"
+        "• Finished translations for Chinese (Simplified)\n"
+        "• Fixed other bugs\n",
     'v4.7.4':
         "</wish import:1000187021635104890>\n"
         "• Added support for genshin 3.0\n"

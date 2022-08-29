@@ -34,7 +34,7 @@ class LangSelect(Select):
                 'emoji': '🇯🇵'
             },
             'zh-CN': {
-                'name': '简体中文 | 23%',
+                'name': '简体中文 | 100%',
                 'emoji': '🇨🇳'
             },
             'de': {
