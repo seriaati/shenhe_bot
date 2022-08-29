@@ -102,7 +102,7 @@
 102: Resing-Schwellenwert
 103: Max. Benachrichtigungsnummer
 104: Einstellungen gespeichert
-105: Zeichen
+105: Characters
 106: Dieser Gutscheincode wurde bereits eingelöst!
 107: Gutscheincode ungültig
 108: Gutscheincode
@@ -142,7 +142,7 @@
 142: Wählen Sie Ihr Element
 143: Sie sind nicht der Aussteller dieses Befehls
 144: Primo Log
-145: Mora-Log
+145: Mora Log
 146: Etage Nr.
 147: "<FLOOR>"
 148: Abgrundboden wählen
@@ -151,13 +151,13 @@
 151: Benachrichtigungseinstellungen Resin
 152: Harzschwelle
 153: Shenhe wird dich DM nachdem Harz diese Zahl übersteigt
-154: Max. Benachrichtigungsnummer
+154: Max. notification number
 155: DM wird nach dieser Anzahl stoppen
 156: Wenn Sie ein Zeichen wählen, das bereits eine Benachrichtigung besitzt, wird die Benachrichtigung entfernt
 157: Wähle deine Charakter(e) aus
 158: Derzeit gibt es keine Benachrichtigungen für irgendwelche Zeichen
 159: Aktuelle Charakterbenachrichtigungen
-160: Wählen Sie Ihr Element
+160: Choose your element
 161: Die Auswahl dieses Charakters schaltet die Benachrichtigungen aus
 162: Bauen
 163: Wähle deinen Build
@@ -183,7 +183,7 @@
 183: Aktuelles Level
 184: "Zum Beispiel: 1"
 185: Target level
-186: "Zum Beispiel: 90"
+186: "For example: 90"
 187: Bitte geben Sie eine Zahl ein
 188: "Charakterlevel: Bitte geben Sie eine Zahl zwischen 1 und 90 ein"
 189: "Talentlevel: Bitte gib eine Zahl zwischen 1 und 10 ein"
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Elektro
-220: Zeichen
+220: Characters
 221: Januar
 222: Februar
 223: Marsch
@@ -281,11 +281,11 @@
 291: Spiral abyss
 292: Max. HP
 293: Atk.
-294: Abb.
-295: Elem. Meisterschaft
-296: Kritrate
+294: Def.
+295: Elem. Mastery
+296: Crit Rate
 297: Crit DMG
-298: Energieaufladung
+298: Energy Recharge
 299: Freundschaftsstufe
 300: Der höchste Artefaktwert ist 99, nur +20 Artefakte werden Punkte haben
 301: Statistik
@@ -380,7 +380,7 @@
 391: Die letzte 5 Sterne Waffe, die du gezogen hast, war
 392: Ist dies eine Standard oder eine begrenzte Zeit UP Waffe?
 393: Waffenwunschnummer-Vorhersage
-394: Wunsch zum Ziehen
+394: Wishing to pull
 395: waff(en) die du willst
 396: Das ist
 397: primogems
@@ -412,7 +412,7 @@
 423: monat
 424: Der Monat, in dem du suchen möchtest
 425: Diesen Monat
-426: Letzten Monat
+426: Last month
 427: Der Monat vor dem letzten Monat
 428: Abyss-Daten anzeigen (benötigt /register)
 429: typ
@@ -420,10 +420,10 @@
 431: Der Typ der Daten, die Sie ansehen möchten
 432: Welche Abgrundsaison?
 433: Detailliert
-434: Übersicht
+434: Overview
 435: Diese Saison
 436: Letzte Saison
-437: Daten nicht öffentlich?
+437: Data not public?
 438: Benachrichtigungsfunktionen festlegen
 439: funktion
 440: umschalten
@@ -431,7 +431,7 @@
 442: Talentbenachrichtigung
 443: Privatsphäre-Einstellungen überprüfen
 444: AN (oder Einstellungen ändern)
-445: "AUS"
+445: "OFF"
 446: Zeige heute landwirtschaftliche Artikel
 447: "Zeige Charakterbausteine: Waffen, Artefakte, Talentstufen, Statistiken"
 448: UID eines Benutzers suchen
@@ -440,7 +440,7 @@
 451: kode
 452: Laufende Ereignisse in genshin anzeigen
 453: Rangliste anzeigen
-454: Rangliste der Errungenschaften
+454: Achievement leaderboard
 455: Artefaktsubstanz-Rangliste
 456: Wünsche Glück Rangliste
 457: Genshin wiki
@@ -449,10 +449,10 @@
 460: Berechne Materialien, die für die Verbesserung eines Charakters benötigt werden
 461: sync
 462: synchronisieren mit in-game Daten (autofill die Levels)
-463: "EIN"
-464: "AUS"
+463: "ON"
+464: "OFF"
 465: Berechne Materialien, die für die Verbesserung einer Waffe benötigt werden
-466: typ
+466: type
 467: seltenheit
 468: schwert
 469: katalysator
@@ -461,11 +461,11 @@
 472: polearm
 473: Todo-Liste anzeigen
 474: Wunschliste importieren
-475: funktion
+475: function
 476: Wunschliste Import-Tutorial
 477: Link abschicken
 478: Wunschliste anzeigen
-479: Glücksanalyse wünschen
+479: Wish luck analysis
 480: Vorhersage der Chance, einen Charakter zu ziehen
 481: anzahl
 482: Wie viele 5 Sterne UP Zeichen möchtest du ziehen?
@@ -478,7 +478,7 @@
 489: Wunschliste-Import mit /wish import erforderlich
 490: Verbesserungsfortschrittsrechner
 491: Verbesserungsmaterialien berechnen
-492: Todo-Liste
+492: Todo list
 493: Waifus
 494: Andere
 495: Wählen Sie Ihre Kategorie
@@ -486,14 +486,14 @@
 497: Genshin stats
 498: Profil anzeigen
 499: Alle Zeichen anzeigen
-500: Echtzeitnotizen
+500: Realtime notes
 501: Position der Self-Leaderboard aktualisieren
 502: Position der Rangliste aktualisiert
 503: Letzte Updates anzeigen
 504: 'Made by seria#5334, DM me if you have any questions'
-505: Letzte Updates anzeigen
-506: anzahl
-507: Wie viele 5 Sterne UP Zeichen möchtest du ziehen?
+505: View past updates
+506: number
+507: How many 5 star UP characters do you wish to pull?
 508: Suche alles verwandte Genshin
 509: abfrage
 510: Sumeru
