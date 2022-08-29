@@ -114,22 +114,6 @@ def check_level_validity(
     return True, ""
 
 
-def trim_cookie(cookie: str) -> str:
-    try:
-        new_cookie = [
-            int(
-                re.search(
-                    r"\d+", (re.search("ltuid=[0-9]{3,}", cookie).group())
-                ).group()
-            ),
-            re.search("[0-9A-Za-z]{20,}", cookie).group(),
-            (re.search("cookie_token=[0-9A-Za-z]{20,}", cookie).group())[13:],
-        ]
-    except:
-        new_cookie = None
-    return new_cookie
-
-
 def get_character(id: int = "", name: str = "", eng: str = ""):
     for character_id, character_info in characters_map.items():
         if (

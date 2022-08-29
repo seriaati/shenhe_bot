@@ -124,8 +124,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.choices(
         option=[
             Choice(name=_("Registration tutorial", hash=412), value=0),
-            Choice(name=_("Submit cookie", hash=413), value=1),
-            Choice(name=_("Remove account data", hash=521), value=1),
+            Choice(name=_("Submit cookie (Global serveres)", hash=413), value=1),
+            Choice(name=_("Submit cookie (China servers)", hash=528), value=2),
+            Choice(name=_("Remove account data", hash=521), value=3),
         ]
     )
     async def slash_cookie(self, i: Interaction, option: int):
@@ -144,6 +145,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                 AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
             )
         elif option == 2:
+            await i.response.send_modal(
+                AccountRegister.Modal(self.genshin_app, i.locale, user_locale, True)
+            )
+        elif option == 3:
             await i.response.defer(ephemeral=True)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
@@ -857,7 +862,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             f"{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n"
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
         )
-        overview.set_author(name=member.display_name, icon_url=member.avatar)
+        if custom_uid is not None:
+            overview.set_footer(embed.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}'))
+        else:
+            overview.set_author(name=member.display_name, icon_url=member.avatar)
         overview.set_image(url=data.player.namecard.banner.url)
         embeds["0"] = overview
         options = [
@@ -963,6 +971,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.bot.db,
             i.locale,
             user_locale,
+            custom_uid
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
