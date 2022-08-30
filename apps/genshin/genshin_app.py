@@ -32,7 +32,7 @@ class GenshinApp:
         user_id = int(user_id)
         try:
             cookie = dict(item.split("=") for item in cookie.split("; "))
-        except KeyError:
+        except (KeyError, ValueError):
             result = error_embed(
                 message=text_map.get(35, locale, user_locale)
             ).set_author(
