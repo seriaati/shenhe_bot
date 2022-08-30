@@ -111,7 +111,7 @@ class ShenheBot(commands.Bot):
     async def on_command_error(self, ctx, error) -> None:
         if hasattr(ctx.command, "on_error"):
             return
-        ignored = (commands.CommandNotFound, app_commands.errors.CheckFailure)
+        ignored = (commands.CommandNotFound, app_commands.errors.CheckFailure, commands.NotOwner)
         error = getattr(error, "original", error)
         if isinstance(error, ignored):
             return
