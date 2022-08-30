@@ -3,7 +3,6 @@ import sqlite3
 import aiosqlite
 import genshin
 import sentry_sdk
-from apps.genshin.utils import get_dummy_client
 from discord import Interaction, Locale, TextStyle
 from discord.ui import TextInput
 from apps.text_map.text_map_app import text_map
@@ -33,7 +32,7 @@ class Modal(DefaultModal):
 
     async def on_submit(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.db)
-        client = get_dummy_client()
+        client = i.client.genshin_client
         client.lang = to_genshin_py(user_locale or i.locale) or 'en-US'
         url = self.url.value
         authkey = genshin.utility.extract_authkey(url)

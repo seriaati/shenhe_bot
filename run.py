@@ -7,7 +7,7 @@ from typing import Optional
 import aiohttp
 import aiosqlite
 import sentry_sdk
-from discord import Game, Intents, Interaction, Locale, Message, Status, app_commands
+from discord import Intents, Interaction, Locale, Message, app_commands
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -15,6 +15,7 @@ from pyppeteer import launch
 from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
 from utility.utils import log, sentry_logging
+import genshin
 
 load_dotenv()
 
@@ -73,6 +74,16 @@ class ShenheBot(commands.Bot):
             }
         )
         self.debug = debug
+        c = await self.db.cursor()
+        await c.execute("SELECT ltuid, ltoken FROM genshin_accounts")
+        data = await c.fetchall()
+        cookies = []
+        for index, tuple in enumerate(data):
+            ltuid = tuple[0]
+            ltoken = tuple[1]
+            cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
+            cookies.append(cookie)
+        self.genshin_client = genshin.Client(cookies)
 
         # load jishaku
         await self.load_extension("jishaku")
@@ -87,7 +98,6 @@ class ShenheBot(commands.Bot):
                 sentry_sdk.capture_exception(e)
 
     async def on_ready(self):
-        await self.change_presence(status=Status.online, activity=Game(name=f"/help"))
         tree = self.tree
         await tree.set_translator(Translator())
         log.info(f"[System]on_ready: You have logged in as {self.user}")

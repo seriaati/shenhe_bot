@@ -1,5 +1,4 @@
 import os
-import re
 from typing import Dict, List, Literal, Tuple, Union
 
 from apps.text_map.text_map_app import text_map
@@ -11,16 +10,11 @@ from data.game.weapons import weapons_map
 from discord import Embed, Locale, SelectOption
 from dotenv import load_dotenv
 from utility.utils import default_embed, parse_HTML
+import aiosqlite
 
 import genshin
 
 load_dotenv()
-
-
-def get_dummy_client() -> genshin.Client:
-    cookies = {"ltuid": os.getenv("ltuid"), "ltoken": os.getenv("ltoken")}
-    client = genshin.Client(cookies)
-    return client
 
 
 def calculate_artifact_score(substats: dict):

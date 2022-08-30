@@ -5,15 +5,11 @@ import sys
 import sentry_sdk
 from apps.text_map.text_map_app import text_map
 import aiosqlite
-from apps.genshin.utils import get_dummy_client
-from apps.text_map.convert_locale import to_ambr_top_dict
 from discord import Forbidden, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed
-from apps.genshin.utils import get_dummy_client
-from apps.text_map.convert_locale import to_ambr_top_dict
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
 from data.game.consumables import consumables_map
@@ -138,7 +134,7 @@ class AdminCog(commands.Cog, name="admin"):
             )
         )
 
-        client = get_dummy_client()
+        client = self.bot.genshin_client
         client.lang = "zh-tw"
 
         # artifacts

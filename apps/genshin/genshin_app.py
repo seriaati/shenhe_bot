@@ -5,7 +5,7 @@ from typing import Dict, Literal, Tuple
 import aiosqlite
 import sentry_sdk
 from apps.draw import draw_stats_card
-from apps.genshin.utils import get_area_emoji, get_character, get_dummy_client
+from apps.genshin.utils import get_area_emoji, get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
@@ -962,7 +962,7 @@ class GenshinApp:
         )
         user_data = await c.fetchone()
         if user_data is None:
-            client = get_dummy_client()
+            client = self.bot.genshin_client
             uid = None
         else:
             uid = user_data[3]

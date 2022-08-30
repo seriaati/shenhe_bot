@@ -4,7 +4,6 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     check_level_validity,
     get_character,
-    get_dummy_client,
     get_weapon,
 )
 from apps.text_map.convert_locale import to_genshin_py
@@ -62,7 +61,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         if sync:
             client = (await self.genshin_app.get_user_data(i.user.id, i.locale))[0]
         else:
-            client = get_dummy_client()
+            client = self.bot.genshin_client
             client.lang = to_genshin_py(user_locale or i.locale)
 
         try:
@@ -215,7 +214,7 @@ class CalcCog(commands.GroupCog, name="calc"):
     async def calc_weapon(self, i: Interaction, types: int, rarities: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
-        client = get_dummy_client()
+        client = self.bot.genshin_client
         client.lang = to_genshin_py(user_locale or i.locale)
 
         weapons = await client.get_calculator_weapons(
