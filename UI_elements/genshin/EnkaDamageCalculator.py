@@ -41,7 +41,7 @@ class View(DefaultView):
             reactionMode_options.append(
                 SelectOption(label=text_map.get(332, locale, user_locale), value="melt")
             )
-        elif element == "Pyro" or self.calculator.infusion_aura == "pyro":
+        elif element == "Pyro" or self.calculator.infusion_aura == "pyro" or element == 'Anemo':
             reactionMode_options.append(
                 SelectOption(
                     label=text_map.get(333, locale, user_locale), value="vaporize"
@@ -62,7 +62,7 @@ class View(DefaultView):
                     label=text_map.get(525, locale, user_locale), value="spread"
                 )
             )
-        elif element == "Electro":
+        elif element == "Electro" or element == 'Anemo':
             reactionMode_options.append(
                 SelectOption(
                     label=text_map.get(526, locale, user_locale), value="aggravate"
