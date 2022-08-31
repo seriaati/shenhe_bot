@@ -24,9 +24,14 @@ class GenshinApp:
         self.bot = bot
 
     async def set_cookie(
-        self, user_id: int, cookie: str, locale: Locale, uid: int = None
+        self,
+        user_id: int,
+        cookie: str,
+        locale: Locale,
+        uid: int = None,
+        is_cn: bool = False,
     ):
-        log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid}")
+        log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid} [China]{is_cn}")
         user = self.bot.get_user(user_id)
         if user is None:
             user = self.bot.fetch_user(user_id)
@@ -90,17 +95,19 @@ class GenshinApp:
         else:
             c = await self.db.cursor()
             await c.execute(
-                "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ? WHERE user_id = ?",
+                "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid, cn_region) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ?, cn_region = ? WHERE user_id = ?",
                 (
                     user_id,
                     int(cookie["ltuid"]),
                     cookie["ltoken"],
                     cookie["cookie_token"],
                     uid,
+                    1 if is_cn else 0,
                     int(cookie["ltuid"]),
                     cookie["ltoken"],
                     cookie["cookie_token"],
                     uid,
+                    1 if is_cn else 0,
                     user_id,
                 ),
             )
@@ -109,7 +116,7 @@ class GenshinApp:
                 icon_url=user.display_avatar.url,
             )
             await self.db.commit()
-            log.info(f"[Set Cookie][Success][{user_id}]: [Cookie]{cookie} [UID][{uid}]")
+            log.info(f"[Set Cookie][Success][{user_id}]: [Cookie]{cookie} [UID][{uid}] [China]{is_cn}")
             return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
@@ -986,7 +993,7 @@ class GenshinApp:
         client.default_game = genshin.Game.GENSHIN
         if is_cn:
             client.region = genshin.Region.CHINESE
-            
+
         try:
             await client.update_character_names(lang=client._lang)
         except genshin.errors.InvalidCookies:

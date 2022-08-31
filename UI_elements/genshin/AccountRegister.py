@@ -48,7 +48,7 @@ class Modal(DefaultModal):
                     ephemeral=True,
                 )
             result, success = await self.genshin_app.set_cookie(
-                i.user.id, self.cookie.value, i.locale, int(self.bbs_uid.value)
+                i.user.id, self.cookie.value, i.locale, int(self.bbs_uid.value), True
             )
         else:
             result, success = await self.genshin_app.set_cookie(
