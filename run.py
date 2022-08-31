@@ -7,14 +7,22 @@ from typing import Optional
 import aiohttp
 import aiosqlite
 import sentry_sdk
-from discord import Intents, Interaction, Locale, Message, app_commands
+from discord import (
+    Intents,
+    Interaction,
+    Locale,
+    Message,
+    app_commands,
+    NotFound,
+    InteractionResponded,
+)
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
 from pyppeteer import launch
 from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
-from utility.utils import log, sentry_logging
+from utility.utils import error_embed, log, sentry_logging
 import genshin
 
 load_dotenv()
@@ -75,15 +83,25 @@ class ShenheBot(commands.Bot):
         )
         self.debug = debug
         c = await self.db.cursor()
-        await c.execute("SELECT ltuid, ltoken FROM genshin_accounts")
-        data = await c.fetchall()
-        cookies = []
-        for index, tuple in enumerate(data):
-            ltuid = tuple[0]
-            ltoken = tuple[1]
-            cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
-            cookies.append(cookie)
-        self.genshin_client = genshin.Client(cookies)
+        overseas = []
+        chinese = []
+        for x in range(2):
+            await c.execute(
+                "SELECT ltuid, ltoken FROM genshin_accounts WHERE cn_region = ?", (x,)
+            )
+            data = await c.fetchall()
+            for index, tuple in enumerate(data):
+                ltuid = tuple[0]
+                ltoken = tuple[1]
+                cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
+                if x == 0:
+                    overseas.append(cookie)
+                else:
+                    chinese.append(cookie)
+        self.genshin_client = genshin.Client()
+        self.genshin_client.cookie_manager = genshin.InternationalCookieManager(
+            {genshin.Region.OVERSEAS: overseas, genshin.Region.CHINESE: chinese}
+        )
 
         # load jishaku
         await self.load_extension("jishaku")
@@ -111,7 +129,11 @@ class ShenheBot(commands.Bot):
     async def on_command_error(self, ctx, error) -> None:
         if hasattr(ctx.command, "on_error"):
             return
-        ignored = (commands.CommandNotFound, app_commands.errors.CheckFailure, commands.NotOwner)
+        ignored = (
+            commands.CommandNotFound,
+            app_commands.errors.CheckFailure,
+            commands.NotOwner,
+        )
         error = getattr(error, "original", error)
         if isinstance(error, ignored):
             return
@@ -190,6 +212,22 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
         return
     log.warning(f"[{i.user.id}]{type(e)}: {e}")
     sentry_sdk.capture_exception(e)
+    try:
+        await i.response.send_message(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+    except InteractionResponded:
+        await i.followup.send(
+            embed=error_embed().set_author(
+                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+    except NotFound:
+        pass
 
 
 bot.run(token)
