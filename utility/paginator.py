@@ -168,9 +168,9 @@ class GeneralPaginator:
 
         kwargs = {"embed": self.embeds[view.current_page]}
         if len(self.files) > 0:
-            fp = new_files[0] if self.domain else self.files[self.current_page]
+            fp = new_files[0] if self.domain else self.files[view.current_page]
             fp.seek(0)
-            file_name = 'farm.jpeg' if self.domain else f"{self.current_page}.jpeg"
+            file_name = 'farm.jpeg' if self.domain else f"{view.current_page}.jpeg"
             file = File(fp, file_name)
             kwargs["files"] = [file]
             
