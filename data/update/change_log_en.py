@@ -1,4 +1,28 @@
 change_log_en = {
+    'v4.7.6':
+        "Translation\n"
+        "• Some text improvements and corrections\n"
+        "• Improve Simplified Chinese translation, thanks Dinnerbone_3rd#8228\n\n"
+        "Damage Calculator\n"
+        "• Added all elements of traveler\n"
+        "• Anemo characters can now choose from Evaporation, Melting, and Aggravate reactions\n\n"
+        "Optimizations\n"
+        "• Significantly speed up the output of images for </profile:1006486283805265953> and </farm:1006486283805265950>\n"
+        "• </farm:1006486283805265950> Added quick navigation bar\n"
+        "• </farm:1006486283805265950> will no longer show weapons that are not released yet\n"
+        "• </register:1006486283725590528> Now supports Chinese server registration (in BETA)\n"
+        "• And other internal optimizations\n\n"
+        "Bug Fixes\n"
+        "• Fixed </profile:1006486283805265953> Showing the incorrect element icon for Dendro Traveler's card\n"
+        "• Fixed </profile:1006486283805265953> not working properly when searching with a custom UID\n"
+        "• Fixed an issue in </todo:1006486283855605804> where the user can still click the 'Delete Material' button after clearing the todo list\n"
+        "• Fixed an issue where </leaderboard:1006486283805265956>'s Artifact Substat Leaderboard was not working\n"
+        "• Fixed </register:1006486283725590528> not popping up an error message when the cookie was invalid\n"
+        "• Fixed </remind:1006486283725590537> talent resource reminder not working properly\n"
+        "• Fixed </todo:1006486283855605804> not working in certain situations\n"
+        "• Fixed an issue where commands were sometimes not available in private messages\n\n"
+        "Known Issues\n"
+        "• </calc character:1000187020892700793> the dendro element only shows Tignahri, and there is also Ayato in the list, this is probbaly a Mihoyo API issue",
     'v4.7.5':
         "Known Issues\n"
         "• Dendro element in </calc character:1000187020892700793> only has Tignahri right now, and Ayato is in there for some reason, this is probably an API error by mihoyo\n\n"
