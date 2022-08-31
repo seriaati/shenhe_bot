@@ -27,7 +27,7 @@ async def draw_domain_card(
     domain: Domain,
     locale: Locale | str,
     items: Dict[int, Character | Weapon],
-) -> Image:
+) -> BytesIO:
     with open("data/draw/domain_card_map.yaml", "r+") as f:
         card_map = yaml.full_load(f)
 

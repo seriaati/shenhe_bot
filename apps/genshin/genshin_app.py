@@ -64,13 +64,17 @@ class GenshinApp:
             try:
                 accounts = await client.get_game_accounts()
             except genshin.InvalidCookies:
-                result = error_embed(
-                    message=text_map.get(35, locale, user_locale)
-                ).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
-                )
-                return result, False
+                try:
+                    client.region = genshin.Region.CHINESE
+                    accounts = await client.get_game_accounts()
+                except genshin.errors.InvalidCookies:
+                    result = error_embed(
+                        message=text_map.get(35, locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(36, locale, user_locale),
+                        icon_url=user.display_avatar.url,
+                    )
+                    return result, False
             if len(accounts) == 0:
                 result = error_embed(
                     message=text_map.get(37, locale, user_locale)
@@ -91,34 +95,33 @@ class GenshinApp:
                         )
                     )
                 return account_options, True
-        else:
-            first_number = uid // 100000000
-            is_cn = True if first_number in [1, 2, 5] else False
-            c = await self.db.cursor()
-            await c.execute(
-                "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid, cn_region) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ?, cn_region = ? WHERE user_id = ?",
-                (
-                    user_id,
-                    int(cookie["ltuid"]),
-                    cookie["ltoken"],
-                    cookie["cookie_token"],
-                    uid,
-                    1 if is_cn else 0,
-                    int(cookie["ltuid"]),
-                    cookie["ltoken"],
-                    cookie["cookie_token"],
-                    uid,
-                    1 if is_cn else 0,
-                    user_id,
-                ),
-            )
-            result = default_embed().set_author(
-                name=text_map.get(39, locale, user_locale),
-                icon_url=user.display_avatar.url,
-            )
-            await self.db.commit()
-            log.info(f"[Set Cookie][Success][{user_id}]")
-            return result, True
+        first_number = uid // 100000000
+        is_cn = True if first_number in [1, 2, 5] else False
+        c = await self.db.cursor()
+        await c.execute(
+            "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid, cn_region) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ?, cn_region = ? WHERE user_id = ?",
+            (
+                user_id,
+                int(cookie["ltuid"]),
+                cookie["ltoken"],
+                cookie["cookie_token"],
+                uid,
+                1 if is_cn else 0,
+                int(cookie["ltuid"]),
+                cookie["ltoken"],
+                cookie["cookie_token"],
+                uid,
+                1 if is_cn else 0,
+                user_id,
+            ),
+        )
+        result = default_embed().set_author(
+            name=text_map.get(39, locale, user_locale),
+            icon_url=user.display_avatar.url,
+        )
+        await self.db.commit()
+        log.info(f"[Set Cookie][Success][{user_id}]")
+        return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
         client, uid, user, user_locale = await self.get_user_data(user_id, locale)
