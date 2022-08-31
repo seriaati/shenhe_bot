@@ -961,10 +961,12 @@ class GenshinApp:
             user = self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?",
+            "SELECT ltuid, ltoken, cookie_token, uid, cn_region FROM genshin_accounts WHERE user_id = ?",
             (user_id,),
         )
         user_data = await c.fetchone()
+        is_cn = user_data[4]
+        is_cn = True if is_cn == 1 else False
         if user_data is None:
             client = self.bot.genshin_client
             uid = None
@@ -977,11 +979,14 @@ class GenshinApp:
                 account_id=user_data[0],
                 cookie_token=user_data[2],
             )
-            client.default_game = genshin.Game.GENSHIN
             client.uids[genshin.Game.GENSHIN] = uid
         locale = await get_user_locale(user_id, self.db) or locale
         client_locale = to_genshin_py(locale) or "en-us"
         client.lang = client_locale
+        client.default_game = genshin.Game.GENSHIN
+        if is_cn:
+            client.region = genshin.Region.CHINESE
+            
         try:
             await client.update_character_names(lang=client._lang)
         except genshin.errors.InvalidCookies:
