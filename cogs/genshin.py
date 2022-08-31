@@ -124,9 +124,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.choices(
         option=[
             Choice(name=_("Registration tutorial", hash=412), value=0),
-            Choice(name=_("Submit cookie (Global serveres)", hash=413), value=1),
-            Choice(name=_("Submit cookie (China servers)", hash=528), value=2),
-            Choice(name=_("Remove account data", hash=521), value=3),
+            Choice(name=_("Submit cookie", hash=413), value=1),
+            Choice(name=_("Remove account data", hash=521), value=2),
         ]
     )
     async def slash_cookie(self, i: Interaction, option: int):
@@ -141,14 +140,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.response.send_message(embed=embed, ephemeral=True)
             await i.followup.send(content=code_msg, ephemeral=True)
         elif option == 1:
-            await i.response.send_modal(
-                AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
-            )
+            await i.response.send_modal(AccountRegister.Modal(self.genshin_app, i.locale, user_locale))
         elif option == 2:
-            await i.response.send_modal(
-                AccountRegister.Modal(self.genshin_app, i.locale, user_locale, True)
-            )
-        elif option == 3:
             await i.response.defer(ephemeral=True)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
@@ -746,7 +739,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         custom_uid: int = None,
         ephemeral: bool = True,
     ):
-        start = process_time()
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)

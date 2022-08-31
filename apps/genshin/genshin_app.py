@@ -28,10 +28,9 @@ class GenshinApp:
         user_id: int,
         cookie: str,
         locale: Locale,
-        uid: int = None,
-        is_cn: bool = False,
+        uid: int = None
     ):
-        log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid} [China]{is_cn}")
+        log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid}")
         user = self.bot.get_user(user_id)
         if user is None:
             user = await self.bot.fetch_user(user_id)
@@ -93,6 +92,8 @@ class GenshinApp:
                     )
                 return account_options, True
         else:
+            first_number = uid // 100000000
+            is_cn = True if first_number in [1, 2, 5] else False
             c = await self.db.cursor()
             await c.execute(
                 "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid, cn_region) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ?, cn_region = ? WHERE user_id = ?",
@@ -116,7 +117,7 @@ class GenshinApp:
                 icon_url=user.display_avatar.url,
             )
             await self.db.commit()
-            log.info(f"[Set Cookie][Success][{user_id}]: [Cookie]{cookie} [UID][{uid}] [China]{is_cn}")
+            log.info(f"[Set Cookie][Success][{user_id}]")
             return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
@@ -266,13 +267,14 @@ class GenshinApp:
         user_id: int,
         custom_uid: int | None,
         locale: Locale,
-        namecard_url: str,
+        namecard: str,
         avatar_url: str,
     ) -> Tuple[Embed | Dict, bool]:
         client, uid, user, user_locale = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
             genshin_user = await client.get_partial_genshin_user(uid)
+            characters = await self.bot.genshin_client.get_calculator_characters(include_traveler=True)
         except genshin.errors.DataNotPublic:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
@@ -302,11 +304,11 @@ class GenshinApp:
                 False,
             )
         else:
-            characters = await client.get_calculator_characters(include_traveler=True)
+            
             embed = default_embed()
             embed.set_image(url="attachment://stat_card.jpeg")
             fp = await draw_stats_card(
-                genshin_user.stats, namecard_url, avatar_url, len(characters)
+                genshin_user.stats, namecard, avatar_url, len(characters)
             )
             return {"embed": embed, "fp": fp}, True
 
