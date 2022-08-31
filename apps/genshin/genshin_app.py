@@ -24,11 +24,7 @@ class GenshinApp:
         self.bot = bot
 
     async def set_cookie(
-        self,
-        user_id: int,
-        cookie: str,
-        locale: Locale,
-        uid: int = None
+        self, user_id: int, cookie: str, locale: Locale, uid: int = None
     ):
         log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid}")
         user = self.bot.get_user(user_id)
@@ -277,7 +273,9 @@ class GenshinApp:
         uid = custom_uid or uid
         try:
             genshin_user = await client.get_partial_genshin_user(uid)
-            characters = await self.bot.genshin_client.get_calculator_characters(include_traveler=True)
+            characters = await self.bot.genshin_client.get_calculator_characters(
+                include_traveler=True
+            )
         except genshin.errors.DataNotPublic:
             return (
                 error_embed(message=text_map.get(21, locale, user_locale)).set_author(
@@ -307,7 +305,7 @@ class GenshinApp:
                 False,
             )
         else:
-            
+
             embed = default_embed()
             embed.set_image(url="attachment://stat_card.jpeg")
             fp = await draw_stats_card(
@@ -977,12 +975,12 @@ class GenshinApp:
             (user_id,),
         )
         user_data = await c.fetchone()
-        is_cn = user_data[4]
-        is_cn = True if is_cn == 1 else False
         if user_data is None:
             client = self.bot.genshin_client
             uid = None
         else:
+            is_cn = user_data[4]
+            is_cn = True if is_cn == 1 else False
             uid = user_data[3]
             client = genshin.Client()
             client.set_cookies(
@@ -992,12 +990,13 @@ class GenshinApp:
                 cookie_token=user_data[2],
             )
             client.uids[genshin.Game.GENSHIN] = uid
+            if is_cn:
+                client.region = genshin.Region.CHINESE
+
         locale = await get_user_locale(user_id, self.db) or locale
         client_locale = to_genshin_py(locale) or "en-us"
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
-        if is_cn:
-            client.region = genshin.Region.CHINESE
 
         try:
             await client.update_character_names(lang=client._lang)
