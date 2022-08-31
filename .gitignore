@@ -169,3 +169,4 @@ ambr/cache/static/*
 resources/images/namecard/*
 resources/images/domain_cards/*
 !/**/.gitkeep
+data/draw/domain_card_map.yaml
