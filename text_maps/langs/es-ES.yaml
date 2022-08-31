@@ -1,264 +1,264 @@
-1: Lleno
-2: Hoy
-3: Mañana
-4: Restante
-5: días
-6: h
+1: Full
+2: Today's
+3: Tomorrow
+4: Remaining
+5: days
+6: hr
 7: min
-8: seg
-9: Disponible
-10: P.T. no encontrado
-11: Diarios terminados
-12: P. T. tiempo restante
+8: sec
+9: Available
+10: P.T. not found
+11: Dailies finished
+12: P.T. remaining time
 13: Resin
-14: Actual
-15: Tiempo de recuperación
-16: Reiniciar descuentos
+14: Current
+15: Recovery time
+16: Resin discounts
 17: Serenitea Pot
-18: No se encontraron expediciones
-19: Terminado
-20: Expediciones
-21: "</stuck:1006486283725590536> para más información"
-22: Datos no públicos
+18: No expeditions found
+19: Finished
+20: Expeditions
+21: "</stuck:1006486283725590536> for more information"
+22: Data not public
 23: Error
-24: Notas en tiempo real
+24: Realtime notes
 25: Mon.
-26: Mar.
-27: Mié.
+26: Tue.
+27: Wed.
 28: Thu.
-29: Vie.
+29: Fri.
 30: Sat.
-31: Sol.
-32: Elige tu idioma
-33: Idioma cambiado
-34: Idioma actual
-35: "</register:1006486283725590528> para más información"
-36: Cookie inválida
-37: Registro de cuenta cancelado
-38: No se han obtenido cuentas válidas de la cookie
-39: Registro de cuenta exitoso
-40: '¡Ya has reclamado la recompensa de inicio de sesión de hoy!'
-41: Obtenido
-42: Reclamación exitosa
-43: Resumen
-44: Días activos
-45: Caracteres
-46: Logros
+31: Sun.
+32: Choose your language
+33: Language changed
+34: Current language
+35: "</register:1006486283725590528> for more information"
+36: Cookie invalid
+37: Account register cancelled
+38: No valid accounts were obtained from the cookie
+39: Account registration successful
+40: You have already claimed today's login reward!
+41: Obtained
+42: Claim successful
+43: Overview
+44: Days Active
+45: Characters
+46: Achievements
 47: Spiral Abyss
 48: Oculi
 49: Anemoculi
 50: Geoculi
 51: Electroculi
-52: Cofres
-53: Cofres comunes
-54: Cofres Exquisitos
-55: Cofres de lujo
+52: Chests
+53: Common Chests
+54: Exquisite Chests
+55: Luxurious Chests
 56: Genshin stats
-57: Cofres preciosos
-58: Exploración del mundo
-59: Ingreso de Primogem v.s el mes pasado
-60: aumentado
-61: disminuido
-62: Ingresos Mora v.s el mes pasado
-63: Adquiridos este mes
-64: Último mes
-65: Primogemas obtenidos
-66: Registro diario
-67: Haga clic en el botón de abajo
-68: para ver los últimos 30 registros primo o mora
-69: Diario del Viajero
+57: Precious Chests
+58: World Exploration
+59: Primogem income v.s last month
+60: increased
+61: decreased
+62: Mora income v.s last month
+63: Acquired this month
+64: Last month
+65: Primogems obtained
+66: Diary log
+67: Click the button below
+68: to view the last 30 primo or mora records
+69: Traveler's Diary
 70: Primo Log
 71: primos
-72: Tronco Mora
+72: Mora Log
 73: mora
-74: Usa el comando </stats:1006486283725590530> para actualizar tus estadísticas
-75: (Este comando sólo muestra datos sobre el suelo 9)
-76: Datos del abismo espiral no encontrados
-77: Fase lunar
-78: Descenso más profundo
-79: Resumen del desafío
-80: Golpe único más fuerte
-81: Más derrotaciones
-82: Mayor daño recibido
-83: Restos elementales desatados
-84: Habilidades elementales
-85: Resumen del abismo espiral
-86: Cámara
+74: Use the </stats:1006486283725590530> command to refresh your stats
+75: (This command only shows data above floor 9)
+76: Spiral abyss data not found
+77: Lunar phase
+78: Deepest descent
+79: Challenge Summary
+80: Strongest single strike
+81: Most defeats
+82: Most damage taken
+83: Elemental bursts unleashed
+84: Elemental skills cast
+85: Spiral Abyss Overview
+86: Chamber
 87: "<CHAMBER>"
-88: "[Primera Casa]"
-89: "[Segunda Casa]"
-90: "Construir #"
-91: Arma
-92: Artefactos
-93: Estadísticas Principales
-94: Talentos
-95: Estadísticas del personaje
-96: Fuente
-97: Artefacto Thoughts
-98: Recordatorio de resina ha sido desactivado
-99: "SI"
-100: "DESACTIVADO"
-101: Alternar actual
-102: Umbral de resonancia
-103: Número máximo de notificación
-104: Ajustes guardados
+88: "[First Half]"
+89: "[Second Half]"
+90: "Build #"
+91: Weapon
+92: Artifacts
+93: Main Stats
+94: Talents
+95: Character Stats
+96: Source
+97: Artifact Thoughts
+98: Resin reminder has been turned off
+99: "ON"
+100: "OFF"
+101: Current Toggle
+102: Resing Threshold
+103: Max. notification number
+104: Settings saved
 105: Characters
-106: '¡Este código de regalo ya ha sido canjeado!'
-107: Código de regalo inválido
-108: Código de regalo
-109: Código canjeado
-110: Datos del evento de verano no encontrados
-111: Archipiélago Dorado de Manzanas
-112: Waypoints Waverider desbloqueados
-113: Waypoints desbloqueados
-114: Cofres del tesoro obtenidos
-115: Sin terminar
+106: This gift code has already been redeemed!
+107: Gift code invalid
+108: Gift code
+109: Code redeemed
+110: Summer event data not found
+111: Golden Apple Archipelago
+112: Waverider Waypoints Unlocked
+113: Waypoints Unlocked
+114: Treasure Chests Obtained
+115: Unfinished
 116: Surfpiercer
-117: Memorias de verano
-118: Exploración de realm
-119: Tiempo completado
-120: Desafiado con éxito
-121: veces
-122: Habilidad elemental desatada
-123: UID personalizado buscado
-124: Volver al predeterminado
-125: De forma predeterminada, shenhe te responde con el mismo idioma que tu discord usa
-126: Cambiar idioma anulará el idioma por defecto
-127: Si cualquier texto aún no está traducido, shenhe te responderá con Inglés
-128: Cambiando idioma
+117: Summer Memories
+118: Realm Exploration
+119: Time completed
+120: Successfully challenged
+121: times
+122: Unleashed elemental skill
+123: Custom UID searched
+124: Back to default
+125: By default, shenhe responds you with the same language your discord uses
+126: Changing language will override the default language
+127: If any text is not translated yet, shenhe will respond you with English
+128: Changing language
 129: Mondstat
 130: Liyue
 131: Inazuma
-132: Envía tu cookie
-133: pega el texto que has copiado aquí
-134: Hubo un error, por favor ve a [la página de problemas de Shenhe](https://github.com/seriaati/shenhe_bot/issues) para reportar este error.
-135: Hubo un error
-136: Elige tu cuenta
-137: Tutorial de registro de cuenta
-138: "1. Copie el código de abajo\n 2. Abra Chrome en su dispositivo e inicie sesión en su cuenta en https://www.hoyolab.com/home\n 3. elija la barra de direcciones y seleccione todo el texto allí\n 4. nter la palabra `java`, luego pega el código que has copiado, asegúrate de que la barra de direcciones comienza con `javascript:`\n 5. ENTER de progreso, una página en blanco mostrará su cookie, seleccione todo y copie\n 6. envía tu cookie aquí, usa el comando </register:1006486283725590528>\n ¿Demasiado complicado? ¡La imagen de abajo puede ayudar!"
-139: La cookie no es válida o está obsoleta, ¡por favor cierra la sesión y vuelve a iniciar sesión!
-140: Por favor, utilice el comando </register:1006486283725590528>
-141: '¡Datos de cuenta no encontrados!'
-142: Elige tu elemento
-143: Usted no es el emisor de este comando
+132: Submit your cookie
+133: please paste the text you copied here
+134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
+135: There was an error
+136: Choose your account
+137: Account registration tutorial
+138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+139: Cookie invalid or is outdated, please logout then login again!
+140: Please use the </register:1006486283725590528> command
+141: Account data not found!
+142: Choose your element
+143: You are not the issuer of this command
 144: Primo Log
 145: Mora Log
-146: Planta No.
+146: Floor No.
 147: "<FLOOR>"
-148: Elegir piso del abismo
-149: '¿Datos no públicos?'
-150: "Vaya a https://www.hoyolab.com/home e inicie sesión en\n Siga los pasos de la imagen debajo\n\n 1. Haz clic en el avatar en la parte superior derecha\n 2. Página de inicio personal\n 3. Haga clic en `Genshin` en la esquina superior derecha\n 4. Haz clic en el icono de engranaje\n 5. Cambia todos los interruptores"
-151: Resinear ajustes de notificación
-152: Umbral de resina
-153: Shenhe te DM después de que la resina excede este número
+148: Choose abyss floor
+149: Data not public?
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
+151: Resin notification settings
+152: Resin threshold
+153: Shenhe will DM you after resin exceeds this number
 154: Max. notification number
-155: DM se detendrá después de este número de veces
-156: Al elegir un personaje que ya tenga notificación activa, se eliminará su notificación
-157: Elige su(s) personaje(s)
-158: Actualmente no hay notificaciones definidas para ningún carácter
-159: Notificaciones de caracteres actuales
+155: DM will stop after this number of times
+156: Choosing a character that already has notification ON will remove its notification
+157: Choose your character(s)
+158: There are currently no notifications set for any characters
+159: Current character notifications
 160: Choose your element
-161: Al elegir este personaje se desactivarán sus notificaciones
-162: Construir
-163: Elige tu versión
-164: construcciones
-165: "Este usuario aún no ha registrado su cuenta\n</register:1006486283725590528> para registrarse"
-166: Usuario no encontrado
-167: "UID de"
-168: Introduce tus datos
-169: Nivel de objetivo del personaje
-170: "Por ejemplo: 90"
-171: Nivel de autoataque objetivo
-172: "Por ejemplo: 5"
-173: Habilidad elemental (E) nivel objetivo
-174: Nivel de objetivo del estallido elemental (Q)
-175: Añadir a la lista de tareas
-176: Por favor, elimina algunos materiales de tu lista de tareas usando el botón `remover materiales`
-177: Has alcanzado el límite de materiales que puedes tener en tu lista de tareas (125)
-178: Usa </todo:1006486283855605804> para ver tu lista de tareas
-179: Éxito
-180: Elige tu arma
-181: Establecer los niveles para
+161: Choosing this character will turn OFF its notifications
+162: Build
+163: Choose your build
+164: builds
+165: "This user hasn't registered their account yet\n</register:1006486283725590528> to register"
+166: User not found
+167: "'s UID"
+168: Enter your data
+169: Character target level
+170: "For example: 90"
+171: Auto attack target level
+172: "For example: 5"
+173: Elemental skill (E) target level
+174: Elemental burst (Q) target level
+175: Add to todo list
+176: Please remove some materials from your todo list using the `remove materials` button
+177: You have reached the limit of materials you can have in your todo list (125)
+178: Use </todo:1006486283855605804> to view your todo list
+179: Success
+180: Choose your weapon
+181: Set the levels for
 182: "<'S LEVEL>"
-183: Nivel actual
-184: "Por ejemplo: 1"
+183: Current level
+184: "For example: 1"
 185: Target level
 186: "For example: 90"
-187: Por favor ingrese un número
-188: "Nivel de personaje: Por favor, introduzca un número entre 1 y 90"
-189: "Nivel de Talento: Por favor, introduzca un número entre 1 y 10"
+187: Please enter a number
+188: "Character level: Please enter a number between 1 and 90"
+189: "Talent level: Please enter a number between 1 and 10"
 190: Invalid input
-191: Resultados del cálculo
-192: Contenido del cálculo
-193: Nivel de caracteres
-194: Nivel de ataque normal
-195: Nivel de habilidad elemental
-196: Nivel de ráfaga elemental
-197: No se necesitan materiales
-198: Nivel del personaje
-199: Nivel de talento
-200: Nivel de arma
-201: Nivel de arma
-202: Lista de tareas
-203: Añadir elemento
-204: "¡Increíble! ¡No hay nada que hacer! \n Use </calc character:1000187020892700793> o </calc weapon:1000187020892700793> para calcular materiales para personajes y armas, o usa el botón verde de abajo para añadir elementos personalizados"
-205: Eliminar elemento
-206: Limpiar elementos
-207: Elija el elemento que desea eliminar
-208: Nombre del artículo
-209: "Por ejemplo: mora"
-210: Importe del artículo
-211: (Dejar este campo en blanco eliminará el elemento completamente)
-212: No puedes eliminar más elementos de los que tienes en tu lista de documentos
+191: Calculation results
+192: Calculation content
+193: Character level
+194: Normal attack level
+195: Elemental skill level
+196: Elemental burst level
+197: No materials needed
+198: Character level-up
+199: Talent level-up
+200: Weapon level
+201: Weapon level-up
+202: Todo list
+203: Add item
+204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items"
+205: Remove item
+206: Clear items
+207: Choose the item you wish to remove
+208: Item name
+209: "For example: mora"
+210: Item amount
+211: (Leaving this field blank will remove the item entirely)
+212: You can't remove more items than you have in your dodo list
 213: Cryo
 214: Geo
-215: Piro
+215: Pyro
 216: Anemo
-217: Hidro
+217: Hydro
 218: Dendro
 219: Electro
 220: Characters
-221: Enero
-222: Febrero
-223: Marzo
-224: Abril
-225: Mayo
-226: Junio
-227: Julio
-228: Agosto
-229: Septiembre
-230: Octubre
-231: Noviembre
-232: Diciembre
-234: lunes
-235: tutoría
-236: novio
-237: jueves
-238: viernes
-239: sábado
-240: domingo
-250: objetos cultivables
-251: Clasificación de Logros
-252: Tú
+221: January
+222: February
+223: March
+224: April
+225: May
+226: June
+227: July
+228: August
+229: September
+230: October
+231: November
+232: December
+234: monday
+235: tuesday
+236: wednesday
+237: thursday
+238: friday
+239: saturday
+240: sunday
+250: farmable items
+251: Achievement leaderboard
+252: You
 253: N/A
-254: Esta tabla de clasificación está vacía
-255: Elige la tabla de clasificación con la que quieres ver
-256: Tabla de clasificación
-257: Tabla de la suerte
-258: PV
+254: This leaderboard is currently empty
+255: Choose the substat leaderboard you with to view
+256: Substat leaderboard
+257: Luck leaderboard
+258: HP
 259: HP%
 260: Atk.
 261: Atk.%
 262: Def.
 263: Def.%
-264: Tasa de crítico
-265: DMG crítico
-266: Elem. Maestría
-267: Recarga de Energía
-268: PS Base
-269: Atk base.
-270: Def. base.
-271: Bono de curación
+264: Crit Rate
+265: Crit DMG
+266: Elem. Mastery
+267: Energy Recharge
+268: Base HP
+269: Base Atk.
+270: Base Def.
+271: Healing Bonus
 272: Physic DMG Bonus
 273: Pyro DMG Bonus
 274: Elec DMG Bonus
@@ -267,250 +267,250 @@
 277: Anemo DMG Bonus
 278: Geo DMG Bonus
 279: Cryo DMG Bonus
-280: Velocidad base
-281: Velocidad%
-282: Volver
-283: O introduce tu UID en las opciones
-284: Cuenta no válida
-285: Esta es una cuenta sin un carácter principal
-286: UID inválido
-287: Por favor, activa el interruptor de pantalla de caracteres en el juego
-288: Nivel de jugador
-289: Nivel de mundo
-290: Logro
+280: Base Speed
+281: Speed%
+282: Go back
+283: Or enter your UID in the options
+284: Invalid account
+285: This is an account without a main character
+286: Invalid UID
+287: Please turn on the character showcase toggle in game
+288: Player level
+289: World level
+290: Achievement
 291: Spiral abyss
-292: HP Máximo
+292: Max HP
 293: Atk.
 294: Def.
 295: Elem. Mastery
 296: Crit Rate
 297: Crit DMG
 298: Energy Recharge
-299: Nivel de Amistad
-300: La puntuación más alta del artefacto es 99, sólo +20 artefactos tendrán puntajes
-301: Estadísticas
-302: Umbral actual
-303: Resin actual
-304: Número máximo de notificación actual
-305: Usa /remind para cambiar la configuración
-306: La resina está casi llena!!
-307: Notificación de Talent está desactivada
-308: Haz clic derecho en cualquier servidor que tenga en él
-309: Haga clic en `ajustes de privacidad`
-310: Encender el interruptor
-311: Cómo desbloquear DM de servidores
-312: Tiempo de cultivo de materiales para
+299: Friendship Level
+300: The highest artifact score is 99, only +20 artifacts will have scores
+301: Stats
+302: Current threshold
+303: Current resin
+304: Current max. notification number
+305: Use /remind to change the settings
+306: Resin is almost full!!
+307: Talent notification is now turned OFF
+308: Right click any server that has shenhe in it
+309: Click on `privacy settings`
+310: Turn the toggle ON
+311: How to unblock DM from servers
+312: Time to farm materials for
 313: "!"
-314: Elementos que puedes cultivar
-315: Información básica
-316: Cumpleaños
-317: Afiliación
-318: Constelación
-319: Nombre tarjeta
-320: Materiales de ascensión
-321: Ascensión a
-322: Materiales de nivelación del talento
-323: Talentos Pasivos
-324: Subir de nivel a
-325: Navegación rápida
-326: Atk normal.
-327: Atk cargado.
-328: Desplegando Atk.
-329: Calculando daño...
-330: Esto requiere entre 5 y 10 segundos
-331: Sin reacción
-332: Piña
-333: Vaporizar
-334: DMG promedio
+314: Items you can farm
+315: Basic information
+316: Birthday
+317: Affiliation
+318: Constellation
+319: Name card
+320: Ascension materials
+321: Ascension to
+322: Talent level-up materials
+323: Passive Talents
+324: Level-up to
+325: Quick navigation
+326: Normal Atk.
+327: Charged Atk.
+328: Plunging Atk.
+329: Calculating damage...
+330: This requires around 5 to 10 seconds
+331: No reaction
+332: Melt
+333: Vaporize
+334: Avg. DMG
 335: Non Crit DMG
-336: Golpe Crítico DMG
-337: Seleccionar reacción elemental
-338: No hay infusión cuerpo a cuerpo del equipo
-339: Infusión de Pyro
-340: Infusión de Cryo
+336: Crit Hit DMG
+337: Select elemental reaction
+338: No team melee infusion
+339: Pyro infusion
+340: Cryo infusion
 341: Bennett C6
 342: Chongyun Skill
-343: Seleccionar infusión cuerpo a cuerpo del equipo
-344: Seleccionar compañero(s)
-345: Equipo
-346: Condiciones
-347: Efectos
-348: Calcular daño
-349: Los efectos del artefacto y del arma no están incluidos por ahora
-350: fundición
-351: vaporizar
-352: URL de Autor
-353: Importando historial de deseos
-354: Por favor, pega el enlace aquí
-355: Por favor, espere un rato mientras shenhe está procesando su historial de deseos
-356: Historial de deseos importado correctamente
-357: Importando historial de deseos usando PC
+343: Select team melee infusion
+344: Select teammate(s)
+345: Team
+346: Conditions
+347: Effects
+348: Calculate Damage
+349: Artifact and weapon effects are not included for now
+350: melt
+351: vaporize
+352: Authkey URL
+353: Importing wish history
+354: Please paste the link here
+355: Please wait for awhile while shenhe is processing your wish history
+356: Successfully imported wish history
+357: Importing wish history using PC
 358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
-359: Importando historial de deseos usando tu teléfono android
-360: "[Usando Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Usando datos celular](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Haz clic en mí si los métodos anteriores no funcionan](https://www.youtube.com/watch?v=jAKq94KpGHA)"
-361: Importando historial de deseos usando tu dispositivo IOS
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Descargar Stream en App Store [here](https://apps.apple. om/app/stream/id1312141691)\n 2. Abrir la aplicación, luego permitir la VPN en las preferencias del sistema (Settings > General > VPN)\n 3. Instalar CA (haga clic en Sniff Now en la aplicación Stream > Instalar CA > Una ventana emergente aparecerá y elegir permitir > Ahora CA se descarga\n 4. Vaya a Ajustes > General > VPN & Device management > Haga clic en Stream Generated CA e instale\n 5. Abre el Impacto de Genshin y luego abre la pantalla de Deseos, mantente en esa página\n 6. Volver a la aplicación Stream > Elegir mi confianza > Pulse Sniff Now Button\n 7. Volver a Impacto de Genshin y luego abrir la página de historial de deseos\n 8. Espere a que la página cargue\n 9. Volver a la aplicación Stream > Detener Sniffing\n 10. Haga clic en Sniff History > Elija una solicitud que finalice por .json (el enlace comienza con https://hk4e-api-os. ihoyo.com/)\n 11. Haga clic en la pestaña Solicitud y copie el enlace\n 12. Envíelo aquí utilizando el comando </wish import:1000187021635104890>"
-363: Importando historial de deseos usando su dispositivo Playstation
-364: "(Si los siguientes pasos no funcionan, puedes vincular tu cuenta PS con una cuenta HoYoVerse y luego usar las instrucciones pc/móvil)\n (Solo puedes usar este método si tienes un correo dentro del juego con un código QR para abrir el evento web)\n\n 1. Abre el Impacto de Genshin en tu PlayStation\n 2. Abre el correo electrónico del evento que contiene el Código QR\n 3. Escanea el código QR con tu teléfono\n 4. Envía el enlace aquí usando el comando </wish import:1000187021635104890>"
-365: Elige tu plataforma
-366: "El idioma de su historial de deseos se basa en el idioma seleccionado actual\n cambiar el idioma después no tendrá efecto en los registros anteriores"
-367: No se encontraron datos de historial de deseos
-368: "</wish import:1000187021635104890> para importar tu historial de deseos"
-369: Historial de deseos
-370: Lástima grande disponible
-371: Lástima pequeña disponible
-372: Análisis de deseos de suerte
-373: Tu suerte es mejor que
-374: de jugadores
+359: Importing wish history using your android phone
+360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
+361: Importing wish history using your IOS device
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
+363: Importing wish history using your Playstation device
+364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
+365: Choose your platform
+366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
+367: No wish history data found
+368: "</wish import:1000187021635104890> to import your wish history"
+369: Wish history
+370: Big pity available
+371: Small pity available
+372: Wish luck analysis
+373: Your luck is better than
+374: of players
 375: "<TOTAL>"
-376: tira(s) en total
+376: pull(s) in total
 378: "<TOTAL>"
-379: Total de cinco estrellas
+379: UP five stars in total
 380: "<FROM PITY>"
-381: pull(s) de lástima
-382: Deseando tirar
-383: UP 5 caracteres estrellas
-384: Esperando que termine después
-385: tira(s)
-386: Predicción de número de deseo del evento
-387: Estándar
-388: "Sí"
-389: "Nu"
-390: '¿Es este el arma que querías?'
-391: El último arma de 5 estrellas que tiraste fue
-392: '¿Se trata de un arma estándar o de tiempo limitado?'
-393: Predicción de número de deseo de arma
+381: pity pull(s)
+382: Wishing to pull
+383: UP 5 star characters
+384: Expecting to finish after
+385: pull(s)
+386: Event wish number prediction
+387: Standard
+388: "Yes"
+389: "No"
+390: Is this the weapon you wanted?
+391: The last 5 star weapon you pulled was
+392: Is this a standard or limited time UP weapon?
+393: Weapon wish number prediction
 394: Wishing to pull
-395: arma(s) que quieres
-396: Eso es
+395: weapon(s) you want
+396: That is
 397: primogems
-398: Banner estándar
-399: Banner de tiempo limitado
-400: Estandarte de armas
+398: Standard banner
+399: Limited-time banner
+400: Weapon banner
 401: "<AVERAGE>"
-402: pull(es) por 5 estrellas
+402: pull(s) per 5 star
 403: "<FROM PITY>"
-404: tira(s) de la lástima
-405: Aún no has tirado ninguna arma de 5 estrellas en el estandarte de arma
-406: Hora de inicio
-407: Hora de fin
-408: Detalles
-409: Elegir tipo de evento
-410: Registra tu cuenta de genshin para usar comandos que requieren uno
-411: opciones
-412: Tutorial de registro
+404: pull(s) from pity
+405: You haven't pulled any 5 star weapons in the weapon banner yet
+406: Start time
+407: End time
+408: Details
+409: Choose event type
+410: Register your genshin account to use commands that require one
+411: options
+412: Registration tutorial
 413: Submit cookie
-414: "Ver notas en tiempo real: Resina actual, poto, estado de expedición (necesita /registrar)"
-415: brugere
-416: Compruebe los datos de otro usuario
-417: "Ver estadísticas del genshin: días activos, oculis, número de cofres"
-418: UID genshin de un usuario
-419: Ver tasas de exploración de área
-420: Reclamar hoyolab recompensa de inicio de sesión diario
-421: Ver todos los caracteres propios (necesita /registrarse)
-422: Ver diario del viajero (necesita /register)
-423: mes
-424: El mes con el que intentas buscar
-425: Este mes
+414: "View real time notes: Current resin, pot, expedition status (need /register)"
+415: user
+416: Check other user's data
+417: "View genshin stats: Active days, oculis, number of chests"
+418: A user's genshin UID
+419: View area exploration rates
+420: Claim hoyolab daily login reward
+421: View all owned characters (need /register)
+422: View traveler's diary (need /register)
+423: month
+424: The month you're trying to search with
+425: This month
 426: Last month
-427: El mes anterior al mes pasado
-428: Ver datos del abismo (necesita /registrar)
-429: tipo
-430: temporada
-431: El tipo de datos que desea ver
-432: '¿Cuál es la temporada del abismo?'
-433: Detallado
+427: The month before last month
+428: View abyss data (need /register)
+429: type
+430: season
+431: The type of data you wish to view
+432: Which abyss season?
+433: Detailed
 434: Overview
-435: Esta temporada
-436: Última temporada
+435: This season
+436: Last season
 437: Data not public?
-438: Establecer funciones de notificación
-439: función
-440: alternar
-441: Reiniciar notificación (necesita /registrarse)
-442: Notificación de Talent
-443: Comprobar configuración de privacidad
-444: ACTIVADO (o cambiar configuración)
+438: Set notification features
+439: function
+440: toggle
+441: Resin notification (need /register)
+442: Talent notification
+443: Check privacy settings
+444: ON (or change settings)
 445: "OFF"
-446: Ver objetos cultivables hoy
-447: "Ver construcciones de personajes: armas, artefactos, niveles de talento, estadísticas"
-448: Buscar UID de un usuario
-449: Ver artefactos, estadísticas, armas, talentos, y calcular el daño
-450: Canjear códigos de regalo (necesita /registrar)
-451: código
-452: Ver eventos en curso en genshin
-453: Ver clasificación
+446: View farmable items today
+447: "View character builds: Weapons, artifacts, talent levels, stats"
+448: Search a user's UID
+449: View characters' artifacts, stats, weapons, talents, and calculate damage
+450: Redeem gift codes (need /register)
+451: code
+452: View ongoing events in genshin
+453: View leaderboard
 454: Achievement leaderboard
-455: Tabla de clasificación de substancias de artefacto
-456: Tabla de deseos de suerte
+455: Artifact substat leaderboard
+456: Wish luck leaderboard
 457: Genshin wiki
-458: personaje
-459: Ver estadísticas de eventos anteriores de genshin
-460: Calcula los materiales necesarios para mejorar un personaje
-461: sincronizar
-462: sincronizar con los datos del juego (autorellenar los niveles)
+458: character
+459: View past genshin event stats
+460: Calculate materials needed for upgrading a character
+461: sync
+462: sync with in-game data (autofill the levels)
 463: "ON"
 464: "OFF"
-465: Calcula los materiales necesarios para mejorar un arma
+465: Calculate materials needed for upgrading a weapon
 466: type
-467: rareza
-468: espada
-469: catalizador
-470: arcilla
-471: arco
+467: rarity
+468: sword
+469: catalyst
+470: claymore
+471: bow
 472: polearm
-473: Ver lista de tareas
-474: Importar historial de deseos
+473: View todo list
+474: Import wish history
 475: function
-476: Tutorial de importación de historial de deseos
-477: Enviar enlace
-478: Ver historial de deseos
+476: Wish history import tutorial
+477: Submit link
+478: View wish history
 479: Wish luck analysis
-480: Probabilidad de predecir de tirar un personaje
-481: número
-482: '¿Cuántos caracteres UP de 5 estrellas desea tirar?'
-483: Predecir el cambio de tirar un arma
-484: Ver resumen de deseos
-485: Cambiar el idioma shenhe te responde con
-486: Ver todos los comandos
+480: Predict chance of pulling a character
+481: number
+482: How many 5 star UP characters do you wish to pull?
+483: Predict change of pulling a weapon
+484: View wish overview
+485: Change the language shenhe responds you with
+486: View all commands
 487: Genshin
-488: Deseo de Genshin
-489: Requiere importar historial de deseos usando /wish import
-490: Calculadora de progreso de mejora
-491: Calcular materiales de actualización
+488: Genshin wish
+489: Requires wish history import using /wish import
+490: Enhancement progress calculator
+491: Calculate upgrade materials
 492: Todo list
 493: Waifus
-494: Otros
-495: Elige tu categoría
-496: Sólo uso del administrador
+494: Others
+495: Choose your category
+496: Admin usage only
 497: Genshin stats
-498: Ver perfil
-499: Ver todos los caracteres
+498: View profile
+499: View all characters
 500: Realtime notes
-501: Actualizar posición del auto marcador
-502: Posición del tablero de clasificación actualizada
-503: Ver actualizaciones anteriores
-504: 'Hecho por seria#5334, DM mí si tienes alguna pregunta'
+501: Update self leaderboard position
+502: Leaderboard position updated
+503: View past updates
+504: 'Made by seria#5334, DM me if you have any questions'
 505: View past updates
 506: number
 507: How many 5 star UP characters do you wish to pull?
-508: Buscar cualquier cosa relacionada con genshin
-509: consulta
+508: Search anything genshin related
+509: query
 510: Sumeru
-511: Los nombres de personajes de genshin, armas y otros elementos del juego se traducirán automáticamente
-512: Error al actualizar la posición del tablero
-513: 'Lo siento mucho, el error ha sido reportado automáticamente a seria#5334, por favor espere pacientemente la corrección'
-514: Recordatorio de moneda del reino (necesita /registrar)
-515: Notificación de moneda de Realm. Configuración
-516: Umbral de moneda del reino
-517: Recordatorio de moneda real deshabilitado
-518: '¡La moneda real está casi llena!'
-519: La API de Enka está proobiblemente abajo ahora mismo, por favor espere pacientemente hasta que esté de vuelta
+511: Names of genshin characters, weapons, and other game elements will be translated automatically
+512: Leaderboard position update failed
+513: 'I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix'
+514: Realm currency reminder (needs /register)
+515: Realm currency notif. settings
+516: Realm currency threshold
+517: Realm currency reminder disabled
+518: Realm currency is almost full!
+519: The Enka API is proobably down right now, please wait patiently until it's back
 520: Dendroculus
-521: Eliminar datos de cuenta
-522: Datos de cuenta eliminados
-523: Dejar de recibir mensajes del desarrollador
-524: '¿No quieres verlo? Usa /devmsg'
-525: Dibujo
-526: Agravar
-527: Hidro infusión
+521: Remove account data
+522: Account data removed
+523: Stop receiving message from the developer
+524: Don't want to see this? Use /devmsg
+525: Spread
+526: Aggravate
+527: Hydro infusion
