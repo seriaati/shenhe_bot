@@ -8,10 +8,6 @@ import aiosqlite
 import GGanalysislib
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
-from apps.draw import (
-    draw_character_card,
-    draw_domain_card,
-)
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     calculate_artifact_score,
@@ -29,6 +25,7 @@ from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from dateutil import parser
 from discord import File, Interaction, SelectOption, User, app_commands
+from discord.ui import Select
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -140,7 +137,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.response.send_message(embed=embed, ephemeral=True)
             await i.followup.send(content=code_msg, ephemeral=True)
         elif option == 1:
-            await i.response.send_modal(AccountRegister.Modal(self.genshin_app, i.locale, user_locale))
+            await i.response.send_modal(
+                AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
+            )
         elif option == 2:
             await i.response.defer(ephemeral=True)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -247,7 +246,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 data = await enka.fetch_user(uid)
             except UIDNotFounded:
                 return await i.followup.send(
-                    embed=error_embed(message=text_map.get(519, i.locale, user_locale)).set_author(
+                    embed=error_embed(
+                        message=text_map.get(519, i.locale, user_locale)
+                    ).set_author(
                         name=text_map.get(286, i.locale, user_locale),
                         icon_url=i.user.display_avatar.url,
                     ),
@@ -273,7 +274,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             fp = result["fp"]
             fp.seek(0)
             file = File(fp, "stat_card.jpeg")
-            result['embed'].set_footer(text=f'Time elapsed: {end-start} s')
+            result["embed"].set_footer(text=f"Time elapsed: {end-start} s")
             await i.followup.send(
                 embed=result["embed"],
                 ephemeral=False if not context_command else True,
@@ -598,7 +599,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: Interaction):
-        start = process_time()
         await i.response.defer()
         result = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -629,31 +629,42 @@ class GenshinCog(commands.Cog, name="genshin"):
                 for upgrade in weapon_upgrades:
                     for item in upgrade.items:
                         if item.id == reward.id:
-                            weapons[upgrade.weapon_id] = (
-                                await ambr.get_weapon(upgrade.weapon_id)
-                            )[0]
+                            [weapon] = await ambr.get_weapon(upgrade.weapon_id)
+                            if not weapon.default_icon:
+                                weapons[upgrade.weapon_id] = weapon
 
             # merge two dicts
             items = characters | weapons
             chunks = list(divide_dict(items, 12))
 
             for chunk in chunks:
-                domain_card = await draw_domain_card(
-                    domain, user_locale or i.locale, chunk
-                )
-                result.append(domain_card)
-                
-        end = process_time()
+                result.append({"domain": domain, "items": chunk})
+
         embeds = []
-        for index, fp in enumerate(result):
+        options = []
+        
+        for index, items in enumerate(result):
             embed = default_embed(
                 f"{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
             )
-            embed.set_image(url=f"attachment://{index}.jpeg")
-            embed.set_footer(text=f'Time elapsed: {end-start} s')
+            embed.set_image(url=f"attachment://farm.jpeg")
             embeds.append(embed)
+            domain = result[index]["domain"]
+            current_len = 0
+            for option in options:
+                if domain.name in option.label:
+                    current_len += 1
+            options.append(SelectOption(label=f'{domain.city.name} | {domain.name} #{current_len+1}', value=index))
+            
+        class DomainSelect(Select):
+            def __init__(self, placeholder:str, options: List[SelectOption]):
+                super().__init__(options=options, placeholder=placeholder)
+            
+            async def callback(self, i: Interaction):
+                self.view.current_page = int(self.values[0])
+                await self.view.update_children(i)
 
-        await GeneralPaginator(i, embeds, self.bot.db, files=result).start(
+        await GeneralPaginator(i, embeds, self.bot.db, files=result, domain=True, custom_children=[DomainSelect(text_map.get(325, i.locale, user_locale), options)]).start(
             followup=True
         )
 
@@ -753,7 +764,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                     return await i.followup.send(
                         embed=error_embed(
                             message="請先至 <#978871680019628032> 設置 UID!"
-                        ).set_author(name="找不到 UID!", icon_url=member.display_avatar.url),
+                        ).set_author(
+                            name="找不到 UID!", icon_url=member.display_avatar.url
+                        ),
                         ephemeral=True,
                     )
             else:
@@ -780,7 +793,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 data = await enka.fetch_user(uid)
             except UIDNotFounded:
                 return await i.followup.send(
-                    embed=error_embed(message=text_map.get(519, i.locale, user_locale)).set_author(
+                    embed=error_embed(
+                        message=text_map.get(519, i.locale, user_locale)
+                    ).set_author(
                         name=text_map.get(286, i.locale, user_locale),
                         icon_url=i.user.display_avatar.url,
                     ),
@@ -819,9 +834,13 @@ class GenshinCog(commands.Cog, name="genshin"):
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
         )
         if custom_uid is not None:
-            overview.set_footer(text=f'{text_map.get(123, i.locale, user_locale)}: {custom_uid}')
+            overview.set_footer(
+                text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
+            )
         else:
-            overview.set_author(name=member.display_name, icon_url=member.display_avatar.url)
+            overview.set_author(
+                name=member.display_name, icon_url=member.display_avatar.url
+            )
         overview.set_image(url=data.player.namecard.banner.url)
         embeds["0"] = overview
         options = [
@@ -840,81 +859,72 @@ class GenshinCog(commands.Cog, name="genshin"):
                     emoji=get_character(character.id)["emoji"],
                 )
             )
-            card = await draw_character_card(
-                character, user_locale or i.locale, self.bot.session
+            embed = default_embed(
+                f"{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}"
             )
-            if card is None:
-                embed = default_embed(
-                    f"{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}"
-                )
-                embed.add_field(
-                    name=text_map.get(301, i.locale, user_locale),
-                    value=f"<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n"
-                    f"<:ATTACK:982138214305390632> {text_map.get(293, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
-                    f"<:DEFENSE:982068463566721064> {text_map.get(294, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
-                    f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(295, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
-                    f"<:CRITICAL:982068460731392040> {text_map.get(296, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
-                    f"<:CRITICAL_HURT:982068462081933352> {text_map.get(297, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
-                    f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(298, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
-                    f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
-                    inline=False,
-                )
+            embed.add_field(
+                name=text_map.get(301, i.locale, user_locale),
+                value=f"<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n"
+                f"<:ATTACK:982138214305390632> {text_map.get(293, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> {text_map.get(294, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(295, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
+                f"<:CRITICAL:982068460731392040> {text_map.get(296, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
+                f"<:CRITICAL_HURT:982068462081933352> {text_map.get(297, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(298, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
+                f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
+                inline=False,
+            )
 
-                # talents
-                value = ""
-                for skill in character.skills:
-                    value += f"{skill.name} | Lvl. {skill.level}\n"
-                embed.add_field(
-                    name=text_map.get(94, i.locale, user_locale), value=value
-                )
+            # talents
+            value = ""
+            for skill in character.skills:
+                value += f"{skill.name} | Lvl. {skill.level}\n"
+            embed.add_field(name=text_map.get(94, i.locale, user_locale), value=value)
 
-                # weapon
-                weapon = character.equipments[-1]
-                weapon_sub_stats = ""
-                for substat in weapon.detail.substats:
-                    weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
-                embed.add_field(
-                    name=text_map.get(91, i.locale, user_locale),
-                    value=f'{get_weapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
-                    f"{get_fight_prop(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
-                    f"{weapon_sub_stats}",
-                    inline=False,
-                )
-                embed.set_thumbnail(url=character.image.icon.url)
-                embed.set_author(name=member.display_name, icon_url=member.display_avatar.url)
-                embeds[str(character.id)] = embed
+            # weapon
+            weapon = character.equipments[-1]
+            weapon_sub_stats = ""
+            for substat in weapon.detail.substats:
+                weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
+            embed.add_field(
+                name=text_map.get(91, i.locale, user_locale),
+                value=f'{get_weapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
+                f"{get_fight_prop(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
+                f"{weapon_sub_stats}",
+                inline=False,
+            )
+            embed.set_thumbnail(url=character.image.icon.url)
+            embed.set_author(
+                name=member.display_name, icon_url=member.display_avatar.url
+            )
+            embeds[str(character.id)] = embed
 
-                # artifacts
-                artifact_embed = default_embed(
-                    f"{character.name} | {text_map.get(92, i.locale, user_locale)}"
+            # artifacts
+            artifact_embed = default_embed(
+                f"{character.name} | {text_map.get(92, i.locale, user_locale)}"
+            )
+            index = 0
+            for artifact in filter(
+                lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments
+            ):
+                artifact_sub_stats = f'**__{get_fight_prop(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(artifact.detail.mainstats.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
+                artifact_sub_stat_dict = {}
+                for substat in artifact.detail.substats:
+                    artifact_sub_stat_dict[substat.prop_id] = substat.value
+                    artifact_sub_stats += f'{get_fight_prop(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
+                if artifact.level == 20:
+                    artifact_sub_stats += f"<:SCORE:983948729293897779> {int(calculate_artifact_score(artifact_sub_stat_dict))}"
+                artifact_embed.add_field(
+                    name=f"{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}",
+                    value=artifact_sub_stats,
                 )
-                index = 0
-                for artifact in filter(
-                    lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments
-                ):
-                    artifact_sub_stats = f'**__{get_fight_prop(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(artifact.detail.mainstats.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
-                    artifact_sub_stat_dict = {}
-                    for substat in artifact.detail.substats:
-                        artifact_sub_stat_dict[substat.prop_id] = substat.value
-                        artifact_sub_stats += f'{get_fight_prop(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
-                    if artifact.level == 20:
-                        artifact_sub_stats += f"<:SCORE:983948729293897779> {int(calculate_artifact_score(artifact_sub_stat_dict))}"
-                    artifact_embed.add_field(
-                        name=f"{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}",
-                        value=artifact_sub_stats,
-                    )
-                    artifact_embed.set_thumbnail(url=character.image.icon.url)
-                    artifact_embed.set_author(
-                        name=member.display_name, icon_url=member.display_avatar.url
-                    )
-                    artifact_embed.set_footer(
-                        text=text_map.get(300, i.locale, user_locale)
-                    )
-                    index += 1
-                artifact_embeds[str(character.id)] = artifact_embed
-            else:
-                embeds[str(character.id)] = card
-                artifact_embeds[str(character.id)] = None
+                artifact_embed.set_thumbnail(url=character.image.icon.url)
+                artifact_embed.set_author(
+                    name=member.display_name, icon_url=member.display_avatar.url
+                )
+                artifact_embed.set_footer(text=text_map.get(300, i.locale, user_locale))
+                index += 1
+            artifact_embeds[str(character.id)] = artifact_embed
 
         view = EnkaProfile.View(
             embeds,
@@ -927,7 +937,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.bot.db,
             i.locale,
             user_locale,
-            custom_uid
+            custom_uid,
+            data.characters,
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
@@ -1251,7 +1262,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                         data = await enka.fetch_user(uid[0])
                     except UIDNotFounded:
                         return await i.followup.send(
-                            embed=error_embed(message=text_map.get(519, i.locale, user_locale)).set_author(
+                            embed=error_embed(
+                                message=text_map.get(519, i.locale, user_locale)
+                            ).set_author(
                                 name=text_map.get(286, i.locale, user_locale),
                                 icon_url=i.user.display_avatar.url,
                             ),
