@@ -34,7 +34,7 @@ class GenshinApp:
         log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid} [China]{is_cn}")
         user = self.bot.get_user(user_id)
         if user is None:
-            user = self.bot.fetch_user(user_id)
+            user = await self.bot.fetch_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
         try:
@@ -965,7 +965,7 @@ class GenshinApp:
     async def get_user_data(self, user_id: int, locale: Locale = None):
         user = self.bot.get_user(user_id)
         if user is None:
-            user = self.bot.fetch_user(user_id)
+            user = await self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
             "SELECT ltuid, ltoken, cookie_token, uid, cn_region FROM genshin_accounts WHERE user_id = ?",
