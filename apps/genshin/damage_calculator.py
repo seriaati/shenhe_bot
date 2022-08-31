@@ -243,6 +243,11 @@ class DamageCalculator:
                 description += desc
                 effect += eff
 
+            if character.id == 10000005 or character.id == 10000007:
+                element_key_dict = {"elementKey": character.element.name.lower()}
+            else:
+                element_key_dict = {}
+
             good_dict["characters"].append(
                 {
                     "key": character.name.replace(" ", ""),
@@ -263,6 +268,7 @@ class DamageCalculator:
                     "compareData": False,
                     "customMultiTarget": [],
                 }
+                | element_key_dict
             )
             weapon = character.equipments[-1]
             weapon_key = (
@@ -463,6 +469,7 @@ class Conditional:
         result = {}
         description_str = ""
         effect_str = ""
+        traveler = True if character.id in [10000005, 10000007] else False
         for conditional in self.conditionals:
             if conditional["name"] == character.name.replace(" ", ""):
                 if (
@@ -480,6 +487,12 @@ class Conditional:
                         and conditional["constellation"] is None
                     )
                 ):
+                    if (
+                        traveler
+                        and "traveler" in conditional
+                        and not conditional["traveler"] == character.element.name
+                    ):
+                        continue
                     result[
                         conditional["key"].replace(
                             "custom_element",
@@ -516,21 +529,12 @@ async def return_damage(i: discord.Interaction, view):
         item.disabled = False
     reaction_mode_disabled = True
     character_element = str(calculator.current_character.element.name)
-    reaction_mode_elements = [
-        "Pyro",
-        "Cryo",
-        "Hydro",
-        "pyro",
-        "cryo",
-        "Dendro",
-        "dendro",
-        "Electro",
-        "electro",
-        "hydro",
-    ]
+    reaction_mode_elements = ["Pyro", "Cryo", "Hydro", "Dendro", "Electro", "Anemo"]
     if (
         character_element in reaction_mode_elements
+        or character_element.lower() in reaction_mode_elements
         or calculator.infusion_aura in reaction_mode_elements
+        or calculator.infusion_aura.lower() in reaction_mode_elements
     ):
         reaction_mode_disabled = False
     view.children[4].disabled = reaction_mode_disabled
