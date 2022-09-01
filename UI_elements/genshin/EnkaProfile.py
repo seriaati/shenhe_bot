@@ -147,3 +147,4 @@ class CalculateDamageButton(Button):
             self.view, i.locale, await get_user_locale(i.user.id, self.view.db)
         )
         await return_damage(i, view)
+        view.message =  await i.original_response()

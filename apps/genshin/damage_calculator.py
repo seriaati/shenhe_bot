@@ -535,7 +535,7 @@ async def return_damage(i: discord.Interaction, view):
         f"<a:LOADER:982128111904776242> {text_map.get(329, i.locale, user_locale)}",
         text_map.get(330, i.locale, user_locale),
     )
-    embed.set_footer(text='Powered by Genshin Optimizer')
+    embed.set_footer(text="Powered by Genshin Optimizer")
     await i.response.edit_message(
         embed=embed,
         view=view,
@@ -555,6 +555,4 @@ async def return_damage(i: discord.Interaction, view):
     ):
         reaction_mode_disabled = False
     view.children[4].disabled = reaction_mode_disabled
-    view.message = await i.edit_original_response(
-        embed=embed, view=view, attachments=[]
-    )
+    await i.edit_original_response(embed=embed, view=view, attachments=[])
