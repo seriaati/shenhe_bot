@@ -1,6 +1,7 @@
+from apps.draw import draw_domain_card
 import config
 
-__all__ = ["GeneralPaginator"]
+__all__ = ["DomainPaginator"]
 
 
 from io import BytesIO
@@ -51,13 +52,19 @@ class _view(View):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
 
+        user_locale = await get_user_locale(interaction.user.id, self.db)
+        card = await draw_domain_card(
+            self.files[self.current_page]["domain"],
+            user_locale or interaction.locale,
+            self.files[self.current_page]["items"],
+        )
+
         kwargs = {"embed": self.embeds[self.current_page]}
-        if len(self.files) > 0:
-            fp = self.files[self.current_page]
-            fp.seek(0)
-            file_name = f"{self.current_page}.jpeg"
-            file = File(fp, file_name)
-            kwargs["attachments"] = [file]
+
+        card.seek(0)
+        file_name = "farm.jpeg"
+        file = File(card, file_name)
+        kwargs["attachments"] = [file]
 
         kwargs["view"] = self
 
@@ -108,7 +115,7 @@ class _view(View):
         await self.update_children(interaction)
 
 
-class GeneralPaginator:
+class DomainPaginator:
     def __init__(
         self,
         interaction: Interaction,
@@ -116,19 +123,18 @@ class GeneralPaginator:
         db: aiosqlite.Connection,
         custom_children: Optional[List[Union[Button, Select]]] = [],
         files: Optional[List[BytesIO]] = [],
+        domain: Optional[bool] = False,
     ):
         self.custom_children = custom_children
         self.interaction = interaction
         self.embeds = embeds
         self.db = db
         self.files = files
+        self.domain = domain
 
     async def start(
         self,
-        edit: bool = False,
-        followup: bool = False,
         check: bool = True,
-        ephemeral: bool = False,
     ) -> None:
         if not (self.embeds):
             raise ValueError("Missing embeds")
@@ -143,33 +149,23 @@ class GeneralPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
+        user_locale = await get_user_locale(self.interaction.user.id, self.db)
+        card = await draw_domain_card(
+            self.files[0]["domain"],
+            user_locale or self.interaction.locale,
+            self.files[0]["items"],
+        )
+
         kwargs = {"embed": self.embeds[view.current_page]}
-        if len(self.files) > 0:
-            fp = self.files[view.current_page]
-            fp.seek(0)
-            file_name = f"{view.current_page}.jpeg"
-            file = File(fp, file_name)
-            kwargs["files"] = [file]
+
+        card.seek(0)
+        file_name = "farm.jpeg"
+        file = File(card, file_name)
+        kwargs["files"] = [file]
 
         kwargs["view"] = view
 
-        if not edit:
-            kwargs["ephemeral"] = ephemeral
-
-        if edit:
-            if "files" in kwargs:
-                del kwargs["files"]
-                fp = self.files[view.current_page]
-                fp.seek(0)
-                file = File(fp, f"{view.current_page}.jpeg")
-                kwargs["attachments"] = [file]
-
-            await self.interaction.edit_original_response(**kwargs)
-
-        elif followup:
-            await self.interaction.followup.send(**kwargs)
-        else:
-            await self.interaction.response.send_message(**kwargs)
+        await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
         for item in view.children:

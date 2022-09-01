@@ -47,6 +47,7 @@ from UI_elements.genshin import (
     TalentNotification,
 )
 from utility.paginator import GeneralPaginator
+from utility.domain_paginator import DomainPaginator
 from utility.utils import (
     default_embed,
     divide_chunks,
@@ -599,7 +600,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: Interaction):
-        await i.response.defer()
         result = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         locale = user_locale or i.locale
@@ -642,7 +642,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         embeds = []
         options = []
-        
+
         for index, items in enumerate(result):
             embed = default_embed(
                 f"{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
@@ -654,19 +654,30 @@ class GenshinCog(commands.Cog, name="genshin"):
             for option in options:
                 if domain.name in option.label:
                     current_len += 1
-            options.append(SelectOption(label=f'{domain.city.name} | {domain.name} #{current_len+1}', value=index))
-            
+            options.append(
+                SelectOption(
+                    label=f"{domain.city.name} | {domain.name} #{current_len+1}",
+                    value=index,
+                )
+            )
+
         class DomainSelect(Select):
-            def __init__(self, placeholder:str, options: List[SelectOption]):
+            def __init__(self, placeholder: str, options: List[SelectOption]):
                 super().__init__(options=options, placeholder=placeholder)
-            
+
             async def callback(self, i: Interaction):
                 self.view.current_page = int(self.values[0])
                 await self.view.update_children(i)
 
-        await GeneralPaginator(i, embeds, self.bot.db, files=result, domain=True, custom_children=[DomainSelect(text_map.get(325, i.locale, user_locale), options)]).start(
-            followup=True
-        )
+        await DomainPaginator(
+            i,
+            embeds,
+            self.bot.db,
+            files=result,
+            custom_children=[
+                DomainSelect(text_map.get(325, i.locale, user_locale), options)
+            ],
+        ).start()
 
     @app_commands.command(
         name="build",
@@ -938,7 +949,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 artifact_embed.set_footer(text=text_map.get(300, i.locale, user_locale))
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
-        
+
         for embed in list(embeds.values()):
             if custom_uid is not None:
                 embed.set_footer(
