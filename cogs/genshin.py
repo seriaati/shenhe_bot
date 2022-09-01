@@ -809,6 +809,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
+            except asyncio.TimeoutError:
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(519, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
         if data.characters is None:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -821,7 +831,18 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=embed, ephemeral=True)
 
         async with EnkaNetworkAPI() as enka:
-            eng_data = await enka.fetch_user(uid)
+            try:
+                eng_data = await enka.fetch_user(uid)
+            except asyncio.TimeoutError:
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(519, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
 
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
