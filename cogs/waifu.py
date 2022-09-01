@@ -262,6 +262,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             if len(view.tags) == 0:
                 return
         async with WaifuAioClient() as wf:
+            wf: WaifuAioClient
             if many == 0:
                 if tags == 1:
                     try:
@@ -309,6 +310,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 else:
                     images = await wf.random(is_nsfw=[is_nsfw], many=True)
                 if sese == 1:
+                    if not isinstance(images, List):
+                        images = [images]
+                        
                     for index, image in enumerate(images):
                         if index > 5:
                             break
