@@ -46,7 +46,7 @@ async def draw_domain_card(
         # get domain template image
         background_paths = ["", "Mondstat", "Liyue", "Inazuma", "Sumeru"]
         domain_card = Image.open(
-            f"resources/images/templates/{background_paths[domain.city.id]} Farm.png"
+            f"shenhe_private/templates/{background_paths[domain.city.id]} Farm.png"
         )
 
         # dynamic font size
@@ -128,7 +128,7 @@ async def draw_character_card(
 
     # try to get the template
     try:
-        card = Image.open(f"resources/images/templates/build_cards/{character_id}.png")
+        card = Image.open(f"shenhe_private/templates/build_cards/{character_id}.png")
     except FileNotFoundError:
         return None
 
@@ -354,8 +354,8 @@ async def draw_todo_card(
     # get templates
     file_names = [
         f
-        for f in listdir("resources/images/templates/todo/")
-        if isfile(join("resources/images/templates/todo/", f))
+        for f in listdir("shenhe_private/templates/todo/")
+        if isfile(join("shenhe_private/templates/todo/", f))
     ]
 
     # divide todo items
@@ -366,7 +366,7 @@ async def draw_todo_card(
         text_x_pos = 725
         text_y_pos = 134
         file_name = choice(file_names)
-        todo_card = Image.open(f"resources/images/templates/todo/{file_name}")
+        todo_card = Image.open(f"shenhe_private/templates/todo/{file_name}")
         draw = ImageDraw.Draw(todo_card)
 
         for index, tuple in enumerate(todo_item):
@@ -446,7 +446,7 @@ async def draw_stats_card(
         "lux": user_stats.luxurious_chests,
     }
     session = aiohttp.ClientSession()
-    stat_card = Image.open("resources/images/templates/stats/Stat Card Template.png")
+    stat_card = Image.open("shenhe_private/templates/stats/Stat Card Template.png")
 
     path = f"resources/images/namecard/{namecard.filename}.png"
     try:
@@ -515,7 +515,7 @@ async def draw_talent_reminder_card(item_ids: List[int], locale: str):
     client = AmbrTopAPI(session, lang=locale)
 
     reminder_card = Image.open(
-        "resources/images/templates/remind/Talent Reminder Template.png"
+        "shenhe_private/templates/remind/Talent Reminder Template.png"
     )
     icon_x, icon_y = 100, 100
     count = 1
