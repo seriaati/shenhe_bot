@@ -76,7 +76,9 @@ class PageSelect(Select):
         damage_calc_disabled = False
         card = None
         if self.values[0] != "0":
-            [character] = [c for c in self.view.characters if c.id == int(self.values[0])]
+            [character] = [
+                c for c in self.view.characters if c.id == int(self.values[0])
+            ]
             card = await draw_character_card(
                 character, user_locale or i.locale, i.client.session
             )
@@ -98,15 +100,28 @@ class PageSelect(Select):
                 embed.set_footer(
                     text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
                 )
+            else:
+                embed.set_author(
+                    name=self.view.author.display_name,
+                    icon_url=self.view.author.display_avatar.url,
+                )
             card.seek(0)
             file = File(card, "card.jpeg")
             await i.response.edit_message(
                 embed=embed, view=self.view, attachments=[file]
             )
         else:
-            await i.response.edit_message(
-                embed=self.view.embeds[self.values[0]], view=self.view, attachments=[]
-            )
+            embed = self.view.emebds[self.values[0]]
+            if self.view.user_uid is not None:
+                embed.set_footer(
+                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
+                )
+            else:
+                embed.set_author(
+                    name=self.view.author.display_name,
+                    icon_url=self.view.author.display_avatar.url,
+                )
+            await i.response.edit_message(embed=embed, view=self.view, attachments=[])
 
 
 class ViewArtifacts(Button):

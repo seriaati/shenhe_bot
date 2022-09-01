@@ -1,15 +1,15 @@
-from io import BytesIO
 from typing import Any, List
 
+import config
+from apps.draw import draw_character_card
 from apps.genshin.damage_calculator import DamageCalculator, return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.GO_modes import hit_modes
+from data.game.GO_modes import hit_mode_texts
 from debug import DefaultView
-from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption
+from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from utility.utils import default_embed, error_embed
-import config
 
 
 class View(DefaultView):
@@ -30,6 +30,7 @@ class View(DefaultView):
             user_locale or locale,
             "critHit",
             enka_view.author,
+            custom_uid=enka_view.user_uid,
         )
 
         # producing select options
@@ -41,7 +42,11 @@ class View(DefaultView):
             reactionMode_options.append(
                 SelectOption(label=text_map.get(332, locale, user_locale), value="melt")
             )
-        elif element == "Pyro" or self.calculator.infusion_aura == "pyro" or element == 'Anemo':
+        elif (
+            element == "Pyro"
+            or self.calculator.infusion_aura == "pyro"
+            or element == "Anemo"
+        ):
             reactionMode_options.append(
                 SelectOption(
                     label=text_map.get(333, locale, user_locale), value="vaporize"
@@ -62,7 +67,7 @@ class View(DefaultView):
                     label=text_map.get(525, locale, user_locale), value="spread"
                 )
             )
-        elif element == "Electro" or element == 'Anemo':
+        elif element == "Electro" or element == "Anemo":
             reactionMode_options.append(
                 SelectOption(
                     label=text_map.get(526, locale, user_locale), value="aggravate"
@@ -81,9 +86,9 @@ class View(DefaultView):
 
         # adding items
         self.add_item(GoBack())
-        for index in range(0, 3):
+        for hit_mode, hash in hit_mode_texts.items():
             self.add_item(
-                HitModeButton(index, text_map.get(334 + index, locale, user_locale))
+                HitModeButton(hit_mode, text_map.get(hash, locale, user_locale))
             )
         self.add_item(
             ReactionModeSelect(
@@ -131,35 +136,59 @@ class GoBack(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        for item in self.view.enka_view.children:
-            item.disabled = False
-        if not isinstance(
-            self.view.enka_view.embeds[self.view.enka_view.character_id], Embed
-        ):
-            self.view.enka_view.children[0].disabled = True
+        enka_view = self.view.enka_view
+        user_locale = await get_user_locale(i.user.id, enka_view.db)
+        card = None
+        [character] = [
+            c for c in enka_view.characters if c.id == int(enka_view.character_id)
+        ]
+        card = await draw_character_card(
+            character, user_locale or i.locale, i.client.session
+        )
+        is_card = False if card is None else True
+        artifact_disabled = True if is_card else False
+
+        enka_view.children[0].disabled = artifact_disabled
+
+        if is_card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            fp: BytesIO = self.view.enka_view.embeds[self.view.enka_view.character_id]
-            fp.seek(0)
-            file = File(fp, "card.jpeg")
+            if enka_view.user_uid is not None:
+                embed.set_footer(
+                    text=f"{text_map.get(123, i.locale, user_locale)}: {enka_view.user_uid}"
+                )
+            else:
+                embed.set_author(
+                    name=enka_view.author.display_name,
+                    icon_url=enka_view.author.display_avatar.url,
+                )
+            card.seek(0)
+            file = File(card, "card.jpeg")
             await i.response.edit_message(
-                embed=embed, view=self.view.enka_view, attachments=[file]
+                embed=embed, view=enka_view, attachments=[file]
             )
         else:
-            embed = self.view.enka_view.embeds[self.view.enka_view.character_id]
-            await i.response.edit_message(
-                embed=embed, view=self.view.enka_view, attachments=[]
-            )
+            embed = enka_view.embeds[enka_view.character_id]
+            if enka_view.user_uid is not None:
+                embed.set_footer(
+                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
+                )
+            else:
+                embed.set_author(
+                    name=enka_view.author.display_name,
+                    icon_url=enka_view.author.display_avatar.url,
+                )
+            await i.response.edit_message(embed=embed, view=enka_view, attachments=[])
 
 
 class HitModeButton(Button):
-    def __init__(self, index: int, label: str):
+    def __init__(self, hit_mode: str, label: str):
         super().__init__(style=ButtonStyle.blurple, label=label)
-        self.index = index
+        self.hit_mode = hit_mode
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        self.view.calculator.hit_mode = (list(hit_modes.keys()))[self.index]
+        self.view.calculator.hit_mode = self.hit_mode
         await return_damage(i, self.view)
 
 

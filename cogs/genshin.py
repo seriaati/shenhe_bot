@@ -833,14 +833,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             f"{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n"
             f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
         )
-        if custom_uid is not None:
-            overview.set_footer(
-                text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
-            )
-        else:
-            overview.set_author(
-                name=member.display_name, icon_url=member.display_avatar.url
-            )
         overview.set_image(url=data.player.namecard.banner.url)
         embeds["0"] = overview
         options = [
@@ -925,6 +917,25 @@ class GenshinCog(commands.Cog, name="genshin"):
                 artifact_embed.set_footer(text=text_map.get(300, i.locale, user_locale))
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
+        
+        for embed in list(embeds.values()):
+            if custom_uid is not None:
+                embed.set_footer(
+                    text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
+                )
+            else:
+                embed.set_author(
+                    name=member.display_name, icon_url=member.display_avatar.url
+                )
+        for embed in list(artifact_embeds.values()):
+            if custom_uid is not None:
+                embed.set_footer(
+                    text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
+                )
+            else:
+                embed.set_author(
+                    name=member.display_name, icon_url=member.display_avatar.url
+                )
 
         view = EnkaProfile.View(
             embeds,

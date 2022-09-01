@@ -31,6 +31,7 @@ class DamageCalculator:
         infusion_aura: str = "",
         team: List[str] = [],
         debug: bool = False,
+        custom_uid: str = None,
     ):
         self.data = data
         self.browser = browser
@@ -44,6 +45,7 @@ class DamageCalculator:
         self.character_name = character_name
         self.current_character = None
         self.debug = debug
+        self.custom_uid = custom_uid
         for character in data.characters:
             if str(character.id) == character_id:
                 self.current_character = character
@@ -53,7 +55,7 @@ class DamageCalculator:
         damage_dict, description, effect = await self.calculate_damage()
         if not self.debug:
             embed = self.parse_damage_embed(
-                damage_dict, description, effect, self.member
+                damage_dict, description, effect, self.member, self.custom_uid
             )
             return embed
 
@@ -327,7 +329,12 @@ class DamageCalculator:
         return good_json, description, effect
 
     def parse_damage_embed(
-        self, damage_dict: dict, description: str, effect: str, member: discord.Member
+        self,
+        damage_dict: dict,
+        description: str,
+        effect: str,
+        member: discord.Member,
+        custom_uid: str | None,
     ) -> discord.Embed:
         infusion_str = (
             f"({text_map.get(infusion_aura_texts[self.infusion_aura], self.locale)})"
@@ -367,8 +374,17 @@ class DamageCalculator:
             )
         if effect != "":
             embed.add_field(name=text_map.get(347, self.locale), value=effect)
-        embed.set_author(name=member.display_name, icon_url=member.display_avatar.url)
+
+        if custom_uid is None:
+            embed.set_author(
+                name=member.display_name, icon_url=member.display_avatar.url
+            )
+        else:
+            embed.set_footer(
+                text=f"{text_map.get(123, self.locale)}: {self.custom_uid}"
+            )
         embed.set_thumbnail(url=get_character(self.character_id)["icon"])
+
         return embed
 
 
@@ -515,12 +531,13 @@ async def return_damage(i: discord.Interaction, view):
     calculator = view.calculator
     for item in view.children:
         item.disabled = True
-    view.children[0].disabled = False
+    embed = default_embed(
+        f"<a:LOADER:982128111904776242> {text_map.get(329, i.locale, user_locale)}",
+        text_map.get(330, i.locale, user_locale),
+    )
+    embed.set_footer(text='Powered by Genshin Optimizer')
     await i.response.edit_message(
-        embed=default_embed(
-            f"<a:LOADER:982128111904776242> {text_map.get(329, i.locale, user_locale)}",
-            text_map.get(330, i.locale, user_locale),
-        ),
+        embed=embed,
         view=view,
         attachments=[],
     )

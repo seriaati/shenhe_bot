@@ -971,7 +971,7 @@ class GenshinApp:
             user = await self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid, cn_region FROM genshin_accounts WHERE user_id = ?",
+            "SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?",
             (user_id,),
         )
         user_data = await c.fetchone()
@@ -979,8 +979,6 @@ class GenshinApp:
             client = self.bot.genshin_client
             uid = None
         else:
-            is_cn = user_data[4]
-            is_cn = True if is_cn == 1 else False
             uid = user_data[3]
             client = genshin.Client()
             client.set_cookies(
@@ -990,8 +988,6 @@ class GenshinApp:
                 cookie_token=user_data[2],
             )
             client.uids[genshin.Game.GENSHIN] = uid
-            if is_cn:
-                client.region = genshin.Region.CHINESE
 
         locale = await get_user_locale(user_id, self.db) or locale
         client_locale = to_genshin_py(locale) or "en-us"
