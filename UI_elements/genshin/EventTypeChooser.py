@@ -10,5 +10,5 @@ class Select(Select):
         
     async def callback(self, i: Interaction) -> Any:
         self.view.current_page = 0
-        self.view.pages = self.embeds[int(self.values[0])]
+        self.view.embeds = self.embeds[int(self.values[0])]
         await i.response.edit_message(embed=self.embeds[int(self.values[0])][0], view=self.view)
