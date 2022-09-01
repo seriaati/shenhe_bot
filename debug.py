@@ -35,6 +35,7 @@ class DefaultView(discord.ui.View):
         except AttributeError:
             log.warning(f"[Attribute Error][Edit View]: [children]{self.children}")
         except discord.HTTPException as e:
+            sentry_sdk.capture_event(e)
             log.warning(f"[HTTPException][Edit View]: [children]{self.children} [code]{e.code} [message]{e.text}")
         except Exception as e:
             sentry_sdk.capture_event(e)
