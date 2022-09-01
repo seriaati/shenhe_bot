@@ -111,7 +111,7 @@ class PageSelect(Select):
                 embed=embed, view=self.view, attachments=[file]
             )
         else:
-            embed = self.view.emebds[self.values[0]]
+            embed = self.view.embeds[self.values[0]]
             if self.view.user_uid is not None:
                 embed.set_footer(
                     text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
