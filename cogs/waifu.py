@@ -213,11 +213,12 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 bytes_obj = io.BytesIO(await resp.read())
                 file = File(bytes_obj, filename="waifu_image.gif", spoiler=True)
             view = WaifuCog.DeleteImageView(i.user)
-            view.message = await i.edit_original_response(embed=None, attachments=[file], view=view)
+            await i.edit_original_response(embed=None, attachments=[file], view=view)
+            view.message = await i.original_response()
         else:
             await i.edit_original_response(
                 embed=default_embed(
-                    "<a:LOADER:982128111904776242> 尋找及下載圖片中...", "時長取決於小雪家裡網路速度"
+                    "<a:LOADER:982128111904776242> 尋找及下載圖片中..."
                 ),
                 view=None,
             )
