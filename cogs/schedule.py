@@ -68,9 +68,18 @@ class Schedule(commands.Cog):
                 except genshin.errors.AlreadyClaimed:
                     count += 1
                 except genshin.errors.InvalidCookies:
-                    await c.execute(
-                        "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                    )
+                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
+                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
+                    try:
+                        await user.send(embed=embed)
+                    except Forbidden:
+                        pass
+                    except Exception as e:
+                        sentry_sdk.capture_exception(e)
+                    else:
+                        await c.execute(
+                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
+                        )
                 except:
                     continue
                 else:
@@ -117,9 +126,18 @@ class Schedule(commands.Cog):
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
-                    await c.execute(
-                        "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                    )
+                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
+                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
+                    try:
+                        await user.send(embed=embed)
+                    except Forbidden:
+                        pass
+                    except Exception as e:
+                        sentry_sdk.capture_exception(e)
+                    else:
+                        await c.execute(
+                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
+                        )
                 except Exception as e:
                     sentry_sdk.capture_exception(e)
                     await c.execute(
@@ -210,9 +228,18 @@ class Schedule(commands.Cog):
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
-                    await c.execute(
-                        "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                    )
+                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
+                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
+                    try:
+                        await user.send(embed=embed)
+                    except Forbidden:
+                        pass
+                    except Exception as e:
+                        sentry_sdk.capture_exception(e)
+                    else:
+                        await c.execute(
+                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
+                        )
                 except:
                     await c.execute(
                         "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
