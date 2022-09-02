@@ -1,10 +1,8 @@
 from datetime import datetime
-from pprint import pprint
 from typing import Optional
 
 import aiosqlite
-import discord
-import GGanalysislib
+from wish_analysis import GGanalysislib
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.wish.wish_app import (
