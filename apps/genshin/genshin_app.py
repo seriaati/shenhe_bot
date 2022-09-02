@@ -997,9 +997,12 @@ class GenshinApp:
         try:
             await client.update_character_names(lang=client._lang)
         except genshin.errors.InvalidCookies:
-            await c.execute(
-                "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-            )
+            client.region = genshin.Region.CHINESE
+            try:
+                await client.update_character_names(lang=client._lang)
+            except Exception as e:
+                log.warning(f"[Erorr][Update Character Name]: [type]{type(e)} [e]{e}")
+                sentry_sdk.capture_exception(e)
         return client, uid, user, locale
 
     async def check_user_data(self, user_id: int):
