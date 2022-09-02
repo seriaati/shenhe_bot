@@ -1,6 +1,3 @@
 [submodule "yelan"]
 	path = yelan
 	url = https://github.com/seriaati/yelan
-[submodule "GGanalysisLite"]
-	path = GGanalysisLite
-	url = https://github.com/OneBST/GGanalysisLite
