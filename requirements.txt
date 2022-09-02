@@ -1,13 +1,16 @@
 aiohttp==3.8.1
 aiosqlite==0.17.0
-discord.py @ git+https://github.com/Rapptz/discord.py
-enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
-genshin @ git+https://github.com/thesadru/genshin.py@e5920c9e2765cf62c82b45d9eaca6f6d12761192
-jishaku @git+https://github.com/Gorialis/jishaku
+discord.py==2.0.1
+enkanetwork.py==1.2.10
+genshin @ git+https://github.com/thesadru/genshin.py
 hmtai==3.2.0
 matplotlib==3.5.3
 numpy==1.23.2
+Pillow==9.2.0
+pydantic==1.9.1
 pyppeteer==1.0.2
 python-dotenv==0.20.0
+python_dateutil==2.8.2
 PyYAML==6.0
+sentry_sdk==1.9.5
 waifuim.py==3.2.6
