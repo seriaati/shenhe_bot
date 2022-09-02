@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 import aiosqlite
-from wish_analysis import GGanalysislib
+import GGanalysislib
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.wish.wish_app import (

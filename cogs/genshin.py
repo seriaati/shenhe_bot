@@ -5,7 +5,7 @@ from time import process_time
 from typing import Dict, List
 
 import aiosqlite
-from wish_analysis import GGanalysislib
+import GGanalysislib
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
 from apps.genshin.genshin_app import GenshinApp
