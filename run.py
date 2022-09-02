@@ -79,7 +79,7 @@ class ShenheBot(commands.Bot):
                     "--no-sandbox",
                     "--start-maximized",
                 ],
-                "executablePath": "chrome-linux"
+                "executablePath": "../shenhe_bot/chrome-linux"
             }
         )
         self.debug = debug
