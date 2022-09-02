@@ -1,5 +1,5 @@
 from genshin import InvalidCookies
-from apps.draw import draw_todo_card
+from yelan.draw import draw_todo_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     check_level_validity,

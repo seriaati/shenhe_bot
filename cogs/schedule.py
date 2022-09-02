@@ -6,7 +6,7 @@ import json
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
-from apps.draw import draw_talent_reminder_card
+from yelan.draw import draw_talent_reminder_card
 from apps.genshin.genshin_app import GenshinApp
 from discord import File
 from apps.text_map.convert_locale import to_genshin_py, to_ambr_top_dict

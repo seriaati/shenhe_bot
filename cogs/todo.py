@@ -2,7 +2,7 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 from apps.text_map.utils import get_user_locale
 from UI_elements.todo import TodoList
-from apps.todo_app import get_todo_embed, return_todo
+from apps.todo.todo_app import get_todo_embed, return_todo
 from discord.app_commands import locale_str as _
 
 

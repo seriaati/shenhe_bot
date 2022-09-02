@@ -7,7 +7,7 @@ from discord import Embed, Interaction, Locale, Member
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
 
-from apps.draw import draw_todo_card
+from yelan.draw import draw_todo_card
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 

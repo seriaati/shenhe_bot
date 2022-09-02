@@ -7,7 +7,7 @@ from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
 from discord.ui import Button, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
-from apps.todo_app import get_todo_embed, return_todo
+from apps.todo.todo_app import get_todo_embed, return_todo
 from utility.utils import error_embed, log
 import config
 

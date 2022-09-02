@@ -4,7 +4,7 @@ from typing import Dict, Literal, Tuple
 
 import aiosqlite
 import sentry_sdk
-from apps.draw import draw_stats_card
+from yelan.draw import draw_stats_card
 from apps.genshin.utils import get_area_emoji, get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map

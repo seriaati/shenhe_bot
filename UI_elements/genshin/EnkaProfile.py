@@ -2,8 +2,8 @@ from io import BytesIO
 from typing import Any, Dict, List
 
 import aiosqlite
-from apps.draw import draw_character_card
-from apps.genshin.damage_calculator import return_damage
+from yelan.draw import draw_character_card
+from yelan.damage_calculator import return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView

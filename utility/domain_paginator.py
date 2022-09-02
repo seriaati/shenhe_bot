@@ -1,4 +1,4 @@
-from apps.draw import draw_domain_card
+from yelan.draw import draw_domain_card
 import config
 
 __all__ = ["DomainPaginator"]
