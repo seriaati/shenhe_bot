@@ -1447,9 +1447,22 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def activity(
         self, i: Interaction, member: User = None, custom_uid: int = None
     ):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         member = member or i.user
+        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = custom_uid or uid
+        if uid is None:
+            return await i.followup.send(
+                embed=error_embed(
+                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
+                ).set_author(
+                    name=text_map.get(141, i.locale, user_locale),
+                    icon_url=member.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
         result, success = await self.genshin_app.get_activities(
-            member.id, custom_uid, i.locale
+            member.id, uid, i.locale
         )
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
