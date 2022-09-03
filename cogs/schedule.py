@@ -147,7 +147,7 @@ class Schedule(commands.Cog):
                 else:
                     coin = notes.current_realm_currency
                     locale = user_locale or "zh-TW"
-                    if coin > threshold and current_notif < max_notif:
+                    if coin >= threshold and current_notif < max_notif:
                         if notes.current_realm_currency == notes.max_realm_currency:
                             realm_recover_time = text_map.get(1, locale, user_locale)
                         else:
@@ -433,7 +433,7 @@ class Schedule(commands.Cog):
     @pot_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-        await asyncio.sleep(120)
+        # await asyncio.sleep(120)
 
     @talent_notification.before_loop
     async def before_notif(self):
