@@ -8,12 +8,15 @@ import aiohttp
 from ambr.constants import CITIES, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 from ambr.models import (
+    ArtifactDetail,
     Character,
     CharacterUpgrade,
     City,
     Domain,
     Material,
+    MaterialDetail,
     Weapon,
+    WeaponDetail,
     WeaponUpgrade,
 )
 
@@ -49,12 +52,13 @@ class AmbrTopAPI:
             return self.cache[self.lang][endpoint]
 
     async def _request_from_endpoint(
-        self, endpoint: str, lang: str = None, static: bool = False
+        self, endpoint: str, lang: str = None, static: bool = False, id: str = ""
     ) -> Dict:
+        lang = lang or self.lang
         if static:
             endpoint_url = f"{BASE}static/{STATIC_ENDPOINTS.get(endpoint)}"
         else:
-            endpoint_url = f"{BASE}{lang}/{ENDPOINTS.get(endpoint)}"
+            endpoint_url = f"{BASE}{lang}/{ENDPOINTS.get(endpoint)}/{id}"
         async with self.session.get(endpoint_url) as r:
             endpoint_data = await r.json()
         if "code" in endpoint_data:
@@ -134,6 +138,27 @@ class AmbrTopAPI:
             self._update_cache(endpoint="material")
             result = await self.get_material(id=id, retry=True)
 
+        return result
+    
+    async def get_material_detail(
+        self, id: int
+    ) -> MaterialDetail:
+        data = await self._request_from_endpoint("material", id=id)
+        result = MaterialDetail(**data["data"])
+        return result
+    
+    async def get_weapon_detail(
+        self, id: int
+    ) -> WeaponDetail:
+        data = await self._request_from_endpoint("weapon", id=id)
+        result = WeaponDetail(**data["data"])
+        return result
+    
+    async def get_artifact_detail(
+        self, id: int
+    ) -> ArtifactDetail:
+        data = await self._request_from_endpoint("artifact", id=id)
+        result = ArtifactDetail(**data["data"])
         return result
 
     async def get_character(

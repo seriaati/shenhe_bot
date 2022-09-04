@@ -26,7 +26,6 @@ from utility.utils import error_embed, log, sentry_logging
 import genshin
 
 load_dotenv()
-os.environ["PYPPETEER_CHROMIUM_REVISION"] = "1027018"
 user_name = getpass.getuser()
 
 if user_name == "seria":
@@ -74,10 +73,7 @@ class ShenheBot(commands.Bot):
                 "headless": True,
                 "autoClose": False,
                 "args": [
-                    '--proxy-server="direct://"',
-                    "--proxy-bypass-list=*",
                     "--no-sandbox",
-                    "--start-maximized",
                 ],
             }
         )

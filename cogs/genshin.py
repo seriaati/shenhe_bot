@@ -1,6 +1,7 @@
 import asyncio
 import json
 from datetime import datetime
+import random
 from time import process_time
 from typing import Dict, List
 
@@ -53,6 +54,7 @@ from utility.utils import (
     divide_chunks,
     divide_dict,
     error_embed,
+    get_weekday_int_with_name,
     parse_HTML,
 )
 
@@ -1385,8 +1387,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         ambr_top_locale = to_ambr_top(user_locale or i.locale)
-        names = ["avatar", "material", "weapon", "reliquary"]
+        names = ["avatar", "weapon", "material", "reliquary"]
         item_type = None
+        client = AmbrTopAPI(self.bot.session, ambr_top_locale)
         for index, file in enumerate(self.text_map_files):
             if query in file:
                 item_type = index
@@ -1395,9 +1398,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             async with self.bot.session.get(
                 f"https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}"
             ) as r:
-                avatar = await r.json()
+                data = await r.json()
             embeds, material_embed, options = parse_character_wiki_embed(
-                avatar, query, i.locale, user_locale
+                data, query, i.locale, user_locale
             )
             await GeneralPaginator(
                 i,
@@ -1412,6 +1415,39 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                 ],
             ).start(followup=True)
+        elif item_type == 1:
+            weapon = await client.get_weapon_detail(query)
+            rarity_str = ''
+            for _ in range(weapon.rarity):
+                rarity_str += '<:white_star:982456919224615002>'
+            embed = default_embed(weapon.name, f'{rarity_str}\n\n{weapon.description}')
+            embed.add_field(name=text_map.get(529, i.locale, user_locale), value=weapon.type, inline=False)
+            embed.add_field(name=text_map.get(347, i.locale, user_locale), value=f'{weapon.effect.name}\n\n{weapon.effect.description}', inline=False)
+            embed.set_thumbnail(url=weapon.icon)
+            await i.followup.send(embed=embed)
+        elif item_type == 2:
+            material = await client.get_material_detail(query)
+            rarity_str = ''
+            for _ in range(material.rarity):
+                rarity_str += '<:white_star:982456919224615002>'
+            embed = default_embed(material.name, f'{rarity_str}\n\n{material.description}')
+            embed.add_field(name=text_map.get(529, i.locale, user_locale), value=material.type, inline=False)
+            source_str = ""
+            for source in material.sources:
+                day_str = ""
+                if len(source.days) != 0:
+                    day_list = [get_weekday_name(get_weekday_int_with_name(day), i.locale, user_locale) for day in source.days]
+                    day_str = ', '.join(day_list)
+                day_str = "" if len(source.days) == 0 else f'({day_str})'
+                source_str += f"• {source.name} {day_str}\n"
+            embed.add_field(name=text_map.get(530, i.locale, user_locale), value=source_str, inline=False)
+            embed.set_thumbnail(url=material.icon)
+            await i.followup.send(embed=embed)
+        elif item_type == 3:
+            artifact = await client.get_artifact_detail(query)
+            embed = default_embed(artifact.name, f'2x: {artifact.effects.two_piece}\n\n4x: {artifact.effects.four_piece}')
+            embed.set_thumbnail(url=artifact.icon)
+            await i.followup.send(embed=embed)
 
     @search.autocomplete("query")
     async def query_autocomplete(
@@ -1433,6 +1469,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             for query in query_list
             if current.lower() in query.lower()
         ]
+        random.shuffle(result)
         return result[:25]
 
     @app_commands.command(

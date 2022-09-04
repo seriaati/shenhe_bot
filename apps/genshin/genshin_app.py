@@ -971,7 +971,7 @@ class GenshinApp:
             user = await self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid FROM genshin_accounts WHERE user_id = ?",
+            "SELECT ltuid, ltoken, cookie_token, uid, cn_region FROM genshin_accounts WHERE user_id = ?",
             (user_id,),
         )
         user_data = await c.fetchone()
@@ -980,6 +980,7 @@ class GenshinApp:
             uid = None
         else:
             uid = user_data[3]
+            is_cn = user_data[4]
             client = genshin.Client()
             client.set_cookies(
                 ltuid=user_data[0],
@@ -997,12 +998,7 @@ class GenshinApp:
         try:
             await client.update_character_names(lang=client._lang)
         except genshin.errors.InvalidCookies:
-            client.region = genshin.Region.CHINESE
-            try:
-                await client.update_character_names(lang=client._lang)
-            except Exception as e:
-                log.warning(f"[Erorr][Update Character Name]: [type]{type(e)} [e]{e}")
-                sentry_sdk.capture_exception(e)
+            pass
         return client, uid, user, locale
 
     async def check_user_data(self, user_id: int):
