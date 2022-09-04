@@ -52,6 +52,7 @@ class AddItem(Button):
         result, empty = await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
         view = View(self.view.db, empty, i.user, i.locale, user_locale)
         await return_todo(result, i, view, i.client.db)
+        view.message = await i.original_response()
 
 
 class RemoveItem(Button):
@@ -88,6 +89,7 @@ class ClearItems(Button):
         view = View(self.view.db, True, i.user, i.locale, user_locale)
         result = (await get_todo_embed(self.view.db, i.user, i.locale, i.client.session))[0]
         await return_todo(result, i, view, i.client.db)
+        view.message = await i.original_response()
 
 
 class AddItemModal(DefaultModal):
@@ -181,3 +183,4 @@ class RemoveItemSelect(Select):
         result, disabled = await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
         view = View(self.view.db, disabled, i.user, i.locale, user_locale)
         await return_todo(result, i, view, i.client.db)
+        view.message = await i.original_response()

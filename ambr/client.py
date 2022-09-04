@@ -135,7 +135,7 @@ class AmbrTopAPI:
                 result.append(Material(**material_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="material")
+            await self._update_cache(endpoint="material")
             result = await self.get_material(id=id, retry=True)
 
         return result
@@ -174,7 +174,7 @@ class AmbrTopAPI:
                 result.append(Character(**character_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="character")
+            await self._update_cache(endpoint="character")
             result = await self.get_character(id=id, retry=True)
 
         return result
@@ -192,7 +192,7 @@ class AmbrTopAPI:
                 result.append(Weapon(**weapon_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="weapon")
+            await self._update_cache(endpoint="weapon")
             result = await self.get_weapon(id=id, retry=True)
 
         return result
@@ -216,7 +216,7 @@ class AmbrTopAPI:
                 result.append(CharacterUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="upgrade")
+            await self._update_cache(endpoint="upgrade")
             result = await self.get_character_upgrade(id=character_id, retry=True)
 
         return result
@@ -240,7 +240,7 @@ class AmbrTopAPI:
                 result.append(WeaponUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="upgrade")
+            await self._update_cache(endpoint="upgrade")
             result = await self.get_weapon_upgrade(id=weapon_id, retry=True)
 
         return result
@@ -270,7 +270,7 @@ class AmbrTopAPI:
                     result.append(Domain(**domain_info))
 
         if len(result) == 0 and not retry:
-            self._update_cache(endpoint="domain")
+            await self._update_cache(endpoint="domain")
             result = await self.get_domain(id=id, retry=True)
 
         return result

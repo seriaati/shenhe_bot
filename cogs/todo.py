@@ -18,6 +18,7 @@ class Todo(commands.Cog, name="todo"):
         )
         view = TodoList.View(self.bot.db, disabled, i.user, i.locale, user_locale)
         await return_todo(result, i, view, self.bot.db)
+        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:
