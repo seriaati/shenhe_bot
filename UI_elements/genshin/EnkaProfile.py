@@ -7,7 +7,7 @@ from yelan.damage_calculator import return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import ButtonStyle, Embed, File, Interaction, Locale, Member, SelectOption
+from discord import ButtonStyle, Embed, File, Interaction, Locale, User, SelectOption
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo

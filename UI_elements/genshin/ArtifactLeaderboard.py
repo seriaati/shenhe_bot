@@ -7,7 +7,7 @@ from apps.text_map.utils import get_user_locale
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from debug import DefaultView
-from discord import ButtonStyle, Interaction, Locale, Member
+from discord import ButtonStyle, Interaction, Locale, User
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed

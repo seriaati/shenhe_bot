@@ -4,7 +4,7 @@ import aiosqlite
 from apps.genshin.utils import get_character
 from data.game.elements import elements
 from debug import DefaultView
-from discord import ButtonStyle, Embed, Interaction, Member, SelectOption
+from discord import ButtonStyle, Embed, Interaction, User, SelectOption
 from discord.ui import Button, Select
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale

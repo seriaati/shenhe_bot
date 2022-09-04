@@ -4,7 +4,7 @@ import yaml
 from apps.genshin.utils import get_character, get_character_builds
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import Embed, Member, Interaction, SelectOption
+from discord import Embed, User, Interaction, SelectOption
 from discord.ui import Button, Select
 from utility.utils import error_embed
 from apps.text_map.text_map_app import text_map

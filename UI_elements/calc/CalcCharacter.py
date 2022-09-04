@@ -9,7 +9,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import convert_elements, elements
 from debug import DefaultModal, DefaultView
-from discord import Interaction, Member, SelectOption, User
+from discord import Interaction, User, SelectOption, User
 from discord.ui import Button, Modal, Select, TextInput
 from genshin.models import BaseCharacter
 from utility.utils import error_embed, log

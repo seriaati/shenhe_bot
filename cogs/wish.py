@@ -11,7 +11,7 @@ from apps.wish.wish_app import (
     get_user_weapon_wish,
     get_user_wish_overview,
 )
-from discord import Interaction, Member, app_commands, User
+from discord import Interaction, User, app_commands, User
 from discord.app_commands import Choice
 from discord.ext import commands
 from UI_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
@@ -260,7 +260,7 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_overview(self, i: Interaction, member: Optional[Member] = None):
+    async def wish_overview(self, i: Interaction, member: Optional[User] = None):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         check, embed = await check_user_wish_data(member.id, i, self.bot.db)

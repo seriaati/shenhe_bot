@@ -1,5 +1,5 @@
 from debug import DefaultView
-from discord import Interaction, Locale, Member
+from discord import Interaction, Locale, User
 from discord.ui import Button
 from apps.text_map.text_map_app import text_map
 from apps.genshin.genshin_app import GenshinApp

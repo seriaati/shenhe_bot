@@ -7,7 +7,7 @@ from apps.genshin.utils import get_weapon
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultModal, DefaultView
-from discord import Interaction, Locale, Member, SelectOption
+from discord import Interaction, Locale, User, SelectOption
 from discord.ui import Modal, Select, TextInput
 from utility.utils import error_embed, log
 
