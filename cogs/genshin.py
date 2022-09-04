@@ -1477,6 +1477,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     day_str = ", ".join(day_list)
                 day_str = "" if len(source.days) == 0 else f"({day_str})"
                 source_str += f"• {source.name} {day_str}\n"
+            source_str = "❌" if source_str == "" else source_str
             embed.add_field(
                 name=text_map.get(530, i.locale, user_locale),
                 value=source_str,
