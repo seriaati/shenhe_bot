@@ -54,3 +54,4 @@ async def return_todo(
         await GeneralPaginator(
             i, embeds, db, custom_children=view.children, files=result
         ).start(edit=interacted)
+    view.message = await i.original_response()
