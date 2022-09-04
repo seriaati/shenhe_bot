@@ -89,7 +89,8 @@ class WishCog(commands.GroupCog, name="wish"):
                 embed_str += f"{wish_str}\n"
             embed = default_embed(message=embed_str)
             embed.set_author(
-                name=text_map.get(369, i.locale, user_locale), icon_url=i.user.display_avatar.url
+                name=text_map.get(369, i.locale, user_locale),
+                icon_url=i.user.display_avatar.url,
             )
             embeds.append(embed)
 
@@ -136,7 +137,8 @@ class WishCog(commands.GroupCog, name="wish"):
             f"• {guarantee}"
         )
         embed.set_author(
-            name=text_map.get(372, i.locale, user_locale), icon_url=member.display_avatar.url
+            name=text_map.get(372, i.locale, user_locale),
+            icon_url=member.display_avatar.url,
         )
         await i.response.send_message(embed=embed)
 
@@ -151,6 +153,14 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_char(self, i: Interaction, num: int):
         check, embed = await check_user_wish_data(i.user.id, i, self.bot.db)
         user_locale = await get_user_locale(i.user.id, self.bot.db)
+        if num > 10:
+            return await i.response.send_message(
+                embed=error_embed(message='number <= 10').set_author(
+                    name=text_map.get(190, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
         if not check:
             return await i.response.send_message(embed=embed, ephemeral=True)
 
@@ -185,7 +195,8 @@ class WishCog(commands.GroupCog, name="wish"):
             f"• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}\n"
         )
         embed.set_author(
-            name=text_map.get(386, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(386, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         await i.response.send_message(embed=embed)
 
@@ -251,7 +262,8 @@ class WishCog(commands.GroupCog, name="wish"):
             f"• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}"
         )
         embed.set_author(
-            name=text_map.get(393, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(393, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         await i.edit_original_response(embed=embed, view=None)
 
