@@ -2,7 +2,6 @@ from genshin import InvalidCookies
 from yelan.draw import draw_todo_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
-    check_level_validity,
     get_character,
     get_weapon,
 )
@@ -16,6 +15,7 @@ from discord.ext import commands
 from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
+from genshin.errors import GenshinException
 
 
 class CalcCog(commands.GroupCog, name="calc"):
@@ -65,39 +65,45 @@ class CalcCog(commands.GroupCog, name="calc"):
             client.lang = to_genshin_py(user_locale or i.locale)
 
         try:
-            characters = await client.get_calculator_characters(sync=sync, include_traveler=True)
+            characters = await client.get_calculator_characters(
+                sync=sync, include_traveler=True
+            )
         except InvalidCookies:
             return await i.response.send_message(
                 embed=error_embed(
                     message=text_map.get(35, i.locale, user_locale)
                 ).set_author(
-                    name=text_map.get(36, i.locale, user_locale), icon_url=i.user.display_avatar.url
+                    name=text_map.get(36, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
                 )
             )
-            
+
         view = CalcCharacter.View(i.user, self.bot.session, self.bot.db, characters)
         await i.response.send_message(view=view)
         view.message = await i.original_response()
         await view.wait()
         if view.character_id == "":
             return
-        valid, error_message = check_level_validity(
-            view.levels, user_locale or i.locale
-        )
-        if not valid:
-            await i.delete_original_response()
-            return await i.followup.send(
-                embed=error_embed(message=error_message).set_author(
-                    name=text_map.get(190, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
+
+        value: str
+        for value in list(view.levels.values()):
+            if not value.isdigit():
+                await i.delete_original_response()
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(187, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(190, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
 
         embeds = []
         embed = default_embed()
         embed.set_author(
-            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(191, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         embed.set_thumbnail(url=get_character(view.character_id)["icon"])
 
@@ -140,7 +146,18 @@ class CalcCog(commands.GroupCog, name="calc"):
             current=burst_talent.level if sync else 1,
             target=int(view.levels["q"]),
         )
-        cost = await builder.calculate()
+        try:
+            cost = await builder.calculate()
+        except GenshinException as e:
+            if e.retcode == -500001:
+                await i.delete_original_response()
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(190, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
 
         embed.add_field(
             name=text_map.get(192, i.locale, user_locale),
@@ -227,30 +244,43 @@ class CalcCog(commands.GroupCog, name="calc"):
         if view.weapon_id == "":
             return
 
-        valid, error_message = check_level_validity(
-            view.levels, user_locale or i.locale
-        )
-        if not valid:
-            await i.delete_original_response()
-            return await i.followup.send(
-                embed=error_embed(message=error_message).set_author(
-                    name=text_map.get(190, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
+        value: str
+        for value in list(view.levels.values()):
+            if not value.isdigit():
+                await i.delete_original_response()
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=text_map.get(187, i.locale, user_locale)
+                    ).set_author(
+                        name=text_map.get(190, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
+        try:
+            cost = await (
+                client.calculator().set_weapon(
+                    int(view.weapon_id),
+                    current=int(view.levels["current"]),
+                    target=int(view.levels["target"]),
+                )
             )
+        except GenshinException as e:
+            if e.retcode == -500001:
+                await i.delete_original_response()
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(190, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
 
-        cost = await (
-            client.calculator().set_weapon(
-                int(view.weapon_id),
-                current=int(view.levels["current"]),
-                target=int(view.levels["target"]),
-            )
-        )
         embeds = []
         embed = default_embed()
         embed.set_author(
-            name=text_map.get(191, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(191, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         embed.set_thumbnail(url=get_weapon(view.weapon_id)["icon"])
         embed.add_field(

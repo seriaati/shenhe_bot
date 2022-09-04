@@ -132,8 +132,8 @@ class LevelModal(DefaultModal):
         self.q.label = text_map.get(174, locale)
         self.q.placeholder = text_map.get(172, locale)
 
-    async def on_submit(self, interaction: Interaction) -> None:
-        await interaction.response.defer()
+    async def on_submit(self, i: Interaction) -> None:
+        await i.response.defer()
         self.stop()
 
     async def on_error(self, i: Interaction, e: Exception) -> None:

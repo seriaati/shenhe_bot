@@ -91,23 +91,6 @@ def get_character_builds(
     return result, has_thoughts
 
 
-def check_level_validity(
-    levels: Dict[str, str], locale: Literal["Locale", "str"]
-) -> Tuple[bool, str]:
-    for level_type, level in levels.items():
-        if not level.isnumeric():
-            return False, text_map.get(187, locale)
-        if (level_type == "current" or level_type == "target") and (
-            int(level) > 90 or int(level) < 1
-        ):
-            return False, text_map.get(188, locale)
-        if (level_type == "a" or level_type == "e" or level_type == "q") and (
-            int(level) > 10 or int(level) < 1
-        ):
-            return False, text_map.get(189, locale)
-    return True, ""
-
-
 def get_character(id: int = "", name: str = "", eng: str = ""):
     for character_id, character_info in characters_map.items():
         if (
