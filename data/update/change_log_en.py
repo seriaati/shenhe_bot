@@ -1,4 +1,11 @@
 change_log_en = {
+    'v4.7.7':
+        "New Feature\n"
+        "• </search:1009710440626016337> can now search everything that's in there: Characters, artifacts, weapons, materials, items, gadgets, etc.\n\n"
+        "BUG Fixes\n"
+        "• Fixed damage calculator showing the wrong number when the character is Yae Miko\n"
+        "• Fixed display inconsistency when performing custom UID searches\n"
+        "• Fixed other numerous bugs\n",
     'v4.7.6':
         "Translation\n"
         "• Some text improvements and corrections\n"
