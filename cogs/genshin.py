@@ -1457,7 +1457,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 inline=False,
             )
             embed.add_field(
-                name=text_map.get(347, i.locale, user_locale),
+                name=text_map.get(531, i.locale, user_locale),
                 value=f"{weapon.effect.name}\n\n{weapon.effect.description}",
                 inline=False,
             )
