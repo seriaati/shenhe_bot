@@ -16,7 +16,7 @@ from discord.ui import Button, Select, button
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
 from waifuim import WaifuAioClient
-from discord import Forbidden
+from discord import Forbidden, HTTPException
 
 
 class WaifuCog(commands.GroupCog, name="waifu"):
@@ -332,7 +332,15 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                             )
                         if index == 0:
                             await (await i.original_response()).delete()
-                        await i.channel.send(file=file)
+                        try:
+                            await i.channel.send(file=file)
+                        except HTTPException as e:
+                            if e.code == 40005:
+                                await i.channel.send(embed=error_embed('檔案過大'))
+                                try:
+                                    await i.user.send(images)
+                                except Forbidden:
+                                    pass
                 else:
                     embeds = []
                     count = 0
