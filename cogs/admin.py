@@ -98,9 +98,6 @@ class AdminCog(commands.Cog, name="admin"):
             user_id = tuple[0]
             user = i.client.get_user(user_id)
             if user is None:
-                await c.execute(
-                    "DELETE FROM active_users WHERE user_id = ?", (user_id,)
-                )
                 continue
             user_locale = await get_user_locale(user_id, i.client.db)
             seria = i.client.get_user(410036441129943050)
