@@ -679,20 +679,24 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
 
         class DomainSelect(Select):
-            def __init__(self, placeholder: str, options: List[SelectOption], row:int):
+            def __init__(self, placeholder: str, options: List[SelectOption], row: int):
                 super().__init__(options=options, placeholder=placeholder, row=row)
 
             async def callback(self, i: Interaction):
                 self.view.current_page = int(self.values[0])
                 await self.view.update_children(i)
-                
+
         children = []
         options = list(divide_chunks(options, 25))
         first = 1
         row = 2
         for option in options:
             children.append(
-                DomainSelect(f'{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})', option, row)
+                DomainSelect(
+                    f"{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})",
+                    option,
+                    row,
+                )
             )
             first += 25
             row += 1
@@ -1412,6 +1416,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             if query in file:
                 item_type = index
                 break
+        if item_type is None:
+            return await i.followup.send(
+                embed=error_embed().set_author(
+                    name=text_map.get(533, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
         if item_type == 0:
             async with self.bot.session.get(
                 f"https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}"
