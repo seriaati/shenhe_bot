@@ -35,6 +35,9 @@ class DefaultView(discord.ui.View):
         except AttributeError:
             log.warning(f"[Attribute Error][Edit View]: [children]{self.children}")
         except discord.HTTPException as e:
+            for item in self.children:
+                if item.label == '刪除圖片':
+                    return
             log.warning(f"[HTTPException][Edit View]: [children]{self.children} [view]{self}")
             sentry_sdk.capture_event(e)
         except Exception as e:
