@@ -16,6 +16,7 @@ from discord.ui import Button, Select, button
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
 from waifuim import WaifuAioClient
+from discord import Forbidden
 
 
 class WaifuCog(commands.GroupCog, name="waifu"):
@@ -318,7 +319,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                         if index > 5:
                             break
                         async with self.bot.session.get(str(images[index])) as resp:
-                            bytes_obj = io.BytesIO(await resp.read())
+                            try:
+                                bytes_obj = io.BytesIO(await resp.read())
+                            except MemoryError:
+                                await i.followup.send(embed=error_embed('檔案過大'))
+                                try:
+                                    await i.user.send(str(images[index]))
+                                except Forbidden:
+                                    pass
                             file = File(
                                 bytes_obj, filename="waifu_image.gif", spoiler=True
                             )
