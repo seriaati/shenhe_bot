@@ -98,11 +98,13 @@ class WeaponUpgrade(BaseModel):
     weapon_id: int
     items: List[Material] = Field(alias="item_list")
     beta: bool = False
-    
+
+
 class MaterialSource(BaseModel):
     name: str
     type: str
     days: List[str] = []
+
 
 class MaterialDetail(BaseModel):
     name: str
@@ -112,31 +114,33 @@ class MaterialDetail(BaseModel):
     sources: List = Field(alias="source")
     icon: str
     rarity: int = Field(alias="rank")
-    
+
     @validator("description")
     def parse_description(cls, v):
         return v.replace("\\n", "\n")
-    
+
     @validator("sources")
     def get_sources(cls, v):
         result = []
         for source in v:
             result.append(MaterialSource(**source))
         return result
-    
+
     @validator("icon")
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
         return icon_url
-    
+
+
 class WeaponEffect(BaseModel):
     name: str
     description: Dict = Field(alias="upgrade")
-    
+
     @validator("description")
     def parse_description(cls, v):
         return parse_HTML(list(v.values())[0])
-    
+
+
 class WeaponDetail(BaseModel):
     name: str
     description: str
@@ -144,36 +148,38 @@ class WeaponDetail(BaseModel):
     icon: str
     rarity: int = Field(alias="rank")
     effect: Dict = Field(alias="affix")
-    
+
     @validator("description")
     def parse_description(cls, v):
         return v.replace("\\n", "\n")
-    
+
     @validator("icon")
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
         return icon_url
-    
+
     @validator("effect")
     def parse_effect(cls, v):
         v = list(v.values())[0]
         return WeaponEffect(**v)
-    
+
+
 class ArtifactEffect(BaseModel):
     two_piece: str
     four_piece: str
-    
+
+
 class ArtifactDetail(BaseModel):
     id: int
     name: str
     icon: str
     effects: Dict = Field(alias="affixList")
-    
+
     @validator("icon")
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png"
         return icon_url
-    
+
     @validator("effects")
     def parse_effects(cls, v):
         li = list(v.values())

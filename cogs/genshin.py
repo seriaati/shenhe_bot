@@ -14,6 +14,7 @@ from apps.genshin.utils import (
     calculate_artifact_score,
     get_artifact,
     get_character,
+    get_city_emoji,
     get_fight_prop,
     get_weapon,
     parse_character_wiki_embed,
@@ -673,25 +674,35 @@ class GenshinCog(commands.Cog, name="genshin"):
                 SelectOption(
                     label=f"{domain.city.name} | {domain.name} #{current_len+1}",
                     value=index,
+                    emoji=get_city_emoji(domain.city.id),
                 )
             )
 
         class DomainSelect(Select):
-            def __init__(self, placeholder: str, options: List[SelectOption]):
-                super().__init__(options=options, placeholder=placeholder)
+            def __init__(self, placeholder: str, options: List[SelectOption], row:int):
+                super().__init__(options=options, placeholder=placeholder, row=row)
 
             async def callback(self, i: Interaction):
                 self.view.current_page = int(self.values[0])
                 await self.view.update_children(i)
+                
+        children = []
+        options = list(divide_chunks(options, 25))
+        first = 1
+        row = 2
+        for option in options:
+            children.append(
+                DomainSelect(f'{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})', option, row)
+            )
+            first += 25
+            row += 1
 
         await DomainPaginator(
             i,
             embeds,
             self.bot.db,
             files=result,
-            custom_children=[
-                DomainSelect(text_map.get(325, i.locale, user_locale), options)
-            ],
+            custom_children=children,
         ).start()
 
     @app_commands.command(
@@ -779,7 +790,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        enka_locale  = to_enka(user_locale or i.locale)
+        enka_locale = to_enka(user_locale or i.locale)
         uid = await self.genshin_app.get_user_uid(member.id)
         uid = custom_uid or uid
         if uid is None:
@@ -1424,35 +1435,61 @@ class GenshinCog(commands.Cog, name="genshin"):
             ).start(followup=True)
         elif item_type == 1:
             weapon = await client.get_weapon_detail(query)
-            rarity_str = ''
+            rarity_str = ""
             for _ in range(weapon.rarity):
-                rarity_str += '<:white_star:982456919224615002>'
-            embed = default_embed(weapon.name, f'{rarity_str}\n\n{weapon.description}')
-            embed.add_field(name=text_map.get(529, i.locale, user_locale), value=weapon.type, inline=False)
-            embed.add_field(name=text_map.get(347, i.locale, user_locale), value=f'{weapon.effect.name}\n\n{weapon.effect.description}', inline=False)
+                rarity_str += "<:white_star:982456919224615002>"
+            embed = default_embed(weapon.name, f"{rarity_str}\n\n{weapon.description}")
+            embed.add_field(
+                name=text_map.get(529, i.locale, user_locale),
+                value=weapon.type,
+                inline=False,
+            )
+            embed.add_field(
+                name=text_map.get(347, i.locale, user_locale),
+                value=f"{weapon.effect.name}\n\n{weapon.effect.description}",
+                inline=False,
+            )
             embed.set_thumbnail(url=weapon.icon)
             await i.followup.send(embed=embed)
         elif item_type == 2:
             material = await client.get_material_detail(query)
-            rarity_str = ''
+            rarity_str = ""
             for _ in range(material.rarity):
-                rarity_str += '<:white_star:982456919224615002>'
-            embed = default_embed(material.name, f'{rarity_str}\n\n{material.description}')
-            embed.add_field(name=text_map.get(529, i.locale, user_locale), value=material.type, inline=False)
+                rarity_str += "<:white_star:982456919224615002>"
+            embed = default_embed(
+                material.name, f"{rarity_str}\n\n{material.description}"
+            )
+            embed.add_field(
+                name=text_map.get(529, i.locale, user_locale),
+                value=material.type,
+                inline=False,
+            )
             source_str = ""
             for source in material.sources:
                 day_str = ""
                 if len(source.days) != 0:
-                    day_list = [get_weekday_name(get_weekday_int_with_name(day), i.locale, user_locale) for day in source.days]
-                    day_str = ', '.join(day_list)
-                day_str = "" if len(source.days) == 0 else f'({day_str})'
+                    day_list = [
+                        get_weekday_name(
+                            get_weekday_int_with_name(day), i.locale, user_locale
+                        )
+                        for day in source.days
+                    ]
+                    day_str = ", ".join(day_list)
+                day_str = "" if len(source.days) == 0 else f"({day_str})"
                 source_str += f"• {source.name} {day_str}\n"
-            embed.add_field(name=text_map.get(530, i.locale, user_locale), value=source_str, inline=False)
+            embed.add_field(
+                name=text_map.get(530, i.locale, user_locale),
+                value=source_str,
+                inline=False,
+            )
             embed.set_thumbnail(url=material.icon)
             await i.followup.send(embed=embed)
         elif item_type == 3:
             artifact = await client.get_artifact_detail(query)
-            embed = default_embed(artifact.name, f'2x: {artifact.effects.two_piece}\n\n4x: {artifact.effects.four_piece}')
+            embed = default_embed(
+                artifact.name,
+                f"2x: {artifact.effects.two_piece}\n\n4x: {artifact.effects.four_piece}",
+            )
             embed.set_thumbnail(url=artifact.icon)
             await i.followup.send(embed=embed)
 

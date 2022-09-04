@@ -149,10 +149,21 @@ def get_area_emoji(exploration_id: int):
         5: "<:Emblem_Enkanomiya:982449407469441045>",
         6: "<:Emblem_Chasm:982449404076249138>",
         7: "<:Emblem_Chasm:982449404076249138>",
+        8: "<:SUMERU:1015877773899857941>",
     }
 
     emoji = emoji_dict.get(exploration_id)
     return emoji or ""
+
+
+def get_city_emoji(city_id: int):
+    emoji_dict = {
+        1: "<:Emblem_Mondstadt:982449412938809354>",
+        2: "<:Emblem_Liyue:982449411047165992>",
+        3: "<:Emblem_Inazuma:982449409117806674>",
+        4: "<:SUMERU:1015877773899857941>",
+    }
+    return emoji_dict.get(city_id)
 
 
 def parse_character_wiki_embed(
