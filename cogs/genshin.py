@@ -268,7 +268,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
             namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
-            member.id, custom_uid, i.locale, namecard, member.display_avatar
+            member.id, uid, i.locale, namecard, member.display_avatar
         )
         end = process_time()
         if not success:
@@ -295,6 +295,19 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
         member = member or i.user
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = custom_uid or uid
+        if uid is None:
+            return await i.followup.send(
+                embed=error_embed(
+                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
+                ).set_author(
+                    name=text_map.get(141, i.locale, user_locale),
+                    icon_url=member.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
         result, success = await self.genshin_app.get_area(
             member.id, custom_uid, i.locale
         )
@@ -766,7 +779,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if custom_uid is None:
+        enka_locale  = to_enka(user_locale or i.locale)
+        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = custom_uid or uid
+        if uid is None:
             if i.guild is not None and i.guild.id == 916838066117824553:
                 c: aiosqlite.Cursor = await self.bot.main_db.cursor()
                 await c.execute(
@@ -783,24 +799,15 @@ class GenshinCog(commands.Cog, name="genshin"):
                         ephemeral=True,
                     )
             else:
-                c: aiosqlite.Cursor = await self.bot.db.cursor()
-                exists = await self.genshin_app.check_user_data(member.id)
-                if not exists:
-                    return await i.followup.send(
-                        embed=error_embed(
-                            message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
-                        ).set_author(
-                            name=text_map.get(141, i.locale, user_locale),
-                            icon_url=member.display_avatar.url,
-                        ),
-                        ephemeral=True,
-                    )
-                await c.execute(
-                    "SELECT uid FROM genshin_accounts WHERE user_id = ?", (member.id,)
+                return await i.followup.send(
+                    embed=error_embed(
+                        message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
+                    ).set_author(
+                        name=text_map.get(141, i.locale, user_locale),
+                        icon_url=member.display_avatar.url,
+                    ),
+                    ephemeral=True,
                 )
-                uid = await c.fetchone()
-        uid = custom_uid or uid[0]
-        enka_locale = to_enka(user_locale or i.locale)
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
