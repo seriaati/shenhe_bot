@@ -8,7 +8,7 @@ import config
 
 
 class View(DefaultView):
-    def __init__(self, author: Member, member: Member, genshin_app: GenshinApp, locale: Locale, user_locale: str):
+    def __init__(self, author: User, member: User, genshin_app: GenshinApp, locale: Locale, user_locale: str):
         super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.member = member

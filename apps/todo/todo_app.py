@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import aiohttp
 import aiosqlite
-from discord import Embed, Interaction, Locale, Member
+from discord import Embed, Interaction, Locale, User
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
 
@@ -14,7 +14,7 @@ from apps.text_map.utils import get_user_locale
 
 async def get_todo_embed(
     db: aiosqlite.Connection,
-    user: Member,
+    user: User,
     locale: Locale,
     session: aiohttp.ClientSession,
 ) -> Tuple[Embed | List[BytesIO], bool]:

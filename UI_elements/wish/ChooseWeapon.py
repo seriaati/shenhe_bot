@@ -9,7 +9,7 @@ from utility.utils import default_embed, error_embed
 
 
 class View(DefaultView):
-    def __init__(self, db: aiosqlite.Connection, author: Member, locale: Locale, user_locale: str | None):
+    def __init__(self, db: aiosqlite.Connection, author: User, locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.short_timeout)
         self.db = db
         self.up = None

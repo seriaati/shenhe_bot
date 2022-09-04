@@ -13,7 +13,7 @@ import config
 
 
 class View(DefaultView):
-    def __init__(self, data: dict, author: Member, db: aiosqlite.Connection):
+    def __init__(self, data: dict, author: User, db: aiosqlite.Connection):
         super().__init__(timeout=config.short_timeout)
         self.author = author
         self.db = db

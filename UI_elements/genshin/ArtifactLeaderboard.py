@@ -15,7 +15,7 @@ import config
 
 
 class View(DefaultView):
-    def __init__(self, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
+    def __init__(self, author: User, db: aiosqlite.Connection, locale: Locale, user_locale: str):
         super().__init__(timeout=config.short_timeout)
         self.author = author
         self.sub_stat = None

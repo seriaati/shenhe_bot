@@ -3,7 +3,7 @@ from typing import List
 import aiosqlite
 import sentry_sdk
 from debug import DefaultModal, DefaultView
-from discord import ButtonStyle, Interaction, Locale, Member, SelectOption
+from discord import ButtonStyle, Interaction, Locale, User, SelectOption
 from discord.ui import Button, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
@@ -13,7 +13,7 @@ import config
 
 
 class View(DefaultView):
-    def __init__(self, db: aiosqlite.Connection, disabled: bool, author: Member, locale: Locale, user_locale: str):
+    def __init__(self, db: aiosqlite.Connection, disabled: bool, author: User, locale: Locale, user_locale: str):
         super().__init__(timeout=config.long_timeout)
         self.db = db
         self.author = author

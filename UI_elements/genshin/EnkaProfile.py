@@ -26,7 +26,7 @@ class View(DefaultView):
         data: EnkaNetworkResponse,
         browser: Browser,
         eng_data: EnkaNetworkResponse,
-        author: Member,
+        author: User,
         db: aiosqlite.Connection,
         locale: Locale,
         user_locale: str,

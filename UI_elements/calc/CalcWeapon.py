@@ -13,7 +13,7 @@ from utility.utils import error_embed, log
 
 
 class View(DefaultView):
-    def __init__(self, weapons: List, author: Member, db: aiosqlite.Connection, locale: Locale, user_locale: str):
+    def __init__(self, weapons: List, author: User, db: aiosqlite.Connection, locale: Locale, user_locale: str):
         super().__init__(timeout=config.short_timeout)
         self.author = author
         self.db = db

@@ -20,7 +20,7 @@ import config
 class View(DefaultView):
     def __init__(
         self,
-        author: Member,
+        author: User,
         locale: Locale,
         user_locale: str,
         db: aiosqlite.Connection,

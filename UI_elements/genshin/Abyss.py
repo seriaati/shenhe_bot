@@ -13,7 +13,7 @@ from utility.utils import log
 class View(DefaultView):
     def __init__(
         self,
-        author: Member,
+        author: User,
         embeds: list[Embed],
         locale: Locale,
         user_locale: str,

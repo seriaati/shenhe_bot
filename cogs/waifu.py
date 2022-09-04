@@ -8,7 +8,7 @@ import hmtai
 import waifuim
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
-from discord import ButtonStyle, File, Interaction, Member, SelectOption, app_commands
+from discord import ButtonStyle, File, Interaction, User, SelectOption, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -35,7 +35,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         return choices
 
     class TagSelectorView(DefaultView):
-        def __init__(self, choices: List, author: Member):
+        def __init__(self, choices: List, author: User):
             super().__init__(timeout=config.short_timeout)
             self.add_item(WaifuCog.TagSelector(choices))
             self.tags = []
@@ -66,7 +66,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             self.view.stop()
 
     class ChooseTagView(DefaultView):
-        def __init__(self, author: Member, type: str):
+        def __init__(self, author: User, type: str):
             super().__init__(timeout=config.short_timeout)
             self.author = author
             self.tag = None
@@ -155,7 +155,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             await GeneralPaginator(i, embeds, self.bot.db).start(edit=True)
 
     class DeleteImageView(DefaultView):
-        def __init__(self, author: Member):
+        def __init__(self, author: User):
             super().__init__(timeout=config.long_timeout)
             self.author = author
 

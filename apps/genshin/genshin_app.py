@@ -9,7 +9,7 @@ from apps.genshin.utils import get_area_emoji, get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
-from discord import Embed, Locale, Member, SelectOption
+from discord import Embed, Locale, User, SelectOption
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, log
@@ -891,7 +891,7 @@ class GenshinApp:
     async def parse_summer_embed(
         self,
         summer: genshin.models.Summer,
-        user: Member,
+        user: User,
         custom_uid: int,
         locale: Locale,
         user_locale: Literal["str", None],
