@@ -1,7 +1,7 @@
 import aiosqlite
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import Member, Interaction, Locale, Embed, SelectOption
+from discord import User, Interaction, Locale, Embed, SelectOption
 from discord.ui import Select
 from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed

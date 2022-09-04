@@ -468,8 +468,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result, ephemeral=True)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            message = await i.followup.send(embed=result[0], view=view)
-            view.message = message
+            await i.followup.send(embed=result[0], view=view)
+            view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=437))
     async def stuck(self, i: Interaction):
