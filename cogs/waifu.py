@@ -44,7 +44,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         async def interaction_check(self, interaction: Interaction) -> bool:
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
-                    embed=error_embed(message="輸入 </waifu waifu:1000187021635104889> 來自行選擇標籤").set_author(
+                    embed=error_embed(
+                        message="輸入 </waifu waifu:1000187021635104889> 來自行選擇標籤"
+                    ).set_author(
                         name="這不是你的操控視窗", icon_url=interaction.user.display_avatar.url
                     ),
                     ephemeral=True,
@@ -101,7 +103,8 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             if self.author.id != interaction.user.id:
                 await interaction.response.send_message(
                     embed=error_embed().set_author(
-                        name="輸入 /waifu 來尋找你的二次元老婆", icon_url=interaction.user.display_avatar.url
+                        name="輸入 /waifu 來尋找你的二次元老婆",
+                        icon_url=interaction.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
@@ -182,7 +185,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
     async def nsfw(self, i: Interaction, num: int = 1):
         if num > 5:
             return await i.response.send_message(
-                embed=error_embed().set_author(name="上限為 5 張", icon_url=i.user.display_avatar.url),
+                embed=error_embed().set_author(
+                    name="上限為 5 張", icon_url=i.user.display_avatar.url
+                ),
                 ephemeral=True,
             )
         if i.channel.guild is not None and not i.channel.nsfw:
@@ -203,6 +208,13 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         tag = x[1]
         lib = random.choice(libs)
         url = hmtai.get(lib, tag)
+        if url is None:
+            return await i.edit_original_response(
+                embed=error_embed(message="您所指定的老婆條件要求太高\n請試試別的標籤").set_author(
+                    name="找不到老婆", icon_url=i.user.display_avatar.url
+                ),
+                view=None,
+            )
         if num == 1:
             await i.edit_original_response(
                 embed=default_embed(
@@ -218,9 +230,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             view.message = await i.original_response()
         else:
             await i.edit_original_response(
-                embed=default_embed(
-                    "<a:LOADER:982128111904776242> 尋找及下載圖片中..."
-                ),
+                embed=default_embed("<a:LOADER:982128111904776242> 尋找及下載圖片中..."),
                 view=None,
             )
             for index in range(0, num):
@@ -275,7 +285,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                         return await i.edit_original_response(
                             embed=error_embed(
                                 message="您所指定的老婆條件要求太高\n請試試別的標籤"
-                            ).set_author(name="找不到老婆", icon_url=i.user.display_avatar.url),
+                            ).set_author(
+                                name="找不到老婆", icon_url=i.user.display_avatar.url
+                            ),
                             view=None,
                         )
                 else:
@@ -306,7 +318,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                         return await i.edit_original_response(
                             embed=error_embed(
                                 message="您所指定的老婆條件要求太高\n請試試別的標籤"
-                            ).set_author(name="找不到老婆", icon_url=i.user.display_avatar.url),
+                            ).set_author(
+                                name="找不到老婆", icon_url=i.user.display_avatar.url
+                            ),
                             view=None,
                         )
                 else:
@@ -314,7 +328,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 if sese == 1:
                     if not isinstance(images, List):
                         images = [images]
-                        
+
                     for index, image in enumerate(images):
                         if index > 5:
                             break
@@ -322,7 +336,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                             try:
                                 bytes_obj = io.BytesIO(await resp.read())
                             except MemoryError:
-                                await i.followup.send(embed=error_embed('檔案過大'))
+                                await i.followup.send(embed=error_embed("檔案過大"))
                                 try:
                                     await i.user.send(str(images[index]))
                                 except Forbidden:
@@ -336,7 +350,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                             await i.channel.send(file=file)
                         except HTTPException as e:
                             if e.code == 40005:
-                                await i.channel.send(embed=error_embed('檔案過大'))
+                                await i.channel.send(embed=error_embed("檔案過大"))
                                 try:
                                     await i.user.send(images)
                                 except Forbidden:
