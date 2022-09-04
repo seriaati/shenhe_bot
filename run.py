@@ -179,6 +179,9 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
+        if i.command.name == "search":
+            return
+
         option_msg = ""
 
         if i.command.parent is None:
