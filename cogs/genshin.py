@@ -245,29 +245,31 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ),
                 ephemeral=True,
             )
-        async with EnkaNetworkAPI() as enka:
-            try:
-                data = await enka.fetch_user(uid)
-            except UIDNotFounded:
-                return await i.followup.send(
-                    embed=error_embed(
-                        message=text_map.get(519, i.locale, user_locale)
-                    ).set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            except VaildateUIDError:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+        data = self.bot.enka_data_cache.get(uid)
+        if data is None:
+            async with EnkaNetworkAPI() as enka:
+                try:
+                    data = await enka.fetch_user(uid)
+                except UIDNotFounded:
+                    return await i.followup.send(
+                        embed=error_embed(
+                            message=text_map.get(519, i.locale, user_locale)
+                        ).set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
+                except VaildateUIDError:
+                    return await i.followup.send(
+                        embed=error_embed().set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
 
-            namecard = data.player.namecard.banner
+        namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
             member.id, uid, i.locale, namecard, member.display_avatar
         )
@@ -813,6 +815,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                         ),
                         ephemeral=True,
                     )
+                else:
+                    uid = uid[0]
             else:
                 return await i.followup.send(
                     embed=error_embed(
@@ -823,37 +827,40 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-        async with EnkaNetworkAPI(enka_locale) as enka:
-            try:
-                data = await enka.fetch_user(uid)
-            except UIDNotFounded:
-                return await i.followup.send(
-                    embed=error_embed(
-                        message=text_map.get(519, i.locale, user_locale)
-                    ).set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            except VaildateUIDError:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            except asyncio.TimeoutError:
-                return await i.followup.send(
-                    embed=error_embed(
-                        message=text_map.get(519, i.locale, user_locale)
-                    ).set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+        data = self.bot.enka_data_cache.get(uid)
+        if data is None:
+            async with EnkaNetworkAPI(enka_locale) as enka:
+                try:
+                    data = await enka.fetch_user(uid)
+                    self.bot.enka_data_cache[uid] = data
+                except UIDNotFounded:
+                    return await i.followup.send(
+                        embed=error_embed(
+                            message=text_map.get(519, i.locale, user_locale)
+                        ).set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
+                except VaildateUIDError:
+                    return await i.followup.send(
+                        embed=error_embed().set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
+                except asyncio.TimeoutError:
+                    return await i.followup.send(
+                        embed=error_embed(
+                            message=text_map.get(519, i.locale, user_locale)
+                        ).set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
         if data.characters is None:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -864,20 +871,21 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-
-        async with EnkaNetworkAPI() as enka:
-            try:
-                eng_data = await enka.fetch_user(uid)
-            except asyncio.TimeoutError:
-                return await i.followup.send(
-                    embed=error_embed(
-                        message=text_map.get(519, i.locale, user_locale)
-                    ).set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+        eng_data = self.bot.enka_eng_cache.get(uid)
+        if eng_data is None:
+            async with EnkaNetworkAPI() as enka:
+                try:
+                    eng_data = await enka.fetch_user(uid)
+                except asyncio.TimeoutError:
+                    return await i.followup.send(
+                        embed=error_embed(
+                            message=text_map.get(519, i.locale, user_locale)
+                        ).set_author(
+                            name=text_map.get(286, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
 
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
@@ -998,7 +1006,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             artifact_embeds,
             options,
             data,
-            self.bot.browser,
+            member,
             eng_data,
             i.user,
             self.bot.db,

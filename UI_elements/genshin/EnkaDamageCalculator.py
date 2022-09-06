@@ -5,7 +5,7 @@ from yelan.draw import draw_character_card
 from yelan.damage_calculator import DamageCalculator, return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.GO_modes import hit_mode_texts
+from yelan.data.GO_modes import hit_mode_texts
 from debug import DefaultView
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select

@@ -24,6 +24,7 @@ from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
 from utility.utils import error_embed, log, sentry_logging
 import genshin
+from cachetools import TTLCache
 
 load_dotenv()
 user_name = getpass.getuser()
@@ -62,7 +63,11 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        user = getpass.getuser()
+        #cache
+        self.enka_data_cache = TTLCache(maxsize=1000, ttl=180)
+        self.enka_eng_cache = TTLCache(maxsize=1000, ttl=180)
+        self.enka_card_cache = TTLCache(maxsize=1000, ttl=180)
+        self.stats_card_cache = TTLCache(maxsize=1000, ttl=180)
 
         # bot variables
         self.session = aiohttp.ClientSession()

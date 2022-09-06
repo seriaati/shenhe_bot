@@ -1,20 +1,21 @@
 from io import BytesIO
+from time import process_time
 from typing import Any, Dict, List
 
 import aiosqlite
-from yelan.draw import draw_character_card
-from yelan.damage_calculator import return_damage
+import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import ButtonStyle, Embed, File, Interaction, Locale, User, SelectOption
+from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption, User
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from pyppeteer.browser import Browser
 from UI_elements.genshin import EnkaDamageCalculator
 from utility.utils import default_embed, error_embed
-import config
+from yelan.damage_calculator import return_damage
+from yelan.draw import draw_character_card
 
 
 class View(DefaultView):
@@ -24,7 +25,7 @@ class View(DefaultView):
         artifact_embeds: dict[int, Embed],
         character_options: list[SelectOption],
         data: EnkaNetworkResponse,
-        browser: Browser,
+        member: User,
         eng_data: EnkaNetworkResponse,
         author: User,
         db: aiosqlite.Connection,
@@ -38,9 +39,9 @@ class View(DefaultView):
         self.artifact_embeds = artifact_embeds
         self.character_options = character_options
         self.character_id = None
-        self.browser = browser
         self.author = author
         self.data = data
+        self.member = member
         self.eng_data = eng_data
         self.db = db
         self.user_uid = user_uid
@@ -76,12 +77,15 @@ class PageSelect(Select):
         damage_calc_disabled = False
         card = None
         if self.values[0] != "0":
-            [character] = [
-                c for c in self.view.characters if c.id == int(self.values[0])
-            ]
-            card = await draw_character_card(
-                character, user_locale or i.locale, i.client.session
-            )
+            card = i.client.enka_card_cache.get(f'{self.view.member.id} - {self.values[0]}')
+            if card is None:
+                [character] = [
+                    c for c in self.view.characters if c.id == int(self.values[0])
+                ]
+                card = await draw_character_card(
+                    character, user_locale or i.locale, i.client.session
+                )
+                i.client.enka_card_cache[f'{self.view.member.id} - {self.values[0]}'] = card
         is_card = False if card is None else True
         artifact_disabled = True if is_card else False
 
@@ -102,8 +106,8 @@ class PageSelect(Select):
                 )
             else:
                 embed.set_author(
-                    name=self.view.author.display_name,
-                    icon_url=self.view.author.display_avatar.url,
+                    name=self.view.member.display_name,
+                    icon_url=self.view.member.display_avatar.url,
                 )
             card.seek(0)
             file = File(card, "card.jpeg")
@@ -118,8 +122,8 @@ class PageSelect(Select):
                 )
             else:
                 embed.set_author(
-                    name=self.view.author.display_name,
-                    icon_url=self.view.author.display_avatar.url,
+                    name=self.view.member.display_name,
+                    icon_url=self.view.member.display_avatar.url,
                 )
             await i.response.edit_message(embed=embed, view=self.view, attachments=[])
 
@@ -147,4 +151,4 @@ class CalculateDamageButton(Button):
             self.view, i.locale, await get_user_locale(i.user.id, self.view.db)
         )
         await return_damage(i, view)
-        view.message =  await i.original_response()
+        view.message = await i.original_response()

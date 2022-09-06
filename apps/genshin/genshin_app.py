@@ -305,12 +305,14 @@ class GenshinApp:
                 False,
             )
         else:
-
             embed = default_embed()
             embed.set_image(url="attachment://stat_card.jpeg")
-            fp = await draw_stats_card(
-                genshin_user.stats, namecard, avatar_url, len(characters)
-            )
+            fp = self.bot.stats_card_cache.get(uid)
+            if fp is None:
+                fp = await draw_stats_card(
+                    genshin_user.stats, namecard, avatar_url, len(characters)
+                )
+                self.bot.stats_card_cache[uid] = fp
             return {"embed": embed, "fp": fp}, True
 
     async def get_area(
