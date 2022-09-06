@@ -1,22 +1,22 @@
 import ast
 import asyncio
+import json
 import random
 from datetime import datetime, timedelta
-import json
+
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
-from yelan.draw import draw_talent_reminder_card
 from apps.genshin.genshin_app import GenshinApp
-from discord import File
-from apps.text_map.convert_locale import to_genshin_py, to_ambr_top_dict
+from apps.text_map.convert_locale import to_ambr_top_dict, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Forbidden, Game, Interaction, app_commands
+from discord import File, Forbidden, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
 from utility.utils import default_embed, log
+from yelan.draw import draw_talent_reminder_card
 
 import genshin
 
@@ -68,20 +68,9 @@ class Schedule(commands.Cog):
                 except genshin.errors.AlreadyClaimed:
                     count += 1
                 except genshin.errors.InvalidCookies:
-                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
-                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
-                    try:
-                        await user.send(embed=embed)
-                    except Forbidden:
-                        pass
-                    except Exception as e:
-                        sentry_sdk.capture_exception(e)
-                    else:
-                        await c.execute(
-                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                        )
-                except:
-                    continue
+                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                except Exception as e:
+                    sentry_sdk.capture_exception(e)
                 else:
                     count += 1
                 await asyncio.sleep(3.0)
@@ -126,18 +115,7 @@ class Schedule(commands.Cog):
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
-                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
-                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
-                    try:
-                        await user.send(embed=embed)
-                    except Forbidden:
-                        pass
-                    except Exception as e:
-                        sentry_sdk.capture_exception(e)
-                    else:
-                        await c.execute(
-                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                        )
+                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
                 except Exception as e:
                     sentry_sdk.capture_exception(e)
                     await c.execute(
@@ -228,19 +206,9 @@ class Schedule(commands.Cog):
                 try:
                     notes = await client.get_notes(uid)
                 except genshin.errors.InvalidCookies:
-                    embed = default_embed(message=text_map.get(528, 'zh-TW', user_locale))
-                    embed.set_author(name=text_map.get(284, 'zh-TW', user_locale), icon_url=user.display_avatar.url)
-                    try:
-                        await user.send(embed=embed)
-                    except Forbidden:
-                        pass
-                    except Exception as e:
-                        sentry_sdk.capture_exception(e)
-                    else:
-                        await c.execute(
-                            "DELETE FROM genshin_accounts WHERE user_id = ?", (user_id,)
-                        )
-                except:
+                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                except Exception as e:
+                    sentry_sdk.capture_exception(e)
                     await c.execute(
                         "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
                         (user_id,),
@@ -309,7 +277,10 @@ class Schedule(commands.Cog):
                 user_id = tuple[0]
                 user = self.bot.get_user(user_id)
                 if user is None:
-                    await c.execute('UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?', (user_id,))
+                    await c.execute(
+                        "UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?",
+                        (user_id,),
+                    )
                     await self.bot.db.commit()
                     continue
                 user_locale = await get_user_locale(user_id, self.bot.db)
