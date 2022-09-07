@@ -140,17 +140,19 @@ class WeaponEffect(BaseModel):
         return parse_HTML(list(v.values())[0])
 
 class WeaponStat(BaseModel):
-    prop_id: str
-    initial_value: int
+    prop_id: str = Field(alias="propType")
+    initial_value: int = Field(alias="initValue")
 
 class WeaponUpgradeDetail(BaseModel):
-    stats: List = Field(alias="prop")
+    awaken_cost: List[int] = Field(alias="awakenCost")
+    stats: List[WeaponStat] = Field(alias="prop")
+    upgrade_info: List = Field(alias="promote")
     
-    @validator("stats")
+    @validator("stats", pre=True)
     def get_stats(cls, v):
         result = []
         for stat in v:
-            result.append(WeaponStat(prop_id=stat['propType'], initial_value=stat['initValue']))
+            result.append(WeaponStat(**stat))
         return result
 
 class WeaponDetail(BaseModel):
@@ -159,8 +161,8 @@ class WeaponDetail(BaseModel):
     type: str
     icon: str
     rarity: int = Field(alias="rank")
-    effect: Dict[int, WeaponEffect] = Field(alias="affix")
-    upgrade: Dict
+    effect: WeaponEffect = Field(alias="affix")
+    upgrade: WeaponUpgradeDetail
 
     @validator("description")
     def parse_description(cls, v):
@@ -171,11 +173,11 @@ class WeaponDetail(BaseModel):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
         return icon_url
 
-    @validator("effect")
+    @validator("effect", pre=True)
     def parse_effect(cls, v):
         return WeaponEffect(**list(v.values())[0])
     
-    @validator("upgrade")
+    @validator("upgrade", pre=True)
     def get_upgrade(cls, v):
         return WeaponUpgradeDetail(**v)
 
