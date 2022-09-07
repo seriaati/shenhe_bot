@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from pyppeteer import launch
 from discord.ext.commands import Context
 from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log, sentry_logging
 import genshin
 from cachetools import TTLCache
@@ -63,7 +64,7 @@ class ShenheBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        #cache
+        # cache
         self.enka_data_cache = TTLCache(maxsize=1000, ttl=180)
         self.enka_eng_cache = TTLCache(maxsize=1000, ttl=180)
         self.enka_card_cache = TTLCache(maxsize=1000, ttl=180)
@@ -91,7 +92,7 @@ class ShenheBot(commands.Bot):
                 "SELECT ltuid, ltoken FROM genshin_accounts WHERE cn_region = ?", (x,)
             )
             data = await c.fetchall()
-            for index, tuple in enumerate(data):
+            for _, tuple in enumerate(data):
                 ltuid = tuple[0]
                 ltoken = tuple[1]
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
@@ -184,11 +185,6 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
-        if i.command.name == "search":
-            return
-
-        option_msg = ""
-
         if i.command.parent is None:
             if "options" in i.data:
                 option_msg = " "
@@ -216,18 +212,20 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
         return
     log.warning(f"[{i.user.id}]{type(e)}: {e}")
     sentry_sdk.capture_exception(e)
+    user_locale = await get_user_locale(i.user.id, i.client.db)
+    embed = error_embed(message=text_map.get(513, i.locale, user_locale))
+    embed.set_author(
+        name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+    )
+    embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
     try:
         await i.response.send_message(
-            embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
     except InteractionResponded:
         await i.followup.send(
-            embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
     except NotFound:
