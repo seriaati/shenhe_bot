@@ -4,6 +4,7 @@ from typing import Dict, Literal, Tuple
 
 import aiosqlite
 import sentry_sdk
+from apps.genshin.user_model import ShenheUser
 from yelan.draw import draw_stats_card
 from apps.genshin.utils import get_area_emoji, get_character
 from apps.text_map.convert_locale import to_genshin_py
@@ -120,22 +121,22 @@ class GenshinApp:
         return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            reward = await client.claim_daily_reward()
+            reward = await shenhe_user.client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
             return (
                 error_embed().set_author(
-                    name=text_map.get(40, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(40, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -146,39 +147,39 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         else:
             return (
                 default_embed(
-                    message=f"{text_map.get(41, locale, user_locale)} {reward.amount}x {reward.name}"
+                    message=f"{text_map.get(41, locale, shenhe_user.user_locale)} {reward.amount}x {reward.name}"
                 ).set_author(
-                    name=text_map.get(42, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(42, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 True,
             )
 
     async def get_real_time_notes(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            notes = await client.get_notes(uid)
+            notes = await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -189,16 +190,16 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         else:
             return (
-                (await self.parse_resin_embed(notes, locale, user_locale)).set_author(
-                    name=text_map.get(24, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                (await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(24, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 True,
             )
@@ -269,26 +270,26 @@ class GenshinApp:
         namecard: str,
         avatar_url: str,
     ) -> Tuple[Embed | Dict, bool]:
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
-            genshin_user = await client.get_partial_genshin_user(uid)
+            genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
             characters = await self.bot.genshin_client.get_calculator_characters(
                 include_traveler=True
             )
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -299,8 +300,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -318,23 +319,23 @@ class GenshinApp:
     async def get_area(
         self, user_id: int, custom_uid: Literal["int", None], locale: Locale
     ):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
-            genshinUser = await client.get_partial_genshin_user(uid)
+            genshinUser = await shenhe_user.client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -345,8 +346,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -364,29 +365,29 @@ class GenshinApp:
             result = default_embed(message=explore_str)
         return (
             result.set_author(
-                name=text_map.get(58, locale, user_locale),
-                icon_url=user.display_avatar.url,
+                name=text_map.get(58, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             ),
             True,
         )
 
     async def get_diary(self, user_id: int, month: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            diary = await client.get_diary(month=month)
+            diary = await shenhe_user.client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -397,57 +398,57 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         else:
             d = diary.data
             result = default_embed(
-                message=f"{text_map.get(59, locale, user_locale)} {text_map.get(60, locale, user_locale) if d.primogems_rate > 0 else text_map.get(61, locale, user_locale)} {abs(d.primogems_rate)}%\n"
-                f"{text_map.get(62, locale, user_locale)} {text_map.get(60, locale, user_locale) if d.mora_rate > 0 else text_map.get(61, locale, user_locale)} {abs(d.mora_rate)}%"
+                message=f"{text_map.get(59, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.primogems_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.primogems_rate)}%\n"
+                f"{text_map.get(62, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.mora_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.mora_rate)}%"
             )
             result.add_field(
-                name=text_map.get(63, locale, user_locale),
-                value=f"<:PRIMO:1010048703312171099> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {text_map.get(64, locale, user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n"
-                f"<:MORA:1010048704901828638> {d.current_mora} • {text_map.get(64, locale, user_locale)}: {d.last_mora}",
+                name=text_map.get(63, locale, shenhe_user.user_locale),
+                value=f"<:PRIMO:1010048703312171099> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {text_map.get(64, locale, shenhe_user.user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n"
+                f"<:MORA:1010048704901828638> {d.current_mora} • {text_map.get(64, locale, shenhe_user.user_locale)}: {d.last_mora}",
                 inline=False,
             )
             msg = ""
             for cat in d.categories:
                 msg += f"{cat.name}: {cat.percentage}%\n"
             result.add_field(
-                name=text_map.get(65, locale, user_locale), value=msg, inline=False
+                name=text_map.get(65, locale, shenhe_user.user_locale), value=msg, inline=False
             )
             result.add_field(
-                name=text_map.get(66, locale, user_locale),
-                value=f"{text_map.get(67, locale, user_locale)}\n{text_map.get(68, locale, user_locale)}",
+                name=text_map.get(66, locale, shenhe_user.user_locale),
+                value=f"{text_map.get(67, locale, shenhe_user.user_locale)}\n{text_map.get(68, locale, shenhe_user.user_locale)}",
                 inline=False,
             )
             result.set_author(
-                name=f"{text_map.get(69, locale, user_locale)} • {get_month_name(month, locale, user_locale)}",
-                icon_url=user.display_avatar.url,
+                name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(month, locale, shenhe_user.user_locale)}",
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             return result, True
 
     async def get_diary_logs(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            diary = await client.get_diary()
+            diary = await shenhe_user.client.get_diary()
         except genshin.errors.DataNotPublic as e:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -458,60 +459,60 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         else:
             primoLog = ""
             result = []
-            async for action in client.diary_log(limit=30):
+            async for action in shenhe_user.client.diary_log(limit=30):
                 primoLog = (
                     primoLog
-                    + f"{action.action} - {action.amount} {text_map.get(71, locale, user_locale)}"
+                    + f"{action.action} - {action.amount} {text_map.get(71, locale, shenhe_user.user_locale)}"
                     + "\n"
                 )
             embed = default_embed(message=f"{primoLog}")
             embed.set_author(
-                name=text_map.get(70, locale, user_locale),
-                icon_url=user.display_avatar.url,
+                name=text_map.get(70, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             result.append(embed)
             moraLog = ""
-            async for action in client.diary_log(
+            async for action in shenhe_user.client.diary_log(
                 limit=30, type=genshin.models.DiaryType.MORA
             ):
                 moraLog = (
                     moraLog
-                    + f"{action.action} - {action.amount} {text_map.get(73, locale, user_locale)}"
+                    + f"{action.action} - {action.amount} {text_map.get(73, locale, shenhe_user.user_locale)}"
                     + "\n"
                 )
             embed = default_embed(message=f"{moraLog}")
             embed.set_author(
-                name=text_map.get(72, locale, user_locale),
-                icon_url=user.display_avatar.url,
+                name=text_map.get(72, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             result.append(embed)
         return result, True
 
     async def get_abyss(self, user_id: int, previous: bool, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            abyss = await client.get_spiral_abyss(uid, previous=previous)
+            abyss = await shenhe_user.client.get_spiral_abyss(shenhe_user.uid, previous=previous)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -522,8 +523,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -532,39 +533,39 @@ class GenshinApp:
             rank = abyss.ranks
             if len(rank.most_kills) == 0:
                 result = error_embed(
-                    message=f"{text_map.get(74, locale, user_locale)}\n"
-                    f"{text_map.get(75, locale, user_locale)}"
+                    message=f"{text_map.get(74, locale, shenhe_user.user_locale)}\n"
+                    f"{text_map.get(75, locale, shenhe_user.user_locale)}"
                 )
                 result.set_author(
-                    name=text_map.get(76, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(76, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
                 return result, False
             overview = default_embed(
-                f"{text_map.get(77, locale, user_locale)} {abyss.season}",
-                f"{text_map.get(78, locale, user_locale)} {abyss.max_floor}\n"
+                f"{text_map.get(77, locale, shenhe_user.user_locale)} {abyss.season}",
+                f"{text_map.get(78, locale, shenhe_user.user_locale)} {abyss.max_floor}\n"
                 f"✦ {abyss.total_stars}",
             )
             overview.add_field(
-                name=text_map.get(79, locale, user_locale),
-                value=f"{get_character(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, user_locale)}: {rank.strongest_strike[0].value}\n"
-                f"{get_character(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, user_locale)}: {rank.most_kills[0].value}\n"
-                f"{get_character(rank.most_damage_taken[0].id)['emoji']} {text_map.get(82, locale, user_locale)}: {rank.most_damage_taken[0].value}\n"
-                f"{get_character(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, user_locale)}: {rank.most_bursts_used[0].value}\n"
-                f"{get_character(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, user_locale)}: {rank.most_skills_used[0].value}",
+                name=text_map.get(79, locale, shenhe_user.user_locale),
+                value=f"{get_character(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, shenhe_user.user_locale)}: {rank.strongest_strike[0].value}\n"
+                f"{get_character(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, shenhe_user.user_locale)}: {rank.most_kills[0].value}\n"
+                f"{get_character(rank.most_damage_taken[0].id)['emoji']} {text_map.get(82, locale, shenhe_user.user_locale)}: {rank.most_damage_taken[0].value}\n"
+                f"{get_character(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, shenhe_user.user_locale)}: {rank.most_bursts_used[0].value}\n"
+                f"{get_character(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, shenhe_user.user_locale)}: {rank.most_skills_used[0].value}",
             )
             overview.set_author(
-                name=text_map.get(85, locale, user_locale),
-                icon_url=user.display_avatar.url,
+                name=text_map.get(85, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             result.append(overview)
 
             for floor in abyss.floors:
                 embed = default_embed(
-                    f"{text_map.get(146, locale, user_locale)} {floor.floor} {text_map.get(147, locale, user_locale)} (✦ {floor.stars}/9)"
+                    f"{text_map.get(146, locale, shenhe_user.user_locale)} {floor.floor} {text_map.get(147, locale, shenhe_user.user_locale)} (✦ {floor.stars}/9)"
                 )
                 for chamber in floor.chambers:
-                    name = f"{text_map.get(86, locale, user_locale)} {chamber.chamber} {text_map.get(87, locale, user_locale)} ✦ {chamber.stars}"
+                    name = f"{text_map.get(86, locale, shenhe_user.user_locale)} {chamber.chamber} {text_map.get(87, locale, shenhe_user.user_locale)} ✦ {chamber.stars}"
                     chara_list = [[], []]
                     for i, battle in enumerate(chamber.battles):
                         for chara in battle.characters:
@@ -579,8 +580,8 @@ class GenshinApp:
                         bottomStr += f"| {bottom_char} "
                     embed.add_field(
                         name=name,
-                        value=f"{text_map.get(88, locale, user_locale)} {topStr}\n\n"
-                        f"{text_map.get(89, locale, user_locale)} {bottomStr}",
+                        value=f"{text_map.get(88, locale, shenhe_user.user_locale)} {topStr}\n\n"
+                        f"{text_map.get(89, locale, shenhe_user.user_locale)} {bottomStr}",
                         inline=False,
                     )
                 result.append(embed)
@@ -596,22 +597,22 @@ class GenshinApp:
         locale: Locale,
     ):
         c: aiosqlite.Cursor = await self.db.cursor()
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            await client.get_notes(uid)
+            await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -622,8 +623,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -634,8 +635,8 @@ class GenshinApp:
                     (user_id,),
                 )
                 result = default_embed().set_author(
-                    name=text_map.get(98, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(98, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
             else:
                 await c.execute(
@@ -643,18 +644,18 @@ class GenshinApp:
                     (resin_notification_toggle, resin_threshold, max_notif, user_id),
                 )
                 toggle_str = (
-                    text_map.get(99, locale, user_locale)
+                    text_map.get(99, locale, shenhe_user.user_locale)
                     if resin_notification_toggle == 1
-                    else text_map.get(100, locale, user_locale)
+                    else text_map.get(100, locale, shenhe_user.user_locale)
                 )
                 result = default_embed(
-                    message=f"{text_map.get(101, locale, user_locale)}: {toggle_str}\n"
-                    f"{text_map.get(102, locale, user_locale)}: {resin_threshold}\n"
-                    f"{text_map.get(103, locale, user_locale)}: {max_notif}"
+                    message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {toggle_str}\n"
+                    f"{text_map.get(102, locale, shenhe_user.user_locale)}: {resin_threshold}\n"
+                    f"{text_map.get(103, locale, shenhe_user.user_locale)}: {max_notif}"
                 )
                 result.set_author(
-                    name=text_map.get(104, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(104, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
             await self.db.commit()
         return result, True
@@ -668,22 +669,22 @@ class GenshinApp:
         max_notif: int = None,
     ):
         c: aiosqlite.Cursor = await self.db.cursor()
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            await client.get_notes(uid)
+            await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -694,8 +695,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -706,8 +707,8 @@ class GenshinApp:
                     (user_id,),
                 )
                 result = default_embed().set_author(
-                    name=text_map.get(517, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(517, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
             else:
                 await c.execute(
@@ -715,35 +716,35 @@ class GenshinApp:
                     (threshold, max_notif, user_id),
                 )
                 result = default_embed(
-                    message=f"{text_map.get(101, locale, user_locale)}: {text_map.get(99, locale, user_locale)}\n"
-                    f"{text_map.get(516, locale, user_locale)}: {threshold}\n"
-                    f"{text_map.get(103, locale, user_locale)}: {max_notif}"
+                    message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {text_map.get(99, locale, shenhe_user.user_locale)}\n"
+                    f"{text_map.get(516, locale, shenhe_user.user_locale)}: {threshold}\n"
+                    f"{text_map.get(103, locale, shenhe_user.user_locale)}: {max_notif}"
                 )
                 result.set_author(
-                    name=text_map.get(104, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(104, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
             await self.db.commit()
 
             return result, True
 
     async def get_all_characters(self, user_id: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            characters = await client.get_genshin_characters(uid)
+            characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -754,8 +755,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -773,7 +774,7 @@ class GenshinApp:
                 result["options"].append(
                     SelectOption(
                         emoji=element_emojis.get(element),
-                        label=f"{get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}",
+                        label=f"{get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(220, locale, shenhe_user.user_locale)}",
                         value=index,
                     )
                 )
@@ -781,41 +782,41 @@ class GenshinApp:
                 for character in characters:
                     message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
                 embed = default_embed(
-                    f"{element_emojis.get(element)} {get_element_name(element, locale, user_locale)} {text_map.get(220, locale, user_locale)}",
+                    f"{element_emojis.get(element)} {get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(220, locale, shenhe_user.user_locale)}",
                     message,
                 ).set_author(
-                    name=text_map.get(105, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(105, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 )
                 result["embeds"].append(embed)
                 index += 1
             return result, True
 
     async def redeem_code(self, user_id: int, code: str, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            await client.redeem_code(code)
+            await shenhe_user.client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
             return (
                 error_embed().set_author(
-                    name=text_map.get(106, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(106, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.RedemptionInvalid:
             return (
                 error_embed().set_author(
-                    name=text_map.get(107, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(107, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -826,40 +827,40 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         else:
             return (
                 default_embed(
-                    message=f"{text_map.get(108, locale, user_locale)}: {code}"
+                    message=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
                 ).set_author(
-                    name=text_map.get(109, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(109, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 True,
             )
 
     async def get_activities(self, user_id: int, custom_uid: int, locale: Locale):
-        client, uid, user, user_locale = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_data(user_id, locale)
         uid = custom_uid or uid
         try:
-            activities = await client.get_genshin_activities(uid)
+            activities = await shenhe_user.client.get_genshin_activities(uid)
         except genshin.errors.DataNotPublic:
             return (
-                error_embed(message=text_map.get(21, locale, user_locale)).set_author(
-                    name=text_map.get(22, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(22, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
         except genshin.errors.InvalidCookies:
             return (
-                error_embed(message=text_map.get(35, locale, user_locale)).set_author(
-                    name=text_map.get(36, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                error_embed(message=text_map.get(35, locale, shenhe_user.user_locale)).set_author(
+                    name=text_map.get(36, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -870,8 +871,8 @@ class GenshinApp:
             )
             return (
                 error_embed().set_author(
-                    name=text_map.get(23, locale, user_locale),
-                    icon_url=user.display_avatar.url,
+                    name=text_map.get(23, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
             )
@@ -880,13 +881,13 @@ class GenshinApp:
             if summer is None:
                 return (
                     error_embed().set_author(
-                        name=text_map.get(110, locale, user_locale),
-                        icon_url=user.display_avatar.url,
+                        name=text_map.get(110, locale, shenhe_user.user_locale),
+                        icon_url=shenhe_user.discord_user.display_avatar.url,
                     ),
                     False,
                 )
             result = await self.parse_summer_embed(
-                summer, user, custom_uid, locale, user_locale
+                summer, shenhe_user.discord_user, custom_uid, locale, shenhe_user.user_locale
             )
             return result, True
 
@@ -977,6 +978,7 @@ class GenshinApp:
             (user_id,),
         )
         user_data = await c.fetchone()
+        is_cn = 0
         if user_data is None:
             client = self.bot.genshin_client
             uid = None
@@ -992,16 +994,20 @@ class GenshinApp:
             )
             client.uids[genshin.Game.GENSHIN] = uid
 
-        locale = await get_user_locale(user_id, self.db) or locale
+        user_locale = await get_user_locale(user_id, self.db)
+        locale = user_locale or locale
         client_locale = to_genshin_py(locale) or "en-us"
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
+        
+        is_cn = True if is_cn == 1 else False
 
         try:
             await client.update_character_names(lang=client._lang)
         except genshin.errors.InvalidCookies:
             pass
-        return client, uid, user, locale
+        user_obj = ShenheUser(client=client, uid=uid, discord_user=user, user_locale=user_locale, is_cn=is_cn)
+        return user_obj
 
     async def check_user_data(self, user_id: int):
         c: aiosqlite.Cursor = await self.db.cursor()

@@ -51,34 +51,45 @@ class Schedule(commands.Cog):
 
     @tasks.loop(hours=24)
     async def claim_reward(self):
-        log.info("[Schedule] Claim Reward Start")
         try:
-            count = 0
+            log.info("[Schedule] Claim Reward Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute("SELECT user_id FROM genshin_accounts")
             users = await c.fetchall()
-            for index, tuple in enumerate(users):
+            for _, tuple in enumerate(users):
                 user_id = tuple[0]
-                client, uid, user, user_locale = await self.genshin_app.get_user_data(
-                    user_id
-                )
-                client.lang = to_genshin_py(user_locale) or "ja-jp"
-                try:
-                    await client.claim_daily_reward()
-                except genshin.errors.AlreadyClaimed:
-                    count += 1
-                except genshin.errors.InvalidCookies:
-                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                except Exception as e:
-                    sentry_sdk.capture_exception(e)
-                else:
-                    count += 1
-                await asyncio.sleep(3.0)
+                shenhe_user = await self.genshin_app.get_user_data(user_id)
+                client = shenhe_user.client
+                client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
+                claimed = False
+                max_try = 10
+                current_try = 1
+                while not claimed:
+                    if current_try > max_try:
+                        break
+                    try:
+                        await client.claim_daily_reward()
+                    except genshin.errors.AlreadyClaimed:
+                        claimed = True
+                    except genshin.errors.InvalidCookies:
+                        log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                    except genshin.errors.GenshinException as e:
+                        if e.retcode == -10002:
+                            log.warning(f'[Schedule] Invalid Cookies: {user_id}')
+                        else:
+                            log.warning(f"[Schedule] Claim Reward Error: {e}")
+                            sentry_sdk.capture_exception(e)
+                    except Exception as e:
+                        log.warning(f"[Schedule] Claim Reward Error: {e}")
+                        sentry_sdk.capture_exception(e)
+                    current_try += 1
+                    await asyncio.sleep(1)
+                await asyncio.sleep(3)
             await self.bot.db.commit()
+            log.info("[Schedule] Claim Reward Ended")
         except Exception as e:
+            log.warning(f"[Schedule] Claim Reward Error: {e}")
             sentry_sdk.capture_exception(e)
-        else:
-            log.info("[Schedule]Claim Reward Ended")
 
     @tasks.loop(hours=1)
     async def pot_notification(self):
@@ -103,17 +114,9 @@ class Schedule(commands.Cog):
                 if time_diff.total_seconds() < 7200:
                     continue
 
-                client, uid, user, user_locale = await self.genshin_app.get_user_data(
-                    user_id
-                )
-                if user is None:
-                    await c.execute(
-                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
-                        (user_id,),
-                    )
-                    continue
+                shenhe_user = await self.genshin_app.get_user_data(user_id)
                 try:
-                    notes = await client.get_notes(uid)
+                    notes = await shenhe_user.client.get_notes(shenhe_user.uid)
                 except genshin.errors.InvalidCookies:
                     log.warning(f"[Schedule] Invalid Cookies: {user_id}")
                 except Exception as e:
@@ -124,10 +127,12 @@ class Schedule(commands.Cog):
                     )
                 else:
                     coin = notes.current_realm_currency
-                    locale = user_locale or "zh-TW"
+                    locale = shenhe_user.user_locale or "zh-TW"
                     if coin >= threshold and current_notif < max_notif:
                         if notes.current_realm_currency == notes.max_realm_currency:
-                            realm_recover_time = text_map.get(1, locale, user_locale)
+                            realm_recover_time = text_map.get(
+                                1, locale, shenhe_user.user_locale
+                            )
                         else:
                             realm_recover_time = format_dt(
                                 notes.realm_currency_recovery_time, "R"
@@ -140,11 +145,11 @@ class Schedule(commands.Cog):
                         )
                         embed.set_author(
                             name=text_map.get(518, locale),
-                            icon_url=user.display_avatar.url,
+                            icon_url=shenhe_user.discord_user.display_avatar.url,
                         )
                         embed.set_footer(text=text_map.get(305, locale))
                         try:
-                            await user.send(embed=embed)
+                            await shenhe_user.discord_user.send(embed=embed)
                         except Forbidden:
                             await c.execute(
                                 "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
@@ -194,17 +199,9 @@ class Schedule(commands.Cog):
                 if time_diff.total_seconds() < 7200:
                     continue
 
-                client, uid, user, user_locale = await self.genshin_app.get_user_data(
-                    user_id
-                )
-                if user is None:
-                    await c.execute(
-                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
-                        (user_id,),
-                    )
-                    continue
+                shenhe_user = await self.genshin_app.get_user_data(user_id)
                 try:
-                    notes = await client.get_notes(uid)
+                    notes = await shenhe_user.client.get_notes(shenhe_user.uid)
                 except genshin.errors.InvalidCookies:
                     log.warning(f"[Schedule] Invalid Cookies: {user_id}")
                 except Exception as e:
@@ -214,11 +211,13 @@ class Schedule(commands.Cog):
                         (user_id,),
                     )
                 else:
-                    locale = user_locale or "zh-TW"
+                    locale = shenhe_user.user_locale or "zh-TW"
                     resin = notes.current_resin
                     if resin >= threshold and current_notif < max_notif:
                         if resin == notes.max_resin:
-                            resin_recover_time = text_map.get(1, locale, user_locale)
+                            resin_recover_time = text_map.get(
+                                1, locale, shenhe_user.user_locale
+                            )
                         else:
                             resin_recover_time = format_dt(
                                 notes.resin_recovery_time, "R"
@@ -232,10 +231,10 @@ class Schedule(commands.Cog):
                         embed.set_footer(text=text_map.get(305, locale))
                         embed.set_author(
                             name=text_map.get(306, locale),
-                            icon_url=user.display_avatar.url,
+                            icon_url=shenhe_user.discord_user.display_avatar.url,
                         )
                         try:
-                            await user.send(embed=embed)
+                            await shenhe_user.discord_user.send(embed=embed)
                         except Forbidden:
                             await c.execute(
                                 "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
@@ -275,14 +274,9 @@ class Schedule(commands.Cog):
             users = await c.fetchall()
             for index, tuple in enumerate(users):
                 user_id = tuple[0]
-                user = self.bot.get_user(user_id)
-                if user is None:
-                    await c.execute(
-                        "UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?",
-                        (user_id,),
-                    )
-                    await self.bot.db.commit()
-                    continue
+                user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(
+                    user_id
+                )
                 user_locale = await get_user_locale(user_id, self.bot.db)
                 user_notification_list = ast.literal_eval(tuple[1])
                 notified = {}

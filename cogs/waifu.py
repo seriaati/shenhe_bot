@@ -8,7 +8,7 @@ import waifuim
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.waifu.waifu_app import get_waifu_im_tags
-from discord import File, Forbidden, HTTPException, Interaction, app_commands
+from discord import File, Forbidden, Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -221,7 +221,9 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                     file = File(bytes_obj, filename="waifu_image.png", spoiler=True)
                     try:
                         if tags == 1:
-                            await i.edit_original_response(attachments=[file], view=None)
+                            await i.edit_original_response(
+                                attachments=[file], view=None
+                            )
                         else:
                             await i.followup.send(file=file)
                     except Forbidden:

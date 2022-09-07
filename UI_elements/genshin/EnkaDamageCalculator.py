@@ -138,13 +138,16 @@ class GoBack(Button):
         self.view: View
         enka_view = self.view.enka_view
         user_locale = await get_user_locale(i.user.id, enka_view.db)
-        card = None
-        [character] = [
-            c for c in enka_view.characters if c.id == int(enka_view.character_id)
-        ]
-        card = await draw_character_card(
-            character, user_locale or i.locale, i.client.session
-        )
+        card = i.client.enka_card_cache.get(f"{enka_view.member.id} - {enka_view.character_id}")
+        if card is None:
+            [character] = [
+                c for c in enka_view.characters if c.id == int(enka_view.character_id)
+            ]
+            card = await draw_character_card(
+                character, user_locale or i.locale, i.client.session
+            )
+            i.client.enka_card_cache[f"{enka_view.member.id} - {enka_view.character_id}"] = card
+
         is_card = False if card is None else True
         artifact_disabled = True if is_card else False
 
