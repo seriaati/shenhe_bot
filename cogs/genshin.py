@@ -1470,6 +1470,14 @@ class GenshinCog(commands.Cog, name="genshin"):
                 value=f"{weapon.effect.name}\n\n{weapon.effect.description}",
                 inline=False,
             )
+            main_stat = weapon.upgrade.stats[0].prop_id
+            sub_stat = weapon.upgrade.stats[1].prop_id
+            main_stat_hash = fight_prop.get(main_stat)['text_map_hash']
+            sub_stat_hash = fight_prop.get(sub_stat)['text_map_hash']
+            embed.add_field(
+                name=text_map.get(301, i.locale, user_locale),
+                value=f"{text_map.get(main_stat_hash, i.locale, user_locale)}\n{text_map.get(sub_stat_hash, i.locale, user_locale)}",
+            )
             embed.set_thumbnail(url=weapon.icon)
             await i.followup.send(embed=embed)
         elif item_type == 2:

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict, List
 
 from data.game.elements import convert_elements
@@ -140,6 +139,21 @@ class WeaponEffect(BaseModel):
     def parse_description(cls, v):
         return parse_HTML(list(v.values())[0])
 
+class WeaponStat(BaseModel):
+    prop_id: str = Field(alias="propType")
+    initial_value: int = Field(alias="initValue")
+
+class WeaponUpgradeDetail(BaseModel):
+    awaken_cost: List[int] = Field(alias="awakenCost")
+    stats: List[WeaponStat] = Field(alias="prop")
+    upgrade_info: List = Field(alias="promote")
+    
+    @validator("stats", pre=True)
+    def get_stats(cls, v):
+        result = []
+        for stat in v:
+            result.append(WeaponStat(**stat))
+        return result
 
 class WeaponDetail(BaseModel):
     name: str
@@ -147,7 +161,8 @@ class WeaponDetail(BaseModel):
     type: str
     icon: str
     rarity: int = Field(alias="rank")
-    effect: Dict = Field(alias="affix")
+    effect: WeaponEffect = Field(alias="affix")
+    upgrade: WeaponUpgradeDetail
 
     @validator("description")
     def parse_description(cls, v):
@@ -158,10 +173,13 @@ class WeaponDetail(BaseModel):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
         return icon_url
 
-    @validator("effect")
+    @validator("effect", pre=True)
     def parse_effect(cls, v):
-        v = list(v.values())[0]
-        return WeaponEffect(**v)
+        return WeaponEffect(**list(v.values())[0])
+    
+    @validator("upgrade", pre=True)
+    def get_upgrade(cls, v):
+        return WeaponUpgradeDetail(**v)
 
 
 class ArtifactEffect(BaseModel):
