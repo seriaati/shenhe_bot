@@ -1,5 +1,3 @@
-from io import BytesIO
-from time import process_time
 from typing import Any, Dict, List
 
 import aiosqlite
@@ -7,7 +5,8 @@ import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption, User
+from discord import (ButtonStyle, Embed, File, Interaction, Locale,
+                     SelectOption, User)
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
@@ -33,6 +32,7 @@ class View(DefaultView):
         user_locale: str,
         user_uid: str,
         characters: List[CharacterInfo],
+        browser: Browser
     ):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
@@ -46,6 +46,7 @@ class View(DefaultView):
         self.db = db
         self.user_uid = user_uid
         self.characters = characters
+        self.browser = browser
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
         self.add_item(
