@@ -163,4 +163,3 @@ ambr/cache/th/*
 ambr/cache/vi/*
 ambr/cache/static/*
 !/**/.gitkeep
-yelan/cache/*
