@@ -8,3 +8,6 @@ class ShenheUser(BaseModel):
     discord_user: discord.User
     user_locale: str
     is_cn: bool
+    
+    class Config:
+        arbitrary_types_allowed = True
