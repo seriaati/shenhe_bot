@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict, List
 
 from data.game.elements import convert_elements
@@ -140,6 +139,19 @@ class WeaponEffect(BaseModel):
     def parse_description(cls, v):
         return parse_HTML(list(v.values())[0])
 
+class WeaponStat(BaseModel):
+    prop_id: str
+    initial_value: int
+
+class WeaponUpgradeDetail(BaseModel):
+    stats: List = Field(alias="prop")
+    
+    @validator("stats")
+    def get_stats(cls, v):
+        result = []
+        for stat in v:
+            result.append(WeaponStat(prop_id=stat['propType'], initial_value=stat['initValue']))
+        return result
 
 class WeaponDetail(BaseModel):
     name: str
@@ -147,7 +159,8 @@ class WeaponDetail(BaseModel):
     type: str
     icon: str
     rarity: int = Field(alias="rank")
-    effect: Dict = Field(alias="affix")
+    effect: Dict[int, WeaponEffect] = Field(alias="affix")
+    upgrade: Dict
 
     @validator("description")
     def parse_description(cls, v):
@@ -160,8 +173,11 @@ class WeaponDetail(BaseModel):
 
     @validator("effect")
     def parse_effect(cls, v):
-        v = list(v.values())[0]
-        return WeaponEffect(**v)
+        return WeaponEffect(**list(v.values())[0])
+    
+    @validator("upgrade")
+    def get_upgrade(cls, v):
+        return WeaponUpgradeDetail(**v)
 
 
 class ArtifactEffect(BaseModel):
