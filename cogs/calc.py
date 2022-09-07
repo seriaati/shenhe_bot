@@ -59,7 +59,8 @@ class CalcCog(commands.GroupCog, name="calc"):
             )
 
         if sync:
-            client = (await self.genshin_app.get_user_data(i.user.id, i.locale))[0]
+            shenhe_user = await self.genshin_app.get_user_data(i.user.id, i.locale)
+            client = shenhe_user.client
         else:
             client = self.bot.genshin_client
             client.lang = to_genshin_py(user_locale or i.locale)
