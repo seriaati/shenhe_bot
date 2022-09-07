@@ -174,6 +174,7 @@ class Schedule(commands.Cog):
             await self.bot.db.commit()
             log.info("[Schedule] Pot Notification Ended")
         except Exception as e:
+            log.warning(f"[Schedule] Pot Notification Error: {e}")
             sentry_sdk.capture_exception(e)
 
     @tasks.loop(hours=1)
@@ -258,6 +259,7 @@ class Schedule(commands.Cog):
             await self.bot.db.commit()
             log.info("[Schedule] Resin Notifiaction Ended")
         except Exception as e:
+            log.warning(f"[Schedule] Resin Notification Error: {e}")
             sentry_sdk.capture_exception(e)
 
     @tasks.loop(hours=24)
@@ -314,6 +316,7 @@ class Schedule(commands.Cog):
 
             log.info("[Schedule] Talent Notifiaction Ended")
         except Exception as e:
+            log.warning(f"[Schedule] Talent Notification Error: {e}")
             sentry_sdk.capture_exception(e)
 
     @tasks.loop(hours=24)
@@ -398,7 +401,7 @@ class Schedule(commands.Cog):
     @pot_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-        # await asyncio.sleep(120)
+        await asyncio.sleep(120)
 
     @talent_notification.before_loop
     async def before_notif(self):
