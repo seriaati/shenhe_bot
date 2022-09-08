@@ -51,7 +51,17 @@ class GenshinApp:
                 icon_url=user.display_avatar.url,
             )
             return embed, False
-
+        required_keys = ["ltuid", "ltoken", "cookie_token"]
+        for key in required_keys:
+            if key not in cookie:
+                result = error_embed(
+                    message=text_map.get(35, locale, user_locale)
+                ).set_author(
+                    name=text_map.get(36, locale, user_locale),
+                    icon_url=user.display_avatar.url,
+                )
+                return result, False
+            
         client = genshin.Client()
         user_locale = user_locale or locale
         client.lang = to_genshin_py(user_locale)
