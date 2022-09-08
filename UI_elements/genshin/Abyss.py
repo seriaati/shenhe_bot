@@ -25,18 +25,6 @@ class View(DefaultView):
 
         self.add_item(FloorSelect(embeds, locale, user_locale))
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if self.author.id != i.user.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return self.author.id == i.user.id
-
 
 class FloorSelect(Select):
     def __init__(self, embeds: list[Embed], locale: Locale, user_locale: str):

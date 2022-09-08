@@ -34,20 +34,6 @@ class _view(View):
 
         self.current_page = 0
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        if not self.check:
-            return True
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if i.user.id != self.author.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return i.user.id == self.author.id
-
     async def update_children(self, interaction: Interaction):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0

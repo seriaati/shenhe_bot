@@ -5,8 +5,7 @@ import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultView
-from discord import (ButtonStyle, Embed, File, Interaction, Locale,
-                     SelectOption, User)
+from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption, User
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
@@ -32,7 +31,7 @@ class View(DefaultView):
         user_locale: str,
         user_uid: str,
         characters: List[CharacterInfo],
-        browser: Browser
+        browser: Browser,
     ):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
@@ -55,18 +54,6 @@ class View(DefaultView):
         self.children[0].disabled = True
         self.children[1].disabled = True
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if self.author.id != i.user.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return self.author.id == i.user.id
-
 
 class PageSelect(Select):
     def __init__(self, character_options: list[SelectOption], plceholder: str):
@@ -78,7 +65,9 @@ class PageSelect(Select):
         damage_calc_disabled = False
         card = None
         if self.values[0] != "0":
-            card = i.client.enka_card_cache.get(f'{self.view.member.id} - {self.values[0]}')
+            card = i.client.enka_card_cache.get(
+                f"{self.view.member.id} - {self.values[0]}"
+            )
             if card is None:
                 [character] = [
                     c for c in self.view.characters if c.id == int(self.values[0])
@@ -86,7 +75,9 @@ class PageSelect(Select):
                 card = await draw_character_card(
                     character, user_locale or i.locale, i.client.session
                 )
-                i.client.enka_card_cache[f'{self.view.member.id} - {self.values[0]}'] = card
+                i.client.enka_card_cache[
+                    f"{self.view.member.id} - {self.values[0]}"
+                ] = card
         is_card = False if card is None else True
         artifact_disabled = True if is_card else False
 

@@ -21,17 +21,10 @@ class View(DefaultView):
             self.add_item(ElementButton(data, index))
         self.avatar_id = None
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
-        return i.user.id == self.author.id
-
 
 class ElementButton(Button):
     def __init__(self, data: dict, index: int):
-        super().__init__(
-            emoji=(list(elements.values()))[index], row=index//4)
+        super().__init__(emoji=(list(elements.values()))[index], row=index // 4)
         self.index = index
         self.data = data
 
@@ -39,18 +32,28 @@ class ElementButton(Button):
         self.view: View
         user_locale = await get_user_locale(i.user.id, self.view.db)
         self.view.clear_items()
-        self.view.add_item(CharacterSelect(
-            self.data, list(elements.keys())[self.index], text_map.get(157, i.locale, user_locale)))
+        self.view.add_item(
+            CharacterSelect(
+                self.data,
+                list(elements.keys())[self.index],
+                text_map.get(157, i.locale, user_locale),
+            )
+        )
         await i.response.edit_message(view=self.view)
 
 
 class CharacterSelect(Select):
     def __init__(self, data: dict, element: str, placeholder: str):
         options = []
-        for avatar_id, avatar_info in data['data']['items'].items():
-            if avatar_info['element'] == element:
-                options.append(SelectOption(label=avatar_info['name'], emoji=get_character(
-                    avatar_id)['emoji'], value=avatar_id))
+        for avatar_id, avatar_info in data["data"]["items"].items():
+            if avatar_info["element"] == element:
+                options.append(
+                    SelectOption(
+                        label=avatar_info["name"],
+                        emoji=get_character(avatar_id)["emoji"],
+                        value=avatar_id,
+                    )
+                )
         super().__init__(placeholder=placeholder, options=options)
 
     async def callback(self, i: Interaction):

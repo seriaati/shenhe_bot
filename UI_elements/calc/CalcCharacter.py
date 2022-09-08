@@ -38,18 +38,6 @@ class View(DefaultView):
                 ElementButton(element_names[index], element_emojis[index], index // 4)
             )
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if i.user.id != self.author.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return i.user.id == self.author.id
-
 
 class ElementButton(Button):
     def __init__(self, element_name: str, element_emoji: str, row: int):
