@@ -7,33 +7,13 @@ from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.others import ChangeLang, ChangeLog
+from UI_elements.others import ChangeLog, SettingsMenu
 from utility.utils import default_embed
 
 
 class OthersCog(commands.Cog, name="others"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    @app_commands.command(
-        name="lang",
-        description=_("Change the langauge shenhe responds you with", hash=485),
-    )
-    async def lang(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        embed = default_embed(
-            message=f"• {text_map.get(125, i.locale, user_locale)}\n"
-            f"• {text_map.get(126, i.locale, user_locale)}\n"
-            f"• {text_map.get(127, i.locale, user_locale)}\n"
-            f"• {text_map.get(511, i.locale, user_locale)}\n\n"
-            "[crowdin](https://crowdin.com/project/shenhe-bot)"
-        )
-        embed.set_author(
-            name=text_map.get(128, i.locale, user_locale), icon_url=i.user.display_avatar.url
-        )
-        view = ChangeLang.View(i.locale, user_locale, self.bot.db)
-        await i.response.send_message(embed=embed, view=view, ephemeral=True)
-        view.message = await i.original_response()
 
     @app_commands.command(
         name="version", description=_("View shenhe's change logs", hash=503)
@@ -90,6 +70,16 @@ class OthersCog(commands.Cog, name="others"):
             ),
             ephemeral=True,
         )
+        
+    @app_commands.command(name='settings', description='View and change your user settings in Shenhe')
+    async def settings(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        view = SettingsMenu.View(user_locale or i.locale)
+        embed = default_embed(message=text_map.get(534, i.locale, user_locale))
+        embed.set_author(name=f'⚙️ {text_map.get(539, i.locale, user_locale)}', icon_url=i.user.display_avatar.url)
+        await i.response.send_message(embed=embed, view=view)
+        view.message = await i.original_response()
+        view.author = i.user
 
 
 async def setup(bot: commands.Bot) -> None:
