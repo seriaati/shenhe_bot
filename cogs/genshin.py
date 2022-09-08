@@ -1428,7 +1428,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if item_type is None:
             return await i.followup.send(
                 embed=error_embed().set_author(
-                    name=text_map.get(533, i.locale, user_locale),
+                    name=text_map.get(542, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,

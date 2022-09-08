@@ -1,6 +1,6 @@
 change_log_en = {
     "v4.7.8": "New Features\n"
-    "• Added dark mode to take care of your eyes (currently only </stats:1006486283725590530>)\n"
+    "• Added dark mode (currently only </stats:1006486283725590530>)\n"
     "• </settings:1017447865829830696> is a command that combines all your user settings\n"
     "• Currently moved /lang and /devmsg into it\n"
     "• Commands for reminders will also be moved in the future\n"
