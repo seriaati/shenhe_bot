@@ -125,7 +125,7 @@
 125: 申鶴會以你在Discord使用的語言來回复你。
 126: 更改語言會覆蓋預設語言。
 127: 若該文本未翻譯好，申鶴會使用英文回复
-128: 更改語言
+128: Language
 129: 蒙德
 130: 璃月
 131: 稻妻
@@ -514,9 +514,15 @@
 525: 蔓激化
 526: 超激化
 527: 水元素近戰附魔
-528: 你的帳號由於由於 Cookie 無效已被移除，\n 請使用 </register:1006486283725590528> 重新註冊
+528: Your account has been removed because its Cookie is invalid, please register again using </register:1006486283725590528>
 529: 物品類型
 530: 獲取途徑
 531: 武器效果
 532: 檔案過大
 533: Error while calculating damage
+534: View and change your user settings in Shenhe
+535: Appearance
+536: Dark mode
+537: Light mode
+538: "• This setting changes the apperance of your cards\n • If there is no dark mode version of the card, it will be displayed in light mode\n • Default is light mode\n • See below for an example\n"
+539: Settings
