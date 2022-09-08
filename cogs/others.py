@@ -55,6 +55,7 @@ class OthersCog(commands.Cog, name="others"):
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
+        embed.set_image(url='https://i.imgur.com/WM6C1Tk.png')
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
         view.author = i.user
