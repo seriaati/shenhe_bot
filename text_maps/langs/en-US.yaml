@@ -125,7 +125,7 @@
 125: By default, shenhe responds you with the same language your discord uses
 126: Changing language will override the default language
 127: If any text is not translated yet, shenhe will respond you with English
-128: Changing language
+128: Language
 129: Mondstat
 130: Liyue
 131: Inazuma
@@ -564,9 +564,18 @@
 525: Spread
 526: Aggravate
 527: Hydro infusion
-528: Your account has been removed because its Cookie is invalid,\n please register again using </register:1006486283725590528>
+528: Your account has been removed because its Cookie is invalid, please register again using </register:1006486283725590528>
 529: Item type
 530: Sources
 531: Weapon effect
 532: File is too large
 533: Error while calculating damage
+534: View and change your user settings in Shenhe
+535: Appearance
+536: Dark mode
+537: Light mode
+538: "• This setting changes the apperance of your cards\n
+     • If there is no dark mode version of the card, it will be displayed in light mode\n
+     • Default is light mode\n
+     • See below for an example\n"
+539: Settings
