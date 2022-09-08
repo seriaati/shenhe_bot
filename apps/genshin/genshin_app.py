@@ -271,7 +271,7 @@ class GenshinApp:
         avatar_url: str,
     ) -> Tuple[Embed | Dict, bool]:
         shenhe_user = await self.get_user_data(user_id, locale)
-        uid = custom_uid or uid
+        uid = custom_uid or shenhe_user.uid
         try:
             genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
             characters = await self.bot.genshin_client.get_calculator_characters(
@@ -320,7 +320,7 @@ class GenshinApp:
         self, user_id: int, custom_uid: Literal["int", None], locale: Locale
     ):
         shenhe_user = await self.get_user_data(user_id, locale)
-        uid = custom_uid or uid
+        uid = custom_uid or shenhe_user.uid
         try:
             genshinUser = await shenhe_user.client.get_partial_genshin_user(uid)
         except genshin.errors.DataNotPublic:
@@ -417,7 +417,7 @@ class GenshinApp:
             )
             msg = ""
             for cat in d.categories:
-                msg += f"{cat.name}: {cat.percentage}%\n"
+                msg += f"{cat.name}: {cat.amount} | {cat.percentage}%\n"
             result.add_field(
                 name=text_map.get(65, locale, shenhe_user.user_locale), value=msg, inline=False
             )
@@ -435,7 +435,7 @@ class GenshinApp:
     async def get_diary_logs(self, user_id: int, locale: Locale):
         shenhe_user = await self.get_user_data(user_id, locale)
         try:
-            diary = await shenhe_user.client.get_diary()
+            _ = await shenhe_user.client.get_diary()
         except genshin.errors.DataNotPublic as e:
             return (
                 error_embed(message=text_map.get(21, locale, shenhe_user.user_locale)).set_author(
@@ -845,7 +845,7 @@ class GenshinApp:
 
     async def get_activities(self, user_id: int, custom_uid: int, locale: Locale):
         shenhe_user = await self.get_user_data(user_id, locale)
-        uid = custom_uid or uid
+        uid = custom_uid or shenhe_user.uid
         try:
             activities = await shenhe_user.client.get_genshin_activities(uid)
         except genshin.errors.DataNotPublic:
