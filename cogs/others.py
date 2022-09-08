@@ -71,7 +71,7 @@ class OthersCog(commands.Cog, name="others"):
             ephemeral=True,
         )
         
-    @app_commands.command(name='settings', description='View and change your user settings in Shenhe')
+    @app_commands.command(name='settings', description=_('View and change your user settings in Shenhe', hash=534))
     async def settings(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         view = SettingsMenu.View(user_locale or i.locale)
