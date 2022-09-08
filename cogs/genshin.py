@@ -302,7 +302,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         uid = await self.genshin_app.get_user_uid(member.id)
         uid = custom_uid or uid
         if uid is None:
-            return await i.followup.send(
+            return await i.response.send_message(
                 embed=error_embed(
                     message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
                 ).set_author(

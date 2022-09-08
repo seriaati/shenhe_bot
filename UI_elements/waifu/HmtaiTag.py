@@ -1,13 +1,11 @@
 from typing import Any
 
 import config
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
 from discord import Interaction, SelectOption, User
 from discord.ui import Select
-from utility.utils import divide_chunks, error_embed
+from utility.utils import divide_chunks
 
 
 class View(DefaultView):
