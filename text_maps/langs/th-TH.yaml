@@ -34,7 +34,7 @@
 34: ภาษาในปัจจุบัน
 35: "</register:1006486283725590528> for more information"
 36: รูปแบบคุกกี้ไม่ถูกต้อง
-37: การลงทะเบียนบัญชีของคุณถูกยกเลิก
+37: Account register canceled
 38: No valid accounts were obtained from the cookie
 39: สมัครบัญชีสำเร็จ
 40: คุณได้รับรางวัลล็อกอินวันนี้แล้ว!
@@ -122,21 +122,21 @@
 122: Unleashed elemental skill
 123: Custom UID searched
 124: Back to default
-125: By default, shenhe responds you with the same language your discord uses
+125: By default, shenhe responds to you with the same language your discord uses
 126: Changing language will override the default language
-127: If any text is not translated yet, shenhe will respond you with English
+127: If any text is not translated yet, shenhe will respond to you with English
 128: Language
 129: Mondstat
 130: Liyue
 131: Inazuma
 132: Submit your cookie
-133: please paste the text you copied here
+133: Please paste the text you copied here
 134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
 135: There was an error
 136: Choose your account
 137: Account registration tutorial
-138: "1.Copy the code below\n 2.Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3.Click the address bar and select all the text there\n 4.Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5.Press ENTER, a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
-139: Cookie invalid or is outdated, please logout then login again!
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3. Click the address bar and select all the text there\n 4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+139: Cookie invalid or outdated, please log out then log in again!
 140: Please use the </register:1006486283725590528> command
 141: Account data not found!
 142: โปรดเลือกธาตุของคุณ
@@ -172,9 +172,9 @@
 172: "For example: 5"
 173: Elemental skill (E) target level
 174: Elemental burst (Q) target level
-175: Add to todo list
+175: Add to the todo list
 176: Please remove some materials from your todo list using the `remove materials` button
-177: You have reached the limit of materials you can have in your todo list (125)
+177: You have reached the limit of materials you can have on your todo list (125)
 178: Use </todo:1006486283855605804> to view your todo list
 179: Success
 180: Choose your weapon
@@ -187,7 +187,7 @@
 187: Please enter a number
 188: "Character level: Please enter a number between 1 and 90"
 189: "Talent level: Please enter a number between 1 and 10"
-190: Invalid input
+190: Invalid Input
 191: Calculation results
 192: Calculation content
 193: Character level
@@ -197,7 +197,7 @@
 197: No materials needed
 198: Character level-up
 199: Talent level-up
-200: Weapon level
+200: Weapon Level
 201: Weapon level-up
 202: Todo list
 203: Add item
@@ -230,19 +230,19 @@
 230: October
 231: November
 232: December
-234: monday
-235: tuesday
-236: wednesday
-237: thursday
-238: friday
-239: saturday
-240: sunday
+234: Monday
+235: Tuesday
+236: Wednesday
+237: Thursday
+238: Friday
+239: Saturday
+240: Sunday
 250: farmable items
 251: Achievement leaderboard
 252: You
 253: N/A
 254: This leaderboard is currently empty
-255: Choose the substat leaderboard you with to view
+255: Choose the sub stat leaderboard you wish to view
 256: Substat leaderboard
 257: Luck leaderboard
 258: HP
@@ -272,9 +272,9 @@
 282: Go back
 283: Or enter your UID in the options
 284: Invalid account
-285: This is an account without a main character
+285: This is an account without the main character
 286: Invalid UID
-287: Please turn on the character showcase toggle in game
+287: Please turn on the character showcase toggle in-game
 288: Player level
 289: World level
 290: Achievement
@@ -295,7 +295,7 @@
 305: Use /remind to change the settings
 306: Resin is almost full!!
 307: Talent notification is now turned OFF
-308: Right click any server that has shenhe in it
+308: Right-click any server that has shenhe in it
 309: Click on `privacy settings`
 310: Turn the toggle ON
 311: How to unblock DM from servers
@@ -312,7 +312,7 @@
 322: Talent level-up materials
 323: Passive Talents
 324: Level-up to
-325: Quick navigation
+325: Quick Navigation
 326: Normal Atk.
 327: Charged Atk.
 328: Plunging Atk.
@@ -322,7 +322,7 @@
 332: Melt
 333: Vaporize
 334: Avg. DMG
-335: Non Crit DMG
+335: Non-Crit DMG
 336: Crit Hit DMG
 337: Select elemental reaction
 338: No team melee infusion
@@ -345,15 +345,15 @@
 355: Please wait for awhile while shenhe is processing your wish history
 356: Successfully imported wish history
 357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
+358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait for it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will be copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
 359: Importing wish history using your android phone
 360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
 361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open Wish screen, stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link start with https://hk4e-api-os.mihoyo.com/)\n 11. Click  Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open the Wish screen, and stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for the page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)\n 11. Click the Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
 363: Importing wish history using your Playstation device
 364: "(If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)\n (You can only use this method if you have an in-game mail with a QR Code to open the web event)\n\n 1. Open Genshin Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish import:1000187021635104890> command"
 365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n changing the language afterward will have no effect on previous records"
+366: "The language of your wish history is based on your current selected language\n changing the language afterward will not affect previous records"
 367: No wish history data found
 368: "</wish import:1000187021635104890> to import your wish history"
 369: Wish history
@@ -369,7 +369,7 @@
 380: "<FROM PITY>"
 381: pity pull(s)
 382: Wishing to pull
-383: UP 5 star characters
+383: UP 5-star characters
 384: Expecting to finish after
 385: pull(s)
 386: Event wish number prediction
@@ -377,7 +377,7 @@
 388: "Yes"
 389: "No"
 390: Is this the weapon you wanted?
-391: The last 5 star weapon you pulled was
+391: The last 5-star weapon you pulled was
 392: Is this a standard or limited time UP weapon?
 393: Weapon wish number prediction
 394: Wishing to pull
@@ -391,7 +391,7 @@
 402: pull(s) per 5 star
 403: "<FROM PITY>"
 404: pull(s) from pity
-405: You haven't pulled any 5 star weapons in the weapon banner yet
+405: You haven't pulled any 5-star weapons in the weapon banner yet
 406: Start time
 407: End time
 408: Details
@@ -400,7 +400,7 @@
 411: options
 412: Registration tutorial
 413: Submit cookie
-414: "View real time notes: Current resin, pot, expedition status (need /register)"
+414: "View real-time notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
 417: "View genshin stats: Active days, oculis, number of chests"
@@ -435,13 +435,13 @@
 446: View farmable items today
 447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
-449: View characters' artifacts, stats, weapons, talents, and calculate damage
+449: View characters' artifacts, stats, weapons, and talents, and calculate damage
 450: Redeem gift codes (need /register)
 451: code
 452: View ongoing events in genshin
-453: View leaderboard
+453: View the leaderboard
 454: Achievement leaderboard
-455: Artifact substat leaderboard
+455: Artifact sub stat leaderboard
 456: Wish luck leaderboard
 457: Genshin wiki
 458: character
@@ -459,19 +459,19 @@
 470: claymore
 471: bow
 472: polearm
-473: View todo list
+473: View the todo list
 474: Import wish history
 475: function
 476: Wish history import tutorial
 477: Submit link
 478: View wish history
 479: Wish luck analysis
-480: Predict chance of pulling a character
+480: Predict the chance of pulling a character
 481: number
-482: How many 5 star UP characters do you wish to pull?
+482: How many 5-star UP characters do you wish to pull?
 483: Predict change of pulling a weapon
 484: View wish overview
-485: Change the language shenhe responds you with
+485: Change the language shenhe responds to you with
 486: View all commands
 487: Genshin
 488: Genshin wish
@@ -487,13 +487,13 @@
 498: View profile
 499: View all characters
 500: บันทึกเรียลไทม์
-501: Update self leaderboard position
+501: Update self-leaderboard position
 502: Leaderboard position updated
 503: View past updates
 504: 'Made by seria#5334, DM me if you have any questions'
 505: View past updates
 506: number
-507: How many 5 star UP characters do you wish to pull?
+507: How many 5-star UP characters do you wish to pull?
 508: Search anything genshin related
 509: query
 510: Sumeru
@@ -509,7 +509,7 @@
 520: Dendroculus
 521: Remove account data
 522: Account data removed
-523: Stop receiving message from the developer
+523: Stop receiving messages from the developer
 524: Don't want to see this? Use /devmsg
 525: Spread
 526: Aggravate
@@ -518,11 +518,11 @@
 529: Item type
 530: Sources
 531: Weapon effect
-532: File is too large
+532: The file is too large
 533: Error while calculating damage
 534: View and change your user settings in Shenhe
 535: Appearance
 536: Dark mode
 537: Light mode
-538: "• This setting changes the apperance of your cards\n • If there is no dark mode version of the card, it will be displayed in light mode\n • Default is light mode\n • See below for an example\n"
+538: "• This setting changes the appearance of your cards\n • If there is no dark mode version of the card, it will be displayed in light mode\n • Default is light mode\n • See below for an example\n"
 539: Settings
