@@ -44,7 +44,8 @@ async def return_todo(
         if interacted:
             await i.edit_original_response(embed=result, view=view, attachments=[])
         else:
-            await i.response.edit_message(embed=result, view=view, attachments=[])
+            await i.response.send_message(embed=result, view=view, files=[])
+        view.message = await i.original_response()
     else:
         embeds = []
         for index in range(len(result)):
@@ -54,4 +55,3 @@ async def return_todo(
         await GeneralPaginator(
             i, embeds, db, custom_children=view.children, files=result
         ).start(edit=interacted)
-    view.message = await i.original_response()
