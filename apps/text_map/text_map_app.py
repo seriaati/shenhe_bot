@@ -29,12 +29,11 @@ class TextMap():
         path = to_paths(locale)
         text_map: Dict = self.text_maps[path]
         text = text_map.get(textMapHash)
-        text = re.sub(r"<[^\/][^>]*>", "", text)
         if text is None:
             log.warning(f'[Exception][text_map][text map hash not found]: [Text map hash]{textMapHash}')
             return None
-        else:
-            return text
+        text = re.sub(r"<[^\/][^>]*>", "", text)
+        return text
 
     def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Literal[None, 'str']:
         avatar_text = self.avatar.get(str(character_id))

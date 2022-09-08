@@ -77,7 +77,6 @@ class ShenheBot(commands.Bot):
         self.browser = await launch(
             {
                 "headless": True,
-                "autoClose": False,
                 "args": [
                     "--no-sandbox",
                 ],
@@ -144,9 +143,9 @@ class ShenheBot(commands.Bot):
             sentry_sdk.capture_exception(error)
 
     async def close(self) -> None:
+        await self.browser.close()
         await self.db.close()
         await self.main_db.close()
-        await self.browser.close()
         await self.session.close()
 
 

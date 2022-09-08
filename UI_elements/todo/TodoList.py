@@ -23,12 +23,6 @@ class View(DefaultView):
         self.add_item(ClearItems(
             disabled, text_map.get(206, locale, user_locale)))
 
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if i.user.id != self.author.id:
-            await i.response.send_message(embed=error_embed().set_author(name=text_map.get(143, i.locale, user_locale), icon_url=i.user.display_avatar.url), ephemeral=True)
-        return i.user.id == self.author.id
-
 
 class AddItem(Button):
     def __init__(self, label: str):

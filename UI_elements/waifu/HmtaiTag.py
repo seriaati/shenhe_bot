@@ -1,13 +1,11 @@
 from typing import Any
 
 import config
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from data.waifu.waifu_tags import nsfw_tags, sfw_tags
 from debug import DefaultView
 from discord import Interaction, SelectOption, User
 from discord.ui import Select
-from utility.utils import divide_chunks, error_embed
+from utility.utils import divide_chunks
 
 
 class View(DefaultView):
@@ -41,18 +39,6 @@ class View(DefaultView):
             self.add_item(TagSelect(d, f"{first}~{second}"))
             first += 25
             second = first + len(d)
-
-    async def interaction_check(self, i: Interaction) -> bool:
-        user_locale = await get_user_locale(i.user.id, self.db)
-        if self.author.id != i.user.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return self.author.id == i.user.id
 
 
 class TagSelect(Select):

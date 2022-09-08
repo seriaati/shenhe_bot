@@ -17,6 +17,7 @@ class View(DefaultView):
         super().__init__(timeout=config.long_timeout)
         # defining damage calculation variables
         self.enka_view = enka_view
+        self.author = self.enka_view.author
         character_name = ""
         for character in enka_view.data.characters:
             if str(character.id) == enka_view.character_id:
@@ -115,19 +116,6 @@ class View(DefaultView):
             self.add_item(
                 TeamSelect(teammate_options, text_map.get(344, locale, user_locale))
             )
-
-    async def interaction_check(self, i: Interaction) -> bool:
-        self.view: View
-        user_locale = await get_user_locale(i.user.id, self.enka_view.db)
-        if i.user.id != self.enka_view.author.id:
-            await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        return i.user.id == self.enka_view.author.id
 
 
 class GoBack(Button):
