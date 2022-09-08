@@ -125,7 +125,7 @@
 125: By default, shenhe responds you with the same language your discord uses
 126: Changing language will override the default language
 127: If any text is not translated yet, shenhe will respond you with English
-128: Changing language
+128: Language
 129: Mondstat
 130: Liyue
 131: Inazuma
@@ -569,11 +569,13 @@
 530: Sources
 531: Weapon effect
 532: File is too large
-533: Change your user setiings in Shenhe
-534: Appearance
-535: Dark mode
-536: Light mode
-537: • This setting changes the apperance of your cards\n
+533: Error while calculating damage
+534: View and change your user settings in Shenhe
+535: Appearance
+536: Dark mode
+537: Light mode
+538: "• This setting changes the apperance of your cards\n
      • If there is no dark mode version of the card, it will be displayed in light mode\n
-     • The defualt mode is light mode\n
-     • See below for an example\n
+     • Default is light mode\n
+     • See below for an example\n"
+539: Settings

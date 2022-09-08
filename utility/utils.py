@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 from itertools import islice
 from typing import Dict, List
-
+import aiosqlite
 import discord
 from dateutil import parser
 from discord.utils import format_dt
@@ -107,3 +107,11 @@ def extract_integer_from_string(text: str) -> int:
     text = text.replace("-", " ")
     text = [int(character) for character in text.split() if character.isdigit()]
     return int(text[0])
+
+async def get_user_apperance_mode(user_id: int, db: aiosqlite.Connection) -> int:
+    c = await db.cursor()
+    await c.execute('SELECT toggle FROM dark_mode_settings WHERE user_id = ?', (user_id,))
+    mode = await c.fetchone()
+    if mode is None:
+        return 0
+    return mode[0]
