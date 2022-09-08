@@ -90,6 +90,10 @@ class OthersCog(commands.Cog, name="others"):
             ),
             ephemeral=True,
         )
+        
+    @app_commands.command(name='settings', description=_('View and change your user settings in Shenhe', hash=533))
+    async def settings(self, i: Interaction):
+        
 
 
 async def setup(bot: commands.Bot) -> None:
