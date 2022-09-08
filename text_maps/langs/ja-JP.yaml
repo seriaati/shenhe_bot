@@ -34,7 +34,7 @@
 34: 現在の言語
 35: "詳細は</register:1006486283725590528>で確認してください"
 36: 無效の cookie
-37: 登錄した アカウント は キャンセル した。
+37: Account register canceled
 38: Cookie から キャラが見つかりません。
 39: アカウント は登錄成功した。
 40: 既にログインボーナスを受け取っています！
@@ -122,21 +122,21 @@
 122: スキルを解放しました。
 123: カスタム UID が検索されました
 124: デフォルトに戻る
-125: デフォルトでは、申鶴はあなたがDiscordで使用している言語で応答します
+125: By default, shenhe responds to you with the same language your discord uses
 126: 言語を変更するとデフォルトの言語が上書きされます
-127: テキストがまだ翻訳されていない場合、Shenheは英語であなたに返信します。
+127: If any text is not translated yet, shenhe will respond to you with English
 128: Language
 129: モンド
 130: 璃月
 131: 稻妻
 132: クッキーを送信
-133: ここにコピーしたテキストを貼ってください
+133: Please paste the text you copied here
 134: エラーが発生しました。format@@0(https://github.com/seriaati/shenhe_bot/issues) でこのエラーを報告してください。
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1. 下のコードをコピー\n 2. PC上でGoogle Chromeを開き、https://www.hoyolab.com/home　にログインします\n 3. アドレスバーをクリックし、アドレスバーのURLを全て選択します\n 4. 「java」と入力し、コピーしたコードを貼り付けます。アドレスバーの先頭が「javascript:」であることを確認してください。\n 5. ENTERを押すと、Cookieを表示する空白のページが表示されますので、すべて選択し、コピーします。\n 6. クッキーを送信するには、 </register:1006486283725590528>コマンドを使用します。\n 複雑すぎ？下の画像は参考になるかもしれません。"
-139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3. Click the address bar and select all the text there\n 4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here, use the </register:1006486283725590528> command\n Too complicated? The image below might help!"
+139: Cookie invalid or outdated, please log out then log in again!
 140: </register:1006486283725590528> コマンドを使用してください
 141: アカウントデータが見つかりません！
 142: アカウントを選択してください
@@ -172,9 +172,9 @@
 172: "例えば： 5"
 173: 元素スキル (E) の目標レベル
 174: 元素爆發(Q) の目標レベル
-175: やること帳に追加します。
+175: Add to the todo list
 176: '「素材を削除します」のボタンを利用して、やること帳內　な素材を削除してください。'
-177: すでに素材に達しています。
+177: You have reached the limit of materials you can have on your todo list (125)
 178: </todo:1006486283855605804> を使用してTODOリストを表示します
 179: 成功
 180: 武器を選択してください
@@ -187,7 +187,7 @@
 187: 数字を入力してください
 188: "キャラクターレベル：１～９０の範囲内で入ってください。"
 189: "天賦レベル：１～１０の範囲内で入ってください。"
-190: 無効入力
+190: Invalid Input
 191: 計算結果
 192: 計算内容
 193: キャラクターレベル
@@ -197,7 +197,7 @@
 197: 必要な材料はありません
 198: キャラクターレベル
 199: 天賦のレベルアップ
-200: 武器レベル
+200: Weapon Level
 201: 武器のレベルアップ
 202: やること帳
 203: 素材を追加
@@ -230,19 +230,19 @@
 230: 10月
 231: 11月
 232: 12月
-234: 月曜日
-235: 火曜日
-236: 水曜日
-237: 木曜日...
-238: 金曜日
-239: 土曜日
-240: 日曜日
+234: Monday
+235: Tuesday
+236: Wednesday
+237: Thursday
+238: Friday
+239: Saturday
+240: Sunday
 250: 周回可能な素材
 251: アチーブメント数ランキング
 252: あなた
 253: 該当なし
 254: このランキングは現在空です
-255: 表示するサブステータス リーダーボードを選択してください。
+255: Choose the sub stat leaderboard you wish to view
 256: サブステータスランキング
 257: 祈願ランキング
 258: HP
@@ -272,9 +272,9 @@
 282: 戻る
 283: または、オプションにUIDを入力してください
 284: 無効なアカウント
-285: メインキャラクターのいないアカウントです
+285: This is an account without the main character
 286: 無効なUID
-287: ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
+287: Please turn on the character showcase toggle in-game
 288: プレイヤーレベル
 289: 世界ランク
 290: アチーブメント
@@ -295,7 +295,7 @@
 305: 設定を変更する場合は、/remind を実行してください
 306: 樹脂はほぼ満杯!!
 307: 天賦のリマインダーをOFFにしました
-308: 申鶴がいるサーバーで右クリック
+308: Right-click any server that has shenhe in it
 309: '`プライバシー設定`をクリックしてください'
 310: トグルをオンにする
 311: 申鶴からのDMを受け取るにはどうすればいいですか？
@@ -312,7 +312,7 @@
 322: 天賦レベル素材
 323: 固有天賦
 324: 'レベルアップ :'
-325: クイックナビゲーション
+325: Quick Navigation
 326: 普通攻擊
 327: 重擊
 328: 下落攻擊
@@ -322,7 +322,7 @@
 332: 溶解
 333: 蒸発
 334: 平均ダメージ
-335: 会心一擊がない の ダメージ
+335: Non-Crit DMG
 336: 会心一擊 の ダメージ
 337: 元素の反応を選択
 338: パーティーによる近接攻撃の元素付着なし
@@ -345,15 +345,15 @@
 355: 申鶴が祈願履歴を処理中です...
 356: 祈願履歴のインポートに成功しました！
 357: PCを使用した祈願履歴のインポート
-358: "1. 原神を開く（複数アカウントを使用している場合は、ゲームを再起動してください。）\n 2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ\n 3. キーボードの「START」を押し、「Powershell」を検索する。\n 4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。\n 5. ENTERを押すと、リンクがクリップボードにコピーされます。\n 6. コピーしたリンクを</wish import:1000187021635104890> コマンドで送信します。\n\n[解説動画](https://www.youtube.com/watch?v=FCwZkHeIezw)"
+358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n 2. Open the wish history in the game and wait for it to load\n 3. Press START on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will be copied to your clipboard\n 6. Submit the link you copied by using the </wish import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
 359: Android端末を使用した祈願履歴のインポート
 360: "[Wi-Fiを使用](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [携帯電話のデータを使用](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [上記の方法がうまくいかない場合はクリックしてください](https://www.youtube.com/watch?v=jAKq94KpGHA)"
 361: iOS端末を使用した祈願履歴のインポート
-362: "[解説動画](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. App StoreでStreamをダウンロード[here](https://apps.apple.com/app/stream/id1312141691)\n 2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)\n 3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)\n 4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。\n 5. 原神を起動し、祈願画面を開き、そのページにとどまります。\n 6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ\n 7. 原神に戻り、祈願履歴ページを開く\n 8. ページが読み込まれるのを待つ\n 9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）\n 10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） \n 11. Requestタブをクリックし、リンクをコピーする\n 12. </wish import:1000187021635104890>コマンドを使用して、そのリンクをここに送信します。"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2. Open the app, then allow VPN in system preferences (Settings > General > VPN)\n 3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin Impact then open the Wish screen, and stay on that page\n 6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then open the Wish history page\n 8. Wait for the page to load\n 9. Back to Stream App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)\n 11. Click the Request tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890> command"
 363: プレイステーションでの祈願履歴のインポート
 364: "(以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/スマホの手順を使用してください。）\n (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）\n\n 1. プレイステーションで「原神」を起動する。\n 2. QRコードが記載されたイベントメールを開封する。\n 3. QRコードをスマホで読み取る\n 4. </wish import:1000187021635104890>コマンドを使用して、リンクを送信する。"
 365: プラットフォームを選択してください
-366: "祈願履歴の言語は、現在選択されている言語に基づいて表示されます。\n 言語を変更しても、以前の記録には影響しません"
+366: "The language of your wish history is based on your current selected language\n changing the language afterward will not affect previous records"
 367: 祈願履歴データが見つかりません
 368: "</wish import:1000187021635104890>で祈願履歴をインポート"
 369: 祈願履歴
@@ -369,7 +369,7 @@
 380: "天井からの数"
 381: 回 ― 天井で引いた回数
 382: 引きたいと思う
-383: 限定星５キャラクター
+383: UP 5-star characters
 384: 予測される祈願回数
 385: 回
 386: イベント祈願回数予測
@@ -377,7 +377,7 @@
 388: "はい"
 389: "いいえ"
 390: これはあなたが欲しかった武器ですか？
-391: 前回引いた星5武器は
+391: The last 5-star weapon you pulled was
 392: これは通常武器または限定武器ですか？
 393: 武器祈願回数予測
 394: 引きたいと思う
@@ -391,7 +391,7 @@
 402: 回あたりの星５
 403: "天井からの数"
 404: 回 ― 天井からの回数
-405: まだあなたは星５武器を武器ガチャで引いたことがありません
+405: You haven't pulled any 5-star weapons in the weapon banner yet
 406: 開始時間
 407: 終了時間
 408: 詳細
@@ -400,7 +400,7 @@
 411: オプション
 412: 登録チュートリアル
 413: Cookieを送信
-414: "リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( '/register' で登録している必要があります)"
+414: "View real-time notes: Current resin, pot, expedition status (need /register)"
 415: ユーザー
 416: 他のユーザーのデータを確認
 417: "原神の統計の表示：アクティブ日数、神の瞳、宝箱の数"
@@ -435,13 +435,13 @@
 446: 今日の周回可能な素材を表示
 447: "キャラクターのビルドを表示: 武器、聖遺物、天賦レベル、ステータス"
 448: ユーザーの UID を検索
-449: キャラクターの聖遺物、ステータス、武器、天賦、ダメージ計算
+449: View characters' artifacts, stats, weapons, and talents, and calculate damage
 450: 交換コードを引き換える　(/register　が必要)
 451: コード
 452: 原神で開催中のイベントを表示
-453: ランキングを表示
+453: View the leaderboard
 454: アチーブメント数ランキング
-455: 聖遺物のサブステータスのリーダーボード
+455: Artifact sub stat leaderboard
 456: 祈願運ランキング
 457: 原神Wiki
 458: キャラクター
@@ -459,19 +459,19 @@
 470: 両手剣
 471: 弓
 472: 長柄武器
-473: やること帳一覧を表示します。
+473: View the todo list
 474: 祈願記録をインポート
 475: 関数
 476: 祈願履歴のインポート方法
 477: リンクを送信
 478: 祈願履歴を表示
 479: 祈願履歴の分析
-480: キャラクターを引く確率を予想
+480: Predict the chance of pulling a character
 481: 数値
-482: 星5UPキャラを何体引きたいか？
+482: How many 5-star UP characters do you wish to pull?
 483: 武器を引く確率を予想
 484: 祈願の概要を見る
-485: 申鶴 (このbot) があなたに反応する際の言語を変更します
+485: Change the language shenhe responds to you with
 486: すべてのコマンドを表示
 487: 原神
 488: 原神の祈願
@@ -487,13 +487,13 @@
 498: プロフィールを表示
 499: マイ キャラクター
 500: リアルタイムノート
-501: リーダーボードの位置を更新
+501: Update self-leaderboard position
 502: リーダーボードの位置が更新されました
 503: 過去の更新を表示
 504: "かわい　美しい　贫乳な　seria#5334を制りました。\n、疑問はDMで話てください。"
 505: 過去の更新を表示
 506: 数値
-507: 5つ星のUPキャラクターは何枚がガチしますか？
+507: How many 5-star UP characters do you wish to pull?
 508: 原神に関すること　を検索してくたさい
 509: クエリ
 510: スメール
@@ -509,7 +509,7 @@
 520: 草神の瞳
 521: アカウントデータを削除
 522: アカウントデータの削除が完了しました
-523: 開発者からのメッセージの受信を停止する
+523: Stop receiving messages from the developer
 524: これを見たくありませんか？/devmsg を使用してください
 525: 草激化
 526: 超激化
@@ -518,11 +518,11 @@
 529: アイテムの種類
 530: 情報源
 531: 武器効果
-532: ファイルが大きすぎます
+532: The file is too large
 533: ダメージ計算中にエラーが発生しました
 534: View and change your user settings in Shenhe
 535: Appearance
 536: Dark mode
 537: Light mode
-538: "• This setting changes the apperance of your cards\n • If there is no dark mode version of the card, it will be displayed in light mode\n • Default is light mode\n • See below for an example\n"
+538: "• This setting changes the appearance of your cards\n • If there is no dark mode version of the card, it will be displayed in light mode\n • Default is light mode\n • See below for an example\n"
 539: Settings
