@@ -8,6 +8,8 @@ from utility.utils import error_embed, log
 
 class DefaultView(discord.ui.View):
     async def interaction_check(self, i: discord.Interaction) -> bool:
+        if not hasattr(self, 'author'):
+            return True
         user_locale = await get_user_locale(i.user.id, i.client.db)
         if self.author.id != i.user.id:
             await i.response.send_message(
