@@ -575,7 +575,10 @@
 536: Dark mode
 537: Light mode
 538: "• This setting changes the appearance of your cards\n
-     • If there is no dark mode version of the card, it will be displayed in light mode\n
-     • Default is light mode\n
-     • See below for an example\n"
+    • If there is no dark mode version of the card, it will be displayed in light mode\n
+    • Default is light mode\n
+    • See below for an example\n"
 539: Settings
+540: "• I some cases, I will push notifications using Shenhe\n
+    • Most of the time, they appear when there are critical issues with Shenhe, or there is an update"
+541: Developer Messages

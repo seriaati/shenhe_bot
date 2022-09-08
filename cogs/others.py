@@ -44,39 +44,17 @@ class OthersCog(commands.Cog, name="others"):
             await i.response.send_message(embed=embeds[0])
 
     @app_commands.command(
-        name="devmsg",
-        description=_("Stop receiving messages from the developer", hash=523),
+        name="settings",
+        description=_("View and change your user settings in Shenhe", hash=534),
     )
-    @app_commands.rename(toggle=_("toggle", hash=440))
-    @app_commands.choices(
-        toggle=[
-            Choice(name=_("ON", hash=463), value=1),
-            Choice(name=_("OFF", hash=464), value=0),
-        ]
-    )
-    async def devmsg(self, i: Interaction, toggle: int):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET toggle = ? WHERE user_id = ?",
-            (i.user.id, toggle, i.user.id),
-        )
-        await i.client.db.commit()
-        await i.response.send_message(
-            embed=default_embed(
-                message=f"{text_map.get(101, i.locale ,user_locale)}: {text_map.get(99, i.locale, user_locale) if toggle==1 else text_map.get(100, i.locale, user_locale)}"
-            ).set_author(
-                name=text_map.get(104, i.locale, user_locale), icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
-        
-    @app_commands.command(name='settings', description=_('View and change your user settings in Shenhe', hash=534))
     async def settings(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         view = SettingsMenu.View(user_locale or i.locale)
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))
-        embed.set_author(name=f'⚙️ {text_map.get(539, i.locale, user_locale)}', icon_url=i.user.display_avatar.url)
+        embed.set_author(
+            name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
+            icon_url=i.user.display_avatar.url,
+        )
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
         view.author = i.user

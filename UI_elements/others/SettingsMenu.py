@@ -16,6 +16,7 @@ class View(DefaultView):
         super().__init__(timeout=config.mid_timeout)
         self.add_item(Appearance(text_map.get(535, locale)))
         self.add_item(Langauge(text_map.get(128, locale)))
+        self.add_item(DeveloperMessage(text_map.get(541, locale)))
 
 
 class Appearance(Button):
@@ -61,6 +62,7 @@ class LightModeButton(Button):
             "UPDATE dark_mode_settings SET toggle = 0 WHERE user_id = ?",
             (i.user.id,),
         )
+        await i.client.db.commit()
         await Appearance.callback(self, i)
 
 
@@ -74,6 +76,7 @@ class DarkModeButton(Button):
             "UPDATE dark_mode_settings SET toggle = 1 WHERE user_id = ?",
             (i.user.id,),
         )
+        await i.client.db.commit()
         await Appearance.callback(self, i)
 
 
@@ -117,7 +120,7 @@ class LangSelect(Select):
                 )
             )
         super().__init__(
-            options=options, placeholder=text_map.get(32, locale, user_locale)
+            options=options, placeholder=text_map.get(32, locale, user_locale), row=1
         )
         self.locale = locale
 
@@ -132,11 +135,70 @@ class LangSelect(Select):
             )
         await i.client.db.commit()
         await Langauge.callback(self, i)
+        
+class DeveloperMessage(Button):
+    def __init__(self, label: str):
+        super().__init__(emoji="✉️", label=label)
+
+    async def callback(self, i: Interaction) -> Any:
+        self.view: View
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET toggle = toggle",
+            (i.user.id,),
+        )
+        await c.execute(
+            "SELECT toggle FROM active_users WHERE user_id = ?", (i.user.id,)
+        )
+        (toggle,) = await c.fetchone()
+        emoji = "🔔" if toggle == 1 else "🔕"
+        toggle_text = 99 if toggle == 1 else 100
+        embed = default_embed(
+            message=text_map.get(540, i.locale, user_locale),
+        )
+        embed.set_author(
+            name=f"{text_map.get(101, i.locale, user_locale)}: {emoji} {text_map.get(toggle_text, i.locale, user_locale)}",
+            icon_url=i.user.display_avatar.url,
+        )
+        self.view.clear_items()
+        self.view.add_item(GOBack())
+        self.view.add_item(NotifiactionONButton(text_map.get(99, i.locale, user_locale)))
+        self.view.add_item(NotificationOFFButton(text_map.get(100, i.locale, user_locale)))
+        await i.response.edit_message(embed=embed, view=self.view)
+
+
+class NotifiactionONButton(Button):
+    def __init__(self, label: str):
+        super().__init__(emoji="🔔", label=label)
+
+    async def callback(self, i: Interaction) -> Any:
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "UPDATE active_users SET toggle = 1 WHERE user_id = ?",
+            (i.user.id,),
+        )
+        await i.client.db.commit()
+        await DeveloperMessage.callback(self, i)
+
+
+class NotificationOFFButton(Button):
+    def __init__(self, label: str):
+        super().__init__(emoji="🔕", label=label)
+
+    async def callback(self, i: Interaction) -> Any:
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "UPDATE active_users SET toggle = 0 WHERE user_id = ?",
+            (i.user.id,),
+        )
+        await i.client.db.commit()
+        await DeveloperMessage.callback(self, i)
 
 
 class GOBack(Button):
     def __init__(self):
-        super().__init__(emoji="<:left:982588994778972171>")
+        super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
