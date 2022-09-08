@@ -564,8 +564,16 @@
 525: Spread
 526: Aggravate
 527: Hydro infusion
-528: Your account has been removed because its Cookie is invalid,\n please register again using </register:1006486283725590528>
+528: Your account has been removed because its Cookie is invalid, please register again using </register:1006486283725590528>
 529: Item type
 530: Sources
 531: Weapon effect
 532: File is too large
+533: Change your user setiings in Shenhe
+534: Appearance
+535: Dark mode
+536: Light mode
+537: • This setting changes the apperance of your cards\n
+     • If there is no dark mode version of the card, it will be displayed in light mode\n
+     • The defualt mode is light mode\n
+     • See below for an example\n
