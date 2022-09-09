@@ -69,6 +69,7 @@ class ShenheBot(commands.Bot):
         self.enka_eng_cache = TTLCache(maxsize=1000, ttl=180)
         self.enka_card_cache = TTLCache(maxsize=1000, ttl=180)
         self.stats_card_cache = TTLCache(maxsize=1000, ttl=180)
+        self.area_card_cache = TTLCache(maxsize=1000, ttl=180)
 
         # bot variables
         self.session = aiohttp.ClientSession()

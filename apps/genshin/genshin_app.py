@@ -343,9 +343,7 @@ class GenshinApp:
                 self.bot.stats_card_cache[uid] = fp
             return {"embed": embed, "fp": fp}, True
 
-    async def get_area(
-        self, user_id: int, custom_uid: Literal["int", None], locale: Locale
-    ):
+    async def get_area(self, user_id: int, custom_uid: int | None, locale: Locale):
         shenhe_user = await self.get_user_data(user_id, locale)
         uid = custom_uid or shenhe_user.uid
         try:
@@ -383,6 +381,9 @@ class GenshinApp:
                 False,
             )
         else:
+            fp = self.bot.area_card_cache.get(uid)
+            if fp is None:
+                fp = await draw_area_card(explorations, True if mode == 1 else False)
             explorations = genshinUser.explorations
             embed = default_embed()
             embed.set_author(
@@ -393,9 +394,7 @@ class GenshinApp:
             mode = await get_user_apperance_mode(user_id, self.db)
             result = {
                 "embed": embed,
-                "image": await draw_area_card(
-                    explorations, True if mode == 1 else False
-                ),
+                "image": fp,
             }
         return (
             result,
