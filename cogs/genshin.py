@@ -314,7 +314,12 @@ class GenshinCog(commands.Cog, name="genshin"):
         result, success = await self.genshin_app.get_area(
             member.id, custom_uid, i.locale
         )
-        await i.response.send_message(embed=result, ephemeral=not success)
+        fp = result["image"]
+        fp.seek(0)
+        image = File(fp, "area.jpeg")
+        await i.response.send_message(
+            embed=result["embed"], ephemeral=not success, files=[image]
+        )
 
     @app_commands.command(
         name="claim",
@@ -1014,7 +1019,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             user_locale,
             custom_uid,
             data.characters,
-            i.client.browser
+            i.client.browser,
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
@@ -1472,8 +1477,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             main_stat = weapon.upgrade.stats[0].prop_id
             sub_stat = weapon.upgrade.stats[1].prop_id
-            main_stat_hash = fight_prop.get(main_stat)['text_map_hash']
-            sub_stat_hash = fight_prop.get(sub_stat)['text_map_hash']
+            main_stat_hash = fight_prop.get(main_stat)["text_map_hash"]
+            sub_stat_hash = fight_prop.get(sub_stat)["text_map_hash"]
             embed.add_field(
                 name=text_map.get(301, i.locale, user_locale),
                 value=f"{text_map.get(main_stat_hash, i.locale, user_locale)}\n{text_map.get(sub_stat_hash, i.locale, user_locale)}",

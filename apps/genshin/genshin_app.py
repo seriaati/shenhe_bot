@@ -5,7 +5,7 @@ from typing import Dict, Literal, Tuple
 import aiosqlite
 import sentry_sdk
 from apps.genshin.user_model import ShenheUser
-from yelan.draw import draw_stats_card
+from yelan.draw import draw_area_card, draw_stats_card
 from apps.genshin.utils import get_area_emoji, get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -61,7 +61,7 @@ class GenshinApp:
                     icon_url=user.display_avatar.url,
                 )
                 return result, False
-            
+
         client = genshin.Client()
         user_locale = user_locale or locale
         client.lang = to_genshin_py(user_locale)
@@ -384,21 +384,21 @@ class GenshinApp:
             )
         else:
             explorations = genshinUser.explorations
-            explore_str = ""
-            for exploration in reversed(explorations):
-                level_str = (
-                    ""
-                    if exploration.id == 5 or exploration.id == 6
-                    else f"Lvl. {exploration.offerings[0].level}"
-                )
-                emoji = get_area_emoji(exploration.id)
-                explore_str += f"{emoji} {exploration.name} | {exploration.explored}% | {level_str}\n"
-            result = default_embed(message=explore_str)
-        return (
-            result.set_author(
+            embed = default_embed()
+            embed.set_author(
                 name=text_map.get(58, locale, shenhe_user.user_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
-            ),
+            )
+            embed.set_image(url="attachment://area.jpeg")
+            mode = await get_user_apperance_mode(user_id, self.db)
+            result = {
+                "embed": embed,
+                "image": await draw_area_card(
+                    explorations, True if mode == 1 else False
+                ),
+            }
+        return (
+            result,
             True,
         )
 
