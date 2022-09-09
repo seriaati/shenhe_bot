@@ -1,10 +1,8 @@
-import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.update.change_log import change_log
 from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
-from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.others import ChangeLog, SettingsMenu
