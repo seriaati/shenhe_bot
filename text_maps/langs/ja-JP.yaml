@@ -34,7 +34,7 @@
 34: 現在の言語
 35: "詳細は</register:1006486283725590528>で確認してください"
 36: 無效の cookie
-37: Account register canceled
+37: アカウント登録はキャンセルされました
 38: Cookie から キャラが見つかりません。
 39: アカウント は登錄成功した。
 40: 既にログインボーナスを受け取っています！
@@ -122,7 +122,7 @@
 122: スキルを解放しました。
 123: カスタム UID が検索されました
 124: デフォルトに戻る
-125: By default, shenhe responds to you with the same language your discord uses
+125: デフォルトでは、申鶴はあなたがDiscordで使用している言語で応答します
 126: 言語を変更するとデフォルトの言語が上書きされます
 127: If any text is not translated yet, shenhe will respond to you with English
 128: Language
@@ -510,7 +510,7 @@
 521: アカウントデータを削除
 522: アカウントデータの削除が完了しました
 523: Stop receiving messages from the developer
-524: これを見たくありませんか？/settings を使用してください
+524: Don't want to see this? Use /settings
 525: 草激化
 526: 超激化
 527: 水元素付着
