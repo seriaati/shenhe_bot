@@ -381,10 +381,10 @@ class GenshinApp:
                 False,
             )
         else:
+            explorations = genshinUser.explorations
             fp = self.bot.area_card_cache.get(uid)
             if fp is None:
                 fp = await draw_area_card(explorations, True if mode == 1 else False)
-            explorations = genshinUser.explorations
             embed = default_embed()
             embed.set_author(
                 name=text_map.get(58, locale, shenhe_user.user_locale),
