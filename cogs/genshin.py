@@ -2,11 +2,10 @@ import asyncio
 import json
 from datetime import datetime
 from pprint import pprint
+from diskcache import FanoutCache
 import random
 from time import process_time
 from typing import Dict, List
-from cachetools import LFUCache
-from shelved_cache import PersistentCache
 import aiosqlite
 import GGanalysislib
 from ambr.client import AmbrTopAPI
@@ -252,10 +251,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ),
                 ephemeral=True,
             )
-        enka_cache = PersistentCache(
-            LFUCache, filename="data/cache/enka_data_cache", maxsize=1024
-        )
-        cache: EnkaNetworkResponse = enka_cache.get(uid)
+
+        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+            cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
             try:
                 data = await enka.fetch_user(uid)
@@ -280,11 +278,14 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
+        if cache is None:
+            with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+                enka_cache[uid] = data
+
         if cache is not None and cache.player.namecard.id != data.player.namecard.id:
             cache.player.namecard.id = data.player.namecard.id
-            enka_cache[uid] = cache
-
-        data = cache
+            with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+                enka_cache[uid] = cache
 
         namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
@@ -333,9 +334,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             member.id, custom_uid, i.locale
         )
         if not success:
-            await i.followup.send(
-                embed=result, ephemeral=True
-            )
+            await i.followup.send(embed=result, ephemeral=True)
         else:
             fp = result["image"]
             fp.seek(0)
@@ -855,10 +854,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-        enka_cache = PersistentCache(
-            LFUCache, filename="data/cache/enka_data_cache", maxsize=1024
-        )
-        cache: EnkaNetworkResponse = enka_cache.get(uid)
+        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+            cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
@@ -897,7 +894,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         cache.characters = []
         for character in list(new_dict.values()):
             cache.characters.append(character)
-        enka_cache[uid] = cache
+        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+            enka_cache[uid] = cache
 
         from_cache = []
         for c in cache.characters:
@@ -922,16 +920,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             return await i.followup.send(embed=embed, ephemeral=True)
 
-        enka_eng_cache = PersistentCache(
-            LFUCache, filename="data/cache/enka_eng_cache", maxsize=1024
-        )
-        eng_cache = enka_eng_cache.get(uid)
+        with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
+            eng_cache = enka_eng_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
             eng_data = await enka.fetch_user(uid)
-        
+
         if eng_cache is None:
             eng_cache = eng_data
-        
+
         c_dict = {}
         d_dict = {}
         new_dict = {}
@@ -943,7 +939,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         eng_cache.characters = []
         for character in list(new_dict.values()):
             eng_cache.characters.append(character)
-        enka_eng_cache[uid] = eng_cache
+        with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
+            enka_eng_cache[uid] = eng_cache
 
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
