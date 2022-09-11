@@ -1,0 +1,7 @@
+{
+    "apps": [{
+        "name": "shenhe_bot",
+        "script": "./run.py",
+        "interpreter": "python3.10"
+    }]
+}
