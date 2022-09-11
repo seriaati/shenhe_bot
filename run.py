@@ -65,7 +65,6 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         # cache
-        self.enka_data_cache = TTLCache(maxsize=1000, ttl=180)
         self.enka_eng_cache = TTLCache(maxsize=1000, ttl=180)
         self.enka_card_cache = TTLCache(maxsize=1000, ttl=180)
         self.stats_card_cache = TTLCache(maxsize=1000, ttl=180)
@@ -185,20 +184,12 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
-        option_msg = ""
+        name_space_str = "" if len(i.namespace) == 0 else f"[Namespace] {i.namespace}"
         if i.command.parent is None:
-            if "options" in i.data:
-                option_msg = " "
-                for option in i.data["options"]:
-                    option_msg += f"[{option['name']}] {option['value']} "
-            log.info(f"[Command][{i.user.id}][{i.command.name}]{option_msg}")
+            log.info(f"[Command][{i.user.id}][{i.command.name}] {name_space_str}")
         else:
-            if "options" in i.data:
-                option_msg = " "
-                for option in i.data["options"][0]["options"]:
-                    option_msg += f"[{option['name']}] {option['value']} "
             log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{option_msg}"
+                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}] {name_space_str}"
             )
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")

@@ -1,12 +1,14 @@
 import importlib
 import json
 import sys
+from typing import List
 
 import sentry_sdk
 from apps.text_map.text_map_app import text_map
 import aiosqlite
 from discord import Forbidden, Interaction, app_commands
 from discord.app_commands import locale_str as _
+from discord.app_commands import Choice
 from discord.ext import commands
 from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed
@@ -36,24 +38,39 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
-    @app_commands.rename(module_name="名稱")
-    async def realod(self, i: Interaction, module_name: str):
+    @app_commands.rename(module_name="name")
+    async def reload(self, i: Interaction, module_name: str):
         try:
             importlib.reload(sys.modules[module_name])
         except KeyError:
             return await i.response.send_message(
                 embed=error_embed(message=module_name).set_author(
-                    name="查無 module", icon_url=i.user.display_avatar.url
+                    name="Module not found", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
         else:
             return await i.response.send_message(
                 embed=default_embed(message=module_name).set_author(
-                    name="重整成功", icon_url=i.user.display_avatar.url
+                    name="Reload completed", icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
+    
+    @reload.autocomplete("module_name")
+    async def query_autocomplete(
+        self, i: Interaction, current: str
+    ) -> List[Choice[str]]:
+        query_list = []
+        for key in list(sys.modules.keys()):
+            query_list.append(key)
+            
+        result = [
+            app_commands.Choice(name=query, value=query)
+            for query in query_list
+            if current.lower() in query.lower()
+        ]
+        return result[:25]
 
     @is_seria()
     @app_commands.command(name="sync", description=_("Admin usage only", hash=496))

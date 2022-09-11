@@ -162,4 +162,5 @@ ambr/cache/ru/*
 ambr/cache/th/*
 ambr/cache/vi/*
 ambr/cache/static/*
+data/cache/*
 !/**/.gitkeep
