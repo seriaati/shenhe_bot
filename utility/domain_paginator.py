@@ -13,8 +13,6 @@ from apps.text_map.utils import get_user_locale
 from discord import ButtonStyle, Embed, File, HTTPException, Interaction, NotFound, User
 from discord.ui import Button, Select, View, button
 
-from utility.utils import error_embed
-
 
 class _view(View):
     def __init__(
@@ -35,6 +33,7 @@ class _view(View):
         self.current_page = 0
 
     async def update_children(self, interaction: Interaction):
+        await interaction.response.defer()
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
 
@@ -54,7 +53,7 @@ class _view(View):
 
         kwargs["view"] = self
 
-        await interaction.response.edit_message(**kwargs)
+        await interaction.edit_original_response(**kwargs)
 
     @button(
         emoji="<:double_left:982588991461281833>",

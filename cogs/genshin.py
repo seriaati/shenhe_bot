@@ -259,7 +259,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         async with EnkaNetworkAPI() as enka:
             try:
                 data = await enka.fetch_user(uid)
-            except UIDNotFounded:
+            except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                 if cache is None:
                     return await i.followup.send(
                         embed=error_embed(
@@ -271,7 +271,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         ephemeral=True,
                     )
                 else:
-                    pass
+                    data = cache
             except VaildateUIDError:
                 return await i.followup.send(
                     embed=error_embed().set_author(
@@ -314,12 +314,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
     async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
+        await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         uid = await self.genshin_app.get_user_uid(member.id)
         uid = custom_uid or uid
         if uid is None:
-            return await i.response.send_message(
+            return await i.followup.send(
                 embed=error_embed(
                     message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
                 ).set_author(
@@ -332,14 +333,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             member.id, custom_uid, i.locale
         )
         if not success:
-            await i.response.send_message(
+            await i.followup.send(
                 embed=result, ephemeral=True
             )
         else:
             fp = result["image"]
             fp.seek(0)
             image = File(fp, "area.jpeg")
-            await i.response.send_message(
+            await i.followup.send(
                 embed=result["embed"], ephemeral=not success, files=[image]
             )
 
@@ -861,7 +862,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
-            except UIDNotFounded:
+            except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                 if cache is None:
                     return await i.followup.send(
                         embed=error_embed(
@@ -873,7 +874,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         ephemeral=True,
                     )
                 else:
-                    pass
+                    data = cache
             except VaildateUIDError:
                 return await i.followup.send(
                     embed=error_embed().set_author(
@@ -921,10 +922,28 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             return await i.followup.send(embed=embed, ephemeral=True)
 
-        eng_data = i.client.enka_eng_cache.get(uid)
-        if eng_data is None:
-            async with EnkaNetworkAPI() as enka:
-                eng_data = await enka.fetch_user(uid)
+        enka_eng_cache = PersistentCache(
+            LFUCache, filename="data/cache/enka_eng_cache", maxsize=1024
+        )
+        eng_cache = enka_eng_cache.get(uid)
+        async with EnkaNetworkAPI() as enka:
+            eng_data = await enka.fetch_user(uid)
+        
+        if eng_cache is None:
+            eng_cache = eng_data
+        
+        c_dict = {}
+        d_dict = {}
+        new_dict = {}
+        for c in eng_cache.characters:
+            c_dict[c.id] = c
+        for d in eng_data.characters:
+            d_dict[d.id] = d
+        new_dict = c_dict | d_dict
+        eng_cache.characters = []
+        for character in list(new_dict.values()):
+            eng_cache.characters.append(character)
+        enka_eng_cache[uid] = eng_cache
 
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
@@ -1378,7 +1397,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 async with EnkaNetworkAPI("cht") as enka:
                     try:
                         data = await enka.fetch_user(uid[0])
-                    except UIDNotFounded:
+                    except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                         return await i.followup.send(
                             embed=error_embed(
                                 message=text_map.get(519, i.locale, user_locale)

@@ -147,6 +147,7 @@ class ShenheBot(commands.Bot):
         await self.db.close()
         await self.main_db.close()
         await self.session.close()
+        return await super().close()
 
 
 sentry_sdk.init(
@@ -184,12 +185,14 @@ async def on_interaction(i: Interaction):
     await bot.db.commit()
 
     if isinstance(i.command, app_commands.Command):
-        name_space_str = "" if len(i.namespace) == 0 else f"[Namespace] {i.namespace}"
+        namespace_str = "" if not i.namespace.__dict__ else ": "
+        for key, value in i.namespace.__dict__.items():
+            namespace_str += f"[{key}] {value} \n"
         if i.command.parent is None:
-            log.info(f"[Command][{i.user.id}][{i.command.name}] {name_space_str}")
+            log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
             log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}] {name_space_str}"
+                f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}"
             )
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
