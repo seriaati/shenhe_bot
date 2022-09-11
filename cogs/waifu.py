@@ -8,9 +8,10 @@ import waifuim
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.waifu.waifu_app import get_waifu_im_tags
-from discord import File, Forbidden, Interaction, app_commands
+from discord import File, Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
+from discord.errors import HTTPException
 from discord.ext import commands
 from PIL import Image
 from UI_elements.waifu import DeleteImage, HmtaiTag, WaifuImTag
@@ -121,13 +122,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 await i.edit_original_response(
                     embed=None, attachments=[file], view=view
                 )
-            except Forbidden:
-                await i.edit_original_response(
-                    embed=default_embed(message=url).set_author(
-                        name=text_map.get(532, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                )
+            except HTTPException as e:
+                if e.code == 40005:
+                    await i.edit_original_response(
+                        embed=default_embed(message=url).set_author(
+                            name=text_map.get(532, i.locale, user_locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                    )
             view.message = await i.original_response()
         else:
             await i.edit_original_response(
@@ -153,13 +155,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 view = DeleteImage.View(i.user)
                 try:
                     view.message = await i.channel.send(file=file, view=view)
-                except Forbidden:
-                    await i.channel.send(
-                        embed=default_embed(message=url).set_author(
-                            name=text_map.get(532, i.locale, user_locale),
-                            icon_url=i.user.display_avatar.url,
-                        ),
-                    )
+                except HTTPException as e:
+                    if e.code == 40005:
+                        await i.channel.send(
+                            embed=default_embed(message=url).set_author(
+                                name=text_map.get(532, i.locale, user_locale),
+                                icon_url=i.user.display_avatar.url,
+                            ),
+                        )
             await i.delete_original_response()
 
     @app_commands.command(name="waifu", description="利用 waifu.im API 隨機產生一張二次元老婆的照片")
@@ -226,13 +229,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                             )
                         else:
                             await i.followup.send(file=file)
-                    except Forbidden:
-                        await i.channel.send(
-                            embed=default_embed(message=image).set_author(
-                                name=text_map.get(532, i.locale, user_locale),
-                                icon_url=i.user.display_avatar.url,
-                            ),
-                        )
+                    except HTTPException as e:
+                        if e.code == 40005:
+                            await i.channel.send(
+                                embed=default_embed(message=image).set_author(
+                                    name=text_map.get(532, i.locale, user_locale),
+                                    icon_url=i.user.display_avatar.url,
+                                ),
+                            )
                 else:
                     embed = default_embed("您的老婆已送達")
                     embed.set_image(url=image)
@@ -277,13 +281,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                             await (await i.original_response()).delete()
                         try:
                             await i.channel.send(file=file)
-                        except Forbidden:
-                            await i.channel.send(
-                                embed=default_embed(message=image).set_author(
-                                    name=text_map.get(532, i.locale, user_locale),
-                                    icon_url=i.user.display_avatar.url,
-                                ),
-                            )
+                        except HTTPException as e:
+                            if e.code == 40005:
+                                await i.channel.send(
+                                    embed=default_embed(message=image).set_author(
+                                        name=text_map.get(532, i.locale, user_locale),
+                                        icon_url=i.user.display_avatar.url,
+                                    ),
+                                )
                 else:
                     embeds = []
                     count = 0
