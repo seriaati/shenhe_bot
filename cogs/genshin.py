@@ -872,14 +872,18 @@ class GenshinCog(commands.Cog, name="genshin"):
                     )
                 else:
                     data = cache
-            except VaildateUIDError:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
+
+        if data.characters is None:
+            embed = (
+                default_embed(message=text_map.get(287, i.locale, user_locale))
+                .set_author(
+                    name=text_map.get(141, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
                 )
+                .set_image(url="https://i.imgur.com/frMsGHO.gif")
+            )
+            return await i.followup.send(embed=embed, ephemeral=True)
+        
         if cache is None:
             cache = data
 
@@ -908,17 +912,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                 from_cache.append(c.id)
 
         data = cache
-
-        if data.characters is None:
-            embed = (
-                default_embed(message=text_map.get(287, i.locale, user_locale))
-                .set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                .set_image(url="https://i.imgur.com/frMsGHO.gif")
-            )
-            return await i.followup.send(embed=embed, ephemeral=True)
 
         with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
             eng_cache = enka_eng_cache.get(uid)
