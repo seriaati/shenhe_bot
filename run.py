@@ -88,7 +88,7 @@ class ShenheBot(commands.Bot):
         chinese = []
         for x in range(2):
             await c.execute(
-                "SELECT ltuid, ltoken FROM genshin_accounts WHERE cn_region = ?", (x,)
+                "SELECT ltuid, ltoken FROM user_accounts WHERE china = ?", (x,)
             )
             data = await c.fetchall()
             for _, tuple in enumerate(data):

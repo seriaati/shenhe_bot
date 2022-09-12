@@ -17,6 +17,7 @@ from apps.genshin.utils import (
     get_character,
     get_city_emoji,
     get_fight_prop,
+    get_uid_region,
     get_weapon,
     parse_character_wiki_embed,
 )
@@ -883,7 +884,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-        
+
         if cache is None:
             cache = data
 

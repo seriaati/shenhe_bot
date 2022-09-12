@@ -166,6 +166,21 @@ def get_city_emoji(city_id: int):
     return emoji_dict.get(city_id)
 
 
+def get_uid_region(uid: int) -> int:
+    uid = str(uid)
+    region_map = {
+        "9": 547,
+        "1": 548,
+        "2": 548,
+        "5": 549,
+        "6": 550,
+        "7": 551,
+        "8": 552,
+        "0": 554,
+    }
+    return region_map.get(uid[0], 553)
+
+
 def parse_character_wiki_embed(
     avatar: Dict, avatar_id: str, locale: Locale, user_locale: str | None
 ) -> Tuple[List[Embed], Embed, List[SelectOption]]:

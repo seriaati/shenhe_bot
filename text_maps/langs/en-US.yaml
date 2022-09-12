@@ -585,3 +585,30 @@
 542: Item not found
 543: Data is from cache
 544: Manage your accounts in Shenhe
+545: You don't have any account registered
+546: "• You can register multiple accounts in Shenhe\n
+    • You can switch between accounts using the dropdown menu"
+547: TW, HK, MO
+548: Celestia
+549: Irminsul
+550: America
+551: Europe
+552: Asia
+553: Unknown region
+554: "(Internal)"
+555: Your accounts
+556: Add an account
+557: Remove an account
+558: Remove all accounts
+559: Switch account
+560: Choose an account below to remove
+561: Account removed
+562: Choose the account type you want to add
+563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID\n
+    • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> requires your Cookie\n
+    • To add your UID, you only have to enter your UID\n
+    • To obtain your Cookie, you will go through a registration process that takes around 30 seconds\n
+    • Cookie is a unique identifier that is used to identify your account, note that I won't have access to your Genshin account by having your Cookie\n
+    • You can always remove your account data by using this command"
+564: Add UID
+565: Add Cookie
