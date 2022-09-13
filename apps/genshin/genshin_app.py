@@ -31,7 +31,7 @@ def genshin_error_handler(func):
         except Exception as e:
             log.warning(f"Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
-            return error_embed("Something went wrong", f"```{e}```"), False
+            return error_embed("Something went wrong\n出問題了", f"```{e}```"), False
 
     return inner_function
 
