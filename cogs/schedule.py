@@ -58,7 +58,7 @@ class Schedule(commands.Cog):
             users = await c.fetchall()
             for _, tuple in enumerate(users):
                 user_id = tuple[0]
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
+                shenhe_user = await self.genshin_app.get_user_cookie(user_id)
                 client = shenhe_user.client
                 client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
                 claimed = False
@@ -114,7 +114,7 @@ class Schedule(commands.Cog):
                 if time_diff.total_seconds() < 7200:
                     continue
 
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
+                shenhe_user = await self.genshin_app.get_user_cookie(user_id)
                 try:
                     notes = await shenhe_user.client.get_notes(shenhe_user.uid)
                 except genshin.errors.InvalidCookies:
@@ -200,7 +200,7 @@ class Schedule(commands.Cog):
                 if time_diff.total_seconds() < 7200:
                     continue
 
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
+                shenhe_user = await self.genshin_app.get_user_cookie(user_id)
                 try:
                     notes = await shenhe_user.client.get_notes(shenhe_user.uid)
                 except genshin.errors.InvalidCookies:

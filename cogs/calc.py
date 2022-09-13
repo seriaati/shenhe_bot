@@ -12,7 +12,7 @@ from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
+from ui_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from genshin.errors import GenshinException
@@ -59,7 +59,7 @@ class CalcCog(commands.GroupCog, name="calc"):
             )
 
         if sync:
-            shenhe_user = await self.genshin_app.get_user_data(i.user.id, i.locale)
+            shenhe_user = await self.genshin_app.get_user_cookie(i.user.id, i.locale)
             client = shenhe_user.client
         else:
             client = self.bot.genshin_client

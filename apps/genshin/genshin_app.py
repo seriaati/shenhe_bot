@@ -123,7 +123,7 @@ class GenshinApp:
         return result, True
 
     async def claim_daily_reward(self, user_id: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             reward = await shenhe_user.client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
@@ -168,7 +168,7 @@ class GenshinApp:
             )
 
     async def get_real_time_notes(self, user_id: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             notes = await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
@@ -280,7 +280,7 @@ class GenshinApp:
         namecard: str,
         avatar_url: str,
     ) -> Tuple[Embed | Dict, bool]:
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         uid = custom_uid or shenhe_user.uid
         try:
             genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
@@ -336,7 +336,7 @@ class GenshinApp:
             return {"embed": embed, "fp": fp}, True
 
     async def get_area(self, user_id: int, custom_uid: int | None, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         uid = custom_uid or shenhe_user.uid
         try:
             genshinUser = await shenhe_user.client.get_partial_genshin_user(uid)
@@ -394,7 +394,7 @@ class GenshinApp:
         )
 
     async def get_diary(self, user_id: int, month: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             diary = await shenhe_user.client.get_diary(month=month)
         except genshin.errors.DataNotPublic:
@@ -461,7 +461,7 @@ class GenshinApp:
             return result, True
 
     async def get_diary_logs(self, user_id: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             _ = await shenhe_user.client.get_diary()
         except genshin.errors.DataNotPublic as e:
@@ -529,7 +529,7 @@ class GenshinApp:
         return result, True
 
     async def get_abyss(self, user_id: int, previous: bool, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             abyss = await shenhe_user.client.get_spiral_abyss(
                 shenhe_user.uid, previous=previous
@@ -635,7 +635,7 @@ class GenshinApp:
         locale: Locale,
     ):
         c: aiosqlite.Cursor = await self.db.cursor()
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
@@ -711,7 +711,7 @@ class GenshinApp:
         max_notif: int = None,
     ):
         c: aiosqlite.Cursor = await self.db.cursor()
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             await shenhe_user.client.get_notes(shenhe_user.uid)
         except genshin.errors.DataNotPublic:
@@ -775,7 +775,7 @@ class GenshinApp:
             return result, True
 
     async def get_all_characters(self, user_id: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             characters = await shenhe_user.client.get_genshin_characters(
                 shenhe_user.uid
@@ -845,7 +845,7 @@ class GenshinApp:
             return result, True
 
     async def redeem_code(self, user_id: int, code: str, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         try:
             await shenhe_user.client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
@@ -898,7 +898,7 @@ class GenshinApp:
             )
 
     async def get_activities(self, user_id: int, custom_uid: int, locale: Locale):
-        shenhe_user = await self.get_user_data(user_id, locale)
+        shenhe_user = await self.get_user_cookie(user_id, locale)
         uid = custom_uid or shenhe_user.uid
         try:
             activities = await shenhe_user.client.get_genshin_activities(uid)
@@ -1030,13 +1030,13 @@ class GenshinApp:
                 )
         return embeds
 
-    async def get_user_data(self, user_id: int, locale: Locale = None):
+    async def get_user_cookie(self, user_id: int, locale: Locale = None) -> ShenheUser:
         user = self.bot.get_user(user_id)
         if user is None:
             user = await self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ? AND active = 1",
+            "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ? AND current = 1",
             (user_id,),
         )
         user_data = await c.fetchone()

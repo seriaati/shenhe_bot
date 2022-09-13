@@ -14,7 +14,7 @@ from discord.app_commands import locale_str as _
 from discord.errors import HTTPException
 from discord.ext import commands
 from PIL import Image
-from UI_elements.waifu import DeleteImage, HmtaiTag, WaifuImTag
+from ui_elements.waifu import DeleteImage, HmtaiTag, WaifuImTag
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from waifuim import WaifuAioClient

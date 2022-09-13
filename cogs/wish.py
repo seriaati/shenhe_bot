@@ -14,7 +14,7 @@ from apps.wish.wish_app import (
 from discord import Interaction, User, app_commands, User
 from discord.app_commands import Choice
 from discord.ext import commands
-from UI_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
+from ui_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
 from discord.app_commands import locale_str as _

@@ -5,7 +5,7 @@ from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.others import ChangeLog, SettingsMenu, ManageAccounts
+from ui_elements.others import ChangeLog, SettingsMenu, ManageAccounts
 from utility.utils import default_embed
 
 

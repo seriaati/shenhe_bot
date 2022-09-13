@@ -10,7 +10,7 @@ from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from pyppeteer.browser import Browser
-from UI_elements.genshin import EnkaDamageCalculator
+from ui_elements.genshin import EnkaDamageCalculator
 from utility.utils import default_embed, error_embed
 from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card

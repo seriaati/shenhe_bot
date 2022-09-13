@@ -94,6 +94,8 @@ class ShenheBot(commands.Bot):
             for _, tuple in enumerate(data):
                 ltuid = tuple[0]
                 ltoken = tuple[1]
+                if ltuid is None:
+                    continue
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
                 if x == 0:
                     overseas.append(cookie)
