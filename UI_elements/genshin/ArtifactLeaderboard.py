@@ -88,12 +88,12 @@ class GoBack(Button):
         str_list = []
         rank = 1
         user_rank = text_map.get(253, i.locale, user_locale)
-        for index, tuple in enumerate(leaderboard):
-            user_id = tuple[0]
-            avatar_id = tuple[1]
-            artifact_name = tuple[2]
-            equip_type = tuple[3]
-            sub_stat_value = tuple[4]
+        for index, tpl in enumerate(leaderboard):
+            user_id = tpl[0]
+            avatar_id = tpl[1]
+            artifact_name = tpl[2]
+            equip_type = tpl[3]
+            sub_stat_value = tpl[4]
             member = i.guild.get_member(user_id)
             if member is None:
                 continue

@@ -63,7 +63,7 @@ class ElementButton(Button):
 
         c = await self.view.db.cursor()
         await c.execute(
-            "SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?",
+            "SELECT character_list FROM talent_notification WHERE user_id = ?",
             (i.user.id,),
         )
         user_character_list: list = ast.literal_eval((await c.fetchone())[0])
@@ -135,7 +135,7 @@ class CharacterSelect(Select):
         user_locale = await get_user_locale(i.user.id, self.view.db)
 
         await c.execute(
-            "SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?",
+            "SELECT character_list FROM talent_notification WHERE user_id = ?",
             (i.user.id,),
         )
         user_character_list: list = ast.literal_eval((await c.fetchone())[0])
@@ -145,7 +145,7 @@ class CharacterSelect(Select):
             else:
                 user_character_list.append(character_id)
         await c.execute(
-            "UPDATE genshin_accounts SET talent_notif_toggle = 1, talent_notif_chara_list = ? WHERE user_id = ?",
+            "UPDATE talent_notification SET toggle = 1, character_list = ? WHERE user_id = ?",
             (str(user_character_list), i.user.id),
         )
         await self.view.db.commit()
@@ -160,7 +160,7 @@ class CharacterSelect(Select):
         embed.add_field(name=text_map.get(159, i.locale, user_locale), value=value)
 
         await c.execute(
-            "SELECT talent_notif_chara_list FROM genshin_accounts WHERE user_id = ?",
+            "SELECT character_list FROM talent_notification WHERE user_id = ?",
             (i.user.id,),
         )
         user_character_list: list = ast.literal_eval((await c.fetchone())[0])

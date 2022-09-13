@@ -56,8 +56,8 @@ class Schedule(commands.Cog):
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
             users = await c.fetchall()
-            for _, tuple in enumerate(users):
-                user_id = tuple[0]
+            for _, tpl in enumerate(users):
+                user_id = tpl[0]
                 shenhe_user = await self.genshin_app.get_user_cookie(user_id)
                 client = shenhe_user.client
                 client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
@@ -101,12 +101,12 @@ class Schedule(commands.Cog):
             )
             users = await c.fetchall()
             now = datetime.now()
-            for _, tuple in enumerate(users):
-                user_id = tuple[0]
-                threshold = tuple[1]
-                current_notif = tuple[2]
-                max_notif = tuple[3]
-                last_notif_time = tuple[4]
+            for _, tpl in enumerate(users):
+                user_id = tpl[0]
+                threshold = tpl[1]
+                current_notif = tpl[2]
+                max_notif = tpl[3]
+                last_notif_time = tpl[4]
                 last_notif_time = datetime.strptime(
                     last_notif_time, "%Y/%m/%d %H:%M:%S"
                 )
@@ -122,7 +122,7 @@ class Schedule(commands.Cog):
                 except Exception as e:
                     sentry_sdk.capture_exception(e)
                     await c.execute(
-                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
+                        "UPDATE pot_notification SET toggle = 0 WHERE user_id = ?",
                         (user_id,),
                     )
                 else:
@@ -152,12 +152,12 @@ class Schedule(commands.Cog):
                             await shenhe_user.discord_user.send(embed=embed)
                         except Forbidden:
                             await c.execute(
-                                "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
+                                "UPDATE pot_notification SET toggle = 0 WHERE user_id = ?",
                                 (user_id,),
                             )
                         else:
                             await c.execute(
-                                "UPDATE genshin_accounts SET pot_current_notif = ?, last_pot_notif_time = ? WHERE user_id = ?",
+                                "UPDATE pot_notification SET current = ?, last_notif_time = ? WHERE user_id = ?",
                                 (
                                     current_notif + 1,
                                     datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
@@ -166,7 +166,7 @@ class Schedule(commands.Cog):
                             )
                     if coin < threshold:
                         await c.execute(
-                            "UPDATE genshin_accounts SET pot_current_notif = 0 WHERE user_id = ?",
+                            "UPDATE pot_notification SET current = 0 WHERE user_id = ?",
                             (user_id,),
                         )
 
@@ -183,16 +183,16 @@ class Schedule(commands.Cog):
             log.info("[Schedule] Resin Notification Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
-                "SELECT user_id, resin_threshold, current_notif, max_notif, last_resin_notif_time FROM genshin_accounts WHERE resin_notification_toggle = 1"
+                "SELECT user_id, threshold, current, max, last_notif_time FROM resin_notification WHERE toggle = 1"
             )
             users = await c.fetchall()
             now = datetime.now()
-            for index, tuple in enumerate(users):
-                user_id = tuple[0]
-                threshold = tuple[1]
-                current_notif = tuple[2]
-                max_notif = tuple[3]
-                last_notif_time = tuple[4]
+            for _, tpl in enumerate(users):
+                user_id = tpl[0]
+                threshold = tpl[1]
+                current_notif = tpl[2]
+                max_notif = tpl[3]
+                last_notif_time = tpl[4]
                 last_notif_time = datetime.strptime(
                     last_notif_time, "%Y/%m/%d %H:%M:%S"
                 )
@@ -208,7 +208,7 @@ class Schedule(commands.Cog):
                 except Exception as e:
                     sentry_sdk.capture_exception(e)
                     await c.execute(
-                        "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
+                        "UPDATE resin_notification SET toggle = 0 WHERE user_id = ?",
                         (user_id,),
                     )
                 else:
@@ -238,12 +238,12 @@ class Schedule(commands.Cog):
                             await shenhe_user.discord_user.send(embed=embed)
                         except Forbidden:
                             await c.execute(
-                                "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
+                                "UPDATE resin_notification SET toggle = 0 WHERE user_id = ?",
                                 (user_id,),
                             )
                         else:
                             await c.execute(
-                                "UPDATE genshin_accounts SET current_notif = ?, last_resin_notif_time = ? WHERE user_id = ?",
+                                "UPDATE resin_noitifcation SET current = ?, last_notif_time = ? WHERE user_id = ?",
                                 (
                                     current_notif + 1,
                                     datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
@@ -252,7 +252,7 @@ class Schedule(commands.Cog):
                             )
                     if resin < threshold:
                         await c.execute(
-                            "UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?",
+                            "UPDATE user_accounts SET current = 0 WHERE user_id = ?",
                             (user_id,),
                         )
                 await asyncio.sleep(3.0)
@@ -271,16 +271,16 @@ class Schedule(commands.Cog):
             domains = await client.get_domain()
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
-                "SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1"
+                "SELECT user_id, character_list FROM talent_notification WHERE toggle = 1"
             )
             users = await c.fetchall()
-            for index, tuple in enumerate(users):
-                user_id = tuple[0]
+            for index, tpl in enumerate(users):
+                user_id = tpl[0]
                 user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(
                     user_id
                 )
                 user_locale = await get_user_locale(user_id, self.bot.db)
-                user_notification_list = ast.literal_eval(tuple[1])
+                user_notification_list = ast.literal_eval(tpl[1])
                 notified = {}
                 for character_id in user_notification_list:
                     for domain in domains:

@@ -60,9 +60,9 @@ class RemoveItem(Button):
         await c.execute('SELECT item FROM todo WHERE user_id = ?', (i.user.id,))
         todos = await c.fetchall()
         options = []
-        for index, tuple in enumerate(todos):
+        for index, tpl in enumerate(todos):
             options.append(SelectOption(
-                label=text_map.get_material_name(tuple[0], i.locale, user_locale), value=tuple[0]))
+                label=text_map.get_material_name(tpl[0], i.locale, user_locale), value=tpl[0]))
         self.view.clear_items()
         self.view.add_item(RemoveItemSelect(
             options, text_map.get(207, i.locale, user_locale)))

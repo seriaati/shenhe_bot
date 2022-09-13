@@ -63,13 +63,13 @@ class WishCog(commands.GroupCog, name="wish"):
 
         user_wish = []
 
-        for index, tuple in enumerate(user_wish_history):
-            wish_name = tuple[1]
-            wish_rarity = tuple[2]
-            wish_time = (datetime.strptime(tuple[3], "%Y/%m/%d %H:%M:%S")).strftime(
+        for index, tpl in enumerate(user_wish_history):
+            wish_name = tpl[1]
+            wish_rarity = tpl[2]
+            wish_time = (datetime.strptime(tpl[3], "%Y/%m/%d %H:%M:%S")).strftime(
                 "%Y/%m/%d"
             )
-            wish_type = tuple[4]
+            wish_type = tpl[4]
             if (
                 wish_rarity == 5 or wish_rarity == 4
             ):  # mark high rarity wishes with blue

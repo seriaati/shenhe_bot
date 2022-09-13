@@ -91,9 +91,9 @@ class ShenheBot(commands.Bot):
                 "SELECT ltuid, ltoken FROM user_accounts WHERE china = ?", (x,)
             )
             data = await c.fetchall()
-            for _, tuple in enumerate(data):
-                ltuid = tuple[0]
-                ltoken = tuple[1]
+            for _, tpl in enumerate(data):
+                ltuid = tpl[0]
+                ltoken = tpl[1]
                 if ltuid is None:
                     continue
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}

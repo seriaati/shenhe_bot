@@ -942,9 +942,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                achievement_num = tuple[1]
+            for index, tpl in enumerate(leaderboard):
+                user_id = tpl[0]
+                achievement_num = tpl[1]
                 if i.guild is None:
                     member = i.client.get_user(user_id)
                 else:
@@ -1002,12 +1002,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                avatar_id = tuple[1]
-                artifact_name = tuple[2]
-                equip_type = tuple[3]
-                sub_stat_value = tuple[4]
+            for index, tpl in enumerate(leaderboard):
+                user_id = tpl[0]
+                avatar_id = tpl[1]
+                artifact_name = tpl[2]
+                equip_type = tpl[3]
+                sub_stat_value = tpl[4]
                 if i.guild is None:
                     member = i.client.get_user(user_id)
                 else:
@@ -1054,8 +1054,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             await c.execute("SELECT DISTINCT user_id FROM wish_history")
             leaderboard = await c.fetchall()
             leaderboard_dict = {}
-            for index, tuple in enumerate(leaderboard):
-                member = i.guild.get_member(tuple[0])
+            for index, tpl in enumerate(leaderboard):
+                member = i.guild.get_member(tpl[0])
                 if member is not None:
                     (
                         get_num,
@@ -1075,7 +1075,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         2,
                     )
                     if player_luck > 0:
-                        leaderboard_dict[tuple[0]] = player_luck
+                        leaderboard_dict[tpl[0]] = player_luck
             leaderboard_dict = dict(
                 sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True)
             )

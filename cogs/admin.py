@@ -136,8 +136,8 @@ class AdminCog(commands.Cog, name="admin"):
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute("SELECT user_id FROM active_users")
         user_ids = await c.fetchall()
-        for index, tuple in enumerate(user_ids):
-            user_id = tuple[0]
+        for index, tpl in enumerate(user_ids):
+            user_id = tpl[0]
             user = i.client.get_user(user_id)
             if user is None:
                 continue
