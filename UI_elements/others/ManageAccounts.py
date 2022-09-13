@@ -79,7 +79,10 @@ class AddUIDModal(DefaultModal):
         for item in view.children:
             item.disabled = True
         await i.response.edit_message(
-            embed=default_embed(message=text_map.get(578, self.locale)).set_author(
+            embed=default_embed(
+                message="<a:LOADER:982128111904776242> "
+                + text_map.get(578, self.locale)
+            ).set_author(
                 name=text_map.get(576, self.locale), icon_url=i.user.display_avatar.url
             ),
             view=view,
@@ -98,7 +101,7 @@ class AddUIDModal(DefaultModal):
                 except UIDNotFounded:
                     raise ValueError
         except ValueError:
-            return await i.edit_original_response(
+            await i.edit_original_response(
                 embed=error_embed()
                 .set_author(
                     name=f"{text_map.get(286, self.locale)}: {self.uid.value}",
@@ -106,6 +109,8 @@ class AddUIDModal(DefaultModal):
                 )
                 .set_footer(text=text_map.get(567, self.locale)),
             )
+            await asyncio.sleep(2)
+            return await return_accounts(i)
 
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
@@ -183,7 +188,10 @@ class SubmitCookieModal(DefaultModal):
         for item in view.children:
             item.disabled = True
         await i.response.edit_message(
-            embed=default_embed(message=text_map.get(578, self.locale)).set_author(
+            embed=default_embed(
+                message="<a:LOADER:982128111904776242> "
+                + text_map.get(578, self.locale)
+            ).set_author(
                 name=text_map.get(577, self.locale), icon_url=i.user.display_avatar.url
             ),
             view=view,
@@ -195,7 +203,9 @@ class SubmitCookieModal(DefaultModal):
 
         if not success:
             result.set_footer(text=text_map.get(567, self.locale))
-            return await i.edit_original_response(embed=result)
+            await i.edit_original_response(embed=result)
+            await asyncio.sleep(2)
+            return await return_accounts(i)
         if isinstance(result, list):  # 有多個帳號
             view = View(self.locale, [])
             view.clear_items()
