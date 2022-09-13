@@ -54,7 +54,7 @@ class Schedule(commands.Cog):
         try:
             log.info("[Schedule] Claim Reward Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute("SELECT user_id FROM genshin_accounts")
+            await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
             users = await c.fetchall()
             for _, tuple in enumerate(users):
                 user_id = tuple[0]
@@ -97,11 +97,11 @@ class Schedule(commands.Cog):
             log.info("[Schedule] Pot Notification Start")
             c: aiosqlite.Cursor = await self.bot.db.cursor()
             await c.execute(
-                "SELECT user_id, pot_threshold, pot_current_notif, pot_max_notif, last_pot_notif_time FROM genshin_accounts WHERE pot_notif_toggle = 1"
+                "SELECT uid, threshold, current, max, last_notif_time FROM pot_notification WHERE toggle = 1"
             )
             users = await c.fetchall()
             now = datetime.now()
-            for index, tuple in enumerate(users):
+            for _, tuple in enumerate(users):
                 user_id = tuple[0]
                 threshold = tuple[1]
                 current_notif = tuple[2]

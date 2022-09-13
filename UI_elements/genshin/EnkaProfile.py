@@ -29,7 +29,6 @@ class View(DefaultView):
         db: aiosqlite.Connection,
         locale: Locale,
         user_locale: str,
-        user_uid: str,
         characters: List[CharacterInfo],
         browser: Browser,
     ):
@@ -43,7 +42,6 @@ class View(DefaultView):
         self.member = member
         self.eng_data = eng_data
         self.db = db
-        self.user_uid = user_uid
         self.characters = characters
         self.browser = browser
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
@@ -92,15 +90,10 @@ class PageSelect(Select):
         if is_card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            if self.view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=self.view.member.display_name,
-                    icon_url=self.view.member.display_avatar.url,
-                )
+            embed.set_author(
+                name=self.view.member.display_name,
+                icon_url=self.view.member.display_avatar.url,
+            )
             card.seek(0)
             file = File(card, "card.jpeg")
             await i.response.edit_message(
@@ -108,15 +101,10 @@ class PageSelect(Select):
             )
         else:
             embed = self.view.embeds[self.values[0]]
-            if self.view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=self.view.member.display_name,
-                    icon_url=self.view.member.display_avatar.url,
-                )
+            embed.set_author(
+                name=self.view.member.display_name,
+                icon_url=self.view.member.display_avatar.url,
+            )
             await i.response.edit_message(embed=embed, view=self.view, attachments=[])
 
 

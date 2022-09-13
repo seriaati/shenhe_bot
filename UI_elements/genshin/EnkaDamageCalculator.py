@@ -31,7 +31,6 @@ class View(DefaultView):
             user_locale or locale,
             "critHit",
             enka_view.author,
-            custom_uid=enka_view.user_uid,
         )
 
         # producing select options

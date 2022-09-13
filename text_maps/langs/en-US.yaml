@@ -622,4 +622,7 @@
 572: Use /accounts to add one
 573: Your current account is not linked to a Cookie
 574: "One of your other accounts is linked to a Cookie,\nbut the current one is only linked to a UID"
-575: Use /accounts to switch account
+575: Use /accounts to switch between accounts
+576: Please wait while we are validating your UID
+577: Please wait while we are validating your Cookie
+578: If you are not redirected, please contact seria#5334

@@ -71,7 +71,19 @@ class AddUIDModal(DefaultModal):
         self.uid.placeholder = text_map.get(566, locale)
 
     async def on_submit(self, i: Interaction) -> None:
-        await i.response.defer(ephemeral=True)
+        view = View(self.locale, [])
+        view.clear_items()
+        view.add_item(GOBack())
+        view.add_item(AddUID(self.locale))
+        view.add_item(AddCookie(self.locale))
+        for item in view.children:
+            item.disabled = True
+        await i.response.edit_message(
+            embed=default_embed(message=text_map.get(578, self.locale)).set_author(
+                name=text_map.get(576, self.locale), icon_url=i.user.display_avatar.url
+            ),
+            view=view,
+        )
 
         try:
             if not self.uid.value.isdigit():
@@ -86,14 +98,13 @@ class AddUIDModal(DefaultModal):
                 except UIDNotFounded:
                     raise ValueError
         except ValueError:
-            return await i.followup.send(
+            return await i.edit_original_response(
                 embed=error_embed()
                 .set_author(
                     name=f"{text_map.get(286, self.locale)}: {self.uid.value}",
                     icon_url=i.user.display_avatar.url,
                 )
                 .set_footer(text=text_map.get(567, self.locale)),
-                ephemeral=True,
             )
 
         c: aiosqlite.Cursor = await i.client.db.cursor()
@@ -102,19 +113,12 @@ class AddUIDModal(DefaultModal):
             (self.uid.value, i.user.id),
         )
         await i.client.db.commit()
-        view = View(self.locale, [])
-        view.clear_items()
-        view.add_item(GOBack())
-        view.add_item(AddUID(self.locale))
-        view.add_item(AddCookie(self.locale))
-        for item in view.children:
-            item.disabled = True
+
         await i.edit_original_response(
             embed=default_embed(message=self.uid.value).set_author(
                 name=text_map.get(568, self.locale),
                 icon_url=i.user.display_avatar.url,
-            ),
-            view=view,
+            )
         )
         await asyncio.sleep(2)
         await return_accounts(i)
@@ -171,7 +175,19 @@ class SubmitCookieModal(DefaultModal):
         self.cookie.placeholder = text_map.get(133, locale)
 
     async def on_submit(self, i: Interaction) -> None:
-        await i.response.defer(ephemeral=True)
+        view = View(self.locale, [])
+        view.clear_items()
+        view.add_item(GOBack())
+        view.add_item(AddUID(self.locale))
+        view.add_item(AddCookie(self.locale))
+        for item in view.children:
+            item.disabled = True
+        await i.response.edit_message(
+            embed=default_embed(message=text_map.get(578, self.locale)).set_author(
+                name=text_map.get(577, self.locale), icon_url=i.user.display_avatar.url
+            ),
+            view=view,
+        )
         genshin_app = GenshinApp(i.client.db, i.client)
         result, success = await genshin_app.set_cookie(
             i.user.id, self.cookie.value, i.locale
@@ -191,7 +207,9 @@ class SubmitCookieModal(DefaultModal):
             await i.edit_original_response(embed=embed, view=view)
             view.message = await i.original_response()
         else:  # 一個帳號而已
-            await i.followup.send(embed=result, ephemeral=True)
+            await i.edit_original_response(embed=result)
+            await asyncio.sleep(2)
+            await return_accounts(i)
 
 
 class UIDSelect(Select):
@@ -266,7 +284,10 @@ class SwitchAccount(Select):
         c: aiosqlite.Cursor = await i.client.db.cursor()
         if self.remove_account:
             for uid in self.values:
-                await c.execute("DELETE FROM user_accounts WHERE uid = ? AND user_id = ?", (uid, i.user.id))
+                await c.execute(
+                    "DELETE FROM user_accounts WHERE uid = ? AND user_id = ?",
+                    (uid, i.user.id),
+                )
             embed = default_embed().set_author(
                 name=text_map.get(561, self.view.locale),
                 icon_url=i.user.display_avatar.url,
@@ -354,7 +375,10 @@ async def return_accounts(i: Interaction):
             )
         )
     if not current_account:
-        await c.execute('UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?', (i.user.id, accounts[0][0]))
+        await c.execute(
+            "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
+            (i.user.id, accounts[0][0]),
+        )
         await i.client.db.commit()
         return await return_accounts(i)
     embed = default_embed(message=account_str).set_author(

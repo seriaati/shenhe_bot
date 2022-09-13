@@ -1,83 +1,13 @@
 from typing import Dict, List, Tuple, Union
 
-import aiosqlite
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
 from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapons import weapons_map
-from discord import Embed, Interaction, Locale, SelectOption, app_commands
-from utility.utils import default_embed, error_embed, parse_HTML
-
-
-def check_account():
-    """
-    Checks if the user has an account. If the user has an account, they will have a UID, but they might not have a Cookie.
-    """
-
-    async def predicate(i: Interaction) -> bool:
-        await check_account_predicate(i)
-
-    return app_commands.check(predicate)
-
-
-async def check_account_predicate(i: Interaction) -> bool:
-    locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
-    c: aiosqlite.Cursor = await i.client.db.cursor()
-    await c.execute("SELECT uid FROM user_accounts WHERE user_id = ?", (i.user.id,))
-    if (await c.fetchone()) is None:
-        await i.response.send_message(
-            embed=error_embed(message=text_map.get(572, locale)).set_author(
-                name=text_map.get(571, locale), icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
-        return False
-    else:
-        return True
-
-
-def check_cookie():
-    """Checks if the current user account has a cookie."""
-
-    async def predicate(i: Interaction) -> bool:
-        check = await check_account_predicate(i)
-        if not check:
-            return False
-        locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
-            (i.user.id,),
-        )
-        if (await c.fetchone())[0] is None:
-            await c.execute(
-                "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 0",
-                (i.user.id,),
-            )
-            if (await c.fetchone()) is None:
-                await i.response.send_message(
-                    embed=error_embed(message=text_map.get(572, locale)).set_author(
-                        name=text_map.get(573, locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            else:
-                await i.response.send_message(
-                    embed=error_embed(message=text_map.get(575, locale)).set_author(
-                        name=text_map.get(574, locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            return False
-        else:
-            return True
-
-    return app_commands.check(predicate)
+from discord import Embed, Locale, SelectOption
+from utility.utils import default_embed, parse_HTML
 
 
 def calculate_artifact_score(substats: dict):

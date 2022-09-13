@@ -5,7 +5,7 @@ import genshin
 class ShenheUser(BaseModel):
     client: genshin.Client
     uid: int | None
-    discord_user: discord.User
+    discord_user: discord.User | discord.Member
     user_locale: str | None
     china: bool
     
