@@ -6,7 +6,7 @@ import aiosqlite
 import sentry_sdk
 from apps.genshin.user_model import ShenheUser
 from yelan.draw import draw_area_card, draw_stats_card
-from apps.genshin.utils import get_area_emoji, get_character
+from apps.genshin.utils import get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
@@ -36,9 +36,7 @@ class GenshinApp:
         try:
             cookie = dict(item.split("=") for item in cookie.split("; "))
         except (KeyError, ValueError):
-            result = error_embed(
-                message=text_map.get(35, locale, user_locale)
-            ).set_author(
+            result = error_embed().set_author(
                 name=text_map.get(36, locale, user_locale),
                 icon_url=user.display_avatar.url,
             )
@@ -54,9 +52,7 @@ class GenshinApp:
         required_keys = ["ltuid", "ltoken", "cookie_token"]
         for key in required_keys:
             if key not in cookie:
-                result = error_embed(
-                    message=text_map.get(35, locale, user_locale)
-                ).set_author(
+                result = error_embed().set_author(
                     name=text_map.get(36, locale, user_locale),
                     icon_url=user.display_avatar.url,
                 )
@@ -75,9 +71,7 @@ class GenshinApp:
                     client.region = genshin.Region.CHINESE
                     accounts = await client.get_game_accounts()
                 except genshin.errors.InvalidCookies:
-                    result = error_embed(
-                        message=text_map.get(35, locale, user_locale)
-                    ).set_author(
+                    result = error_embed().set_author(
                         name=text_map.get(36, locale, user_locale),
                         icon_url=user.display_avatar.url,
                     )
@@ -102,23 +96,21 @@ class GenshinApp:
                         )
                     )
                 return account_options, True
-        first_number = uid // 100000000
-        is_cn = True if first_number in [1, 2, 5] else False
+        china = 1 if str(uid)[0] in [1, 2, 5] else 0
         c = await self.db.cursor()
         await c.execute(
-            "INSERT INTO genshin_accounts (user_id, ltuid, ltoken, cookie_token, uid, cn_region) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ?, uid = ?, cn_region = ? WHERE user_id = ?",
+            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
             (
+                uid,
                 user_id,
-                int(cookie["ltuid"]),
+                cookie["ltuid"],
+                cookie["ltoken"],
+                cookie["cookie_token"],
+                china,
+                cookie["ltuid"],
                 cookie["ltoken"],
                 cookie["cookie_token"],
                 uid,
-                1 if is_cn else 0,
-                int(cookie["ltuid"]),
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                uid,
-                1 if is_cn else 0,
                 user_id,
             ),
         )
@@ -681,8 +673,8 @@ class GenshinApp:
         else:
             if resin_notification_toggle == 0:
                 await c.execute(
-                    "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
-                    (user_id,),
+                    "UPDATE resin_notification SET toggle = 0 WHERE uid = ?",
+                    (shenhe_user.uid,),
                 )
                 result = default_embed().set_author(
                     name=text_map.get(98, locale, shenhe_user.user_locale),
@@ -690,8 +682,8 @@ class GenshinApp:
                 )
             else:
                 await c.execute(
-                    "UPDATE genshin_accounts SET resin_notification_toggle = ?, resin_threshold = ? , max_notif = ? WHERE user_id = ?",
-                    (resin_notification_toggle, resin_threshold, max_notif, user_id),
+                    "UPDATE resin_notification SET toggle = ?, threshold = ? , max = ? WHERE uid = ?",
+                    (resin_notification_toggle, resin_threshold, max_notif, shenhe_user.uid),
                 )
                 toggle_str = (
                     text_map.get(99, locale, shenhe_user.user_locale)
@@ -757,8 +749,8 @@ class GenshinApp:
         else:
             if toggle == 0:
                 await c.execute(
-                    "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
-                    (user_id,),
+                    "UPDATE pot_notification SET toggle = 0 WHERE uid = ?",
+                    (shenhe_user.uid,),
                 )
                 result = default_embed().set_author(
                     name=text_map.get(517, locale, shenhe_user.user_locale),
@@ -766,8 +758,8 @@ class GenshinApp:
                 )
             else:
                 await c.execute(
-                    "UPDATE genshin_accounts SET pot_notif_toggle = 1, pot_threshold = ? , pot_max_notif = ? WHERE user_id = ?",
-                    (threshold, max_notif, user_id),
+                    "UPDATE pot_notification SET toggle = 1, threshold = ? , max = ? WHERE uid = ?",
+                    (threshold, max_notif, shenhe_user.uid),
                 )
                 result = default_embed(
                     message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {text_map.get(99, locale, shenhe_user.user_locale)}\n"
@@ -1044,25 +1036,20 @@ class GenshinApp:
             user = await self.bot.fetch_user(user_id)
         c: aiosqlite.Cursor = await self.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid, cn_region FROM genshin_accounts WHERE user_id = ?",
+            "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ? AND active = 1",
             (user_id,),
         )
         user_data = await c.fetchone()
-        is_cn = 0
-        if user_data is None:
-            client = self.bot.genshin_client
-            uid = None
-        else:
-            uid = user_data[3]
-            is_cn = user_data[4]
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=user_data[0],
-                ltoken=user_data[1],
-                account_id=user_data[0],
-                cookie_token=user_data[2],
-            )
-            client.uids[genshin.Game.GENSHIN] = uid
+        uid = user_data[3]
+        china = user_data[4]
+        client = genshin.Client()
+        client.set_cookies(
+            ltuid=user_data[0],
+            ltoken=user_data[1],
+            account_id=user_data[0],
+            cookie_token=user_data[2],
+        )
+        client.uids[genshin.Game.GENSHIN] = uid
 
         user_locale = await get_user_locale(user_id, self.db)
         locale = user_locale or locale
@@ -1070,7 +1057,7 @@ class GenshinApp:
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
 
-        is_cn = True if is_cn == 1 else False
+        china = True if china == 1 else False
 
         try:
             await client.update_character_names(lang=client._lang)
@@ -1081,17 +1068,9 @@ class GenshinApp:
             uid=uid,
             discord_user=user,
             user_locale=user_locale,
-            is_cn=is_cn,
+            china=china,
         )
         return user_obj
-
-    async def check_user_data(self, user_id: int):
-        c: aiosqlite.Cursor = await self.db.cursor()
-        await c.execute("SELECT * FROM genshin_accounts WHERE user_id = ?", (user_id,))
-        user_data = await c.fetchone()
-        if user_data is None:
-            return False
-        return True
 
     async def get_user_talent_notification_enabled_str(
         self, user_id: int, locale: Locale

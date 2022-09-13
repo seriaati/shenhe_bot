@@ -39,24 +39,49 @@ class AdminCog(commands.Cog, name="admin"):
     @is_seria()
     @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
     @app_commands.rename(module_name="name")
-    async def reload(self, i: Interaction, module_name: str):
-        try:
-            importlib.reload(sys.modules[module_name])
-        except KeyError:
-            return await i.response.send_message(
-                embed=error_embed(message=module_name).set_author(
-                    name="Module not found", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
+    async def reload(self, i: Interaction, module_name: str = None):
+        await i.response.defer(ephemeral=True)
+        if module_name is None:
+            modules = list(sys.modules.values())
+            for module in modules:
+                if module is None:
+                    continue
+                if module.__name__.startswith(
+                    (
+                        "cogs.",
+                        "apps.",
+                        "data.",
+                        "text_maps.",
+                        "UI_elements.",
+                        "utility.",
+                        "yelan.",
+                    )
+                ):
+                    try:
+                        importlib.reload(module)
+                    except Exception as e:
+                        return await i.followup.send(
+                            embed=error_embed(module.__name__, f"```{e}```"), ephemeral=True
+                        )
+            await i.followup.send("success", ephemeral=True)
         else:
-            return await i.response.send_message(
-                embed=default_embed(message=module_name).set_author(
-                    name="Reload completed", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
-    
+            try:
+                importlib.reload(sys.modules[module_name])
+            except KeyError:
+                return await i.response.send_message(
+                    embed=error_embed(message=module_name).set_author(
+                        name="Module not found", icon_url=i.user.display_avatar.url
+                    ),
+                    ephemeral=True,
+                )
+            else:
+                return await i.response.send_message(
+                    embed=default_embed(message=module_name).set_author(
+                        name="Reload completed", icon_url=i.user.display_avatar.url
+                    ),
+                    ephemeral=True,
+                )
+
     @reload.autocomplete("module_name")
     async def query_autocomplete(
         self, i: Interaction, current: str
@@ -64,7 +89,7 @@ class AdminCog(commands.Cog, name="admin"):
         query_list = []
         for key in list(sys.modules.keys()):
             query_list.append(key)
-            
+
         result = [
             app_commands.Choice(name=query, value=query)
             for query in query_list
@@ -135,13 +160,6 @@ class AdminCog(commands.Cog, name="admin"):
     @is_seria()
     @app_commands.command(name="update", description=_("Admin usage only", hash=496))
     async def update(self, i: Interaction):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(
-                embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
         await i.response.send_message(
             embed=default_embed().set_author(
                 name="更新資料開始", icon_url=i.user.display_avatar.url

@@ -7,7 +7,7 @@ class ShenheUser(BaseModel):
     uid: int | None
     discord_user: discord.User
     user_locale: str | None
-    is_cn: bool
+    china: bool
     
     class Config:
         arbitrary_types_allowed = True

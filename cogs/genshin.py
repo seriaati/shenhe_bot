@@ -43,7 +43,6 @@ from enkanetwork import (
 from enkanetwork.enum import DigitType, EquipmentsType
 from UI_elements.genshin import (
     Abyss,
-    AccountRegister,
     ArtifactLeaderboard,
     Build,
     CharacterWiki,
@@ -148,9 +147,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.response.send_message(embed=embed, ephemeral=True)
             await i.followup.send(content=code_msg, ephemeral=True)
         elif option == 1:
-            await i.response.send_modal(
-                AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
-            )
+            pass
         elif option == 2:
             await i.response.defer(ephemeral=True)
             c: aiosqlite.Cursor = await self.bot.db.cursor()
