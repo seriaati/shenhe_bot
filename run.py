@@ -195,14 +195,13 @@ async def on_interaction(i: Interaction):
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
-            log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}"
-            )
+            log.info(f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}")
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 
 
 tree = bot.tree
+
 
 async def check_maintenance(i: Interaction, /) -> bool:
     if i.user.id == i.client.owner_id:
@@ -212,7 +211,7 @@ async def check_maintenance(i: Interaction, /) -> bool:
             await i.response.send_message(
                 embed=error_embed(
                     "申鶴正在維護中\nShenhe is under maintenance",
-                    f"預計將在 {i.client.maintenance_time} 內恢復服務\nWill be back online in {i.client.maintenance_time}",
+                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",
                 ).set_thumbnail(url=i.client.user.avatar.url),
                 ephemeral=True,
             )
@@ -220,7 +219,9 @@ async def check_maintenance(i: Interaction, /) -> bool:
         else:
             return True
 
+
 tree.interaction_check = check_maintenance
+
 
 @tree.error
 async def on_error(i: Interaction, e: app_commands.AppCommandError):
