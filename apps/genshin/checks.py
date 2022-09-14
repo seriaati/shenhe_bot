@@ -30,7 +30,8 @@ async def check_account_predicate(i: Interaction, user: User | Member = None) ->
     if (await c.fetchone()) is None:
         await i.response.send_message(
             embed=error_embed(message=text_map.get(572, locale)).set_author(
-                name=text_map.get(571, locale), icon_url=user.display_avatar.url
+                name=text_map.get(571 if user.id == i.user.id else 572, locale),
+                icon_url=user.display_avatar.url,
             ),
             ephemeral=True,
         )
@@ -69,7 +70,7 @@ async def check_cookie_predicate(i: Interaction, user: User | Member = None) -> 
         if (await c.fetchone()) is None:
             await i.response.send_message(
                 embed=error_embed(message=text_map.get(572, locale)).set_author(
-                    name=text_map.get(573, locale),
+                    name=text_map.get(573 if user.id == i.user.id else 580, locale),
                     icon_url=user.display_avatar.url,
                 ),
                 ephemeral=True,
@@ -77,7 +78,7 @@ async def check_cookie_predicate(i: Interaction, user: User | Member = None) -> 
         else:
             await i.response.send_message(
                 embed=error_embed(message=text_map.get(575, locale)).set_author(
-                    name=text_map.get(574, locale),
+                    name=text_map.get(574 if user.id == i.user.id else 581, locale),
                     icon_url=user.display_avatar.url,
                 ),
                 ephemeral=True,
@@ -88,7 +89,9 @@ async def check_cookie_predicate(i: Interaction, user: User | Member = None) -> 
         return check
 
 
-async def validate_account(i: Interaction, only_uid: bool, user: User | Member = None) -> bool:
+async def validate_account(
+    i: Interaction, only_uid: bool, user: User | Member = None
+) -> bool:
     """Checks if the user has a valid Cookie and the data is public."""
     user = user or i.user
     genshin_app = GenshinApp(i.client.db, i.client)
@@ -97,7 +100,7 @@ async def validate_account(i: Interaction, only_uid: bool, user: User | Member =
     if only_uid:
         shenhe_user = ShenheUser(
             client=i.client.genshin_client,
-            uid= await genshin_app.get_user_uid(i.user.id),
+            uid=await genshin_app.get_user_uid(i.user.id),
             discord_user=user,
             user_locale=user_locale,
             china=0,

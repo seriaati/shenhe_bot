@@ -8,7 +8,7 @@ from data.game.fight_prop import fight_prop
 from data.game.weapons import weapons_map
 from discord import Embed, Locale, SelectOption
 from utility.utils import default_embed, parse_HTML
-
+import aiosqlite
 
 def calculate_artifact_score(substats: dict):
     tier_four_val = {
@@ -289,3 +289,11 @@ def parse_character_wiki_embed(
         )
     )
     return embeds, material_embed, options
+
+async def get_user_uid_with_db(user_id: int, db: aiosqlite.Connection) -> int | None:
+    c = await db.cursor()
+    await c.execute(
+        "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
+        (user_id,),
+    )
+    return (await c.fetchone())[0]

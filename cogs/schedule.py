@@ -108,7 +108,7 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_settings WHERE ltuid IS NOT NULL AND current = 1"
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
         )
         users = await c.fetchall()
         for _, tpl in enumerate(users):
@@ -122,7 +122,7 @@ class Schedule(commands.Cog):
             if data is None:
                 continue
             user_id, threshold, current, max, last_notif_time = data
-            last_notif_time = datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
             if time_diff.total_seconds() < 7200:
                 continue
@@ -183,9 +183,10 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_settings WHERE ltuid IS NOT NULL AND current = 1"
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
         )
         users = await c.fetchall()
+
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
@@ -194,8 +195,10 @@ class Schedule(commands.Cog):
                 (user_id, uid),
             )
             data = await c.fetchone()
+            if data is None:
+                continue
             user_id, threshold, current, max, last_notif_time = data
-            last_notif_time = datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
             if time_diff.total_seconds() < 7200:
                 continue
@@ -229,7 +232,7 @@ class Schedule(commands.Cog):
                     )
                 else:
                     await c.execute(
-                        "UPDATE resin_noitifcation SET current = ?, last_notif_time = ? WHERE user_id = ? AND uid = ?",
+                        "UPDATE resin_notification SET current = ?, last_notif_time = ? WHERE user_id = ? AND uid = ?",
                         (
                             current + 1,
                             datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),

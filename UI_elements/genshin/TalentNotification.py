@@ -13,20 +13,12 @@ from discord.ui import Button, Select
 from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed
 import config
 
 
 class View(DefaultView):
-    def __init__(
-        self,
-        author: User,
-        locale: Locale,
-        user_locale: str,
-        db: aiosqlite.Connection,
-        genshin_app: GenshinApp,
-        session: aiohttp.ClientSession,
-    ):
+    def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.short_timeout)
         self.author = author
         self.locale = locale
@@ -54,7 +46,8 @@ class ElementButton(Button):
 
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(157, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale
@@ -82,9 +75,9 @@ class ElementButton(Button):
                 options.append(
                     SelectOption(
                         label=character.name,
-                        emoji=get_character(character.id)['emoji'],
+                        emoji=get_character(character.id)["emoji"],
                         value=character.id,
-                        description=description
+                        description=description,
                     )
                 )
 
@@ -114,7 +107,8 @@ class GoBack(Button):
             )
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(157, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale
@@ -152,7 +146,8 @@ class CharacterSelect(Select):
 
         embed = default_embed(message=text_map.get(156, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(157, i.locale, user_locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(157, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
         )
         value = await self.view.genshin_app.get_user_talent_notification_enabled_str(
             i.user.id, i.locale

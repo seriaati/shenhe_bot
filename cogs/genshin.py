@@ -48,11 +48,10 @@ from ui_elements.genshin import (
     Diary,
     EnkaProfile,
     EventTypeChooser,
-    PotReminder,
-    ResinNotification,
     ShowAllCharacters,
     TalentNotification,
 )
+from ui_elements.genshin.ReminderMenu import return_notification_menu
 from utility.paginator import GeneralPaginator
 from utility.domain_paginator import DomainPaginator
 from utility.utils import (
@@ -383,118 +382,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
-    @app_commands.rename(function=_("function", hash=439), toggle=_("toggle", hash=440))
-    @app_commands.choices(
-        function=[
-            Choice(name=_("Resin reminder (needs /register)", hash=441), value=0),
-            Choice(
-                name=_("Realm currency reminder (needs /register)", hash=514), value=2
-            ),
-            Choice(name=_("Talent material reminder", hash=442), value=1),
-            Choice(name=_("Check privacy settings", hash=443), value=3),
-        ],
-        toggle=[
-            Choice(name=_("ON (Change settings)", hash=444), value=1),
-            Choice(name=_("OFF", hash=445), value=0),
-        ],
-    )
-    async def remind(self, i: Interaction, function: int, toggle: int):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if function == 0:
-            check = await check_cookie_predicate(i)
-            if not check:
-                return
-            if toggle == 0:
-                result, success = await self.genshin_app.set_resin_notification(
-                    i.user.id, 0, None, None, i.locale
-                )
-                await i.response.send_message(embed=result, ephemeral=not success)
-            else:
-                modal = ResinNotification.Modal(i.locale, user_locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                result, success = await self.genshin_app.set_resin_notification(
-                    i.user.id,
-                    toggle,
-                    modal.resin_threshold.value,
-                    modal.max_notif.value,
-                    i.locale,
-                )
-                await i.followup.send(embed=result, ephemeral=not success)
-        elif function == 1:
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            if toggle == 0:
-                await c.execute(
-                    "UPDATE talent_notification SET toggle = 0 WHERE user_id = ?",
-                    (i.user.id,),
-                )
-                await self.bot.db.commit()
-                embed = default_embed()
-                embed.set_author(
-                    name=text_map.get(307, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                await i.response.send_message(embed=embed)
-            else:
-                await c.execute(
-                    "UPDATE talent_notification SET toggle = 1 WHERE user_id = ?",
-                    (i.user.id,),
-                )
-                await self.bot.db.commit()
-                embed = default_embed(message=text_map.get(156, i.locale, user_locale))
-                embed.set_author(
-                    name=text_map.get(157, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                value = await self.genshin_app.get_user_talent_notification_enabled_str(
-                    i.user.id, i.locale
-                )
-                embed.add_field(
-                    name=text_map.get(159, i.locale, user_locale), value=value
-                )
-                view = TalentNotification.View(
-                    i.user,
-                    i.locale,
-                    user_locale,
-                    self.bot.db,
-                    self.genshin_app,
-                    self.bot.session,
-                )
-                await i.response.send_message(embed=embed, view=view)
-                view.message = await i.original_response()
-        elif function == 2:
-            check = await check_cookie_predicate(i)
-            if not check:
-                return
-            if toggle == 0:
-                result, success = await self.genshin_app.set_pot_nofitication(
-                    i.user.id, i.locale, 0
-                )
-                await i.response.send_message(embed=result, ephemeral=not success)
-            else:
-                modal = PotReminder.Modal(i.locale, user_locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                result, success = await self.genshin_app.set_pot_nofitication(
-                    i.user.id,
-                    i.locale,
-                    1,
-                    int(modal.threshold.value),
-                    int(modal.max_notif.value),
-                )
-                await i.followup.send(embed=result, ephemeral=not success)
-        elif function == 3:
-            embed = default_embed(
-                message=f"1. {text_map.get(308, i.locale, user_locale)}\n"
-                f"2. {text_map.get(309, i.locale, user_locale)}\n"
-                f"3. {text_map.get(310, i.locale, user_locale)}"
-            )
-            embed.set_author(
-                name=text_map.get(311, i.locale, user_locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embed.set_image(url="https://i.imgur.com/sYg4SpD.gif")
-            await i.response.send_message(embed=embed, ephemeral=True)
+    async def remind(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        await return_notification_menu(i, user_locale or i.locale, True)
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
@@ -599,7 +489,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="uid",
         description=_(
-            "Search a user's genshin UID (if they registered in shenhe)", hash=448
+            "Search a user's genshin UID (if they are registered in shenhe)", hash=448
         ),
     )
     @app_commands.rename(player=_("user", hash=415))

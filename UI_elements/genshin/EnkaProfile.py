@@ -11,7 +11,7 @@ from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from pyppeteer.browser import Browser
 from ui_elements.genshin import EnkaDamageCalculator
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, error_embed, get_user_appearance_mode
 from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card
 
@@ -58,6 +58,7 @@ class PageSelect(Select):
         super().__init__(placeholder=plceholder, options=character_options)
 
     async def callback(self, i: Interaction) -> Any:
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.view.db)
         self.view: View
         damage_calc_disabled = False
@@ -70,8 +71,9 @@ class PageSelect(Select):
                 [character] = [
                     c for c in self.view.characters if c.id == int(self.values[0])
                 ]
+                dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
                 card = await draw_character_card(
-                    character, user_locale or i.locale, i.client.session
+                    character, user_locale or i.locale, i.client.session, dark_mode
                 )
                 i.client.enka_card_cache[
                     f"{self.view.member.id} - {self.values[0]}"
@@ -96,7 +98,7 @@ class PageSelect(Select):
             )
             card.seek(0)
             file = File(card, "card.jpeg")
-            await i.response.edit_message(
+            await i.edit_original_response(
                 embed=embed, view=self.view, attachments=[file]
             )
         else:
@@ -105,7 +107,7 @@ class PageSelect(Select):
                 name=self.view.member.display_name,
                 icon_url=self.view.member.display_avatar.url,
             )
-            await i.response.edit_message(embed=embed, view=self.view, attachments=[])
+            await i.edit_original_response(embed=embed, view=self.view, attachments=[])
 
 
 class ViewArtifacts(Button):

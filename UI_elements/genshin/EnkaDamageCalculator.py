@@ -122,6 +122,7 @@ class GoBack(Button):
         super().__init__(emoji="<:left:982588994778972171>")
 
     async def callback(self, i: Interaction):
+        await i.response.defer()
         self.view: View
         enka_view = self.view.enka_view
         user_locale = await get_user_locale(i.user.id, enka_view.db)
@@ -159,7 +160,7 @@ class GoBack(Button):
                 )
             card.seek(0)
             file = File(card, "card.jpeg")
-            await i.response.edit_message(
+            await i.edit_original_response(
                 embed=embed, view=enka_view, attachments=[file]
             )
         else:
@@ -173,7 +174,7 @@ class GoBack(Button):
                     name=enka_view.author.display_name,
                     icon_url=enka_view.author.display_avatar.url,
                 )
-            await i.response.edit_message(embed=embed, view=enka_view, attachments=[])
+            await i.edit_original_response(embed=embed, view=enka_view, attachments=[])
 
 
 class HitModeButton(Button):

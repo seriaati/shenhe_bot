@@ -6,16 +6,16 @@ from typing import Dict, Literal, Tuple
 import aiosqlite
 import sentry_sdk
 from apps.genshin.user_model import ShenheUser
-from yelan.draw import draw_area_card, draw_stats_card
 from apps.genshin.utils import get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
-from discord import Embed, Locale, User, SelectOption
+from data.game.elements import element_emojis
+from discord import Embed, Locale, SelectOption, User
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
-from data.game.elements import element_emojis
+from yelan.draw import draw_area_card, draw_stats_card
 
 import genshin
 
@@ -27,7 +27,7 @@ class CookieInvalid(Exception):
 def genshin_error_handler(func):
     async def inner_function(*args, **kwargs):
         try:
-            await func(*args, **kwargs)
+            return await func(*args, **kwargs)
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
@@ -424,92 +424,6 @@ class GenshinApp:
         return result, True
 
     @genshin_error_handler
-    async def set_resin_notification(
-        self,
-        user_id: int,
-        toggle: int,
-        threshold: int,
-        max_notif: int,
-        locale: Locale,
-    ):
-        c: aiosqlite.Cursor = await self.db.cursor()
-        shenhe_user = await self.get_user_cookie(user_id, locale)
-        if toggle == 0:
-            await c.execute(
-                "UPDATE resin_notification SET toggle = 0 WHERE uid = ? AND user_id = ?",
-                (shenhe_user.uid, user_id),
-            )
-            result = default_embed().set_author(
-                name=text_map.get(98, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-        else:
-            await c.execute(
-                "UPDATE resin_notification SET toggle = ?, threshold = ? , max = ? WHERE uid = ? AND user_id = ?",
-                (
-                    toggle,
-                    threshold,
-                    max_notif,
-                    shenhe_user.uid,
-                    user_id,
-                ),
-            )
-            toggle_str = (
-                text_map.get(99, locale, shenhe_user.user_locale)
-                if toggle == 1
-                else text_map.get(100, locale, shenhe_user.user_locale)
-            )
-            result = default_embed(
-                message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {toggle_str}\n"
-                f"{text_map.get(102, locale, shenhe_user.user_locale)}: {threshold}\n"
-                f"{text_map.get(103, locale, shenhe_user.user_locale)}: {max_notif}"
-            )
-            result.set_author(
-                name=text_map.get(104, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-        await self.db.commit()
-        return result, True
-
-    @genshin_error_handler
-    async def set_pot_nofitication(
-        self,
-        user_id: int,
-        locale: Locale,
-        toggle: int,
-        threshold: int = None,
-        max_notif: int = None,
-    ):
-        c: aiosqlite.Cursor = await self.db.cursor()
-        shenhe_user = await self.get_user_cookie(user_id, locale)
-        if toggle == 0:
-            await c.execute(
-                "UPDATE pot_notification SET toggle = 0 WHERE uid = ? AND user_id = ?",
-                (shenhe_user.uid, user_id),
-            )
-            result = default_embed().set_author(
-                name=text_map.get(517, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-        else:
-            await c.execute(
-                "UPDATE pot_notification SET toggle = 1, threshold = ? , max = ? WHERE uid = ? AND user_id = ?",
-                (threshold, max_notif, shenhe_user.uid, user_id),
-            )
-            result = default_embed(
-                message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {text_map.get(99, locale, shenhe_user.user_locale)}\n"
-                f"{text_map.get(516, locale, shenhe_user.user_locale)}: {threshold}\n"
-                f"{text_map.get(103, locale, shenhe_user.user_locale)}: {max_notif}"
-            )
-            result.set_author(
-                name=text_map.get(104, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-
-        await self.db.commit()
-        return result, True
-
-    @genshin_error_handler
     async def get_all_characters(self, user_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
@@ -722,21 +636,3 @@ class GenshinApp:
             china=china,
         )
         return user_obj
-
-    async def get_user_talent_notification_enabled_str(
-        self, user_id: int, locale: Locale
-    ) -> str:
-        c: aiosqlite.Cursor = await self.db.cursor()
-        user_locale = await get_user_locale(user_id, self.db)
-        await c.execute(
-            "SELECT character_list FROM talent_notification WHERE user_id = ?",
-            (user_id,),
-        )
-        character_list: list = ast.literal_eval((await c.fetchone())[0])
-        enabled_characters_str = ""
-        if len(character_list) == 0:
-            enabled_characters_str = text_map.get(158, locale, user_locale)
-        else:
-            for character_id in character_list:
-                enabled_characters_str += f"• {text_map.get_character_name(character_id, locale, user_locale)}\n"
-        return enabled_characters_str
