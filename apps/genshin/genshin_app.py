@@ -14,7 +14,7 @@ from apps.text_map.utils import get_element_name, get_month_name, get_user_local
 from discord import Embed, Locale, User, SelectOption
 from discord.ext import commands
 from discord.utils import format_dt
-from utility.utils import default_embed, error_embed, get_user_apperance_mode, log
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
 from data.game.elements import element_emojis
 
 import genshin
@@ -29,9 +29,9 @@ def genshin_error_handler(func):
         try:
             await func(*args, **kwargs)
         except Exception as e:
-            log.warning(f"Error in {func.__name__}: {e}")
+            log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
-            return error_embed("Something went wrong\n出問題了", f"```{e}```"), False
+            return error_embed("Something went wrong\n出了些問題", f"```{e}```"), False
 
     return inner_function
 
@@ -252,13 +252,13 @@ class GenshinApp:
                 include_traveler=True
             )
 
-            mode = await get_user_apperance_mode(user_id, self.db)
+            mode = await get_user_appearance_mode(user_id, self.db)
             fp = await draw_stats_card(
                 genshin_user.stats,
                 namecard,
                 avatar_url,
                 len(characters),
-                True if mode == 1 else False,
+                mode,
             )
             self.bot.stats_card_cache[uid] = fp
         return {"embed": embed, "fp": fp}, True
@@ -279,9 +279,9 @@ class GenshinApp:
         if fp is not None:
             pass
         else:
-            mode = await get_user_apperance_mode(user_id, self.db)
+            mode = await get_user_appearance_mode(user_id, self.db)
             if fp is None:
-                fp = await draw_area_card(explorations, True if mode == 1 else False)
+                fp = await draw_area_card(explorations, mode)
             result = {
                 "embed": embed,
                 "image": fp,
@@ -427,17 +427,17 @@ class GenshinApp:
     async def set_resin_notification(
         self,
         user_id: int,
-        resin_notification_toggle: int,
-        resin_threshold: int,
+        toggle: int,
+        threshold: int,
         max_notif: int,
         locale: Locale,
     ):
         c: aiosqlite.Cursor = await self.db.cursor()
         shenhe_user = await self.get_user_cookie(user_id, locale)
-        if resin_notification_toggle == 0:
+        if toggle == 0:
             await c.execute(
-                "UPDATE resin_notification SET toggle = 0 WHERE uid = ?",
-                (shenhe_user.uid,),
+                "UPDATE resin_notification SET toggle = 0 WHERE uid = ? AND user_id = ?",
+                (shenhe_user.uid, user_id),
             )
             result = default_embed().set_author(
                 name=text_map.get(98, locale, shenhe_user.user_locale),
@@ -445,22 +445,23 @@ class GenshinApp:
             )
         else:
             await c.execute(
-                "UPDATE resin_notification SET toggle = ?, threshold = ? , max = ? WHERE uid = ?",
+                "UPDATE resin_notification SET toggle = ?, threshold = ? , max = ? WHERE uid = ? AND user_id = ?",
                 (
-                    resin_notification_toggle,
-                    resin_threshold,
+                    toggle,
+                    threshold,
                     max_notif,
                     shenhe_user.uid,
+                    user_id,
                 ),
             )
             toggle_str = (
                 text_map.get(99, locale, shenhe_user.user_locale)
-                if resin_notification_toggle == 1
+                if toggle == 1
                 else text_map.get(100, locale, shenhe_user.user_locale)
             )
             result = default_embed(
                 message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {toggle_str}\n"
-                f"{text_map.get(102, locale, shenhe_user.user_locale)}: {resin_threshold}\n"
+                f"{text_map.get(102, locale, shenhe_user.user_locale)}: {threshold}\n"
                 f"{text_map.get(103, locale, shenhe_user.user_locale)}: {max_notif}"
             )
             result.set_author(
@@ -483,8 +484,8 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, locale)
         if toggle == 0:
             await c.execute(
-                "UPDATE pot_notification SET toggle = 0 WHERE uid = ?",
-                (shenhe_user.uid,),
+                "UPDATE pot_notification SET toggle = 0 WHERE uid = ? AND user_id = ?",
+                (shenhe_user.uid, user_id),
             )
             result = default_embed().set_author(
                 name=text_map.get(517, locale, shenhe_user.user_locale),
@@ -492,8 +493,8 @@ class GenshinApp:
             )
         else:
             await c.execute(
-                "UPDATE pot_notification SET toggle = 1, threshold = ? , max = ? WHERE uid = ?",
-                (threshold, max_notif, shenhe_user.uid),
+                "UPDATE pot_notification SET toggle = 1, threshold = ? , max = ? WHERE uid = ? AND user_id = ?",
+                (threshold, max_notif, shenhe_user.uid, user_id),
             )
             result = default_embed(
                 message=f"{text_map.get(101, locale, shenhe_user.user_locale)}: {text_map.get(99, locale, shenhe_user.user_locale)}\n"

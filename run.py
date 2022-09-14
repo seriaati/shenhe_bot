@@ -183,8 +183,8 @@ async def on_interaction(i: Interaction):
 
     c = await bot.db.cursor()
     await c.execute(
-        "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET count = count + 1 WHERE user_id = ?",
-        (i.user.id, i.user.id),
+        "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
+        (i.user.id,),
     )
     await bot.db.commit()
 

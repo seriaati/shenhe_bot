@@ -116,38 +116,15 @@ class AdminCog(commands.Cog, name="admin"):
         await i.followup.send("sync done")
 
     @is_seria()
-    @app_commands.command(name="status", description=_("Admin usage only", hash=496))
-    async def status(self, i: Interaction):
-        await i.response.defer()
-        embed = default_embed()
-        embed.add_field(
-            name="Latency", value=f"{round(self.bot.latency*1000)} ms", inline=False
-        )
-        embed.add_field(
-            name="Servers",
-            value=f"Connected to {len(self.bot.guilds)} servers",
-            inline=False,
-        )
-        count = 0
-        for guild in self.bot.guilds:
-            count += len(guild.members)
-        embed.add_field(name="Users", value=f"{count} users", inline=False)
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute("SELECT COUNT(user_id) FROM active_users")
-        (count,) = await c.fetchone()
-        embed.add_field(name="Active Users", value=f"{count} users", inline=False)
-        await i.followup.send(embed=embed)
-
-    @is_seria()
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
     async def annouce(
         self, i: Interaction, title: str, description: str, url: str = None
     ):
         await i.response.defer(ephemeral=True)
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute("SELECT user_id FROM active_users")
+        await c.execute("SELECT user_id FROM user_settings WHERE dev_msg = 1")
         user_ids = await c.fetchall()
-        for index, tpl in enumerate(user_ids):
+        for _, tpl in enumerate(user_ids):
             user_id = tpl[0]
             user = i.client.get_user(user_id)
             if user is None:

@@ -9,7 +9,7 @@ from yelan.data.GO_modes import hit_mode_texts
 from debug import DefaultView
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, error_embed, get_user_appearance_mode
 
 
 class View(DefaultView):
@@ -125,15 +125,20 @@ class GoBack(Button):
         self.view: View
         enka_view = self.view.enka_view
         user_locale = await get_user_locale(i.user.id, enka_view.db)
-        card = i.client.enka_card_cache.get(f"{enka_view.member.id} - {enka_view.character_id}")
+        card = i.client.enka_card_cache.get(
+            f"{enka_view.member.id} - {enka_view.character_id}"
+        )
         if card is None:
             [character] = [
                 c for c in enka_view.characters if c.id == int(enka_view.character_id)
             ]
+            dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
             card = await draw_character_card(
-                character, user_locale or i.locale, i.client.session
+                character, user_locale or i.locale, i.client.session, dark_mode
             )
-            i.client.enka_card_cache[f"{enka_view.member.id} - {enka_view.character_id}"] = card
+            i.client.enka_card_cache[
+                f"{enka_view.member.id} - {enka_view.character_id}"
+            ] = card
 
         is_card = False if card is None else True
         artifact_disabled = True if is_card else False
