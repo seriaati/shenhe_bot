@@ -71,6 +71,8 @@ class ShenheBot(commands.Bot):
         self.area_card_cache = TTLCache(maxsize=1000, ttl=180)
 
         # bot variables
+        self.maintenance = False
+        self.maintenance_time = ""
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect("shenhe.db")
         self.main_db = await aiosqlite.connect(f"../shenhe_main/main.db")
@@ -202,6 +204,23 @@ async def on_interaction(i: Interaction):
 
 tree = bot.tree
 
+async def check_maintenance(i: Interaction, /) -> bool:
+    if i.user.id == i.client.owner_id:
+        return True
+    else:
+        if i.client.maintenance:
+            await i.response.send_message(
+                embed=error_embed(
+                    "申鶴正在維護中\nShenhe is under maintenance",
+                    f"預計將在 {i.client.maintenance_time} 內恢復服務\nWill be back online in {i.client.maintenance_time}",
+                ).set_thumbnail(url=i.client.user.avatar.url),
+                ephemeral=True,
+            )
+            return False
+        else:
+            return True
+
+tree.interaction_check = check_maintenance
 
 @tree.error
 async def on_error(i: Interaction, e: app_commands.AppCommandError):

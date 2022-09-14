@@ -37,6 +37,16 @@ class AdminCog(commands.Cog, name="admin"):
         return app_commands.check(predicate)
 
     @is_seria()
+    @app_commands.command(
+        name="maintenance", description=_("Admin usage only", hash=496)
+    )
+    async def maintenance(self, i: Interaction, time: str = None):
+        i.client.maintenance = not i.client.maintenance
+        if time is not None:
+            i.client.maintenance_time = time
+        await i.response.send_message("success", ephemeral=True)
+
+    @is_seria()
     @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
     @app_commands.rename(module_name="name")
     async def reload(self, i: Interaction, module_name: str = None):
@@ -61,7 +71,8 @@ class AdminCog(commands.Cog, name="admin"):
                         importlib.reload(module)
                     except Exception as e:
                         return await i.followup.send(
-                            embed=error_embed(module.__name__, f"```{e}```"), ephemeral=True
+                            embed=error_embed(module.__name__, f"```{e}```"),
+                            ephemeral=True,
                         )
             await i.followup.send("success", ephemeral=True)
         else:
