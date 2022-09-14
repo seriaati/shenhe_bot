@@ -62,8 +62,8 @@ class Schedule(commands.Cog):
         ]
         await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
 
-    @schedule_error_handler
     @tasks.loop(hours=24)
+    @schedule_error_handler
     async def claim_reward(self):
         log.info("[Schedule] Claim Reward Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -101,8 +101,8 @@ class Schedule(commands.Cog):
         await self.bot.db.commit()
         log.info("[Schedule] Claim Reward Ended")
 
-    @schedule_error_handler
     @tasks.loop(hours=1)
+    @schedule_error_handler
     async def pot_notification(self):
         log.info("[Schedule] Pot Notification Start")
         now = datetime.now()
@@ -176,8 +176,8 @@ class Schedule(commands.Cog):
         await self.bot.db.commit()
         log.info("[Schedule] Pot Notification Ended")
 
-    @schedule_error_handler
     @tasks.loop(hours=1)
+    @schedule_error_handler
     async def resin_notification(self):
         log.info("[Schedule] Resin Notification Start")
         now = datetime.now()
@@ -246,8 +246,8 @@ class Schedule(commands.Cog):
         await self.bot.db.commit()
         log.info("[Schedule] Resin Notifiaction Ended")
 
-    @schedule_error_handler
     @tasks.loop(hours=24)
+    @schedule_error_handler
     async def talent_notification(self):
         log.info("[Schedule] Talent Notification Start")
         today_weekday = datetime.today().weekday()
@@ -292,8 +292,8 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule] Talent Notifiaction Ended")
 
-    @schedule_error_handler
     @tasks.loop(hours=24)
+    @schedule_error_handler
     async def update_text_map(self):
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
@@ -348,8 +348,8 @@ class Schedule(commands.Cog):
                 f"https://api.ambr.top/v2/{lang}/dailyDungeon"
             ) as r:
                 data = await r.json()
-            for weekday, domains in data["data"].items():
-                for domain, domain_info in domains.items():
+            for _, domains in data["data"].items():
+                for _, domain_info in domains.items():
                     if str(domain_info["id"]) not in dict:
                         dict[str(domain_info["id"])] = {}
                     dict[str(domain_info["id"])][lang] = domain_info["name"]
