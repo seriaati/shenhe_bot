@@ -6,10 +6,11 @@ from debug import DefaultModal, DefaultView
 import config
 from discord import Locale, Interaction, ButtonStyle, Embed
 from discord.ui import Button, TextInput
-from discord.errors import InteractionResponded, Forbidden, NotFound
+from discord.errors import InteractionResponded, Forbidden
 from apps.text_map.text_map_app import text_map
 from utility.utils import default_embed, error_embed
 import aiosqlite
+from ui_elements.genshin import TalentNotificationMenu
 
 
 class View(DefaultView):
@@ -131,6 +132,8 @@ async def return_talent_notification(i: Interaction, view: View):
     embed.add_field(name=text_map.get(159, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
+    view.add_item(AddCharacter(view.locale))
+    view.add_item(RemoveAllCharacter(view.locale))
     view.add_item(
         NotificationON(
             view.locale, "talent_notification", True if toggle == 1 else False
@@ -146,12 +149,34 @@ async def return_talent_notification(i: Interaction, view: View):
     except InteractionResponded:
         await i.edit_original_response(embed=embed, view=view)
 
+
 class AddCharacter(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="<:uid_add:1018777895663063040>", label=text_map.get(598, locale))
+        super().__init__(
+            emoji="<:uid_add:1018777895663063040>", label=text_map.get(598, locale)
+        )
+        self.locale = locale
 
     async def callback(self, i: Interaction):
-        await return_add_character(i, self.view)
+        view = TalentNotificationMenu.View(self.locale)
+        await i.response.edit_message(view=view)
+        view.author = i.user
+        view.message = await i.original_response()
+
+
+class RemoveAllCharacter(Button):
+    def __init__(self, locale: Locale | str):
+        super().__init__(emoji="🗑️", label=text_map.get(599, locale))
+
+    async def callback(self, i: Interaction):
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
+            (i.user.id,),
+        )
+        await i.client.db.commit()
+        await return_talent_notification(i, self.view)
+
 
 class PrivacySettings(Button):
     def __init__(self, locale: Locale | str):
@@ -205,10 +230,16 @@ class NotificationON(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ? AND uid = ?",
-            (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
-        )
+        if self.table_name == "talent_notification":
+            await c.execute(
+                f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ?",
+                (i.user.id,),
+            )
+        else:
+            await c.execute(
+                f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ? AND uid = ?",
+                (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+            )
         await i.client.db.commit()
         if self.table_name == "resin_notification":
             await return_resin_notification(i, self.view)
@@ -229,10 +260,16 @@ class NotificationOFF(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-            (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
-        )
+        if self.table_name == "talent_notification":
+            await c.execute(
+                f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ?",
+                (i.user.id,),
+            )
+        else:
+            await c.execute(
+                f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+            )
         await i.client.db.commit()
         if self.table_name == "resin_notification":
             await return_resin_notification(i, self.view)

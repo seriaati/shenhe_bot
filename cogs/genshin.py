@@ -49,7 +49,6 @@ from ui_elements.genshin import (
     EnkaProfile,
     EventTypeChooser,
     ShowAllCharacters,
-    TalentNotification,
 )
 from ui_elements.genshin.ReminderMenu import return_notification_menu
 from utility.paginator import GeneralPaginator
