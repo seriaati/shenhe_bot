@@ -42,7 +42,8 @@ class Schedule(commands.Cog):
         self.talent_notification.start()
         self.change_status.start()
         self.pot_notification.start()
-        self.update_text_map.start()
+        if not self.bot.debug:
+            self.update_text_map.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
@@ -50,7 +51,8 @@ class Schedule(commands.Cog):
         self.talent_notification.cancel()
         self.change_status.cancel()
         self.pot_notification.cancel()
-        self.update_text_map.cancel()
+        if not self.bot.debug:
+            self.update_text_map.cancel()
 
     @tasks.loop(minutes=10)
     async def change_status(self):
