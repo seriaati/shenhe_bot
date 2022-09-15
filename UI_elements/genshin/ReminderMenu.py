@@ -153,7 +153,7 @@ async def return_talent_notification(i: Interaction, view: View):
 class AddCharacter(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(
-            emoji="<:uid_add:1018777895663063040>", label=text_map.get(598, locale)
+            emoji="✏️", label=text_map.get(598, locale)
         )
         self.locale = locale
 

@@ -641,9 +641,13 @@
 589: "• Threshold: The amount of realm currency you want to be notified at\n
     • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you\n
     • A an account linked with Cookie is required to enable this feature"
-590: "This feature allows you to receive notification when a character's talent domain is farmable\n Simply select the characters you want to be notified about"
+590:
+    "• This feature allows you to receive notification when a character's talent domain is farmable\n
+    • Simply select the characters you want to be notified about\n
+    • Selecting a character that already has notification enabled will disable it"
 591: Current settings
-592: "• This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time\n
+592:
+    "• This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time\n
     • Reminder settings are separate for each account you have registered\n
     • The only exception is the talent notification, which is shared across all accounts\n
     • Click on the buttons below for more information on each feature"
@@ -652,5 +656,5 @@
 595: Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
 596: Test it out!
 597: Shenhe has failed to DM you
-598: Add characters
+598: Add/Remove characters
 599: Remove all characters
