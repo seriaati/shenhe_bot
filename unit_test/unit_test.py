@@ -1,4 +1,5 @@
 commands = ["abyss",
+            "accounts",
             "activity",
             "area",
             "build",

@@ -74,7 +74,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 wish_rarity == 5 or wish_rarity == 4
             ):  # mark high rarity wishes with blue
                 user_wish.append(
-                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://github.com/seriaati/shenhe_bot)"
+                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://seriaati.github.io/shenhe_website/)"
                 )
             else:
                 user_wish.append(

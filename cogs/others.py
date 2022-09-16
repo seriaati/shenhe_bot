@@ -62,6 +62,7 @@ class OthersCog(commands.Cog, name="others"):
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
     )
     async def accounts_command(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
 

@@ -278,7 +278,7 @@ class UIDSelect(Select):
         self.cookie = cookie
 
     async def callback(self, i: Interaction):
-        await i.response.defer()
+        await i.response.defer(ephemeral=True)
         genshin_app = GenshinApp(i.client.db, i.client)
         result = (
             await genshin_app.set_cookie(
@@ -352,9 +352,11 @@ class SwitchAccount(Select):
             for item in self.view.children:
                 item.disabled = True
             await i.response.edit_message(embed=embed, view=self.view)
+            await asyncio.sleep(2)
+            await return_accounts(i)
         elif self.change_nickname:
             modal = NicknameModal(self.view.locale, self.values[0])
-            return await i.response.send_modal(modal)
+            await i.response.send_modal(modal)
         else:
             await c.execute(
                 "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
@@ -363,17 +365,7 @@ class SwitchAccount(Select):
                 "UPDATE user_accounts SET current = 1 WHERE uid = ? AND user_id = ?",
                 (self.values[0], i.user.id),
             )
-            for item in self.view.children:
-                item.disabled = True
-            await i.response.edit_message(
-                embed=default_embed().set_author(
-                    name=f"{text_map.get(569, self.view.locale)}: {self.values[0]}",
-                    icon_url=i.user.display_avatar.url,
-                ),
-                view=self.view,
-            )
-        await asyncio.sleep(2)
-        await return_accounts(i)
+            await return_accounts(i)
         await i.client.db.commit()
 
 
@@ -395,7 +387,8 @@ async def return_accounts(i: Interaction):
     user_locale = await get_user_locale(i.user.id, i.client.db)
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
-        "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?", (i.user.id,)
+        "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
+        (i.user.id,),
     )
     accounts = await c.fetchall()
     select_options = []
@@ -406,10 +399,9 @@ async def return_accounts(i: Interaction):
             icon_url=i.user.display_avatar.url,
         )
         try:
-            await i.response.send_message(
+            await i.response.edit_message(
                 embed=embed,
                 view=view,
-                ephemeral=True,
             )
         except InteractionResponded:
             await i.edit_original_response(embed=embed, view=view)
@@ -425,7 +417,7 @@ async def return_accounts(i: Interaction):
         nickname = f"{account[3]} | " if account[3] is not None else ""
         if account[2] == 1:
             current_account = True
-            account_str += f"**• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**\n"
+            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**__\n"
         else:
             account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}\n"
         select_options.append(
@@ -448,7 +440,7 @@ async def return_accounts(i: Interaction):
     )
     view = View(user_locale or i.locale, select_options)
     try:
-        await i.response.send_message(embed=embed, view=view, ephemeral=True)
+        await i.response.edit_message(embed=embed, view=view)
     except InteractionResponded:
         await i.edit_original_response(embed=embed, view=view)
     view.message = await i.original_response()
