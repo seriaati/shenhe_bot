@@ -72,7 +72,7 @@
 72: 摩拉获取记录
 73: 摩拉
 74: 使用 </stats:1006486283725590530> 指令来更新你的资料
-75: '“(本指令只显示第9层以上资料)"'
+75: “(本指令只显示第9层以上资料)"
 76: 找不到深渊资料
 77: 期别
 78: 最深抵达
@@ -87,7 +87,7 @@
 87: 層
 88: '[上半]'
 89: '[下半]'
-90: '配置#'
+90: 配置#
 91: 武器
 92: 圣遗物
 93: 主词条
@@ -96,8 +96,8 @@
 96: 来源
 97: 圣遗物思路
 98: 树脂提醒已关闭
-99: '开'
-100: '关'
+99: 开
+100: 关
 101: 目前开关
 102: 树脂阀值
 103: 最大提醒数量
@@ -135,7 +135,12 @@
 135: 未知错误
 136: 选择要注册的账号
 137: Cookie 设置流程
-138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit your cookie\\ \\ here\n Too complicated? The image below might help!"
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\\
+  \ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\\
+  \ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\\
+  \ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank\
+  \ page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit\
+  \ your cookie\\ \\ here\n Too complicated? The image below might help!"
 139: 过期或无效的Cookie, 请先登出帐号再重新登入!
 140: 请使用 </register:1006486283725590528> 指令
 141: 找不到账号资料!
@@ -147,7 +152,10 @@
 147: 层
 148: 楼层导览
 149: 资料不公开?
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\\
+  \ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\
+  \\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\\
+  \ \\ all the switches"
 151: 树脂提醒设定
 152: 树脂阀值
 153: 申鹤会在树脂超过这个数字后提醒你
@@ -162,9 +170,10 @@
 162: 配置
 163: 选择配置
 164: 种配置
-165: 'This user hasn''t registered their account yet </register:1006486283725590528> to register'
+165: This user hasn't registered their account yet </register:1006486283725590528>
+  to register
 166: 未知用户
-167: '的 UID'
+167: 的 UID
 168: 计算资料输入
 169: 角色目标等级
 170: '例如: 90'
@@ -201,7 +210,9 @@
 201: 武器升级
 202: 代办清单
 203: 新增素材
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793>\\ \\ or </calc weapon:1000187020892700793> to calculate materials for characters and\\ \\ weapons, or use the green button below to add custom items"
+204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793>\\\
+  \ \\ or </calc weapon:1000187020892700793> to calculate materials for characters\
+  \ and\\ \\ weapons, or use the green button below to add custom items"
 205: 删除素材
 206: 清空代办清单
 207: 选择要删除的素材
@@ -300,7 +311,7 @@
 310: 将开关打开
 311: 如何让申鹤私讯你?
 312: 该为
-313: '刷本啦!'
+313: 刷本啦!
 314: 你可以刷的素材
 315: 基本资料
 316: 生日
@@ -345,15 +356,41 @@
 355: 请稍等, 处理数据中...
 356: 祈愿记录导入成功
 357: PC 设置方式
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n\\ \\ 2. Open the wish history in the game and wait for it to load\n 3. Press START\\ \\ on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then\\ \\ copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will\\ \\ be copied to your clipboard\n 6. Submit the link you copied by using the </wish\\ \\ import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
+358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n\
+  \\ \\ 2. Open the wish history in the game and wait for it to load\n 3. Press START\\\
+  \ \\ on your keyboard, then search for Powershell\n 4. Click Windows Powershell,\
+  \ then\\ \\ copy & paste the script below to the Powershell\n 5. Press ENTER, and\
+  \ a link will\\ \\ be copied to your clipboard\n 6. Submit the link you copied by\
+  \ using the </wish\\ \\ import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
 359: Android 设置方式
-360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular\\ \\ Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above methods\\ \\ don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
+360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular\\\
+  \ \\ Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above\
+  \ methods\\ \\ don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
 361: IOS 教学
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download\\ \\ Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2.\\ \\ Open the app, then allow VPN in system preferences (Settings > General > VPN)\n\\ \\ 3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will\\ \\ appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General >\\ \\ VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin\\ \\ Impact then open the Wish screen, and stay on that page\n 6. Back to Stream App\\ \\ > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then\\ \\ open the Wish history page\n 8. Wait for the page to load\n 9. Back to Stream\\ \\ App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by\\ \\ .json (the link starts with https://hk4e-api-os.mihoyo.com/)\n 11. Click the Request\\ \\ tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890>\\ \\ command"
+362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download\\\
+  \ \\ Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n\
+  \ 2.\\ \\ Open the app, then allow VPN in system preferences (Settings > General\
+  \ > VPN)\n\\ \\ 3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up\
+  \ window will\\ \\ appear and choose allow > Now CA is downloaded\n 4. Go to Settings\
+  \ > General >\\ \\ VPN & Device management > Click on Stream Generated CA and install\n\
+  \ 5. Open Genshin\\ \\ Impact then open the Wish screen, and stay on that page\n\
+  \ 6. Back to Stream App\\ \\ > Choose I've trusted > Tap Sniff Now Button\n 7. Back\
+  \ to Genshin Impact then\\ \\ open the Wish history page\n 8. Wait for the page\
+  \ to load\n 9. Back to Stream\\ \\ App > Stop Sniffing\n 10. Click Sniff History\
+  \ > Choose a request that ends by\\ \\ .json (the link starts with https://hk4e-api-os.mihoyo.com/)\n\
+  \ 11. Click the Request\\ \\ tab, then copy the link\n 12. Submit that link here\
+  \ using the </wish import:1000187021635104890>\\ \\ command"
 363: Playstation 设置流程
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse\\ \\ account then use the pc/mobile instructions)\n (You can only use this method if\\ \\ you have an in-game mail with a QR Code to open the web event)\n\n\n1. Open Genshin\\ \\ Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n\\ \\ 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish\\ \\ import:1000187021635104890> command"
+364: "(If the steps below don't work, you can link your PS account with a HoYoVerse\\\
+  \ \\ account then use the pc/mobile instructions)\n (You can only use this method\
+  \ if\\ \\ you have an in-game mail with a QR Code to open the web event)\n\n\n1.\
+  \ Open Genshin\\ \\ Impact on your PlayStation\n 2. Open the event mail that contains\
+  \ the QR Code\n\\ \\ 3. Scan the QR Code with your phone\n 4. Submit the link here\
+  \ using the </wish\\ \\ import:1000187021635104890> command"
 365: 选择你的平台
-366: "The language of your wish history is based on your current selected language\n\\ \\ changing the language afterward will not affect previous records"
+366: 'The language of your wish history is based on your current selected language
+
+  \ \ changing the language afterward will not affect previous records'
 367: 找不到任何祈愿记录
 368: 使用 </wish import:1000187021635104890> 指令来导入你的祈愿记录
 369: 祈愿记录
@@ -374,8 +411,8 @@
 385: pulls
 386: 祈愿抽数预测
 387: 常驻
-388: '想要的'
-389: '不想要的'
+388: 想要的
+389: 不想要的
 390: 请问这把武器是你想要的吗?
 391: 你最后一次抽到的五星武器是
 392: 这是一把常驻还是 UP 武器?
@@ -431,7 +468,7 @@
 442: 天赋素材提醒
 443: 启用提醒功能前请先确认隐私设定
 444: 开 (调整设定)
-445: '关'
+445: 关
 446: 查看原神今日可刷素材
 447: '查看角色配置: 圣遗物、毕业面板、装备选择、圣遗物思路'
 448: 查询特定使用者的 UID
@@ -449,8 +486,8 @@
 460: 计算角色升级所需素材
 461: 同步
 462: 与游戏资料同步, 将会自动填入角色及天赋等级 (开启时无法计算自己不拥有的角色)
-463: '开启'
-464: '关闭'
+463: 开启
+464: 关闭
 465: 计算武器升级所需的素材
 466: 类别
 467: 稀有度
@@ -490,7 +527,7 @@
 501: 更新自身排名
 502: 排名更新成功
 503: 查看申鹤历来的更新
-504: '由 seria#5334 制作, 有疑问可以私讯'
+504: 由 seria#5334 制作, 有疑问可以私讯
 505: 查看过去更新
 506: 武器数量
 507: 想要抽到几个自己想要的五星 UP 武器?
@@ -499,7 +536,7 @@
 510: 须弥
 511: 原神游戏元素（武器、角色等）的字串将会自动翻译
 512: 排名更新成功
-513: '非常抱歉，这个错误已经自动回报至 seria#5334，请耐心等待修复'
+513: 非常抱歉，这个错误已经自动回报至 seria#5334，请耐心等待修复
 514: 洞天宝钱提醒（需注册）
 515: 洞天宝钱提醒设定
 516: 洞天宝钱阀值
@@ -524,15 +561,19 @@
 535: 外觀
 536: 深色模式
 537: 亮色模式
-538: "• This setting changes the appearance of your cards\n • If there is no dark\\ \\ mode version of the card, it will be displayed in light mode\n • Default is light\\ \\ mode\n • See below for an example\n"
+538: "• This setting changes the appearance of your cards\n • If there is no dark\\\
+  \ \\ mode version of the card, it will be displayed in light mode\n • Default is\
+  \ light\\ \\ mode\n • See below for an example\n"
 539: 设定
-540: "• I some cases, I will push notifications using Shenhe\n • Most of the time,\\ \\ they appear when there are critical issues with Shenhe, or there is an update"
+540: "• I some cases, I will push notifications using Shenhe\n • Most of the time,\\\
+  \ \\ they appear when there are critical issues with Shenhe, or there is an update"
 541: 开发者信息
 542: 物品不存在
 543: Data is from cache
 544: Manage your accounts in Shenhe
 545: You don't have any account registered
-546: "• You can register multiple accounts in Shenhe\n • You can switch between accounts\\ \\ using the dropdown menu"
+546: "• You can register multiple accounts in Shenhe\n • You can switch between accounts\\\
+  \ \\ using the dropdown menu"
 547: TW, HK, MO
 548: Celestia
 549: Irminsul
@@ -548,39 +589,63 @@
 560: Choose one or multiple accounts below to remove
 561: Accounts removed
 562: Choose the account type you want to add
-563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands, like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\\ \\ • To obtain your Cookie, you will go through a registration process that takes\\ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\ \\ your account, note that I won't have access to your Genshin account by having\\ \\ your Cookie\n • You can always remove your account data by using /accounts"
+563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\\
+  \ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands,\
+  \ like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\\
+  \ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\
+  \\ \\ • To obtain your Cookie, you will go through a registration process that takes\\\
+  \ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\\
+  \ \\ your account, note that I won't have access to your Genshin account by having\\\
+  \ \\ your Cookie\n • You can always remove your account data by using /accounts"
 564: Add UID
 565: Add Cookie
 566: Put your UID here
-567: 'If this shouldn''t be happening, please contact seria#5334'
+567: If this shouldn't be happening, please contact seria#5334
 568: UID added
 569: Current account
 570: "Your Cookie contains multiple accounts\n please choose the one you want to add"
 571: You don't have an account registered
 572: Use /accounts to add one
 573: Your current account is not linked to a Cookie
-574: 'One of your other accounts is linked to a Cookie, but the current one is only linked to a UID'
+574: One of your other accounts is linked to a Cookie, but the current one is only
+  linked to a UID
 575: Use /accounts to switch between accounts
 576: Please wait while we are validating your UID
 577: Please wait while we are validating your Cookie
-578: 'If you are not redirected, please contact seria#5334'
+578: If you are not redirected, please contact seria#5334
 579: This user doesn't have an account registered
 580: This user's current account is not linked to a Cookie
-581: 'One of this user''s accounts is linked to a Cookie, but the current one is only linked to a UID'
+581: One of this user's accounts is linked to a Cookie, but the current one is only
+  linked to a UID
 582: Resin notification
 583: Talent notification
 584: Realm currency notification
 585: Test DM
-586: This feature allows you to receive notification when your resin exceeds a certain amount
-587: "• Threshold: The amount of resin you want to be notified at\n • Maximum notification\\ \\ number: After reminding you this number of times, Shenhe will stop DMing you\n\\ \\ • A an account linked with Cookie is required to enable this feature"
-588: This feature allows you to receive notification when your realm currency exceeds a certain amount
-589: "• Threshold: The amount of realm currency you want to be notified at\n • Maximum\\ \\ notification number: After reminding you this number of times, Shenhe will stop\\ \\ DMing you\n • A an account linked with Cookie is required to enable this feature"
-590: "• This feature allows you to receive notification when a character's talent\\ \\ domain is farmable\n • Simply select the characters you want to be notified about\n\\ \\ • Selecting a character that already has notification enabled will disable it"
+586: This feature allows you to receive notification when your resin exceeds a certain
+  amount
+587: "• Threshold: The amount of resin you want to be notified at\n • Maximum notification\\\
+  \ \\ number: After reminding you this number of times, Shenhe will stop DMing you\n\
+  \\ \\ • A an account linked with Cookie is required to enable this feature"
+588: This feature allows you to receive notification when your realm currency exceeds
+  a certain amount
+589: "• Threshold: The amount of realm currency you want to be notified at\n • Maximum\\\
+  \ \\ notification number: After reminding you this number of times, Shenhe will\
+  \ stop\\ \\ DMing you\n • A an account linked with Cookie is required to enable\
+  \ this feature"
+590: "• This feature allows you to receive notification when a character's talent\\\
+  \ \\ domain is farmable\n • Simply select the characters you want to be notified\
+  \ about\n\\ \\ • Selecting a character that already has notification enabled will\
+  \ disable it"
 591: Current settings
-592: "• This feature allows you to set reminders to assist you in doing the homework\\ \\ provided by Genshin on-time\n • Reminder settings are separate for each account\\ \\ you have registered\n • The only exception is the talent notification, which is\\ \\ shared across all accounts\n • Click on the buttons below for more information\\ \\ on each feature"
+592: "• This feature allows you to set reminders to assist you in doing the homework\\\
+  \ \\ provided by Genshin on-time\n • Reminder settings are separate for each account\\\
+  \ \\ you have registered\n • The only exception is the talent notification, which\
+  \ is\\ \\ shared across all accounts\n • Click on the buttons below for more information\\\
+  \ \\ on each feature"
 593: Reminders
 594: Change settings
-595: Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
+595: Shenhe needs to be able to DM you to send you the notifications, if you somehow
+  disabled it, please follow the steps below to enable it.
 596: Test it out!
 597: Shenhe has failed to DM you
 598: Add/Remove characters
