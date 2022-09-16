@@ -50,6 +50,7 @@ from ui_elements.genshin import (
     EventTypeChooser,
     ShowAllCharacters,
 )
+from ui_elements.genshin.DailyReward import return_claim_reward
 from ui_elements.genshin.ReminderMenu import return_notification_menu
 from utility.paginator import GeneralPaginator
 from utility.domain_paginator import DomainPaginator
@@ -258,8 +259,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def claim(self, i: Interaction):
-        result, success = await self.genshin_app.claim_daily_reward(i.user.id, i.locale)
-        await i.response.send_message(embed=result, ephemeral=not success)
+        await return_claim_reward(i, self.genshin_app)
 
     @app_commands.command(
         name="characters",
