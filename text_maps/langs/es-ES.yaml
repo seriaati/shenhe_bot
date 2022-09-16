@@ -85,9 +85,9 @@
 85: Spiral Abyss Overview
 86: Chamber
 87: <CHAMBER>
-88: '[First Half]'
-89: '[Second Half]'
-90: 'Build #'
+88: "[First Half]"
+89: "[Second Half]"
+90: "Build #"
 91: Weapon
 92: Artifacts
 93: Main Stats
@@ -96,8 +96,8 @@
 96: Source
 97: Artifact Thoughts
 98: Resin reminder has been turned off
-99: 'ON'
-100: 'OFF'
+99: "ON"
+100: "OFF"
 101: Current Toggle
 102: Resing Threshold
 103: Max. notification number
@@ -135,7 +135,7 @@
 135: There was an error
 136: Choose your account
 137: Account registration tutorial
-138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit your cookie\\ \\ here\n Too complicated? The image below might help!"
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3. Click the address bar and select all the text there\n 4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here\n Too complicated? The image below might help!"
 139: Cookie invalid or outdated, please log out then log in again!
 140: Please use the </register:1006486283725590528> command
 141: Account data not found!
@@ -147,7 +147,7 @@
 147: <FLOOR>
 148: Choose abyss floor
 149: Data not public?
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: Resin notification settings
 152: Resin threshold
 153: Shenhe will DM you after resin exceeds this number
@@ -162,14 +162,14 @@
 162: Build
 163: Choose your build
 164: builds
-165: 'This user hasn''t registered their account yet </register:1006486283725590528> to register'
+165: "This user hasn't registered their account yet </register:1006486283725590528> to register"
 166: User not found
-167: '''s UID'
+167: "'s UID"
 168: Enter your data
 169: Character target level
-170: 'For example: 90'
+170: "For example: 90"
 171: Auto attack target level
-172: 'For example: 5'
+172: "For example: 5"
 173: Elemental skill (E) target level
 174: Elemental burst (Q) target level
 175: Add to the todo list
@@ -181,12 +181,12 @@
 181: Set the levels for
 182: <'S LEVEL>
 183: Current level
-184: 'For example: 1'
+184: "For example: 1"
 185: Target level
-186: 'For example: 90'
+186: "For example: 90"
 187: Please enter a number
-188: 'Character level: Please enter a number between 1 and 90'
-189: 'Talent level: Please enter a number between 1 and 10'
+188: "Character level: Please enter a number between 1 and 90"
+189: "Talent level: Please enter a number between 1 and 10"
 190: Invalid Input
 191: Calculation results
 192: Calculation content
@@ -206,7 +206,7 @@
 206: Clear items
 207: Choose the item you wish to remove
 208: Item name
-209: 'For example: mora'
+209: "For example: mora"
 210: Item amount
 211: (Leaving this field blank will remove the item entirely)
 212: You can't remove more items than you have in your dodo list
@@ -300,7 +300,7 @@
 310: Turn the toggle ON
 311: How to unblock DM from servers
 312: Time to farm materials for
-313: '!'
+313: "!"
 314: Items you can farm
 315: Basic information
 316: Birthday
@@ -374,8 +374,8 @@
 385: pulls
 386: Event wish number prediction
 387: Standard
-388: 'Yes'
-389: 'No'
+388: "Yes"
+389: "No"
 390: Is this the weapon you wanted?
 391: The last 5-star weapon you pulled was
 392: Is this a standard or limited time UP weapon?
@@ -400,10 +400,10 @@
 411: options
 412: Registration tutorial
 413: Submit cookie
-414: 'View real-time notes: Current resin, pot, expedition status (need /register)'
+414: "View real-time notes: Current resin, pot, expedition status (need /register)"
 415: user
 416: Check other user's data
-417: 'View genshin stats: Active days, oculis, number of chests'
+417: "View genshin stats: Active days, oculis, number of chests"
 418: A user's genshin UID
 419: View area exploration rates
 420: Claim hoyolab daily login reward
@@ -431,9 +431,9 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: 'OFF'
+445: "OFF"
 446: View farmable items today
-447: 'View character builds: Weapons, artifacts, talent levels, stats'
+447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
 449: View characters' artifacts, stats, weapons, and talents, and calculate damage
 450: Redeem gift codes (need /register)
@@ -449,8 +449,8 @@
 460: Calculate materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: 'ON'
-464: 'OFF'
+463: "ON"
+464: "OFF"
 465: Calculate materials needed for upgrading a weapon
 466: type
 467: rarity
@@ -559,14 +559,14 @@
 571: You don't have an account registered
 572: Use /accounts to add one
 573: Your current account is not linked to a Cookie
-574: 'One of your other accounts is linked to a Cookie, but the current one is only linked to a UID'
+574: "One of your other accounts is linked to a Cookie, but the current one is only linked to a UID"
 575: Use /accounts to switch between accounts
 576: Please wait while we are validating your UID
 577: Please wait while we are validating your Cookie
 578: 'If you are not redirected, please contact seria#5334'
 579: This user doesn't have an account registered
 580: This user's current account is not linked to a Cookie
-581: 'One of this user''s accounts is linked to a Cookie, but the current one is only linked to a UID'
+581: "One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID"
 582: Resin notification
 583: Talent notification
 584: Realm currency notification
@@ -644,7 +644,7 @@
 656: 一斗 Q 結束後
 657: 防禦力+20%，攻擊力+20%
 658: 攻速 +30%
-659: ''
+659: ""
 660: 施放風輪兩立2次
 661: 風輪兩立傷害提高 30%
 662: 魈 Q 狀態下
@@ -899,7 +899,7 @@
 911: 元素戰技&爆發傷害 +20%
 912: 元素爆發或戰技命中
 913: 普攻傷害 +20%
-914: '登場樂: 詠嘆調'
+914: "登場樂: 詠嘆調"
 915: 全元素傷害 +48%
 916: 普攻命中後衝刺
 917: 攻擊力 +20%
@@ -918,7 +918,7 @@
 930: '「白夜極星」4層'
 931: 攻擊力 +48%
 932: '「飛雷之巴印」3層'
-933: ''
+933: ""
 934: 角色在後台8秒
 935: 傷害 +16%
 936: 擊敗敵人後(3層)
