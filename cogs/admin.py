@@ -280,50 +280,6 @@ class AdminCog(commands.Cog, name="admin"):
             )
         )
 
-        # check emojis
-        message = ""
-        for artifact, artifact_info in artifacts_map.items():
-            message += artifact_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="聖遺物 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        message = ""
-        for character, character_info in characters_map.items():
-            message += character_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="角色 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        message = ""
-        for weapon, weapon_info in weapons_map.items():
-            message += weapon_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="武器 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        messages = []
-        message = ""
-        for consumable, consumable_info in consumables_map.items():
-            if (len(message) + len(consumable_info["emoji"])) > 4096:
-                messages.append(message)
-                message = ""
-            message += consumable_info["emoji"]
-        messages.append(message)
-
-        for message in messages:
-            await i.followup.send(
-                embed=default_embed(message=message).set_author(
-                    name="素材 emoji", icon_url=i.user.display_avatar.url
-                )
-            )
-
         await i.followup.send(
             embed=default_embed().set_author(
                 name="更新資料完畢", icon_url=i.user.display_avatar.url

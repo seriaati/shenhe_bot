@@ -22,6 +22,7 @@ class View(DefaultView):
         self.select_options = select_options
         self.add_item(AddAccount(locale))
         self.add_item(RemoveAccount(locale, True if not select_options else False))
+        self.add_item(ChangeNickname(locale, select_options))
         self.add_item(SwitchAccount(locale, select_options))
 
 
@@ -62,8 +63,52 @@ class AddUID(Button):
         await i.response.send_modal(AddUIDModal(self.view.locale))
 
 
+class ChangeNickname(Button):
+    def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
+        disabled = True if not select_options else False
+        super().__init__(
+            emoji="<:edit:1020096204924784700>",
+            label=text_map.get(600, locale),
+            disabled=disabled,
+        )
+
+    async def callback(self, i: Interaction):
+        self.view: View
+        self.view.clear_items()
+        self.view.add_item(
+            SwitchAccount(
+                self.view.locale, self.view.select_options, change_nickname=True
+            )
+        )
+        self.view.add_item(GOBack())
+        embed = default_embed().set_author(
+            name=text_map.get(602, self.view.locale), icon_url=i.user.display_avatar.url
+        )
+        await i.response.edit_message(embed=embed, view=self.view)
+
+
+class NicknameModal(DefaultModal):
+    name = TextInput(label="Nickname", placeholder="Nickname", max_length=100)
+
+    def __init__(self, locale: Locale | str, uid: str) -> None:
+        super().__init__(title=text_map.get(600, locale), timeout=config.mid_timeout)
+        self.locale = locale
+        self.uid = uid
+        self.name.label = text_map.get(601, locale)
+        self.name.placeholder = text_map.get(601, locale).lower()
+
+    async def on_submit(self, i: Interaction):
+        c: aiosqlite.Cursor = await i.client.db.cursor()
+        await c.execute(
+            "UPDATE user_accounts SET nickname = ? WHERE uid = ? AND user_id = ?",
+            (self.name.value, self.uid, i.user.id),
+        )
+        await i.client.db.commit()
+        await return_accounts(i)
+
+
 class AddUIDModal(DefaultModal):
-    uid = TextInput(label="UID", placeholder="Put your UID here")
+    uid = TextInput(label="UID", placeholder="Put your UID here", max_length=9)
 
     def __init__(self, locale: Locale | str) -> None:
         super().__init__(title=text_map.get(564, locale), timeout=config.mid_timeout)
@@ -276,12 +321,14 @@ class SwitchAccount(Select):
         locale: Locale | str,
         select_options: List[SelectOption],
         remove_account: bool = False,
+        change_nickname: bool = False,
     ):
         disabled = False
-        self.remove_account = remove_account
         if not select_options:
             select_options = [SelectOption(label="None", value="None")]
             disabled = True
+        self.remove_account = remove_account
+        self.change_nickname = change_nickname
         super().__init__(
             placeholder=text_map.get(559, locale),
             options=select_options,
@@ -305,6 +352,9 @@ class SwitchAccount(Select):
             for item in self.view.children:
                 item.disabled = True
             await i.response.edit_message(embed=embed, view=self.view)
+        elif self.change_nickname:
+            modal = NicknameModal(self.view.locale, self.values[0])
+            return await i.response.send_modal(modal)
         else:
             await c.execute(
                 "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
@@ -345,7 +395,7 @@ async def return_accounts(i: Interaction):
     user_locale = await get_user_locale(i.user.id, i.client.db)
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
-        "SELECT uid, ltuid, current FROM user_accounts WHERE user_id = ?", (i.user.id,)
+        "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?", (i.user.id,)
     )
     accounts = await c.fetchall()
     select_options = []
@@ -372,14 +422,15 @@ async def return_accounts(i: Interaction):
             if account[1] is not None
             else "<:number:1018838745614667817>"
         )
+        nickname = f"{account[3]} | " if account[3] is not None else ""
         if account[2] == 1:
             current_account = True
-            account_str += f"**• {account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**\n"
+            account_str += f"**• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**\n"
         else:
-            account_str += f"• {account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}\n"
+            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}\n"
         select_options.append(
             SelectOption(
-                label=f"{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)}",
+                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)}",
                 emoji=emoji,
                 value=account[0],
             )

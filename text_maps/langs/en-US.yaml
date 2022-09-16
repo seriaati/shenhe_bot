@@ -171,7 +171,7 @@
 154: Max. notification number
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
-157: Choose your character(s)
+157: Choose your characters
 158: There are currently no notifications set for any characters
 159: Current characters
 160: Choose your element
@@ -351,7 +351,7 @@
 341: Bennett C6
 342: Chongyun Skill
 343: Select team melee infusion
-344: Select teammate(s)
+344: Select teammates
 345: Team
 346: Conditions
 347: Effects
@@ -413,15 +413,15 @@
 373: Your luck is better than
 374: of players
 375: "<TOTAL>"
-376: pull(s) in total
+376: pulls in total
 378: "<TOTAL>"
 379: UP five stars in total
 380: "<FROM PITY>"
-381: pity pull(s)
+381: pity pulls
 382: Wishing to pull
 383: UP 5-star characters
 384: Expecting to finish after
-385: pull(s)
+385: pulls
 386: Event wish number prediction
 387: Standard
 388: "Yes"
@@ -431,16 +431,16 @@
 392: Is this a standard or limited time UP weapon?
 393: Weapon wish number prediction
 394: Wishing to pull
-395: weapon(s) you want
+395: weapons you want
 396: That is
 397: primogems
 398: Standard banner
 399: Limited-time banner
 400: Weapon banner
 401: "<AVERAGE>"
-402: pull(s) per 5 star
+402: pulls per 5 star
 403: "<FROM PITY>"
-404: pull(s) from pity
+404: pulls from pity
 405: You haven't pulled any 5-star weapons in the weapon banner yet
 406: Start time
 407: End time
@@ -598,10 +598,10 @@
 554: "(Internal)"
 555: Your accounts
 556: Add an account
-557: Remove account(s)
+557: Remove accounts
 559: Switch account
 560: Choose one or multiple accounts below to remove
-561: Account(s) removed
+561: Accounts removed
 562: Choose the account type you want to add
 563:
     "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID\n
@@ -658,3 +658,6 @@
 597: Shenhe has failed to DM you
 598: Add/Remove characters
 599: Remove all characters
+600: Change nicknames
+601: Nickname
+602: Select the account you want to change the nickname of
