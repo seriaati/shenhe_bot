@@ -85,9 +85,9 @@
 85: 深境螺旋 一覧
 86: 層
 87: 間
-88: '[上半]'
-89: '[下半]'
-90: '装備'
+88: "[上半]"
+89: "[下半]"
+90: "装備"
 91: 武器
 92: 聖遺物
 93: メイン効果
@@ -96,8 +96,8 @@
 96: 來源
 97: 聖遺物の おすすめ
 98: 樹脂お知らせも 消しました。
-99: 'ON'
-100: 'OFF'
+99: "ON"
+100: "OFF"
 101: 現在の設定
 102: 樹脂值
 103: 最大通知件数
@@ -135,7 +135,7 @@
 135: エラーが発生しました
 136: アカウントを選択してください
 137: アカウント は登錄成功した。
-138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit your cookie\\ \\ here\n Too complicated? The image below might help!"
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3. Click the address bar and select all the text there\n 4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here\n Too complicated? The image below might help!"
 139: Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
 140: </register:1006486283725590528> コマンドを使用してください
 141: アカウントデータが見つかりません！
@@ -147,7 +147,7 @@
 147: 層
 148: 深境螺旋の層を選べてくたさい。
 149: 權限がありません。
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
 151: 樹脂通知設定
 152: 樹脂值
 153: 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
@@ -162,14 +162,14 @@
 162: 装備
 163: 装備を選択してください
 164: 装備
-165: 'This user hasn''t registered their account yet </register:1006486283725590528> to register'
+165: "This user hasn't registered their account yet </register:1006486283725590528> to register"
 166: 参量物質変化器がありません。
-167: 'の UID'
+167: "の UID"
 168: データを入力してください
 169: キャラクター目標レベル
-170: '例えば： 90'
+170: "例えば： 90"
 171: 普通攻擊の目標 レベル
-172: '例えば： 5'
+172: "例えば： 5"
 173: 元素スキル (E) の目標レベル
 174: 元素爆發(Q) の目標レベル
 175: ToDoリストに追加
@@ -181,12 +181,12 @@
 181: レベルを設定：
 182: のレベル
 183: 現在のレベル
-184: '例: 1'
+184: "例: 1"
 185: 目標レベル
-186: '例: 90'
+186: "例: 90"
 187: 数字を入力してください
-188: 'キャラクターレベル：１～９０の範囲内で入ってください。'
-189: '天賦レベル：１～１０の範囲内で入ってください。'
+188: "キャラクターレベル：１～９０の範囲内で入ってください。"
+189: "天賦レベル：１～１０の範囲内で入ってください。"
 190: 無効な入力
 191: 計算結果
 192: 計算内容
@@ -206,7 +206,7 @@
 206: アイテムをクリア
 207: 削除したいアイテムを選択
 208: アイテム名
-209: '例: モラ'
+209: "例: モラ"
 210: アイテム量
 211: (この項目を空白のままにするとアイテムが完全に削除されます)
 212: Todo リストよりも多くのアイテムを削除することはできません。
@@ -300,7 +300,7 @@
 310: トグルをオンにする
 311: 申鶴からのDMを受け取るにはどうすればいいですか？
 312: ' '
-313: 'のための素材の周回時間です！'
+313: "のための素材の周回時間です！"
 314: 周回可能な素材
 315: 基本情報
 316: 誕生日
@@ -374,8 +374,8 @@
 385: pulls
 386: イベント祈願回数予測
 387: 通常
-388: 'はい'
-389: 'いいえ'
+388: "はい"
+389: "いいえ"
 390: これはあなたが欲しかった武器ですか？
 391: 最後に引いた星5武器は
 392: これは通常武器または限定武器ですか？
@@ -400,10 +400,10 @@
 411: オプション
 412: 登録チュートリアル
 413: Cookieを送信
-414: 'リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( ''/register'' で登録している必要があります)'
+414: "リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( '/register' で登録している必要があります)"
 415: ユーザー
 416: 他のユーザーのデータを確認
-417: '原神の統計の表示：アクティブ日数、神の瞳、宝箱の数'
+417: "原神の統計の表示：アクティブ日数、神の瞳、宝箱の数"
 418: ユーザーの原神 UID
 419: 探索度の表示
 420: Hoyolabの毎日のログインボーナスを受け取ります (登録が必要)
@@ -431,9 +431,9 @@
 442: 天賦素材リマインダー
 443: リマインダーを有効にする前に、プライバシー設定を確認してください
 444: ON (または設定を変更)
-445: 'OFF'
+445: "OFF"
 446: 今日の周回可能な素材を表示
-447: 'キャラクターのビルドを表示: 武器、聖遺物、天賦レベル、ステータス'
+447: "キャラクターのビルドを表示: 武器、聖遺物、天賦レベル、ステータス"
 448: ユーザーの UID を検索
 449: キャラクターの聖遺物、統計、武器、天賦、ダメージ計算
 450: 交換コードを引き換える　(/register　が必要)
@@ -449,8 +449,8 @@
 460: キャラクターの育成に必要な素材を計算する
 461: 同期
 462: ゲーム内データと同期（レベルは自動入力）
-463: 'ON'
-464: 'OFF'
+463: "ON"
+464: "OFF"
 465: 武器のレベルアップに必要な素材を計算します
 466: タイプ
 467: レアリティ
@@ -559,14 +559,14 @@
 571: You don't have an account registered
 572: Use /accounts to add one
 573: Your current account is not linked to a Cookie
-574: 'One of your other accounts is linked to a Cookie, but the current one is only linked to a UID'
+574: "One of your other accounts is linked to a Cookie, but the current one is only linked to a UID"
 575: Use /accounts to switch between accounts
 576: Please wait while we are validating your UID
 577: Please wait while we are validating your Cookie
 578: 'If you are not redirected, please contact seria#5334'
 579: This user doesn't have an account registered
 580: This user's current account is not linked to a Cookie
-581: 'One of this user''s accounts is linked to a Cookie, but the current one is only linked to a UID'
+581: "One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID"
 582: Resin notification
 583: Talent notification
 584: Realm currency notification
@@ -644,7 +644,7 @@
 656: 一斗 Q 結束後
 657: 防禦力+20%，攻擊力+20%
 658: 攻速 +30%
-659: ''
+659: ""
 660: 施放風輪兩立2次
 661: 風輪兩立傷害提高 30%
 662: 魈 Q 狀態下
@@ -899,7 +899,7 @@
 911: 元素戰技&爆發傷害 +20%
 912: 元素爆發或戰技命中
 913: 普攻傷害 +20%
-914: '登場樂: 詠嘆調'
+914: "登場樂: 詠嘆調"
 915: 全元素傷害 +48%
 916: 普攻命中後衝刺
 917: 攻擊力 +20%
@@ -918,7 +918,7 @@
 930: '「白夜極星」4層'
 931: 攻擊力 +48%
 932: '「飛雷之巴印」3層'
-933: ''
+933: ""
 934: 角色在後台8秒
 935: 傷害 +16%
 936: 擊敗敵人後(3層)
