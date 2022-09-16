@@ -126,6 +126,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_register(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
     @app_commands.command(
