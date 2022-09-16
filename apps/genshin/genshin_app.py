@@ -609,7 +609,22 @@ class GenshinApp:
             "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
             (user_id,),
         )
-        return (await c.fetchone())[0]
+        uid = await c.fetchone()
+        if uid is None:
+            await c.execute(
+                "SELECT uid FROM user_accounts WHERE user_id = ?",
+                (user_id,),
+            )
+            uid = await c.fetchone()
+            if uid is None:
+                return None
+            else:
+                await c.execute(
+                    "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
+                    (user_id, uid[0]),
+                )
+                await self.db.commit()
+        return uid[0]
 
     async def get_user_cookie(self, user_id: int, locale: Locale = None) -> ShenheUser:
         discord_user = self.bot.get_user(user_id)
@@ -620,10 +635,23 @@ class GenshinApp:
             "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ? AND current = 1",
             (user_id,),
         )
-        if (user_data := await c.fetchone()) is None:
-            client = self.bot.genshin_client
-            uid = await self.get_user_uid(user_id)
+        user_data = await c.fetchone()
+        if user_data is None:
+            await c.execute(
+                "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ?",
+                (user_id,),
+            )
+            user_data = await c.fetchone()
+            if user_data is None:
+                only_uid = True
+            else:
+                only_uid = False
+                await c.execute('UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?', (user_id, user_data[3]))
+                await self.db.commit()
         else:
+            only_uid = False
+            
+        if not only_uid:
             uid = user_data[3]
             client = genshin.Client()
             client.set_cookies(
@@ -633,6 +661,9 @@ class GenshinApp:
                 cookie_token=user_data[2],
             )
             client.uids[genshin.Game.GENSHIN] = uid
+        else:
+            client = self.bot.genshin_client
+            uid = await self.get_user_uid(user_id)
 
         user_locale = await get_user_locale(user_id, self.db)
         genshin_locale = user_locale or locale
