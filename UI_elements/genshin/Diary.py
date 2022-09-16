@@ -34,7 +34,7 @@ class Primo(Button):
         await i.response.defer(ephemeral=True)
         self.view: View
         result = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.locale, True
+            self.view.member.id, True, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)
 
@@ -47,6 +47,6 @@ class Mora(Button):
         await i.response.defer(ephemeral=True)
         self.view: View
         result = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.locale, False
+            self.view.member.id, False, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)

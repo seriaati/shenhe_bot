@@ -1,6 +1,4 @@
-import ast
 from datetime import datetime, timezone
-from time import process_time
 from typing import Dict, Literal, Tuple
 
 import aiosqlite
@@ -26,12 +24,39 @@ class CookieInvalid(Exception):
 
 def genshin_error_handler(func):
     async def inner_function(*args, **kwargs):
+        genshin_app: GenshinApp = args[0]
+        user_id = args[1]
+        locale = args[-1]
+        user = genshin_app.bot.get_user(user_id) or await genshin_app.bot.fetch_user(
+            user_id
+        )
+        user_locale = await get_user_locale(user_id, genshin_app.bot.db)
+        locale = user_locale or locale
         try:
             return await func(*args, **kwargs)
+        except genshin.errors.DataNotPublic:
+            embed = error_embed(message=text_map.get(21, locale))
+            embed.set_author(
+                name=text_map.get(22, locale),
+                icon_url=user.display_avatar.url,
+            )
+            return embed, False
+        except genshin.errors.InvalidCookies:
+            embed = error_embed(message=text_map.get(35, locale))
+            embed.set_author(
+                name=text_map.get(36, locale),
+                icon_url=user.display_avatar.url,
+            )
+            return embed, False
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
-            return error_embed("Something went wrong\n出了些問題", f"```{e}```"), False
+            embed = error_embed(message=text_map.get(513, locale, user_locale))
+            embed.set_author(
+                name=text_map.get(135, locale), icon_url=user.display_avatar.url
+            )
+            embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
+            return embed, False
 
     return inner_function
 
@@ -233,11 +258,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_stats(
-        self,
-        user_id: int,
-        locale: Locale,
-        namecard: str,
-        avatar_url: str,
+        self, user_id: int, namecard: str, avatar_url: str, locale: Locale
     ) -> Tuple[Embed | Dict, bool]:
         shenhe_user = await self.get_user_cookie(user_id, locale)
         uid = shenhe_user.uid
@@ -326,7 +347,7 @@ class GenshinApp:
         return result, True
 
     @genshin_error_handler
-    async def get_diary_logs(self, user_id: int, locale: Locale, primo: bool):
+    async def get_diary_logs(self, user_id: int, primo: bool, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
         if primo:
             primo_log = ""

@@ -212,7 +212,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 enka_cache[uid] = cache
         namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
-            member.id, i.locale, namecard, member.display_avatar
+            member.id, namecard, member.display_avatar, i.locale
         )
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
@@ -509,7 +509,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             c = await self.bot.db.cursor()
         c: aiosqlite.Cursor
         await c.execute(
-            "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1", (player.id,)
+            "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
+            (player.id,),
         )
         uid = await c.fetchone()
         if uid is None:
@@ -1225,16 +1226,12 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def activity(
-        self, i: Interaction, member: User = None
-    ):
+    async def activity(self, i: Interaction, member: User = None):
         check = await check_account_predicate(i, member or i.user)
         if not check:
             return
         member = member or i.user
-        result, success = await self.genshin_app.get_activities(
-            member.id, i.locale
-        )
+        result, success = await self.genshin_app.get_activities(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         await GeneralPaginator(i, result, self.bot.db).start()
