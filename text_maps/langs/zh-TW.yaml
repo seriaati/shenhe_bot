@@ -135,7 +135,7 @@
 135: 未知錯誤
 136: 選擇要註冊的帳號
 137: Cookie 設置流程
-138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home\n 3. Click the address bar and select all the text there\n 4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy\n 6.Submit your cookie here\n Too complicated? The image below might help!"
+138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit your cookie\\ \\ here\n Too complicated? The image below might help!"
 139: 過期或無效的Cookie, 請先登出帳號再重新登入!
 140: 請使用 </register:1006486283725590528> 指令
 141: 找不到帳號資料!
@@ -147,22 +147,22 @@
 147: 層
 148: 樓層導覽
 149: 資料不公開?
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the image below\n\n 1. Click the avatar on the top right\n 2. Personal homepage\n 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle all the switches"
+150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
 151: 樹脂提醒設定
 152: 樹脂閥值
 153: 申鶴會在樹脂超過這個數字後提醒你
 154: 最大提醒值
 155: 申鶴最多提醒你的次數
 156: 選擇已經設置過的角色將移除該角色的提醒
-157: Choose your characters
+157: 選擇角色
 158: 目前尚未設置任何角色
-159: Current characters
+159: 目前角色
 160: 選擇元素
 161: 已設置過此角色, 再次選擇將會關閉通知
 162: 配置
 163: 選擇配置
 164: 種配置
-165: "This user hasn't registered their account yet </register:1006486283725590528> to register"
+165: "這個用戶還沒有註冊過帳號\n</register:1006486283725590528> 來註冊帳號"
 166: 未知用戶
 167: "的 UID"
 168: 計算資料輸入
@@ -331,7 +331,7 @@
 341: 班尼特六命
 342: 重雲元素戰技
 343: 選擇近戰元素附魔
-344: Select teammates
+344: 選擇隊友
 345: 隊伍
 346: 狀態
 347: 目前效果
@@ -363,15 +363,15 @@
 373: 你的運氣擊敗了
 374: 的玩家
 375: 共
-376: pulls in total
+376: 抽
 378: 共
 379: 個 UP 五星
 380: 距離保底
-381: pity pulls
+381: 抽
 382: 想要抽出
 383: 個 UP 五星角色
 384: 預計
-385: pulls
+385: 抽
 386: 祈願抽數預測
 387: 常駐
 388: "想要的"
@@ -381,16 +381,16 @@
 392: 這是一把常駐還是 UP 武器?
 393: 武器祈願抽數預測
 394: 想要抽出
-395: weapons you want
+395: 個想要的五星 Up 武器
 396: 即為
 397: 原石
 398: 常駐池
 399: 角色池
 400: 武器池
 401: 平均
-402: pulls per 5 star
+402: 抽出一金
 403: 距離保底
-404: pulls from pity
+404: 抽
 405: 你還沒有在武器池抽中過五星武器
 406: 活動開始時間
 407: 活動結束時間
@@ -505,7 +505,7 @@
 516: 洞天寶錢閥值
 517: 洞天寶錢提醒關閉
 518: 洞天寶錢要溢出了！
-519: The Enka API is probably down right now, please wait patiently until it's back
+519: Enka API 目前處於關閉狀態，請耐心等待其恢復
 520: 草神瞳
 521: 移除帳號資料
 522: 帳號資料移除成功
@@ -530,23 +530,23 @@
 541: 開發者訊息
 542: 物品不存在
 543: 資料取自快取
-544: Manage your accounts in Shenhe
-545: You don't have any account registered
+544: 管理帳號
+545: 你沒有註冊任何帳號
 546: "• You can register multiple accounts in Shenhe\n • You can switch between accounts\\ \\ using the dropdown menu"
-547: TW, HK, MO
-548: Celestia
-549: Irminsul
-550: America
-551: Europe
-552: Asia
-553: Unknown region
-554: (Internal)
-555: Your accounts
-556: Add an account
-557: Remove accounts
-559: Switch account
-560: Choose one or multiple accounts below to remove
-561: Accounts removed
+547: 台港澳
+548: 天空島
+549: 世界樹
+550: 美服
+551: 歐服
+552: 亞服
+553: 未知伺服器
+554: (內部)
+555: 你的帳戶
+556: 新增帳戶
+557: 移除帳戶
+559: 切換帳戶
+560: 選擇一或多個要移除的帳戶
+561: 帳戶已刪除
 562: Choose the account type you want to add
 563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands, like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\\ \\ • To obtain your Cookie, you will go through a registration process that takes\\ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\ \\ your account, note that I won't have access to your Genshin account by having\\ \\ your Cookie\n • You can always remove your account data by using /accounts"
 564: Add UID
