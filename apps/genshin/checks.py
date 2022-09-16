@@ -111,22 +111,22 @@ async def validate_account(
         await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
     except genshin.errors.DataNotPublic:
         await i.response.send_message(
-            error_embed(
+            embed=error_embed(
                 message=text_map.get(21, locale, shenhe_user.user_locale)
             ).set_author(
                 name=text_map.get(22, locale, shenhe_user.user_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
+            ),ephemeral=True
         )
         return False
     except genshin.errors.InvalidCookies:
         await i.response.send_message(
-            error_embed(
+            embed=error_embed(
                 message=text_map.get(35, locale, shenhe_user.user_locale)
             ).set_author(
                 name=text_map.get(36, locale, shenhe_user.user_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
+            ),ephemeral=True
         )
         return False
     except Exception as e:

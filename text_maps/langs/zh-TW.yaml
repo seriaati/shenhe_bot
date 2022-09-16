@@ -1,595 +1,595 @@
-1: Full
-2: Today's
-3: Tomorrow
-4: Remaining
-5: days
-6: hr
-7: min
-8: sec
-9: Available
-10: P.T. not found
-11: Dailies finished
-12: P.T. remaining time
-13: Resin
-14: Current
-15: Recovery time
-16: Resin discounts
-17: Serenitea Pot
-18: No expeditions found
-19: Finished
-20: Expeditions
-21: </stuck:1006486283725590536> for more information
-22: Data not public
-23: Error
-24: Realtime notes
-25: Mon.
-26: Tue.
-27: Wed.
-28: Thu.
-29: Fri.
-30: Sat.
-31: Sun.
-32: Choose your language
-33: Language changed
-34: Current language
-35: </register:1006486283725590528> for more information
-36: Cookie invalid
-37: Account register canceled
-38: No valid accounts were obtained from the cookie
-39: Account added
-40: You have already claimed today's login reward!
-41: Obtained
-42: Claim successful
-43: Overview
-44: Days Active
-45: Characters
-46: Achievements
-47: Spiral Abyss
-48: Oculi
-49: Anemoculi
-50: Geoculi
-51: Electroculi
-52: Chests
-53: Common Chests
-54: Exquisite Chests
-55: Luxurious Chests
-56: Genshin stats
-57: Precious Chests
-58: World Exploration
-59: Primogem income v.s last month
-60: increased
-61: decreased
-62: Mora income v.s last month
-63: Acquired this month
-64: Last month
-65: Primogems obtained
-66: Diary log
-67: Click the button below
-68: to view the last 30 primo or mora records
-69: Traveler's Diary
-70: Primo Log
-71: primos
-72: Mora Log
-73: mora
-74: Use the </stats:1006486283725590530> command to refresh your stats
-75: (This command only shows data above floor 9)
-76: Spiral abyss data not found
-77: Lunar phase
-78: Deepest descent
-79: Challenge Summary
-80: Strongest single strike
-81: Most defeats
-82: Most damage taken
-83: Elemental bursts unleashed
-84: Elemental skills cast
-85: Spiral Abyss Overview
-86: Chamber
-87: <CHAMBER>
-88: "[First Half]"
-89: "[Second Half]"
-90: "Build #"
-91: Weapon
-92: Artifacts
-93: Main Stats
-94: Talents
-95: Character Stats
-96: Source
-97: Artifact Thoughts
-98: Resin reminder has been turned off
-99: "ON"
-100: "OFF"
-101: Current Toggle
-102: Resing Threshold
-103: Max. notification number
-104: Settings saved
-105: Characters
-106: This gift code has already been redeemed!
-107: Gift code invalid
-108: Gift code
-109: Code redeemed
-110: Summer event data not found
-111: Golden Apple Archipelago
-112: Waverider Waypoints Unlocked
-113: Waypoints Unlocked
-114: Treasure Chests Obtained
-115: Unfinished
-116: Surfpiercer
-117: Summer Memories
-118: Realm Exploration
-119: Time completed
-120: Successfully challenged
-121: times
-122: Unleashed elemental skill
-123: Custom UID searched
-124: Back to default
-125: By default, shenhe responds to you with the same language your discord uses
-126: Changing language will override the default language
-127: If any text is not translated yet, shenhe will respond to you with English
-128: Language
-129: Mondstat
-130: Liyue
-131: Inazuma
-132: Submit your cookie
-133: Please paste the text you copied here
-134: There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
-135: There was an error
-136: Choose your account
-137: Account registration tutorial
-138: "1. Copy the code below\n 2. Open Chrome on your device and login to your account\\ \\ on https://www.hoyolab.com/home\n 3. Click the address bar and select all the\\ \\ text there\n 4. Enter the word `java`, then paste the code you copied, ensure\\ \\ that the address bar starts with `javascript:`\n 5. Press ENTER, and a blank page\\ \\ will show up displaying your cookie, select all and copy\n 6.Submit your cookie\\ \\ here\n Too complicated? The image below might help!"
-139: Cookie invalid or outdated, please log out then log in again!
-140: Please use the </register:1006486283725590528> command
-141: Account data not found!
-142: Choose your element
-143: You are not the issuer of this command
-144: Primo Log
-145: Mora Log
-146: Floor No.
-147: <FLOOR>
-148: Choose abyss floor
-149: Data not public?
-150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
-151: Resin notification settings
-152: Resin threshold
-153: Shenhe will DM you after resin exceeds this number
-154: Max. notification number
-155: DM will stop after this number of times
-156: Choosing a character that already has notification ON will remove its notification
-157: Choose your characters
-158: There are currently no notifications set for any characters
-159: Current characters
-160: Choose your element
-161: Choosing this character will turn OFF its notifications
-162: Build
-163: Choose your build
-164: builds
-165: "This user hasn't registered their account yet </register:1006486283725590528> to register"
-166: User not found
-167: "'s UID"
-168: Enter your data
-169: Character target level
-170: "For example: 90"
-171: Auto attack target level
-172: "For example: 5"
-173: Elemental skill (E) target level
-174: Elemental burst (Q) target level
-175: Add to the todo list
-176: Please remove some materials from your todo list using the `remove materials` button
-177: You have reached the limit of materials you can have on your todo list (125)
-178: Use </todo:1006486283855605804> to view your todo list
-179: Success
-180: Choose your weapon
-181: Set the levels for
-182: <'S LEVEL>
-183: Current level
-184: "For example: 1"
-185: Target level
-186: "For example: 90"
-187: Please enter a number
-188: "Character level: Please enter a number between 1 and 90"
-189: "Talent level: Please enter a number between 1 and 10"
-190: Invalid Input
-191: Calculation results
-192: Calculation content
-193: Character level
-194: Normal attack level
-195: Elemental skill level
-196: Elemental burst level
-197: No materials needed
-198: Character level-up
-199: Talent level-up
-200: Weapon Level
-201: Weapon level-up
-202: Todo list
-203: Add item
-204: "Amazing! There is currently nothing to do! ˋ( ° ▽、° ) \n Use </calc character:1000187020892700793>\\ \\ or </calc weapon:1000187020892700793> to calculate materials for characters and\\ \\ weapons, or use the green button below to add custom items"
-205: Remove item
-206: Clear items
-207: Choose the item you wish to remove
-208: Item name
-209: "For example: mora"
-210: Item amount
-211: (Leaving this field blank will remove the item entirely)
-212: You can't remove more items than you have in your dodo list
-213: Cryo
-214: Geo
-215: Pyro
-216: Anemo
-217: Hydro
-218: Dendro
-219: Electro
-220: Characters
-221: January
-222: February
-223: March
-224: April
-225: May
-226: June
-227: July
-228: August
-229: September
-230: October
-231: November
-232: December
-234: Monday
-235: Tuesday
-236: Wednesday
-237: Thursday
-238: Friday
-239: Saturday
-240: Sunday
-250: farmable items
-251: Achievement leaderboard
-252: You
-253: N/A
-254: This leaderboard is currently empty
-255: Choose the sub stat leaderboard you wish to view
-256: Substat leaderboard
-257: Luck leaderboard
-258: HP
-259: HP%
-260: Atk.
-261: Atk.%
-262: Def.
-263: Def.%
-264: Crit Rate
-265: Crit DMG
-266: Elem. Mastery
-267: Energy Recharge
-268: Base HP
-269: Base Atk.
-270: Base Def.
-271: Healing Bonus
-272: Physic DMG Bonus
-273: Pyro DMG Bonus
-274: Elec DMG Bonus
-275: Hydro DMG Bonus
-276: Dendro DMG Bonus
-277: Anemo DMG Bonus
-278: Geo DMG Bonus
-279: Cryo DMG Bonus
-280: Base Speed
-281: Speed%
-282: Go back
-283: Or enter your UID in the options
-284: Invalid account
-285: This is an account without the main character
-286: Invalid UID
-287: Please turn on the character showcase toggle in-game
-288: Player level
-289: World level
-290: Achievement
-291: Spiral abyss
-292: Max HP
-293: Atk.
-294: Def.
-295: Elem. Mastery
-296: Crit Rate
-297: Crit DMG
-298: Energy Recharge
-299: Friendship Level
-300: The highest artifact score is 99, only +20 artifacts will have scores
-301: Stats
-302: Current threshold
-303: Current resin
-304: Current max. notification number
-305: Use /remind to change the settings
-306: Resin is almost full!!
-307: Talent notification is now turned OFF
-308: Right-click any server that has shenhe in it
-309: Click on `privacy settings`
-310: Turn the toggle ON
-311: How to unblock DM from servers
-312: Time to farm materials for
-313: "!"
-314: Items you can farm
-315: Basic information
-316: Birthday
-317: Affiliation
-318: Constellation
-319: Name card
-320: Ascension materials
-321: Ascension to
-322: Talent level-up materials
-323: Passive Talents
-324: Level-up to
-325: Quick Navigation
-326: Normal Atk.
-327: Charged Atk.
-328: Plunging Atk.
-329: Calculating damage...
-330: This requires around 5 to 10 seconds
-331: No reaction
-332: Melt
-333: Vaporize
-334: Avg. DMG
-335: Non-Crit DMG
-336: Crit Hit DMG
-337: Select elemental reaction
-338: No team melee infusion
-339: Pyro infusion
-340: Cryo infusion
-341: Bennett C6
-342: Chongyun Skill
-343: Select team melee infusion
-344: Select teammates
-345: Team
-346: Conditions
-347: Effects
-348: Calculate Damage
-349: Artifact and weapon effects are not included for now
-350: melt
-351: vaporize
-352: Authkey URL
-353: Importing wish history
-354: Please paste the link here
-355: Please wait for awhile while shenhe is processing your wish history
-356: Successfully imported wish history
-357: Importing wish history using PC
-358: "1. Open genshin impact (If you use multiple accounts, please restart the game)\n\\ \\ 2. Open the wish history in the game and wait for it to load\n 3. Press START\\ \\ on your keyboard, then search for Powershell\n 4. Click Windows Powershell, then\\ \\ copy & paste the script below to the Powershell\n 5. Press ENTER, and a link will\\ \\ be copied to your clipboard\n 6. Submit the link you copied by using the </wish\\ \\ import:1000187021635104890> command\n\n [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)"
-359: Importing wish history using your android phone
-360: "[Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [Using Cellular\\ \\ Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [Click me if the above methods\\ \\ don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)"
-361: Importing wish history using your IOS device
-362: "[Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. Download\\ \\ Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)\n 2.\\ \\ Open the app, then allow VPN in system preferences (Settings > General > VPN)\n\\ \\ 3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will\\ \\ appear and choose allow > Now CA is downloaded\n 4. Go to Settings > General >\\ \\ VPN & Device management > Click on Stream Generated CA and install\n 5. Open Genshin\\ \\ Impact then open the Wish screen, and stay on that page\n 6. Back to Stream App\\ \\ > Choose I've trusted > Tap Sniff Now Button\n 7. Back to Genshin Impact then\\ \\ open the Wish history page\n 8. Wait for the page to load\n 9. Back to Stream\\ \\ App > Stop Sniffing\n 10. Click Sniff History > Choose a request that ends by\\ \\ .json (the link starts with https://hk4e-api-os.mihoyo.com/)\n 11. Click the Request\\ \\ tab, then copy the link\n 12. Submit that link here using the </wish import:1000187021635104890>\\ \\ command"
-363: Importing wish history using your Playstation device
-364: "(If the steps below don't work, you can link your PS account with a HoYoVerse\\ \\ account then use the pc/mobile instructions)\n (You can only use this method if\\ \\ you have an in-game mail with a QR Code to open the web event)\n\n\n1. Open Genshin\\ \\ Impact on your PlayStation\n 2. Open the event mail that contains the QR Code\n\\ \\ 3. Scan the QR Code with your phone\n 4. Submit the link here using the </wish\\ \\ import:1000187021635104890> command"
-365: Choose your platform
-366: "The language of your wish history is based on your current selected language\n\\ \\ changing the language afterward will not affect previous records"
-367: No wish history data found
-368: </wish import:1000187021635104890> to import your wish history
-369: Wish history
-370: Big pity available
-371: Small pity available
-372: Wish luck analysis
-373: Your luck is better than
-374: of players
-375: <TOTAL>
-376: pulls in total
-378: <TOTAL>
-379: UP five stars in total
-380: <FROM PITY>
-381: pity pulls
-382: Wishing to pull
-383: UP 5-star characters
-384: Expecting to finish after
-385: pulls
-386: Event wish number prediction
-387: Standard
-388: "Yes"
-389: "No"
-390: Is this the weapon you wanted?
-391: The last 5-star weapon you pulled was
-392: Is this a standard or limited time UP weapon?
-393: Weapon wish number prediction
-394: Wishing to pull
-395: weapons you want
-396: That is
-397: primogems
-398: Standard banner
-399: Limited-time banner
-400: Weapon banner
-401: <AVERAGE>
-402: pulls per 5 star
-403: <FROM PITY>
-404: pulls from pity
-405: You haven't pulled any 5-star weapons in the weapon banner yet
-406: Start time
-407: End time
-408: Details
-409: Choose event type
-410: Register your genshin account to use commands that require one
-411: options
-412: Registration tutorial
-413: Submit cookie
-414: "View real-time notes: Current resin, pot, expedition status (need /register)"
-415: user
-416: Check other user's data
-417: "View genshin stats: Active days, oculis, number of chests"
-418: A user's genshin UID
-419: View area exploration rates
-420: Claim hoyolab daily login reward
-421: View all owned characters (need /register)
-422: View traveler's diary (need /register)
-423: month
-424: The month you're trying to search with
-425: This month
-426: Last month
-427: The month before last month
-428: View abyss data (need /register)
-429: type
-430: season
-431: The type of data you wish to view
-432: Which abyss season?
-433: Detailed
-434: Overview
-435: This season
-436: Last season
-437: Data not public?
-438: Set notification features
-439: function
-440: toggle
-441: Resin notification (need /register)
-442: Talent notification
-443: Check privacy settings
-444: ON (or change settings)
-445: "OFF"
-446: View farmable items today
-447: "View character builds: Weapons, artifacts, talent levels, stats"
-448: Search a user's UID
-449: View characters' artifacts, stats, weapons, and talents, and calculate damage
-450: Redeem gift codes (need /register)
-451: code
-452: View ongoing events in genshin
-453: View the leaderboard
-454: Achievement leaderboard
-455: Artifact sub stat leaderboard
-456: Wish luck leaderboard
-457: Genshin wiki
-458: character
-459: View past genshin event stats
-460: Calculate materials needed for upgrading a character
-461: sync
-462: sync with in-game data (autofill the levels)
-463: "ON"
-464: "OFF"
-465: Calculate materials needed for upgrading a weapon
-466: type
-467: rarity
-468: sword
-469: catalyst
-470: claymore
-471: bow
-472: polearm
-473: View the todo list
-474: Import wish history
-475: function
-476: Wish history import tutorial
-477: Submit link
-478: View wish history
-479: Wish luck analysis
-480: Predict the chance of pulling a character
-481: number
-482: How many 5-star UP characters do you wish to pull?
-483: Predict change of pulling a weapon
-484: View wish overview
-485: Change the language shenhe responds to you with
-486: View all commands
-487: Genshin
-488: Genshin wish
-489: Requires wish history import using /wish import
-490: Enhancement progress calculator
-491: Calculate upgrade materials
-492: Todo list
-493: Waifus
-494: Others
-495: Choose your category
-496: Admin usage only
-497: Genshin stats
-498: View profile
-499: View all characters
-500: Realtime notes
-501: Update self-leaderboard position
-502: Leaderboard position updated
-503: View past updates
-504: 'Made by seria#5334, DM me if you have any questions'
-505: View past updates
-506: number
-507: How many 5-star UP weapons do you wish to pull?
-508: Search anything genshin related
-509: query
-510: Sumeru
-511: Names of genshin characters, weapons, and other game elements will be translated automatically
-512: Leaderboard position update failed
-513: 'I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix'
-514: Realm currency reminder (needs /register)
-515: Realm currency notif. settings
-516: Realm currency threshold
-517: Realm currency reminder disabled
-518: Realm currency is almost full!
-519: The Enka API is probably down right now, please wait patiently until it's back
-520: Dendroculus
-521: Remove account data
-522: Account data removed
-523: Stop receiving messages from the developer
-524: Don't want to see this? Use /settings
-525: Spread
-526: Aggravate
-527: Hydro infusion
-528: Your account has been removed because its Cookie is invalid, please register again using </register:1006486283725590528>
-529: Item type
-530: Sources
-531: Weapon effect
-532: The file is too large
-533: Error while calculating damage
-534: View and change your user settings in Shenhe
-535: Appearance
-536: Dark mode
-537: Light mode
-538: "• This setting changes the appearance of your cards\n • If there is no dark\\ \\ mode version of the card, it will be displayed in light mode\n • Default is light\\ \\ mode\n • See below for an example\n"
-539: Settings
-540: "• I some cases, I will push notifications using Shenhe\n • Most of the time,\\ \\ they appear when there are critical issues with Shenhe, or there is an update"
-541: Developer Messages
-542: Item not found
-543: Data is from cache
-544: Manage your accounts in Shenhe
-545: You don't have any account registered
-546: "• You can register multiple accounts in Shenhe\n • You can switch between accounts\\ \\ using the dropdown menu"
-547: TW, HK, MO
-548: Celestia
-549: Irminsul
-550: America
-551: Europe
-552: Asia
-553: Unknown region
-554: (Internal)
-555: Your accounts
-556: Add an account
-557: Remove accounts
-559: Switch account
-560: Choose one or multiple accounts below to remove
-561: Accounts removed
-562: Choose the account type you want to add
-563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands, like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\\ \\ • To obtain your Cookie, you will go through a registration process that takes\\ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\ \\ your account, note that I won't have access to your Genshin account by having\\ \\ your Cookie\n • You can always remove your account data by using /accounts"
-564: Add UID
-565: Add Cookie
-566: Put your UID here
-567: 'If this shouldn''t be happening, please contact seria#5334'
-568: UID added
-569: Current account
-570: "Your Cookie contains multiple accounts\n please choose the one you want to add"
-571: You don't have an account registered
-572: Use /accounts to add one
-573: Your current account is not linked to a Cookie
-574: "One of your other accounts is linked to a Cookie, but the current one is only linked to a UID"
-575: Use /accounts to switch between accounts
-576: Please wait while we are validating your UID
-577: Please wait while we are validating your Cookie
-578: 'If you are not redirected, please contact seria#5334'
-579: This user doesn't have an account registered
-580: This user's current account is not linked to a Cookie
-581: "One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID"
-582: Resin notification
-583: Talent notification
-584: Realm currency notification
-585: Test DM
-586: This feature allows you to receive notification when your resin exceeds a certain amount
-587: "• Threshold: The amount of resin you want to be notified at\n • Maximum notification\\ \\ number: After reminding you this number of times, Shenhe will stop DMing you\n\\ \\ • A an account linked with Cookie is required to enable this feature"
-588: This feature allows you to receive notification when your realm currency exceeds a certain amount
-589: "• Threshold: The amount of realm currency you want to be notified at\n • Maximum\\ \\ notification number: After reminding you this number of times, Shenhe will stop\\ \\ DMing you\n • A an account linked with Cookie is required to enable this feature"
-590: "• This feature allows you to receive notification when a character's talent\\ \\ domain is farmable\n • Simply select the characters you want to be notified about\n\\ \\ • Selecting a character that already has notification enabled will disable it"
-591: Current settings
-592: "• This feature allows you to set reminders to assist you in doing the homework\\ \\ provided by Genshin on-time\n • Reminder settings are separate for each account\\ \\ you have registered\n • The only exception is the talent notification, which is\\ \\ shared across all accounts\n • Click on the buttons below for more information\\ \\ on each feature"
-593: Reminders
-594: Change settings
-595: Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
-596: Test it out!
-597: Shenhe has failed to DM you
-598: Add/Remove characters
-599: Remove all characters
-600: Change nicknames
-601: Nickname
-602: Select the account you want to change the nickname of
-603: Claim reward
-604: Hoyolab daily check in
-605: Claimed rewards
-606: Current status
-607: View claimed rewards
+1: 已滿
+2: 今天的
+3: 明天
+4: 剩餘
+5: 天
+6: 小時
+7: 分
+8: 秒
+9: 可使用
+10: 質變儀不存在
+11: 已完成的每日數量
+12: 質變儀剩餘時間
+13: 樹脂
+14: 目前
+15: 恢復時間
+16: 周本減半次數
+17: 塵歌壺
+18: 沒有探索派遣
+19: 已完成
+20: 探索派遣
+21: </stuck:1006486283725590536> 來獲取更多資訊
+22: 資料未公開
+23: 錯誤
+24: 即時便籤
+25: 週一
+26: 週二
+27: 週三
+28: 週四
+29: 週五
+30: 週六
+31: 週日
+32: 選擇語言
+33: 語言已更改
+34: 目前語言
+35: </register:1006486283725590528> 來獲取更多資訊
+36: 無效的 cookie
+37: 帳號設定已取消
+38: 帳號內沒有任何角色
+39: 已新增帳戶
+40: 你已經領取過今天的獎勵了！
+41: 獲得
+42: 簽到成功
+43: 總覽
+44: 活躍天數
+45: 角色數量
+46: 獲得成就數
+47: 深淵已達
+48: 神瞳
+49: 風神瞳
+50: 岩神瞳
+51: 雷神瞳
+52: 寶箱
+53: 普通寶箱
+54: 精緻寶箱
+55: 華麗寶箱
+56: 原神數據
+57: 珍貴寶箱
+58: 世界探索度
+59: 比上個月的原石收入
+60: 增加了
+61: 減少了
+62: 比上個月的摩拉收入
+63: 本月共獲得
+64: 上個月
+65: 原石收入分類
+66: 獲取記錄
+67: 點擊下方的按鈕
+68: 查看本月近 30 筆的原石或摩拉記錄
+69: 旅行者札記
+70: 原石獲取記錄
+71: 原石
+72: 摩拉獲取記錄
+73: 摩拉
+74: 使用 </stats:1006486283725590530> 指令來更新你的資料
+75: '“(本指令只顯示第9層以上資料)"'
+76: 找不到深淵資料
+77: 期別
+78: 最深抵達
+79: 挑戰詳情
+80: 單次最高傷害
+81: 最多擊殺
+82: 最高承傷
+83: 元素爆發次數
+84: 元素戰技釋放數
+85: 深淵總覽
+86: 間
+87: 層
+88: '[上半]'
+89: '[下半]'
+90: '配置#'
+91: 武器
+92: 聖遺物
+93: 主詞條
+94: 天賦
+95: 屬性面板
+96: 來源
+97: 聖遺物思路
+98: 樹脂提醒已關閉
+99: '開'
+100: '關'
+101: 目前開關
+102: 樹脂閥值
+103: 最大提醒數量
+104: 設置成功
+105: 所有角色
+106: 你已經兌換過這個兌換碼了!
+107: 兌換碼無效
+108: 兌換碼
+109: 兌換碼兌換成功
+110: 找不到你的海島活動資料
+111: 金蘋果群島
+112: 浪船錨點
+113: 傳送錨點
+114: 獲得寶箱數
+115: 尚未完成
+116: 逸速穿浪
+117: 夏日回憶
+118: 迷域探索
+119: 完成時間
+120: 累計成功挑戰
+121: 次
+122: 元素技能釋放
+123: 自定義 UID 搜索
+124: 返回預設
+125: 申鶴會以你在Discord使用的語言來回复你。
+126: 更改語言會覆蓋預設語言。
+127: 如果該語言還沒翻譯好, 會使用英文回覆
+128: 語言
+129: 蒙德
+130: 璃月
+131: 稻妻
+132: 提交 Cookie
+133: 請貼上剛剛複製的文字
+134: 發生了未知的錯誤，請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤
+135: 未知錯誤
+136: 選擇要註冊的帳號
+137: Cookie 設置流程
+138: "1.先複製下面的程式碼。\n 2.電腦或手機使用 Chrome 開啟 Hoyolab 並登入帳號 https://www.hoyolab.com\n 3.長摁地址欄，選取所有文本。\n 4.在網址列先輸入 `java`, 然後貼上代碼, 確保網址開頭變成 `javascript:`\n 5.按下確認，網頁展示會變成你的Cookie, 全選然後復制\n 6.在這裡提交你的cookie, 使用 \n 無法理解嗎? 按照下面的圖示操作吧!"
+139: 過期或無效的Cookie, 請先登出帳號再重新登入!
+140: 請使用 </register:1006486283725590528> 指令
+141: 找不到帳號資料!
+142: 選擇元素
+143: 你不是這個指令的發起者
+144: 原石記錄
+145: 摩拉記錄
+146: 第
+147: 層
+148: 樓層導覽
+149: 資料不公開?
+150: "請至 https://www.hoyolab.com 登入你的hoyoverse帳號\n 按照下方圖片中的步驟操作\n\n 1. 點擊右上角自己的頭像\n 2. 個人主頁\n 3. 右上角「原神」\n 4. 設定齒輪\n 5. 三個選項都打開"
+151: 樹脂提醒設定
+152: 樹脂閥值
+153: 申鶴會在樹脂超過這個數字後提醒你
+154: 最大提醒值
+155: 申鶴最多提醒你的次數
+156: 選擇已經設置過的角色將移除該角色的提醒
+157: 選擇角色
+158: 目前尚未設置任何角色
+159: 目前角色
+160: 選擇元素
+161: 已設置過此角色, 再次選擇將會關閉通知
+162: 配置
+163: 選擇配置
+164: 種配置
+165: "這個用戶還沒有註冊過帳號\n</register:1006486283725590528> 來註冊帳號"
+166: 未知用戶
+167: '的 UID'
+168: 計算資料輸入
+169: 角色目標等級
+170: '例如: 90'
+171: 普通攻擊目標等級
+172: '例如: 5'
+173: 元素戰技 (E) 目標等級
+174: 元素戰技 (Q) 目標等級
+175: 新增到代辦清單
+176: 請輸入 `/todo` 並使用「刪除素材」按鈕
+177: 代辦清單可存素材數量已達最大值 (125)
+178: 使用 </todo:1006486283855605804> 來查看你的代辦清單
+179: 新增成功
+180: 選擇武器
+181: 設置
+182: 的等級
+183: 目前等級
+184: '例如: 1'
+185: 目標等級
+186: '例如: 90'
+187: 請輸入數字
+188: '角色等級: 請輸入介於 1~90 的數字'
+189: '天賦等級: 請輸入介於 1~10 的數字'
+190: 無效的輸入
+191: 計算結果
+192: 計算內容
+193: 角色等級
+194: 普攻等級
+195: 元素戰技等級
+196: 元素爆發等級
+197: 不需要任何素材
+198: 角色升級
+199: 天賦升級
+200: 武器等級
+201: 武器升級
+202: 代辦清單
+203: 新增素材
+204: "太好了, 沒有需要蒐集的素材 ˋ( ° ▽、° ) \n 使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 指令來計算升級所需素材，\n 或是使用下方的按鈕來新增素材"
+205: 刪除素材
+206: 清空代辦清單
+207: 選擇要刪除的素材
+208: 材料名稱
+209: '例如: 摩拉'
+210: 材料數量
+211: '例如: 90 (留空將清空該素材)'
+212: 不可輸入大於目前素材數量的數字
+213: 冰元素
+214: 岩元素
+215: 火元素
+216: 風元素
+217: 水元素
+218: 草元素
+219: 雷元素
+220: 角色
+221: 一月
+222: 二月
+223: 三月
+224: 四月
+225: 五月
+226: 六月
+227: 七月
+228: 八月
+229: 九月
+230: 十月
+231: 十一月
+232: 十二月
+234: 週一
+235: 週二
+236: 週三
+237: 週四
+238: 週五
+239: 週六
+240: 週日
+250: 可以刷的素材
+251: 成就數排行榜
+252: 你
+253: 不在榜內
+254: 排行榜內目前沒有玩家
+255: 選擇想要查看的副詞條排行榜
+256: 副詞條排行榜
+257: 歐氣榜
+258: 生命值
+259: 生命值%
+260: 攻擊力
+261: 攻擊力%
+262: 防禦力
+263: 防禦力%
+264: 暴擊率
+265: 暴擊傷害
+266: 元素精通
+267: 元素充能
+268: 基礎生命值
+269: 基礎攻擊力
+270: 基礎防禦力
+271: 治療加成
+272: 物傷加成
+273: 火傷加成
+274: 雷傷加成
+275: 水傷加成
+276: 草傷加成
+277: 風傷加成
+278: 岩傷加成
+279: 冰傷加成
+280: 基礎移速
+281: 移速%
+282: 返回副詞條選擇
+283: 或直接輸入你的 UID
+284: 無效帳號
+285: 這是一個沒有角色的空號
+286: 無效 UID
+287: 請在遊戲中打開「顯示角色詳情」
+288: 玩家等級
+289: 世界等級
+290: 成就
+291: 深淵已達
+292: 生命值上限
+293: 攻擊力
+294: 防禦力
+295: 元素精通
+296: 暴擊率
+297: 暴擊傷害
+298: 元素充能效率
+299: 好感度
+300: 聖遺物最高分為 99, 只有 +20 才會評分
+301: 屬性
+302: 目前設定閥值
+303: 目前樹脂
+304: 目前最大提醒值
+305: 輸入 /remind 來更改設定
+306: 樹脂要滿啦!!
+307: 天賦提醒功能已關閉
+308: 右鍵任意一個有申鶴在內的群組
+309: 點擊「隱私設定」
+310: 將開關打開
+311: 如何讓申鶴私訊你?
+312: 該為
+313: '刷本啦!'
+314: 你可以刷的素材
+315: 基本資料
+316: 生日
+317: 頭銜
+318: 命座
+319: 名片
+320: 等級突破素材
+321: 突破到
+322: 升級天賦素材
+323: 固有天賦
+324: 升級到
+325: 快速預覽
+326: 普攻
+327: 重擊
+328: 下落攻擊
+329: 計算傷害中...
+330: 大約需要 5 至 10 秒
+331: 無反應
+332: 融化
+333: 蒸發
+334: 平均傷害
+335: 未暴擊傷害
+336: 暴擊傷害
+337: 選擇元素反應
+338: 無近戰元素附魔
+339: 火元素近戰附魔
+340: 冰元素近戰附魔
+341: 班尼特六命
+342: 重雲元素戰技
+343: 選擇近戰元素附魔
+344: 選擇隊友
+345: 隊伍
+346: 狀態
+347: 目前效果
+348: 計算傷害
+349: 聖遺物和武器的效果目前還不計入
+350: 融化
+351: 蒸發
+352: 祈願記錄總結
+353: 導入祈願記錄
+354: 請貼上複製的連結
+355: 請稍等, 處理數據中...
+356: 祈願記錄導入成功
+357: PC 設置方式
+358: "1. 在電腦開啟原神 (如果你使用多組帳號，請重新啟動遊戲)\n 2. 打開祈願記錄並等待讀取\n 3. 在鍵盤點選「開始」鍵 (Windows鍵), 並蒐尋 Powershell\n 4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell\n 5. 按Enter鍵, 接著連結會自動複製到剪貼簿\n 6. 在這裡提交連結, 輸入 </wish import:1000187021635104890> 指令\n\n [影片教學](https://www.youtube.com/watch?v=FCwZkHeIezw)"
+359: Android 設置方式
+360: "[Wifi 設置](https://www.youtube.com/watch?v=6C5Zqhcm3NI)\n [行動數據設置](https://www.youtube.com/watch?v=rHN1iRjmKmc)\n [如果上述的方法都沒用，點我](https://www.youtube.com/watch?v=jAKq94KpGHA)"
+361: IOS 教學
+362: "[影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)\n 1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)\n 2. 開啟app, 接著在系統設定 (設定 > 一般 > VPN與裝置管理) 中同意 VPN\n 3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝 CA > CA 就下載好了\n 4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install\n 5. 開啟原神，接著打開祈願畫面，並在這個畫面等待\n 6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕\n 7. 回到原神，接著開啟祈願歷史記錄\n 8. 等候頁面載入\n 9. 回到 Stream App > 停止抓包\n 10. 按 抓包歷史 > 選擇一個以.json結尾的歷史記錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)\n 11. 點選 「請求」 分頁, 接著複製連結\n 12. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令"
+363: Playstation 設置流程
+364: "(如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式)\n 1. 在你的 PlayStation 裡打開原神\n 2. 打開你的信箱 QR Code\n 3. 用手機掃描 QR Code 得到連結\n 4. 在這裡提交連結, 請輸入 </wish\\ \\ import:1000187021635104890> 指令"
+365: 選擇你的平台
+366: "祈願記錄的語言是根據你目前設置的語言決定的\n 之後更改語言不會改變先前記錄的語言"
+367: 找不到任何祈願記錄
+368: 使用 </wish import:1000187021635104890> 指令來導入你的祈願記錄
+369: 祈願記錄
+370: 有大保底
+371: 有小保底
+372: 歐氣值分析
+373: 你的運氣擊敗了
+374: 的玩家
+375: 共
+376: 抽
+378: 共
+379: 個 UP 五星
+380: 距離保底
+381: 抽
+382: 想要抽出
+383: 個 UP 五星角色
+384: 預計
+385: 抽
+386: 祈願抽數預測
+387: 常駐
+388: '想要的'
+389: '不想要的'
+390: 請問這把武器是你想要的嗎?
+391: 你最後一次抽到的五星武器是
+392: 這是一把常駐還是 UP 武器?
+393: 武器祈願抽數預測
+394: 想要抽出
+395: 個想要的五星 Up 武器
+396: 即為
+397: 原石
+398: 常駐池
+399: 角色池
+400: 武器池
+401: 平均
+402: 抽出一金
+403: 距離保底
+404: 抽
+405: 你還沒有在武器池抽中過五星武器
+406: 活動開始時間
+407: 活動結束時間
+408: 詳情
+409: 選擇活動類型
+410: 在申鶴的資料庫中註冊你的原神帳號，來使用部份需要帳戶的指令
+411: 選項
+412: 註冊教學
+413: 提交 cookie
+414: '查看即時便簽: 目前樹脂、洞天寶錢、探索派遣 (需註冊)'
+415: 使用者
+416: 查看其他使用者該指令提供的資料
+417: '查看原神資料: 活躍時間、神瞳數量、寶箱數量'
+418: 欲查詢使用者的 UID, 已註冊過則不用填
+419: 查看區域探索度
+420: 領取 hoyolab 網頁登入獎勵 (需註冊)
+421: 展示自己擁有的所有角色 (需註冊)
+422: 查看旅行者日記 (需註冊)
+423: 月份
+424: 想要查詢的月份
+425: 這個月
+426: 上個月
+427: 上上個月
+428: 查看深淵資料 (需註冊)
+429: 類別
+430: 期別
+431: 想要查看的資料類別
+432: 哪一期的深淵?
+433: 詳細
+434: 總覽
+435: 本期記錄
+436: 上期記錄
+437: 註冊了, 但是找不到資料?
+438: 設置提醒功能
+439: 功能
+440: 開關
+441: 樹脂提醒 (需註冊)
+442: 天賦素材提醒
+443: 啟用提醒功能前請先確認隱私設定
+444: 開 (調整設定)
+445: '關'
+446: 查看原神今日可刷素材
+447: '查看角色配置: 聖遺物、畢業面板、裝備選擇、聖遺物思路'
+448: 查詢特定使用者的 UID
+449: 查看原神角色聖遺物、屬性、武器、天賦等級、進行傷害計算
+450: 兌換禮物碼 (需註冊)
+451: 兌換碼
+452: 查看原神目前進行中的活動
+453: 查看排行榜
+454: 成就排行榜
+455: 聖遺物副詞條排行榜
+456: 歐氣榜
+457: 原神百科
+458: 角色
+459: 查看原神歷來活動數據
+460: 計算角色升級所需素材
+461: 同步
+462: 與遊戲資料同步, 將會自動填入角色及天賦等級 (開啟時無法計算自己不擁有的角色)
+463: '開啟'
+464: '關閉'
+465: 計算武器升級所需的素材
+466: 類別
+467: 稀有度
+468: 單手劍
+469: 法器
+470: 大劍
+471: 弓箭
+472: 長槍
+473: 查看代辦清單
+474: 導入原神祈願記錄
+475: 功能
+476: 查看導入祈願記錄教學
+477: 提交連結
+478: 查看祈願記錄
+479: 歐氣值分析
+480: 預測抽到角色的機率
+481: 角色數量
+482: 想要抽到幾個自己想要的五星 UP 武器?
+483: 預測抽到武器的機率
+484: 查看原神祈願總覽
+485: 更改申鶴回覆你的語言
+486: 查看申鶴的所有指令
+487: 原神
+488: 原神祈願
+489: 需要先導入祈願記錄
+490: 養成計算機
+491: 計算升級所需素材
+492: 代辦清單
+493: 二次元
+494: 其他
+495: 你想要什麼樣的幫助呢?
+496: 管理員用
+497: 原神數據
+498: 查看 profile
+499: 查看所有角色
+500: 即時便簽
+501: 更新自身排名
+502: 排名更新成功
+503: 查看申鶴歷來的更新
+504: '由 seria#5334 製作, 有疑問可以私訊'
+505: 查看過去更新
+506: 武器數量
+507: 想要抽到幾個自己想要的五星 UP 武器?
+508: 搜尋任何與原神有關的角色、武器、物品
+509: 關鍵詞
+510: 須彌
+511: 原神遊戲元素（武器、角色等）的字串將會自動翻譯
+512: 排名更新成功
+513: '非常抱歉，這個錯誤已經自動回報至 seria#5334，請耐心等待修復'
+514: 洞天寶錢提醒（需註冊）
+515: 洞天寶錢提醒設定
+516: 洞天寶錢閥值
+517: 洞天寶錢提醒關閉
+518: 洞天寶錢要溢出了！
+519: Enka API 目前處於關閉狀態，請耐心等待其恢復
+520: 草神瞳
+521: 移除帳號資料
+522: 帳號資料移除成功
+523: 停止接收來自開發者的訊息
+524: 不想看見這個？使用 /settings
+525: 蔓激化
+526: 超激化
+527: 水元素近戰附魔
+528: 你的帳號由於由於 Cookie 無效已被移除， 請使用 </register:1006486283725590528> 重新註冊
+529: 物品類型
+530: 獲取途徑
+531: 武器效果
+532: 檔案過大
+533: 傷害計算時發生錯誤
+534: 查看並更改你的使用者設定
+535: 外觀
+536: 深色模式
+537: 亮色模式
+538: "• 這個設定將會更改卡片的樣式\n • 如果該卡片的深色模式尚未製作完成，將會顯示為淺色模式\n • 預設模式為淺色\n • 示例如下\n"
+539: 設定
+540: "• 在某些情況，我會透過申鶴發送通知\n • 他們大多在申鶴出現重大問題，或是有更新時出現"
+541: 開發者訊息
+542: 物品不存在
+543: 資料取自快取
+544: 管理帳號
+545: 你沒有註冊任何帳號
+546: "• 你可以註冊多個帳戶\n• 你可以透過下面的下拉選單來切換帳號"
+547: 台港澳
+548: 天空島
+549: 世界樹
+550: 美服
+551: 歐服
+552: 亞服
+553: 未知伺服器
+554: (內部)
+555: 你的帳戶
+556: 新增帳戶
+557: 移除帳戶
+559: 切換帳戶
+560: 選擇一或多個要移除的帳戶
+561: 帳戶已刪除
+562: 選擇你想要新增的帳戶類型
+563: "• 有些指令只需要你的 UID，像是</profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ 以及</stats:1006486283725590530>\n • 其他指令需要 Cookie，像是\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, 以及 </diary:1006486283725590534>\n\n • 新增 UID 只需要輸入 UID 即可\n • 註冊 Cookie 則需要經過一個大約 30 秒的註冊流程\n\n • Cookie 是一個儲存你的瀏覽器中的加密字符串，用於識別你和你的帳戶\n • 你隨時可以移除你的帳戶資料\n • 更多資訊請參閱[官網](https://seriaati.github.io/shenhe_website/index-zh-TW.html)"
+564: 新增 UID
+565: 新增 Cookie
+566: 請在這裡放入你的 UID
+567: '如果這不應該發生，請聯絡 seria#5334'
+568: 已新增 UID
+569: 當前帳戶
+570: "你的 Cookie 帶有多個帳戶，請選擇你想要註冊的帳戶"
+571: 你沒有註冊任何帳號
+572: 使用 /accounts 指令來新增
+573: 你的當前帳號並沒有連結 Cookie
+574: '你的其他帳號有連結到 Cookie，但是當前帳號只有連結到 UID'
+575: 使用 /accounts 來切換帳號
+576: 我們正在確認你的 UID，請稍等
+577: 我們正在確認你的 Cookie，請稍等
+578: '如果你被卡在這個頁面，請聯絡 seria#5334'
+579: 這個用戶沒有註冊任何帳號
+580: 這個用戶的當前帳號並沒有連結 Cookie
+581: '這個用戶的其他帳號有連結到 Cookie，但當前的只有連結到 UID'
+582: 樹脂提醒
+583: 天賦提醒
+584: 寶錢提醒
+585: 測試私訊
+586: 在樹脂超過一定數量時提醒你
+587: "• 閥值：想要被提醒的樹脂數量\n• 最大提醒數量：申鶴會在提醒你超過這個次數後停止提醒\n• 你需要一個有連結 Cookie 的帳號才能使用這個功能"
+588: 當寶錢超過一定數量時提醒你
+589: "• 閥值：想要被提醒的寶錢數量\n• 最大提醒值：申鶴會在提醒你超過這個次數後停止提醒\n• 你需要一個有連結 Cookie 的帳號才能使用這個功能"
+590: "• 當一個角色的天賦素材副本可以刷的時候，申鶴會提醒你\n• 請在下方選擇想要被提醒的角色\n• 選擇一個已經選擇過的角色將會移除該角色的提醒"
+591: 當前設置
+592: "• 這個功能能幫助你準時做完原神給你的功課\n• 不同帳戶之間的提醒設定是獨立的，除了天賦提醒\n• 點擊下方不同的按鈕來查看更多資訊"
+593: 提醒
+594: 更改設置
+595: 申鶴需要私訊你才能發送提醒，如果你不小心關掉的話，請按照下面的步驟重新打開
+596: 試試看！
+597: 申鶴沒辦法私訊你
+598: 新增/移除角色
+599: 移除所有角色
+600: 更改暱稱
+601: 暱稱
+602: 選擇你想要更換暱稱的帳戶
+603: 簽到
+604: Hoyolab 每日簽到
+605: 已獲得的獎勵
+606: 當前狀態
+607: 查看已獲得的獎勵
