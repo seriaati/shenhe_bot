@@ -588,7 +588,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-        if cache is None:
+        if cache is None or cache.characters is None:
             cache = data
         c_dict = {}
         d_dict = {}
@@ -806,6 +806,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             [EventTypeChooser.Select(options, embeds, i.locale, user_locale)],
         ).start(followup=True)
 
+    @app_commands.guild_only()
     @app_commands.command(
         name="leaderboard", description=_("View different leaderbaords", hash=453)
     )
