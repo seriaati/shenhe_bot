@@ -8,7 +8,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from debug import DefaultModal, DefaultView
 from discord import ButtonStyle, Interaction, Locale, SelectOption, TextStyle
-from discord.errors import InteractionResponded
+from discord.errors import InteractionResponded, NotFound
 from discord.ui import Button, Select, TextInput
 from utility.utils import default_embed, error_embed
 from enkanetwork import EnkaNetworkAPI, UIDNotFounded
@@ -443,5 +443,8 @@ async def return_accounts(i: Interaction):
         await i.response.edit_message(embed=embed, view=view)
     except InteractionResponded:
         await i.edit_original_response(embed=embed, view=view)
-    view.message = await i.original_response()
+    try:
+        view.message = await i.original_response()
+    except NotFound:
+        pass
     view.author = i.user
