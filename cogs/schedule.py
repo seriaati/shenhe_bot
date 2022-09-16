@@ -74,6 +74,7 @@ class Schedule(commands.Cog):
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            log.info(f"[Schedule] Claim Reward for {shenhe_user}")
             client = shenhe_user.client
             client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
             claimed = False
@@ -90,7 +91,7 @@ class Schedule(commands.Cog):
                     log.warning(f"[Schedule] Invalid Cookies: {user_id}")
                 except genshin.errors.GenshinException as e:
                     if e.retcode == -10002:
-                        log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                        pass
                     else:
                         log.warning(f"[Schedule] Claim Reward Error: {e}")
                         sentry_sdk.capture_exception(e)
@@ -115,6 +116,7 @@ class Schedule(commands.Cog):
         users = await c.fetchall()
         for _, tpl in enumerate(users):
             user_id = tpl[0]
+            log.info(f"[Schedule] Pot Notification for {user_id}")
             uid = tpl[1]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM pot_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
@@ -132,7 +134,7 @@ class Schedule(commands.Cog):
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
             notes = await shenhe_user.client.get_notes(shenhe_user.uid)
             coin = notes.current_realm_currency
-            locale = shenhe_user.user_locale or "zh-TW"
+            locale = shenhe_user.user_locale or "en-US"
             if coin >= threshold and current < max:
                 if notes.current_realm_currency == notes.max_realm_currency:
                     realm_recover_time = text_map.get(
@@ -191,6 +193,7 @@ class Schedule(commands.Cog):
 
         for _, tpl in enumerate(users):
             user_id = tpl[0]
+            log.info(f"[Schedule] Pot Notification for {user_id}")
             uid = tpl[1]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM resin_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
@@ -265,6 +268,7 @@ class Schedule(commands.Cog):
         users = await c.fetchall()
         for _, tpl in enumerate(users):
             user_id = tpl[0]
+            log.info(f"[Schedule] Talent Notification for {user_id}")
             user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
             user_locale = await get_user_locale(user_id, self.bot.db)
             user_notification_list = ast.literal_eval(tpl[1])

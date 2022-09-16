@@ -6,7 +6,7 @@ from debug import DefaultModal, DefaultView
 import config
 from discord import Locale, Interaction, ButtonStyle, Embed
 from discord.ui import Button, TextInput
-from discord.errors import InteractionResponded, Forbidden
+from discord.errors import InteractionResponded, Forbidden, NotFound
 from apps.text_map.text_map_app import text_map
 from utility.utils import default_embed, error_embed
 import aiosqlite
@@ -46,7 +46,7 @@ async def return_resin_notification(i: Interaction, view: View):
     value += f"{text_map.get(103, view.locale)}: {max}"
     embed = default_embed(message=text_map.get(586, view.locale))
     embed.add_field(name=text_map.get(591, view.locale), value=value)
-    embed.set_author(name=text_map.get(582, view.locale), icon_url=i.user.avatar.url)
+    embed.set_author(name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url)
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(ChangeSettings(view.locale, "resin_notification"))
@@ -88,7 +88,7 @@ async def return_pot_notification(i: Interaction, view: View):
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
     embed = default_embed(message=text_map.get(586, view.locale))
-    embed.set_author(name=text_map.get(584, view.locale), icon_url=i.user.avatar.url)
+    embed.set_author(name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url)
     embed.add_field(name=text_map.get(591, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
@@ -128,7 +128,7 @@ async def return_talent_notification(i: Interaction, view: View):
         for character in character_list:
             value += f'{get_character(character)["emoji"]} {text_map.get_character_name(character, view.locale)}\n'
     embed = default_embed(message=text_map.get(590, view.locale))
-    embed.set_author(name=text_map.get(583, view.locale), icon_url=i.user.avatar.url)
+    embed.set_author(name=text_map.get(583, view.locale), icon_url=i.user.display_avatar.url)
     embed.add_field(name=text_map.get(159, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
@@ -152,9 +152,7 @@ async def return_talent_notification(i: Interaction, view: View):
 
 class AddCharacter(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(
-            emoji="✏️", label=text_map.get(598, locale)
-        )
+        super().__init__(emoji="✏️", label=text_map.get(598, locale))
         self.locale = locale
 
     async def callback(self, i: Interaction):
@@ -290,7 +288,8 @@ class ChangeSettings(Button):
         uid = await get_user_uid_with_db(i.user.id, i.client.db)
         try:
             if self.table_name == "resin_notification":
-                await i.response.send_modal(modal := ResinModal(self.locale))
+                modal = ResinModal(self.locale)
+                await i.response.send_modal(modal=modal)
                 await modal.wait()
                 threshold = modal.resin_threshold.value
                 max = modal.max_notif.value
@@ -306,7 +305,8 @@ class ChangeSettings(Button):
                     await i.client.db.commit()
                 await return_resin_notification(i, self.view)
             elif self.table_name == "pot_notification":
-                await i.response.send_modal(modal := PotModal(self.locale))
+                modal = PotModal(self.locale)
+                await i.response.send_modal(modal=modal)
                 await modal.wait()
                 threshold = modal.threshold.value
                 max = modal.max_notif.value
@@ -364,17 +364,20 @@ async def return_notification_menu(
     )
     await i.client.db.commit()
     embed = default_embed(message=text_map.get(592, locale))
-    embed.set_author(name=text_map.get(593, locale), icon_url=i.user.avatar.url)
+    embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
     view = View(locale)
     if send:
         await i.response.send_message(embed=embed, view=view)
-        view.author = i.user
-        view.message = await i.original_response()
     else:
         try:
             await i.response.edit_message(embed=embed, view=view)
         except InteractionResponded:
             await i.edit_original_response(embed=embed, view=view)
+    view.author = i.user
+    try:
+        view.message = await i.original_response()
+    except NotFound:
+        pass
 
 
 class ResinModal(DefaultModal):

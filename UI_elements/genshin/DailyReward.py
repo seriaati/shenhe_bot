@@ -48,7 +48,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
     _, claimed_rewards = await shenhe_user.client.get_reward_info()
     embed = default_embed()
     embed.set_author(
-        name=text_map.get(604, i.locale, user_locale), icon_url=i.user.avatar.url
+        name=text_map.get(604, i.locale, user_locale), icon_url=i.user.display_avatar.url
     )
     embed.add_field(
         name=text_map.get(606, i.locale, user_locale),

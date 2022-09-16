@@ -108,7 +108,7 @@ class NicknameModal(DefaultModal):
 
 
 class AddUIDModal(DefaultModal):
-    uid = TextInput(label="UID", placeholder="Put your UID here", max_length=9)
+    uid = TextInput(label="UID", placeholder="Put your UID here", min_lengh=9, max_length=9)
 
     def __init__(self, locale: Locale | str) -> None:
         super().__init__(title=text_map.get(564, locale), timeout=config.mid_timeout)

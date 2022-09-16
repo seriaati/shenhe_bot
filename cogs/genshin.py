@@ -505,11 +505,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if i.guild.id == 916838066117824553:
             c = await self.bot.main_db.cursor()
+            table_name = "genshin_accounts"
         else:
             c = await self.bot.db.cursor()
+            table_name = "user_accounts"
         c: aiosqlite.Cursor
         await c.execute(
-            "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
+            f"SELECT uid FROM {table_name} WHERE user_id = ? AND current = 1",
             (player.id,),
         )
         uid = await c.fetchone()
@@ -751,8 +753,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
+        await i.response.defer()
         result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
-        await i.response.send_message(embed=result, ephemeral=not success)
+        await i.followup.send(embed=result, ephemeral=not success)
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
