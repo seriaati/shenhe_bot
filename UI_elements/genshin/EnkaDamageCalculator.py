@@ -149,15 +149,10 @@ class GoBack(Button):
         if is_card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            if enka_view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {enka_view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=enka_view.author.display_name,
-                    icon_url=enka_view.author.display_avatar.url,
-                )
+            embed.set_author(
+                name=enka_view.author.display_name,
+                icon_url=enka_view.author.display_avatar.url,
+            )
             card.seek(0)
             file = File(card, "card.jpeg")
             await i.edit_original_response(
@@ -165,15 +160,10 @@ class GoBack(Button):
             )
         else:
             embed = enka_view.embeds[enka_view.character_id]
-            if enka_view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=enka_view.author.display_name,
-                    icon_url=enka_view.author.display_avatar.url,
-                )
+            embed.set_author(
+                name=enka_view.author.display_name,
+                icon_url=enka_view.author.display_avatar.url,
+            )
             await i.edit_original_response(embed=embed, view=enka_view, attachments=[])
 
 
