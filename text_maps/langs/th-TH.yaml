@@ -1,65 +1,65 @@
-1: Full
-2: Today's
-3: Tomorrow
-4: Remaining
-5: days
-6: hr
-7: min
-8: sec
-9: Available
-10: P.T. not found
-11: Dailies finished
-12: P.T. remaining time
-13: Resin
+1: เต็ม
+2: วันนี้
+3: พรุ่งนี้
+4: คงเหลือ
+5: วัน
+6: ชั่วโมง
+7: นาที
+8: วินาที
+9: มีอยู่
+10: ไม่พบ P.T.
+11: จำนวนภารกิจรายวันที่สำเร็จ
+12: P.T. เวลาคงเหลือ
+13: เรซิน
 14: Current
 15: Recovery time
-16: Resin discounts
+16: ส่วนลด Resin
 17: Serenitea Pot
 18: No expeditions found
-19: Finished
+19: เสร็จ
 20: Expeditions
 21: </stuck:1006486283725590536> for more information
 22: Data not public
-23: Error
-24: Realtime notes
-25: Mon.
-26: Tue.
-27: Wed.
-28: Thu.
-29: Fri.
-30: Sat.
-31: Sun.
-32: Choose your language
-33: Language changed
-34: Current language
+23: ข้อผิดพลาด
+24: บันทึกเรียลไทม์
+25: วันจันทร์
+26: วันอังคาร
+27: วันพุธ
+28: วันพฤหัส
+29: วันศุกร์
+30: วันเสาร์
+31: วันอาทิตย์
+32: เลือกภาษาของคุณ
+33: เปลี่ยนภาษาสำเร็จ
+34: ภาษาในปัจจุบัน
 35: </register:1006486283725590528> for more information
-36: Cookie invalid
+36: รูปแบบคุกกี้ไม่ถูกต้อง
 37: Account register canceled
 38: No valid accounts were obtained from the cookie
 39: Account added
-40: You have already claimed today's login reward!
-41: Obtained
-42: Claim successful
-43: Overview
-44: Days Active
-45: Characters
-46: Achievements
+40: คุณได้รับรางวัลล็อกอินวันนี้แล้ว!
+41: ได้รับ
+42: รับสำเร็จ
+43: ภาพรวม
+44: จำนวนวันใช้งาน
+45: ตัวละคร
+46: ความสำเร็จ
 47: Spiral Abyss
 48: Oculi
 49: Anemoculi
 50: Geoculi
 51: Electroculi
-52: Chests
+52: หีบ
 53: Common Chests
 54: Exquisite Chests
 55: Luxurious Chests
-56: Genshin stats
+56: สถิติ Genshin
 57: Precious Chests
-58: World Exploration
-59: Primogem income v.s last month
-60: increased
-61: decreased
-62: Mora income v.s last month
+58: การสำรวจโลก
+59: รายได้ Primogem v.s เดือนล่าสุด
+60: เพิ่มขึ้น
+61: ลดลง
+62: รายได้ Mora v.s เดือนล่าสุด
 63: Acquired this month
 64: Last month
 65: Primogems obtained
@@ -94,17 +94,17 @@
 94: Talents
 95: Character Stats
 96: Source
-97: Artifact Thoughts
-98: Resin reminder has been turned off
-99: "ON"
-100: "OFF"
+97: เรซิ่น
+98: การแจ้งเตือนเรซิ่นได้ถูกปิดแล้ว
+99: "เปิด"
+100: "ปิด"
 101: Current Toggle
-102: Resing Threshold
-103: Max. notification number
-104: Settings saved
-105: Characters
-106: This gift code has already been redeemed!
-107: Gift code invalid
+102: เกณฑ์เรซิ่น
+103: จำนวนการแจ้งเตือนสูงสุด
+104: ตั้งค่าถูกบันทึก
+105: ตัวละคร
+106: Gift code ได้ถูกใช้ไปแล้ว
+107: รูปแบบ Gift code ไม่ถูกต้อง
 108: Gift code
 109: Code redeemed
 110: Summer event data not found
@@ -139,25 +139,25 @@
 139: Cookie invalid or outdated, please log out then log in again!
 140: Please use the </register:1006486283725590528> command
 141: Account data not found!
-142: Choose your element
+142: โปรดเลือกธาตุของคุณ
 143: You are not the issuer of this command
 144: Primo Log
-145: Mora Log
-146: Floor No.
-147: <FLOOR>
+145: บันทึกโมร่า
+146: ลำดับชั้น
+147: <ชั้นที่>
 148: Choose abyss floor
 149: Data not public?
 150: "Please go to https://www.hoyolab.com/home and login\n Follow the steps in the\\ \\ image below\n\n\n1. Click the avatar on the top right\n 2. Personal homepage\n\\ \\ 3. Click `Genshin` on the top right corner\n 4. Click the gear icon\n 5. Toggle\\ \\ all the switches"
-151: Resin notification settings
+151: การตั้งค่าการแจ้งเตือนเรซิน
 152: Resin threshold
 153: Shenhe will DM you after resin exceeds this number
-154: Max. notification number
+154: จำนวนการแจ้งเตือนสูงสุด
 155: DM will stop after this number of times
 156: Choosing a character that already has notification ON will remove its notification
 157: Choose your characters
 158: There are currently no notifications set for any characters
 159: Current characters
-160: Choose your element
+160: โปรดเลือกธาตุของคุณ
 161: Choosing this character will turn OFF its notifications
 162: Build
 163: Choose your build
@@ -217,7 +217,7 @@
 217: Hydro
 218: Dendro
 219: Electro
-220: Characters
+220: ตัวละคร
 221: January
 222: February
 223: March
@@ -420,7 +420,7 @@
 431: The type of data you wish to view
 432: Which abyss season?
 433: Detailed
-434: Overview
+434: ภาพรวม
 435: This season
 436: Last season
 437: Data not public?
@@ -431,7 +431,7 @@
 442: Talent notification
 443: Check privacy settings
 444: ON (or change settings)
-445: "OFF"
+445: "ปิด"
 446: View farmable items today
 447: "View character builds: Weapons, artifacts, talent levels, stats"
 448: Search a user's UID
@@ -449,8 +449,8 @@
 460: Calculate materials needed for upgrading a character
 461: sync
 462: sync with in-game data (autofill the levels)
-463: "ON"
-464: "OFF"
+463: "เปิด"
+464: "ปิด"
 465: Calculate materials needed for upgrading a weapon
 466: type
 467: rarity
@@ -483,10 +483,10 @@
 494: Others
 495: Choose your category
 496: Admin usage only
-497: Genshin stats
+497: สถิติ Genshin
 498: View profile
 499: View all characters
-500: Realtime notes
+500: บันทึกเรียลไทม์
 501: Update self-leaderboard position
 502: Leaderboard position updated
 503: View past updates
