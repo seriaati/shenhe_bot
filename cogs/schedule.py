@@ -110,7 +110,7 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
         for _, tpl in enumerate(users):
@@ -185,7 +185,7 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
 
