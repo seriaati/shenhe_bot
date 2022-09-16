@@ -1008,7 +1008,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ephemeral=True,
                 )
         elif type == 3:
-            check = await check_account_predicate()
+            check = await check_account_predicate(i)
             if not check:
                 return
             await i.response.defer(ephemeral=True)

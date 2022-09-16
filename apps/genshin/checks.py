@@ -27,10 +27,11 @@ async def check_account_predicate(i: Interaction, user: User | Member = None) ->
     locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute("SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,))
-    if (await c.fetchone()) is None:
+    uid = await c.fetchone()
+    if uid is None:
         await i.response.send_message(
             embed=error_embed(message=text_map.get(572, locale)).set_author(
-                name=text_map.get(571 if user.id == i.user.id else 572, locale),
+                name=text_map.get(571 if user.id == i.user.id else 579, locale),
                 icon_url=user.display_avatar.url,
             ),
             ephemeral=True,
@@ -52,7 +53,7 @@ def check_cookie():
 
 
 async def check_cookie_predicate(i: Interaction, user: User | Member = None) -> bool:
-    check = await check_account_predicate(i)
+    check = await check_account_predicate(i, user or i.user)
     if not check:
         return False
     user = user or i.user

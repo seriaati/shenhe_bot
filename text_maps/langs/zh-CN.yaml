@@ -548,7 +548,7 @@
 560: Choose one or multiple accounts below to remove
 561: Accounts removed
 562: Choose the account type you want to add
-563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands, like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\\ \\ • To obtain your Cookie, you will go through a registration process that takes\\ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\ \\ your account, note that I won't have access to your Genshin account by having\\ \\ your Cookie\n • You can always remove your account data by using /accounts"
+563: "• Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>,\\ \\ and </stats:1006486283725590530> only requires your UID\n • Other commands, like\\ \\ </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534>\\ \\ requires your Cookie\n\n • To add your UID, you only have to enter your UID\n\\ \\ • To obtain your Cookie, you will go through a registration process that takes\\ \\ around 30 seconds\n\n • Cookie is a unique identifier that is used to identify\\ \\ your account, note that I won't have access to your Genshin account by having\\ \\ your Cookie\n • You can always remove your account data by using </accounts:1020188057628065866>"
 564: Add UID
 565: Add Cookie
 566: Put your UID here
@@ -557,10 +557,10 @@
 569: Current account
 570: "Your Cookie contains multiple accounts\n please choose the one you want to add"
 571: You don't have an account registered
-572: Use /accounts to add one
+572: Use </accounts:1020188057628065866> to add one
 573: Your current account is not linked to a Cookie
 574: "One of your other accounts is linked to a Cookie, but the current one is only linked to a UID"
-575: Use /accounts to switch between accounts
+575: Use </accounts:1020188057628065866> to switch between accounts
 576: Please wait while we are validating your UID
 577: Please wait while we are validating your Cookie
 578: 'If you are not redirected, please contact seria#5334'
