@@ -204,7 +204,7 @@ tree = bot.tree
 
 
 async def check_maintenance(i: Interaction, /) -> bool:
-    if i.user.id == i.client.owner_id:
+    if i.user.id == 410036441129943050:
         return True
     else:
         if i.client.maintenance:
