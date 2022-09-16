@@ -10,8 +10,8 @@ from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from pyppeteer.browser import Browser
-from UI_elements.genshin import EnkaDamageCalculator
-from utility.utils import default_embed, error_embed
+from ui_elements.genshin import EnkaDamageCalculator
+from utility.utils import default_embed, error_embed, get_user_appearance_mode
 from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card
 
@@ -29,7 +29,6 @@ class View(DefaultView):
         db: aiosqlite.Connection,
         locale: Locale,
         user_locale: str,
-        user_uid: str,
         characters: List[CharacterInfo],
         browser: Browser,
     ):
@@ -43,7 +42,6 @@ class View(DefaultView):
         self.member = member
         self.eng_data = eng_data
         self.db = db
-        self.user_uid = user_uid
         self.characters = characters
         self.browser = browser
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
@@ -60,6 +58,7 @@ class PageSelect(Select):
         super().__init__(placeholder=plceholder, options=character_options)
 
     async def callback(self, i: Interaction) -> Any:
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.view.db)
         self.view: View
         damage_calc_disabled = False
@@ -72,8 +71,9 @@ class PageSelect(Select):
                 [character] = [
                     c for c in self.view.characters if c.id == int(self.values[0])
                 ]
+                dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
                 card = await draw_character_card(
-                    character, user_locale or i.locale, i.client.session
+                    character, user_locale or i.locale, i.client.session, dark_mode
                 )
                 i.client.enka_card_cache[
                     f"{self.view.member.id} - {self.values[0]}"
@@ -92,32 +92,22 @@ class PageSelect(Select):
         if is_card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            if self.view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=self.view.member.display_name,
-                    icon_url=self.view.member.display_avatar.url,
-                )
+            embed.set_author(
+                name=self.view.member.display_name,
+                icon_url=self.view.member.display_avatar.url,
+            )
             card.seek(0)
             file = File(card, "card.jpeg")
-            await i.response.edit_message(
+            await i.edit_original_response(
                 embed=embed, view=self.view, attachments=[file]
             )
         else:
             embed = self.view.embeds[self.values[0]]
-            if self.view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=self.view.member.display_name,
-                    icon_url=self.view.member.display_avatar.url,
-                )
-            await i.response.edit_message(embed=embed, view=self.view, attachments=[])
+            embed.set_author(
+                name=self.view.member.display_name,
+                icon_url=self.view.member.display_avatar.url,
+            )
+            await i.edit_original_response(embed=embed, view=self.view, attachments=[])
 
 
 class ViewArtifacts(Button):

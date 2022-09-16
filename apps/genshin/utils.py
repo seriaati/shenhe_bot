@@ -1,5 +1,4 @@
-import os
-from typing import Dict, List, Literal, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from apps.text_map.text_map_app import text_map
 from data.game.artifacts import artifacts_map
@@ -8,14 +7,8 @@ from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapons import weapons_map
 from discord import Embed, Locale, SelectOption
-from dotenv import load_dotenv
 from utility.utils import default_embed, parse_HTML
 import aiosqlite
-
-import genshin
-
-load_dotenv()
-
 
 def calculate_artifact_score(substats: dict):
     tier_four_val = {
@@ -166,6 +159,21 @@ def get_city_emoji(city_id: int):
     return emoji_dict.get(city_id)
 
 
+def get_uid_region(uid: int) -> int:
+    uid = str(uid)
+    region_map = {
+        "9": 547,
+        "1": 548,
+        "2": 548,
+        "5": 549,
+        "6": 550,
+        "7": 551,
+        "8": 552,
+        "0": 554,
+    }
+    return region_map.get(uid[0], 553)
+
+
 def parse_character_wiki_embed(
     avatar: Dict, avatar_id: str, locale: Locale, user_locale: str | None
 ) -> Tuple[List[Embed], Embed, List[SelectOption]]:
@@ -281,3 +289,11 @@ def parse_character_wiki_embed(
         )
     )
     return embeds, material_embed, options
+
+async def get_user_uid_with_db(user_id: int, db: aiosqlite.Connection) -> int | None:
+    c = await db.cursor()
+    await c.execute(
+        "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
+        (user_id,),
+    )
+    return (await c.fetchone())[0]

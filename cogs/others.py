@@ -5,7 +5,7 @@ from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.others import ChangeLog, SettingsMenu
+from ui_elements.others import ChangeLog, SettingsMenu, ManageAccounts
 from utility.utils import default_embed
 
 
@@ -53,10 +53,18 @@ class OthersCog(commands.Cog, name="others"):
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url='https://i.imgur.com/WM6C1Tk.png')
+        embed.set_image(url="https://i.imgur.com/WM6C1Tk.png")
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
         view.author = i.user
+
+    @app_commands.command(
+        name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
+    )
+    async def accounts_command(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
+        await ManageAccounts.return_accounts(i)
+
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -28,11 +28,11 @@ class Appearance(Button):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "INSERT INTO dark_mode_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET toggle = toggle",
+            "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
             (i.user.id,),
         )
         await c.execute(
-            "SELECT toggle FROM dark_mode_settings WHERE user_id = ?", (i.user.id,)
+            "SELECT dark_mode FROM user_settings WHERE user_id = ?", (i.user.id,)
         )
         (toggle,) = await c.fetchone()
         emoji = "🌙" if toggle == 1 else "☀️"
@@ -59,7 +59,7 @@ class LightModeButton(Button):
     async def callback(self, i: Interaction) -> Any:
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "UPDATE dark_mode_settings SET toggle = 0 WHERE user_id = ?",
+            "UPDATE user_settings SET dark_mode = 0 WHERE user_id = ?",
             (i.user.id,),
         )
         await i.client.db.commit()
@@ -73,7 +73,7 @@ class DarkModeButton(Button):
     async def callback(self, i: Interaction) -> Any:
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "UPDATE dark_mode_settings SET toggle = 1 WHERE user_id = ?",
+            "UPDATE user_settings SET dark_mode = 1 WHERE user_id = ?",
             (i.user.id,),
         )
         await i.client.db.commit()
@@ -128,10 +128,10 @@ class LangSelect(Select):
     async def callback(self, i: Interaction) -> Any:
         c: aiosqlite.Cursor = await i.client.db.cursor()
         if self.values[0] == "none":
-            await c.execute("DELETE FROM user_lang WHERE user_id = ?", (i.user.id,))
+            await c.execute("DELETE FROM user_settings WHERE user_id = ?", (i.user.id,))
         else:
             await c.execute(
-                "INSERT INTO user_lang (user_id, lang) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET lang = ? WHERE user_id = ?",
+                "INSERT INTO user_settings (user_id, lang) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET lang = ? WHERE user_id = ?",
                 (i.user.id, self.values[0], self.values[0], i.user.id),
             )
         await i.client.db.commit()
@@ -146,11 +146,11 @@ class DeveloperMessage(Button):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET toggle = toggle",
+            "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
             (i.user.id,),
         )
         await c.execute(
-            "SELECT toggle FROM active_users WHERE user_id = ?", (i.user.id,)
+            "SELECT dev_msg FROM user_settings WHERE user_id = ?", (i.user.id,)
         )
         (toggle,) = await c.fetchone()
         emoji = "🔔" if toggle == 1 else "🔕"
@@ -177,7 +177,7 @@ class NotifiactionONButton(Button):
     async def callback(self, i: Interaction) -> Any:
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "UPDATE active_users SET toggle = 1 WHERE user_id = ?",
+            "UPDATE user_settings SET dev_msg = 1 WHERE user_id = ?",
             (i.user.id,),
         )
         await i.client.db.commit()
@@ -191,7 +191,7 @@ class NotificationOFFButton(Button):
     async def callback(self, i: Interaction) -> Any:
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
-            "UPDATE active_users SET toggle = 0 WHERE user_id = ?",
+            "UPDATE user_settings SET dev_msg = 0 WHERE user_id = ?",
             (i.user.id,),
         )
         await i.client.db.commit()

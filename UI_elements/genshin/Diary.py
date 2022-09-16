@@ -31,14 +31,12 @@ class Primo(Button):
         super().__init__(label=label, emoji="<:PRIMO:1010048703312171099>")
 
     async def callback(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         self.view: View
-        result, success = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.locale
+        result = await self.view.genshin_app.get_diary_logs(
+            self.view.member.id, i.locale, True
         )
-        if not success:
-            await i.response.send_message(embed=result, ephemeral=True)
-        result = result[0]
-        await i.response.send_message(embed=result, ephemeral=True)
+        await i.followup.send(embed=result, ephemeral=True)
 
 
 class Mora(Button):
@@ -46,11 +44,9 @@ class Mora(Button):
         super().__init__(label=label, emoji="<:MORA:1010048704901828638>")
 
     async def callback(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         self.view: View
-        result, success = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.locale
+        result = await self.view.genshin_app.get_diary_logs(
+            self.view.member.id, i.locale, False
         )
-        if not success:
-            await i.response.send_message(embed=result, ephemeral=True)
-        result = result[1]
-        await i.response.send_message(embed=result, ephemeral=True)
+        await i.followup.send(embed=result, ephemeral=True)

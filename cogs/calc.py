@@ -1,4 +1,5 @@
 from genshin import InvalidCookies
+from apps.genshin.checks import check_cookie_predicate
 from yelan.draw import draw_todo_card
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
@@ -12,7 +13,7 @@ from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
+from ui_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from genshin.errors import GenshinException
@@ -46,20 +47,11 @@ class CalcCog(commands.GroupCog, name="calc"):
         special_talent_characters = [10000041, 10000002]
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
-        exists = await self.genshin_app.check_user_data(i.user.id)
-        if sync and not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-
         if sync:
-            shenhe_user = await self.genshin_app.get_user_data(i.user.id, i.locale)
+            check = await check_cookie_predicate(i)
+            if not check:
+                return
+            shenhe_user = await self.genshin_app.get_user_cookie(i.user.id, i.locale)
             client = shenhe_user.client
         else:
             client = self.bot.genshin_client

@@ -20,6 +20,7 @@ from apps.genshin.utils import (
     get_weapon,
     parse_character_wiki_embed,
 )
+from apps.genshin.checks import *
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
@@ -36,24 +37,21 @@ from discord.utils import format_dt
 from enkanetwork import (
     EnkaNetworkAPI,
     UIDNotFounded,
-    VaildateUIDError,
     EnkaNetworkResponse,
 )
 from enkanetwork.enum import DigitType, EquipmentsType
-from UI_elements.genshin import (
+from ui_elements.genshin import (
     Abyss,
-    AccountRegister,
     ArtifactLeaderboard,
     Build,
     CharacterWiki,
     Diary,
     EnkaProfile,
     EventTypeChooser,
-    PotReminder,
-    ResinNotification,
     ShowAllCharacters,
-    TalentNotification,
 )
+from ui_elements.genshin.DailyReward import return_claim_reward
+from ui_elements.genshin.ReminderMenu import return_notification_menu
 from utility.paginator import GeneralPaginator
 from utility.domain_paginator import DomainPaginator
 from utility.utils import (
@@ -64,6 +62,7 @@ from utility.utils import (
     get_weekday_int_with_name,
     parse_HTML,
 )
+from ui_elements.others import ManageAccounts
 
 
 class GenshinCog(commands.Cog, name="genshin"):
@@ -80,7 +79,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         with open(f"text_maps/reliquary.json", "r", encoding="utf-8") as f:
             reliquary = json.load(f)
         self.text_map_files = [avatar, weapon, material, reliquary]
-
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
             name=_("UID"), callback=self.search_uid_ctx_menu
@@ -127,43 +125,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=410,
         ),
     )
-    @app_commands.rename(option=_("option", hash=411))
-    @app_commands.choices(
-        option=[
-            Choice(name=_("Registration tutorial", hash=412), value=0),
-            Choice(name=_("Submit cookie", hash=413), value=1),
-            Choice(name=_("Remove account data", hash=521), value=2),
-        ]
-    )
-    async def slash_cookie(self, i: Interaction, option: int):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if option == 0:
-            embed = default_embed(
-                text_map.get(137, i.locale, user_locale),
-                text_map.get(138, i.locale, user_locale),
-            )
-            embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
-            code_msg = f"```script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, i.locale, user_locale)}'); c && document.write(d)```"
-            await i.response.send_message(embed=embed, ephemeral=True)
-            await i.followup.send(content=code_msg, ephemeral=True)
-        elif option == 1:
-            await i.response.send_modal(
-                AccountRegister.Modal(self.genshin_app, i.locale, user_locale)
-            )
-        elif option == 2:
-            await i.response.defer(ephemeral=True)
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute(
-                "DELETE FROM genshin_accounts WHERE user_id = ?", (i.user.id,)
-            )
-            await self.bot.db.commit()
-            await i.followup.send(
-                embed=default_embed().set_author(
-                    name=text_map.get(522, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
+    async def slash_register(self, i: Interaction):
+        await ManageAccounts.return_accounts(i)
 
     @app_commands.command(
         name="check",
@@ -175,39 +138,20 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def check(self, i: Interaction, member: User = None):
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
+        check = await check_cookie_predicate(i, member)
+        if not check:
+            return
+        await i.response.defer()
         result, success = await self.genshin_app.get_real_time_notes(
             member.id, i.locale
         )
-        await i.response.send_message(embed=result, ephemeral=not success)
+        await i.followup.send(embed=result, ephemeral=not success)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        result, success = await self.genshin_app.get_real_time_notes(
-            member.id, i.locale
-        )
+        check = await check_cookie_predicate(i)
+        if not check:
+            return
+        result, _ = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.response.send_message(embed=result, ephemeral=True)
 
     @app_commands.command(
@@ -217,13 +161,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=417,
         ),
     )
-    @app_commands.rename(member=_("user", hash=415), custom_uid="uid")
+    @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
         member=_("check other user's data", hash=416),
-        custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
-    async def stats(self, i: Interaction, member: User = None, custom_uid: int = None):
-        await self.stats_command(i, member, custom_uid)
+    async def stats(self, i: Interaction, member: User = None):
+        await self.stats_command(i, member)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
         await self.stats_command(i, member, context_command=True)
@@ -232,26 +175,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         self,
         i: Interaction,
         member: User = None,
-        custom_uid: int = None,
         context_command: bool = False,
     ) -> None:
-        start = process_time()
+        check = await check_account_predicate(i, member or i.user)
+        if not check:
+            return
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         uid = await self.genshin_app.get_user_uid(member.id)
-        uid = custom_uid or uid
-        if uid is None:
-            return await i.followup.send(
-                embed=error_embed(
-                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
@@ -270,35 +202,23 @@ class GenshinCog(commands.Cog, name="genshin"):
                     )
                 else:
                     data = cache
-            except VaildateUIDError:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
         if cache is None:
             with FanoutCache("data/cache/enka_data_cache") as enka_cache:
                 enka_cache[uid] = data
-
         if cache is not None and cache.player.namecard.id != data.player.namecard.id:
             cache.player.namecard.id = data.player.namecard.id
             with FanoutCache("data/cache/enka_data_cache") as enka_cache:
                 enka_cache[uid] = cache
-
         namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
-            member.id, uid, i.locale, namecard, member.display_avatar
+            member.id, i.locale, namecard, member.display_avatar
         )
-        end = process_time()
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
         else:
             fp = result["fp"]
             fp.seek(0)
             file = File(fp, "stat_card.jpeg")
-            result["embed"].set_footer(text=f"Time elapsed: {end-start} s")
             await i.followup.send(
                 embed=result["embed"],
                 ephemeral=False if not context_command else True,
@@ -309,32 +229,19 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="area",
         description=_("View exploration rates of different areas in genshin", hash=419),
     )
-    @app_commands.rename(member=_("user", hash=415), custom_uid="uid")
+    @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
         member=_("check other user's data", hash=416),
-        custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
-    async def area(self, i: Interaction, member: User = None, custom_uid: int = None):
+    async def area(self, i: Interaction, member: User = None):
+        check = await check_account_predicate(i, member or i.user)
+        if not check:
+            return
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        uid = await self.genshin_app.get_user_uid(member.id)
-        uid = custom_uid or uid
-        if uid is None:
-            return await i.followup.send(
-                embed=error_embed(
-                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        result, success = await self.genshin_app.get_area(
-            member.id, custom_uid, i.locale
-        )
+        result, success = await self.genshin_app.get_area(member.id, i.locale)
         if not success:
-            await i.followup.send(embed=result, ephemeral=True)
+            await i.followup.send(embed=result)
         else:
             fp = result["image"]
             fp.seek(0)
@@ -343,31 +250,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed=result["embed"], ephemeral=not success, files=[image]
             )
 
+    @check_cookie()
     @app_commands.command(
         name="claim",
         description=_(
-            "Immediately claim your hoyolab daily login reward (needs /register)",
+            "Immediately claims your hoyolab daily login reward (needs /register)",
             hash=420,
         ),
     )
-    @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
-    async def claim(self, i: Interaction, member: User = None):
-        member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        result, success = await self.genshin_app.claim_daily_reward(member.id, i.locale)
-        await i.response.send_message(embed=result, ephemeral=not success)
+    async def claim(self, i: Interaction):
+        await return_claim_reward(i, self.genshin_app)
 
     @app_commands.command(
         name="characters",
@@ -388,28 +280,21 @@ class GenshinCog(commands.Cog, name="genshin"):
         self, i: Interaction, member: User = None, ephemeral: bool = True
     ):
         member = member or i.user
+        check = await check_cookie_predicate(i, member)
+        if not check:
+            return
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
         result, success = await self.genshin_app.get_all_characters(member.id, i.locale)
         if not success:
-            return await i.response.send_message(embed=result, ephemeral=True)
+            return await i.followup.send(embed=result)
         placeholder = text_map.get(142, i.locale, user_locale)
         await GeneralPaginator(
             i,
             result["embeds"],
             self.bot.db,
             [ShowAllCharacters.ElementSelect(result["options"], placeholder)],
-        ).start(check=False, ephemeral=ephemeral)
+        ).start(check=False, ephemeral=ephemeral, followup=True)
 
     @app_commands.command(
         name="diary",
@@ -434,26 +319,19 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def diary(self, i: Interaction, month: int = 0, member: User = None):
         member = member or i.user
+        check = await check_cookie_predicate(i, member)
+        if not check:
+            return
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
         month = datetime.now().month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.get_diary(member.id, month, i.locale)
         if not success:
-            await i.response.send_message(embed=result, ephemeral=not success)
+            await i.followup.send(embed=result)
         else:
             view = Diary.View(i.user, member, self.genshin_app, i.locale, user_locale)
-            await i.response.send_message(embed=result, view=view)
+            await i.followup.send(embed=result, view=view)
             view.message = await i.original_response()
 
     @app_commands.command(
@@ -475,26 +353,18 @@ class GenshinCog(commands.Cog, name="genshin"):
         ],
     )
     async def abyss(self, i: Interaction, previous: int = 0, member: User = None):
-        await i.response.defer()
         member = member or i.user
+        check = await check_cookie_predicate(i, member or i.user)
+        if not check:
+            return
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(member.id)
-        if not exists:
-            return await i.followup.send(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
         previous = True if previous == 1 else False
         result, success = await self.genshin_app.get_abyss(
             member.id, previous, i.locale
         )
         if not success:
-            return await i.followup.send(embed=result, ephemeral=True)
+            return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
             await i.followup.send(embed=result[0], view=view)
@@ -511,135 +381,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
-    @app_commands.rename(function=_("function", hash=439), toggle=_("toggle", hash=440))
-    @app_commands.choices(
-        function=[
-            Choice(name=_("Resin reminder (needs /register)", hash=441), value=0),
-            Choice(
-                name=_("Realm currency reminder (needs /register)", hash=514), value=2
-            ),
-            Choice(name=_("Talent material reminder", hash=442), value=1),
-            Choice(name=_("Check privacy settings", hash=443), value=3),
-        ],
-        toggle=[
-            Choice(name=_("ON (Change settings)", hash=444), value=1),
-            Choice(name=_("OFF", hash=445), value=0),
-        ],
-    )
-    async def remind(self, i: Interaction, function: int, toggle: int):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if function == 0:
-            if toggle == 0:
-                exists = await self.genshin_app.check_user_data(i.user.id)
-                if not exists:
-                    return await i.response.send_message(
-                        embed=error_embed(
-                            message=text_map.get(140, i.locale, user_locale)
-                        ).set_author(
-                            name=text_map.get(141, i.locale, user_locale),
-                            icon_url=i.user.display_avatar.url,
-                        )
-                    )
-                result, success = await self.genshin_app.set_resin_notification(
-                    i.user.id, 0, None, None, i.locale
-                )
-                await i.response.send_message(embed=result, ephemeral=not success)
-            else:
-                modal = ResinNotification.Modal(i.locale, user_locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                result, success = await self.genshin_app.set_resin_notification(
-                    i.user.id,
-                    toggle,
-                    modal.resin_threshold.value,
-                    modal.max_notif.value,
-                    i.locale,
-                )
-                await i.followup.send(embed=result, ephemeral=not success)
-
-        elif function == 1:
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            if toggle == 0:
-                await c.execute(
-                    "UPDATE genshin_accounts SET talent_notif_toggle = 0 WHERE user_id = ?",
-                    (i.user.id,),
-                )
-                await self.bot.db.commit()
-                embed = default_embed()
-                embed.set_author(
-                    name=text_map.get(307, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                await i.response.send_message(embed=embed)
-            else:
-                await c.execute(
-                    "UPDATE genshin_accounts SET talent_notif_toggle = 1 WHERE user_id = ?",
-                    (i.user.id,),
-                )
-                await self.bot.db.commit()
-                embed = default_embed(message=text_map.get(156, i.locale, user_locale))
-                embed.set_author(
-                    name=text_map.get(157, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                value = await self.genshin_app.get_user_talent_notification_enabled_str(
-                    i.user.id, i.locale
-                )
-                embed.add_field(
-                    name=text_map.get(159, i.locale, user_locale), value=value
-                )
-                view = TalentNotification.View(
-                    i.user,
-                    i.locale,
-                    user_locale,
-                    self.bot.db,
-                    self.genshin_app,
-                    self.bot.session,
-                )
-                await i.response.send_message(embed=embed, view=view)
-                view.message = await i.original_response()
-
-        elif function == 2:
-            if toggle == 0:
-                exists = await self.genshin_app.check_user_data(i.user.id)
-                if not exists:
-                    return await i.response.send_message(
-                        embed=error_embed(
-                            message=text_map.get(140, i.locale, user_locale)
-                        ).set_author(
-                            name=text_map.get(141, i.locale, user_locale),
-                            icon_url=i.user.display_avatar.url,
-                        )
-                    )
-                result, success = await self.genshin_app.set_pot_nofitication(
-                    i.user.id, i.locale, 0
-                )
-                await i.response.send_message(embed=result, ephemeral=not success)
-            else:
-                modal = PotReminder.Modal(i.locale, user_locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                result, success = await self.genshin_app.set_pot_nofitication(
-                    i.user.id,
-                    i.locale,
-                    1,
-                    int(modal.threshold.value),
-                    int(modal.max_notif.value),
-                )
-                await i.followup.send(embed=result, ephemeral=not success)
-
-        elif function == 3:
-            embed = default_embed(
-                message=f"1. {text_map.get(308, i.locale, user_locale)}\n"
-                f"2. {text_map.get(309, i.locale, user_locale)}\n"
-                f"3. {text_map.get(310, i.locale, user_locale)}"
-            )
-            embed.set_author(
-                name=text_map.get(311, i.locale, user_locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embed.set_image(url="https://i.imgur.com/sYg4SpD.gif")
-            await i.response.send_message(embed=embed, ephemeral=True)
+    async def remind(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        await return_notification_menu(i, user_locale or i.locale, True)
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
@@ -653,12 +397,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         domains = await ambr.get_domain()
         character_upgrades = await ambr.get_character_upgrade()
         weapon_upgrades = await ambr.get_weapon_upgrade()
-
         today_domains = []
         for domain in domains:
             if domain.weekday == datetime.today().weekday():
                 today_domains.append(domain)
-
         for domain in today_domains:
             characters: Dict[int, Character] = {}
             for reward in domain.rewards:
@@ -668,7 +410,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                             characters[upgrade.character_id] = (
                                 await ambr.get_character(upgrade.character_id)
                             )[0]
-
             weapons: Dict[int, Weapon] = {}
             for reward in domain.rewards:
                 for upgrade in weapon_upgrades:
@@ -677,17 +418,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                             [weapon] = await ambr.get_weapon(upgrade.weapon_id)
                             if not weapon.default_icon:
                                 weapons[upgrade.weapon_id] = weapon
-
             # merge two dicts
             items = characters | weapons
             chunks = list(divide_dict(items, 12))
-
             for chunk in chunks:
                 result.append({"domain": domain, "items": chunk})
-
         embeds = []
         options = []
-
         for index, items in enumerate(result):
             embed = default_embed(
                 f"{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
@@ -729,7 +466,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             first += 25
             row += 1
-
         await DomainPaginator(
             i,
             embeds,
@@ -752,7 +488,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="uid",
         description=_(
-            "Search a user's genshin UID (if they registered in shenhe)", hash=448
+            "Search a user's genshin UID (if they are registered in shenhe)", hash=448
         ),
     )
     @app_commands.rename(player=_("user", hash=415))
@@ -772,7 +508,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             c = await self.bot.db.cursor()
         c: aiosqlite.Cursor
         await c.execute(
-            "SELECT uid FROM genshin_accounts WHERE user_id = ?", (player.id,)
+            "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1", (player.id,)
         )
         uid = await c.fetchone()
         if uid is None:
@@ -800,15 +536,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=449,
         ),
     )
-    @app_commands.rename(member=_("user", hash=415), custom_uid="uid")
+    @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
         member=_("check other user's data", hash=416),
-        custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
-    async def profile(
-        self, i: Interaction, member: User = None, custom_uid: int = None
-    ):
-        await self.profile_command(i, member, custom_uid, False)
+    async def profile(self, i: Interaction, member: User = None):
+        await self.profile_command(i, member, False)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
         await self.profile_command(i, member)
@@ -817,43 +550,16 @@ class GenshinCog(commands.Cog, name="genshin"):
         self,
         i: Interaction,
         member: User = None,
-        custom_uid: int = None,
         ephemeral: bool = True,
     ):
+        check = await check_account_predicate(i, member or i.user)
+        if not check:
+            return
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         enka_locale = to_enka(user_locale or i.locale)
         uid = await self.genshin_app.get_user_uid(member.id)
-        uid = custom_uid or uid
-        if uid is None:
-            if i.guild is not None and i.guild.id == 916838066117824553:
-                c: aiosqlite.Cursor = await self.bot.main_db.cursor()
-                await c.execute(
-                    "SELECT uid FROM genshin_accounts WHERE user_id = ?", (member.id,)
-                )
-                uid = await c.fetchone()
-                if uid is None:
-                    return await i.followup.send(
-                        embed=error_embed(
-                            message="請先至 <#978871680019628032> 設置 UID!"
-                        ).set_author(
-                            name="找不到 UID!", icon_url=member.display_avatar.url
-                        ),
-                        ephemeral=True,
-                    )
-                else:
-                    uid = uid[0]
-            else:
-                return await i.followup.send(
-                    embed=error_embed(
-                        message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
-                    ).set_author(
-                        name=text_map.get(141, i.locale, user_locale),
-                        icon_url=member.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI(enka_locale) as enka:
@@ -872,7 +578,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                     )
                 else:
                     data = cache
-
         if data.characters is None:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -883,10 +588,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-        
-        if cache is None:
+        if cache is None or cache.characters is None:
             cache = data
-
         c_dict = {}
         d_dict = {}
         new_dict = {}
@@ -900,7 +603,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             cache.characters.append(character)
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             enka_cache[uid] = cache
-
         from_cache = []
         for c in cache.characters:
             found = False
@@ -910,17 +612,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                     break
             if not found:
                 from_cache.append(c.id)
-
         data = cache
-
         with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
             eng_cache = enka_eng_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
             eng_data = await enka.fetch_user(uid)
-
         if eng_cache is None:
             eng_cache = eng_data
-
         c_dict = {}
         d_dict = {}
         new_dict = {}
@@ -934,7 +632,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             eng_cache.characters.append(character)
         with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
             enka_eng_cache[uid] = eng_cache
-
         embeds = {}
         sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
         overview = default_embed(
@@ -981,13 +678,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
                 inline=False,
             )
-
             # talents
             value = ""
             for skill in character.skills:
                 value += f"{skill.name} | Lvl. {skill.level}\n"
             embed.add_field(name=text_map.get(94, i.locale, user_locale), value=value)
-
             # weapon
             weapon = character.equipments[-1]
             weapon_sub_stats = ""
@@ -1005,7 +700,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                 name=member.display_name, icon_url=member.display_avatar.url
             )
             embeds[str(character.id)] = embed
-
             # artifacts
             artifact_embed = default_embed(
                 f"{character.name} | {text_map.get(92, i.locale, user_locale)}"
@@ -1032,26 +726,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                 artifact_embed.set_footer(text=text_map.get(300, i.locale, user_locale))
                 index += 1
             artifact_embeds[str(character.id)] = artifact_embed
-
-        for embed in list(embeds.values()):
-            if custom_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=member.display_name, icon_url=member.display_avatar.url
-                )
-        for embed in list(artifact_embeds.values()):
-            if custom_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {custom_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=member.display_name, icon_url=member.display_avatar.url
-                )
-
         view = EnkaProfile.View(
             embeds,
             artifact_embeds,
@@ -1063,29 +737,18 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.bot.db,
             i.locale,
             user_locale,
-            custom_uid,
             data.characters,
             i.client.browser,
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
 
+    @check_cookie()
     @app_commands.command(
         name="redeem", description=_("Redeem a gift code (needs /register)", hash=450)
     )
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        exists = await self.genshin_app.check_user_data(i.user.id)
-        if not exists:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(140, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-            )
         result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
         await i.response.send_message(embed=result, ephemeral=not success)
 
@@ -1102,19 +765,15 @@ class GenshinCog(commands.Cog, name="genshin"):
             overview: Dict = await r.json()
         async with self.bot.session.get(event_details_API) as r:
             details: Dict = await r.json()
-
         type_list = overview["data"]["type_list"]
         options = []
         for type in type_list:
             options.append(SelectOption(label=type["mi18n_name"], value=type["id"]))
-
         # get a dict of details
         detail_dict = {}
         for event in details["data"]["list"]:
             detail_dict[event["ann_id"]] = event["content"]
-
         first_id = None
-
         embeds = {}
         for event_list in overview["data"]["list"]:
             list = event_list["list"]
@@ -1140,7 +799,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                     inline=False,
                 )
                 embeds[event["type"]].append(embed)
-
         await GeneralPaginator(
             i,
             embeds[first_id],
@@ -1148,6 +806,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             [EventTypeChooser.Select(options, embeds, i.locale, user_locale)],
         ).start(followup=True)
 
+    @app_commands.guild_only()
     @app_commands.command(
         name="leaderboard", description=_("View different leaderbaords", hash=453)
     )
@@ -1163,22 +822,19 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def leaderboard(self, i: Interaction, type: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-
         if type == 0:
             # fetch the leaderboard from database
             await c.execute("SELECT user_id, achievements FROM leaderboard")
             leaderboard = await c.fetchall()
-
             # sort the leaderboard
             leaderboard.sort(key=lambda tup: tup[1], reverse=True)
-
             # convert data into str
             str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                achievement_num = tuple[1]
+            for index, tpl in enumerate(leaderboard):
+                user_id = tpl[0]
+                achievement_num = tpl[1]
                 if i.guild is None:
                     member = i.client.get_user(user_id)
                 else:
@@ -1189,10 +845,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                     user_rank = f"#{rank}"
                 str_list.append(f"{rank}. {member.display_name} - {achievement_num}\n")
                 rank += 1
-
             # 10 str per page
             str_list = list(divide_chunks(str_list, 10))
-
             # write the str into embed
             embeds = []
             for str_list in str_list:
@@ -1214,7 +868,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-
         elif type == 1:
             view = ArtifactLeaderboard.View(i.user, self.bot.db, i.locale, user_locale)
             await i.response.send_message(
@@ -1228,26 +881,23 @@ class GenshinCog(commands.Cog, name="genshin"):
             await view.wait()
             if view.sub_stat is None:
                 return
-
             await c.execute(
                 "SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?",
                 (view.sub_stat,),
             )
             leaderboard = await c.fetchall()
-
             leaderboard.sort(
                 key=lambda tup: float(str(tup[4]).replace("%", "")), reverse=True
             )
-
             str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tuple in enumerate(leaderboard):
-                user_id = tuple[0]
-                avatar_id = tuple[1]
-                artifact_name = tuple[2]
-                equip_type = tuple[3]
-                sub_stat_value = tuple[4]
+            for index, tpl in enumerate(leaderboard):
+                user_id = tpl[0]
+                avatar_id = tpl[1]
+                artifact_name = tpl[2]
+                equip_type = tpl[3]
+                sub_stat_value = tpl[4]
                 if i.guild is None:
                     member = i.client.get_user(user_id)
                 else:
@@ -1260,9 +910,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
                 )
                 rank += 1
-
             str_list = divide_chunks(str_list, 10)
-
             embeds = []
             for str_list in str_list:
                 message = ""
@@ -1292,15 +940,12 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-
         elif type == 2:
             await c.execute("SELECT DISTINCT user_id FROM wish_history")
-
             leaderboard = await c.fetchall()
-
             leaderboard_dict = {}
-            for index, tuple in enumerate(leaderboard):
-                member = i.guild.get_member(tuple[0])
+            for index, tpl in enumerate(leaderboard):
+                member = i.guild.get_member(tpl[0])
                 if member is not None:
                     (
                         get_num,
@@ -1319,18 +964,14 @@ class GenshinCog(commands.Cog, name="genshin"):
                         ),
                         2,
                     )
-
                     if player_luck > 0:
-                        leaderboard_dict[tuple[0]] = player_luck
-
+                        leaderboard_dict[tpl[0]] = player_luck
             leaderboard_dict = dict(
                 sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True)
             )
-
             leaderboard_str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-
             for user_id, luck in leaderboard_dict.items():
                 if i.guild is None:
                     member = i.client.get_user(user_id)
@@ -1344,9 +985,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     f"{rank}. {member.display_name} - {luck}%\n"
                 )
                 rank += 1
-
             leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
-
             embeds = []
             for str_list in leaderboard_str_list:
                 message = ""
@@ -1357,7 +996,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                     message,
                 )
                 embeds.append(embed)
-
             try:
                 await GeneralPaginator(i, embeds, self.bot.db).start()
             except ValueError:
@@ -1368,38 +1006,21 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ),
                     ephemeral=True,
                 )
-
         elif type == 3:
+            check = await check_account_predicate()
+            if not check:
+                return
             await i.response.defer(ephemeral=True)
-            await c.execute(
-                "SELECT uid FROM genshin_accounts WHERE user_id = ?", (i.user.id,)
-            )
-            uid = await c.fetchone()
-            if (uid is None) or (uid[0] is None):
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(141, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+            uid = await self.genshin_app.get_user_uid(i.user.id)
             try:
                 async with EnkaNetworkAPI("cht") as enka:
                     try:
-                        data = await enka.fetch_user(uid[0])
+                        data = await enka.fetch_user(uid)
                     except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                         return await i.followup.send(
                             embed=error_embed(
                                 message=text_map.get(519, i.locale, user_locale)
                             ).set_author(
-                                name=text_map.get(286, i.locale, user_locale),
-                                icon_url=i.user.display_avatar.url,
-                            ),
-                            ephemeral=True,
-                        )
-                    except VaildateUIDError:
-                        return await i.followup.send(
-                            embed=error_embed().set_author(
                                 name=text_map.get(286, i.locale, user_locale),
                                 icon_url=i.user.display_avatar.url,
                             ),
@@ -1586,9 +1207,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             for query_id, query_names in queries.items():
                 everything_dict[query_names[ambr_top_locale]] = query_id
                 query_list.append(query_names[ambr_top_locale])
-
         query_list = list(dict.fromkeys(query_list))
-
         result = [
             app_commands.Choice(name=query, value=everything_dict[query])
             for query in query_list
@@ -1601,30 +1220,19 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="activity",
         description=_("View your past genshin activity stats", hash=459),
     )
-    @app_commands.rename(member=_("user", hash=415), custom_uid="uid")
+    @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
         member=_("check other user's data", hash=416),
-        custom_uid=_("The UID of the player you're trying to search with", hash=418),
     )
     async def activity(
-        self, i: Interaction, member: User = None, custom_uid: int = None
+        self, i: Interaction, member: User = None
     ):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        check = await check_account_predicate(i, member or i.user)
+        if not check:
+            return
         member = member or i.user
-        uid = await self.genshin_app.get_user_uid(member.id)
-        uid = custom_uid or uid
-        if uid is None:
-            return await i.response.send_message(
-                embed=error_embed(
-                    message=f"{text_map.get(140, i.locale, user_locale)}\n{text_map.get(283, i.locale, user_locale)}"
-                ).set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
         result, success = await self.genshin_app.get_activities(
-            member.id, uid, i.locale
+            member.id, i.locale
         )
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)

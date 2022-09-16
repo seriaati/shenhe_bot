@@ -14,7 +14,7 @@ from apps.wish.wish_app import (
 from discord import Interaction, User, app_commands, User
 from discord.app_commands import Choice
 from discord.ext import commands
-from UI_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
+from ui_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
 from discord.app_commands import locale_str as _
@@ -63,18 +63,18 @@ class WishCog(commands.GroupCog, name="wish"):
 
         user_wish = []
 
-        for index, tuple in enumerate(user_wish_history):
-            wish_name = tuple[1]
-            wish_rarity = tuple[2]
-            wish_time = (datetime.strptime(tuple[3], "%Y/%m/%d %H:%M:%S")).strftime(
+        for index, tpl in enumerate(user_wish_history):
+            wish_name = tpl[1]
+            wish_rarity = tpl[2]
+            wish_time = (datetime.strptime(tpl[3], "%Y/%m/%d %H:%M:%S")).strftime(
                 "%Y/%m/%d"
             )
-            wish_type = tuple[4]
+            wish_type = tpl[4]
             if (
                 wish_rarity == 5 or wish_rarity == 4
             ):  # mark high rarity wishes with blue
                 user_wish.append(
-                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://github.com/seriaati/shenhe_bot)"
+                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://seriaati.github.io/shenhe_website/)"
                 )
             else:
                 user_wish.append(

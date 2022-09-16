@@ -46,9 +46,9 @@ async def get_user_event_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[i
 
     standard_characters = get_standard_characters()
 
-    for index, tuple in enumerate(user_wish_history):
-        wish_name = tuple[0]
-        wish_rarity = tuple[1]
+    for index, tpl in enumerate(user_wish_history):
+        wish_name = tpl[0]
+        wish_rarity = tpl[1]
         if wish_rarity == 5:
             get_num += 1
             if wish_name in standard_characters:
@@ -86,9 +86,9 @@ async def get_user_weapon_wish(user_id: int, db: aiosqlite.Connection) -> Tuple[
     last_name = ''  # 最後一個抽到的武器的名字
     pull_state = 0  # 墊了幾抽
 
-    for index, tuple in enumerate(user_wish_history):
-        wish_name = tuple[0]
-        wish_rarity = tuple[1]
+    for index, tpl in enumerate(user_wish_history):
+        wish_name = tpl[0]
+        wish_rarity = tpl[1]
         if wish_rarity != 5:
             pull_state += 1
         else:
@@ -122,9 +122,9 @@ async def get_user_wish_overview(user_id: int, db: aiosqlite.Connection) -> Dict
         total = len(user_wish_history)  # 總抽
         left_pull = 0  # 墊抽
         std = 0 # 常駐
-        for index, tuple in enumerate(user_wish_history):
-            wish_rarity = tuple[0]
-            wish_name = tuple[1]
+        for index, tpl in enumerate(user_wish_history):
+            wish_rarity = tpl[0]
+            wish_name = tpl[1]
             if wish_name in standard_characters:
                 std += 1
             if wish_rarity == 5:

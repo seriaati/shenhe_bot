@@ -37,26 +37,62 @@ class AdminCog(commands.Cog, name="admin"):
         return app_commands.check(predicate)
 
     @is_seria()
+    @app_commands.command(
+        name="maintenance", description=_("Admin usage only", hash=496)
+    )
+    async def maintenance(self, i: Interaction, time: str = None):
+        i.client.maintenance = not i.client.maintenance
+        if time is not None:
+            i.client.maintenance_time = time
+        await i.response.send_message("success", ephemeral=True)
+
+    @is_seria()
     @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
     @app_commands.rename(module_name="name")
-    async def reload(self, i: Interaction, module_name: str):
-        try:
-            importlib.reload(sys.modules[module_name])
-        except KeyError:
-            return await i.response.send_message(
-                embed=error_embed(message=module_name).set_author(
-                    name="Module not found", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
+    async def reload(self, i: Interaction, module_name: str = None):
+        await i.response.defer(ephemeral=True)
+        if module_name is None:
+            modules = list(sys.modules.values())
+            for module in modules:
+                if module is None:
+                    continue
+                if module.__name__.startswith(
+                    (
+                        "cogs.",
+                        "apps.",
+                        "data.",
+                        "text_maps.",
+                        "ui_elements.",
+                        "utility.",
+                        "yelan.",
+                    )
+                ):
+                    try:
+                        importlib.reload(module)
+                    except Exception as e:
+                        return await i.followup.send(
+                            embed=error_embed(module.__name__, f"```{e}```"),
+                            ephemeral=True,
+                        )
+            await i.followup.send("success", ephemeral=True)
         else:
-            return await i.response.send_message(
-                embed=default_embed(message=module_name).set_author(
-                    name="Reload completed", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
-    
+            try:
+                importlib.reload(sys.modules[module_name])
+            except KeyError:
+                return await i.response.send_message(
+                    embed=error_embed(message=module_name).set_author(
+                        name="Module not found", icon_url=i.user.display_avatar.url
+                    ),
+                    ephemeral=True,
+                )
+            else:
+                return await i.response.send_message(
+                    embed=default_embed(message=module_name).set_author(
+                        name="Reload completed", icon_url=i.user.display_avatar.url
+                    ),
+                    ephemeral=True,
+                )
+
     @reload.autocomplete("module_name")
     async def query_autocomplete(
         self, i: Interaction, current: str
@@ -64,7 +100,7 @@ class AdminCog(commands.Cog, name="admin"):
         query_list = []
         for key in list(sys.modules.keys()):
             query_list.append(key)
-            
+
         result = [
             app_commands.Choice(name=query, value=query)
             for query in query_list
@@ -80,39 +116,16 @@ class AdminCog(commands.Cog, name="admin"):
         await i.followup.send("sync done")
 
     @is_seria()
-    @app_commands.command(name="status", description=_("Admin usage only", hash=496))
-    async def status(self, i: Interaction):
-        await i.response.defer()
-        embed = default_embed()
-        embed.add_field(
-            name="Latency", value=f"{round(self.bot.latency*1000)} ms", inline=False
-        )
-        embed.add_field(
-            name="Servers",
-            value=f"Connected to {len(self.bot.guilds)} servers",
-            inline=False,
-        )
-        count = 0
-        for guild in self.bot.guilds:
-            count += len(guild.members)
-        embed.add_field(name="Users", value=f"{count} users", inline=False)
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute("SELECT COUNT(user_id) FROM active_users")
-        (count,) = await c.fetchone()
-        embed.add_field(name="Active Users", value=f"{count} users", inline=False)
-        await i.followup.send(embed=embed)
-
-    @is_seria()
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
     async def annouce(
         self, i: Interaction, title: str, description: str, url: str = None
     ):
         await i.response.defer(ephemeral=True)
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute("SELECT user_id FROM active_users")
+        await c.execute("SELECT user_id FROM user_settings WHERE dev_msg = 1")
         user_ids = await c.fetchall()
-        for index, tuple in enumerate(user_ids):
-            user_id = tuple[0]
+        for _, tpl in enumerate(user_ids):
+            user_id = tpl[0]
             user = i.client.get_user(user_id)
             if user is None:
                 continue
@@ -135,13 +148,6 @@ class AdminCog(commands.Cog, name="admin"):
     @is_seria()
     @app_commands.command(name="update", description=_("Admin usage only", hash=496))
     async def update(self, i: Interaction):
-        if i.user.id != 410036441129943050:
-            return await i.response.send_message(
-                embed=error_embed(message="你不是小雪本人").set_author(
-                    name="生物驗證失敗", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
         await i.response.send_message(
             embed=default_embed().set_author(
                 name="更新資料開始", icon_url=i.user.display_avatar.url
@@ -273,50 +279,6 @@ class AdminCog(commands.Cog, name="admin"):
                 name="武器", icon_url=i.user.display_avatar.url
             )
         )
-
-        # check emojis
-        message = ""
-        for artifact, artifact_info in artifacts_map.items():
-            message += artifact_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="聖遺物 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        message = ""
-        for character, character_info in characters_map.items():
-            message += character_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="角色 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        message = ""
-        for weapon, weapon_info in weapons_map.items():
-            message += weapon_info["emoji"]
-        await i.followup.send(
-            embed=default_embed(message=message).set_author(
-                name="武器 emoji", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        messages = []
-        message = ""
-        for consumable, consumable_info in consumables_map.items():
-            if (len(message) + len(consumable_info["emoji"])) > 4096:
-                messages.append(message)
-                message = ""
-            message += consumable_info["emoji"]
-        messages.append(message)
-
-        for message in messages:
-            await i.followup.send(
-                embed=default_embed(message=message).set_author(
-                    name="素材 emoji", icon_url=i.user.display_avatar.url
-                )
-            )
 
         await i.followup.send(
             embed=default_embed().set_author(

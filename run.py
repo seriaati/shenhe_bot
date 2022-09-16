@@ -71,6 +71,8 @@ class ShenheBot(commands.Bot):
         self.area_card_cache = TTLCache(maxsize=1000, ttl=180)
 
         # bot variables
+        self.maintenance = False
+        self.maintenance_time = ""
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect("shenhe.db")
         self.main_db = await aiosqlite.connect(f"../shenhe_main/main.db")
@@ -88,12 +90,14 @@ class ShenheBot(commands.Bot):
         chinese = []
         for x in range(2):
             await c.execute(
-                "SELECT ltuid, ltoken FROM genshin_accounts WHERE cn_region = ?", (x,)
+                "SELECT ltuid, ltoken FROM user_accounts WHERE china = ?", (x,)
             )
             data = await c.fetchall()
-            for _, tuple in enumerate(data):
-                ltuid = tuple[0]
-                ltoken = tuple[1]
+            for _, tpl in enumerate(data):
+                ltuid = tpl[0]
+                ltoken = tpl[1]
+                if ltuid is None:
+                    continue
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
                 if x == 0:
                     overseas.append(cookie)
@@ -179,8 +183,8 @@ async def on_interaction(i: Interaction):
 
     c = await bot.db.cursor()
     await c.execute(
-        "INSERT INTO active_users (user_id) VALUES (?) ON CONFLICT (user_id) DO UPDATE SET count = count + 1 WHERE user_id = ?",
-        (i.user.id, i.user.id),
+        "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
+        (i.user.id,),
     )
     await bot.db.commit()
 
@@ -191,14 +195,32 @@ async def on_interaction(i: Interaction):
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
-            log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}"
-            )
+            log.info(f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}")
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 
 
 tree = bot.tree
+
+
+async def check_maintenance(i: Interaction, /) -> bool:
+    if i.user.id == i.client.owner_id:
+        return True
+    else:
+        if i.client.maintenance:
+            await i.response.send_message(
+                embed=error_embed(
+                    "申鶴正在維護中\nShenhe is under maintenance",
+                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",
+                ).set_thumbnail(url=i.client.user.avatar.url),
+                ephemeral=True,
+            )
+            return False
+        else:
+            return True
+
+
+tree.interaction_check = check_maintenance
 
 
 @tree.error

@@ -21,6 +21,17 @@ from yelan.draw import draw_talent_reminder_card
 import genshin
 
 
+def schedule_error_handler(func):
+    async def inner_function(*args, **kwargs):
+        try:
+            await func(*args, **kwargs)
+        except Exception as e:
+            log.warning(f"[Schedule] Error in {func.__name__}: {e}")
+            sentry_sdk.capture_exception(e)
+
+    return inner_function
+
+
 class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
@@ -31,6 +42,8 @@ class Schedule(commands.Cog):
         self.talent_notification.start()
         self.change_status.start()
         self.pot_notification.start()
+        if not self.bot.debug:
+            self.update_text_map.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
@@ -38,6 +51,8 @@ class Schedule(commands.Cog):
         self.talent_notification.cancel()
         self.change_status.cancel()
         self.pot_notification.cancel()
+        if not self.bot.debug:
+            self.update_text_map.cancel()
 
     @tasks.loop(minutes=10)
     async def change_status(self):
@@ -50,340 +65,301 @@ class Schedule(commands.Cog):
         await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
 
     @tasks.loop(hours=24)
+    @schedule_error_handler
     async def claim_reward(self):
-        try:
-            log.info("[Schedule] Claim Reward Start")
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute("SELECT user_id FROM genshin_accounts")
-            users = await c.fetchall()
-            for _, tuple in enumerate(users):
-                user_id = tuple[0]
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
-                client = shenhe_user.client
-                client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
-                claimed = False
-                max_try = 10
-                current_try = 1
-                while not claimed:
-                    if current_try > max_try:
-                        break
-                    try:
-                        await client.claim_daily_reward()
-                    except genshin.errors.AlreadyClaimed:
-                        claimed = True
-                    except genshin.errors.InvalidCookies:
+        log.info("[Schedule] Claim Reward Start")
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
+        users = await c.fetchall()
+        for _, tpl in enumerate(users):
+            user_id = tpl[0]
+            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            client = shenhe_user.client
+            client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
+            claimed = False
+            max_try = 10
+            current_try = 1
+            while not claimed:
+                if current_try > max_try:
+                    break
+                try:
+                    await client.claim_daily_reward()
+                except genshin.errors.AlreadyClaimed:
+                    claimed = True
+                except genshin.errors.InvalidCookies:
+                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                except genshin.errors.GenshinException as e:
+                    if e.retcode == -10002:
                         log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                    except genshin.errors.GenshinException as e:
-                        if e.retcode == -10002:
-                            log.warning(f'[Schedule] Invalid Cookies: {user_id}')
-                        else:
-                            log.warning(f"[Schedule] Claim Reward Error: {e}")
-                            sentry_sdk.capture_exception(e)
-                    except Exception as e:
+                    else:
                         log.warning(f"[Schedule] Claim Reward Error: {e}")
                         sentry_sdk.capture_exception(e)
-                    current_try += 1
-                    await asyncio.sleep(1)
-                await asyncio.sleep(3)
-            await self.bot.db.commit()
-            log.info("[Schedule] Claim Reward Ended")
-        except Exception as e:
-            log.warning(f"[Schedule] Claim Reward Error: {e}")
-            sentry_sdk.capture_exception(e)
+                except Exception as e:
+                    log.warning(f"[Schedule] Claim Reward Error: {e}")
+                    sentry_sdk.capture_exception(e)
+                current_try += 1
+                await asyncio.sleep(1)
+            await asyncio.sleep(3)
+        await self.bot.db.commit()
+        log.info("[Schedule] Claim Reward Ended")
 
     @tasks.loop(hours=1)
+    @schedule_error_handler
     async def pot_notification(self):
-        try:
-            log.info("[Schedule] Pot Notification Start")
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
+        log.info("[Schedule] Pot Notification Start")
+        now = datetime.now()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute(
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
+        )
+        users = await c.fetchall()
+        for _, tpl in enumerate(users):
+            user_id = tpl[0]
+            uid = tpl[1]
             await c.execute(
-                "SELECT user_id, pot_threshold, pot_current_notif, pot_max_notif, last_pot_notif_time FROM genshin_accounts WHERE pot_notif_toggle = 1"
+                "SELECT user_id, threshold, current, max, last_notif_time FROM pot_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
+                (user_id, uid),
             )
-            users = await c.fetchall()
-            now = datetime.now()
-            for index, tuple in enumerate(users):
-                user_id = tuple[0]
-                threshold = tuple[1]
-                current_notif = tuple[2]
-                max_notif = tuple[3]
-                last_notif_time = tuple[4]
-                last_notif_time = datetime.strptime(
-                    last_notif_time, "%Y/%m/%d %H:%M:%S"
-                )
-                time_diff = now - last_notif_time
-                if time_diff.total_seconds() < 7200:
-                    continue
+            data = await c.fetchone()
+            if data is None:
+                continue
+            user_id, threshold, current, max, last_notif_time = data
+            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            time_diff = now - last_notif_time
+            if time_diff.total_seconds() < 7200:
+                continue
 
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
-                try:
-                    notes = await shenhe_user.client.get_notes(shenhe_user.uid)
-                except genshin.errors.InvalidCookies:
-                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                except Exception as e:
-                    sentry_sdk.capture_exception(e)
-                    await c.execute(
-                        "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
-                        (user_id,),
+            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+            coin = notes.current_realm_currency
+            locale = shenhe_user.user_locale or "zh-TW"
+            if coin >= threshold and current < max:
+                if notes.current_realm_currency == notes.max_realm_currency:
+                    realm_recover_time = text_map.get(
+                        1, locale, shenhe_user.user_locale
                     )
                 else:
-                    coin = notes.current_realm_currency
-                    locale = shenhe_user.user_locale or "zh-TW"
-                    if coin >= threshold and current_notif < max_notif:
-                        if notes.current_realm_currency == notes.max_realm_currency:
-                            realm_recover_time = text_map.get(
-                                1, locale, shenhe_user.user_locale
-                            )
-                        else:
-                            realm_recover_time = format_dt(
-                                notes.realm_currency_recovery_time, "R"
-                            )
-                        embed = default_embed(
-                            message=f"{text_map.get(14, locale)}: {coin}/{notes.max_realm_currency}\n"
-                            f"{text_map.get(15, locale)}: {realm_recover_time}\n"
-                            f"{text_map.get(302, locale)}: {threshold}\n"
-                            f"{text_map.get(304, locale)}: {max_notif}"
-                        )
-                        embed.set_author(
-                            name=text_map.get(518, locale),
-                            icon_url=shenhe_user.discord_user.display_avatar.url,
-                        )
-                        embed.set_footer(text=text_map.get(305, locale))
-                        try:
-                            await shenhe_user.discord_user.send(embed=embed)
-                        except Forbidden:
-                            await c.execute(
-                                "UPDATE genshin_accounts SET pot_notif_toggle = 0 WHERE user_id = ?",
-                                (user_id,),
-                            )
-                        else:
-                            await c.execute(
-                                "UPDATE genshin_accounts SET pot_current_notif = ?, last_pot_notif_time = ? WHERE user_id = ?",
-                                (
-                                    current_notif + 1,
-                                    datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
-                                    user_id,
-                                ),
-                            )
-                    if coin < threshold:
-                        await c.execute(
-                            "UPDATE genshin_accounts SET pot_current_notif = 0 WHERE user_id = ?",
-                            (user_id,),
-                        )
+                    realm_recover_time = format_dt(
+                        notes.realm_currency_recovery_time, "R"
+                    )
+                embed = default_embed(
+                    message=f"{text_map.get(14, locale)}: {coin}/{notes.max_realm_currency}\n"
+                    f"{text_map.get(15, locale)}: {realm_recover_time}\n"
+                )
+                embed.set_author(
+                    name=text_map.get(518, locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
+                )
+                embed.set_footer(text=text_map.get(305, locale))
+                try:
+                    await shenhe_user.discord_user.send(embed=embed)
+                except Forbidden:
+                    await c.execute(
+                        "UPDATE pot_notification SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                        (user_id, uid),
+                    )
+                else:
+                    await c.execute(
+                        "UPDATE pot_notification SET current = ?, last_notif_time = ? WHERE user_id = ? AND uid = ?",
+                        (
+                            current + 1,
+                            datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
+                            user_id,
+                            uid,
+                        ),
+                    )
+            if coin < threshold:
+                await c.execute(
+                    "UPDATE pot_notification SET current = 0 WHERE user_id = ? AND uid = ?",
+                    (user_id, uid),
+                )
 
-                await asyncio.sleep(3.0)
-            await self.bot.db.commit()
-            log.info("[Schedule] Pot Notification Ended")
-        except Exception as e:
-            log.warning(f"[Schedule] Pot Notification Error: {e}")
-            sentry_sdk.capture_exception(e)
+            await asyncio.sleep(3.0)
+        await self.bot.db.commit()
+        log.info("[Schedule] Pot Notification Ended")
 
     @tasks.loop(hours=1)
+    @schedule_error_handler
     async def resin_notification(self):
-        try:
-            log.info("[Schedule] Resin Notification Start")
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute(
-                "SELECT user_id, resin_threshold, current_notif, max_notif, last_resin_notif_time FROM genshin_accounts WHERE resin_notification_toggle = 1"
-            )
-            users = await c.fetchall()
-            now = datetime.now()
-            for index, tuple in enumerate(users):
-                user_id = tuple[0]
-                threshold = tuple[1]
-                current_notif = tuple[2]
-                max_notif = tuple[3]
-                last_notif_time = tuple[4]
-                last_notif_time = datetime.strptime(
-                    last_notif_time, "%Y/%m/%d %H:%M:%S"
-                )
-                time_diff = now - last_notif_time
-                if time_diff.total_seconds() < 7200:
-                    continue
+        log.info("[Schedule] Resin Notification Start")
+        now = datetime.now()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute(
+            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL AND current = 1"
+        )
+        users = await c.fetchall()
 
-                shenhe_user = await self.genshin_app.get_user_data(user_id)
-                try:
-                    notes = await shenhe_user.client.get_notes(shenhe_user.uid)
-                except genshin.errors.InvalidCookies:
-                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                except Exception as e:
-                    sentry_sdk.capture_exception(e)
-                    await c.execute(
-                        "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
-                        (user_id,),
+        for _, tpl in enumerate(users):
+            user_id = tpl[0]
+            uid = tpl[1]
+            await c.execute(
+                "SELECT user_id, threshold, current, max, last_notif_time FROM resin_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
+                (user_id, uid),
+            )
+            data = await c.fetchone()
+            if data is None:
+                continue
+            user_id, threshold, current, max, last_notif_time = data
+            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            time_diff = now - last_notif_time
+            if time_diff.total_seconds() < 7200:
+                continue
+
+            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+            locale = shenhe_user.user_locale or "zh-TW"
+            resin = notes.current_resin
+            if resin >= threshold and current < max:
+                if resin == notes.max_resin:
+                    resin_recover_time = text_map.get(
+                        1, locale, shenhe_user.user_locale
                     )
                 else:
-                    locale = shenhe_user.user_locale or "zh-TW"
-                    resin = notes.current_resin
-                    if resin >= threshold and current_notif < max_notif:
-                        if resin == notes.max_resin:
-                            resin_recover_time = text_map.get(
-                                1, locale, shenhe_user.user_locale
-                            )
-                        else:
-                            resin_recover_time = format_dt(
-                                notes.resin_recovery_time, "R"
-                            )
-                        embed = default_embed(
-                            message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                            f"{text_map.get(15, locale)}: {resin_recover_time}\n"
-                            f"{text_map.get(302, locale)}: {threshold}\n"
-                            f"{text_map.get(304, locale)}: {max_notif}"
-                        )
-                        embed.set_footer(text=text_map.get(305, locale))
-                        embed.set_author(
-                            name=text_map.get(306, locale),
-                            icon_url=shenhe_user.discord_user.display_avatar.url,
-                        )
-                        try:
-                            await shenhe_user.discord_user.send(embed=embed)
-                        except Forbidden:
-                            await c.execute(
-                                "UPDATE genshin_accounts SET resin_notification_toggle = 0 WHERE user_id = ?",
-                                (user_id,),
-                            )
-                        else:
-                            await c.execute(
-                                "UPDATE genshin_accounts SET current_notif = ?, last_resin_notif_time = ? WHERE user_id = ?",
-                                (
-                                    current_notif + 1,
-                                    datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
-                                    user_id,
-                                ),
-                            )
-                    if resin < threshold:
-                        await c.execute(
-                            "UPDATE genshin_accounts SET current_notif = 0 WHERE user_id = ?",
-                            (user_id,),
-                        )
-                await asyncio.sleep(3.0)
-            await self.bot.db.commit()
-            log.info("[Schedule] Resin Notifiaction Ended")
-        except Exception as e:
-            log.warning(f"[Schedule] Resin Notification Error: {e}")
-            sentry_sdk.capture_exception(e)
-
-    @tasks.loop(hours=24)
-    async def talent_notification(self):
-        try:
-            log.info("[Schedule] Talent Notification Start")
-            today_weekday = datetime.today().weekday()
-            client = AmbrTopAPI(self.bot.session, "cht")
-            domains = await client.get_domain()
-            c: aiosqlite.Cursor = await self.bot.db.cursor()
-            await c.execute(
-                "SELECT user_id, talent_notif_chara_list FROM genshin_accounts WHERE talent_notif_toggle = 1"
-            )
-            users = await c.fetchall()
-            for index, tuple in enumerate(users):
-                user_id = tuple[0]
-                user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(
-                    user_id
+                    resin_recover_time = format_dt(notes.resin_recovery_time, "R")
+                embed = default_embed(
+                    message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
+                    f"{text_map.get(15, locale)}: {resin_recover_time}"
                 )
-                user_locale = await get_user_locale(user_id, self.bot.db)
-                user_notification_list = ast.literal_eval(tuple[1])
-                notified = {}
-                for character_id in user_notification_list:
-                    for domain in domains:
-                        if domain.weekday == today_weekday:
-                            for item in domain.rewards:
-                                [upgrade] = await client.get_character_upgrade(
-                                    character_id
-                                )
-                                if item in upgrade.items:
-                                    if character_id not in notified:
-                                        notified[character_id] = []
-                                    if item.id not in notified[character_id]:
-                                        notified[character_id].append(item.id)
-
-                for character_id, materials in notified.items():
-                    [character] = await client.get_character(character_id)
-
-                    fp = await draw_talent_reminder_card(
-                        materials, user_locale or "zh-TW"
+                embed.set_footer(text=text_map.get(305, locale))
+                embed.set_author(
+                    name=text_map.get(306, locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
+                )
+                try:
+                    await shenhe_user.discord_user.send(embed=embed)
+                except Forbidden:
+                    await c.execute(
+                        "UPDATE resin_notification SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                        (user_id, uid),
                     )
-                    fp.seek(0)
-                    file = File(fp, "reminder_card.jpeg")
-                    embed = default_embed(
-                        message=text_map.get(314, "zh-TW", user_locale)
+                else:
+                    await c.execute(
+                        "UPDATE resin_notification SET current = ?, last_notif_time = ? WHERE user_id = ? AND uid = ?",
+                        (
+                            current + 1,
+                            datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
+                            user_id,
+                            uid,
+                        ),
                     )
-                    embed.set_author(
-                        name=text_map.get(313, "zh-TW", user_locale),
-                        icon_url=character.icon,
-                    )
-                    embed.set_image(url="attachment://reminder_card.jpeg")
-
-                    await user.send(embed=embed, files=[file])
-
-            log.info("[Schedule] Talent Notifiaction Ended")
-        except Exception as e:
-            log.warning(f"[Schedule] Talent Notification Error: {e}")
-            sentry_sdk.capture_exception(e)
+            if resin < threshold:
+                await c.execute(
+                    "UPDATE user_accounts SET current = 0 WHERE user_id = ? AND uid = ?",
+                    (user_id, uid),
+                )
+        await asyncio.sleep(3.0)
+        await self.bot.db.commit()
+        log.info("[Schedule] Resin Notifiaction Ended")
 
     @tasks.loop(hours=24)
-    async def update_text_map(self):
-        try:
-            log.info("[Schedule][Update Text Map] Start")
-            # character, weapon, material, artifact text map
-            things_to_update = ["avatar", "weapon", "material", "reliquary"]
-            for thing in things_to_update:
-                dict = {}
-                for lang in list(to_ambr_top_dict.values()):
-                    async with self.bot.session.get(
-                        f"https://api.ambr.top/v2/{lang}/{thing}"
-                    ) as r:
-                        data = await r.json()
-                    for character_id, character_info in data["data"]["items"].items():
-                        if character_id not in dict:
-                            dict[character_id] = {}
-                        dict[character_id][lang] = character_info["name"]
-                if thing == "avatar":
-                    dict["10000007"] = {
-                        "chs": "旅行者",
-                        "cht": "旅行者",
-                        "de": "Reisende",
-                        "en": "Traveler",
-                        "es": "Viajera",
-                        "fr": "Voyageuse",
-                        "jp": "旅人",
-                        "kr": "여행자",
-                        "th": "นักเดินทาง",
-                        "pt": "Viajante",
-                        "ru": "Путешественница",
-                        "vi": "Nhà Lữ Hành",
-                    }
-                    dict["10000005"] = {
-                        "chs": "旅行者",
-                        "cht": "旅行者",
-                        "de": "Reisende",
-                        "en": "Traveler",
-                        "es": "Viajera",
-                        "fr": "Voyageuse",
-                        "jp": "旅人",
-                        "kr": "여행자",
-                        "th": "นักเดินทาง",
-                        "pt": "Viajante",
-                        "ru": "Путешественница",
-                        "vi": "Nhà Lữ Hành",
-                    }
-                with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
-                    json.dump(dict, f, indent=4, ensure_ascii=False)
+    @schedule_error_handler
+    async def talent_notification(self):
+        log.info("[Schedule] Talent Notification Start")
+        today_weekday = datetime.today().weekday()
+        client = AmbrTopAPI(self.bot.session, "cht")
+        domains = await client.get_domain()
+        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        await c.execute(
+            "SELECT user_id, character_list FROM talent_notification WHERE toggle = 1"
+        )
+        users = await c.fetchall()
+        for _, tpl in enumerate(users):
+            user_id = tpl[0]
+            user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            user_notification_list = ast.literal_eval(tpl[1])
+            notified = {}
+            for character_id in user_notification_list:
+                for domain in domains:
+                    if domain.weekday == today_weekday:
+                        for item in domain.rewards:
+                            [upgrade] = await client.get_character_upgrade(character_id)
+                            if item in upgrade.items:
+                                if character_id not in notified:
+                                    notified[character_id] = []
+                                if item.id not in notified[character_id]:
+                                    notified[character_id].append(item.id)
 
-            # daily dungeon text map
+            for character_id, materials in notified.items():
+                [character] = await client.get_character(character_id)
+
+                fp = await draw_talent_reminder_card(materials, user_locale or "zh-TW")
+                fp.seek(0)
+                file = File(fp, "reminder_card.jpeg")
+                embed = default_embed(message=text_map.get(314, "zh-TW", user_locale))
+                embed.set_author(
+                    name=text_map.get(313, "zh-TW", user_locale),
+                    icon_url=character.icon,
+                )
+                embed.set_image(url="attachment://reminder_card.jpeg")
+
+                await user.send(embed=embed, files=[file])
+
+        log.info("[Schedule] Talent Notifiaction Ended")
+
+    @tasks.loop(hours=24)
+    @schedule_error_handler
+    async def update_text_map(self):
+        log.info("[Schedule][Update Text Map] Start")
+        # character, weapon, material, artifact text map
+        things_to_update = ["avatar", "weapon", "material", "reliquary"]
+        for thing in things_to_update:
             dict = {}
             for lang in list(to_ambr_top_dict.values()):
                 async with self.bot.session.get(
-                    f"https://api.ambr.top/v2/{lang}/dailyDungeon"
+                    f"https://api.ambr.top/v2/{lang}/{thing}"
                 ) as r:
                     data = await r.json()
-                for weekday, domains in data["data"].items():
-                    for domain, domain_info in domains.items():
-                        if str(domain_info["id"]) not in dict:
-                            dict[str(domain_info["id"])] = {}
-                        dict[str(domain_info["id"])][lang] = domain_info["name"]
-            with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
+                for character_id, character_info in data["data"]["items"].items():
+                    if character_id not in dict:
+                        dict[character_id] = {}
+                    dict[character_id][lang] = character_info["name"]
+            if thing == "avatar":
+                dict["10000007"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
+                dict["10000005"] = {
+                    "chs": "旅行者",
+                    "cht": "旅行者",
+                    "de": "Reisende",
+                    "en": "Traveler",
+                    "es": "Viajera",
+                    "fr": "Voyageuse",
+                    "jp": "旅人",
+                    "kr": "여행자",
+                    "th": "นักเดินทาง",
+                    "pt": "Viajante",
+                    "ru": "Путешественница",
+                    "vi": "Nhà Lữ Hành",
+                }
+            with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
                 json.dump(dict, f, indent=4, ensure_ascii=False)
-        except Exception as e:
-            sentry_sdk.capture_exception(e)
+
+        # daily dungeon text map
+        dict = {}
+        for lang in list(to_ambr_top_dict.values()):
+            async with self.bot.session.get(
+                f"https://api.ambr.top/v2/{lang}/dailyDungeon"
+            ) as r:
+                data = await r.json()
+            for _, domains in data["data"].items():
+                for _, domain_info in domains.items():
+                    if str(domain_info["id"]) not in dict:
+                        dict[str(domain_info["id"])] = {}
+                    dict[str(domain_info["id"])][lang] = domain_info["name"]
+        with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
+            json.dump(dict, f, indent=4, ensure_ascii=False)
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):

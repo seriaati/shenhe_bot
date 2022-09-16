@@ -108,10 +108,10 @@ def extract_integer_from_string(text: str) -> int:
     text = [int(character) for character in text.split() if character.isdigit()]
     return int(text[0])
 
-async def get_user_apperance_mode(user_id: int, db: aiosqlite.Connection) -> int:
+async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bool:
     c = await db.cursor()
-    await c.execute('SELECT toggle FROM dark_mode_settings WHERE user_id = ?', (user_id,))
+    await c.execute('SELECT dark_mode FROM user_settings WHERE user_id = ?', (user_id,))
     mode = await c.fetchone()
-    if mode is None:
-        return 0
-    return mode[0]
+    if mode is not None and mode[0] == 1:
+        return True
+    return False

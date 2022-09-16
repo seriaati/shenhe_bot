@@ -9,7 +9,7 @@ from yelan.data.GO_modes import hit_mode_texts
 from debug import DefaultView
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, error_embed, get_user_appearance_mode
 
 
 class View(DefaultView):
@@ -31,7 +31,6 @@ class View(DefaultView):
             user_locale or locale,
             "critHit",
             enka_view.author,
-            custom_uid=enka_view.user_uid,
         )
 
         # producing select options
@@ -123,18 +122,24 @@ class GoBack(Button):
         super().__init__(emoji="<:left:982588994778972171>")
 
     async def callback(self, i: Interaction):
+        await i.response.defer()
         self.view: View
         enka_view = self.view.enka_view
         user_locale = await get_user_locale(i.user.id, enka_view.db)
-        card = i.client.enka_card_cache.get(f"{enka_view.member.id} - {enka_view.character_id}")
+        card = i.client.enka_card_cache.get(
+            f"{enka_view.member.id} - {enka_view.character_id}"
+        )
         if card is None:
             [character] = [
                 c for c in enka_view.characters if c.id == int(enka_view.character_id)
             ]
+            dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
             card = await draw_character_card(
-                character, user_locale or i.locale, i.client.session
+                character, user_locale or i.locale, i.client.session, dark_mode
             )
-            i.client.enka_card_cache[f"{enka_view.member.id} - {enka_view.character_id}"] = card
+            i.client.enka_card_cache[
+                f"{enka_view.member.id} - {enka_view.character_id}"
+            ] = card
 
         is_card = False if card is None else True
         artifact_disabled = True if is_card else False
@@ -144,32 +149,22 @@ class GoBack(Button):
         if is_card:
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
-            if enka_view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {enka_view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=enka_view.author.display_name,
-                    icon_url=enka_view.author.display_avatar.url,
-                )
+            embed.set_author(
+                name=enka_view.author.display_name,
+                icon_url=enka_view.author.display_avatar.url,
+            )
             card.seek(0)
             file = File(card, "card.jpeg")
-            await i.response.edit_message(
+            await i.edit_original_response(
                 embed=embed, view=enka_view, attachments=[file]
             )
         else:
             embed = enka_view.embeds[enka_view.character_id]
-            if enka_view.user_uid is not None:
-                embed.set_footer(
-                    text=f"{text_map.get(123, i.locale, user_locale)}: {self.view.user_uid}"
-                )
-            else:
-                embed.set_author(
-                    name=enka_view.author.display_name,
-                    icon_url=enka_view.author.display_avatar.url,
-                )
-            await i.response.edit_message(embed=embed, view=enka_view, attachments=[])
+            embed.set_author(
+                name=enka_view.author.display_name,
+                icon_url=enka_view.author.display_avatar.url,
+            )
+            await i.edit_original_response(embed=embed, view=enka_view, attachments=[])
 
 
 class HitModeButton(Button):
