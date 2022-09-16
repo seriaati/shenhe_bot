@@ -11,7 +11,7 @@ from data.game.elements import convert_elements, elements
 from debug import DefaultView
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from ui_elements.genshin import ReminderMenu
+from UI_elements.genshin import ReminderMenu
 
 
 class View(DefaultView):

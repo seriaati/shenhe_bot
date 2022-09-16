@@ -40,7 +40,7 @@ from enkanetwork import (
     EnkaNetworkResponse,
 )
 from enkanetwork.enum import DigitType, EquipmentsType
-from ui_elements.genshin import (
+from UI_elements.genshin import (
     Abyss,
     ArtifactLeaderboard,
     Build,
@@ -50,8 +50,8 @@ from ui_elements.genshin import (
     EventTypeChooser,
     ShowAllCharacters,
 )
-from ui_elements.genshin.DailyReward import return_claim_reward
-from ui_elements.genshin.ReminderMenu import return_notification_menu
+from UI_elements.genshin.DailyReward import return_claim_reward
+from UI_elements.genshin.ReminderMenu import return_notification_menu
 from utility.paginator import GeneralPaginator
 from utility.domain_paginator import DomainPaginator
 from utility.utils import (
@@ -62,7 +62,7 @@ from utility.utils import (
     get_weekday_int_with_name,
     parse_HTML,
 )
-from ui_elements.others import ManageAccounts
+from UI_elements.others import ManageAccounts
 
 
 class GenshinCog(commands.Cog, name="genshin"):

@@ -13,7 +13,7 @@ from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from ui_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
+from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from genshin.errors import GenshinException

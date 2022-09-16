@@ -10,7 +10,7 @@ from discord.errors import InteractionResponded, Forbidden
 from apps.text_map.text_map_app import text_map
 from utility.utils import default_embed, error_embed
 import aiosqlite
-from ui_elements.genshin import TalentNotificationMenu
+from UI_elements.genshin import TalentNotificationMenu
 
 
 class View(DefaultView):

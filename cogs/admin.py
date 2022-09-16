@@ -62,7 +62,7 @@ class AdminCog(commands.Cog, name="admin"):
                         "apps.",
                         "data.",
                         "text_maps.",
-                        "ui_elements.",
+                        "UI_elements.",
                         "utility.",
                         "yelan.",
                     )
