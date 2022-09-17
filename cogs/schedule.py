@@ -3,7 +3,6 @@ import asyncio
 import json
 import random
 from datetime import datetime, timedelta
-
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
@@ -15,6 +14,7 @@ from discord import File, Forbidden, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
+from cogs.admin import is_seria
 from utility.utils import default_embed, log
 from yelan.draw import draw_talent_reminder_card
 
@@ -405,18 +405,13 @@ class Schedule(commands.Cog):
             next_run += timedelta(days=1)
         await sleep_until(next_run)
 
+    @is_seria()
     @app_commands.command(
         name="instantclaim", description=_("Admin usage only", hash=496)
     )
     async def instantclaim(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
+        await i.response.send_message('started, check console', ephemeral=True)
         await self.claim_reward()
-        await i.followup.send(
-            embed=default_embed().set_author(
-                name="claimed", icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
 
 
 async def setup(bot: commands.Bot) -> None:

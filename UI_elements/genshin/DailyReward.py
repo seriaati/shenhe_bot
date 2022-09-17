@@ -9,7 +9,7 @@ from discord import Locale, ButtonStyle, Interaction
 from discord.errors import InteractionResponded
 from discord.ui import Button
 from apps.text_map.text_map_app import text_map
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, divide_chunks, error_embed
 import genshin
 
 
@@ -44,7 +44,6 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
     locale = user_locale or i.locale
     day_in_month = calendar.monthrange(datetime.now().year, datetime.now().month)[1]
     shenhe_user = await genshin_app.get_user_cookie(i.user.id, i.locale)
-    value = ""
     try:
         _, claimed_rewards = await shenhe_user.client.get_reward_info()
     except genshin.errors.InvalidCookies:
@@ -62,18 +61,17 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         name=text_map.get(606, i.locale, user_locale),
         value=f"{claimed_rewards}/{day_in_month}",
     )
-    count = 0
+    value = []
     async for reward in shenhe_user.client.claimed_rewards(limit=claimed_rewards):
-        count += 1
-        value += (
+        value.append(
             f"{reward.time.month}/{reward.time.day} - {reward.name} x{reward.amount}\n"
         )
-        if count//10 == 1:
-            embed.add_field(
-                name=f"{text_map.get(605, i.locale, user_locale)} ({count//10})", value=value, inline=False
-            )
-            value = ""
-            count = 0
+    value = list(divide_chunks(value, 10))
+    for val in value:
+        r = ''
+        for v in val:
+            r += v
+        embed.add_field(name=text_map.get(605, i.locale, user_locale), value=r, inline=False)
     view = View(locale, genshin_app)
     try:
         await i.response.send_message(embed=embed, view=view)

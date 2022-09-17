@@ -57,7 +57,8 @@ async def check_cookie_predicate(i: Interaction, user: User | Member = None) -> 
         "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
         (user.id,),
     )
-    if (await c.fetchone())[0] is None:
+    data = await c.fetchone()
+    if data is None or data[0] is None:
         await c.execute(
             "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 0",
             (user.id,),

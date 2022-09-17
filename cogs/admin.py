@@ -19,22 +19,23 @@ from data.game.elements import convert_elements
 from data.game.weapons import weapons_map
 
 
+def is_seria():
+    async def predicate(i: Interaction) -> bool:
+        if i.user.id != 410036441129943050:
+            await i.response.send_message(
+                embed=error_embed(message="你不是小雪本人").set_author(
+                    name="生物驗證失敗", icon_url=i.user.display_avatar.url
+                ),
+                ephemeral=True,
+            )
+        return i.user.id == 410036441129943050
+
+    return app_commands.check(predicate)
+
+
 class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def is_seria():
-        async def predicate(i: Interaction) -> bool:
-            if i.user.id != 410036441129943050:
-                await i.response.send_message(
-                    embed=error_embed(message="你不是小雪本人").set_author(
-                        name="生物驗證失敗", icon_url=i.user.display_avatar.url
-                    ),
-                    ephemeral=True,
-                )
-            return i.user.id == 410036441129943050
-
-        return app_commands.check(predicate)
 
     @is_seria()
     @app_commands.command(
