@@ -670,7 +670,7 @@ class GenshinApp:
         client_locale = to_genshin_py(genshin_locale) or "en-us"
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
-        china = True if str(uid)[0] in [1, 2, 5] else False
+        china = True if int(str(uid)[0]) in [1, 2, 5] else False
 
         try:
             await client.update_character_names(lang=client._lang)

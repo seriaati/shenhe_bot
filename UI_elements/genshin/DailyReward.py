@@ -67,11 +67,11 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             f"{reward.time.month}/{reward.time.day} - {reward.name} x{reward.amount}\n"
         )
     value = list(divide_chunks(value, 10))
-    for val in value:
+    for index, val in enumerate(value):
         r = ''
         for v in val:
             r += v
-        embed.add_field(name=text_map.get(605, i.locale, user_locale), value=r, inline=False)
+        embed.add_field(name=f"{text_map.get(605, i.locale, user_locale)} ({index})", value=r, inline=False)
     view = View(locale, genshin_app)
     try:
         await i.response.send_message(embed=embed, view=view)
