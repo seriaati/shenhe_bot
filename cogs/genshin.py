@@ -132,7 +132,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="check",
         description=_(
-            "Check resin, pot, and expedition status (needs /register)", hash=414
+            "Check resin, pot, and expedition status", hash=414
         ),
     )
     @app_commands.rename(member=_("user", hash=415))
@@ -255,7 +255,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="claim",
         description=_(
-            "Immediately claims your hoyolab daily login reward (needs /register)",
+            "Immediately claims your hoyolab daily login reward",
             hash=420,
         ),
     )
@@ -265,7 +265,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="characters",
         description=_(
-            "View all of your characters, useful for building abyss teams (needs /register)",
+            "View all of your characters, useful for building abyss teams",
             hash=421,
         ),
     )
@@ -337,7 +337,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @app_commands.command(
         name="abyss",
-        description=_("View abyss information (needs /register)", hash=428),
+        description=_("View abyss information", hash=428),
     )
     @app_commands.rename(
         previous=_("season", hash=430),
@@ -749,7 +749,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @check_cookie()
     @app_commands.command(
-        name="redeem", description=_("Redeem a gift code (needs /register)", hash=450)
+        name="redeem", description=_("Redeem a gift code", hash=450)
     )
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
