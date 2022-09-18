@@ -17,3 +17,6 @@ class DamageResult(BaseModel):
     result_embed: discord.Embed
     cond_embed: discord.Embed | None
     log_file: io.StringIO | None
+    
+    class Config:
+        arbitrary_types_allowed = True
