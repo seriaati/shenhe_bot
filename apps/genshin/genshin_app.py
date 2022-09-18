@@ -201,7 +201,6 @@ class GenshinApp:
     async def parse_resin_embed(
         self, notes: genshin.models.Notes, locale: Locale, user_locale: str
     ) -> Embed:
-        now = datetime.now(timezone.utc)
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, locale, user_locale)
         else:
@@ -214,7 +213,7 @@ class GenshinApp:
         if notes.transformer_recovery_time is None:
             transformer_recover_time = text_map.get(10, locale, user_locale)
         else:
-            if (now - notes.transformer_recovery_time).total_seconds() < 60:
+            if notes.remaining_transformer_recovery_time.total_seconds() <= 0:
                 transformer_recover_time = text_map.get(9, locale, user_locale)
             else:
                 transformer_recover_time = format_dt(
