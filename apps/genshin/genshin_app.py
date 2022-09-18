@@ -1,6 +1,5 @@
-from datetime import datetime, timezone
 from typing import Dict, Literal, Tuple
-
+import discord
 import aiosqlite
 import sentry_sdk
 from apps.genshin.custom_model import ShenheUser
@@ -13,7 +12,7 @@ from discord import Embed, Locale, SelectOption, User
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
-from yelan.draw import draw_area_card, draw_stats_card
+from yelan.draw import draw_abyss_overview_card, draw_area_card, draw_stats_card
 
 import genshin
 
@@ -384,37 +383,23 @@ class GenshinApp:
         abyss = await shenhe_user.client.get_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
-        result = []
-        rank = abyss.ranks
-        if len(rank.most_kills) == 0:
-            result = error_embed(
-                message=f"{text_map.get(74, locale, shenhe_user.user_locale)}\n"
-                f"{text_map.get(75, locale, shenhe_user.user_locale)}"
-            )
-            result.set_author(
-                name=text_map.get(76, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-            return result, False
-        overview = default_embed(
-            f"{text_map.get(77, locale, shenhe_user.user_locale)} {abyss.season}",
-            f"{text_map.get(78, locale, shenhe_user.user_locale)} {abyss.max_floor}\n"
-            f"✦ {abyss.total_stars}",
-        )
-        overview.add_field(
-            name=text_map.get(79, locale, shenhe_user.user_locale),
-            value=f"{get_character(rank.strongest_strike[0].id)['emoji']} {text_map.get(80, locale, shenhe_user.user_locale)}: {rank.strongest_strike[0].value}\n"
-            f"{get_character(rank.most_kills[0].id)['emoji']} {text_map.get(81, locale, shenhe_user.user_locale)}: {rank.most_kills[0].value}\n"
-            f"{get_character(rank.most_damage_taken[0].id)['emoji']} {text_map.get(82, locale, shenhe_user.user_locale)}: {rank.most_damage_taken[0].value}\n"
-            f"{get_character(rank.most_bursts_used[0].id)['emoji']} {text_map.get(83, locale, shenhe_user.user_locale)}: {rank.most_bursts_used[0].value}\n"
-            f"{get_character(rank.most_skills_used[0].id)['emoji']} {text_map.get(84, locale, shenhe_user.user_locale)}: {rank.most_skills_used[0].value}",
-        )
-        overview.set_author(
-            name=text_map.get(85, locale, shenhe_user.user_locale),
-            icon_url=shenhe_user.discord_user.display_avatar.url,
-        )
-        result.append(overview)
-
+        locale = shenhe_user.user_locale or locale
+        if not abyss.ranks.most_kills:
+            embed = error_embed(message=f"{text_map.get(74, locale)}\n{text_map.get(75, locale)}")
+            embed.set_author(name=text_map.get(76, locale), icon_url=shenhe_user.discord_user.display_avatar.url)
+            return embed, False
+        result = {}
+        result['abyss'] = abyss
+        overview = default_embed()
+        overview.set_image(url="attachment://abyss.jpeg")
+        result['overview'] = overview
+        locale = shenhe_user.user_locale or locale
+        dark_mode = await get_user_appearance_mode(user_id, self.db)
+        fp = await draw_abyss_overview_card(locale, dark_mode, abyss)
+        fp.seek(0)
+        card = discord.File(fp, filename="abyss.jpeg")
+        result['overview_card'] = card
+        result['floors'] = []
         for floor in abyss.floors:
             embed = default_embed(
                 f"{text_map.get(146, locale, shenhe_user.user_locale)} {floor.floor} {text_map.get(147, locale, shenhe_user.user_locale)} (✦ {floor.stars}/9)"
@@ -439,7 +424,7 @@ class GenshinApp:
                     f"{text_map.get(89, locale, shenhe_user.user_locale)} {bottomStr}",
                     inline=False,
                 )
-            result.append(embed)
+            result['floors'].append(embed)
 
         return result, True
 
