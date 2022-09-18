@@ -59,10 +59,9 @@ class Schedule(commands.Cog):
         status_list = [
             "/help",
             "discord.gg/ryfamUykRw",
-            f"in {len(self.bot.guilds)} guilds",
             "shenhe.bot.nu",
         ]
-        await self.bot.change_presence(activity=Game(name=random.choice(status_list)))
+        await self.bot.change_presence(activity=Game(name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"))
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -71,10 +70,10 @@ class Schedule(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
         users = await c.fetchall()
+        count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
-            log.info(f"[Schedule] Claim Reward for {shenhe_user}")
             client = shenhe_user.client
             client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
             claimed = False
@@ -103,9 +102,10 @@ class Schedule(commands.Cog):
                     break
                 current_try += 1
                 await asyncio.sleep(2)
+            count += 1
             await asyncio.sleep(3)
         await self.bot.db.commit()
-        log.info("[Schedule] Claim Reward Ended")
+        log.info(f"[Schedule] Claim Reward Ended ({count}/{len(users)} users)")
 
     @tasks.loop(hours=1)
     @schedule_error_handler
@@ -117,6 +117,7 @@ class Schedule(commands.Cog):
             "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
+        count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
@@ -127,7 +128,6 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
-            log.info(f"[Schedule] Pot Notification for {user_id}")
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
@@ -135,7 +135,14 @@ class Schedule(commands.Cog):
                 continue
 
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
-            notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+            try:
+                notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+            except genshin.errors.InvalidCookies:
+                log.warning(f"[Schedule] Invalid Cookies for {user_id}")
+                continue
+            except Exception as e:
+                log.warning(f"[Schedule] Pot Notification Error: {e}")
+                continue
             coin = notes.current_realm_currency
             locale = shenhe_user.user_locale or "en-US"
             if coin >= threshold and current < max:
@@ -178,10 +185,10 @@ class Schedule(commands.Cog):
                     "UPDATE pot_notification SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user_id, uid),
                 )
-
-            await asyncio.sleep(3.0)
+            count += 1
+            await asyncio.sleep(3)
         await self.bot.db.commit()
-        log.info("[Schedule] Pot Notification Ended")
+        log.info(f"[Schedule] Pot Notification Ended (Notified {count}/{len(users)} users)")
 
     @tasks.loop(hours=1)
     @schedule_error_handler
@@ -193,7 +200,7 @@ class Schedule(commands.Cog):
             "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
-
+        count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
@@ -204,7 +211,6 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
-            log.info(f"[Schedule] Resin Notification for {user_id}")
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
@@ -260,9 +266,10 @@ class Schedule(commands.Cog):
                     "UPDATE user_accounts SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user_id, uid),
                 )
-        await asyncio.sleep(3.0)
+            count += 1
+            await asyncio.sleep(3.0)
         await self.bot.db.commit()
-        log.info("[Schedule] Resin Notifiaction Ended")
+        log.info(f"[Schedule] Resin Notifiaction Ended (Notified {count}/{len(users)} users)")
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -276,9 +283,9 @@ class Schedule(commands.Cog):
             "SELECT user_id, character_list FROM talent_notification WHERE toggle = 1"
         )
         users = await c.fetchall()
+        count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
-            log.info(f"[Schedule] Talent Notification for {user_id}")
             user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
             user_locale = await get_user_locale(user_id, self.bot.db)
             user_notification_list = ast.literal_eval(tpl[1])
@@ -308,8 +315,9 @@ class Schedule(commands.Cog):
                 embed.set_image(url="attachment://reminder_card.jpeg")
 
                 await user.send(embed=embed, files=[file])
+            count += 1
 
-        log.info("[Schedule] Talent Notifiaction Ended")
+        log.info(f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)")
 
     @tasks.loop(hours=24)
     @schedule_error_handler

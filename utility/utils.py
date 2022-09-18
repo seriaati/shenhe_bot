@@ -1,6 +1,5 @@
 import logging
 import re
-from datetime import datetime
 from itertools import islice
 from typing import Dict, List
 import aiosqlite
@@ -13,6 +12,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
+    filename="logs.log",
+    encoding="utf-8",
 )
 log = logging
 
