@@ -3,7 +3,7 @@ from typing import Dict, Literal, Tuple
 
 import aiosqlite
 import sentry_sdk
-from apps.genshin.user_model import ShenheUser
+from apps.genshin.custom_model import ShenheUser
 from apps.genshin.utils import get_character
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -188,7 +188,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_real_time_notes(self, user_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
-        notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+        notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return (
             embed.set_author(
@@ -660,7 +660,6 @@ class GenshinApp:
                 account_id=user_data[0],
                 cookie_token=user_data[2],
             )
-            client.uids[genshin.Game.GENSHIN] = uid
         else:
             client = self.bot.genshin_client
             uid = await self.get_user_uid(user_id)
@@ -670,7 +669,10 @@ class GenshinApp:
         client_locale = to_genshin_py(genshin_locale) or "en-us"
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
+        client.uid = uid
         china = True if int(str(uid)[0]) in [1, 2, 5] else False
+        if china:
+            client.lang = 'zh-cn'
 
         try:
             await client.update_character_names(lang=client._lang)

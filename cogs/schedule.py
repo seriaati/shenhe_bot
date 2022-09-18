@@ -89,17 +89,20 @@ class Schedule(commands.Cog):
                     claimed = True
                 except genshin.errors.InvalidCookies:
                     log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                    break
                 except genshin.errors.GenshinException as e:
                     if e.retcode == -10002:
-                        pass
+                        break
                     else:
                         log.warning(f"[Schedule] Claim Reward Error: {e}")
                         sentry_sdk.capture_exception(e)
+                        break
                 except Exception as e:
                     log.warning(f"[Schedule] Claim Reward Error: {e}")
                     sentry_sdk.capture_exception(e)
+                    break
                 current_try += 1
-                await asyncio.sleep(1)
+                await asyncio.sleep(2)
             await asyncio.sleep(3)
         await self.bot.db.commit()
         log.info("[Schedule] Claim Reward Ended")
@@ -209,8 +212,15 @@ class Schedule(commands.Cog):
                 continue
 
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
-            notes = await shenhe_user.client.get_notes(shenhe_user.uid)
-            locale = shenhe_user.user_locale or "zh-TW"
+            try:
+                notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+            except genshin.errors.InvalidCookies:
+                log.warning(f"[Schedule] Invalid Cookies for {user_id}")
+                continue
+            except Exception as e:
+                log.warning(f"[Schedule] Resin Notification Error: {e}")
+                continue
+            locale = shenhe_user.user_locale or "en-US"
             resin = notes.current_resin
             if resin >= threshold and current < max:
                 if resin == notes.max_resin:

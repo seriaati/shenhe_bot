@@ -163,6 +163,7 @@ class WishCog(commands.GroupCog, name="wish"):
             )
         if not check:
             return await i.response.send_message(embed=embed, ephemeral=True)
+        await i.response.defer()
 
         (
             get_num,
@@ -198,7 +199,7 @@ class WishCog(commands.GroupCog, name="wish"):
             name=text_map.get(386, i.locale, user_locale),
             icon_url=i.user.display_avatar.url,
         )
-        await i.response.send_message(embed=embed)
+        await i.followup.send(embed=embed)
 
     @app_commands.command(
         name="weapon",

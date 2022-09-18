@@ -306,7 +306,7 @@ class ChangeSettings(Button):
                 await return_resin_notification(i, self.view)
             elif self.table_name == "pot_notification":
                 modal = PotModal(self.locale)
-                await i.response.send_modal(modal=modal)
+                await i.response.send_modal(modal)
                 await modal.wait()
                 threshold = modal.threshold.value
                 max = modal.max_notif.value
