@@ -510,7 +510,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             c = await self.bot.db.cursor()
             table_name = "user_accounts"
         c: aiosqlite.Cursor
-        if table_name == "genshin_accounts":
+        if table_name == "user_accounts":
             await c.execute(
                 f"SELECT uid FROM {table_name} WHERE user_id = ? AND current = 1",
                 (player.id,),
