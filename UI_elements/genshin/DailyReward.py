@@ -71,7 +71,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         r = ''
         for v in val:
             r += v
-        embed.add_field(name=f"{text_map.get(605, i.locale, user_locale)} ({index})", value=r, inline=False)
+        embed.add_field(name=f"{text_map.get(605, i.locale, user_locale)} ({index+1})", value=r, inline=False)
     view = View(locale, genshin_app)
     try:
         await i.response.send_message(embed=embed, view=view)
