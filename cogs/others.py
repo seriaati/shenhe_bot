@@ -20,6 +20,8 @@ class OthersCog(commands.Cog, name="others"):
         embeds = []
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         seria = self.bot.get_user(410036441129943050)
+        if seria is None:
+            seria = await self.bot.fetch_user(410036441129943050)
         locale = user_locale or i.locale
         if str(locale) == "zh-TW" or str(locale) == "zh-CN":
             display_change_log = change_log
