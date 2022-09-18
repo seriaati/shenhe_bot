@@ -119,7 +119,6 @@ class Schedule(commands.Cog):
         users = await c.fetchall()
         for _, tpl in enumerate(users):
             user_id = tpl[0]
-            log.info(f"[Schedule] Pot Notification for {user_id}")
             uid = tpl[1]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM pot_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
@@ -128,6 +127,7 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
+            log.info(f"[Schedule] Pot Notification for {user_id}")
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
@@ -196,7 +196,6 @@ class Schedule(commands.Cog):
 
         for _, tpl in enumerate(users):
             user_id = tpl[0]
-            log.info(f"[Schedule] Pot Notification for {user_id}")
             uid = tpl[1]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM resin_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
@@ -205,6 +204,7 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
+            log.info(f"[Schedule] Resin Notification for {user_id}")
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
             time_diff = now - last_notif_time
