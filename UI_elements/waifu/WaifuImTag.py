@@ -1,11 +1,8 @@
 from typing import Any, List
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from debug import DefaultView
 from discord import User, Interaction
 from discord.ui import Select
 import config
-from utility.utils import error_embed
 
 
 class View(DefaultView):

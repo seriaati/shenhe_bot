@@ -46,7 +46,6 @@ nsfw_tags = {
     '手淫': {'libs': ['hmtai'], 'value': 'masturbation', 'description': '...'},
     '公共場所': {'libs': ['hmtai'], 'value': 'public', 'description': '???'},
     'ero': {'libs': ['hmtai'], 'value': 'ero', 'description': '我不太確定這是什麼'},
-    '多人?': {'libs': ['hmtai'], 'value': 'orgy', 'description': '應該是多p的意思吧'},
     '精靈': {'libs': ['hmtai'], 'value': 'elves', 'description': '原來也有人好這口'},
     '百合': {'libs': ['hmtai', 'nekobot'], 'value': 'yuri', 'description': '純純的 <3'},
     '胖次': {'libs': ['hmtai'], 'value': 'pantsu', 'description': '內褲'},
