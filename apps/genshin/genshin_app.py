@@ -669,7 +669,10 @@ class GenshinApp:
         client.lang = client_locale
         client.default_game = genshin.Game.GENSHIN
         client.uid = uid
-        china = True if int(str(uid)[0]) in [1, 2, 5] else False
+        if uid is not None:
+            china = True if int(str(uid)[0]) in [1, 2, 5] else False
+        else:
+            china = False
         if china:
             client.lang = 'zh-cn'
 
