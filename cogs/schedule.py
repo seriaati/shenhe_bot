@@ -58,7 +58,6 @@ class Schedule(commands.Cog):
     async def change_status(self):
         status_list = [
             "/help",
-            "discord.gg/ryfamUykRw",
             "shenhe.bot.nu",
         ]
         await self.bot.change_presence(activity=Game(name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"))

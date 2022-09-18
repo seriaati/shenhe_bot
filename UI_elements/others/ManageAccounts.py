@@ -11,7 +11,7 @@ from discord import ButtonStyle, Interaction, Locale, SelectOption, TextStyle
 from discord.errors import InteractionResponded, NotFound
 from discord.ui import Button, Select, TextInput
 from utility.utils import default_embed, error_embed
-from enkanetwork import EnkaNetworkAPI, UIDNotFounded
+import genshin
 from apps.genshin.genshin_app import GenshinApp
 
 
@@ -140,11 +140,11 @@ class AddUIDModal(DefaultModal):
                 raise ValueError
             if len(self.uid.value) != 9:
                 raise ValueError
-            async with EnkaNetworkAPI() as enka:
-                try:
-                    await enka.fetch_user(self.uid.value)
-                except UIDNotFounded:
-                    raise ValueError
+            client = i.client.genshin_client
+            try:
+                await client.get_partial_genshin_user(self.uid.value)
+            except genshin.errors.AccountNotFound:
+                raise ValueError
         except ValueError:
             await i.edit_original_response(
                 embed=error_embed()
