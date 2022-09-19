@@ -391,14 +391,12 @@ class GenshinApp:
         result = {}
         result['abyss'] = abyss
         overview = default_embed()
-        overview.set_image(url="attachment://abyss.jpeg")
+        overview.set_image(url="attachment://overview_card.jpeg")
         result['overview'] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
         fp = await draw_abyss_overview_card(locale, dark_mode, abyss)
-        fp.seek(0)
-        card = discord.File(fp, filename="abyss.jpeg")
-        result['overview_card'] = card
+        result['overview_card'] = fp
         result['floors'] = []
         for floor in abyss.floors:
             embed = default_embed(

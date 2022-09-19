@@ -370,7 +370,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            await i.followup.send(embed=result['overview'], view=view, files=[result['overview_card']])
+            fp = result['overview_card']
+            fp.seek(0)
+            image = File(fp, "overview_card.jpeg")
+            await i.followup.send(embed=result['overview'], view=view, files=[image])
             view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=437))
