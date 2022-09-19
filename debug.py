@@ -35,7 +35,7 @@ class DefaultView(discord.ui.View):
                 embed=embed,
                 ephemeral=True,
             )
-        except discord.InteractionResponded:
+        except discord.errors.InteractionResponded:
             await i.followup.send(
                 embed=embed,
                 ephemeral=True,

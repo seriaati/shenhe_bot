@@ -145,6 +145,8 @@ class AddUIDModal(DefaultModal):
                 await client.get_partial_genshin_user(self.uid.value)
             except genshin.errors.AccountNotFound:
                 raise ValueError
+            except:
+                pass
         except ValueError:
             await i.edit_original_response(
                 embed=error_embed()

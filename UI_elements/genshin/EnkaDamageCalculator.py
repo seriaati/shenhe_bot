@@ -9,7 +9,7 @@ from yelan.data.GO_modes import hit_mode_texts
 from debug import DefaultView
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from utility.utils import default_embed, error_embed, get_user_appearance_mode
+from utility.utils import default_embed, get_user_appearance_mode
 
 
 class View(DefaultView):

@@ -289,7 +289,7 @@ class ChangeSettings(Button):
         try:
             if self.table_name == "resin_notification":
                 modal = ResinModal(self.locale)
-                await i.response.send_modal(modal=modal)
+                await i.response.send_modal(modal)
                 await modal.wait()
                 threshold = modal.resin_threshold.value
                 max = modal.max_notif.value
