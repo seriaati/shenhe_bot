@@ -4,7 +4,7 @@ discord.py==2.0.1
 enkanetwork.py==1.2.10
 genshin @ git+https://github.com/thesadru/genshin.py
 hmtai==3.2.0
-matplotlib==3.5.3
+matplotlib==3.6.0
 numpy==1.23.3
 Pillow==9.2.0
 pydantic==1.10.2
