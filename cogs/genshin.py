@@ -59,10 +59,12 @@ from utility.utils import (
     divide_chunks,
     divide_dict,
     error_embed,
+    get_user_appearance_mode,
     get_weekday_int_with_name,
     parse_HTML,
 )
 from UI_elements.others import ManageAccounts
+from yelan.draw import draw_abyss_overview_card
 
 
 class GenshinCog(commands.Cog, name="genshin"):
@@ -368,7 +370,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            await i.followup.send(embed=result[0], view=view)
+            fp = result['overview_card']
+            fp.seek(0)
+            image = File(fp, "overview_card.jpeg")
+            await i.followup.send(embed=result['overview'], view=view, files=[image])
             view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=437))
