@@ -75,34 +75,36 @@ class Schedule(commands.Cog):
             shenhe_user = await self.genshin_app.get_user_cookie(user_id)
             client = shenhe_user.client
             client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
-            claimed = False
-            max_try = 10
-            current_try = 1
-            while not claimed:
-                if current_try > max_try:
+            try:
+                await client.claim_daily_reward()
+            except genshin.errors.AlreadyClaimed:
+                break
+            except genshin.errors.InvalidCookies:
+                log.warning(f"[Schedule] Invalid Cookies: {user_id}")
+                break
+            except genshin.errors.GenshinException as e:
+                if e.retcode == -10002:
                     break
-                try:
-                    await client.claim_daily_reward()
-                except genshin.errors.AlreadyClaimed:
-                    claimed = True
-                except genshin.errors.InvalidCookies:
-                    log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                    break
-                except genshin.errors.GenshinException as e:
-                    if e.retcode == -10002:
-                        break
-                    else:
-                        log.warning(f"[Schedule] Claim Reward Error: {e}")
-                        sentry_sdk.capture_exception(e)
-                        break
-                except Exception as e:
+                elif e.retcode == -1004:
+                    log.warning(f"[Schedule][Claim Reward] We have been rate limited")
+                    await asyncio.sleep(20)
+                    for index in range(5):
+                        log.info(f"[Schedule][Claim Reward] Retry {index + 1}")
+                        try:
+                            await client.claim_daily_reward()
+                        except genshin.errors.AlreadyClaimed:
+                            break
+                        await asyncio.sleep(20*index)
+                else:
                     log.warning(f"[Schedule] Claim Reward Error: {e}")
                     sentry_sdk.capture_exception(e)
                     break
-                current_try += 1
-                await asyncio.sleep(2)
+            except Exception as e:
+                log.warning(f"[Schedule] Claim Reward Error: {e}")
+                sentry_sdk.capture_exception(e)
+                break
             count += 1
-            await asyncio.sleep(3)
+            await asyncio.sleep(5)
         await self.bot.db.commit()
         log.info(f"[Schedule] Claim Reward Ended ({count}/{len(users)} users)")
 

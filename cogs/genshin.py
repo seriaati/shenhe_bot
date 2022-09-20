@@ -386,6 +386,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_image(url="https://i.imgur.com/w6Q7WwJ.gif")
         await i.response.send_message(embed=embed, ephemeral=True)
 
+    @check_account()
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
@@ -631,7 +632,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
             eng_cache = enka_eng_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
-            eng_data = await enka.fetch_user(uid)
+            try:
+                eng_data = await enka.fetch_user(uid)
+            except (UIDNotFounded, asyncio.exceptions.TimeoutError):
+                pass
         if eng_cache is None:
             eng_cache = eng_data
         c_dict = {}

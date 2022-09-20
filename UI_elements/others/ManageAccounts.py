@@ -212,7 +212,11 @@ class SubmitCookie(Button):
         )
 
     async def callback(self, i: Interaction):
-        await i.response.send_modal(SubmitCookieModal(self.view.locale))
+        try:
+            await i.response.send_modal(SubmitCookieModal(self.view.locale))
+        except NotFound as e:
+            if e.code == 10062:
+                pass
 
 
 class SubmitCookieModal(DefaultModal):
