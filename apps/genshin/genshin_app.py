@@ -385,45 +385,24 @@ class GenshinApp:
         )
         locale = shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
-            embed = error_embed(message=f"{text_map.get(74, locale)}\n{text_map.get(75, locale)}")
-            embed.set_author(name=text_map.get(76, locale), icon_url=shenhe_user.discord_user.display_avatar.url)
+            embed = error_embed(
+                message=f"{text_map.get(74, locale)}\n{text_map.get(75, locale)}"
+            )
+            embed.set_author(
+                name=text_map.get(76, locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
+            )
             return embed, False
         result = {}
-        result['abyss'] = abyss
+        result["abyss"] = abyss
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
-        result['overview'] = overview
+        result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
         fp = await draw_abyss_overview_card(locale, dark_mode, abyss)
-        result['overview_card'] = fp
-        result['floors'] = []
-        for floor in abyss.floors:
-            embed = default_embed(
-                f"{text_map.get(146, locale, shenhe_user.user_locale)} {floor.floor} {text_map.get(147, locale, shenhe_user.user_locale)} (✦ {floor.stars}/9)"
-            )
-            for chamber in floor.chambers:
-                name = f"{text_map.get(86, locale, shenhe_user.user_locale)} {chamber.chamber} {text_map.get(87, locale, shenhe_user.user_locale)} ✦ {chamber.stars}"
-                chara_list = [[], []]
-                for i, battle in enumerate(chamber.battles):
-                    for chara in battle.characters:
-                        chara_list[i].append(
-                            f"{get_character(chara.id)['emoji']} **{chara.name}**"
-                        )
-                topStr = ""
-                bottomStr = ""
-                for top_char in chara_list[0]:
-                    topStr += f"| {top_char} "
-                for bottom_char in chara_list[1]:
-                    bottomStr += f"| {bottom_char} "
-                embed.add_field(
-                    name=name,
-                    value=f"{text_map.get(88, locale, shenhe_user.user_locale)} {topStr}\n\n"
-                    f"{text_map.get(89, locale, shenhe_user.user_locale)} {bottomStr}",
-                    inline=False,
-                )
-            result['floors'].append(embed)
-
+        result["overview_card"] = fp
+        result["floors"] = abyss.floors
         return result, True
 
     @genshin_error_handler
@@ -628,11 +607,14 @@ class GenshinApp:
                 only_uid = True
             else:
                 only_uid = False
-                await c.execute('UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?', (user_id, user_data[3]))
+                await c.execute(
+                    "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
+                    (user_id, user_data[3]),
+                )
                 await self.db.commit()
         else:
             only_uid = False
-            
+
         if not only_uid:
             uid = user_data[3]
             client = genshin.Client()
@@ -657,7 +639,7 @@ class GenshinApp:
         else:
             china = False
         if china:
-            client.lang = 'zh-cn'
+            client.lang = "zh-cn"
 
         try:
             await client.update_character_names(lang=client._lang)

@@ -1,10 +1,13 @@
 import aiosqlite
+from apps.text_map.utils import get_user_locale
 from debug import DefaultView
 from discord import User, Interaction, Locale, Embed, SelectOption, File
 from discord.ui import Select
 from apps.text_map.text_map_app import text_map
 from typing import Any
 import config
+from utility.utils import default_embed, get_user_appearance_mode
+from yelan.draw import draw_abyss_floor_card
 
 
 class View(DefaultView):
@@ -28,7 +31,7 @@ class FloorSelect(Select):
         options = [
             SelectOption(label=text_map.get(43, locale, user_locale), value="overview")
         ]
-        for index in range(0, len(embeds['floors']) - 1):
+        for index in range(0, len(embeds["floors"])):
             options.append(
                 SelectOption(
                     label=f"{text_map.get(146, locale, user_locale)} {9+index} {text_map.get(147, locale, user_locale)}",
@@ -51,6 +54,15 @@ class FloorSelect(Select):
                 attachments=[image],
             )
         else:
-            await i.edit_original_response(
-                embed=self.embeds["floors"][int(self.values[0])], attachments=[]
+            embed = default_embed()
+            embed.set_image(url="attachment://floor.jpeg")
+            dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+            user_locale = await get_user_locale(i.user.id, i.client.db)
+            fp = await draw_abyss_floor_card(
+                dark_mode,
+                user_locale or i.locale,
+                self.embeds["floors"][int(self.values[0])],
             )
+            fp.seek(0)
+            image = File(fp, filename="floor.jpeg")
+            await i.edit_original_response(embed=embed, attachments=[image])
