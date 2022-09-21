@@ -69,6 +69,7 @@ class Schedule(commands.Cog):
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
         users = await c.fetchall()
+        log.info(users)
         count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
