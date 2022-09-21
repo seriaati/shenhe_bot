@@ -6,6 +6,7 @@ from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.others import ChangeLog, SettingsMenu, ManageAccounts
+from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
 
 
@@ -67,6 +68,36 @@ class OthersCog(commands.Cog, name="others"):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
+    @app_commands.command(
+        name="v5", description=_("View the Shenhe v5 change log", hash=608)
+    )
+    async def version_five(self, i: Interaction):
+        embeds = []
+        images = [
+            'https://i.imgur.com/Le1AyPz.png',
+            'https://i.imgur.com/4jCFh5v.png',
+            'https://i.imgur.com/9mwDGsp.png',
+            'https://i.imgur.com/seuqAnc.png',
+            'https://i.imgur.com/G4SrF4r.png',
+            'https://i.imgur.com/cgV10Jw.png',
+            'https://i.imgur.com/XDlxJOE.png'
+        ]
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        count = 0
+        for hash in range(609, 622 + 1):
+            if hash % 2 == 0:
+                continue
+            desc_text = text_map.get(hash+1, locale).split('.')
+            desc = ''
+            for words in desc_text[:-1]:
+                desc += f'{words}.\n\n'
+            embed = default_embed(
+                text_map.get(hash, locale), desc
+            )
+            embed.set_image(url=images[count])
+            embeds.append(embed)
+            count += 1
+        await GeneralPaginator(i, embeds, i.client.db).start()
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -10,6 +10,7 @@ from discord import Embed, Locale, SelectOption
 from utility.utils import default_embed, parse_HTML
 import aiosqlite
 
+
 def calculate_artifact_score(substats: dict):
     tier_four_val = {
         "FIGHT_PROP_HP": 1196,
@@ -290,10 +291,27 @@ def parse_character_wiki_embed(
     )
     return embeds, material_embed, options
 
+
 async def get_user_uid_with_db(user_id: int, db: aiosqlite.Connection) -> int | None:
     c = await db.cursor()
     await c.execute(
         "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
         (user_id,),
     )
-    return (await c.fetchone())[0]
+    uid = await c.fetchone()
+    if uid is None:
+        await c.execute(
+            "SELECT uid FROM user_accounts WHERE user_id = ?",
+            (user_id,),
+        )
+        uid = await c.fetchone()
+        if uid is None:
+            return None
+        else:
+            await c.execute(
+                "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
+                (user_id, uid[0]),
+            )
+            return uid[0]
+    else:
+        return uid[0]
