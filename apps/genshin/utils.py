@@ -271,7 +271,7 @@ def parse_character_wiki_embed(
         )
     )
     const_count = 1
-    for const_id, const_info in avatar_data["constellation"].items():
+    for _, const_info in avatar_data["constellation"].items():
         embed = default_embed().set_author(
             name=f"{text_map.get(318, locale, user_locale)} {const_count}",
             icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'),

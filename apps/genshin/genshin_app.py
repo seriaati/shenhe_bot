@@ -3,7 +3,7 @@ import discord
 import aiosqlite
 import sentry_sdk
 from apps.genshin.custom_model import ShenheUser
-from apps.genshin.utils import get_character
+from apps.genshin.utils import get_character, get_user_uid_with_db
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
@@ -565,27 +565,8 @@ class GenshinApp:
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
-        c = await self.db.cursor()
-        await c.execute(
-            "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
-            (user_id,),
-        )
-        uid = await c.fetchone()
-        if uid is None:
-            await c.execute(
-                "SELECT uid FROM user_accounts WHERE user_id = ?",
-                (user_id,),
-            )
-            uid = await c.fetchone()
-            if uid is None:
-                return None
-            else:
-                await c.execute(
-                    "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
-                    (user_id, uid[0]),
-                )
-                await self.db.commit()
-        return uid[0]
+        uid = await get_user_uid_with_db(user_id, self.db)
+        return uid
 
     async def get_user_cookie(self, user_id: int, locale: Locale = None) -> ShenheUser:
         discord_user = self.bot.get_user(user_id)
