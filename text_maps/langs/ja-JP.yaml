@@ -10,7 +10,7 @@
 '9': 利用可能
 '10': 参量物質変化器がありません。
 '11': 完成した デイリー依頼数
-'12': 参量物質変化器の残る冷卻時間。
+'12': 参量物質変化器の残りクールタイム
 '13': 樹脂
 '14': 現在
 '15': 回復時間
@@ -137,13 +137,13 @@
 '136': アカウントを選択してください
 '137': アカウント は登錄成功した。
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6.Submit your cookie here
-  Too complicated? The image below might help!
+  1. 以下のコードをコピーしてください。
+  2. お使いのデバイスでChromeを開き、https://www.hoyolab.com/home のアカウントにログインします。
+  3. アドレスバーをクリックし、すべて選択します。
+  4. `java` と入力し、コピーしたコードを貼り付けます。アドレスバーが `javascript:` で始まっていることを確認してください。
+  5. ENTERを押すと、あなたのクッキーを表示する空白のページが表示されます。
+  6.ここにクッキーを送信してください
+  複雑すぎますか？下の画像が参考になるかもしれません。
 '139': Cookieが無効または古くなっています。ログアウトしてから再度ログインしてください！
 '140': </register:1006486283725590528> コマンドを使用してください
 '141': アカウントデータが見つかりません！
@@ -156,15 +156,15 @@
 '148': 深境螺旋の層を選んでください。
 '149': 權限がありません。
 '150': |-
-  Please go to https://www.hoyolab.com/home and login
-  Follow the steps in the image below
+  https://www.hoyolab.com/home にアクセスし、ログインしてください。
+  以下の画像のステップに従ってください。
 
 
-  1. Click the avatar on the top right
-  2. Personal homepage
-  3. Click `Genshin` on the top right corner
-  4. Click the gear icon
-  5. Toggle all the switches
+  1. 右上のアバターをクリックする
+  2. 個人ホームページ
+  3. 右上の「原神」をクリックします。
+  4. 歯車のアイコンをクリックします。
+  5. すべてのスイッチをONにします。
 '151': 樹脂通知設定
 '152': 樹脂值
 '153': 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
@@ -220,8 +220,8 @@
 '202': Todoリスト
 '203': 素材を追加
 '204': |-
-  Amazing! There is currently nothing to do! ˋ( ° ▽、° )
-  Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items
+  おめでとう！現在やることがありません！ ˋ( ° ▽、° )
+  </calc character:1000187020892700793> または </calc weapon:1000187020892700793> でキャラクターと武器の素材を計算するか、下の緑のボタンでカスタムアイテムを追加してください。
 '205': 素材を削除
 '206': アイテムをクリア
 '207': 削除したいアイテムを選択
@@ -366,48 +366,48 @@
 '356': 祈願履歴のインポートに成功しました！
 '357': PCを使用した祈願履歴のインポート
 '358': |-
-  1. Open genshin impact (If you use multiple accounts, please restart the game)
-  2. Open the wish history in the game and wait for it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will be copied to your clipboard
-  6. Submit the link you copied by using the </wish import:1000187021635104890> command
+  1. 原神を開きます（複数アカウントを使用している場合は、ゲームを再起動してください。）
+  2. ゲーム内の祈願履歴を開き、読み込まれるのを待ちます。
+  3. キーボードの「START」を押し、「Powershell」を検索する。
+  4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストします。
+  5. ENTERを押すと、リンクがクリップボードにコピーされます。
+  6. コピーしたリンクを </wish import:1000187021635104890> コマンドで送信します。
 
-  [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  [解説動画](https://www.youtube.com/watch?v=FCwZkHeIezw)
 '359': Android端末を使用した祈願履歴のインポート
 '360': |-
-  [Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)
+  [Wifiを使用](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
+  [モバイルデータを使用](https://www.youtube.com/watch?v=rHN1iRjmKmc)
+  [上記の方法がうまくいかない場合はクリックしてください](https://www.youtube.com/watch?v=jAKq94KpGHA)
 '361': iOS端末を使用した祈願履歴のインポート
 '362': |-
-  [Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Submit that link here using the </wish import:1000187021635104890> command
+  [チュートリアル動画](https://www.youtube.com/watch?v=WfBpraUq41c)
+  1. App StoreでのStreamのダウンロードは[こちら](https://apps.apple.com/app/stream/id1312141691)から。
+  2. アプリを開き、システム環境設定でVPNを許可します(設定 > 一般 > VPN)
+  3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示されるので、許可を選択 > CAがダウンロードされました。）
+  4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをクリックし、インストールします。
+  5. Genshin Impactを起動し、祈願画面を開き、そのページにとどまります。
+  6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ
+  7. Genshin Impactに戻り、祈願履歴の画面を開きます。
+  8. ページが読み込まれるのを待ちます。
+  9. ストリームアプリに戻る > スニッフィングを停止する
+  10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まる）。
+  11. Requestタブをクリックし、リンクをコピーします。
+  12. そのリンクを、</wish import:1000187021635104890> コマンドを使用して、ここに送信します。
 '363': プレイステーションでの祈願履歴のインポート
 '364': |-
-  (If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)
-  (You can only use this method if you have an in-game mail with a QR Code to open the web event)
+  (以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/mobileの手順を使用してください。）
+  (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）
 
 
-  1. Open Genshin Impact on your PlayStation
-  2. Open the event mail that contains the QR Code
-  3. Scan the QR Code with your phone
-  4. Submit the link here using the </wish import:1000187021635104890> command
+  1. PlayStationで「Genshin Impact」を起動します。
+  2. QRコードが記載されたイベントメールを開封します。
+  3. QRコードを携帯電話で読み取ります。
+  4. </wish import:1000187021635104890>コマンドで、ここにリンクを送信します。
 '365': プラットフォームを選択してください
 '366': |-
-  The language of your wish history is based on your current selected language
-  changing the language afterward will not affect previous records
+  祈願履歴の言語は、現在選択されている言語に基づいて表示されます。
+  後から言語を変更しても、以前の記録には影響しません。
 '367': 祈願履歴データが見つかりません
 '368': </wish import:1000187021635104890>で祈願履歴をインポート
 '369': 祈願履歴
@@ -579,22 +579,22 @@
 '536': ダークモード
 '537': ライトモード
 '538': |
-  • This setting changes the appearance of your cards
-   • If there is no dark mode version of the card, it will be displayed in light mode
-   • Default is light mode
-   • See below for an example
+  • この設定は、カードの外観を変更します。
+  • ダークモードのカードがない場合、ライトモードで表示されます。
+  • デフォルトはライトモードです。
+  • 例として以下をご参照ください。
 '539': 設定
 '540': |-
-  • I some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
+  • 私は場合によっては、申鶴を使ってプッシュ通知を行います
+  • ほとんどの場合、申鶴に重大な問題が発生したとき、またはアップデートがあったときに表示されます
 '541': 開発者メッセージ
 '542': アイテムが見つかりません
 '543': データはキャッシュからのものです
 '544': 申鶴でアカウントを管理する
 '545': アカウントが登録されていません
 '546': |-
-  • You can register multiple accounts in Shenhe
-  • You can switch between accounts using the dropdown menu
+  • 申鶴では複数のアカウントを登録することができます。
+  • ドロップダウンメニューでアカウントを切り替えることができます。
 '547': TW, HK, MO
 '548': セレスティア
 '549': 古樹
@@ -611,14 +611,14 @@
 '561': アカウントが削除されました。
 '562': 追加するアカウントの種類を選択してください
 '563': |-
-  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID
-  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> requires your Cookie
+  • </profile:1006486283805265953>, </area:1006486283725590531>, </stats:1006486283725590530> など、一部のコマンドはあなたの UID を必要とします。
+  • </check:1020580644365021247>, </abyss:1020580644365021253>, </diary:1020580644365021252> などのコマンドは、Cookieが必要です。
 
-  • To add your UID, you only have to enter your UID
-  • To obtain your Cookie, you will go through a registration process that takes around 30 seconds
+  • UIDを追加するには、あなたのUIDを入力します。
+  • Cookieを取得するには、約30秒の登録プロセスが必要です。
 
-  • Cookie is a unique identifier that is used to identify your account, note that I won't have access to your Genshin account by having your Cookie
-  • You can always remove your account data by using </accounts:1020188057628065866>
+  • Cookieはあなたのアカウントを識別するために使われる固有の識別子です。
+  • </accounts:1020580644478275615>を使用して、いつでもアカウントデータを削除することができます。
 '564': UIDを追加
 '565': Cookieを追加
 '566': ここにあなたのUIDを入れてください
@@ -626,14 +626,14 @@
 '568': UID が追加されました
 '569': 現在のアカウント
 '570': |-
-  Your Cookie contains multiple accounts
-  please choose the one you want to add
+  あなたのCookieには複数のアカウントが含まれています。
+  追加したいアカウントを選択してください。
 '571': アカウントが登録されていません
-'572': Use </accounts:1020188057628065866> to add one
+'572': </accounts:1020580644478275615> を使用して追加します。
 '573': 現在のアカウントはCookieにリンクされていません
 '574': |-
   One of your other accounts is linked to a Cookie, but the current one is only linked to a UID
-'575': Use </accounts:1020188057628065866> to switch between accounts
+'575': </accounts:1020580644478275615> を使用してアカウントを切り替えます
 '576': UIDを検証するまでしばらくお待ちください
 '577': Cookieを検証するまでしばらくお待ちください。
 '578': 'リダイレクトされていない場合は、seria#5334 までご連絡ください'
@@ -647,24 +647,24 @@
 '585': DM をテスト
 '586': 樹脂が一定量を超えたときに通知を受け取ることができます。
 '587': |-
-  • Threshold: The amount of resin you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+  • しきい値。通知させたい樹脂の量
+  • 最大通知回数です。この回数を超えたら、申鶴はあなたのDMを停止します。
+  • この機能を有効にするには、Cookieと連携したアカウントが必要です。
 '588': 洞天宝銭が一定額を超えたときに通知を受け取ることができます。
 '589': |-
-  • Threshold: The amount of realm currency you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+  ・しきい値。通知させたい洞天宝銭の量
+  ・最大通知回数です。この回数を超えたら、申鶴はあなたのDMを停止します
+  ・この機能を有効にするには、Cookieと連携したアカウントが必要です。
 '590': |-
-  • This feature allows you to receive notification when a character's talent domain is farmable
-  • Simply select the characters you want to be notified about
-  • Selecting a character that already has notification enabled will disable it
+  • この機能は、キャラクターの天賦秘境が利用可能になった際に通知を受け取ることができる機能です
+  • 通知したいキャラクターを選択します。
+  • すでに通知が有効になっているキャラクターを選択すると、通知が無効になります。
 '591': 現在の設定
 '592': |-
-  • This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered
-  • The only exception is the talent notification, which is shared across all accounts
-  • Click on the buttons below for more information on each feature
+  - 原神が提供する課題を期限内に行うための通知を設定することができる機能です。
+  - 通知は、登録したアカウントごとに設定できます。
+  - ただし、天賦の通知だけは、すべてのアカウントで共有されます。
+  - 各機能の詳細については、以下のボタンをクリックしてください。
 '593': 通知
 '594': 設定を変更
 '595': 通知を送るには、申鶴がDMを送れるようにする必要があります。何らかの理由で無効にしている場合は、以下の手順で有効にしてください。
@@ -680,18 +680,18 @@
 '605': 獲得した報酬
 '606': 現在の状態
 '607': 獲得した報酬を確認する
-'608': View the Shenhe v5 change log
-'609': Multi-account support
-'610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
-'611': Reminders
-'612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
-'613': New website
-'614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.
-'615': Dark mode support for profile cards
-'616': Profile cards now have a dark mode version, which is automatically used when you enable dark mode in Shenhe.
-'617': Abyss cards
-'618': Abyss cards are now available, you can use them to display your abyss progress as well as details in battles.
-'619': Cache support for profile command
-'620': The profile command now caches your data, which means that you can use it to display more than the 8 characters on your profile showcase. When you use the commnd, Shenhe will remember all the character data, and when you remove those characters from the showcase in-game, they will still appear in the command. If you put those characters back up in the showcase, they will be updated automatically. This feature can also be used as a backup when the Enka API is down.
-'621': The new /claim command
-'622': You can now see the rewards you have claimed in the past, and claim rewards manually if Shenhe somehow misses it.
+'608': 申鶴v5の変更履歴を見る
+'609': 複数アカウント対応
+'610': 新しいアカウント管理システムで簡単にアカウントを切り替えることができます。 追加するアカウントの種類を選択し、アカウントに独自のニックネームを与えることができます。
+'611': 通知
+'612': 通知機能が大きく見直されました。樹脂、天賦秘境、洞天宝銭のリマインダーを設定できるようになり、より直感的に操作できるようになりました。
+'613': 新しいウェブサイト
+'614': また、ウェブサイトも大幅にリニューアルしました。携帯電話やタブレット端末でも見やすいようにBootstrapを採用し、よくある質問に答えるFAQのコーナーも設けました。
+'615': プロファイルカードのダークモード対応
+'616': プロフィールカードにダークモードバージョンが追加され、鶴申のダークモードを有効にすると自動的に使用されるようになりました。
+'617': 深境螺旋カード
+'618': 深境螺旋カードが登場し、深境螺旋の進行状況やバトルでの詳細を表示することができます。
+'619': プロファイルコマンドのキャッシュ対応
+'620': プロフィールコマンドはデータをキャッシュするようになりましたので、これを利用してキャラクターラインナップに8人以上のキャラクターを表示することができます。このコマンドを使用すると、申鶴はすべてのキャラクターデータを記憶し、ゲーム内でそれらのキャラクターをショーケースから削除しても、コマンドには表示されます。また、そのキャラクターをショーケースに戻すと、自動的に更新されます。この機能は、Enka APIがダウンした際のバックアップとしても利用できます。
+'621': 新コマンド /claim
+'622': 過去に獲得した報酬を見ることができ、申鶴が何らかの方法でそれを逃した場合は手動で報酬を受け取ることができます。
