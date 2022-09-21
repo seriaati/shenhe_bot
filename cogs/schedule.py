@@ -60,14 +60,20 @@ class Schedule(commands.Cog):
             "/help",
             "shenhe.bot.nu",
         ]
-        await self.bot.change_presence(activity=Game(name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"))
+        await self.bot.change_presence(
+            activity=Game(
+                name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"
+            )
+        )
 
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def claim_reward(self):
         log.info("[Schedule] Claim Reward Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT ltuid, ltoken, user_id FROM user_accounts WHERE ltuid IS NOT NULL")
+        await c.execute(
+            "SELECT ltuid, ltoken, user_id FROM user_accounts WHERE ltuid IS NOT NULL"
+        )
         users = await c.fetchall()
         count = 0
         for _, tpl in enumerate(users):
@@ -76,9 +82,10 @@ class Schedule(commands.Cog):
             user_id = tpl[2]
             client = genshin.Client()
             client.default_game = genshin.Game.GENSHIN
-            client.set_cookies({'ltuid': ltuid, 'ltoken': ltoken})
+            client.set_cookies({"ltuid": ltuid, "ltoken": ltoken})
             user_locale = await get_user_locale(user_id, self.bot.db)
             client.lang = to_genshin_py(user_locale) or "en-us"
+            
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
@@ -97,7 +104,7 @@ class Schedule(commands.Cog):
                             await client.claim_daily_reward()
                         except genshin.errors.AlreadyClaimed:
                             pass
-                        await asyncio.sleep(20*index)
+                        await asyncio.sleep(20 * index)
                 else:
                     log.warning(f"[Schedule] Claim Reward Error: {e}")
                     sentry_sdk.capture_exception(e)
@@ -116,13 +123,15 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
+            "SELECT user_id, uid, ltuid, ltoken FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
         count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
+            ltuid = tpl[2]
+            ltoken = tpl[3]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM pot_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
                 (user_id, uid),
@@ -131,14 +140,26 @@ class Schedule(commands.Cog):
             if data is None:
                 continue
             user_id, threshold, current, max, last_notif_time = data
-            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            last_notif_time = (
+                now - timedelta(1)
+                if not last_notif_time
+                else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            )
             time_diff = now - last_notif_time
             if time_diff.total_seconds() < 7200:
                 continue
 
-            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            client = genshin.Client()
+            client.default_game = genshin.Game.GENSHIN
+            client.set_cookies({"ltuid": ltuid, "ltoken": ltoken})
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            locale = user_locale or "en-US"
+            client.lang = to_genshin_py(locale)
+            discord_user = self.bot.get_user(user_id) or await self.bot.fetch_user(
+                user_id
+            )
             try:
-                notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+                notes = await client.get_notes(uid)
             except genshin.errors.InvalidCookies:
                 log.warning(f"[Schedule] Invalid Cookies for {user_id}")
                 continue
@@ -146,12 +167,9 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule] Pot Notification Error: {e}")
                 continue
             coin = notes.current_realm_currency
-            locale = shenhe_user.user_locale or "en-US"
             if coin >= threshold and current < max:
                 if notes.current_realm_currency == notes.max_realm_currency:
-                    realm_recover_time = text_map.get(
-                        1, locale, shenhe_user.user_locale
-                    )
+                    realm_recover_time = text_map.get(1, locale)
                 else:
                     realm_recover_time = format_dt(
                         notes.realm_currency_recovery_time, "R"
@@ -162,11 +180,11 @@ class Schedule(commands.Cog):
                 )
                 embed.set_author(
                     name=text_map.get(518, locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
+                    icon_url=discord_user.display_avatar.url,
                 )
                 embed.set_footer(text=text_map.get(305, locale))
                 try:
-                    await shenhe_user.discord_user.send(embed=embed)
+                    await discord_user.send(embed=embed)
                 except Forbidden:
                     await c.execute(
                         "UPDATE pot_notification SET toggle = 0 WHERE user_id = ? AND uid = ?",
@@ -190,7 +208,9 @@ class Schedule(commands.Cog):
                 )
             await asyncio.sleep(3)
         await self.bot.db.commit()
-        log.info(f"[Schedule] Pot Notification Ended (Notified {count}/{len(users)} users)")
+        log.info(
+            f"[Schedule] Pot Notification Ended (Notified {count}/{len(users)} users)"
+        )
 
     @tasks.loop(hours=1)
     @schedule_error_handler
@@ -199,13 +219,15 @@ class Schedule(commands.Cog):
         now = datetime.now()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
+            "SELECT user_id, uid, ltuid, ltoken FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
         count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
+            ltuid = tpl[2]
+            ltoken = tpl[3]
             await c.execute(
                 "SELECT user_id, threshold, current, max, last_notif_time FROM resin_notification WHERE toggle = 1 AND user_id = ? AND uid = ?",
                 (user_id, uid),
@@ -214,27 +236,36 @@ class Schedule(commands.Cog):
             if data is None:
                 continue
             user_id, threshold, current, max, last_notif_time = data
-            last_notif_time = now - timedelta(1) if not last_notif_time else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            last_notif_time = (
+                now - timedelta(1)
+                if not last_notif_time
+                else datetime.strptime(last_notif_time, "%Y/%m/%d %H:%M:%S")
+            )
             time_diff = now - last_notif_time
             if time_diff.total_seconds() < 7200:
                 continue
 
-            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
+            client = genshin.Client()
+            client.default_game = genshin.Game.GENSHIN
+            client.set_cookies({"ltuid": ltuid, "ltoken": ltoken})
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            locale = user_locale or "en-US"
+            client.lang = to_genshin_py(locale)
+            discord_user = self.bot.get_user(user_id) or await self.bot.fetch_user(
+                user_id
+            )
             try:
-                notes = await shenhe_user.client.get_notes(shenhe_user.uid)
+                notes = await client.get_notes(uid)
             except genshin.errors.InvalidCookies:
                 log.warning(f"[Schedule] Invalid Cookies for {user_id}")
                 continue
             except Exception as e:
                 log.warning(f"[Schedule] Resin Notification Error: {e}")
                 continue
-            locale = shenhe_user.user_locale or "en-US"
             resin = notes.current_resin
             if resin >= threshold and current < max:
                 if resin == notes.max_resin:
-                    resin_recover_time = text_map.get(
-                        1, locale, shenhe_user.user_locale
-                    )
+                    resin_recover_time = text_map.get(1, locale)
                 else:
                     resin_recover_time = format_dt(notes.resin_recovery_time, "R")
                 embed = default_embed(
@@ -244,10 +275,10 @@ class Schedule(commands.Cog):
                 embed.set_footer(text=text_map.get(305, locale))
                 embed.set_author(
                     name=text_map.get(306, locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
+                    icon_url=discord_user.display_avatar.url,
                 )
                 try:
-                    await shenhe_user.discord_user.send(embed=embed)
+                    await discord_user.send(embed=embed)
                 except Forbidden:
                     await c.execute(
                         "UPDATE resin_notification SET toggle = 0 WHERE user_id = ? AND uid = ?",
@@ -271,7 +302,9 @@ class Schedule(commands.Cog):
                 )
             await asyncio.sleep(3.0)
         await self.bot.db.commit()
-        log.info(f"[Schedule] Resin Notifiaction Ended (Notified {count}/{len(users)} users)")
+        log.info(
+            f"[Schedule] Resin Notifiaction Ended (Notified {count}/{len(users)} users)"
+        )
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -325,7 +358,9 @@ class Schedule(commands.Cog):
                 else:
                     count += 1
 
-        log.info(f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)")
+        log.info(
+            f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)"
+        )
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -436,7 +471,7 @@ class Schedule(commands.Cog):
         name="instantclaim", description=_("Admin usage only", hash=496)
     )
     async def instantclaim(self, i: Interaction):
-        await i.response.send_message('started, check console', ephemeral=True)
+        await i.response.send_message("started, check console", ephemeral=True)
         await self.claim_reward()
 
 
