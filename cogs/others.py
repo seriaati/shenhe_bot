@@ -87,7 +87,10 @@ class OthersCog(commands.Cog, name="others"):
         for hash in range(609, 622 + 1):
             if hash % 2 == 0:
                 continue
-            desc_text = text_map.get(hash+1, locale).split('.')
+            if locale == 'zh-TW' or 'zh-CN':
+                desc_text = text_map.get(hash+1, locale).split('。')
+            else:
+                desc_text = text_map.get(hash+1, locale).split('.')
             desc = ''
             for words in desc_text[:-1]:
                 desc += f'{words}.\n\n'
