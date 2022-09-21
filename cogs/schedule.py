@@ -181,7 +181,7 @@ class Schedule(commands.Cog):
                     f"{text_map.get(15, locale)}: {realm_recover_time}\n"
                 )
                 embed.set_author(
-                    name=text_map.get(518, locale),
+                    name=f"{text_map.get(518, locale)}: {uid}",
                     icon_url=discord_user.display_avatar.url,
                 )
                 embed.set_footer(text=text_map.get(305, locale))
@@ -278,7 +278,7 @@ class Schedule(commands.Cog):
                 )
                 embed.set_footer(text=text_map.get(305, locale))
                 embed.set_author(
-                    name=text_map.get(306, locale),
+                    name=f"{text_map.get(306, locale)}: {uid}",
                     icon_url=discord_user.display_avatar.url,
                 )
                 try:
