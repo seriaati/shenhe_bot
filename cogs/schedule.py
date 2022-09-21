@@ -127,6 +127,7 @@ class Schedule(commands.Cog):
         )
         users = await c.fetchall()
         count = 0
+        user_count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
@@ -139,6 +140,7 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
+            user_count += 1
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = (
                 now - timedelta(1)
@@ -209,7 +211,7 @@ class Schedule(commands.Cog):
             await asyncio.sleep(3)
         await self.bot.db.commit()
         log.info(
-            f"[Schedule] Pot Notification Ended (Notified {count}/{len(users)} users)"
+            f"[Schedule] Pot Notification Ended (Notified {count}/{user_count} users)"
         )
 
     @tasks.loop(hours=1)
@@ -223,6 +225,7 @@ class Schedule(commands.Cog):
         )
         users = await c.fetchall()
         count = 0
+        user_count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
             uid = tpl[1]
@@ -235,6 +238,7 @@ class Schedule(commands.Cog):
             data = await c.fetchone()
             if data is None:
                 continue
+            user_count += 1
             user_id, threshold, current, max, last_notif_time = data
             last_notif_time = (
                 now - timedelta(1)
@@ -303,7 +307,7 @@ class Schedule(commands.Cog):
             await asyncio.sleep(3.0)
         await self.bot.db.commit()
         log.info(
-            f"[Schedule] Resin Notifiaction Ended (Notified {count}/{len(users)} users)"
+            f"[Schedule] Resin Notifiaction Ended (Notified {count}/{user_count} users)"
         )
 
     @tasks.loop(hours=24)
