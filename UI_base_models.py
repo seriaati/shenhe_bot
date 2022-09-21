@@ -6,7 +6,7 @@ from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log
 
 
-class DefaultView(discord.ui.View):
+class BaseView(discord.ui.View):
     async def interaction_check(self, i: discord.Interaction) -> bool:
         if not hasattr(self, 'author'):
             return True
@@ -62,7 +62,7 @@ class DefaultView(discord.ui.View):
             sentry_sdk.capture_event(e)
 
 
-class DefaultModal(discord.ui.Modal):
+class BaseModal(discord.ui.Modal):
     async def on_error(self, i: discord.Interaction, e: Exception) -> None:
         user_locale = await get_user_locale(i.user.id, i.client.db)
         log.warning(f"[Modal Error][{i.user.id}]: [type]{type(e)} [e]{e}")

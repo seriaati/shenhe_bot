@@ -1,12 +1,12 @@
 import config
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord.errors import Forbidden, NotFound
 from discord import ButtonStyle, Interaction, User
 from discord.ui import Button, button
 from utility.utils import error_embed
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, author: User):
         super().__init__(timeout=config.long_timeout)
         self.author = author

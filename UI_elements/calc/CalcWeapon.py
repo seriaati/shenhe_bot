@@ -6,13 +6,13 @@ import config
 from apps.genshin.utils import get_weapon
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultModal, DefaultView
+from UI_base_models import BaseModal, BaseView
 from discord import Interaction, Locale, User, SelectOption
 from discord.ui import Modal, Select, TextInput
 from utility.utils import error_embed, log
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, weapons: List, author: User, db: aiosqlite.Connection, locale: Locale, user_locale: str):
         super().__init__(timeout=config.short_timeout)
         self.author = author
@@ -45,7 +45,7 @@ class WeaponSelect(Select):
         self.view.stop()
 
 
-class LevelModal(DefaultModal):
+class LevelModal(BaseModal):
     current = TextInput(
         label='current_level', placeholder='like: 1')
     target = TextInput(label='target_level', placeholder='like: 90')

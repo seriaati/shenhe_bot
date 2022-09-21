@@ -2,7 +2,7 @@ import ast
 import asyncio
 from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import get_character, get_user_uid_with_db
-from debug import DefaultModal, DefaultView
+from UI_base_models import BaseModal, BaseView
 import config
 from discord import Locale, Interaction, ButtonStyle, Embed
 from discord.ui import Button, TextInput
@@ -13,7 +13,7 @@ import aiosqlite
 from UI_elements.genshin import TalentNotificationMenu
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
@@ -380,7 +380,7 @@ async def return_notification_menu(
         pass
 
 
-class ResinModal(DefaultModal):
+class ResinModal(BaseModal):
     resin_threshold = TextInput(label="樹脂閥值", placeholder="例如: 140 (不得大於 160)")
     max_notif = TextInput(label="最大提醒值", placeholder="例如: 5")
 
@@ -396,7 +396,7 @@ class ResinModal(DefaultModal):
         self.stop()
 
 
-class PotModal(DefaultModal):
+class PotModal(BaseModal):
     threshold = TextInput(label="寶錢閥值")
     max_notif = TextInput(label="最大提醒值")
 

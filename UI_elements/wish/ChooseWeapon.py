@@ -2,13 +2,13 @@ import aiosqlite
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import ButtonStyle, Interaction, Locale, User
 from discord.ui import Button
 from utility.utils import default_embed, error_embed
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(
         self,
         db: aiosqlite.Connection,

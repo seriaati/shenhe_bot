@@ -6,13 +6,13 @@ from yelan.damage_calculator import DamageCalculator, return_damage
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from yelan.data.GO_modes import hit_mode_texts
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from utility.utils import default_embed, get_user_appearance_mode
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, enka_view, locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.long_timeout)
         # defining damage calculation variables

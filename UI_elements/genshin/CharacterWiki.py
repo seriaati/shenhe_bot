@@ -3,7 +3,7 @@ from typing import Any
 import aiosqlite
 from apps.genshin.utils import get_character
 from data.game.elements import elements
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import ButtonStyle, Embed, Interaction, User, SelectOption
 from discord.ui import Button, Select
 from apps.text_map.text_map_app import text_map
@@ -12,7 +12,7 @@ from utility.utils import error_embed
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, data: dict, author: User, db: aiosqlite.Connection):
         super().__init__(timeout=config.short_timeout)
         self.author = author

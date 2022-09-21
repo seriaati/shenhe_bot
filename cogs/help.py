@@ -1,6 +1,6 @@
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Interaction, Locale, SelectOption, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -74,7 +74,7 @@ class Dropdown(Select):
         await i.response.send_message(embed=embed, ephemeral=True)
 
 
-class DropdownView(DefaultView):
+class DropdownView(BaseView):
     def __init__(self, bot: commands.Bot, locale: Locale, user_locale: str | None):
         super().__init__()
         self.add_item(Dropdown(bot, locale, user_locale))

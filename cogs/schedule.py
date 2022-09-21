@@ -103,7 +103,8 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule] Claim Reward Error: {e}")
                 sentry_sdk.capture_exception(e)
                 break
-            count += 1
+            else:
+                count += 1
             await asyncio.sleep(5)
         await self.bot.db.commit()
         log.info(f"[Schedule] Claim Reward Ended ({count}/{len(users)} users)")
@@ -181,12 +182,12 @@ class Schedule(commands.Cog):
                             uid,
                         ),
                     )
+                    count += 1
             if coin < threshold:
                 await c.execute(
                     "UPDATE pot_notification SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user_id, uid),
                 )
-            count += 1
             await asyncio.sleep(3)
         await self.bot.db.commit()
         log.info(f"[Schedule] Pot Notification Ended (Notified {count}/{len(users)} users)")
@@ -262,12 +263,12 @@ class Schedule(commands.Cog):
                             uid,
                         ),
                     )
+                    count += 1
             if resin < threshold:
                 await c.execute(
                     "UPDATE resin_notification SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user_id, uid),
                 )
-            count += 1
             await asyncio.sleep(3.0)
         await self.bot.db.commit()
         log.info(f"[Schedule] Resin Notifiaction Ended (Notified {count}/{len(users)} users)")
@@ -314,9 +315,15 @@ class Schedule(commands.Cog):
                     icon_url=character.icon,
                 )
                 embed.set_image(url="attachment://reminder_card.jpeg")
-
-                await user.send(embed=embed, files=[file])
-            count += 1
+                try:
+                    await user.send(embed=embed, files=[file])
+                except Forbidden:
+                    await c.execute(
+                        "UPDATE talent_notification SET toggle = 0 WHERE user_id = ?",
+                        (user_id,),
+                    )
+                else:
+                    count += 1
 
         log.info(f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)")
 

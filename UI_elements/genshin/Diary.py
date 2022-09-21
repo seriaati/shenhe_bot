@@ -1,4 +1,4 @@
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Interaction, Locale, User
 from discord.ui import Button
 from apps.text_map.text_map_app import text_map
@@ -7,7 +7,7 @@ from utility.utils import error_embed
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(
         self,
         author: User,

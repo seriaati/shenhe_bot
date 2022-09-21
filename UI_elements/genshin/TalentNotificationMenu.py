@@ -8,13 +8,13 @@ from apps.genshin.utils import get_character
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.elements import convert_elements, elements
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from UI_elements.genshin import ReminderMenu
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale

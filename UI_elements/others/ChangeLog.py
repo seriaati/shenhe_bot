@@ -2,14 +2,14 @@ from typing import Any, List
 
 import aiosqlite
 from apps.text_map.text_map_app import text_map
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Embed, Interaction, Locale
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, db: aiosqlite.Connection, embeds: List[Embed], locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.mid_timeout)
         self.db = db

@@ -3,20 +3,16 @@ import json
 import sys
 from typing import List
 
-import sentry_sdk
-from apps.text_map.text_map_app import text_map
-import aiosqlite
-from discord import Forbidden, Interaction, app_commands
+from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.app_commands import Choice
 from discord.ext import commands
-from apps.text_map.utils import get_user_locale
 from utility.utils import default_embed, error_embed
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
-from data.game.consumables import consumables_map
 from data.game.elements import convert_elements
 from data.game.weapons import weapons_map
+from UI_elements.admin import Annouce
 
 
 def is_seria():
@@ -118,33 +114,8 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
-    async def annouce(
-        self, i: Interaction, title: str, description: str, url: str = None
-    ):
-        await i.response.defer(ephemeral=True)
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute("SELECT user_id FROM user_settings WHERE dev_msg = 1")
-        user_ids = await c.fetchall()
-        for _, tpl in enumerate(user_ids):
-            user_id = tpl[0]
-            user = i.client.get_user(user_id)
-            if user is None:
-                continue
-            user_locale = await get_user_locale(user_id, i.client.db)
-            seria = i.client.get_user(410036441129943050)
-            embed = default_embed(
-                title.replace("%n", "\n"), description.replace("%n", "\n")
-            )
-            embed.set_author(name="seria#5334", icon_url=seria.avatar)
-            embed.set_footer(text=text_map.get(524, "zh-TW", user_locale))
-            embed.set_image(url=url)
-            try:
-                await user.send(embed=embed)
-            except Forbidden:
-                pass
-            except Exception as e:
-                sentry_sdk.capture_exception(e)
-        await i.followup.send("complete.", ephemeral=True)
+    async def annouce(self, i: Interaction):
+        await i.response.send_modal(Annouce.Modal())
 
     @is_seria()
     @app_commands.command(name="update", description=_("Admin usage only", hash=496))

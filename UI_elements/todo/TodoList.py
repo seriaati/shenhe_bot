@@ -2,7 +2,7 @@ from typing import List
 
 import aiosqlite
 import sentry_sdk
-from debug import DefaultModal, DefaultView
+from UI_base_models import BaseModal, BaseView
 from discord import ButtonStyle, Interaction, Locale, User, SelectOption
 from discord.ui import Button, Select, TextInput
 from apps.text_map.utils import get_user_locale
@@ -12,7 +12,7 @@ from utility.utils import error_embed, log
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(
         self,
         db: aiosqlite.Connection,
@@ -126,7 +126,7 @@ class ClearItems(Button):
         await return_todo(result, i, view, i.client.db)
 
 
-class AddItemModal(DefaultModal):
+class AddItemModal(BaseModal):
     item = TextInput(
         label="item_name",
         placeholder="for_example:_mora",
@@ -160,7 +160,7 @@ class AddItemModal(DefaultModal):
         )
 
 
-class RemoveItemModal(DefaultModal):
+class RemoveItemModal(BaseModal):
     count = TextInput(
         label="item_amount",
         placeholder="for_example:_90_(leave_blank_clear)",

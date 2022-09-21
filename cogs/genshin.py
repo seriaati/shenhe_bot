@@ -751,7 +751,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             options,
             data,
             member,
-            eng_data,
+            eng_cache,
             i.user,
             self.bot.db,
             i.locale,

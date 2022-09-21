@@ -4,7 +4,7 @@ import aiosqlite
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption, User
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
@@ -16,7 +16,7 @@ from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(
         self,
         embeds: Dict[int, Embed],

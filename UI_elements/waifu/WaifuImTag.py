@@ -1,11 +1,11 @@
 from typing import Any, List
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import User, Interaction
 from discord.ui import Select
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, choices: List, author: User):
         super().__init__(timeout=config.short_timeout)
         self.add_item(TagSelect(choices))

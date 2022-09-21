@@ -8,12 +8,12 @@ from discord.ui import TextInput
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.text_map.convert_locale import to_genshin_py
-from debug import DefaultModal
+from UI_base_models import BaseModal
 from utility.utils import default_embed, error_embed, log
 import config
 
 
-class Modal(DefaultModal):
+class Modal(BaseModal):
     url = TextInput(
         label='Auth Key URL',
         placeholder='請ctrl+v貼上複製的連結',

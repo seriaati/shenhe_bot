@@ -13,7 +13,7 @@ standard_characters = {
         "th": "Jean",
         "pt": "Jean",
         "ru": "\u0414\u0436\u0438\u043d\u043d",
-        "vi": "Jean"
+        "vi": "Jean",
     },
     "10000016": {
         "chs": "\u8fea\u5362\u514b",
@@ -27,7 +27,7 @@ standard_characters = {
         "th": "Diluc",
         "pt": "Diluc",
         "ru": "\u0414\u0438\u043b\u044e\u043a",
-        "vi": "Diluc"
+        "vi": "Diluc",
     },
     "10000035": {
         "chs": "\u4e03\u4e03",
@@ -41,7 +41,7 @@ standard_characters = {
         "th": "Qiqi",
         "pt": "Qiqi",
         "ru": "\u0426\u0438 \u0426\u0438",
-        "vi": "Qiqi"
+        "vi": "Qiqi",
     },
     "10000041": {
         "chs": "\u83ab\u5a1c",
@@ -55,7 +55,7 @@ standard_characters = {
         "th": "Mona",
         "pt": "Mona",
         "ru": "\u041c\u043e\u043d\u0430",
-        "vi": "Mona"
+        "vi": "Mona",
     },
     "10000042": {
         "chs": "\u523b\u6674",
@@ -69,14 +69,28 @@ standard_characters = {
         "th": "Keqing",
         "pt": "Keqing",
         "ru": "\u041a\u044d \u0426\u0438\u043d",
-        "vi": "Keqing"
+        "vi": "Keqing",
+    },
+    "10000069": {
+        "chs": "提纳里",
+        "cht": "提納里",
+        "de": "Tighnari",
+        "en": "Tighnari",
+        "es": "Tignari",
+        "fr": "Tighnari",
+        "jp": "ティナリ",
+        "kr": "타이나리",
+        "th": "Tighnari",
+        "pt": "Tighnari",
+        "ru": "Тигнари",
+        "vi": "Tighnari",
     },
 }
 
 
 def get_standard_characters() -> List:
     result = []
-    for character_id, character_names in standard_characters.items():
-        for lang_code, character_name in character_names.items():
+    for _, character_names in standard_characters.items():
+        for _, character_name in character_names.items():
             result.append(character_name)
     return result

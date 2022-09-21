@@ -3,7 +3,7 @@ from apps.genshin.genshin_app import GenshinApp
 import calendar
 from datetime import datetime
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 import config
 from discord import Locale, ButtonStyle, Interaction
 from discord.errors import InteractionResponded
@@ -13,7 +13,7 @@ from utility.utils import default_embed, divide_chunks, error_embed
 import genshin
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale | str, genshin_app: GenshinApp):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale

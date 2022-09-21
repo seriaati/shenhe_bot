@@ -3,7 +3,7 @@ import aiosqlite
 import yaml
 from apps.genshin.utils import get_character, get_character_builds
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Embed, User, Interaction, SelectOption
 from discord.ui import Button, Select
 from apps.text_map.text_map_app import text_map
@@ -11,7 +11,7 @@ from data.game.elements import convert_elements, elements
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, author: User, db: aiosqlite.Connection):
         super().__init__(timeout=config.long_timeout)
         self.author = author

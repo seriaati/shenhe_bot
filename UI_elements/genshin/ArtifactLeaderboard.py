@@ -6,7 +6,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import ButtonStyle, Interaction, Locale, User
 from discord.ui import Button
 from utility.paginator import GeneralPaginator
@@ -14,7 +14,7 @@ from utility.utils import default_embed, divide_chunks, error_embed
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(
         self, author: User, db: aiosqlite.Connection, locale: Locale, user_locale: str
     ):

@@ -4,14 +4,14 @@ import aiosqlite
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from utility.utils import default_embed
 from data.others.language_options import lang_options
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.mid_timeout)
         self.add_item(Appearance(text_map.get(535, locale)))

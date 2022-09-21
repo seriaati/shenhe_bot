@@ -6,7 +6,7 @@ from apps.genshin.utils import get_uid_region
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from debug import DefaultModal, DefaultView
+from UI_base_models import BaseModal, BaseView
 from discord import ButtonStyle, Interaction, Locale, SelectOption, TextStyle
 from discord.errors import InteractionResponded, NotFound
 from discord.ui import Button, Select, TextInput
@@ -15,7 +15,7 @@ import genshin
 from apps.genshin.genshin_app import GenshinApp
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
         super().__init__(timeout=config.long_timeout)
         self.locale = locale
@@ -87,7 +87,7 @@ class ChangeNickname(Button):
         await i.response.edit_message(embed=embed, view=self.view)
 
 
-class NicknameModal(DefaultModal):
+class NicknameModal(BaseModal):
     name = TextInput(label="Nickname", placeholder="Nickname", max_length=100)
 
     def __init__(self, locale: Locale | str, uid: str) -> None:
@@ -107,7 +107,7 @@ class NicknameModal(DefaultModal):
         await return_accounts(i)
 
 
-class AddUIDModal(DefaultModal):
+class AddUIDModal(BaseModal):
     uid = TextInput(label="UID", placeholder="Put your UID here", min_length=9, max_length=9)
 
     def __init__(self, locale: Locale | str) -> None:
@@ -219,7 +219,7 @@ class SubmitCookie(Button):
                 pass
 
 
-class SubmitCookieModal(DefaultModal):
+class SubmitCookieModal(BaseModal):
     cookie = TextInput(label="Cookie", style=TextStyle.long)
 
     def __init__(self, locale: Locale | str) -> None:

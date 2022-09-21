@@ -1,12 +1,12 @@
 from apps.text_map.text_map_app import text_map
-from debug import DefaultView
+from UI_base_models import BaseView
 from discord import Interaction, Locale
 from discord.ui import Button, button
 from utility.utils import default_embed
 import config
 
 
-class View(DefaultView):
+class View(BaseView):
     def __init__(self, locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
