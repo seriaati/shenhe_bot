@@ -74,29 +74,25 @@ class OthersCog(commands.Cog, name="others"):
     async def version_five(self, i: Interaction):
         embeds = []
         images = [
-            'https://i.imgur.com/Le1AyPz.png',
-            'https://i.imgur.com/4jCFh5v.png',
-            'https://i.imgur.com/9mwDGsp.png',
-            'https://i.imgur.com/seuqAnc.png',
-            'https://i.imgur.com/G4SrF4r.png',
-            'https://i.imgur.com/cgV10Jw.png',
-            'https://i.imgur.com/XDlxJOE.png'
+            "https://i.imgur.com/Le1AyPz.png",
+            "https://i.imgur.com/4jCFh5v.png",
+            "https://i.imgur.com/9mwDGsp.png",
+            "https://i.imgur.com/seuqAnc.png",
+            "https://i.imgur.com/G4SrF4r.png",
+            "https://i.imgur.com/cgV10Jw.png",
+            "https://i.imgur.com/XDlxJOE.png",
         ]
         locale = await get_user_locale(i.user.id, i.client.db) or i.locale
         count = 0
         for hash in range(609, 622 + 1):
             if hash % 2 == 0:
                 continue
-            if locale == 'zh-TW' or 'zh-CN':
-                desc_text = text_map.get(hash+1, locale).split('。')
-            else:
-                desc_text = text_map.get(hash+1, locale).split('.')
-            desc = ''
+            period = "。" if str(locale) == "zh-TW" or str(locale) == "zh-CN" else "."
+            desc_text = text_map.get(hash + 1, locale).split(period)
+            desc = ""
             for words in desc_text[:-1]:
-                desc += f'{words}.\n\n'
-            embed = default_embed(
-                text_map.get(hash, locale), desc
-            )
+                desc += f"{words}{period}\n\n"
+            embed = default_embed(text_map.get(hash, locale), desc)
             embed.set_image(url=images[count])
             embeds.append(embed)
             count += 1
