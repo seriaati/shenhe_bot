@@ -180,8 +180,7 @@
 '163': 选择配置
 '164': 种配置
 '165': |-
-  This user hasn't registered their account yet
-  </register:1006486283725590528> to register
+  This user hasn't registered their account yet </register:1006486283725590528> to register
 '166': 未知用户
 '167': '的 UID'
 '168': 计算资料输入
@@ -633,8 +632,7 @@
 '572': Use </accounts:1020188057628065866> to add one
 '573': Your current account is not linked to a Cookie
 '574': |-
-  One of your other accounts is linked to a Cookie,
-  but the current one is only linked to a UID
+  One of your other accounts is linked to a Cookie, but the current one is only linked to a UID
 '575': Use </accounts:1020188057628065866> to switch between accounts
 '576': Please wait while we are validating your UID
 '577': Please wait while we are validating your Cookie
@@ -642,8 +640,7 @@
 '579': This user doesn't have an account registered
 '580': This user's current account is not linked to a Cookie
 '581': |-
-  One of this user's accounts is linked to a Cookie,
-  but the current one is only linked to a UID
+  One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID
 '582': Resin notification
 '583': Talent notification
 '584': Realm currency notification
