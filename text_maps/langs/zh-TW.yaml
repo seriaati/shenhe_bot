@@ -137,13 +137,13 @@
 '136': 選擇要註冊的帳號
 '137': Cookie 設置流程
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6.Submit your cookie here
-  Too complicated? The image below might help!
+  1.先複製下面的程式碼。
+  2.電腦或手機使用 Chrome 開啟 Hoyolab 並登入帳號 https://www.hoyolab.com
+  3.長摁地址欄，選取所有文本。
+  4.在網址列先輸入 `java`, 然後貼上代碼, 確保網址開頭變成 `javascript:`
+  5.按下確認，網頁展示會變成你的Cookie, 全選然後復制
+  6.在這裡提交你的cookie, 使用
+  無法理解嗎? 按照下面的圖示操作吧!
 '139': 過期或無效的Cookie, 請先登出帳號再重新登入!
 '140': 請使用 </register:1006486283725590528> 指令
 '141': 找不到帳號資料!
@@ -156,15 +156,14 @@
 '148': 樓層導覽
 '149': 資料不公開?
 '150': |-
-  Please go to https://www.hoyolab.com/home and login
-  Follow the steps in the image below
+  請至 https://www.hoyolab.com 登入你的hoyoverse帳號
+  按照下方圖片中的步驟操作
 
-
-  1. Click the avatar on the top right
-  2. Personal homepage
-  3. Click `Genshin` on the top right corner
-  4. Click the gear icon
-  5. Toggle all the switches
+  1. 點擊右上角自己的頭像
+  2. 個人主頁
+  3. 右上角「原神」
+  4. 設定齒輪
+  5. 三個選項都打開
 '151': 樹脂提醒設定
 '152': 樹脂閥值
 '153': 申鶴會在樹脂超過這個數字後提醒你
@@ -180,8 +179,8 @@
 '163': 選擇配置
 '164': 種配置
 '165': |-
-  This user hasn't registered their account yet
-  </register:1006486283725590528> to register
+  這個用戶還沒有註冊過帳號
+  </register:1006486283725590528> 來註冊帳號
 '166': 未知用戶
 '167': '的 UID'
 '168': 計算資料輸入
@@ -221,8 +220,9 @@
 '202': 代辦清單
 '203': 新增素材
 '204': |-
-  Amazing! There is currently nothing to do! ˋ( ° ▽、° )
-  Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items
+  太好了, 沒有需要蒐集的素材 ˋ( ° ▽、° )
+  使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 指令來計算升級所需素材，
+  或是使用下方的按鈕來新增素材
 '205': 刪除素材
 '206': 清空代辦清單
 '207': 選擇要刪除的素材
@@ -367,48 +367,45 @@
 '356': 祈願記錄導入成功
 '357': PC 設置方式
 '358': |-
-  1. Open genshin impact (If you use multiple accounts, please restart the game)
-  2. Open the wish history in the game and wait for it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will be copied to your clipboard
-  6. Submit the link you copied by using the </wish import:1000187021635104890> command
+  1. 在電腦開啟原神 (如果你使用多組帳號，請重新啟動遊戲)
+  2. 打開祈願記錄並等待讀取
+  3. 在鍵盤點選「開始」鍵 (Windows鍵), 並蒐尋 Powershell
+  4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell
+  5. 按Enter鍵, 接著連結會自動複製到剪貼簿
+  6. 在這裡提交連結, 輸入 </wish import:1000187021635104890> 指令
 
-  [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  [影片教學](https://www.youtube.com/watch?v=FCwZkHeIezw)
 '359': Android 設置方式
 '360': |-
-  [Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)
+  [Wifi 設置](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
+  [行動數據設置](https://www.youtube.com/watch?v=rHN1iRjmKmc)
+  [如果上述的方法都沒用，點我](https://www.youtube.com/watch?v=jAKq94KpGHA)
 '361': IOS 教學
 '362': |-
-  [Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Submit that link here using the </wish import:1000187021635104890> command
+  [影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)
+  1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)
+  2. 開啟app, 接著在系統設定 (設定 > 一般 > VPN與裝置管理) 中同意 VPN
+  3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝 CA > CA 就下載好了
+  4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install
+  5. 開啟原神，接著打開祈願畫面，並在這個畫面等待
+  6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕
+  7. 回到原神，接著開啟祈願歷史記錄
+  8. 等候頁面載入
+  9. 回到 Stream App > 停止抓包
+  10. 按 抓包歷史 > 選擇一個以.json結尾的歷史記錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)
+  11. 點選 「請求」 分頁, 接著複製連結
+  12. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令
 '363': Playstation 設置流程
 '364': |-
-  (If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)
-  (You can only use this method if you have an in-game mail with a QR Code to open the web event)
-
-
-  1. Open Genshin Impact on your PlayStation
-  2. Open the event mail that contains the QR Code
-  3. Scan the QR Code with your phone
-  4. Submit the link here using the </wish import:1000187021635104890> command
+  (如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式)
+  1. 在你的 PlayStation 裡打開原神
+  2. 打開你的信箱 QR Code
+  3. 用手機掃描 QR Code 得到連結
+  4. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令
 '365': 選擇你的平台
 '366': |-
-  The language of your wish history is based on your current selected language
-  changing the language afterward will not affect previous records
+  祈願記錄的語言是根據你目前設置的語言決定的
+  之後更改語言不會改變先前記錄的語言
 '367': 找不到任何祈願記錄
 '368': 使用 </wish import:1000187021635104890> 指令來導入你的祈願記錄
 '369': 祈願記錄
@@ -580,22 +577,22 @@
 '536': 深色模式
 '537': 亮色模式
 '538': |
-  • This setting changes the appearance of your cards
-   • If there is no dark mode version of the card, it will be displayed in light mode
-   • Default is light mode
-   • See below for an example
+  • 這個設定將會更改卡片的樣式
+   • 如果該卡片的深色模式尚未製作完成，將會顯示為淺色模式
+   • 預設模式為淺色
+   • 示例如下
 '539': 設定
 '540': |-
-  • I some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
+  • 在某些情況，我會透過申鶴發送通知
+  • 他們大多在申鶴出現重大問題，或是有更新時出現
 '541': 開發者訊息
 '542': 物品不存在
 '543': 資料取自快取
 '544': 管理帳號
 '545': 你沒有註冊任何帳號
 '546': |-
-  • You can register multiple accounts in Shenhe
-  • You can switch between accounts using the dropdown menu
+  • 你可以註冊多個帳戶
+  • 你可以透過下面的下拉選單來切換帳號
 '547': 台港澳
 '548': 天空島
 '549': 世界樹
@@ -612,14 +609,15 @@
 '561': 帳戶已刪除
 '562': 選擇你想要新增的帳戶類型
 '563': |-
-  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID
-  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> requires your Cookie
+  • 有些指令只需要你的 UID，像是</profile:1006486283805265953>, </area:1006486283725590531>, 以及</stats:1006486283725590530>
+  • 其他指令需要 Cookie，像是 </check:1006486283725590529>, </abyss:1006486283725590535>, 以及 </diary:1006486283725590534>
 
-  • To add your UID, you only have to enter your UID
-  • To obtain your Cookie, you will go through a registration process that takes around 30 seconds
+  • 新增 UID 只需要輸入 UID 即可
+  • 註冊 Cookie 則需要經過一個大約 30 秒的註冊流程
 
-  • Cookie is a unique identifier that is used to identify your account, note that I won't have access to your Genshin account by having your Cookie
-  • You can always remove your account data by using </accounts:1020188057628065866>
+  • Cookie 是一個儲存你的瀏覽器中的加密字符串，用於識別你和你的帳戶
+  • 你隨時可以移除你的帳戶資料
+  • 更多資訊請參閱[官網](https://seriaati.github.io/shenhe_website/index-zh-TW.html)
 '564': 新增 UID
 '565': 新增 Cookie
 '566': 請在這裡放入你的 UID
@@ -627,14 +625,12 @@
 '568': 已新增 UID
 '569': 當前帳戶
 '570': |-
-  Your Cookie contains multiple accounts
-  please choose the one you want to add
+  你的 Cookie 帶有多個帳戶，請選擇你想要註冊的帳戶
 '571': 你沒有註冊任何帳號
 '572': 使用 </accounts:1020188057628065866> 指令來新增
 '573': 你的當前帳號並沒有連結 Cookie
 '574': |-
-  One of your other accounts is linked to a Cookie,
-  but the current one is only linked to a UID
+  你的其他帳號有連結到 Cookie，但是當前帳號只有連結到 UID
 '575': 使用 </accounts:1020188057628065866> 來切換帳號
 '576': 我們正在確認你的 UID，請稍等
 '577': 我們正在確認你的 Cookie，請稍等
@@ -642,32 +638,30 @@
 '579': 這個用戶沒有註冊任何帳號
 '580': 這個用戶的當前帳號並沒有連結 Cookie
 '581': |-
-  One of this user's accounts is linked to a Cookie,
-  but the current one is only linked to a UID
+  這個用戶的其他帳號有連結到 Cookie，但當前的只有連結到 UID
 '582': 樹脂提醒
 '583': 天賦提醒
 '584': 寶錢提醒
 '585': 測試私訊
 '586': 在樹脂超過一定數量時提醒你
 '587': |-
-  • Threshold: The amount of resin you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+  • 閥值：想要被提醒的樹脂數量
+  • 最大提醒數量：申鶴會在提醒你超過這個次數後停止提醒
+  • 你需要一個有連結 Cookie 的帳號才能使用這個功能
 '588': 當寶錢超過一定數量時提醒你
 '589': |-
-  • Threshold: The amount of realm currency you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+  • 閥值：想要被提醒的寶錢數量
+  • 最大提醒值：申鶴會在提醒你超過這個次數後停止提醒
+  • 你需要一個有連結 Cookie 的帳號才能使用這個功能
 '590': |-
-  • This feature allows you to receive notification when a character's talent domain is farmable
-  • Simply select the characters you want to be notified about
-  • Selecting a character that already has notification enabled will disable it
+  • 當一個角色的天賦素材副本可以刷的時候，申鶴會提醒你
+  • 請在下方選擇想要被提醒的角色
+  • 選擇一個已經選擇過的角色將會移除該角色的提醒
 '591': 當前設置
 '592': |-
-  • This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered
-  • The only exception is the talent notification, which is shared across all accounts
-  • Click on the buttons below for more information on each feature
+  • 這個功能能幫助你準時做完原神給你的功課
+  • 不同帳戶之間的提醒設定是獨立的，除了天賦提醒
+  • 點擊下方不同的按鈕來查看更多資訊
 '593': 提醒
 '594': 更改設置
 '595': 申鶴需要私訊你才能發送提醒，如果你不小心關掉的話，請按照下面的步驟重新打開
@@ -683,18 +677,18 @@
 '605': 已獲得的獎勵
 '606': 當前狀態
 '607': 查看已獲得的獎勵
-'608': View the Shenhe v5 change log
-'609': Multi-account support
-'610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
-'611': Reminders
-'612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
-'613': New website
-'614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.
-'615': Dark mode support for profile cards
-'616': Profile cards now have a dark mode version, which is automatically used when you enable dark mode in Shenhe.
-'617': Abyss cards
-'618': Abyss cards are now available, you can use them to display your abyss progress as well as details in battles.
-'619': Cache support for profile command
-'620': The profile command now caches your data, which means that you can use it to display more than the 8 characters on your profile showcase. When you use the commnd, Shenhe will remember all the character data, and when you remove those characters from the showcase in-game, they will still appear in the command. If you put those characters back up in the showcase, they will be updated automatically. This feature can also be used as a backup when the Enka API is down.
-'621': The new /claim command
-'622': You can now see the rewards you have claimed in the past, and claim rewards manually if Shenhe somehow misses it.
+'608': 查看申鶴 5.0 的新功能
+'609': 帳號管理
+'610': 使用新的帳戶管理系統在你的帳戶之間輕鬆切換。 你可以選擇要添加的帳戶類型，並為這些帳戶取名。
+'611': 提醒功能
+'612': 提醒系統進行了大修。 你現在可以像以前一樣設置樹脂、天賦領域和領域貨幣的提醒，但界面更簡潔直觀。
+'613': 新的網站
+'614': 網站也進行了大修。 現在使用 Bootstrap 技術來增強手機及平板用戶的體驗，並且新增了常見問題區塊來回答大部分使用者的常見問題。
+'615': 深色模式
+'616': 角色配置卡片現在新增了深色模式，你可以至使用者設定來更改模式。
+'617': 深淵卡片
+'618': 新增了深淵卡片來顯示你的深淵進度以及深淵進度。
+'619': 快取功能
+'620': /profile 指令現在會快取你的資料，這意味著你可以使用它在您的個人資料展示中顯展示高過8個角色。 當你使用指令時，申鶴會記住所有的角色數據，當你從遊戲內的展示中移除這些角色時，它們依然會出現在指令中。 如果你將這些角色放回到展示櫃中，它們的資料將自動更新。 當 Enka API 掉線時，此功能也可以用作備份。
+'621': 新的 /claim 指令
+'622': 你現在可以查看過去領取過的獎勵，如果申鶴沒有幫你領到，你也可以手動領取獎勵。
