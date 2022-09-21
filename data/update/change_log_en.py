@@ -1,4 +1,8 @@
 change_log_en = {
+    "v5.0.0": "New Features\n"
+    "• Use the </v5:1021973867050303498> comamnd\n\n"
+    "BUG Fixes\n"
+    "• Fixed a lot of different bugs\n",
     "v4.7.8": "New Features\n"
     "• Added dark mode (currently only </stats:1006486283725590530>)\n"
     "• </settings:1017447865829830696> is a command that combines all your user settings\n"
