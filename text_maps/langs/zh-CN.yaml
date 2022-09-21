@@ -36,8 +36,8 @@
 '35': </register:1006486283725590528> 来获取更多资讯
 '36': 无效的 cookie
 '37': 帐号设定已取消
-'38': 账号内没有任何角色
-'39': Account added
+'38': 帐号内没有任何角色
+'39': 已新增帐户
 '40': 你已经领取过今天的奖励了！
 '41': 获得
 '42': 签到成功
@@ -85,7 +85,7 @@
 '84': 元素战技释放数
 '85': 深渊总览
 '86': 间
-'87': 層
+'87': 层
 '88': '[上半]'
 '89': '[下半]'
 '90': '配置#'
@@ -126,7 +126,7 @@
 '125': 申鹤会以你在Discord使用的语言来回复你。
 '126': 更改语言会覆盖预设语言。
 '127': 如果该语言还没翻译好, 会使用英文回覆
-'128': 語言
+'128': 语言
 '129': 蒙德
 '130': 璃月
 '131': 稻妻
@@ -134,19 +134,19 @@
 '133': 请贴上刚刚复制的文字
 '134': 发生了未知的错误，请至[申鹤的 issue 页面](https://github.com/seriaati/shenhe_bot/issues)回报这个错误
 '135': 未知错误
-'136': 选择要注册的账号
+'136': 选择要注册的帐号
 '137': Cookie 设置流程
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6.Submit your cookie here
-  Too complicated? The image below might help!
+  1.先复制下面的程式码。
+  2.电脑或手机使用 Chrome 开启 Hoyolab 并登入帐号 https://www.hoyolab.com
+  3.长摁地址栏，选取所有文本。
+  4.在网址列先输入 `java`, 然后贴上代码, 确保网址开头变成 `javascript:`
+  5.按下确认，网页展示会变成你的Cookie, 全选然后复制
+  6.在这里提交你的cookie, 使用
+  无法理解吗? 按照下面的图示操作吧!
 '139': 过期或无效的Cookie, 请先登出帐号再重新登入!
 '140': 请使用 </register:1006486283725590528> 指令
-'141': 找不到账号资料!
+'141': 找不到帐号资料!
 '142': 选择元素
 '143': 你不是这个指令的发起者
 '144': 原石记录
@@ -156,31 +156,31 @@
 '148': 楼层导览
 '149': 资料不公开?
 '150': |-
-  Please go to https://www.hoyolab.com/home and login
-  Follow the steps in the image below
+  请至 https://www.hoyolab.com 登入你的hoyoverse帐号
+  按照下方图片中的步骤操作
 
-
-  1. Click the avatar on the top right
-  2. Personal homepage
-  3. Click `Genshin` on the top right corner
-  4. Click the gear icon
-  5. Toggle all the switches
+  1. 点击右上角自己的头像
+  2. 个人主页
+  3. 右上角「原神」
+  4. 设定齿轮
+  5. 三个选项都打开
 '151': 树脂提醒设定
 '152': 树脂阀值
 '153': 申鹤会在树脂超过这个数字后提醒你
 '154': 最大提醒值
 '155': 申鹤最多提醒你的次数
 '156': 选择已经设置过的角色将移除该角色的提醒
-'157': Choose your characters
+'157': 选择角色
 '158': 目前尚未设置任何角色
-'159': Current characters
+'159': 目前角色
 '160': 选择元素
 '161': 已设置过此角色, 再次选择将会关闭通知
 '162': 配置
 '163': 选择配置
 '164': 种配置
 '165': |-
-  This user hasn't registered their account yet </register:1006486283725590528> to register
+  这个用户还没有注册过帐号
+  </register:1006486283725590528> 来注册帐号
 '166': 未知用户
 '167': '的 UID'
 '168': 计算资料输入
@@ -220,8 +220,9 @@
 '202': 代办清单
 '203': 新增素材
 '204': |-
-  Amazing! There is currently nothing to do! ˋ( ° ▽、° )
-  Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items
+  太好了, 没有需要搜集的素材 ˋ( ° ▽、° )
+  使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 指令来计算升级所需素材，
+  或是使用下方的按钮来新增素材
 '205': 删除素材
 '206': 清空代办清单
 '207': 选择要删除的素材
@@ -291,7 +292,7 @@
 '281': 移速%
 '282': 返回副词条选择
 '283': 或直接输入你的 UID
-'284': 无效账号
+'284': 无效帐号
 '285': 这是一个没有角色的空号
 '286': 无效 UID
 '287': 请在游戏中打开「显示角色详情」
@@ -351,7 +352,7 @@
 '341': 班尼特六命
 '342': 重云元素战技
 '343': 选择近战元素附魔
-'344': Select teammates
+'344': 选择队友
 '345': 队伍
 '346': 状态
 '347': 目前效果
@@ -361,53 +362,50 @@
 '351': 蒸发
 '352': 祈愿记录总结
 '353': 导入祈愿记录
-'354': 请粘贴上复制的连结
+'354': 请贴上复制的连结
 '355': 请稍等, 处理数据中...
 '356': 祈愿记录导入成功
 '357': PC 设置方式
 '358': |-
-  1. Open genshin impact (If you use multiple accounts, please restart the game)
-  2. Open the wish history in the game and wait for it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will be copied to your clipboard
-  6. Submit the link you copied by using the </wish import:1000187021635104890> command
+  1. 在电脑开启原神 (如果你使用多组帐号，请重新启动游戏)
+  2. 打开祈愿记录并等待读取
+  3. 在键盘点选「开始」键 (Windows键), 并搜寻 Powershell
+  4. 点选 Windows Powershell, 接着复制及贴上下列程式码到 Powershell
+  5. 按Enter键, 接着连结会自动复制到剪贴簿
+  6. 在这里提交连结, 输入 </wish import:1000187021635104890> 指令
 
-  [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  [影片教学](https://www.youtube.com/watch?v=FCwZkHeIezw)
 '359': Android 设置方式
 '360': |-
-  [Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)
+  [Wifi 设置](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
+  [行动数据设置](https://www.youtube.com/watch?v=rHN1iRjmKmc)
+  [如果上述的方法都没用，点我](https://www.youtube.com/watch?v=jAKq94KpGHA)
 '361': IOS 教学
 '362': |-
-  [Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Submit that link here using the </wish import:1000187021635104890> command
+  [影片教学](https://www.youtube.com/watch?v=WfBpraUq41c)
+  1. 在App Store 下载 Stream [点我](https://apps.apple.com/app/stream/id1312141691)
+  2. 开启app, 接着在系统设定 (设定 > 一般 > VPN与装置管理) 中同意 VPN
+  3. 安装 CA (在Stream App点选 开始抓包 > 将会出现弹跳视窗并选择同意 > 安装 CA > CA 就下载好了
+  4. 前往 设定 > 一般 > VPN与装置管理 > 点选 Stream Generated CA and install
+  5. 开启原神，接着打开祈愿画面，并在这个画面等待
+  6. 回到 Stream App > 选择 信任 > 按 开始抓包 按钮
+  7. 回到原神，接着开启祈愿历史记录
+  8. 等候页面载入
+  9. 回到 Stream App > 停止抓包
+  10. 按 抓包历史 > 选择一个以.json结尾的历史记录(该连结前面会像是 https://hk4e-api-os.mihoyo.com/)
+  11. 点选 「请求」 分页, 接着复制连结
+  12. 在这里提交连结, 请输入 </wish import:1000187021635104890> 指令
 '363': Playstation 设置流程
 '364': |-
-  (If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)
-  (You can only use this method if you have an in-game mail with a QR Code to open the web event)
-
-
-  1. Open Genshin Impact on your PlayStation
-  2. Open the event mail that contains the QR Code
-  3. Scan the QR Code with your phone
-  4. Submit the link here using the </wish import:1000187021635104890> command
+  (如果你没办法使用以下的设置方法, 请将自己的PS帐号绑定至一个hoyoverse帐号, 并接着使用PC/手机设置方式)
+  1. 在你的 PlayStation 里打开原神
+  2. 打开你的信箱 QR Code
+  3. 用手机扫描 QR Code 得到连结
+  4. 在这里提交连结, 请输入 </wish import:1000187021635104890> 指令
 '365': 选择你的平台
 '366': |-
-  The language of your wish history is based on your current selected language
-  changing the language afterward will not affect previous records
+  祈愿记录的语言是根据你目前设置的语言决定的
+  之后更改语言不会改变先前记录的语言
 '367': 找不到任何祈愿记录
 '368': 使用 </wish import:1000187021635104890> 指令来导入你的祈愿记录
 '369': 祈愿记录
@@ -417,15 +415,15 @@
 '373': 你的运气击败了
 '374': 的玩家
 '375': 共
-'376': pulls in total
+'376': 抽
 '378': 共
 '379': 个 UP 五星
 '380': 距离保底
-'381': pity pulls
+'381': 抽
 '382': 想要抽出
 '383': 个 UP 五星角色
 '384': 预计
-'385': pulls
+'385': 抽
 '386': 祈愿抽数预测
 '387': 常驻
 '388': '想要的'
@@ -435,22 +433,22 @@
 '392': 这是一把常驻还是 UP 武器?
 '393': 武器祈愿抽数预测
 '394': 想要抽出
-'395': weapons you want
+'395': 个想要的五星 Up 武器
 '396': 即为
 '397': 原石
 '398': 常驻池
 '399': 角色池
 '400': 武器池
 '401': 平均
-'402': pulls per 5 star
+'402': 抽出一金
 '403': 距离保底
-'404': pulls from pity
+'404': 抽
 '405': 你还没有在武器池抽中过五星武器
 '406': 活动开始时间
 '407': 活动结束时间
 '408': 详情
 '409': 选择活动类型
-'410': 在申鹤的资料库中注册你的原神账号，来使用部份需要帐户的指令
+'410': 在申鹤的资料库中注册你的原神帐号，来使用部份需要帐户的指令
 '411': 选项
 '412': 注册教学
 '413': 提交 cookie
@@ -559,139 +557,138 @@
 '516': 洞天宝钱阀值
 '517': 洞天宝钱提醒关闭
 '518': 洞天宝钱要溢出了！
-'519': The Enka API is probably down right now, please wait patiently until it's back
+'519': Enka API 目前处于关闭状态，请耐心等待其恢复
 '520': 草神瞳
-'521': 移除账号资料
-'522': 账号资料移除成功
+'521': 移除帐号资料
+'522': 帐号资料移除成功
 '523': 停止接收来自开发者的讯息
 '524': 不想看见这个？使用 /settings
 '525': 蔓激化
 '526': 超激化
 '527': 水元素近战附魔
-'528': 你的帳號由於由於 Cookie 無效已被移除， 請使用 </register:1006486283725590528> 重新註冊
-'529': 物品類型
-'530': 獲取途徑
+'528': 你的帐号由于由于 Cookie 无效已被移除， 请使用 </register:1006486283725590528> 重新注册
+'529': 物品类型
+'530': 获取途径
 '531': 武器效果
 '532': 档案过大
 '533': 伤害计算时发生错误
 '534': 查看并更改你的使用者设定
-'535': 外觀
+'535': 外观
 '536': 深色模式
 '537': 亮色模式
 '538': |
-  • This setting changes the appearance of your cards
-   • If there is no dark mode version of the card, it will be displayed in light mode
-   • Default is light mode
-   • See below for an example
+  • 这个设定将会更改卡片的样式
+   • 如果该卡片的深色模式尚未制作完成，将会显示为浅色模式
+   • 预设模式为浅色
+   • 示例如下
 '539': 设定
 '540': |-
-  • I some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
-'541': 开发者信息
+  • 在某些情况，我会透过申鹤发送通知
+  • 他们大多在申鹤出现重大问题，或是有更新时出现
+'541': 开发者讯息
 '542': 物品不存在
-'543': Data is from cache
-'544': Manage your accounts in Shenhe
-'545': You don't have any account registered
+'543': 资料取自快取
+'544': 管理帐号
+'545': 你没有注册任何帐号
 '546': |-
-  • You can register multiple accounts in Shenhe
-  • You can switch between accounts using the dropdown menu
-'547': TW, HK, MO
-'548': Celestia
-'549': Irminsul
-'550': America
-'551': Europe
-'552': Asia
-'553': Unknown region
-'554': (Internal)
-'555': Your accounts
-'556': Add an account
-'557': Remove accounts
-'559': Switch account
-'560': Choose one or multiple accounts below to remove
-'561': Accounts removed
-'562': Choose the account type you want to add
+  • 你可以注册多个帐户
+  • 你可以透过下面的下拉选单来切换帐号
+'547': 台港澳
+'548': 天空岛
+'549': 世界树
+'550': 美服
+'551': 欧服
+'552': 亚服
+'553': 未知伺服器
+'554': (内部)
+'555': 你的帐户
+'556': 新增帐户
+'557': 移除帐户
+'559': 切换帐户
+'560': 选择一或多个要移除的帐户
+'561': 帐户已删除
+'562': 选择你想要新增的帐户类型
 '563': |-
-  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID
-  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> requires your Cookie
+  • 有些指令只需要你的 UID，像是</profile:1006486283805265953>, </area:1006486283725590531>, 以及</stats:1006486283725590530>
+  • 其他指令需要 Cookie，像是 </check:1006486283725590529>, </abyss:1006486283725590535>, 以及 </diary:1006486283725590534>
 
-  • To add your UID, you only have to enter your UID
-  • To obtain your Cookie, you will go through a registration process that takes around 30 seconds
+  • 新增 UID 只需要输入 UID 即可
+  • 注册 Cookie 则需要经过一个大约 30 秒的注册流程
 
-  • Cookie is a unique identifier that is used to identify your account, note that I won't have access to your Genshin account by having your Cookie
-  • You can always remove your account data by using </accounts:1020188057628065866>
-'564': Add UID
-'565': Add Cookie
-'566': Put your UID here
-'567': 'If this shouldn''t be happening, please contact seria#5334'
-'568': UID added
-'569': Current account
+  • Cookie 是一个储存你的浏览器中的加密字符串，用于识别你和你的帐户
+  • 你随时可以移除你的帐户资料
+  • 更多资讯请参阅[官网](https://seriaati.github.io/shenhe_website/index-zh-TW.html)
+'564': 新增 UID
+'565': 新增 Cookie
+'566': 请在这里放入你的 UID
+'567': '如果这不应该发生，请联络 seria#5334'
+'568': 已新增 UID
+'569': 当前帐户
 '570': |-
-  Your Cookie contains multiple accounts
-  please choose the one you want to add
-'571': You don't have an account registered
-'572': Use </accounts:1020188057628065866> to add one
-'573': Your current account is not linked to a Cookie
+  你的 Cookie 带有多个帐户，请选择你想要注册的帐户
+'571': 你没有注册任何帐号
+'572': 使用 </accounts:1020188057628065866> 指令来新增
+'573': 你的当前帐号并没有连结 Cookie
 '574': |-
-  One of your other accounts is linked to a Cookie, but the current one is only linked to a UID
-'575': Use </accounts:1020188057628065866> to switch between accounts
-'576': Please wait while we are validating your UID
-'577': Please wait while we are validating your Cookie
-'578': 'If you are not redirected, please contact seria#5334'
-'579': This user doesn't have an account registered
-'580': This user's current account is not linked to a Cookie
+  你的其他帐号有连结到 Cookie，但是当前帐号只有连结到 UID
+'575': 使用 </accounts:1020188057628065866> 来切换帐号
+'576': 我们正在确认你的 UID，请稍等
+'577': 我们正在确认你的 Cookie，请稍等
+'578': '如果你被卡在这个页面，请联络 seria#5334'
+'579': 这个用户没有注册任何帐号
+'580': 这个用户的当前帐号并没有连结 Cookie
 '581': |-
-  One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID
-'582': Resin notification
-'583': Talent notification
-'584': Realm currency notification
-'585': Test DM
-'586': This feature allows you to receive notification when your resin exceeds a certain amount
+  这个用户的其他帐号有连结到 Cookie，但当前的只有连结到 UID
+'582': 树脂提醒
+'583': 天赋提醒
+'584': 宝钱提醒
+'585': 测试私讯
+'586': 在树脂超过一定数量时提醒你
 '587': |-
-  • Threshold: The amount of resin you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
-'588': This feature allows you to receive notification when your realm currency exceeds a certain amount
+  • 阀值：想要被提醒的树脂数量
+  • 最大提醒数量：申鹤会在提醒你超过这个次数后停止提醒
+  • 你需要一个有连结 Cookie 的帐号才能使用这个功能
+'588': 当宝钱超过一定数量时提醒你
 '589': |-
-  • Threshold: The amount of realm currency you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+  • 阀值：想要被提醒的宝钱数量
+  • 最大提醒值：申鹤会在提醒你超过这个次数后停止提醒
+  • 你需要一个有连结 Cookie 的帐号才能使用这个功能
 '590': |-
-  • This feature allows you to receive notification when a character's talent domain is farmable
-  • Simply select the characters you want to be notified about
-  • Selecting a character that already has notification enabled will disable it
-'591': Current settings
+  • 当一个角色的天赋素材副本可以刷的时候，申鹤会提醒你
+  • 请在下方选择想要被提醒的角色
+  • 选择一个已经选择过的角色将会移除该角色的提醒
+'591': 当前设置
 '592': |-
-  • This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered
-  • The only exception is the talent notification, which is shared across all accounts
-  • Click on the buttons below for more information on each feature
-'593': Reminders
-'594': Change settings
-'595': Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
-'596': Test it out!
-'597': Shenhe has failed to DM you
-'598': Add/Remove characters
-'599': Remove all characters
-'600': Change nicknames
-'601': Nickname
-'602': Select the account you want to change the nickname of
-'603': Claim reward
-'604': Hoyolab daily check in
-'605': Claimed rewards
-'606': Current status
-'607': View claimed rewards
-'608': View the Shenhe v5 change log
-'609': Multi-account support
-'610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
-'611': Reminders
-'612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
-'613': New website
-'614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.
-'615': Dark mode support for profile cards
-'616': Profile cards now have a dark mode version, which is automatically used when you enable dark mode in Shenhe.
-'617': Abyss cards
-'618': Abyss cards are now available, you can use them to display your abyss progress as well as details in battles.
-'619': Cache support for profile command
-'620': The profile command now caches your data, which means that you can use it to display more than the 8 characters on your profile showcase. When you use the commnd, Shenhe will remember all the character data, and when you remove those characters from the showcase in-game, they will still appear in the command. If you put those characters back up in the showcase, they will be updated automatically. This feature can also be used as a backup when the Enka API is down.
-'621': The new /claim command
-'622': You can now see the rewards you have claimed in the past, and claim rewards manually if Shenhe somehow misses it.
+  • 这个功能能帮助你准时做完原神给你的功课
+  • 不同帐户之间的提醒设定是独立的，除了天赋提醒
+  • 点击下方不同的按钮来查看更多资讯
+'593': 提醒
+'594': 更改设置
+'595': 申鹤需要私讯你才能发送提醒，如果你不小心关掉的话，请按照下面的步骤重新打开
+'596': 试试看！
+'597': 申鹤没办法私讯你
+'598': 新增/移除角色
+'599': 移除所有角色
+'600': 更改昵称
+'601': 昵称
+'602': 选择你想要更换昵称的帐户
+'603': 签到
+'604': Hoyolab 每日签到
+'605': 已获得的奖励
+'606': 当前状态
+'607': 查看已获得的奖励
+'608': 查看申鹤 5.0 的新功能
+'609': 帐号管理
+'610': 使用新的帐户管理系统在你的帐户之间轻松切换。你可以选择要添加的帐户类型，并为这些帐户取名。
+'611': 提醒功能
+'612': 提醒系统进行了大修。你现在可以像以前一样设置树脂、天赋领域和领域货币的提醒，但界面更简洁直观。
+'613': 新的网站
+'614': 网站也进行了大修。现在使用 Bootstrap 技术来增强手机及平板用户的体验，并且新增了常见问题区块来回答大部分使用者的常见问题。
+'615': 深色模式
+'616': 角色配置卡片现在新增了深色模式，你可以至使用者设定来更改模式。
+'617': 深渊卡片
+'618': 新增了深渊卡片来显示你的深渊进度以及深渊进度。
+'619': 快取功能
+'620': /profile 指令现在会快取你的资料，这意味着你可以使用它在您的个人资料展示中显展示高过8个角色。当你使用指令时，申鹤会记住所有的角色数据，当你从游戏内的展示中移除这些角色时，它们依然会出现在指令中。如果你将这些角色放回到展示柜中，它们的资料将自动更新。当 Enka API 掉线时，此功能也可以用作备份。
+'621': 新的 /claim 指令
+'622': 你现在可以查看过去领取过的奖励，如果申鹤没有帮你领到，你也可以手动领取奖励。
