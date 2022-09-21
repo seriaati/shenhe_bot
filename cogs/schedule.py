@@ -67,25 +67,27 @@ class Schedule(commands.Cog):
     async def claim_reward(self):
         log.info("[Schedule] Claim Reward Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL")
+        await c.execute("SELECT ltuid, ltoken, user_id FROM user_accounts WHERE ltuid IS NOT NULL")
         users = await c.fetchall()
-        log.info(users)
         count = 0
         for _, tpl in enumerate(users):
-            user_id = tpl[0]
-            shenhe_user = await self.genshin_app.get_user_cookie(user_id)
-            client = shenhe_user.client
-            client.lang = to_genshin_py(shenhe_user.user_locale) or "en-us"
+            ltuid = tpl[0]
+            ltoken = tpl[1]
+            user_id = tpl[2]
+            client = genshin.Client()
+            client.default_game = genshin.Game.GENSHIN
+            client.set_cookies({'ltuid': ltuid, 'ltoken': ltoken})
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            client.lang = to_genshin_py(user_locale) or "en-us"
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
-                break
+                pass
             except genshin.errors.InvalidCookies:
                 log.warning(f"[Schedule] Invalid Cookies: {user_id}")
-                break
             except genshin.errors.GenshinException as e:
                 if e.retcode == -10002:
-                    break
+                    pass
                 elif e.retcode == -1004:
                     log.warning(f"[Schedule][Claim Reward] We have been rate limited")
                     await asyncio.sleep(20)
@@ -94,20 +96,17 @@ class Schedule(commands.Cog):
                         try:
                             await client.claim_daily_reward()
                         except genshin.errors.AlreadyClaimed:
-                            break
+                            pass
                         await asyncio.sleep(20*index)
                 else:
                     log.warning(f"[Schedule] Claim Reward Error: {e}")
                     sentry_sdk.capture_exception(e)
-                    break
             except Exception as e:
                 log.warning(f"[Schedule] Claim Reward Error: {e}")
                 sentry_sdk.capture_exception(e)
-                break
             else:
                 count += 1
             await asyncio.sleep(5)
-        await self.bot.db.commit()
         log.info(f"[Schedule] Claim Reward Ended ({count}/{len(users)} users)")
 
     @tasks.loop(hours=1)
