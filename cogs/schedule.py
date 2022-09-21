@@ -264,7 +264,7 @@ class Schedule(commands.Cog):
                     )
             if resin < threshold:
                 await c.execute(
-                    "UPDATE user_accounts SET current = 0 WHERE user_id = ? AND uid = ?",
+                    "UPDATE resin_notification SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user_id, uid),
                 )
             count += 1
