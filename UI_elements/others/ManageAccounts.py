@@ -200,7 +200,8 @@ async def add_cookie_callback(view: View, i: Interaction):
     view.clear_items()
     view.add_item(GOBack(2))
     view.add_item(SubmitCookie(locale))
-    await i.response.edit_message(embeds=[embed, code_embed], view=view)
+    await i.response.edit_message(embed=embed, view=view)
+    await i.followup.send(embed=code_embed, ephemeral=True)
 
 
 class SubmitCookie(Button):

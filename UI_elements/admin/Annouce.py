@@ -1,3 +1,4 @@
+import asyncio
 import aiosqlite
 import config
 from apps.text_map.text_map_app import text_map
@@ -38,4 +39,5 @@ class Modal(BaseModal):
                 await user.send(embed=embed)
             except:
                 pass
+            await asyncio.sleep(1)
         await i.followup.send("completed.", ephemeral=True)
