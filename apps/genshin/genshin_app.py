@@ -3,7 +3,7 @@ import discord
 import aiosqlite
 import sentry_sdk
 from apps.genshin.custom_model import ShenheUser
-from apps.genshin.utils import get_character, get_user_uid_with_db
+from apps.genshin.utils import get_character, get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
@@ -565,76 +565,9 @@ class GenshinApp:
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
-        uid = await get_user_uid_with_db(user_id, self.db)
+        uid = await get_uid(user_id, self.db)
         return uid
 
     async def get_user_cookie(self, user_id: int, locale: Locale = None) -> ShenheUser:
-        discord_user = self.bot.get_user(user_id)
-        if discord_user is None:
-            discord_user = await self.bot.fetch_user(user_id)
-        c: aiosqlite.Cursor = await self.db.cursor()
-        await c.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ? AND current = 1",
-            (user_id,),
-        )
-        user_data = await c.fetchone()
-        if user_data is None:
-            await c.execute(
-                "SELECT ltuid, ltoken, cookie_token, uid, china FROM user_accounts WHERE user_id = ?",
-                (user_id,),
-            )
-            user_data = await c.fetchone()
-            if user_data is None:
-                only_uid = True
-            else:
-                only_uid = False
-                await c.execute(
-                    "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
-                    (user_id, user_data[3]),
-                )
-                await self.db.commit()
-        else:
-            only_uid = False
-
-        if not only_uid:
-            uid = user_data[3]
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=user_data[0],
-                ltoken=user_data[1],
-                account_id=user_data[0],
-                cookie_token=user_data[2],
-            )
-        else:
-            client = self.bot.genshin_client
-            uid = await self.get_user_uid(user_id)
-
-        user_locale = await get_user_locale(user_id, self.db)
-        genshin_locale = user_locale or locale
-        client_locale = to_genshin_py(genshin_locale) or "en-us"
-        client.lang = client_locale
-        client.default_game = genshin.Game.GENSHIN
-        client.uid = uid
-        if uid is not None:
-            china = True if int(str(uid)[0]) in [1, 2, 5] else False
-        else:
-            china = False
-        if china:
-            client.lang = "zh-cn"
-
-        try:
-            await client.update_character_names(lang=client._lang)
-        except genshin.errors.InvalidCookies:
-            try:
-                await self.bot.genshin_client.update_character_names(lang=client._lang)
-            except Exception as e:
-                sentry_sdk.capture_exception(e)
-
-        user_obj = ShenheUser(
-            client=client,
-            uid=uid,
-            discord_user=discord_user,
-            user_locale=user_locale,
-            china=china,
-        )
-        return user_obj
+        shenhe_user = await get_shenhe_user(user_id, self.db, self.bot, locale)
+        return shenhe_user

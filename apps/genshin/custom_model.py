@@ -6,7 +6,7 @@ import genshin
 class ShenheUser(BaseModel):
     client: genshin.Client
     uid: int | None
-    discord_user: discord.User | discord.Member
+    discord_user: discord.User | discord.Member | discord.ClientUser
     user_locale: str | None
     china: bool
     
@@ -20,3 +20,11 @@ class DamageResult(BaseModel):
     
     class Config:
         arbitrary_types_allowed = True
+
+class NotificationUser(BaseModel):
+    user_id: int
+    threshold: int
+    current: int
+    max: int
+    last_notif_time: str | None
+    shenhe_user: ShenheUser = None

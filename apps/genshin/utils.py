@@ -1,6 +1,9 @@
 from typing import Dict, List, Tuple, Union
-
+from apps.genshin.custom_model import ShenheUser
+from discord.ext import commands
+from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from data.game.artifacts import artifacts_map
 from data.game.characters import characters_map
 from data.game.elements import elements
@@ -9,6 +12,7 @@ from data.game.weapons import weapons_map
 from discord import Embed, Locale, SelectOption
 from utility.utils import default_embed, parse_HTML
 import aiosqlite
+import genshin
 
 
 def calculate_artifact_score(substats: dict):
@@ -292,26 +296,83 @@ def parse_character_wiki_embed(
     return embeds, material_embed, options
 
 
-async def get_user_uid_with_db(user_id: int, db: aiosqlite.Connection) -> int | None:
-    c = await db.cursor()
+async def get_shenhe_user(
+    user_id: int,
+    db: aiosqlite.Connection,
+    bot: commands.Bot,
+    locale: Locale = None,
+    cookie: Dict[str, str | int] = None,
+) -> ShenheUser:
+    discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
+    c: aiosqlite.Cursor = await db.cursor()
     await c.execute(
-        "SELECT uid FROM user_accounts WHERE user_id = ? AND current = 1",
+        "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
         (user_id,),
     )
-    uid = await c.fetchone()
-    if uid is None:
-        await c.execute(
-            "SELECT uid FROM user_accounts WHERE user_id = ?",
-            (user_id,),
-        )
-        uid = await c.fetchone()
-        if uid is None:
-            return None
+    user_data = await c.fetchall()
+    for index, tpl in enumerate(user_data):
+        if tpl[5] == 1:
+            user_data = user_data[index]
+            break
         else:
-            await c.execute(
-                "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
-                (user_id, uid[0]),
+            user_data = user_data[index]
+
+    if user_data[0] is not None:
+        client = genshin.Client()
+        if cookie is None:
+            client.set_cookies(
+                ltuid=user_data[0],
+                ltoken=user_data[1],
+                account_id=user_data[0],
+                cookie_token=user_data[2],
             )
-            return uid[0]
+        else:
+            client.set_cookies(cookie)
+        uid = user_data[3]
     else:
-        return uid[0]
+        client = bot.genshin_client
+        uid = user_data[3]
+
+    user_locale = await get_user_locale(user_id, db)
+    locale = user_locale or locale
+    client_locale = to_genshin_py(locale) or "en-us"
+    client.lang = client_locale
+    client.default_game = genshin.Game.GENSHIN
+    client.uid = uid
+    china = True if str(uid)[0] in ["1", "2", "5"] else False
+    if china:
+        client.lang = "zh-cn"
+
+    try:
+        await client.update_character_names(lang=client.lang)
+    except genshin.errors.InvalidCookies:
+        try:
+            await bot.genshin_client.update_character_names(lang=client._lang)
+        except:
+            pass
+
+    user_obj = ShenheUser(
+        client=client,
+        uid=uid,
+        discord_user=discord_user,
+        user_locale=user_locale,
+        china=china,
+    )
+    return user_obj
+
+
+async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
+    c = await db.cursor()
+    await c.execute(
+        "SELECT uid, current FROM user_accounts WHERE user_id = ?",
+        (user_id,),
+    )
+    uid = await c.fetchall()
+    for index, tpl in enumerate(uid):
+        if tpl[1] == 1:
+            uid = uid[index][0]
+            break
+        else:
+            uid = uid[index][0]
+    else:
+        return uid

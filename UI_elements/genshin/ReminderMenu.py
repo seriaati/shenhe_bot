@@ -1,7 +1,7 @@
 import ast
 import asyncio
 from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.utils import get_character, get_user_uid_with_db
+from apps.genshin.utils import get_character, get_uid
 from UI_base_models import BaseModal, BaseView
 import config
 from discord import Locale, Interaction, ButtonStyle, Embed
@@ -38,7 +38,7 @@ async def return_resin_notification(i: Interaction, view: View):
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
         "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
     )
     (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -81,7 +81,7 @@ async def return_pot_notification(i: Interaction, view: View):
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
         "SELECT toggle, threshold, max FROM pot_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
     )
     (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -236,7 +236,7 @@ class NotificationON(Button):
         else:
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+                (i.user.id, await get_uid(i.user.id, i.client.db)),
             )
         await i.client.db.commit()
         if self.table_name == "resin_notification":
@@ -266,7 +266,7 @@ class NotificationOFF(Button):
         else:
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_user_uid_with_db(i.user.id, i.client.db)),
+                (i.user.id, await get_uid(i.user.id, i.client.db)),
             )
         await i.client.db.commit()
         if self.table_name == "resin_notification":
@@ -285,7 +285,7 @@ class ChangeSettings(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        uid = await get_user_uid_with_db(i.user.id, i.client.db)
+        uid = await get_uid(i.user.id, i.client.db)
         try:
             if self.table_name == "resin_notification":
                 modal = ResinModal(self.locale)
@@ -349,7 +349,7 @@ async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
     c: aiosqlite.Cursor = await i.client.db.cursor()
-    uid = await get_user_uid_with_db(i.user.id, i.client.db)
+    uid = await get_uid(i.user.id, i.client.db)
     await c.execute(
         "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
         (i.user.id, uid),

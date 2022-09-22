@@ -509,7 +509,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         self, i: Interaction, player: User, ephemeral: bool = True
     ):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if i.guild.id == 916838066117824553:
+        if i.guild is not None and i.guild.id == 916838066117824553:
             c = await self.bot.main_db.cursor()
             table_name = "genshin_accounts"
         else:
