@@ -17,6 +17,7 @@ from apps.genshin.utils import (
     get_character,
     get_city_emoji,
     get_fight_prop,
+    get_uid,
     get_weapon,
     parse_character_wiki_embed,
 )
@@ -186,7 +187,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = await get_uid(member.id, self.bot.db)
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI() as enka:
@@ -575,7 +576,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         enka_locale = to_enka(user_locale or i.locale)
-        uid = await self.genshin_app.get_user_uid(member.id)
+        uid = await get_uid(member.id, self.bot.db)
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI(enka_locale) as enka:
@@ -1031,7 +1032,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             if not check:
                 return
             await i.response.defer(ephemeral=True)
-            uid = await self.genshin_app.get_user_uid(i.user.id)
+            uid = await get_uid(i.user.id, self.bot.db)
             try:
                 async with EnkaNetworkAPI("cht") as enka:
                     try:

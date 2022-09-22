@@ -112,7 +112,7 @@ class Schedule(commands.Cog):
             )
             result.append(notification_user)
         return result
-    
+
     async def base_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -133,7 +133,9 @@ class Schedule(commands.Cog):
             if user.last_notif_time is None:
                 pass
             else:
-                last_notif_time = datetime.strptime(user.last_notif_time, "%Y/%m/%d %H:%M:%S")
+                last_notif_time = datetime.strptime(
+                    user.last_notif_time, "%Y/%m/%d %H:%M:%S"
+                )
                 time_diff = now - last_notif_time
                 if time_diff.total_seconds() < 7200:
                     continue
@@ -143,7 +145,9 @@ class Schedule(commands.Cog):
             try:
                 notes = await client.get_notes(user.shenhe_user.uid)
             except genshin.errors.InvalidCookies:
-                log.warning(f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}")
+                log.warning(
+                    f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}"
+                )
                 continue
             except Exception as e:
                 log.warning(f"[Schedule][{notification_type}] Error: {e}")
@@ -154,7 +158,7 @@ class Schedule(commands.Cog):
                 item_current_amount = notes.current_resin
             if item_current_amount >= user.threshold and user.current < user.max:
                 if notes.current_realm_currency == notes.max_realm_currency:
-                        recover_time = text_map.get(1, locale)
+                    recover_time = text_map.get(1, locale)
                 else:
                     if notification_type == "pot_notification":
                         recover_time = format_dt(
@@ -214,7 +218,7 @@ class Schedule(commands.Cog):
     @schedule_error_handler
     async def claim_reward(self):
         await self.claim_reward_task()
-        
+
     async def claim_reward_task(self):
         log.info("[Schedule] Claim Reward Start")
         users = await self.get_schedule_users()
@@ -227,16 +231,21 @@ class Schedule(commands.Cog):
                 pass
             except genshin.errors.InvalidCookies:
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-            except genshin.errors.GenshinException:
-                log.warning(f"[Schedule][Claim Reward] We have been rate limited")
-                for index in range(1, 6):
-                    await asyncio.sleep(20 * index)
-                    log.info(f"[Schedule][Claim Reward] Retry {index}")
-                    try:
-                        await client.claim_daily_reward()
-                    except genshin.errors.AlreadyClaimed:
-                        count += 1
-                        break
+            except genshin.errors.GenshinException as e:
+                if e.retcode in [-10002]:
+                    pass
+                else:
+                    log.warning(f"[Schedule][Claim Reward] We have been rate limited")
+                    for index in range(1, 6):
+                        await asyncio.sleep(20 * index)
+                        log.info(f"[Schedule][Claim Reward] Retry {index}")
+                        try:
+                            await client.claim_daily_reward()
+                        except genshin.errors.AlreadyClaimed:
+                            break
+                        except Exception as e:
+                            log.warning(f"[Schedule][Claim Reward] Error: {e}")
+                            sentry_sdk.capture_exception(e)
             except Exception as e:
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
@@ -249,7 +258,7 @@ class Schedule(commands.Cog):
     @schedule_error_handler
     async def pot_notification(self):
         await self.base_notification("pot_notification")
-    
+
     @tasks.loop(hours=1)
     @schedule_error_handler
     async def resin_notification(self):

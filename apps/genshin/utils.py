@@ -368,11 +368,8 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
         (user_id,),
     )
     uid = await c.fetchall()
-    for index, tpl in enumerate(uid):
+    for _, tpl in enumerate(uid):
+        uid = tpl[0]
         if tpl[1] == 1:
-            uid = uid[index][0]
             break
-        else:
-            uid = uid[index][0]
-    else:
-        return uid
+    return uid

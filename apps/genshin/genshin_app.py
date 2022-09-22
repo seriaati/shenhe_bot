@@ -1,5 +1,4 @@
 from typing import Dict, Literal, Tuple
-import discord
 import aiosqlite
 import sentry_sdk
 from apps.genshin.custom_model import ShenheUser
