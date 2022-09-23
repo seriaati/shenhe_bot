@@ -149,6 +149,8 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                     )
                 )
             embeds = []
+            if many == 0:
+                image = [image]
             for index in range(0, len(image)):
                 embed = default_embed()
                 embed.set_author(

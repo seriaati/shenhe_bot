@@ -27,7 +27,7 @@ class BaseView(discord.ui.View):
         sentry_sdk.capture_exception(e)
         embed = error_embed(message=text_map.get(513, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(135, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
         try:
@@ -69,7 +69,7 @@ class BaseModal(discord.ui.Modal):
         sentry_sdk.capture_exception(e)
         embed = error_embed(message=text_map.get(513, i.locale, user_locale))
         embed.set_author(
-            name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(135, i.locale, user_locale), icon_url=i.user.display_avatar.url
         )
         embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
 
