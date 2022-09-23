@@ -152,7 +152,7 @@ class ShenheBot(commands.Bot):
         await self.db.close()
         await self.main_db.close()
         await self.session.close()
-        return await super().close()
+        await self.close()
 
 
 sentry_sdk.init(

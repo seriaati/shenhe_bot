@@ -187,6 +187,11 @@ class Artifact(BaseModel):
     rarity_list: List[int] = Field(alias="levelList")
     effects: Dict[str, str] = Field(alias="affixList")
     icon: str
+    
+    @validator("icon")
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png"
+        return icon_url
 
 class ArtifactEffect(BaseModel):
     two_piece: str

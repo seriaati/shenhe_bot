@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Tuple
+from typing import Dict, List, Literal, Tuple
 import aiosqlite
 import sentry_sdk
 from apps.genshin.custom_model import ShenheUser
@@ -115,19 +115,19 @@ class GenshinApp:
                         icon_url=user.display_avatar.url,
                     )
                     return result, False
-                elif len(accounts) == 1:
-                    uid = accounts[0].uid
-                else:
-                    account_options = []
-                    for account in accounts:
-                        if account.game != genshin.Game.GENSHIN:
-                            continue
-                        account_options.append(
-                            SelectOption(
-                                label=f"{account.uid} | Lvl. {account.level} | {account.nickname}",
-                                value=account.uid,
-                            )
+                account_options: List[SelectOption] = []
+                for account in accounts:
+                    if account.game != genshin.Game.GENSHIN:
+                        continue
+                    account_options.append(
+                        SelectOption(
+                            label=f"{account.uid} | Lvl. {account.level} | {account.nickname}",
+                            value=account.uid,
                         )
+                    )
+                if len(account_options) == 1:
+                    uid = account_options[0].value
+                else:
                     return account_options, True
         except CookieInvalid:
             result = error_embed().set_author(

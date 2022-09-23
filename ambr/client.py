@@ -185,9 +185,8 @@ class AmbrTopAPI:
         result = []
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
-            if id is not None:
-                if id == character_id:
-                    result.append(Character(**character_info))
+            if id is not None and id == character_id:
+                result.append(Character(**character_info))
             else:
                 result.append(Character(**character_info))
 
@@ -198,14 +197,13 @@ class AmbrTopAPI:
         return result
 
     async def get_weapon(
-        self, id: Optional[int] = None, retry: bool = False
+        self, id: Optional[str] = None, retry: bool = False
     ) -> List[Weapon]:
         result = []
         data = await self._get_cache("weapon")
         for weapon_id, weapon_info in data["data"]["items"].items():
-            if id is not None:
-                if id == int(weapon_id):
-                    result.append(Weapon(**weapon_info))
+            if id is not None and id == weapon_id:
+                result.append(Weapon(**weapon_info))
             else:
                 result.append(Weapon(**weapon_info))
 

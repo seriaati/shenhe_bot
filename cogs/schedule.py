@@ -3,8 +3,8 @@ import asyncio
 import json
 import random
 from datetime import datetime, timedelta
-from pytz import timezone
 from typing import List
+
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
@@ -14,15 +14,17 @@ from apps.genshin.utils import get_shenhe_user
 from apps.text_map.convert_locale import to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import File, Forbidden, Game, Interaction, app_commands
+from discord import File, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
+from discord.errors import HTTPException, Forbidden
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until
-from cogs.admin import is_seria
+from pytz import timezone
 from utility.utils import default_embed, log
 from yelan.draw import draw_talent_reminder_card
 
 import genshin
+from cogs.admin import is_seria
 
 
 def schedule_error_handler(func):
@@ -47,6 +49,7 @@ class Schedule(commands.Cog):
         self.change_status.start()
         self.pot_notification.start()
         self.backup_database.start()
+        self.update_game_data.start()
         if not self.bot.debug:
             self.update_text_map.start()
 
@@ -57,6 +60,7 @@ class Schedule(commands.Cog):
         self.change_status.cancel()
         self.pot_notification.cancel()
         self.backup_database.cancel()
+        self.update_game_data.cancel()
         if not self.bot.debug:
             self.update_text_map.cancel()
 
@@ -215,12 +219,12 @@ class Schedule(commands.Cog):
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
         )
-        
+
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def backup_database(self):
         await self.backup_database_task()
-        
+
     async def backup_database_task(self):
         log.info("[Schedule][Backup] Start")
         db: aiosqlite.Connection = self.bot.db
@@ -335,16 +339,18 @@ class Schedule(commands.Cog):
         log.info(
             f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)"
         )
-        
+
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_game_data(self):
-        pass
-    
+        await self.update_game_data_task()
+
     async def update_game_data_task(self):
         log.info("[Schedule] Update Game Data Start")
-        emoji_server_id = 991572462334652496
-        emoji_server = self.bot.get_guild(emoji_server_id) or await self.bot.fetch_guild(emoji_server_id)
+        emoji_server_id = 991560432470999062
+        emoji_server = self.bot.get_guild(
+            emoji_server_id
+        ) or await self.bot.fetch_guild(emoji_server_id)
         client = AmbrTopAPI(self.bot.session, "cht")
         eng_client = AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
@@ -353,16 +359,17 @@ class Schedule(commands.Cog):
                 objects = await client.get_character()
             elif thing == "weapon":
                 objects = await client.get_weapon()
-            elif thing == 'artifact':
+            elif thing == "artifact":
                 objects = await client.get_aritfact()
-                
-            with open (f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
+
+            with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
                 object_map = json.load(f)
             for object in objects:
-                if object.id in object_map:
+                log.info(f"[Schedule] Update Game Data: {thing} {object}")
+                if str(object.id) in object_map:
                     continue
                 if thing == "character":
-                    object_map[object.id] = {
+                    object_map[str(object.id)] = {
                         "name": object.name,
                         "element": object.element,
                         "rarity": object.rairty,
@@ -370,29 +377,37 @@ class Schedule(commands.Cog):
                     }
                     english_name = (await eng_client.get_character(object.id))[0].name
                 elif thing == "weapon":
-                    object_map[object.id] = {
+                    object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_character(str(object.id)))[0].name
+                    english_name = (await eng_client.get_character(str(object.id)))[
+                        0
+                    ].name
                 elif thing == "artifact":
-                    object_map[object.id] = {
+                    object_map[str(object.id)] = {
                         "name": object.name,
-                        "rarity": object.rarity,
+                        "rarity": object.rarity_list,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_aritfact(str(object.id)))[0].name
+                    english_name = (await eng_client.get_aritfact(str(object.id)))[
+                        0
+                    ].name
 
-                object_map[object.id]["eng"] = english_name
+                object_map[str(object.id)]["eng"] = english_name
                 async with self.bot.session.get(object.icon) as r:
                     bytes_obj = await r.read()
-                emoji = await emoji_server.create_custom_emoji(
-                    name=object.id,
-                    image=bytes_obj,
-                )
-                object_map[object.id]["emoji"] = str(emoji)
-            with open (f"data/game/{thing}_map.json", "w", encoding="utf-8") as f:
+                try:
+                    emoji = await emoji_server.create_custom_emoji(
+                        name=object.id,
+                        image=bytes_obj,
+                    )
+                    object_map[str(object.id)]["emoji"] = str(emoji)
+                except (Forbidden, HTTPException) as e:
+                    log.warning(f"[Schedule] Emoji creation failed [Object]{object}")
+                    sentry_sdk.capture_exception(e)
+            with open(f"data/game/{thing}_map.json", "w", encoding="utf-8") as f:
                 json.dump(object_map, f, ensure_ascii=False, indent=4)
         log.info("[Schedule] Update Game Data Ended")
 
@@ -489,13 +504,23 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
-    
+
     @backup_database.before_loop
     async def before_backup(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
         now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=0, minute=30, second=0)  # 等待到早上0點30分
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await sleep_until(next_run)
+    
+    @update_game_data.before_loop
+    async def before_update(self):
+        await self.bot.wait_until_ready()
+        now = datetime.now()
+        now += timezone("Asia/Taipei").utcoffset(now)
+        next_run = now.replace(hour=2, minute=30, second=0)  # 等待到早上2點30分
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
@@ -507,21 +532,19 @@ class Schedule(commands.Cog):
     async def instantclaim(self, i: Interaction):
         await i.response.send_message("started, check console", ephemeral=True)
         await self.claim_reward_task()
-    
+
     @is_seria()
-    @app_commands.command(
-        name="backup", description=_("Admin usage only", hash=496)
-    )
+    @app_commands.command(name="backup", description=_("Admin usage only", hash=496))
     async def backup(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
         await self.backup_database_task()
         await i.edit_original_response(content="backup completed")
-    
+
     @is_seria()
     @app_commands.command(
         name="updategamedata", description=_("Admin usage only", hash=496)
     )
-    async def update_game_data(self, i: Interaction):
+    async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
         await self.update_game_data_task()
         await i.edit_original_response(content="update completed")
