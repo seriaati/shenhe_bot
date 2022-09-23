@@ -159,6 +159,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                 embed.set_footer(text=f"API: waifu.im | {index+1}/{len(image)}")
                 embeds.append(embed)
             if sese == 1:
+                await i.delete_original_response()
                 await i.followup.send(
                     content="⚠️ 申鶴已將色圖私訊給你了。如果你在一個公共場所，請注意，圖片**沒有**暴雷 ⚠️",
                     ephemeral=True,
