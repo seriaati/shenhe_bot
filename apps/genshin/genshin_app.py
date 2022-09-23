@@ -120,9 +120,11 @@ class GenshinApp:
                 else:
                     account_options = []
                     for account in accounts:
+                        if account.game != genshin.Game.GENSHIN:
+                            continue
                         account_options.append(
                             SelectOption(
-                                label=f"{account.uid} | Lvl. {account.level} | {account.nickname}",
+                                label=f"{account.uid} | Lvl. {account.level} | {account.nickname} | {account.server_name}",
                                 value=account.uid,
                             )
                         )
