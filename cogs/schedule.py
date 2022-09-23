@@ -46,6 +46,7 @@ class Schedule(commands.Cog):
         self.talent_notification.start()
         self.change_status.start()
         self.pot_notification.start()
+        self.backup_database.start()
         if not self.bot.debug:
             self.update_text_map.start()
 
@@ -55,6 +56,7 @@ class Schedule(commands.Cog):
         self.talent_notification.cancel()
         self.change_status.cancel()
         self.pot_notification.cancel()
+        self.backup_database.cancel()
         if not self.bot.debug:
             self.update_text_map.cancel()
 
@@ -213,6 +215,18 @@ class Schedule(commands.Cog):
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
         )
+        
+    @tasks.loop(hours=24)
+    @schedule_error_handler
+    async def backup_database(self):
+        await self.backup_database_task()
+        
+    async def backup_database_task(self):
+        log.info("[Schedule][Backup] Start")
+        db: aiosqlite.Connection = self.bot.db
+        await db.commit()
+        await db.backup(self.bot.backup_db)
+        log.info("[Schedule][Backup] Ended")
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -415,6 +429,16 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
+    
+    @backup_database.before_loop
+    async def before_backup(self):
+        await self.bot.wait_until_ready()
+        now = datetime.now()
+        now += timezone("Asia/Taipei").utcoffset(now)
+        next_run = now.replace(hour=0, minute=30, second=0)  # 等待到早上0點30分
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await sleep_until(next_run)
 
     @is_seria()
     @app_commands.command(
@@ -423,6 +447,15 @@ class Schedule(commands.Cog):
     async def instantclaim(self, i: Interaction):
         await i.response.send_message("started, check console", ephemeral=True)
         await self.claim_reward_task()
+    
+    @is_seria()
+    @app_commands.command(
+        name="backup", description=_("Admin usage only", hash=496)
+    )
+    async def backup(self, i: Interaction):
+        await i.response.send_message("started", ephemeral=True)
+        await self.backup_database_task()
+        await i.edit_original_response(content="backup completed")
 
 
 async def setup(bot: commands.Bot) -> None:

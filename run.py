@@ -75,7 +75,8 @@ class ShenheBot(commands.Bot):
         self.maintenance_time = ""
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect("shenhe.db")
-        self.main_db = await aiosqlite.connect(f"../shenhe_main/main.db")
+        self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
+        self.backup_db = await aiosqlite.connect("backup.db")
         self.browser = await launch(
             {
                 "headless": True,

@@ -164,3 +164,4 @@ ambr/cache/vi/*
 ambr/cache/static/*
 data/cache/*
 !/**/.gitkeep
+backup.db
