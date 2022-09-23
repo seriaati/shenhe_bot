@@ -121,13 +121,6 @@ class WaifuCog(commands.GroupCog, name="waifu"):
     @app_commands.describe(sese="是否要色色", many="產生多張老婆的照片", tags="透過標籤找到更符合你的需求的老婆")
     async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer()
-        if i.channel.guild is not None and not i.channel.nsfw and sese == 1:
-            return await i.followup.send(
-                embed=error_embed().set_author(
-                    name="請先開啟此頻道的年齡限制設定", icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
         is_nsfw = "True" if sese == 1 else "False"
         if tags == 1:
             view = WaifuImTag.View(
