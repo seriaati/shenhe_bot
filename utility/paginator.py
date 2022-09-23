@@ -129,6 +129,7 @@ class GeneralPaginator:
         followup: bool = False,
         check: bool = True,
         ephemeral: bool = False,
+        dm: bool = False
     ) -> None:
         if not (self.embeds):
             raise ValueError("Missing embeds")
@@ -165,9 +166,11 @@ class GeneralPaginator:
                 kwargs["attachments"] = [file]
 
             await self.interaction.edit_original_response(**kwargs)
-
         elif followup:
             await self.interaction.followup.send(**kwargs)
+        elif dm:
+            del kwargs["ephemeral"]
+            await self.interaction.user.send(**kwargs)
         else:
             await self.interaction.response.send_message(**kwargs)
 
