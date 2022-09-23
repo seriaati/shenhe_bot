@@ -124,7 +124,7 @@ class GenshinApp:
                             continue
                         account_options.append(
                             SelectOption(
-                                label=f"{account.uid} | Lvl. {account.level} | {account.nickname} | {account.server_name}",
+                                label=f"{account.uid} | Lvl. {account.level} | {account.nickname}",
                                 value=account.uid,
                             )
                         )
