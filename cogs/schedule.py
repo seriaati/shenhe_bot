@@ -335,6 +335,66 @@ class Schedule(commands.Cog):
         log.info(
             f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)"
         )
+        
+    @tasks.loop(hours=24)
+    @schedule_error_handler
+    async def update_game_data(self):
+        pass
+    
+    async def update_game_data_task(self):
+        log.info("[Schedule] Update Game Data Start")
+        emoji_server_id = 991572462334652496
+        emoji_server = self.bot.get_guild(emoji_server_id) or await self.bot.fetch_guild(emoji_server_id)
+        client = AmbrTopAPI(self.bot.session, "cht")
+        eng_client = AmbrTopAPI(self.bot.session, "en")
+        things_to_update = ["character", "weapon", "artifact"]
+        for thing in things_to_update:
+            if thing == "character":
+                objects = await client.get_character()
+            elif thing == "weapon":
+                objects = await client.get_weapon()
+            elif thing == 'artifact':
+                objects = await client.get_aritfact()
+                
+            with open (f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
+                object_map = json.load(f)
+            for object in objects:
+                if object.id in object_map:
+                    continue
+                if thing == "character":
+                    object_map[object.id] = {
+                        "name": object.name,
+                        "element": object.element,
+                        "rarity": object.rairty,
+                        "icon": object.icon,
+                    }
+                    english_name = (await eng_client.get_character(object.id))[0].name
+                elif thing == "weapon":
+                    object_map[object.id] = {
+                        "name": object.name,
+                        "rarity": object.rarity,
+                        "icon": object.icon,
+                    }
+                    english_name = (await eng_client.get_character(str(object.id)))[0].name
+                elif thing == "artifact":
+                    object_map[object.id] = {
+                        "name": object.name,
+                        "rarity": object.rarity,
+                        "icon": object.icon,
+                    }
+                    english_name = (await eng_client.get_aritfact(str(object.id)))[0].name
+
+                object_map[object.id]["eng"] = english_name
+                async with self.bot.session.get(object.icon) as r:
+                    bytes_obj = await r.read()
+                emoji = await emoji_server.create_custom_emoji(
+                    name=object.id,
+                    image=bytes_obj,
+                )
+                object_map[object.id]["emoji"] = str(emoji)
+            with open (f"data/game/{thing}_map.json", "w", encoding="utf-8") as f:
+                json.dump(object_map, f, ensure_ascii=False, indent=4)
+        log.info("[Schedule] Update Game Data Ended")
 
     @tasks.loop(hours=24)
     @schedule_error_handler
@@ -456,6 +516,15 @@ class Schedule(commands.Cog):
         await i.response.send_message("started", ephemeral=True)
         await self.backup_database_task()
         await i.edit_original_response(content="backup completed")
+    
+    @is_seria()
+    @app_commands.command(
+        name="updategamedata", description=_("Admin usage only", hash=496)
+    )
+    async def update_game_data(self, i: Interaction):
+        await i.response.send_message("started", ephemeral=True)
+        await self.update_game_data_task()
+        await i.edit_original_response(content="update completed")
 
 
 async def setup(bot: commands.Bot) -> None:

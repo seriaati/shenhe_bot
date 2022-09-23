@@ -8,6 +8,7 @@ import aiohttp
 from ambr.constants import CITIES, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 from ambr.models import (
+    Artifact,
     ArtifactDetail,
     Character,
     CharacterUpgrade,
@@ -159,6 +160,23 @@ class AmbrTopAPI:
     ) -> ArtifactDetail:
         data = await self._request_from_endpoint("artifact", id=id)
         result = ArtifactDetail(**data["data"])
+        return result
+    
+    async def get_aritfact(
+        self, id: Optional[str] = None, retry: bool = False
+    ) -> List[Artifact]:
+        result = []
+        data = await self._get_cache("artifact")
+        for artifact_id, aritfact_info in data["data"]["items"].items():
+            if id is not None and id == artifact_id:
+                result.append(Artifact(**aritfact_info))
+            else:
+                result.append(Artifact(**aritfact_info))
+        
+        if len(result) == 0 and not retry:
+            await self._update_cache(endpoint="artifact")
+            result = await self.get_aritfact(id=id, retry=True)
+        
         return result
 
     async def get_character(

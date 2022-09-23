@@ -181,6 +181,12 @@ class WeaponDetail(BaseModel):
     def get_upgrade(cls, v):
         return WeaponUpgradeDetail(**v)
 
+class Artifact(BaseModel):
+    id: int
+    name: str
+    rarity_list: List[int] = Field(alias="levelList")
+    effects: Dict[str, str] = Field(alias="affixList")
+    icon: str
 
 class ArtifactEffect(BaseModel):
     two_piece: str

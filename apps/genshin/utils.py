@@ -4,11 +4,11 @@ from discord.ext import commands
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.artifacts import artifacts_map
-from data.game.characters import characters_map
+from data.game.artifact_map import artifact_map
+from data.game.character_map import character_map
 from data.game.elements import elements
 from data.game.fight_prop import fight_prop
-from data.game.weapons import weapons_map
+from data.game.weapon_map import weapon_map
 from discord import Embed, Locale, SelectOption
 from utility.utils import default_embed, parse_HTML
 import aiosqlite
@@ -90,7 +90,7 @@ def get_character_builds(
 
 
 def get_character(id: int = "", name: str = "", eng: str = ""):
-    for character_id, character_info in characters_map.items():
+    for character_id, character_info in character_map.items():
         if (
             str(id) == character_id
             or character_info["name"] == name
@@ -108,7 +108,7 @@ def get_character(id: int = "", name: str = "", eng: str = ""):
 
 
 def get_weapon(id: int = "", name: str = ""):
-    for weapon_id, weapon_info in weapons_map.items():
+    for weapon_id, weapon_info in weapon_map.items():
         if weapon_id == str(id) or weapon_info["name"] == name:
             return weapon_info
     return {
@@ -121,7 +121,7 @@ def get_weapon(id: int = "", name: str = ""):
 
 
 def get_artifact(id: int = "", name: str = ""):
-    for artifact_id, artifact_info in artifacts_map.items():
+    for artifact_id, artifact_info in artifact_map.items():
         if (
             artifact_id == str(id)
             or name in artifact_info["artifacts"]

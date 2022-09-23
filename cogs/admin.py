@@ -8,10 +8,10 @@ from discord.app_commands import locale_str as _
 from discord.app_commands import Choice
 from discord.ext import commands
 from utility.utils import default_embed, error_embed
-from data.game.artifacts import artifacts_map
-from data.game.characters import characters_map
+from data.game.artifact_map import artifact_map
+from data.game.character_map import character_map
 from data.game.elements import convert_elements
-from data.game.weapons import weapons_map
+from data.game.weapon_map import weapon_map
 from UI_elements.admin import Annouce
 
 
@@ -116,147 +116,6 @@ class AdminCog(commands.Cog, name="admin"):
     @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
     async def annouce(self, i: Interaction):
         await i.response.send_modal(Annouce.Modal())
-
-    @is_seria()
-    @app_commands.command(name="update", description=_("Admin usage only", hash=496))
-    async def update(self, i: Interaction):
-        await i.response.send_message(
-            embed=default_embed().set_author(
-                name="更新資料開始", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        client = self.bot.genshin_client
-        client.lang = "zh-tw"
-
-        # artifacts
-        result = {}
-        artifacts = await client.get_calculator_artifacts()
-        for artifact in artifacts:
-            if str(artifact.id) in artifacts_map:
-                continue
-            result[str(artifact.id)] = {
-                "name": artifact.name,
-                "icon": artifact.icon,
-                "ratity": artifact.rarity,
-                "artifacts": [],
-                "emoji": "",
-            }
-            other_artifacts = await client.get_complete_artifact_set(artifact.id)
-            for other_artifact in other_artifacts:
-                result[str(artifact.id)]["artifacts"].append(other_artifact.name)
-
-        result = json.dumps(result, indent=4, sort_keys=True)
-
-        await i.followup.send(
-            embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="聖遺物", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        # characters
-        result = {}
-        characters = await client.get_calculator_characters()
-        for character in characters:
-            if str(character.id) in characters_map:
-                continue
-            result[str(character.id)] = {
-                "name": character.name,
-                "icon": character.icon,
-                "element": character.element,
-                "rarity": character.rarity,
-                "emoji": "",
-                "eng": "",
-            }
-        # character english names
-        client.lang = "en-us"
-        characters = await client.get_calculator_characters()
-        for character in characters:
-            if str(character.id) in result:
-                result[str(character.id)]["eng"] = character.name
-
-        async with self.bot.session.get(f"https://api.ambr.top/v2/cht/avatar") as r:
-            characters = await r.json()
-
-        for character_id, character_info in characters["data"]["items"].items():
-            if "beta" not in character_info and character_id not in characters_map:
-                result[character_id] = {
-                    "name": character_info["name"],
-                    "icon": f'https://api.ambr.top/assets/UI/{character_info["icon"]}.png',
-                    "rarity": character_info["rank"],
-                    "emoji": "",
-                    "element": convert_elements.get(character_info["element"]),
-                    "eng": "",
-                }
-
-        async with self.bot.session.get(f"https://api.ambr.top/v2/en/avatar") as r:
-            characters = await r.json()
-
-        for character_id, character_info in characters["data"]["items"].items():
-            if character_id in result:
-                result[character_id]["eng"] = character_info["name"]
-
-        result = json.dumps(result, indent=4, sort_keys=True)
-
-        await i.followup.send(
-            embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="角色", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        # weapons
-        client.lang = "zh-tw"
-        result = {}
-        weapons = await client.get_calculator_weapons()
-        for weapon in weapons:
-            if str(weapon.id) in weapons_map:
-                continue
-            result[str(weapon.id)] = {
-                "name": weapon.name,
-                "icon": weapon.icon,
-                "rarity": weapon.rarity,
-                "emoji": "",
-                "eng": "",
-            }
-        client.lang = "en-us"
-        weapons = await client.get_calculator_weapons()
-        for weapon in weapons:
-            if str(weapon.id) in result:
-                result[str(weapon.id)]["eng"] = weapon.name
-
-        async with self.bot.session.get(f"https://api.ambr.top/v2/cht/weapon") as r:
-            weapons = await r.json()
-
-        for weapon_id, weapon_info in weapons["data"]["items"].items():
-            if "beta" not in weapon_info and weapon_id not in weapons_map:
-                result[weapon_id] = {
-                    "name": weapon_info["name"],
-                    "icon": f'https://api.ambr.top/assets/UI/{weapon_info["icon"]}.png',
-                    "rarity": weapon_info["rank"],
-                    "emoji": "",
-                    "eng": "",
-                }
-
-        async with self.bot.session.get(f"https://api.ambr.top/v2/en/weapon") as r:
-            weapons = await r.json()
-
-        for weapon_id, weapon_info in weapons["data"]["items"].items():
-            if weapon_id in result:
-                result[weapon_id]["eng"] = weapon_info["name"]
-
-        result = json.dumps(result, indent=4, sort_keys=True)
-
-        await i.followup.send(
-            embed=default_embed(message=f"```py\n{result}\n```").set_author(
-                name="武器", icon_url=i.user.display_avatar.url
-            )
-        )
-
-        await i.followup.send(
-            embed=default_embed().set_author(
-                name="更新資料完畢", icon_url=i.user.display_avatar.url
-            )
-        )
 
 
 async def setup(bot: commands.Bot) -> None:
