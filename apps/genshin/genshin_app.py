@@ -117,7 +117,7 @@ class GenshinApp:
                     return result, False
                 account_options: List[SelectOption] = []
                 for account in accounts:
-                    if account.game != genshin.Game.GENSHIN:
+                    if account.game is not genshin.Game.GENSHIN:
                         continue
                     account_options.append(
                         SelectOption(

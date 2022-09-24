@@ -6,9 +6,43 @@ from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log
 
 
+async def global_error_handler(
+    i: discord.Interaction, e: Exception | discord.app_commands.AppCommandError
+):
+    if isinstance(e, discord.app_commands.errors.CheckFailure):
+        return
+    log.warning(f"[{i.user.id}]{type(e)}: {e}")
+    sentry_sdk.capture_exception(e)
+    user_locale = await get_user_locale(i.user.id, i.client.db)
+    if isinstance(e, discord.errors.NotFound):
+        if e.code in [10062, 10008]:
+            embed = error_embed(message=text_map.get(624, i.locale, user_locale))
+            embed.set_author(name=text_map.get(623, i.locale, user_locale))
+    else:
+        embed = error_embed(message=text_map.get(513, i.locale, user_locale))
+        embed.set_author(
+            name=text_map.get(135, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
+        )
+        embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
+
+    try:
+        await i.response.send_message(
+            embed=embed,
+            ephemeral=True,
+        )
+    except discord.errors.InteractionResponded:
+        await i.followup.send(
+            embed=embed,
+            ephemeral=True,
+        )
+    except discord.errors.NotFound:
+        pass
+
+
 class BaseView(discord.ui.View):
     async def interaction_check(self, i: discord.Interaction) -> bool:
-        if not hasattr(self, 'author'):
+        if not hasattr(self, "author"):
             return True
         user_locale = await get_user_locale(i.user.id, i.client.db)
         if self.author.id != i.user.id:
@@ -22,26 +56,7 @@ class BaseView(discord.ui.View):
         return self.author.id == i.user.id
 
     async def on_error(self, i: discord.Interaction, e: Exception, item) -> None:
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        log.warning(f"[View Error][{i.user.id}]: [type]{type(e)} [e]{e} [item]{item}")
-        sentry_sdk.capture_exception(e)
-        embed = error_embed(message=text_map.get(513, i.locale, user_locale))
-        embed.set_author(
-            name=text_map.get(135, i.locale, user_locale), icon_url=i.user.display_avatar.url
-        )
-        embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
-        try:
-            await i.response.send_message(
-                embed=embed,
-                ephemeral=True,
-            )
-        except discord.errors.InteractionResponded:
-            await i.followup.send(
-                embed=embed,
-                ephemeral=True,
-            )
-        except discord.NotFound:
-            pass
+        await global_error_handler(i, e)
 
     async def on_timeout(self) -> None:
         for item in self.children:
@@ -64,24 +79,4 @@ class BaseView(discord.ui.View):
 
 class BaseModal(discord.ui.Modal):
     async def on_error(self, i: discord.Interaction, e: Exception) -> None:
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        log.warning(f"[Modal Error][{i.user.id}]: [type]{type(e)} [e]{e}")
-        sentry_sdk.capture_exception(e)
-        embed = error_embed(message=text_map.get(513, i.locale, user_locale))
-        embed.set_author(
-            name=text_map.get(135, i.locale, user_locale), icon_url=i.user.display_avatar.url
-        )
-        embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
-
-        try:
-            await i.response.send_message(
-                embed=embed,
-                ephemeral=True,
-            )
-        except discord.InteractionResponded:
-            await i.followup.send(
-                embed=embed,
-                ephemeral=True,
-            )
-        except discord.NotFound:
-            pass
+        await global_error_handler(i, e)

@@ -307,7 +307,7 @@ class Schedule(commands.Cog):
                 for domain in domains:
                     if domain.weekday == today_weekday:
                         for item in domain.rewards:
-                            [upgrade] = await client.get_character_upgrade(character_id)
+                            [upgrade] = await client.get_character_upgrade(str(character_id))
                             if item in upgrade.items:
                                 if character_id not in notified:
                                     notified[character_id] = []
@@ -360,12 +360,11 @@ class Schedule(commands.Cog):
             elif thing == "weapon":
                 objects = await client.get_weapon()
             elif thing == "artifact":
-                objects = await client.get_aritfact()
+                objects = await client.get_artifact()
 
             with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
                 object_map = json.load(f)
             for object in objects:
-                log.info(f"[Schedule] Update Game Data: {thing} {object}")
                 if str(object.id) in object_map:
                     continue
                 if thing == "character":
@@ -382,7 +381,7 @@ class Schedule(commands.Cog):
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_character(str(object.id)))[
+                    english_name = (await eng_client.get_weapon(str(object.id)))[
                         0
                     ].name
                 elif thing == "artifact":
@@ -391,7 +390,7 @@ class Schedule(commands.Cog):
                         "rarity": object.rarity_list,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_aritfact(str(object.id)))[
+                    english_name = (await eng_client.get_artifact(str(object.id)))[
                         0
                     ].name
 

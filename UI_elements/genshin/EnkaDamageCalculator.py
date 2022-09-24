@@ -30,7 +30,7 @@ class View(BaseView):
             enka_view.character_id,
             user_locale or locale,
             "critHit",
-            enka_view.author,
+            enka_view.member,
         )
 
         # producing select options

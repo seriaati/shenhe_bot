@@ -37,23 +37,42 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         await view.wait()
         if view.tag is None:
             return
+        await i.edit_original_response(
+            embed=error_embed("<a:LOADER:982128111904776242> 正在尋找圖片...")
+        )
         x = view.tag.split("/")
         libs = ast.literal_eval(x[0])
         tag = x[1]
         lib = random.choice(libs)
         if num == 1:
+            try:
+                url = hmtai.get(lib, tag)
+            except hmtai.CategoryNotFound:
+                return await i.edit_original_response(
+                    embed=error_embed(message="該標籤或許已被 API 刪除，請嘗試別的標籤").set_author(
+                        name="找不到該標籤", icon_url=i.user.display_avatar.url
+                    )
+                )
             await i.edit_original_response(
                 embed=default_embed(f"標籤: {tag}")
-                .set_image(url=(hmtai.get(lib, tag)))
+                .set_image(url=url)
                 .set_footer(text=f"API: {lib}"),
                 view=None,
             )
         else:
             embeds = []
             for _ in range(0, num):
+                try:
+                    url = hmtai.get(lib, tag)
+                except hmtai.CategoryNotFound:
+                    return await i.edit_original_response(
+                        embed=error_embed(message="該標籤或許已被 API 刪除，請嘗試別的標籤").set_author(
+                            name="找不到該標籤", icon_url=i.user.display_avatar.url
+                        )
+                    )
                 lib = random.choice(libs)
                 embed = default_embed(f"標籤: {tag}")
-                embed.set_image(url=(hmtai.get(lib, tag)))
+                embed.set_image(url=url)
                 embed.set_footer(text=f"API: {lib}")
                 embeds.append(embed)
             await GeneralPaginator(i, embeds, self.bot.db).start(edit=True)

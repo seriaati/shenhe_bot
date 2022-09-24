@@ -90,45 +90,48 @@ class AmbrTopAPI:
 
         return endpoint_data
 
-    async def _update_cache(self, all: bool = False, endpoint: str = None) -> None:
+    async def _update_cache(self, all: bool = False, endpoint: str = None, static: bool = False) -> None:
         if all:
             langs = list(LANGS.keys())
         else:
             langs = [self.lang]
         if endpoint is None:
-            endpoints = list(ENDPOINTS.keys())
+            if not static:
+                endpoints = list(ENDPOINTS.keys())
+            else:
+                endpoints = list(STATIC_ENDPOINTS.keys())
         else:
             endpoints = [endpoint]
-
-        for lang in langs:
+            
+        if static:
             for endpoint in endpoints:
-                data = await self._request_from_endpoint(endpoint, lang)
-                path = f"ambr/cache/{lang}"
-                if not os.path.exists(path):
-                    os.makedirs(path)
+                data = await self._request_from_endpoint(endpoint, static=True)
                 with open(
-                    f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json",
+                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(endpoint)}.json",
                     "w+",
                     encoding="utf-8",
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
-
-        static_endpoints = list(STATIC_ENDPOINTS.keys())
-        for static_endpoint in static_endpoints:
-            data = await self._request_from_endpoint(static_endpoint, static=True)
-            with open(
-                f"ambr/cache/static/{STATIC_ENDPOINTS.get(static_endpoint)}.json",
-                "w+",
-                encoding="utf-8",
-            ) as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+        else:
+            for lang in langs:
+                for endpoint in endpoints:
+                    data = await self._request_from_endpoint(endpoint, lang)
+                    path = f"ambr/cache/{lang}"
+                    if not os.path.exists(path):
+                        os.makedirs(path)
+                    with open(
+                        f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json",
+                        "w+",
+                        encoding="utf-8",
+                    ) as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
 
     async def get_material(
         self, id: Optional[int] = None, retry: bool = False
     ) -> List[Material]:
         result = []
         data = await self._get_cache("material")
-        for material_id, material_info in data["data"]["items"].items():
+        for _, material_info in data["data"]["items"].items():
             if id is not None:
                 if id == material_info["id"]:
                     result.append(Material(**material_info))
@@ -140,53 +143,51 @@ class AmbrTopAPI:
             result = await self.get_material(id=id, retry=True)
 
         return result
-    
-    async def get_material_detail(
-        self, id: int
-    ) -> MaterialDetail:
+
+    async def get_material_detail(self, id: int) -> MaterialDetail:
         data = await self._request_from_endpoint("material", id=id)
         result = MaterialDetail(**data["data"])
         return result
-    
-    async def get_weapon_detail(
-        self, id: int
-    ) -> WeaponDetail:
+
+    async def get_weapon_detail(self, id: int) -> WeaponDetail:
         data = await self._request_from_endpoint("weapon", id=id)
         result = WeaponDetail(**data["data"])
         return result
-    
-    async def get_artifact_detail(
-        self, id: int
-    ) -> ArtifactDetail:
+
+    async def get_artifact_detail(self, id: int) -> ArtifactDetail:
         data = await self._request_from_endpoint("artifact", id=id)
         result = ArtifactDetail(**data["data"])
         return result
-    
-    async def get_aritfact(
+
+    async def get_artifact(
         self, id: Optional[str] = None, retry: bool = False
     ) -> List[Artifact]:
         result = []
+        id = str(id)
         data = await self._get_cache("artifact")
         for artifact_id, aritfact_info in data["data"]["items"].items():
-            if id is not None and id == artifact_id:
-                result.append(Artifact(**aritfact_info))
+            if id is not None:
+                if id == artifact_id:
+                    result.append(Artifact(**aritfact_info))
             else:
                 result.append(Artifact(**aritfact_info))
-        
+
         if len(result) == 0 and not retry:
             await self._update_cache(endpoint="artifact")
-            result = await self.get_aritfact(id=id, retry=True)
-        
+            result = await self.get_artifact(id=id, retry=True)
+
         return result
 
     async def get_character(
         self, id: Optional[str] = None, retry: bool = False
     ) -> List[Character]:
         result = []
+        id = str(id)
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
-            if id is not None and id == character_id:
-                result.append(Character(**character_info))
+            if id is not None:
+                if id == character_id:
+                    result.append(Character(**character_info))
             else:
                 result.append(Character(**character_info))
 
@@ -202,8 +203,9 @@ class AmbrTopAPI:
         result = []
         data = await self._get_cache("weapon")
         for weapon_id, weapon_info in data["data"]["items"].items():
-            if id is not None and id == weapon_id:
-                result.append(Weapon(**weapon_info))
+            if id is not None:
+                if id == weapon_id:
+                    result.append(Weapon(**weapon_info))
             else:
                 result.append(Weapon(**weapon_info))
 
@@ -220,7 +222,7 @@ class AmbrTopAPI:
         data = await self._get_cache("upgrade", static=True)
         for upgrade_id, upgrade_info in data["data"]["avatar"].items():
             item_list = []
-            for material_id, rarity in upgrade_info["items"].items():
+            for material_id, _ in upgrade_info["items"].items():
                 material = await self.get_material(id=int(material_id))
                 item_list.append(material[0])
             upgrade_info["item_list"] = item_list
@@ -232,8 +234,8 @@ class AmbrTopAPI:
                 result.append(CharacterUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            await self._update_cache(endpoint="upgrade")
-            result = await self.get_character_upgrade(id=character_id, retry=True)
+            await self._update_cache(endpoint="upgrade", static=True)
+            result = await self.get_character_upgrade(character_id=character_id, retry=True)
 
         return result
 
@@ -244,7 +246,7 @@ class AmbrTopAPI:
         data = await self._get_cache("upgrade", static=True)
         for upgrade_id, upgrade_info in data["data"]["weapon"].items():
             item_list = []
-            for material_id, rarity in upgrade_info["items"].items():
+            for material_id, _ in upgrade_info["items"].items():
                 material = await self.get_material(id=int(material_id))
                 item_list.append(material[0])
             upgrade_info["item_list"] = item_list
@@ -256,8 +258,8 @@ class AmbrTopAPI:
                 result.append(WeaponUpgrade(**upgrade_info))
 
         if len(result) == 0 and not retry:
-            await self._update_cache(endpoint="upgrade")
-            result = await self.get_weapon_upgrade(id=weapon_id, retry=True)
+            await self._update_cache(endpoint="upgrade", static=True)
+            result = await self.get_weapon_upgrade(weapon_id=weapon_id, retry=True)
 
         return result
 
@@ -268,7 +270,7 @@ class AmbrTopAPI:
         data = await self._get_cache("domain")
         for weekday, domain_dict in data["data"].items():
             weekday_int = time.strptime(weekday, "%A").tm_wday
-            for domain_full_name, domain_info in domain_dict.items():
+            for _, domain_info in domain_dict.items():
                 city_id = domain_info["city"]
                 city = City(id=city_id, name=CITIES.get(city_id)[self.lang])
                 rewards = []

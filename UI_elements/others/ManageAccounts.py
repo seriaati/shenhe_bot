@@ -88,7 +88,7 @@ class ChangeNickname(Button):
 
 
 class NicknameModal(BaseModal):
-    name = TextInput(label="Nickname", placeholder="Nickname", max_length=100)
+    name = TextInput(label="Nickname", placeholder="Nickname", max_length=15)
 
     def __init__(self, locale: Locale | str, uid: str) -> None:
         super().__init__(title=text_map.get(600, locale), timeout=config.mid_timeout)
@@ -422,6 +422,8 @@ async def return_accounts(i: Interaction):
             else "<:number:1018838745614667817>"
         )
         nickname = f"{account[3]} | " if account[3] is not None else ""
+        if len(nickname) > 15:
+            nickname = nickname[:15] + "..."
         if account[2] == 1:
             current_account = True
             account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**__\n"

@@ -8,7 +8,6 @@ sfw_tags = {
     '餵食': {'libs': ['hmtai', 'nekos'], 'value': 'feed', 'description': "誰想吃東西呀~? (晃晃餅乾)"},
     '抱抱': {'libs': ['hmtai', 'nekos'], 'value': 'hug', 'description': "我喜歡抱抱, 你呢?"},
     '蹭蹭': {'libs': ['hmtai', 'nekos'], 'value': 'cuddle', 'description': "蹭蹭蹭蹭 xd"},
-    '哭哭': {'libs': ['hmtai', 'nekos'], 'value': 'cry', 'description': "嗚嗚... ; -;"},
     '扇巴掌': {'libs': ['hmtai', 'nekos'], 'value': 'slap', 'description': "BAKA!!"},
     '舔': {'libs': ['hmtai'], 'value': 'lick', 'description': "嗯..嗯姆唔姆.. 好吃~"},
     "咬": {'libs': ['hmtai'], 'value': 'bite', 'description': "咬咬 :3"},

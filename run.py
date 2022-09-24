@@ -21,6 +21,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pyppeteer import launch
 from discord.ext.commands import Context
+from UI_base_models import global_error_handler
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log, sentry_logging
@@ -152,7 +153,7 @@ class ShenheBot(commands.Bot):
         await self.db.close()
         await self.main_db.close()
         await self.session.close()
-        await self.close()
+        return await super().close()
 
 
 sentry_sdk.init(
@@ -226,28 +227,7 @@ tree.interaction_check = check_maintenance
 
 @tree.error
 async def on_error(i: Interaction, e: app_commands.AppCommandError):
-    if isinstance(e, app_commands.errors.CheckFailure):
-        return
-    log.warning(f"[{i.user.id}]{type(e)}: {e}")
-    sentry_sdk.capture_exception(e)
-    user_locale = await get_user_locale(i.user.id, i.client.db)
-    embed = error_embed(message=text_map.get(513, i.locale, user_locale))
-    embed.set_author(
-        name=text_map.get(135, i.locale, user_locale), icon_url=i.user.display_avatar.url
-    )
-    embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
-    try:
-        await i.response.send_message(
-            embed=embed,
-            ephemeral=True,
-        )
-    except InteractionResponded:
-        await i.followup.send(
-            embed=embed,
-            ephemeral=True,
-        )
-    except NotFound:
-        pass
+    await global_error_handler(i, e)
 
 
 bot.run(token)
