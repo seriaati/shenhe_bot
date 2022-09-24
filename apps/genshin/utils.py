@@ -353,7 +353,7 @@ async def get_shenhe_user(
 
     user_obj = ShenheUser(
         client=client,
-        uid=uid,
+        uid=int(uid),
         discord_user=discord_user,
         user_locale=user_locale,
         china=china,
