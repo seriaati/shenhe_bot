@@ -68,9 +68,7 @@ class GenshinApp:
         self, user_id: int, cookie: str, locale: Locale, uid: int = None
     ):
         log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid}")
-        user = self.bot.get_user(user_id)
-        if user is None:
-            user = await self.bot.fetch_user(user_id)
+        user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
         user_locale = await get_user_locale(user_id, self.db)
         user_id = int(user_id)
         try:

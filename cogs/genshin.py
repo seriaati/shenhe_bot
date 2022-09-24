@@ -134,9 +134,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @app_commands.command(
         name="check",
-        description=_(
-            "Check resin, pot, and expedition status", hash=414
-        ),
+        description=_("Check resin, pot, and expedition status", hash=414),
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
@@ -371,10 +369,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result)
         else:
             view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            fp = result['overview_card']
+            fp = result["overview_card"]
             fp.seek(0)
             image = File(fp, "overview_card.jpeg")
-            await i.followup.send(embed=result['overview'], view=view, files=[image])
+            await i.followup.send(embed=result["overview"], view=view, files=[image])
             view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=437))
@@ -618,6 +616,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         cache.characters = []
         for character in list(new_dict.values()):
             cache.characters.append(character)
+        cache.player = data.player
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             enka_cache[uid] = cache
         from_cache = []
@@ -653,16 +652,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
             enka_eng_cache[uid] = eng_cache
         embeds = {}
-        sig = f"「{data.player.signature}」\n" if data.player.signature != "" else ""
         overview = default_embed(
-            f"{data.player.nickname}",
-            f"{sig}"
-            f"{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n"
-            f"{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n"
-            f"{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n"
-            f"{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}",
+            message=f"*{data.player.signature}*\n\n{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}"
         )
         overview.set_image(url=data.player.namecard.banner.url)
+        overview.set_author(
+            name=data.player.nickname, icon_url=data.player.icon.url.url
+        )
         embeds["0"] = overview
         options = [
             SelectOption(
@@ -764,9 +760,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         view.message = await i.original_response()
 
     @check_cookie()
-    @app_commands.command(
-        name="redeem", description=_("Redeem a gift code", hash=450)
-    )
+    @app_commands.command(name="redeem", description=_("Redeem a gift code", hash=450))
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
         await i.response.defer()
