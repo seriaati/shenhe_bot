@@ -698,3 +698,5 @@
 '620': The profile command now caches your data, which means that you can use it to display more than the 8 characters on your profile showcase. When you use the commnd, Shenhe will remember all the character data, and when you remove those characters from the showcase in-game, they will still appear in the command. If you put those characters back up in the showcase, they will be updated automatically. This feature can also be used as a backup when the Enka API is down.
 '621': The new /claim command
 '622': You can now see the rewards you have claimed in the past, and claim rewards manually if Shenhe somehow misses it.
+'623': Interaction timed out
+'624': Please try again
