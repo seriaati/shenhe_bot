@@ -80,7 +80,7 @@ class Schedule(commands.Cog):
         result = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, user_id FROM user_accounts WHERE ltuid IS NOT NULL"
+            "SELECT ltuid, ltoken, user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
         for _, tpl in enumerate(users):
@@ -92,6 +92,7 @@ class Schedule(commands.Cog):
                 self.bot.db,
                 self.bot,
                 cookie={"ltuid": ltuid, "ltoken": ltoken},
+                custom_uid=tpl[3]
             )
             result.append(shenhe_user)
         return result
@@ -178,7 +179,7 @@ class Schedule(commands.Cog):
                         f"{text_map.get(15, locale)}: {recover_time}\n"
                     )
                     embed.set_author(
-                        name=f"{text_map.get(518, locale)}: {user.shenhe_user.uid}",
+                        name=f"{user.shenhe_user.uid}: {text_map.get(518, locale)}",
                         icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
                 elif notification_type == "resin_notification":
@@ -187,7 +188,7 @@ class Schedule(commands.Cog):
                         f"{text_map.get(15, locale)}: {recover_time}"
                     )
                     embed.set_author(
-                        name=f"{text_map.get(306, locale)}: {user.shenhe_user.uid}",
+                        name=f"{user.shenhe_user.uid}: {text_map.get(306, locale)}",
                         icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
                 embed.set_footer(text=text_map.get(305, locale))
