@@ -53,7 +53,7 @@ def genshin_error_handler(func):
             embed.set_author(
                 name=text_map.get(135, locale), icon_url=user.display_avatar.url
             )
-            embed.set_thumbnail(url="https://i.imgur.com/4XVfK4h.png")
+            embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
             return embed, False
 
     return inner_function

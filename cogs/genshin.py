@@ -256,7 +256,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="claim",
         description=_(
-            "Immediately claims your hoyolab daily login reward",
+            "View info about your Hoyolab daily check-in rewards",
             hash=420,
         ),
     )
