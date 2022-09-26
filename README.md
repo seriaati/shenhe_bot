@@ -62,7 +62,6 @@
 - 角色配置
 - 角色展示
 - 聖遺物評分計算
-- [功能列表](https://seriaati.github.io/shenhe_website/features.html)
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
