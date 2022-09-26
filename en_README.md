@@ -61,7 +61,7 @@
 - Character builds
 - Character showcase
 - Localization
-- [Feature List](https://seriaati.github.io/shenhe_website/features.html)
+- More can be found on [the website](http://shenhe.bot.nu/)
 
 <p align="right">(<a href="#readme-top">Back to top</a>)</p>
 
