@@ -92,7 +92,7 @@ class Schedule(commands.Cog):
                 self.bot.db,
                 self.bot,
                 cookie={"ltuid": ltuid, "ltoken": ltoken},
-                custom_uid=tpl[3]
+                custom_uid=tpl[3],
             )
             result.append(shenhe_user)
         return result
@@ -175,22 +175,20 @@ class Schedule(commands.Cog):
                         recover_time = format_dt(notes.resin_recovery_time, "R")
                 if notification_type == "pot_notification":
                     embed = default_embed(
-                        message=f"{text_map.get(14, locale)}: {item_current_amount}/{notes.max_realm_currency}\n"
-                        f"{text_map.get(15, locale)}: {recover_time}\n"
-                    )
-                    embed.set_author(
-                        name=f"{user.shenhe_user.uid}: {text_map.get(518, locale)}",
-                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
+                        text_map.get(518, locale),
+                        f"{text_map.get(14, locale)}: {item_current_amount}/{notes.max_realm_currency}\n"
+                        f"{text_map.get(15, locale)}: {recover_time}\n",
                     )
                 elif notification_type == "resin_notification":
                     embed = default_embed(
-                        message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                        f"{text_map.get(15, locale)}: {recover_time}"
+                        text_map.get(306, locale),
+                        f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
+                        f"{text_map.get(15, locale)}: {recover_time}",
                     )
-                    embed.set_author(
-                        name=f"{user.shenhe_user.uid}: {text_map.get(306, locale)}",
-                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
-                    )
+                embed.set_author(
+                    name=user.shenhe_user.uid,
+                    icon_url=user.shenhe_user.discord_user.display_avatar.url,
+                )
                 embed.set_footer(text=text_map.get(305, locale))
                 try:
                     await user.shenhe_user.discord_user.send(embed=embed)
@@ -308,7 +306,9 @@ class Schedule(commands.Cog):
                 for domain in domains:
                     if domain.weekday == today_weekday:
                         for item in domain.rewards:
-                            [upgrade] = await client.get_character_upgrade(str(character_id))
+                            [upgrade] = await client.get_character_upgrade(
+                                str(character_id)
+                            )
                             if item in upgrade.items:
                                 if character_id not in notified:
                                     notified[character_id] = []
@@ -382,9 +382,7 @@ class Schedule(commands.Cog):
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_weapon(str(object.id)))[
-                        0
-                    ].name
+                    english_name = (await eng_client.get_weapon(str(object.id)))[0].name
                 elif thing == "artifact":
                     object_map[str(object.id)] = {
                         "name": object.name,
@@ -514,7 +512,7 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
-    
+
     @update_game_data.before_loop
     async def before_update(self):
         await self.bot.wait_until_ready()
