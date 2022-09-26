@@ -458,7 +458,7 @@
 '417': '查看原神資料: 活躍時間、神瞳數量、寶箱數量'
 '418': 欲查詢使用者的 UID, 已註冊過則不用填
 '419': 查看區域探索度
-'420': View info about your Hoyolab daily check-in rewards
+'420': 領取 hoyolab 網頁登入獎勵 (需註冊)
 '421': 展示自己擁有的所有角色 (需註冊)
 '422': 查看旅行者日記 (需註冊)
 '423': 月份
@@ -542,7 +542,7 @@
 '501': 更新自身排名
 '502': 排名更新成功
 '503': 查看申鶴歷來的更新
-'504': '由 seria#5334 製作, 有疑問可以私訊'
+'504': 'Made by [seria#5334](http://discord.com/users/410036441129943050), DM me if you have any questions'
 '505': 查看過去更新
 '506': 武器數量
 '507': 想要抽到幾個自己想要的五星 UP 武器?
@@ -551,7 +551,7 @@
 '510': 須彌
 '511': 原神遊戲元素（武器、角色等）的字串將會自動翻譯
 '512': 排名更新成功
-'513': '非常抱歉，這個錯誤已經自動回報至 seria#5334，請耐心等待修復'
+'513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
 '514': 洞天寶錢提醒（需註冊）
 '515': 洞天寶錢提醒設定
 '516': 洞天寶錢閥值
@@ -621,7 +621,7 @@
 '564': 新增 UID
 '565': 新增 Cookie
 '566': 請在這裡放入你的 UID
-'567': '如果這不應該發生，請聯絡 seria#5334'
+'567': 'If this shouldn''t be happening, please contact [seria#5334](http://discord.com/users/410036441129943050)'
 '568': 已新增 UID
 '569': 當前帳戶
 '570': |-
@@ -634,7 +634,7 @@
 '575': 使用 </accounts:1020188057628065866> 來切換帳號
 '576': 我們正在確認你的 UID，請稍等
 '577': 我們正在確認你的 Cookie，請稍等
-'578': '如果你被卡在這個頁面，請聯絡 seria#5334'
+'578': 'If you are not redirected, please contact [seria#5334](http://discord.com/users/410036441129943050)'
 '579': 這個用戶沒有註冊任何帳號
 '580': 這個用戶的當前帳號並沒有連結 Cookie
 '581': |-
