@@ -461,7 +461,7 @@
 '417': 'View genshin stats: Active days, oculis, number of chests'
 '418': A user's genshin UID
 '419': View area exploration rates
-'420': View info about your Hoyolab daily check-in rewards
+'420': Claim hoyolab daily login reward
 '421': View all owned characters (need /register)
 '422': View traveler's diary (need /register)
 '423': month
@@ -545,7 +545,7 @@
 '501': Update self-leaderboard position
 '502': Leaderboard position updated
 '503': View past updates
-'504': 'Made by seria#5334, DM me if you have any questions'
+'504': 'Made by [seria#5334](http://discord.com/users/410036441129943050), DM me if you have any questions'
 '505': View past updates
 '506': number
 '507': How many 5-star UP weapons do you wish to pull?
@@ -554,7 +554,7 @@
 '510': Sumeru
 '511': Names of genshin characters, weapons, and other game elements will be translated automatically
 '512': Leaderboard position update failed
-'513': 'I am very sorry for this, the error has been automatically reported to seria#5334, please patiently wait for the fix'
+'513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
 '514': Realm currency reminder
 '515': Realm currency notif. settings
 '516': Realm currency threshold
@@ -623,7 +623,7 @@
 '564': Add UID
 '565': Add Cookie
 '566': Put your UID here
-'567': 'If this shouldn''t be happening, please contact seria#5334'
+'567': 'If this shouldn''t be happening, please contact [seria#5334](http://discord.com/users/410036441129943050)'
 '568': UID added
 '569': Current account
 '570': |-
@@ -638,7 +638,7 @@
 '575': Use </accounts:1020188057628065866> to switch between accounts
 '576': Please wait while we are validating your UID
 '577': Please wait while we are validating your Cookie
-'578': 'If you are not redirected, please contact seria#5334'
+'578': 'If you are not redirected, please contact [seria#5334](http://discord.com/users/410036441129943050)'
 '579': This user doesn't have an account registered
 '580': This user's current account is not linked to a Cookie
 '581': |-
