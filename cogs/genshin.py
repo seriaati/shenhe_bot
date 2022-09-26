@@ -93,10 +93,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             name=_("Characters", hash=499), callback=self.characters_ctx_menu
         )
         self.stats_context_menu = app_commands.ContextMenu(
-            name=_("Stats", hash=497), callback=self.stats_ctx_menu
+            name=_("Stats", hash=56), callback=self.stats_ctx_menu
         )
         self.check_context_menu = app_commands.ContextMenu(
-            name=_("Real time notes", hash=500), callback=self.check_ctx_menu
+            name=_("Realtime notes", hash=24), callback=self.check_ctx_menu
         )
         self.bot.tree.add_command(self.search_uid_context_menu)
         self.bot.tree.add_command(self.profile_context_menu)
@@ -313,7 +313,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.choices(
         month=[
             app_commands.Choice(name=_("This month", hash=425), value=0),
-            app_commands.Choice(name=_("Last month", hash=426), value=-1),
+            app_commands.Choice(name=_("Last month", hash=64), value=-1),
             app_commands.Choice(
                 name=_("The month before last month", hash=427), value=-2
             ),
@@ -375,7 +375,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.followup.send(embed=result["overview"], view=view, files=[image])
             view.message = await i.original_response()
 
-    @app_commands.command(name="stuck", description=_("Data not public?", hash=437))
+    @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embed = default_embed(
@@ -685,12 +685,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.add_field(
                 name=text_map.get(301, i.locale, user_locale),
                 value=f"<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n"
-                f"<:ATTACK:982138214305390632> {text_map.get(293, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
-                f"<:DEFENSE:982068463566721064> {text_map.get(294, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
-                f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(295, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
+                f"<:ATTACK:982138214305390632> {text_map.get(260, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> {text_map.get(264, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(266, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
                 f"<:CRITICAL:982068460731392040> {text_map.get(296, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
-                f"<:CRITICAL_HURT:982068462081933352> {text_map.get(297, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(298, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
+                f"<:CRITICAL_HURT:982068462081933352> {text_map.get(265, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
+                f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(267, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
                 f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
                 inline=False,
             )
@@ -828,7 +828,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(type=_("option", hash=429))
     @app_commands.choices(
         type=[
-            Choice(name=_("Achievement leaderboard", hash=454), value=0),
+            Choice(name=_("Achievement leaderboard", hash=251), value=0),
             Choice(name=_("Artifact substat leaderboard", hash=455), value=1),
             Choice(name=_("Wish luck leaderboard", hash=456), value=2),
             Choice(name=_("Update self leaderboard position", hash=501), value=3),
