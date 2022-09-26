@@ -56,7 +56,7 @@ class LevelModal(BaseModal):
         self.current.label = text_map.get(183, locale, user_locale)
         self.current.placeholder = text_map.get(184, locale, user_locale)
         self.target.label = text_map.get(185, locale, user_locale)
-        self.target.placeholder = text_map.get(186, locale, user_locale)
+        self.target.placeholder = text_map.get(170, locale, user_locale)
 
     async def on_submit(self, i: Interaction) -> None:
         await i.response.defer()

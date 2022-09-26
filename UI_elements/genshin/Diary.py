@@ -22,8 +22,8 @@ class View(BaseView):
         self.genshin_app = genshin_app
         self.locale = locale
         self.user_locale = user_locale
-        self.add_item(Primo(text_map.get(144, locale, user_locale)))
-        self.add_item(Mora(text_map.get(145, locale, user_locale)))
+        self.add_item(Primo(text_map.get(70, locale, user_locale)))
+        self.add_item(Mora(text_map.get(72, locale, user_locale)))
 
 
 class Primo(Button):

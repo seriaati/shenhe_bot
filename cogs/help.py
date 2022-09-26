@@ -19,7 +19,7 @@ class Dropdown(Select):
             SelectOption(label=text_map.get(490, locale, user_locale),
                          description=text_map.get(491, locale, user_locale),
                          emoji='<:CALCULATOR:999540912319369227>'),
-            SelectOption(label=text_map.get(492, locale, user_locale),
+            SelectOption(label=text_map.get(202, locale, user_locale),
                          emoji='✅'),
             SelectOption(label=text_map.get(493, locale, user_locale),
                          emoji='2️⃣'),

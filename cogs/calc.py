@@ -38,8 +38,8 @@ class CalcCog(commands.GroupCog, name="calc"):
     )
     @app_commands.choices(
         sync=[
-            Choice(name=_("ON", hash=463), value=1),
-            Choice(name=_("OFF", hash=464), value=0),
+            Choice(name=_("ON", hash=99), value=1),
+            Choice(name=_("OFF", hash=100), value=0),
         ]
     )
     async def calc_characters(self, i: Interaction, sync: int = 0):
@@ -204,7 +204,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         name="weapon",
         description=_("Calcualte materials needed for upgrading a weapon", hash=465),
     )
-    @app_commands.rename(types=_("type", hash=466), rarities=_("rarity", hash=467))
+    @app_commands.rename(types=_("type", hash=429), rarities=_("rarity", hash=467))
     @app_commands.choices(
         types=[
             Choice(name=_("sword", hash=468), value=1),

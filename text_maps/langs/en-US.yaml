@@ -103,7 +103,7 @@
 '102': Resing Threshold
 '103': Max. notification number
 '104': Settings saved
-'105': Characters
+'105': ''
 '106': This gift code has already been redeemed!
 '107': Gift code invalid
 '108': Gift code
@@ -149,8 +149,8 @@
 '141': Account data not found!
 '142': Choose your element
 '143': You are not the issuer of this command
-'144': Primo Log
-'145': Mora Log
+'144': ''
+'145': ''
 '146': Floor
 '147': <FLOOR>
 '148': Choose abyss floor
@@ -168,13 +168,13 @@
 '151': Resin notification settings
 '152': Resin threshold
 '153': Shenhe will DM you after resin exceeds this number
-'154': Max. notification number
+'154': ''
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
 '157': Choose your characters
 '158': There are currently no notifications set for any characters
 '159': Current characters
-'160': Choose your element
+'160': ''
 '161': Choosing this character will turn OFF its notifications
 '162': Build
 '163': Choose your build
@@ -202,7 +202,7 @@
 '183': Current level
 '184': 'For example: 1'
 '185': Target level
-'186': 'For example: 90'
+'186': ''
 '187': Please enter a number
 '188': 'Character level: Please enter a number between 1 and 90'
 '189': 'Talent level: Please enter a number between 1 and 10'
@@ -238,7 +238,7 @@
 '217': Hydro
 '218': Dendro
 '219': Electro
-'220': Characters
+'220': ''
 '221': January
 '222': February
 '223': March
@@ -301,12 +301,12 @@
 '290': Achievement
 '291': Spiral abyss
 '292': Max HP
-'293': Atk.
-'294': Def.
-'295': Elem. Mastery
-'296': Crit Rate
-'297': Crit DMG
-'298': Energy Recharge
+'293': ''
+'294': ''
+'295': ''
+'296': ''
+'297': ''
+'298': ''
 '299': Friendship Level
 '300': The highest artifact score is 99, only +20 artifacts will have scores
 '301': Stats
@@ -419,7 +419,7 @@
 '374': of players
 '375': <TOTAL>
 '376': pulls in total
-'378': <TOTAL>
+'378': ''
 '379': UP five stars in total
 '380': <FROM PITY>
 '381': pity pulls
@@ -435,7 +435,7 @@
 '391': The last 5-star weapon you pulled was
 '392': Is this a standard or limited time UP weapon?
 '393': Weapon wish number prediction
-'394': Wishing to pull
+'394': ''
 '395': weapons you want
 '396': That is
 '397': primogems
@@ -444,7 +444,7 @@
 '400': Weapon banner
 '401': <AVERAGE>
 '402': pulls per 5 star
-'403': <FROM PITY>
+'403': ''
 '404': pulls from pity
 '405': You haven't pulled any 5-star weapons in the weapon banner yet
 '406': Start time
@@ -467,7 +467,7 @@
 '423': month
 '424': The month you're trying to search with
 '425': This month
-'426': Last month
+'426': ''
 '427': The month before last month
 '428': View abyss data (need /register)
 '429': type
@@ -475,18 +475,18 @@
 '431': The type of data you wish to view
 '432': Which abyss season?
 '433': Detailed
-'434': Overview
+'434': ''
 '435': This season
 '436': Last season
-'437': Data not public?
+'437': ''
 '438': Set notification features
 '439': function
 '440': toggle
 '441': Resin notification (need /register)
 '442': Talent notification
 '443': Check privacy settings
-'444': ON (or change settings)
-'445': 'OFF'
+'444': ''
+'445': ''
 '446': View farmable items today
 '447': 'View character builds: Weapons, artifacts, talent levels, stats'
 '448': Search a user's UID
@@ -495,7 +495,7 @@
 '451': code
 '452': View ongoing events in genshin
 '453': View the leaderboard
-'454': Achievement leaderboard
+'454': ''
 '455': Artifact sub stat leaderboard
 '456': Wish luck leaderboard
 '457': Genshin wiki
@@ -504,10 +504,10 @@
 '460': Calculate materials needed for upgrading a character
 '461': sync
 '462': sync with in-game data (autofill the levels)
-'463': 'ON'
-'464': 'OFF'
+'463': ''
+'464': ''
 '465': Calculate materials needed for upgrading a weapon
-'466': type
+'466': ''
 '467': rarity
 '468': sword
 '469': catalyst
@@ -516,11 +516,11 @@
 '472': polearm
 '473': View the todo list
 '474': Import wish history
-'475': function
+'475': ''
 '476': Wish history import tutorial
 '477': Submit link
 '478': View wish history
-'479': Wish luck analysis
+'479': ''
 '480': Predict the chance of pulling a character
 '481': number
 '482': How many 5-star UP characters do you wish to pull?
@@ -533,21 +533,21 @@
 '489': Requires wish history import using /wish import
 '490': Enhancement progress calculator
 '491': Calculate upgrade materials
-'492': Todo list
+'492': ''
 '493': Waifus
 '494': Others
 '495': Choose your category
 '496': Admin usage only
-'497': Genshin stats
+'497': ''
 '498': View profile
 '499': View all characters
-'500': Realtime notes
+'500': ''
 '501': Update self-leaderboard position
 '502': Leaderboard position updated
 '503': View past updates
-'504': Made by [seria#5334](http://discord.com/users/410036441129943050), DM me if you have any questions
-'505': View past updates
-'506': number
+'504': Made by seria#5334, DM me if you have any questions
+'505': ''
+'506': ''
 '507': How many 5-star UP weapons do you wish to pull?
 '508': Search anything genshin related
 '509': query
@@ -645,7 +645,7 @@
   One of this user's accounts is linked to a Cookie,
   but the current one is only linked to a UID
 '582': Resin notification
-'583': Talent notification
+'583': ''
 '584': Realm currency notification
 '585': Test DM
 '586': This feature allows you to receive notification when your resin exceeds a certain amount
@@ -686,7 +686,7 @@
 '608': View the Shenhe v5 change log
 '609': Multi-account support
 '610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
-'611': Reminders
+'611': ''
 '612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
 '613': New website
 '614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.

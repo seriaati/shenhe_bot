@@ -107,7 +107,7 @@ async def return_pot_notification(i: Interaction, view: View):
 
 class TalentNotification(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="📘", label=text_map.get(583, locale), row=2)
+        super().__init__(emoji="📘", label=text_map.get(442, locale), row=2)
 
     async def callback(self, i: Interaction):
         await return_talent_notification(i, self.view)
@@ -128,7 +128,7 @@ async def return_talent_notification(i: Interaction, view: View):
         for character in character_list:
             value += f'{get_character(character)["emoji"]} {text_map.get_character_name(character, view.locale)}\n'
     embed = default_embed(message=text_map.get(590, view.locale))
-    embed.set_author(name=text_map.get(583, view.locale), icon_url=i.user.display_avatar.url)
+    embed.set_author(name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url)
     embed.add_field(name=text_map.get(159, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
@@ -388,7 +388,7 @@ class ResinModal(BaseModal):
         super().__init__(title=text_map.get(151, locale))
         self.resin_threshold.label = text_map.get(152, locale)
         self.resin_threshold.placeholder = text_map.get(153, locale)
-        self.max_notif.label = text_map.get(154, locale)
+        self.max_notif.label = text_map.get(103, locale)
         self.max_notif.placeholder = text_map.get(155, locale)
 
     async def on_submit(self, interaction: Interaction) -> None:
@@ -403,7 +403,7 @@ class PotModal(BaseModal):
     def __init__(self, locale: Locale):
         super().__init__(title=text_map.get(515, locale))
         self.threshold.label = text_map.get(516, locale)
-        self.max_notif.label = text_map.get(154, locale)
+        self.max_notif.label = text_map.get(103, locale)
 
     async def on_submit(self, interaction: Interaction) -> None:
         await interaction.response.defer()

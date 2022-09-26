@@ -28,7 +28,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.command(
         name="import", description=_("Import your genshin wish history", hash=474)
     )
-    @app_commands.rename(function=_("option", hash=475))
+    @app_commands.rename(function=_("option", hash=439))
     @app_commands.choices(
         function=[
             Choice(name=_("Tutorial", hash=476), value="help"),
@@ -96,7 +96,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         await GeneralPaginator(i, embeds, self.bot.db).start()
 
-    @app_commands.command(name="luck", description=_("Wish luck analysis", hash=479))
+    @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_analysis(self, i: Interaction, member: User = None):
@@ -132,7 +132,7 @@ class WishCog(commands.GroupCog, name="wish"):
         embed = default_embed(
             message=f"• {text_map.get(373, i.locale, user_locale)} **{player_luck}%** {text_map.get(374, i.locale, user_locale)}\n"
             f"• {text_map.get(375, i.locale, user_locale)} **{use_pull}** {text_map.get(376, i.locale, user_locale)}\n"
-            f"• {text_map.get(378, i.locale, user_locale)} **{up_five_star_num}** {text_map.get(379, i.locale, user_locale)}\n"
+            f"• {text_map.get(375, i.locale, user_locale)} **{up_five_star_num}** {text_map.get(379, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale)} **{left_pull}** {text_map.get(381, i.locale, user_locale)}\n"
             f"• {guarantee}"
         )
@@ -205,7 +205,7 @@ class WishCog(commands.GroupCog, name="wish"):
         name="weapon",
         description=_("Predict the chance of pulling a weapon you want", hash=483),
     )
-    @app_commands.rename(item_num=_("number", hash=506))
+    @app_commands.rename(item_num=_("number", hash=481))
     @app_commands.describe(
         item_num=_("How many five star UP weapons do you wish to pull?", hash=507)
     )
@@ -258,7 +258,7 @@ class WishCog(commands.GroupCog, name="wish"):
             calc_pull += 1
 
         embed = default_embed(
-            message=f"• {text_map.get(394, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
+            message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale)} **{pull_state}** {text_map.get(381, i.locale, user_locale)}\n"
             f"• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}"
         )
@@ -313,7 +313,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 f'• 5<:white_star:982456919224615002> **{banner["five_star"]}**\n'
                 f'• 4<:white_star:982456919224615002> **{banner["four_star"]}**\n'
                 f"• {text_map.get(401, i.locale, user_locale)} **{average}** {text_map.get(402, i.locale, user_locale)}\n"
-                f'• {text_map.get(403, i.locale, user_locale)} **{(80 if index == 2 else 90)-banner["left_pull"]}** {text_map.get(404, i.locale, user_locale)}\n'
+                f'• {text_map.get(380, i.locale, user_locale)} **{(80 if index == 2 else 90)-banner["left_pull"]}** {text_map.get(404, i.locale, user_locale)}\n'
                 f"{std_str}",
             )
         embed.set_author(name=member, icon_url=member.display_avatar.url)
