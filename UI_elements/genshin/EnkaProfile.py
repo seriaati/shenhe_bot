@@ -93,8 +93,8 @@ class PageSelect(Select):
             embed = default_embed()
             embed.set_image(url=f"attachment://card.jpeg")
             embed.set_author(
-                name=self.view.member.display_name,
-                icon_url=self.view.member.display_avatar.url,
+                name=self.view.data.player.nickname,
+                icon_url=self.view.data.player.icon.url.url,
             )
             card.seek(0)
             file = File(card, "card.jpeg")
@@ -103,10 +103,6 @@ class PageSelect(Select):
             )
         else:
             embed = self.view.embeds[self.values[0]]
-            embed.set_author(
-                name=self.view.member.display_name,
-                icon_url=self.view.member.display_avatar.url,
-            )
             await i.edit_original_response(embed=embed, view=self.view, attachments=[])
 
 
