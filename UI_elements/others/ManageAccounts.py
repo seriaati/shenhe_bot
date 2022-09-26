@@ -450,10 +450,7 @@ async def return_accounts(i: Interaction):
     view = View(user_locale or i.locale, select_options)
     try:
         await i.response.edit_message(embed=embed, view=view)
+        view.message = await i.original_response()
     except InteractionResponded:
         await i.edit_original_response(embed=embed, view=view)
-    try:
-        view.message = await i.original_response()
-    except NotFound:
-        pass
     view.author = i.user

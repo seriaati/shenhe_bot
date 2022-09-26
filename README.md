@@ -100,7 +100,7 @@
 <!-- CONTACT -->
 ## 聯絡方式
 
-discord: seria#5334
+discord: [seria#5334](http://discord.com/users/410036441129943050)
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 

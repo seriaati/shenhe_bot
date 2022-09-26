@@ -99,7 +99,7 @@ Distributed under the MIT license, more information can be found in `LICENSE.md`
 <!-- CONTACT -->
 ## Contact
 
-discord: seria#5334
+discord: [seria#5334](http://discord.com/users/410036441129943050)
 
 <p align="right">(<a href="#readme-top">Back to top</a>)</p>
 

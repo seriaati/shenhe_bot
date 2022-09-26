@@ -302,6 +302,7 @@ async def get_shenhe_user(
     bot: commands.Bot,
     locale: Locale = None,
     cookie: Dict[str, str | int] = None,
+    custom_uid: int = None,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     c: aiosqlite.Cursor = await db.cursor()
@@ -310,12 +311,12 @@ async def get_shenhe_user(
         (user_id,),
     )
     user_data = await c.fetchall()
-    for index, tpl in enumerate(user_data):
+    for _, tpl in enumerate(user_data):
         if tpl[5] == 1:
-            user_data = user_data[index]
+            user_data = tpl
             break
         else:
-            user_data = user_data[index]
+            user_data = tpl
 
     if user_data[0] is not None:
         client = genshin.Client()
@@ -332,7 +333,9 @@ async def get_shenhe_user(
     else:
         client = bot.genshin_client
         uid = user_data[3]
-
+    
+    uid = custom_uid or uid
+    
     user_locale = await get_user_locale(user_id, db)
     locale = user_locale or locale
     client_locale = to_genshin_py(locale) or "en-us"
@@ -353,7 +356,7 @@ async def get_shenhe_user(
 
     user_obj = ShenheUser(
         client=client,
-        uid=int(uid),
+        uid=uid,
         discord_user=discord_user,
         user_locale=user_locale,
         china=china,
