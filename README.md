@@ -62,6 +62,7 @@
 - 角色配置
 - 角色展示
 - 聖遺物評分計算
+- 詳情可參閱[網站](http://shenhe.bot.nu/)
 
 <p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
