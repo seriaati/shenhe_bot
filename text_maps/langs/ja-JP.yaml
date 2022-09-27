@@ -371,7 +371,7 @@
   3. Windowsキーを押し、「Powershell」を検索する。
   4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。
   5. ENTERを押すと、リンクがクリップボードにコピーされます。
-  6. 送信ボタンをクリックして、表示されるテキストボックスにペーストしてください。
+  6. 下のボタンをクリックして、表示されるテキストボックスにペーストしてください。
 '359': Android端末を使用した祈願履歴のインポート
 '360': ''
 '361': ''
@@ -387,7 +387,7 @@
   9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）
   10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） 
   11. Requestタブをクリックし、リンクをコピーする
-  12. 送信タブをクリックし、表示されたテキストボックスにペースト
+  12. 下のボタンをクリックし、表示されたテキストボックスにペースト
 '363': 入力されたリンクは無効です
 '364': ビデオチュートリアル
 '365': プラットフォームを選択してください
@@ -421,13 +421,13 @@
 '392': これは通常武器または限定武器ですか？
 '393': 武器祈願回数予測
 '394': |-
-  1. Press START on your keyboard, then search for Powershell
-  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
-  3. Open Genshin Impact in this PC
-  4. Then open the wish history in the game and wait it to load
-  5. Click the table, then press CTRL+A then CTRL+C
-  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
-  7. Click the submit button and paste the link to the textbox that pops up
+  1. Windowsキーを押し、PowerShellを検索します。
+  2. Windows Powershellをクリックし、以下のコードをコピーしてPowershellに貼り付け、Enterキーを1回押す（「Press Enter to continue」と表示されていない時）
+  3. パソコンで「原神」を開く 
+  4. その後、祈願履歴を開き、読み込まれるのを待ちます。
+  5. 祈願履歴の表をクリックし、Ctrl+A、Ctrl+Cの順に押します（この時点でページ上のすべてのテキストが選択されているはずです）
+  6. Alt+TabでPowerShellに切り替え、Enterを押すと、既にリンクがクリップボードにコピーされているはずです。
+  7. 下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '395': あなたが欲しい星5武器
 '396': それは
 '397': 原石
@@ -437,14 +437,15 @@
 '401': 平均
 '402': 星5あたりの引いた数
 '403': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
-  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
-  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
-  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
-  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
-  8. Click the submit button and paste the link to the textbox that pops up
+  1. パソコンで原神を開く（複数のアカウントを使用している場合は、ゲームを再起動してください。）
+  2. その後、祈願履歴を開き、読み込まれるのを待ちます。
+  3. ゲームがインストールされている場所（例：C: \Games\Genshin Impact）を開いてください。
+  4. その後、GenshinImpact_Data → webCaches → Cache → Cache_Data フォルダを開く。
+  5. ファイル「data_2」を右クリックし、「プログラムから開く」をクリックして「メモ帳」を選択します（「他のプログラムによって使用されているため、ファイルにアクセスできません」等のエラーが報告された場合は、先にゲームを終了させてください）
+  6. Ctrl+Fキーを押しながら、オプションの「折り返しあり」をクリックし、検索する方向は「上へ」を選択し、入力欄に「e20190909gacha-v2」を入力し（カギカッコをコピーしないように注意）「次を検索」をクリックします。
+  7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。 
+  完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
+  8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '404': 天井からの回数
 '405': あなたは星５武器を武器ガチャで引いたことが無いようです
 '406': 開始時間
