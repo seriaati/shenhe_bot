@@ -175,20 +175,24 @@ class Schedule(commands.Cog):
                         recover_time = format_dt(notes.resin_recovery_time, "R")
                 if notification_type == "pot_notification":
                     embed = default_embed(
-                        text_map.get(518, locale),
-                        f"{text_map.get(14, locale)}: {item_current_amount}/{notes.max_realm_currency}\n"
-                        f"{text_map.get(15, locale)}: {recover_time}\n",
+                        message=f"{text_map.get(2, locale)}: {item_current_amount}/{notes.max_realm_currency}\n"
+                        f"{text_map.get(15, locale)}: {recover_time}\n"
+                        f"UID: {user.shenhe_user.uid}\n",
+                    )
+                    embed.set_author(
+                        name=text_map.get(518, locale),
+                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
                 elif notification_type == "resin_notification":
                     embed = default_embed(
-                        text_map.get(306, locale),
-                        f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                        f"{text_map.get(15, locale)}: {recover_time}",
+                        message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
+                        f"{text_map.get(15, locale)}: {recover_time}"
+                        f"UID: {user.shenhe_user.uid}\n",
                     )
-                embed.set_author(
-                    name=user.shenhe_user.uid,
-                    icon_url=user.shenhe_user.discord_user.display_avatar.url,
-                )
+                    embed.set_author(
+                        name=text_map.get(306, locale),
+                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
+                    )
                 embed.set_footer(text=text_map.get(305, locale))
                 try:
                     await user.shenhe_user.discord_user.send(embed=embed)

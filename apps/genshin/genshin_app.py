@@ -218,19 +218,19 @@ class GenshinApp:
                     notes.transformer_recovery_time, "R"
                 )
         result = default_embed(
-            message=f"<:daily:1004648484877651978> {text_map.get(11, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
-            f"<:transformer:1004648470981902427> {text_map.get(12, locale, user_locale)}: {transformer_recover_time}"
+            message=f"<:daily:1004648484877651978> {text_map.get(6, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
+            f"<:transformer:1004648470981902427> {text_map.get(8, locale, user_locale)}: {transformer_recover_time}"
         )
         result.add_field(
-            name=f"<:resin:1004648472995168326> {text_map.get(13, locale, user_locale)}",
-            value=f"{text_map.get(14, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
+            name=f"<:resin:1004648472995168326> {text_map.get(4, locale, user_locale)}",
+            value=f"{text_map.get(303, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
             f"{text_map.get(15, locale, user_locale)}: {resin_recover_time}\n"
-            f"{text_map.get(16, locale, user_locale)}: {notes.remaining_resin_discounts}/3",
+            f"{text_map.get(5, locale, user_locale)}: {notes.remaining_resin_discounts}/3",
             inline=False,
         )
         result.add_field(
             name=f"<:realm:1004648474266062880> {text_map.get(17, locale, user_locale)}",
-            value=f" {text_map.get(14, locale, user_locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
+            value=f" {text_map.get(2, locale, user_locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
             f"{text_map.get(15, locale, user_locale)}: {realm_recover_time}",
             inline=False,
         )

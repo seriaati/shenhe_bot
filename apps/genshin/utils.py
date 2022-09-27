@@ -305,22 +305,22 @@ async def get_shenhe_user(
     custom_uid: int = None,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-    c: aiosqlite.Cursor = await db.cursor()
-    await c.execute(
-        "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
-        (user_id,),
-    )
-    user_data = await c.fetchall()
-    for _, tpl in enumerate(user_data):
-        if tpl[5] == 1:
-            user_data = tpl
-            break
-        else:
-            user_data = tpl
+    if not cookie:
+        c: aiosqlite.Cursor = await db.cursor()
+        await c.execute(
+            "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
+            (user_id,),
+        )
+        user_data = await c.fetchall()
+        for _, tpl in enumerate(user_data):
+            if tpl[5] == 1:
+                user_data = tpl
+                break
+            else:
+                user_data = tpl
 
-    if user_data[0] is not None:
-        client = genshin.Client()
-        if cookie is None:
+        if user_data[0] is not None:
+            client = genshin.Client()
             client.set_cookies(
                 ltuid=user_data[0],
                 ltoken=user_data[1],
@@ -328,18 +328,16 @@ async def get_shenhe_user(
                 cookie_token=user_data[2],
             )
         else:
-            client.set_cookies(cookie)
+            client = bot.genshin_client
         uid = user_data[3]
+        await c.close()
     else:
-        client = bot.genshin_client
-        uid = user_data[3]
+        client = genshin.Client()
+        client.set_cookies(cookie)
     
     uid = custom_uid or uid
-    
     user_locale = await get_user_locale(user_id, db)
-    locale = user_locale or locale
-    client_locale = to_genshin_py(locale) or "en-us"
-    client.lang = client_locale
+    client.lang = to_genshin_py(user_locale or locale) or "en-us"
     client.default_game = genshin.Game.GENSHIN
     client.uid = uid
     china = True if str(uid)[0] in ["1", "2", "5"] else False
@@ -350,7 +348,7 @@ async def get_shenhe_user(
         await client.update_character_names(lang=client.lang)
     except genshin.errors.InvalidCookies:
         try:
-            await bot.genshin_client.update_character_names(lang=client._lang)
+            await bot.genshin_client.update_character_names(lang=client.lang)
         except:
             pass
 

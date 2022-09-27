@@ -54,7 +54,7 @@ class AddItem(Button):
         await modal.wait()
         if modal.count.value == "":
             return
-        if not modal.count.value.isnumeric():
+        if not modal.count.value.isdigit():
             return await i.followup.send(
                 embed=error_embed(
                     message=text_map.get(187, i.locale, user_locale)
@@ -208,7 +208,7 @@ class RemoveItemSelect(Select):
                 (i.user.id, self.values[0]),
             )
             count = await c.fetchone()
-            if not modal.count.value.isnumeric():
+            if not modal.count.value.isdigit():
                 return await i.followup.send(
                     embed=error_embed(
                         message=text_map.get(187, i.locale, user_locale)

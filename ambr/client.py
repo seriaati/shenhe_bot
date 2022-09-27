@@ -182,13 +182,13 @@ class AmbrTopAPI:
         self, id: Optional[str] = None, retry: bool = False
     ) -> List[Character]:
         result = []
-        id = str(id)
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
             if id is not None:
                 if id == character_id:
                     result.append(Character(**character_info))
             else:
+                print(character_info)
                 result.append(Character(**character_info))
 
         if len(result) == 0 and not retry:

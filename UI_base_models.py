@@ -11,14 +11,13 @@ async def global_error_handler(
 ):
     if isinstance(e, discord.app_commands.errors.CheckFailure):
         return
-    log.warning(f"[{i.user.id}]{type(e)}: {e}")
-    sentry_sdk.capture_exception(e)
     user_locale = await get_user_locale(i.user.id, i.client.db)
-    if isinstance(e, discord.errors.NotFound):
-        if e.code in [10062, 10008]:
+    if isinstance(e, discord.errors.NotFound) and e.code in [10062, 10008]:
             embed = error_embed(message=text_map.get(624, i.locale, user_locale))
             embed.set_author(name=text_map.get(623, i.locale, user_locale))
     else:
+        log.warning(f"[{i.user.id}]{type(e)}: {e}")
+        sentry_sdk.capture_exception(e)
         embed = error_embed(message=text_map.get(513, i.locale, user_locale))
         embed.set_author(
             name=text_map.get(135, i.locale, user_locale),

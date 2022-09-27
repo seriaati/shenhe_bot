@@ -452,5 +452,5 @@ async def return_accounts(i: Interaction):
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
     except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
+        view.message = await i.edit_original_response(embed=embed, view=view)
     view.author = i.user

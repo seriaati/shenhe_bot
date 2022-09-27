@@ -48,7 +48,7 @@ class TextMap():
     def get_material_name(self, material_id: int, locale: discord.Locale, user_locale: str = None):
         material_text = self.material.get(str(material_id))
         if material_text is None:
-            if str(material_id).isnumeric():
+            if str(material_id).isdigit():
                 log.warning(f'[Exception][get_material_name][material_id not found]: [material_id]{material_id}')
             return material_id
         else:
@@ -89,7 +89,7 @@ class TextMap():
         for character_id, character_name_dict in self.avatar.items():
             for lang_code, character_lang_name in character_name_dict.items():
                 if character_lang_name == character_name:
-                    if not character_id.isnumeric():
+                    if not character_id.isdigit():
                         return character_id
                     else:
                         return int(character_id)

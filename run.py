@@ -152,8 +152,9 @@ class ShenheBot(commands.Bot):
         await self.browser.close()
         await self.db.close()
         await self.main_db.close()
+        await self.backup_db.close()
         await self.session.close()
-        return await super().close()
+        await self.close()
 
 
 sentry_sdk.init(
@@ -197,7 +198,7 @@ async def on_interaction(i: Interaction):
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
-            log.info(f"[Command][{i.user.id}][{i.command.parent.name}{namespace_str}")
+            log.info(f"[Command][{i.user.id}][{i.command.parent.name}]{namespace_str}")
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 

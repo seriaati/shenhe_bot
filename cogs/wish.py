@@ -12,9 +12,8 @@ from apps.wish.wish_app import (
     get_user_wish_overview,
 )
 from discord import Interaction, User, app_commands, User
-from discord.app_commands import Choice
 from discord.ext import commands
-from UI_elements.wish import ChoosePlatform, ChooseWeapon, SetAuthKey
+from UI_elements.wish import ChoosePlatform, ChooseWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
 from discord.app_commands import locale_str as _
@@ -28,25 +27,8 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.command(
         name="import", description=_("Import your genshin wish history", hash=474)
     )
-    @app_commands.rename(function=_("option", hash=439))
-    @app_commands.choices(
-        function=[
-            Choice(name=_("Tutorial", hash=476), value="help"),
-            Choice(name=_("Submit authkey link", hash=477), value="submit"),
-        ]
-    )
-    async def set_key(self, i: Interaction, function: str):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if function == "help":
-            view = ChoosePlatform.View(i.locale, user_locale)
-            embed = default_embed(text_map.get(365, i.locale, user_locale))
-            embed.set_footer(text=text_map.get(366, i.locale, user_locale))
-            await i.response.send_message(embed=embed, view=view, ephemeral=True)
-            view.message = await i.original_response()
-        else:
-            await i.response.send_modal(
-                SetAuthKey.Modal(self.bot.db, i.locale, user_locale)
-            )
+    async def set_key(self, i: Interaction):
+        await ChoosePlatform.GOBack.callback(self, i)
 
     # /wish history
     @app_commands.command(name="history", description=_("View wish history", hash=478))
@@ -155,7 +137,7 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if num > 10:
             return await i.response.send_message(
-                embed=error_embed(message='number <= 10').set_author(
+                embed=error_embed(message="number <= 10").set_author(
                     name=text_map.get(190, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
