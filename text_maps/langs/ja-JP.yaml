@@ -1,12 +1,12 @@
 ---
 '1': フル
-'2': ''
-'3': ''
-'4': ''
-'5': ''
-'6': ''
+'2': Current realm currency
+'3': Choose an import method
+'4': Resin
+'5': Resin discounts
+'6': Daily mission
 '7': 分
-'8': ''
+'8': P.T. remaining time
 '9': ''
 '10': ''
 '11': ''
@@ -132,7 +132,7 @@
 '131': 稲妻
 '132': クッキーを送信
 '133': ここにコピーしたテキストを貼り付けてください
-'134': エラーが発生しました。[Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) でこのエラーを報告してください。
+'134': ''
 '135': エラーが発生しました
 '136': アカウントを選択してください
 '137': アカウント登録チュートリアル
@@ -362,52 +362,37 @@
 '352': 祈願記録のURL
 '353': 祈願記録をインポート中
 '354': リンクをここに貼り付けてください
-'355': 申鶴が祈願履歴を処理中です...
+'355': Please wait while shenhe is processing your wish history
 '356': 祈願履歴のインポートに成功しました！
-'357': PCを使用した祈願履歴のインポート
+'357': ''
 '358': |-
-  1. 原神を開きます（複数アカウントを使用している場合は、ゲームを再起動してください。）
-  2. ゲーム内の祈願履歴を開き、読み込まれるのを待ちます。
-  3. キーボードの「START」を押し、「Powershell」を検索する。
-  4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストします。
-  5. ENTERを押すと、リンクがクリップボードにコピーされます。
-  6. コピーしたリンクを </wish import:1000187021635104890> コマンドで送信します。
-
-  [解説動画](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Press START on your keyboard, then search for Powershell
+  4. Click Windows Powershell, then copy & paste the script below to the Powershell
+  5. Press ENTER, and a link will copied to your clipboard
+  6. Click the submit button and paste the link to the textbox that pops up
 '359': Android端末を使用した祈願履歴のインポート
-'360': |-
-  [Wifiを使用](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [モバイルデータを使用](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [上記の方法がうまくいかない場合はクリックしてください](https://www.youtube.com/watch?v=jAKq94KpGHA)
-'361': iOS端末を使用した祈願履歴のインポート
+'360': ''
+'361': ''
 '362': |-
-  [チュートリアル動画](https://www.youtube.com/watch?v=WfBpraUq41c)
-  1. App StoreでのStreamのダウンロードは[こちら](https://apps.apple.com/app/stream/id1312141691)から。
-  2. アプリを開き、システム環境設定でVPNを許可します(設定 > 一般 > VPN)
-  3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示されるので、許可を選択 > CAがダウンロードされました。）
-  4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをクリックし、インストールします。
-  5. Genshin Impactを起動し、祈願画面を開き、そのページにとどまります。
-  6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ
-  7. Genshin Impactに戻り、祈願履歴の画面を開きます。
-  8. ページが読み込まれるのを待ちます。
-  9. ストリームアプリに戻る > スニッフィングを停止する
-  10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まる）。
-  11. Requestタブをクリックし、リンクをコピーします。
-  12. そのリンクを、</wish import:1000187021635104890> コマンドを使用して、ここに送信します。
-'363': プレイステーションでの祈願履歴のインポート
-'364': |-
-  (以下の手順でうまくいかない場合は、PSアカウントとHoYoVerseアカウントをリンクさせてから、pc/mobileの手順を使用してください。）
-  (QRコード付きのゲーム内メールをお持ちの方のみ、この方法をご利用いただけます。）
-
-
-  1. PlayStationで「Genshin Impact」を起動します。
-  2. QRコードが記載されたイベントメールを開封します。
-  3. QRコードを携帯電話で読み取ります。
-  4. </wish import:1000187021635104890>コマンドで、ここにリンクを送信します。
+  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
+  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
+  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
+  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
+  5. Open Genshin Impact then open the Wish screen, and stay on that page
+  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
+  7. Back to Genshin Impact then open the Wish history page
+  8. Wait for the page to load
+  9. Back to Stream App > Stop Sniffing
+  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
+  11. Click the Request tab, then copy the link
+  12. Click the submit button and paste the link to the textbox that pops up
+'363': The link you have provided is invalid
+'364': Video Tutorial
 '365': プラットフォームを選択してください
 '366': |-
-  祈願履歴の言語は、現在選択されている言語に基づいて表示されます。
-  後から言語を変更しても、以前の記録には影響しません。
+  The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
 '367': 祈願履歴データが見つかりません
 '368': </wish import:1000187021635104890>で祈願履歴をインポート
 '369': 祈願履歴
@@ -418,7 +403,7 @@
 '374': より運が良いです
 '375': 合計
 '376': 引いた合計
-'378': ''
+'378': Method 1
 '379': 全ての限定星5
 '380': 天井からの数
 '381': 天井で引いた回数
@@ -434,7 +419,14 @@
 '391': 最後に引いた星5武器は
 '392': これは通常武器または限定武器ですか？
 '393': 武器祈願回数予測
-'394': ''
+'394': |-
+  1. Press START on your keyboard, then search for Powershell
+  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
+  3. Open Genshin Impact in this PC
+  4. Then open the wish history in the game and wait it to load
+  5. Click the table, then press CTRL+A then CTRL+C
+  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
+  7. Click the submit button and paste the link to the textbox that pops up
 '395': あなたが欲しい星5武器
 '396': それは
 '397': 原石
@@ -443,7 +435,15 @@
 '400': イベント祈願・武器
 '401': 平均
 '402': 星5あたりの引いた数
-'403': ''
+'403': |-
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
+  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
+  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
+  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
+  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
+  8. Click the submit button and paste the link to the textbox that pops up
 '404': 天井からの回数
 '405': あなたは星５武器を武器ガチャで引いたことが無いようです
 '406': 開始時間
@@ -466,7 +466,7 @@
 '423': 月
 '424': 検索しようとしている月
 '425': 今月の
-'426': ''
+'426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': 先々月
 '428': 深境螺旋戦績を表示 (/register が必要）
 '429': タイプ
@@ -532,7 +532,7 @@
 '489': /wish import を使用して履歴をインポートする必要があります
 '490': 進捗状況計算機の強化
 '491': アップグレード材料を計算する
-'492': ''
+'492': Video tutorial
 '493': 推し！
 '494': その他
 '495': カテゴリを選択
@@ -579,14 +579,14 @@
 '536': ダークモード
 '537': ライトモード
 '538': |
-  • この設定は、カードの外観を変更します。
-  • ダークモードのカードがない場合、ライトモードで表示されます。
-  • デフォルトはライトモードです。
-  • 例として以下をご参照ください。
+  • This setting changes the appearance of your cards
+  • If there is no dark mode version of the card, it will be displayed in light mode
+  • Default is light mode
+  • See below for an example
 '539': 設定
 '540': |-
-  • 私は場合によっては、申鶴を使ってプッシュ通知を行います
-  • ほとんどの場合、申鶴に重大な問題が発生したとき、またはアップデートがあったときに表示されます
+  • In some cases, I will push notifications using Shenhe
+  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
 '541': 開発者メッセージ
 '542': アイテムが見つかりません
 '543': データはキャッシュからのものです
