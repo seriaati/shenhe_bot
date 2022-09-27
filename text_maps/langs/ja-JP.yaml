@@ -1,12 +1,12 @@
 ---
 '1': フル
-'2': Current realm currency
-'3': Choose an import method
-'4': Resin
-'5': Resin discounts
-'6': Daily mission
+'2': 現在の洞天宝銭
+'3': インポート方式を選択
+'4': 樹脂
+'5': 樹脂消費半減
+'6': デイリー任務
 '7': 分
-'8': P.T. remaining time
+'8': 参量物質変化器のクールタイム
 '9': ''
 '10': ''
 '11': ''
@@ -362,37 +362,38 @@
 '352': 祈願記録のURL
 '353': 祈願記録をインポート中
 '354': リンクをここに貼り付けてください
-'355': Please wait while shenhe is processing your wish history
+'355': 申鶴が祈願履歴を処理中です...
 '356': 祈願履歴のインポートに成功しました！
 '357': ''
 '358': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will copied to your clipboard
-  6. Click the submit button and paste the link to the textbox that pops up
+  1. 原神をパソコンで開く (複数アカウントを使用している場合は、ゲームを再起動してください)
+  2. ゲーム内の祈願履歴を開き、読み込まれるのを待つ
+  3. Windowsキーを押し、「Powershell」を検索する。
+  4. Windows Powershellをクリックし、以下のスクリプトをPowershellにコピー＆ペーストする。
+  5. ENTERを押すと、リンクがクリップボードにコピーされます。
+  6. 送信ボタンをクリックして、表示されるテキストボックスにペーストしてください。
 '359': Android端末を使用した祈願履歴のインポート
 '360': ''
 '361': ''
 '362': |-
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Click the submit button and paste the link to the textbox that pops up
-'363': The link you have provided is invalid
-'364': Video Tutorial
+  1. [このリンクから](https://apps.apple.com/app/stream/id1312141691) App StoreでStreamをダウンロード
+  2. アプリを開き、システム環境設定でVPNを許可する(設定 > 一般 > VPN)
+  3. CAをインストールする（Stream App上でSniff Nowをクリック > CAをインストール > ポップアップウィンドウが表示され、許可を選択 > CAをダウンロード)
+  4. 設定 > 一般 > VPNとデバイス管理 > Stream Generated CAをタップし、インストールします。
+  5. 原神を起動し、祈願画面を開き、そのページにとどまります。
+  6. Stream Appに戻る > I've trustedを選択 > Sniff Nowボタンをタップ
+  7. 原神に戻り、祈願履歴ページを開く
+  8. ページが読み込まれるのを待つ
+  9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）
+  10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） 
+  11. Requestタブをクリックし、リンクをコピーする
+  12. 送信タブをクリックし、表示されたテキストボックスにペースト
+'363': 入力されたリンクは無効です
+'364': ビデオチュートリアル
 '365': プラットフォームを選択してください
 '366': |-
-  The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
+  祈願履歴の言語は、現在選択されている言語に基づいて表示されます。
+  言語を変更しても、過去の記録には影響しません
 '367': 祈願履歴データが見つかりません
 '368': </wish import:1000187021635104890>で祈願履歴をインポート
 '369': 祈願履歴
@@ -403,7 +404,7 @@
 '374': より運が良いです
 '375': 合計
 '376': 引いた合計
-'378': Method 1
+'378': 方法1
 '379': 全ての限定星5
 '380': 天井からの数
 '381': 天井で引いた回数
@@ -466,7 +467,7 @@
 '423': 月
 '424': 検索しようとしている月
 '425': 今月の
-'426': Text tutorial is coming soon, for now please watch the video tutorial
+'426': テキストチュートリアルは近日公開予定です。しばらくはビデオチュートリアルをご覧ください。
 '427': 先々月
 '428': 深境螺旋戦績を表示 (/register が必要）
 '429': タイプ
@@ -532,7 +533,7 @@
 '489': /wish import を使用して履歴をインポートする必要があります
 '490': 進捗状況計算機の強化
 '491': アップグレード材料を計算する
-'492': Video tutorial
+'492': ビデオチュートリアル
 '493': 推し！
 '494': その他
 '495': カテゴリを選択
@@ -579,14 +580,14 @@
 '536': ダークモード
 '537': ライトモード
 '538': |
-  • This setting changes the appearance of your cards
-  • If there is no dark mode version of the card, it will be displayed in light mode
-  • Default is light mode
-  • See below for an example
+  • この設定は、カードの外観を変更します
+  • ダークモードのカードがない場合、ライトモードで表示されます
+  • デフォルトはライトモードです
+  • 下の画像はその例です
 '539': 設定
 '540': |-
-  • In some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
+  • 場合によっては、申鶴を使ってプッシュ通知することもあります
+  • ほとんどの場合、申鶴に重大な問題が発生したときや、アップデートがある場合に表示されます
 '541': 開発者メッセージ
 '542': アイテムが見つかりません
 '543': データはキャッシュからのものです
