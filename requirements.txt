@@ -12,7 +12,7 @@ pyppeteer==1.0.2
 python-dotenv==0.21.0
 python_dateutil==2.8.2
 PyYAML==6.0
-sentry_sdk==1.9.8
+sentry_sdk==1.9.9
 waifuim.py==3.2.6
 jishaku @ git+https://github.com/Gorialis/jishaku
 cachetools==5.2.0
