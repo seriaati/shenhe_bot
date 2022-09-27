@@ -1,12 +1,12 @@
 ---
 '1': 已滿
-'2': ''
-'3': ''
-'4': ''
-'5': ''
-'6': ''
+'2': Current realm currency
+'3': Choose an import method
+'4': Resin
+'5': Resin discounts
+'6': Daily mission
 '7': 分
-'8': ''
+'8': P.T. remaining time
 '9': ''
 '10': ''
 '11': ''
@@ -132,7 +132,7 @@
 '131': 稻妻
 '132': 提交 Cookie
 '133': 請貼上剛剛複製的文字
-'134': 發生了未知的錯誤，請至[申鶴的 issue 頁面](https://github.com/seriaati/shenhe_bot/issues)回報這個錯誤
+'134': ''
 '135': 未知錯誤
 '136': 選擇要註冊的帳號
 '137': Cookie 設置流程
@@ -363,49 +363,37 @@
 '352': 祈願記錄總結
 '353': 導入祈願記錄
 '354': 請貼上複製的連結
-'355': 請稍等, 處理數據中...
+'355': Please wait while shenhe is processing your wish history
 '356': 祈願記錄導入成功
-'357': PC 設置方式
+'357': ''
 '358': |-
-  1. 在電腦開啟原神 (如果你使用多組帳號，請重新啟動遊戲)
-  2. 打開祈願記錄並等待讀取
-  3. 在鍵盤點選「開始」鍵 (Windows鍵), 並蒐尋 Powershell
-  4. 點選 Windows Powershell, 接著複製及貼上下列程式碼到 Powershell
-  5. 按Enter鍵, 接著連結會自動複製到剪貼簿
-  6. 在這裡提交連結, 輸入 </wish import:1000187021635104890> 指令
-
-  [影片教學](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Press START on your keyboard, then search for Powershell
+  4. Click Windows Powershell, then copy & paste the script below to the Powershell
+  5. Press ENTER, and a link will copied to your clipboard
+  6. Click the submit button and paste the link to the textbox that pops up
 '359': Android 設置方式
-'360': |-
-  [Wifi 設置](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [行動數據設置](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [如果上述的方法都沒用，點我](https://www.youtube.com/watch?v=jAKq94KpGHA)
-'361': IOS 教學
+'360': ''
+'361': ''
 '362': |-
-  [影片教學](https://www.youtube.com/watch?v=WfBpraUq41c)
-  1. 在App Store 下載 Stream [點我](https://apps.apple.com/app/stream/id1312141691)
-  2. 開啟app, 接著在系統設定 (設定 > 一般 > VPN與裝置管理) 中同意 VPN
-  3. 安裝 CA (在Stream App點選 開始抓包 > 將會出現彈跳視窗並選擇同意 > 安裝 CA > CA 就下載好了
-  4. 前往 設定 > 一般 > VPN與裝置管理 > 點選 Stream Generated CA and install
-  5. 開啟原神，接著打開祈願畫面，並在這個畫面等待
-  6. 回到 Stream App > 選擇 信任 > 按 開始抓包 按鈕
-  7. 回到原神，接著開啟祈願歷史記錄
-  8. 等候頁面載入
-  9. 回到 Stream App > 停止抓包
-  10. 按 抓包歷史 > 選擇一個以.json結尾的歷史記錄(該連結前面會像是 https://hk4e-api-os.mihoyo.com/)
-  11. 點選 「請求」 分頁, 接著複製連結
-  12. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令
-'363': Playstation 設置流程
-'364': |-
-  (如果你沒辦法使用以下的設置方法, 請將自己的PS帳號綁定至一個hoyoverse帳號, 並接著使用PC/手機設置方式)
-  1. 在你的 PlayStation 裡打開原神
-  2. 打開你的信箱 QR Code
-  3. 用手機掃描 QR Code 得到連結
-  4. 在這裡提交連結, 請輸入 </wish import:1000187021635104890> 指令
+  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
+  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
+  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
+  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
+  5. Open Genshin Impact then open the Wish screen, and stay on that page
+  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
+  7. Back to Genshin Impact then open the Wish history page
+  8. Wait for the page to load
+  9. Back to Stream App > Stop Sniffing
+  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
+  11. Click the Request tab, then copy the link
+  12. Click the submit button and paste the link to the textbox that pops up
+'363': The link you have provided is invalid
+'364': Video Tutorial
 '365': 選擇你的平台
 '366': |-
-  祈願記錄的語言是根據你目前設置的語言決定的
-  之後更改語言不會改變先前記錄的語言
+  The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
 '367': 找不到任何祈願記錄
 '368': 使用 </wish import:1000187021635104890> 指令來導入你的祈願記錄
 '369': 祈願記錄
@@ -416,7 +404,7 @@
 '374': 的玩家
 '375': 共
 '376': 抽
-'378': ''
+'378': Method 1
 '379': 個 UP 五星
 '380': 距離保底
 '381': 抽
@@ -432,7 +420,14 @@
 '391': 你最後一次抽到的五星武器是
 '392': 這是一把常駐還是 UP 武器?
 '393': 武器祈願抽數預測
-'394': ''
+'394': |-
+  1. Press START on your keyboard, then search for Powershell
+  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
+  3. Open Genshin Impact in this PC
+  4. Then open the wish history in the game and wait it to load
+  5. Click the table, then press CTRL+A then CTRL+C
+  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
+  7. Click the submit button and paste the link to the textbox that pops up
 '395': 個想要的五星 Up 武器
 '396': 即為
 '397': 原石
@@ -441,7 +436,15 @@
 '400': 武器池
 '401': 平均
 '402': 抽出一金
-'403': ''
+'403': |-
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
+  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
+  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
+  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
+  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
+  8. Click the submit button and paste the link to the textbox that pops up
 '404': 抽
 '405': 你還沒有在武器池抽中過五星武器
 '406': 活動開始時間
@@ -464,7 +467,7 @@
 '423': 月份
 '424': 想要查詢的月份
 '425': 這個月
-'426': ''
+'426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': 上上個月
 '428': 查看深淵資料 (需註冊)
 '429': 類別
@@ -530,7 +533,7 @@
 '489': 需要先導入祈願記錄
 '490': 養成計算機
 '491': 計算升級所需素材
-'492': ''
+'492': Video tutorial
 '493': 二次元
 '494': 其他
 '495': 你想要什麼樣的幫助呢?
@@ -577,14 +580,14 @@
 '536': 深色模式
 '537': 亮色模式
 '538': |
-  • 這個設定將會更改卡片的樣式
-   • 如果該卡片的深色模式尚未製作完成，將會顯示為淺色模式
-   • 預設模式為淺色
-   • 示例如下
+  • This setting changes the appearance of your cards
+  • If there is no dark mode version of the card, it will be displayed in light mode
+  • Default is light mode
+  • See below for an example
 '539': 設定
 '540': |-
-  • 在某些情況，我會透過申鶴發送通知
-  • 他們大多在申鶴出現重大問題，或是有更新時出現
+  • In some cases, I will push notifications using Shenhe
+  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
 '541': 開發者訊息
 '542': 物品不存在
 '543': 資料取自快取
