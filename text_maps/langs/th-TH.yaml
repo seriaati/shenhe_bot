@@ -1,12 +1,12 @@
 ---
 '1': เต็ม
-'2': ''
-'3': ''
-'4': ''
-'5': ''
-'6': ''
+'2': Current realm currency
+'3': Choose an import method
+'4': Resin
+'5': Resin discounts
+'6': Daily mission
 '7': นาที
-'8': ''
+'8': P.T. remaining time
 '9': ''
 '10': ''
 '11': ''
@@ -132,7 +132,7 @@
 '131': Inazuma
 '132': Submit your cookie
 '133': Please paste the text you copied here
-'134': There was an error, please go to [Shenhe's issue page](https://github.com/seriaati/shenhe_bot/issues) to report this error.
+'134': ''
 '135': There was an error
 '136': Choose your account
 '137': Account registration tutorial
@@ -363,26 +363,20 @@
 '352': Authkey URL
 '353': Importing wish history
 '354': Please paste the link here
-'355': Please wait for awhile while shenhe is processing your wish history
+'355': Please wait while shenhe is processing your wish history
 '356': Successfully imported wish history
-'357': Importing wish history using PC
+'357': ''
 '358': |-
-  1. Open genshin impact (If you use multiple accounts, please restart the game)
-  2. Open the wish history in the game and wait for it to load
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
   3. Press START on your keyboard, then search for Powershell
   4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will be copied to your clipboard
-  6. Submit the link you copied by using the </wish import:1000187021635104890> command
-
-  [Video tutorial](https://www.youtube.com/watch?v=FCwZkHeIezw)
+  5. Press ENTER, and a link will copied to your clipboard
+  6. Click the submit button and paste the link to the textbox that pops up
 '359': Importing wish history using your android phone
-'360': |-
-  [Using Wifi](https://www.youtube.com/watch?v=6C5Zqhcm3NI)
-  [Using Cellular Data](https://www.youtube.com/watch?v=rHN1iRjmKmc)
-  [Click me if the above methods don't work](https://www.youtube.com/watch?v=jAKq94KpGHA)
-'361': Importing wish history using your IOS device
+'360': ''
+'361': ''
 '362': |-
-  [Video tutorial](https://www.youtube.com/watch?v=WfBpraUq41c)
   1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
   2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
   3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
@@ -394,21 +388,12 @@
   9. Back to Stream App > Stop Sniffing
   10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
   11. Click the Request tab, then copy the link
-  12. Submit that link here using the </wish import:1000187021635104890> command
-'363': Importing wish history using your Playstation device
-'364': |-
-  (If the steps below don't work, you can link your PS account with a HoYoVerse account then use the pc/mobile instructions)
-  (You can only use this method if you have an in-game mail with a QR Code to open the web event)
-
-
-  1. Open Genshin Impact on your PlayStation
-  2. Open the event mail that contains the QR Code
-  3. Scan the QR Code with your phone
-  4. Submit the link here using the </wish import:1000187021635104890> command
+  12. Click the submit button and paste the link to the textbox that pops up
+'363': The link you have provided is invalid
+'364': Video Tutorial
 '365': Choose your platform
 '366': |-
-  The language of your wish history is based on your current selected language
-  changing the language afterward will not affect previous records
+  The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
 '367': No wish history data found
 '368': </wish import:1000187021635104890> to import your wish history
 '369': Wish history
@@ -419,7 +404,7 @@
 '374': of players
 '375': <TOTAL>
 '376': pulls in total
-'378': ''
+'378': Method 1
 '379': UP five stars in total
 '380': <FROM PITY>
 '381': pity pulls
@@ -435,7 +420,14 @@
 '391': The last 5-star weapon you pulled was
 '392': Is this a standard or limited time UP weapon?
 '393': Weapon wish number prediction
-'394': ''
+'394': |-
+  1. Press START on your keyboard, then search for Powershell
+  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
+  3. Open Genshin Impact in this PC
+  4. Then open the wish history in the game and wait it to load
+  5. Click the table, then press CTRL+A then CTRL+C
+  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
+  7. Click the submit button and paste the link to the textbox that pops up
 '395': weapons you want
 '396': That is
 '397': primogems
@@ -444,7 +436,15 @@
 '400': Weapon banner
 '401': <AVERAGE>
 '402': pulls per 5 star
-'403': ''
+'403': |-
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
+  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
+  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
+  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
+  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
+  8. Click the submit button and paste the link to the textbox that pops up
 '404': pulls from pity
 '405': You haven't pulled any 5-star weapons in the weapon banner yet
 '406': Start time
@@ -467,7 +467,7 @@
 '423': month
 '424': The month you're trying to search with
 '425': This month
-'426': ''
+'426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
 '429': type
@@ -533,7 +533,7 @@
 '489': Requires wish history import using /wish import
 '490': Enhancement progress calculator
 '491': Calculate upgrade materials
-'492': ''
+'492': Video tutorial
 '493': Waifus
 '494': Others
 '495': Choose your category
@@ -581,12 +581,12 @@
 '537': Light mode
 '538': |
   • This setting changes the appearance of your cards
-   • If there is no dark mode version of the card, it will be displayed in light mode
-   • Default is light mode
-   • See below for an example
+  • If there is no dark mode version of the card, it will be displayed in light mode
+  • Default is light mode
+  • See below for an example
 '539': Settings
 '540': |-
-  • I some cases, I will push notifications using Shenhe
+  • In some cases, I will push notifications using Shenhe
   • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
 '541': Developer Messages
 '542': Item not found
