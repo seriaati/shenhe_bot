@@ -198,7 +198,7 @@ async def on_interaction(i: Interaction):
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
-            log.info(f"[Command][{i.user.id}][{i.command.parent.name}]{namespace_str}")
+            log.info(f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{namespace_str}")
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 
