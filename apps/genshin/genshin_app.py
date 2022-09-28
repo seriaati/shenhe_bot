@@ -46,6 +46,17 @@ def genshin_error_handler(func):
                 icon_url=user.display_avatar.url,
             )
             return embed, False
+        except genshin.errors.GenshinException as e:
+            log.warning(
+                f"[Genshin App][GenshinException] in {func.__name__}: [e]{e} [code]{e.retcode} [msg]{e.msg}"
+            )
+            sentry_sdk.capture_exception(e)
+            embed = error_embed(message=f"```py\n{e}\n```")
+            embed.set_author(
+                name=text_map.get(10, locale),
+                icon_url=user.display_avatar.url,
+            )
+            return embed, False
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
@@ -209,7 +220,7 @@ class GenshinApp:
         else:
             realm_recover_time = format_dt(notes.realm_currency_recovery_time, "R")
         if notes.transformer_recovery_time is None:
-            transformer_recover_time = text_map.get(10, locale, user_locale)
+            transformer_recover_time = text_map.get(11, locale, user_locale)
         else:
             if notes.remaining_transformer_recovery_time.total_seconds() <= 0:
                 transformer_recover_time = text_map.get(9, locale, user_locale)
