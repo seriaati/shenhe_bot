@@ -103,9 +103,9 @@ class ChooseMethod(Select):
         embed = default_embed()
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
-        await i.response.edit_message(embed=embed, view=self.view)
-        if option["link"] != "":
-            await i.followup.send(content=option["link"], ephemeral=True)
+        video_embed = default_embed(message=option["link"])
+        video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.imgur.com/wYeNuf6.jpg")
+        await i.response.edit_message(embeds=[embed, video_embed], view=self.view)
         if option["code"] != "":
             await i.followup.send(content=f"```{option['code']}```", ephemeral=True)
 
