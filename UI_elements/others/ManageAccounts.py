@@ -132,6 +132,7 @@ class AddUIDModal(BaseModal):
             ),
             view=view,
         )
+        view.message = await i.original_response()
 
         try:
             if not self.uid.value.isdigit():
@@ -248,6 +249,7 @@ class SubmitCookieModal(BaseModal):
             ),
             view=view,
         )
+        view.message = await i.original_response()
         genshin_app = GenshinApp(i.client.db, i.client)
         result, success = await genshin_app.set_cookie(
             i.user.id, self.cookie.value, i.locale
@@ -266,8 +268,7 @@ class SubmitCookieModal(BaseModal):
             embed = default_embed().set_author(
                 name=text_map.get(570, self.locale), icon_url=i.user.display_avatar.url
             )
-            await i.edit_original_response(embed=embed, view=view)
-            view.message = await i.original_response()
+            view.message=  await i.edit_original_response(embed=embed, view=view)
         else:  # 一個帳號而已
             await i.edit_original_response(embed=result)
             await asyncio.sleep(2)
@@ -410,8 +411,9 @@ async def return_accounts(i: Interaction):
                 embed=embed,
                 view=view,
             )
+            view.message = await i.original_response()
         except InteractionResponded:
-            await i.edit_original_response(embed=embed, view=view)
+            view.message = await i.edit_original_response(embed=embed, view=view)
         return
     account_str = ""
     current_account = False
