@@ -55,7 +55,9 @@ class View(BaseView):
         options = []
         for option in list(import_options.keys()):
             if "PC" in option:
-                options.append(SelectOption(label=option, value=option, emoji=button.emoji))
+                options.append(
+                    SelectOption(label=option, value=option, emoji=button.emoji)
+                )
         self.add_item(ChooseMethod(options, self.user_locale or self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
@@ -67,7 +69,9 @@ class View(BaseView):
         options = []
         for option in list(import_options.keys()):
             if "ANDROID" in option:
-                options.append(SelectOption(label=option, value=option, emoji=button.emoji))
+                options.append(
+                    SelectOption(label=option, value=option, emoji=button.emoji)
+                )
         self.add_item(ChooseMethod(options, self.user_locale or self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
@@ -79,7 +83,9 @@ class View(BaseView):
         options = []
         for option in list(import_options.keys()):
             if "IOS" in option:
-                options.append(SelectOption(label=option, value=option, emoji=button.emoji))
+                options.append(
+                    SelectOption(label=option, value=option, emoji=button.emoji)
+                )
         self.add_item(ChooseMethod(options, self.user_locale or self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
@@ -97,24 +103,30 @@ class ChooseMethod(Select):
         embed = default_embed()
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
-        if option["link"] != '':
-            self.view.add_item(Button(label=text_map.get(492, self.locale), url=option["link"]))
+        if option["link"] != "":
+            await i.followup.send(content=option["link"], ephemeral=True)
         await i.response.edit_message(embed=embed, view=self.view)
-        if option["code"] != '':
+        if option["code"] != "":
             await i.followup.send(content=f"```{option['code']}```", ephemeral=True)
+
 
 class SubmitLink(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="<:submit_cookie:1019068169882718258>", label=text_map.get(477, locale), style=ButtonStyle.primary)
+        super().__init__(
+            emoji="<:submit_cookie:1019068169882718258>",
+            label=text_map.get(477, locale),
+            style=ButtonStyle.primary,
+        )
         self.locale = locale
-    
+
     async def callback(self, i: Interaction):
         await i.response.send_modal(SetAuthKey.Modal(self.locale))
+
 
 class GOBack(Button):
     def __init__(self):
         super().__init__(emoji="<:left:982588994778972171>")
-    
+
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id, i.client.db)
