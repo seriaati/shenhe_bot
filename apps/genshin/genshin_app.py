@@ -536,7 +536,7 @@ class GenshinApp:
                 time_str = (
                     f"{minutes} {text_map.get(7, locale, user_locale)} {seconds} {text_map.get(8, locale, user_locale)}"
                     if minutes != 0
-                    else f"{seconds}{text_map.get(8, locale, user_locale)}"
+                    else f"{seconds}{text_map.get(12, locale, user_locale)}"
                 )
                 value += f"{surf.id}. {time_str}\n"
             else:

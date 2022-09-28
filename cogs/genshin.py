@@ -878,7 +878,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             str_list = []
             rank = 1
             user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tpl in enumerate(leaderboard):
+            for _, tpl in enumerate(leaderboard):
                 user_id = tpl[0]
                 avatar_id = tpl[1]
                 artifact_name = tpl[2]
@@ -1040,12 +1040,12 @@ class GenshinCog(commands.Cog, name="genshin"):
                                             i.user.id,
                                             character.id,
                                             artifact.detail.name,
-                                            artifact.detail.artifact_type,
+                                            artifact.detail.artifact_type.name,
                                             substat.prop_id,
                                             f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
                                             character.id,
                                             artifact.detail.name,
-                                            artifact.detail.artifact_type,
+                                            artifact.detail.artifact_type.name,
                                             f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
                                             i.user.id,
                                             substat.prop_id,
