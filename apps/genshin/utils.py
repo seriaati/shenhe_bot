@@ -1,6 +1,8 @@
 from typing import Dict, List, Tuple, Union
+
+import aiosqlite
+import enkanetwork
 from apps.genshin.custom_model import ShenheUser
-from discord.ext import commands
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -10,8 +12,10 @@ from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from discord import Embed, Locale, SelectOption
+from discord.ext import commands
+from diskcache import FanoutCache
 from utility.utils import default_embed, parse_HTML
-import aiosqlite
+
 import genshin
 
 
@@ -374,3 +378,33 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
         if tpl[1] == 1:
             break
     return uid
+
+class NoCharacterFound(Exception):
+    pass
+
+async def load_and_update_enka_cache(cache: enkanetwork.EnkaNetworkResponse, data: enkanetwork.EnkaNetworkResponse, uid: int, en: bool = False) -> enkanetwork.EnkaNetworkResponse:
+    if data.characters is None:
+        raise NoCharacterFound
+    if cache is None or cache.characters is None:
+        cache = data
+    c_dict = {}
+    d_dict = {}
+    new_dict = {}
+    for c in cache.characters:
+        c_dict[c.id] = c
+    for d in data.characters:
+        d_dict[d.id] = d
+    new_dict = c_dict | d_dict
+    cache.characters = []
+    for character in list(new_dict.values()):
+        cache.characters.append(character)
+    cache.player = data.player
+    
+    if en:
+        cache_path = "data/cache/enka_eng_cache"
+    else:
+        cache_path = "data/cache/enka_data_cache"
+    with FanoutCache(cache_path) as enka_cache:
+        enka_cache[uid] = cache
+
+    return cache

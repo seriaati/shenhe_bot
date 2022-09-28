@@ -9,7 +9,9 @@ import GGanalysislib
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
 from apps.genshin.genshin_app import GenshinApp
+from enkanetwork.enum import Language
 from apps.genshin.utils import (
+    NoCharacterFound,
     calculate_artifact_score,
     get_artifact,
     get_character,
@@ -17,6 +19,7 @@ from apps.genshin.utils import (
     get_fight_prop,
     get_uid,
     get_weapon,
+    load_and_update_enka_cache,
     parse_character_wiki_embed,
 )
 from apps.genshin.checks import *
@@ -575,9 +578,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         uid = await get_uid(member.id, self.bot.db)
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
+        with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
+            eng_cache: EnkaNetworkResponse = enka_cache.get(uid)
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
+                enka.set_language(Language.EN)
+                eng_data = await enka.fetch_user(uid)
             except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                 if cache is None:
                     return await i.followup.send(
@@ -591,7 +598,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                     )
                 else:
                     data = cache
-        if data.characters is None:
+                    eng_data = eng_cache
+        try:
+            data = await load_and_update_enka_cache(cache, data, uid)
+            eng_data = await load_and_update_enka_cache(eng_cache, eng_data, uid, en=True)
+        except NoCharacterFound:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
                 .set_author(
@@ -601,24 +612,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
             return await i.followup.send(embed=embed, ephemeral=True)
-        if cache is None or cache.characters is None:
-            cache = data
-        c_dict = {}
-        d_dict = {}
-        new_dict = {}
-        for c in cache.characters:
-            c_dict[c.id] = c
-        for d in data.characters:
-            d_dict[d.id] = d
-        new_dict = c_dict | d_dict
-        cache.characters = []
-        for character in list(new_dict.values()):
-            cache.characters.append(character)
-        cache.player = data.player
-        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-            enka_cache[uid] = cache
         from_cache = []
-        for c in cache.characters:
+        for c in data.characters:
             found = False
             for d in data.characters:
                 if c.id == d.id:
@@ -626,29 +621,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     break
             if not found:
                 from_cache.append(c.id)
-        data = cache
-        with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
-            eng_cache = enka_eng_cache.get(uid)
-        async with EnkaNetworkAPI() as enka:
-            try:
-                eng_data = await enka.fetch_user(uid)
-            except (UIDNotFounded, asyncio.exceptions.TimeoutError):
-                pass
-        if eng_cache is None:
-            eng_cache = eng_data
-        c_dict = {}
-        d_dict = {}
-        new_dict = {}
-        for c in eng_cache.characters:
-            c_dict[c.id] = c
-        for d in eng_data.characters:
-            d_dict[d.id] = d
-        new_dict = c_dict | d_dict
-        eng_cache.characters = []
-        for character in list(new_dict.values()):
-            eng_cache.characters.append(character)
-        with FanoutCache("data/cache/enka_eng_cache") as enka_eng_cache:
-            enka_eng_cache[uid] = eng_cache
+                
         embeds = {}
         overview = default_embed(
             message=f"*{data.player.signature}*\n\n{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}"
@@ -746,7 +719,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             options,
             data,
             member,
-            eng_cache,
+            eng_data,
             i.user,
             self.bot.db,
             i.locale,
