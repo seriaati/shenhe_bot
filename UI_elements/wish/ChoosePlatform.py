@@ -20,17 +20,17 @@ import_options = {
         "code": 'iex(\'Write-Host "Copy the wish history table!";while(1) { $c = Get-Clipboard -TextFormatType Html; if ($c -match "^SourceURL:https:/.+log") { break; }; for($i=5; $i -gt 0; $i--) { Write-Host "`rChecking in $i" -NoNewline; Sleep 1; }; }; Write-Host " OK"; $m=(((Get-Clipboard -TextFormatType Html) | Select-String "(https:/.+log)").Matches[0].Value);$m; Set-Clipboard -Value $m;\')',
     },
     "PC - #3": {"hash": 403, "link": "", "code": ""},
-    "ANDROID - #1": {
+    "ANDROID - Wifi": {
         "hash": 426,
         "link": "https://www.youtube.com/watch?v=6C5Zqhcm3NI",
         "code": "",
     },
-    "ANDROID - #2": {
+    "ANDROID - Data": {
         "hash": 426,
         "link": "https://www.youtube.com/watch?v=rHN1iRjmKmc",
         "code": "",
     },
-    "ANDROID - #3": {
+    "ANDROID - Alt": {
         "hash": 426,
         "link": "https://www.youtube.com/watch?v=jAKq94KpGHA",
         "code": "",
