@@ -53,13 +53,9 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             icon_url=i.user.display_avatar.url,
         )
         return await i.followup.send(embed=embed)
-    embed = default_embed()
+    embed = default_embed(message=f"{text_map.get(606, i.locale, user_locale)}: {claimed_rewards}/{day_in_month}")
     embed.set_author(
         name=text_map.get(604, i.locale, user_locale), icon_url=i.user.display_avatar.url
-    )
-    embed.add_field(
-        name=text_map.get(606, i.locale, user_locale),
-        value=f"{claimed_rewards}/{day_in_month}",
     )
     value = []
     async for reward in shenhe_user.client.claimed_rewards(limit=claimed_rewards):
@@ -71,7 +67,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         r = ''
         for v in val:
             r += v
-        embed.add_field(name=f"{text_map.get(605, i.locale, user_locale)} ({index+1})", value=r, inline=False)
+        embed.add_field(name=f"{text_map.get(605, i.locale, user_locale)} ({index+1})", value=r)
     view = View(locale, genshin_app)
     try:
         await i.response.send_message(embed=embed, view=view)

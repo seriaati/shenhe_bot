@@ -51,7 +51,7 @@ def genshin_error_handler(func):
                 f"[Genshin App][GenshinException] in {func.__name__}: [e]{e} [code]{e.retcode} [msg]{e.msg}"
             )
             sentry_sdk.capture_exception(e)
-            embed = error_embed(message=f"```py\n{e}\n```")
+            embed = error_embed(message=f"```{e}```")
             embed.set_author(
                 name=text_map.get(10, locale),
                 icon_url=user.display_avatar.url,
