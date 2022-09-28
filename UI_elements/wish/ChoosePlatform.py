@@ -46,8 +46,7 @@ import_options = {
 class View(BaseView):
     def __init__(self, locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.short_timeout)
-        self.locale = locale
-        self.user_locale = user_locale
+        self.locale = user_locale or locale
 
     @button(emoji="<:windows_logo:1024250977731223552>")
     async def pc(self, i: Interaction, button: Button):
@@ -58,7 +57,7 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
-        self.add_item(ChooseMethod(options, self.user_locale or self.locale))
+        self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(view=self)
@@ -72,7 +71,7 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
-        self.add_item(ChooseMethod(options, self.user_locale or self.locale))
+        self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(view=self)
@@ -86,7 +85,7 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
-        self.add_item(ChooseMethod(options, self.user_locale or self.locale))
+        self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(view=self)
@@ -104,7 +103,7 @@ class ChooseMethod(Select):
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
         video_embed = default_embed(message=option["link"])
-        video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.imgur.com/wYeNuf6.jpg")
+        video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png")
         await i.response.edit_message(embeds=[embed, video_embed], view=self.view)
         if option["code"] != "":
             await i.followup.send(content=f"```{option['code']}```", ephemeral=True)
