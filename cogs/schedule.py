@@ -4,7 +4,6 @@ import json
 import random
 from datetime import datetime, timedelta
 from typing import List
-
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
@@ -22,7 +21,6 @@ from discord.utils import format_dt, sleep_until
 from pytz import timezone
 from utility.utils import default_embed, log
 from yelan.draw import draw_talent_reminder_card
-
 import genshin
 from cogs.admin import is_seria
 
@@ -124,7 +122,6 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         users = await self.get_schedule_users()
         notification_users = await self.get_notification_users(notification_type)
         count = 0
@@ -133,7 +130,6 @@ class Schedule(commands.Cog):
                 if u.discord_user.id == user.user_id:
                     user.shenhe_user = u
                     break
-
         for user in notification_users:
             if user.shenhe_user is None:
                 continue
@@ -146,7 +142,6 @@ class Schedule(commands.Cog):
                 time_diff = now - last_notif_time
                 if time_diff.total_seconds() < 7200:
                     continue
-
             client = user.shenhe_user.client
             locale = user.shenhe_user.user_locale or "en-US"
             try:
@@ -186,7 +181,7 @@ class Schedule(commands.Cog):
                 elif notification_type == "resin_notification":
                     embed = default_embed(
                         message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                        f"{text_map.get(15, locale)}: {recover_time}"
+                        f"{text_map.get(15, locale)}: {recover_time}\n"
                         f"UID: {user.shenhe_user.uid}\n",
                     )
                     embed.set_author(
@@ -290,7 +285,6 @@ class Schedule(commands.Cog):
     async def talent_notification(self):
         log.info("[Schedule] Talent Notification Start")
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         today_weekday = now.weekday()
         client = AmbrTopAPI(self.bot.session, "cht")
         domains = await client.get_domain()
@@ -318,10 +312,8 @@ class Schedule(commands.Cog):
                                     notified[character_id] = []
                                 if item.id not in notified[character_id]:
                                     notified[character_id].append(item.id)
-
             for character_id, materials in notified.items():
                 [character] = await client.get_character(character_id)
-
                 fp = await draw_talent_reminder_card(materials, user_locale or "zh-TW")
                 fp.seek(0)
                 file = File(fp, "reminder_card.jpeg")
@@ -340,7 +332,6 @@ class Schedule(commands.Cog):
                     )
                 else:
                     count += 1
-
         log.info(
             f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)"
         )
@@ -366,7 +357,6 @@ class Schedule(commands.Cog):
                 objects = await client.get_weapon()
             elif thing == "artifact":
                 objects = await client.get_artifact()
-
             with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
                 object_map = json.load(f)
             for object in objects:
@@ -396,7 +386,6 @@ class Schedule(commands.Cog):
                     english_name = (await eng_client.get_artifact(str(object.id)))[
                         0
                     ].name
-
                 object_map[str(object.id)]["eng"] = english_name
                 async with self.bot.session.get(object.icon) as r:
                     bytes_obj = await r.read()
@@ -448,7 +437,6 @@ class Schedule(commands.Cog):
                 dict["10000005"] = dict["10000007"]
             with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
                 json.dump(dict, f, indent=4, ensure_ascii=False)
-
         # daily dungeon text map
         dict = {}
         for lang in list(to_ambr_top_dict.values()):
@@ -468,7 +456,6 @@ class Schedule(commands.Cog):
     async def before_claiming_reward(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
         if next_run < now:
             next_run += timedelta(days=1)
@@ -487,7 +474,6 @@ class Schedule(commands.Cog):
     async def before_notif(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=1, minute=20, second=0)  # 等待到早上1點20
         if next_run < now:
             next_run += timedelta(days=1)
@@ -501,7 +487,6 @@ class Schedule(commands.Cog):
     async def before_update(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=2, minute=0, second=0)  # 等待到早上2點
         if next_run < now:
             next_run += timedelta(days=1)
@@ -511,7 +496,6 @@ class Schedule(commands.Cog):
     async def before_backup(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=0, minute=30, second=0)  # 等待到早上0點30分
         if next_run < now:
             next_run += timedelta(days=1)
@@ -521,7 +505,6 @@ class Schedule(commands.Cog):
     async def before_update(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        now += timezone("Asia/Taipei").utcoffset(now)
         next_run = now.replace(hour=2, minute=30, second=0)  # 等待到早上2點30分
         if next_run < now:
             next_run += timedelta(days=1)
