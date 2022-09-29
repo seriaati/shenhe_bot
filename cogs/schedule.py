@@ -362,8 +362,6 @@ class Schedule(commands.Cog):
             except FileNotFoundError:
                 object_map = {}
             for object in objects:
-                if str(object.id) in object_map:
-                    continue
                 if thing == "character":
                     object_map[str(object.id)] = {
                         "name": object.name,
@@ -391,7 +389,7 @@ class Schedule(commands.Cog):
                 object_map[str(object.id)]["eng"] = english_name
                 async with self.bot.session.get(object.icon) as r:
                     bytes_obj = await r.read()
-                emoji = find(lambda e: e.name == str(object.id), self.bot.emojis)
+                emoji = find(lambda e: e.name in str(object.id), self.bot.emojis)
                 if emoji is None:
                     try:
                         emoji = await emoji_server.create_custom_emoji(
@@ -469,8 +467,10 @@ class Schedule(commands.Cog):
         await self.update_ambr_cache_task()
     
     async def update_ambr_cache_task(self):
+        log.info("[Schedule][Update Ambr Cache] Start")
         client = AmbrTopAPI(self.bot.session)
         await client._update_cache(True)
+        log.info("[Schedule][Update Ambr Cache] Ended")
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
@@ -522,6 +522,15 @@ class Schedule(commands.Cog):
         await sleep_until(next_run)
 
     @update_game_data.before_loop
+    async def before_update(self):
+        await self.bot.wait_until_ready()
+        now = datetime.now()
+        next_run = now.replace(hour=2, minute=30, second=0)  # 等待到早上2點30分
+        if next_run < now:
+            next_run += timedelta(days=1)
+        await sleep_until(next_run)
+        
+    @update_ambr_cache.before_loop
     async def before_update(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
