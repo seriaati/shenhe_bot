@@ -3,11 +3,12 @@ import json
 from datetime import datetime
 from diskcache import FanoutCache
 import random
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import aiosqlite
+from hoyolab_rss_feeds.hoyolab import create_game_feeds_from_config
 import GGanalysislib
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Weapon
+from ambr.models import Character, Material, Weapon
 from apps.genshin.genshin_app import GenshinApp
 from enkanetwork.enum import Language
 from apps.genshin.utils import (
@@ -623,10 +624,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                     break
             if not found:
                 from_cache.append(c.id)
-                
+
         data = cache
         eng_data = eng_cache
-        
+
         embeds = {}
         overview = default_embed(
             message=f"*{data.player.signature}*\n\n{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}"
@@ -748,53 +749,42 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def events(self, i: Interaction):
         await i.response.defer()
-        user_locale = (await get_user_locale(i.user.id, self.bot.db)) or i.locale
-        genshin_py_locale = to_genshin_py(user_locale)
-        event_overview_API = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
-        event_details_API = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
-        async with self.bot.session.get(event_overview_API) as r:
-            overview: Dict = await r.json()
-        async with self.bot.session.get(event_details_API) as r:
-            details: Dict = await r.json()
-        type_list = overview["data"]["type_list"]
-        options = []
-        for type in type_list:
-            options.append(SelectOption(label=type["mi18n_name"], value=type["id"]))
-        # get a dict of details
-        detail_dict = {}
-        for event in details["data"]["list"]:
-            detail_dict[event["ann_id"]] = event["content"]
-        first_id = None
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        locale = user_locale or i.locale
+        genshin_locale = to_genshin_py(locale)
+        await create_game_feeds_from_config(genshin_locale)
+        with open("hoyolab_rss_feeds/feeds/genshin.json", "r") as f:
+            events: Dict = json.load(f)
+        select_options = []
+        tags = []
         embeds = {}
-        for event_list in overview["data"]["list"]:
-            list = event_list["list"]
-            if list[0]["type"] not in embeds:
-                embeds[list[0]["type"]] = []
-            if first_id is None:
-                first_id = list[0]["type"]
-            for event in list:
-                embed = default_embed(event["title"])
-                embed.set_author(name=event["type_label"], icon_url=event["tag_icon"])
-                embed.set_image(url=event["banner"])
-                embed.add_field(
-                    name=text_map.get(406, i.locale, user_locale),
-                    value=format_dt(parser.parse(event["start_time"]), "R"),
-                )
-                embed.add_field(
-                    name=text_map.get(407, i.locale, user_locale),
-                    value=format_dt(parser.parse(event["end_time"]), "R"),
-                )
-                embed.add_field(
-                    name=text_map.get(408, i.locale, user_locale),
-                    value=parse_HTML(detail_dict[event["ann_id"]])[:1021] + "...",
-                    inline=False,
-                )
-                embeds[event["type"]].append(embed)
+        events = events["items"]
+        for event in events:
+            date_published = parser.parse(event["date_published"])
+            embed = default_embed(
+                event["title"],
+                f"{format_dt(date_published)}\n\n[{text_map.get(454, locale)}]({event['url']})",
+            )
+            if "image" in event:
+                embed.set_image(url=event["image"])
+            for tag in event["tags"]:
+                if tag not in tags:
+                    tags.append(tag)
+                if tag not in embeds:
+                    embeds[tag] = []
+                embeds[tag].append(embed)
+            embed.set_author(
+                name="Hoyolab",
+                icon_url="https://play-lh.googleusercontent.com/5_vh9y9wp8s8Agr7_bjTIz5syyp_jYxGgbTCcPDj3VaA-nilI6Fd75xsBqHHXUxMyB8",
+            )
+
+        for tag in tags:
+            select_options.append(SelectOption(label=tag, value=tag))
         await GeneralPaginator(
             i,
-            embeds[first_id],
+            embeds[list(embeds.keys())[0]],
             self.bot.db,
-            [EventTypeChooser.Select(options, embeds, i.locale, user_locale)],
+            [EventTypeChooser.Select(select_options, embeds, i.locale, user_locale)],
         ).start(followup=True)
 
     @app_commands.guild_only()
@@ -1243,6 +1233,44 @@ class GenshinCog(commands.Cog, name="genshin"):
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
         await GeneralPaginator(i, result, self.bot.db).start()
+
+    @app_commands.command(
+        name="beta",
+        description=_("View the list of current beta items in Genshin", hash=434),
+    )
+    async def view_beta_items(self, i: Interaction):
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        client = AmbrTopAPI(i.client.session, to_ambr_top(user_locale or i.locale))
+        result = ""
+        first_icon_url = ""
+        characters = await client.get_character()
+        weapons = await client.get_weapon()
+        materials = await client.get_material()
+        things = [characters, weapons, materials]
+        for thing in things:
+            result, first_icon_url = self.get_beta_items(result, thing, first_icon_url)
+        if result == "":
+            result = text_map.get(445, i.locale, user_locale)
+        embed = default_embed(text_map.get(437, i.locale, user_locale), result)
+        if first_icon_url != "":
+            embed.set_thumbnail(url=first_icon_url)
+        embed.set_footer(text=text_map.get(444, i.locale, user_locale))
+        await i.response.send_message(embed=embed)
+
+    def get_beta_items(
+        self,
+        result: str,
+        items: List[Character | Weapon | Material],
+        first_icon_url: str,
+    ) -> Tuple[str, str]:
+        for item in items:
+            if item.beta:
+                if item.name == "？？？":
+                    continue
+                result += f"• {item.name}\n"
+                if first_icon_url == "":
+                    first_icon_url = item.icon
+        return result, first_icon_url
 
 
 async def setup(bot: commands.Bot) -> None:
