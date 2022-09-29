@@ -13,16 +13,31 @@ class TextMap():
         langs = paths.values()
         self.text_maps = {}
         for lang in langs:
-            with open(f'text_maps/langs/{lang}.yaml', 'r', encoding='utf-8') as f:
-                self.text_maps[str(lang)] = yaml.full_load(f)
-        with open('text_maps/avatar.json', 'r', encoding='utf-8') as f:
-            self.avatar = json.load(f)
-        with open('text_maps/material.json', 'r', encoding='utf-8') as f:
-            self.material = json.load(f)
-        with open('text_maps/weapon.json', 'r', encoding='utf-8') as f:
-            self.weapon = json.load(f)
-        with open('text_maps/dailyDungeon.json', 'r', encoding='utf-8') as f:
-            self.dailyDungeon = json.load(f)
+            try:
+                with open(f'text_maps/langs/{lang}.yaml', 'r', encoding='utf-8') as f:
+                    self.text_maps[str(lang)] = yaml.full_load(f)
+            except FileNotFoundError:
+                self.text_maps[str(lang)] = {}
+        try:
+            with open('text_maps/avatar.json', 'r', encoding='utf-8') as f:
+                self.avatar = json.load(f)
+        except FileNotFoundError:
+            self.avatar = {}
+        try:
+            with open('text_maps/material.json', 'r', encoding='utf-8') as f:
+                self.material = json.load(f)
+        except FileNotFoundError:
+            self.material = {}
+        try:
+            with open('text_maps/weapon.json', 'r', encoding='utf-8') as f:
+                self.weapon = json.load(f)
+        except FileNotFoundError:
+            self.weapon = {}
+        try:
+            with open('text_maps/dailyDungeon.json', 'r', encoding='utf-8') as f:
+                self.dailyDungeon = json.load(f)
+        except FileNotFoundError:
+            self.dailyDungeon = {}
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
         locale = user_locale or locale 

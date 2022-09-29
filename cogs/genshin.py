@@ -62,12 +62,9 @@ from utility.utils import (
     divide_chunks,
     divide_dict,
     error_embed,
-    get_user_appearance_mode,
     get_weekday_int_with_name,
-    parse_HTML,
 )
 from UI_elements.others import ManageAccounts
-from yelan.draw import draw_abyss_overview_card
 
 
 class GenshinCog(commands.Cog, name="genshin"):
@@ -75,14 +72,26 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
-        with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
-            avatar = json.load(f)
-        with open(f"text_maps/weapon.json", "r", encoding="utf-8") as f:
-            weapon = json.load(f)
-        with open(f"text_maps/material.json", "r", encoding="utf-8") as f:
-            material = json.load(f)
-        with open(f"text_maps/reliquary.json", "r", encoding="utf-8") as f:
-            reliquary = json.load(f)
+        try:
+            with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
+                avatar = json.load(f)
+        except FileNotFoundError:
+            avatar = {}
+        try:
+            with open(f"text_maps/weapon.json", "r", encoding="utf-8") as f:
+                weapon = json.load(f)
+        except FileNotFoundError:
+            weapon = {}
+        try:
+            with open(f"text_maps/material.json", "r", encoding="utf-8") as f:
+                material = json.load(f)
+        except FileNotFoundError:
+            material = {}
+        try:
+            with open(f"text_maps/reliquary.json", "r", encoding="utf-8") as f:
+                reliquary = json.load(f)
+        except FileNotFoundError:
+            reliquary = {}
         self.text_map_files = [avatar, weapon, material, reliquary]
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
