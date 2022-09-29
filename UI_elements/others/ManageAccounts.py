@@ -196,7 +196,7 @@ async def add_cookie_callback(view: View, i: Interaction):
         text_map.get(138, locale),
     )
     embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
-    code_msg = "script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, locale)}'); c && document.write(d)"
+    code_msg = f"script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, locale)}'); c && document.write(d)"
     code_embed = default_embed(message=code_msg)
     view.clear_items()
     view.add_item(GOBack(2))
@@ -256,7 +256,7 @@ class SubmitCookieModal(BaseModal):
         )
 
         if not success:
-            result.set_footer(text=text_map.get(567, self.locale))
+            result.description = text_map.get(567, self.locale)
             await i.edit_original_response(embed=result)
             await asyncio.sleep(2)
             return await return_accounts(i)
