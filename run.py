@@ -13,8 +13,6 @@ from discord import (
     Locale,
     Message,
     app_commands,
-    NotFound,
-    InteractionResponded,
 )
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
@@ -23,7 +21,6 @@ from pyppeteer import launch
 from discord.ext.commands import Context
 from UI_base_models import global_error_handler
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log, sentry_logging
 import genshin
 from cachetools import TTLCache
@@ -39,6 +36,7 @@ else:
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     application_id = os.getenv("SHENHE_BOT_APP_ID")
+
 
 prefix = ["?"]
 intents = Intents.default()
@@ -190,6 +188,7 @@ async def on_interaction(i: Interaction):
         (i.user.id,),
     )
     await bot.db.commit()
+    await c.close()
 
     if isinstance(i.command, app_commands.Command):
         namespace_str = "" if not i.namespace.__dict__ else ": "
@@ -198,7 +197,9 @@ async def on_interaction(i: Interaction):
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
-            log.info(f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{namespace_str}")
+            log.info(
+                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{namespace_str}"
+            )
     else:
         log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
 
@@ -231,4 +232,8 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
     await global_error_handler(i, e)
 
 
-bot.run(token)
+if not debug:
+    import uvloop  # type: ignore
+
+    uvloop.install()
+bot.run(token=token)
