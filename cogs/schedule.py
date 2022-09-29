@@ -576,12 +576,12 @@ class Schedule(commands.Cog):
     )
     async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
-        await self.update_game_data_task()
-        await i.edit_original_response(content="updated game data (1/3)")
+        await self.update_ambr_cache_task()
+        await i.edit_original_response(content="updated amber cache (1/3)")
         await self.update_text_map_task()
         await i.edit_original_response(content="updated text map (2/3)")
-        await self.update_ambr_cache_task()
-        await i.edit_original_response(content="updated amber cache (3/3)")
+        await self.update_game_data_task()
+        await i.edit_original_response(content="updated game data (3/3)")
 
 
 async def setup(bot: commands.Bot) -> None:
