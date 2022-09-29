@@ -10,7 +10,7 @@
 '9': Available to use
 '10': There was an error in Genshin's API
 '11': P.T. doesn't exist
-'12': ''
+'12': sec
 '13': ''
 '14': ''
 '15': Recovery time
@@ -392,8 +392,7 @@
 '363': The link you have provided is invalid
 '364': Video Tutorial
 '365': Choose your platform
-'366': |-
-  The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
+'366': The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
 '367': No wish history data found
 '368': </wish import:1000187021635104890> to import your wish history
 '369': Wish history
@@ -475,18 +474,18 @@
 '431': The type of data you wish to view
 '432': Which abyss season?
 '433': Detailed
-'434': ''
+'434': View the list of current beta items in Genshin
 '435': This season
 '436': Last season
-'437': ''
+'437': Beta Items
 '438': Set notification features
 '439': function
 '440': toggle
 '441': Resin notification (need /register)
 '442': Talent notification
 '443': Check privacy settings
-'444': ''
-'445': ''
+'444': You can use this command with /search to get more information about a beta item
+'445': There are currently no beta items, check back later
 '446': View farmable items today
 '447': 'View character builds: Weapons, artifacts, talent levels, stats'
 '448': Search a user's UID
@@ -495,7 +494,7 @@
 '451': code
 '452': View ongoing events in genshin
 '453': View the leaderboard
-'454': ''
+'454': Read More
 '455': Artifact sub stat leaderboard
 '456': Wish luck leaderboard
 '457': Genshin wiki
@@ -504,8 +503,8 @@
 '460': Calculate materials needed for upgrading a character
 '461': sync
 '462': sync with in-game data (autofill the levels)
-'463': ''
-'464': ''
+'463': Main stat
+'464': Sub stat
 '465': Calculate materials needed for upgrading a weapon
 '466': ''
 '467': rarity
