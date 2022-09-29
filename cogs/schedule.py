@@ -405,6 +405,9 @@ class Schedule(commands.Cog):
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_text_map(self):
+        await self.update_text_map_task()
+        
+    async def update_text_map_task(self):
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
         things_to_update = ["avatar", "weapon", "material", "reliquary"]
@@ -532,7 +535,9 @@ class Schedule(commands.Cog):
     async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
         await self.update_game_data_task()
-        await i.edit_original_response(content="update completed")
+        await i.edit_original_response(content="updated game data")
+        await self.update_text_map_task()
+        await i.edit_original_response(content="updated text map")
 
 
 async def setup(bot: commands.Bot) -> None:
