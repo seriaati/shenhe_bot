@@ -1,11 +1,11 @@
 import asyncio
+import importlib
 import json
 from datetime import datetime
 from diskcache import FanoutCache
 import random
 from typing import Dict, List, Tuple
 import aiosqlite
-from hoyolab_rss_feeds.hoyolab import create_game_feeds_from_config
 import GGanalysislib
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
@@ -752,8 +752,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
-        await create_game_feeds_from_config(genshin_locale)
-        with open("hoyolab_rss_feeds/feeds/genshin.json", "r") as f:
+        hoyolab_rss_feeds = importlib.import_module("hoyolab-rss-feeds.hoyolab")
+        await hoyolab_rss_feeds.create_game_feeds_from_config(genshin_locale)
+        with open("hoyolab-rss-feeds/feeds/genshin.json", "r") as f:
             events: Dict = json.load(f)
         select_options = []
         tags = []
