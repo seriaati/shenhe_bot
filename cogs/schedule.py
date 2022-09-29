@@ -15,10 +15,9 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import File, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
-from discord.errors import HTTPException, Forbidden
+from discord.errors import HTTPException, Forbidden, NotFound
 from discord.ext import commands, tasks
-from discord.utils import format_dt, sleep_until
-from pytz import timezone
+from discord.utils import format_dt, sleep_until, find
 from utility.utils import default_embed, log
 from yelan.draw import draw_talent_reminder_card
 import genshin
@@ -48,8 +47,8 @@ class Schedule(commands.Cog):
         self.pot_notification.start()
         self.backup_database.start()
         self.update_game_data.start()
-        if not self.bot.debug:
-            self.update_text_map.start()
+        self.update_text_map.start()
+        self.update_ambr_cache.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
@@ -59,8 +58,8 @@ class Schedule(commands.Cog):
         self.pot_notification.cancel()
         self.backup_database.cancel()
         self.update_game_data.cancel()
-        if not self.bot.debug:
-            self.update_text_map.cancel()
+        self.update_text_map.cancel()
+        self.update_ambr_cache.cancel()
 
     @tasks.loop(minutes=10)
     async def change_status(self):
@@ -357,8 +356,11 @@ class Schedule(commands.Cog):
                 objects = await client.get_weapon()
             elif thing == "artifact":
                 objects = await client.get_artifact()
-            with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
-                object_map = json.load(f)
+            try:
+                with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
+                    object_map = json.load(f)
+            except FileNotFoundError:
+                object_map = {}
             for object in objects:
                 if str(object.id) in object_map:
                     continue
@@ -389,16 +391,21 @@ class Schedule(commands.Cog):
                 object_map[str(object.id)]["eng"] = english_name
                 async with self.bot.session.get(object.icon) as r:
                     bytes_obj = await r.read()
-                try:
-                    emoji = await emoji_server.create_custom_emoji(
-                        name=object.id,
-                        image=bytes_obj,
-                    )
+                emoji = find(lambda e: e.name == str(object.id), self.bot.emojis)
+                if emoji is None:
+                    try:
+                        emoji = await emoji_server.create_custom_emoji(
+                            name=object.id,
+                            image=bytes_obj,
+                        )
+                    except (Forbidden, HTTPException) as e:
+                        log.warning(f"[Schedule] Emoji creation failed [Object]{object}")
+                        sentry_sdk.capture_exception(e)
+                    else:
+                        object_map[str(object.id)]["emoji"] = str(emoji)
+                else:
                     object_map[str(object.id)]["emoji"] = str(emoji)
-                except (Forbidden, HTTPException) as e:
-                    log.warning(f"[Schedule] Emoji creation failed [Object]{object}")
-                    sentry_sdk.capture_exception(e)
-            with open(f"data/game/{thing}_map.json", "w", encoding="utf-8") as f:
+            with open(f"data/game/{thing}_map.json", "w+", encoding="utf-8") as f:
                 json.dump(object_map, f, ensure_ascii=False, indent=4)
         log.info("[Schedule] Update Game Data Ended")
 
@@ -455,6 +462,15 @@ class Schedule(commands.Cog):
         with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(dict, f, indent=4, ensure_ascii=False)
         log.info("[Schedule][Update Text Map] Ended")
+    
+    @tasks.loop(hours=24)
+    @schedule_error_handler
+    async def update_ambr_cache(self):
+        await self.update_ambr_cache_task()
+    
+    async def update_ambr_cache_task(self):
+        client = AmbrTopAPI(self.bot.session)
+        await client._update_cache(True)
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
@@ -536,9 +552,11 @@ class Schedule(commands.Cog):
     async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
         await self.update_game_data_task()
-        await i.edit_original_response(content="updated game data")
+        await i.edit_original_response(content="updated game data (1/3)")
         await self.update_text_map_task()
-        await i.edit_original_response(content="updated text map")
+        await i.edit_original_response(content="updated text map (2/3)")
+        await self.update_ambr_cache_task()
+        await i.edit_original_response(content="updated amber cache (3/3)")
 
 
 async def setup(bot: commands.Bot) -> None:

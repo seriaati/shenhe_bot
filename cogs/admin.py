@@ -1,5 +1,4 @@
 import importlib
-import json
 import sys
 from typing import List
 
@@ -8,10 +7,6 @@ from discord.app_commands import locale_str as _
 from discord.app_commands import Choice
 from discord.ext import commands
 from utility.utils import default_embed, error_embed
-from data.game.artifact_map import artifact_map
-from data.game.character_map import character_map
-from data.game.elements import convert_elements
-from data.game.weapon_map import weapon_map
 from UI_elements.admin import Annouce
 
 
