@@ -163,7 +163,6 @@ class AmbrTopAPI:
         self, id: Optional[str] = None, retry: bool = False
     ) -> List[Artifact]:
         result = []
-        id = str(id)
         data = await self._get_cache("artifact")
         for artifact_id, aritfact_info in data["data"]["items"].items():
             if id is not None:
@@ -188,7 +187,6 @@ class AmbrTopAPI:
                 if id == character_id:
                     result.append(Character(**character_info))
             else:
-                print(character_info)
                 result.append(Character(**character_info))
 
         if len(result) == 0 and not retry:
