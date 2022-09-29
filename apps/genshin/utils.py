@@ -212,11 +212,12 @@ def parse_character_wiki_embed(
         name=text_map.get(320, locale, user_locale),
         icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'),
     )
+    embed.set_image(url=f"https://api.ambr.top/assets/UI/generated/ascension/avatar/{avatar_id}.png")
     for promoteLevel in avatar_data["upgrade"]["promote"][1:]:
         value = ""
         for item_id, item_count in promoteLevel["costItems"].items():
             value += f"{text_map.get_material_name(item_id, locale, user_locale)} x{item_count}\n"
-        value += f'<:202:991561579218878515> x{promoteLevel["coinCost"]}\n'
+        value += f'{text_map.get_material_name(202, locale, user_locale)} x{promoteLevel["coinCost"]}\n'
         embed.add_field(
             name=f'{text_map.get(321, locale, user_locale)} lvl.{promoteLevel["unlockMaxLevel"]}',
             value=value,
@@ -233,11 +234,8 @@ def parse_character_wiki_embed(
                 name=text_map.get(94, locale, user_locale),
                 icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'),
             )
-            embed.add_field(
-                name=talent_info["name"],
-                value=parse_HTML(talent_info["description"]),
-                inline=False,
-            )
+            embed.title = talent_info["name"]
+            embed.description = parse_HTML(talent_info["description"])
             material_embed = default_embed().set_author(
                 name=text_map.get(322, locale, user_locale),
                 icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'),
@@ -248,7 +246,7 @@ def parse_character_wiki_embed(
                 value = ""
                 for item_id, item_count in promote_info["costItems"].items():
                     value += f"{text_map.get_material_name(item_id, locale, user_locale)} x{item_count}\n"
-                value += f'<:202:991561579218878515> x{promote_info["coinCost"]}\n'
+                value += f'{text_map.get_material_name(202, locale, user_locale)} x{promote_info["coinCost"]}\n'
                 material_embed.add_field(
                     name=f"{text_map.get(324, locale, user_locale)} lvl.{level}",
                     value=value,
@@ -338,7 +336,7 @@ async def get_shenhe_user(
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-    
+
     uid = custom_uid or uid
     user_locale = await get_user_locale(user_id, db)
     client.lang = to_genshin_py(user_locale or locale) or "en-us"
@@ -379,10 +377,17 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
             break
     return uid
 
+
 class NoCharacterFound(Exception):
     pass
 
-async def load_and_update_enka_cache(cache: enkanetwork.EnkaNetworkResponse, data: enkanetwork.EnkaNetworkResponse, uid: int, en: bool = False) -> enkanetwork.EnkaNetworkResponse:
+
+async def load_and_update_enka_cache(
+    cache: enkanetwork.EnkaNetworkResponse,
+    data: enkanetwork.EnkaNetworkResponse,
+    uid: int,
+    en: bool = False,
+) -> enkanetwork.EnkaNetworkResponse:
     if data.characters is None:
         raise NoCharacterFound
     if cache is None or cache.characters is None:
@@ -399,7 +404,7 @@ async def load_and_update_enka_cache(cache: enkanetwork.EnkaNetworkResponse, dat
     for character in list(new_dict.values()):
         cache.characters.append(character)
     cache.player = data.player
-    
+
     if en:
         cache_path = "data/cache/enka_eng_cache"
     else:

@@ -25,7 +25,7 @@ class ChangeLogButton(Button):
     async def callback(self, i: Interaction) -> Any:
         self.view: View
         discord = Button(
-            label='Discord', url='https://discord.gg/ryfamUykRw', row=2)
+            label='Discord', url='https://discord.gg/b22kMKuwbS', row=2)
         github = Button(
             label='Github', url='https://github.com/seriaati/shenhe_bot', row=2)
         crowdin = Button(

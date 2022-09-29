@@ -454,6 +454,7 @@ class Schedule(commands.Cog):
                     dict[str(domain_info["id"])][lang] = domain_info["name"]
         with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(dict, f, indent=4, ensure_ascii=False)
+        log.info("[Schedule][Update Text Map] Ended")
 
     @claim_reward.before_loop
     async def before_claiming_reward(self):
