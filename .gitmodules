@@ -4,3 +4,6 @@
 [submodule "GGanalysislib"]
 	path = GGanalysislib
 	url = https://github.com/OneBST/GGanalysis
+[submodule "hoyolab-rss-feeds"]
+	path = hoyolab-rss-feeds
+	url = https://github.com/c3kay/hoyolab-rss-feeds
