@@ -349,6 +349,19 @@ class Schedule(commands.Cog):
         client = AmbrTopAPI(self.bot.session, "cht")
         eng_client = AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
+        with open(f"data/game/character_map.json", "r", encoding='utf-8') as f:
+            character_map = json.load(f)
+        character_map['10000005'] = {
+            "name": "旅行者",
+            "element": "Anemo",
+            "rarity": 5,
+            "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerBoy.png",
+            "eng": "Traveler",
+            "emoji": find(lambda e: e.name == '10000005', self.bot.emojis)
+        }
+        character_map['10000007'] = character_map['10000005']
+        character_map['10000007']['emoji'] = find(lambda e: e.name == '10000007', self.bot.emojis)
+        
         for thing in things_to_update:
             if thing == "character":
                 objects = await client.get_character()
@@ -387,13 +400,16 @@ class Schedule(commands.Cog):
                         0
                     ].name
                 object_map[str(object.id)]["eng"] = english_name
-                async with self.bot.session.get(object.icon) as r:
-                    bytes_obj = await r.read()
-                emoji = find(lambda e: e.name in str(object.id), self.bot.emojis)
+                object_id = str(object.id)
+                if '-' in object_id:
+                    object_id = (object_id.split('-'))[0]
+                emoji = find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
                     try:
+                        async with self.bot.session.get(object.icon) as r:
+                            bytes_obj = await r.read()
                         emoji = await emoji_server.create_custom_emoji(
-                            name=object.id,
+                            name=object_id,
                             image=bytes_obj,
                         )
                     except (Forbidden, HTTPException) as e:
