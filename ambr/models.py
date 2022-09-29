@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from data.game.elements import convert_elements
 from pydantic import BaseModel, Field, validator
@@ -133,14 +133,17 @@ class MaterialDetail(BaseModel):
 
 class WeaponEffect(BaseModel):
     name: str
-    description: Dict = Field(alias="upgrade")
+    descriptions: List[str] = Field(alias="upgrade")
 
-    @validator("description")
+    @validator("descriptions", pre=True)
     def parse_description(cls, v):
-        return parse_HTML(list(v.values())[0])
+        result = []
+        for _ in list(v.values()):
+            result.append(parse_HTML(_))
+        return result
 
 class WeaponStat(BaseModel):
-    prop_id: str = Field(alias="propType")
+    prop_id: Optional[str] = Field(alias="propType", default=None)
     initial_value: int = Field(alias="initValue")
 
 class WeaponUpgradeDetail(BaseModel):
@@ -161,7 +164,7 @@ class WeaponDetail(BaseModel):
     type: str
     icon: str
     rarity: int = Field(alias="rank")
-    effect: WeaponEffect = Field(alias="affix")
+    effect: Optional[WeaponEffect] = Field(alias="affix")
     upgrade: WeaponUpgradeDetail
 
     @validator("description")
@@ -175,7 +178,11 @@ class WeaponDetail(BaseModel):
 
     @validator("effect", pre=True)
     def parse_effect(cls, v):
-        return WeaponEffect(**list(v.values())[0])
+        if v is None:
+            return None
+        else:
+            v = list(v.values())[0]
+            return (WeaponEffect(**v))
     
     @validator("upgrade", pre=True)
     def get_upgrade(cls, v):

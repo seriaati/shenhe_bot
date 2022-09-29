@@ -583,7 +583,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
-                enka.set_language(Language.EN)
+                await enka.set_language(Language.EN)
                 eng_data = await enka.fetch_user(uid)
             except (UIDNotFounded, asyncio.exceptions.TimeoutError):
                 if cache is None:
@@ -600,8 +600,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                     data = cache
                     eng_data = eng_cache
         try:
-            data = await load_and_update_enka_cache(cache, data, uid)
-            eng_data = await load_and_update_enka_cache(eng_cache, eng_data, uid, en=True)
+            cache = await load_and_update_enka_cache(cache, data, uid)
+            eng_cache = await load_and_update_enka_cache(
+                eng_cache, eng_data, uid, en=True
+            )
         except NoCharacterFound:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
@@ -613,7 +615,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             return await i.followup.send(embed=embed, ephemeral=True)
         from_cache = []
-        for c in data.characters:
+        for c in cache.characters:
             found = False
             for d in data.characters:
                 if c.id == d.id:
@@ -622,6 +624,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             if not found:
                 from_cache.append(c.id)
                 
+        data = cache
+        eng_data = eng_cache
+        
         embeds = {}
         overview = default_embed(
             message=f"*{data.player.signature}*\n\n{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}"
@@ -1113,30 +1118,49 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ],
             ).start(followup=True)
         elif item_type == 1:
-            weapon = await client.get_weapon_detail(query)
+            weapon_detail = await client.get_weapon_detail(query)
             rarity_str = ""
-            for _ in range(weapon.rarity):
+            for _ in range(weapon_detail.rarity):
                 rarity_str += "<:white_star:982456919224615002>"
-            embed = default_embed(weapon.name, f"{rarity_str}\n\n{weapon.description}")
+            embed = default_embed(
+                weapon_detail.name, f"{rarity_str}\n\n{weapon_detail.description}"
+            )
             embed.add_field(
                 name=text_map.get(529, i.locale, user_locale),
-                value=weapon.type,
+                value=weapon_detail.type,
                 inline=False,
             )
-            embed.add_field(
-                name=text_map.get(531, i.locale, user_locale),
-                value=f"{weapon.effect.name}\n\n{weapon.effect.description}",
-                inline=False,
+            if weapon_detail.effect is not None:
+                embed.add_field(
+                    name=f"{weapon_detail.effect.name} (R1)",
+                    value=weapon_detail.effect.descriptions[0],
+                    inline=False,
+                )
+                embed.add_field(
+                    name=f"{weapon_detail.effect.name} (R5)",
+                    value=weapon_detail.effect.descriptions[4],
+                    inline=False,
+                )
+            embed.set_image(
+                url=f"https://api.ambr.top/assets/UI/generated/ascension/weapon_detail/{query}.png"
             )
-            main_stat = weapon.upgrade.stats[0].prop_id
-            sub_stat = weapon.upgrade.stats[1].prop_id
-            main_stat_hash = fight_prop.get(main_stat)["text_map_hash"]
-            sub_stat_hash = fight_prop.get(sub_stat)["text_map_hash"]
-            embed.add_field(
-                name=text_map.get(301, i.locale, user_locale),
-                value=f"{text_map.get(main_stat_hash, i.locale, user_locale)}\n{text_map.get(sub_stat_hash, i.locale, user_locale)}",
-            )
-            embed.set_thumbnail(url=weapon.icon)
+
+            main_stat = weapon_detail.upgrade.stats[0]
+            sub_stat = weapon_detail.upgrade.stats[1]
+            stat_str = ""
+            if main_stat.prop_id is not None:
+                main_stat_hash = fight_prop.get(main_stat.prop_id)["text_map_hash"]
+                stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
+            if sub_stat.prop_id is not None:
+                sub_stat_hash = fight_prop.get(sub_stat.prop_id)["text_map_hash"]
+                stat_str += f"{text_map.get(464, i.locale, user_locale)}: {text_map.get(sub_stat_hash, i.locale, user_locale)}"
+            if stat_str != "":
+                embed.add_field(
+                    name=text_map.get(531, i.locale, user_locale),
+                    value=stat_str,
+                    inline=False,
+                )
+            embed.set_thumbnail(url=weapon_detail.icon)
             await i.followup.send(embed=embed)
         elif item_type == 2:
             material = await client.get_material_detail(query)
