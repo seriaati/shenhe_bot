@@ -170,3 +170,6 @@ text_maps/dailyDungeon.json
 text_maps/material.json
 text_maps/reliquary.json
 text_maps/weapon.json
+data/game/artifact_map.json
+data/game/character_map.json
+data/game/weapon_map.json
