@@ -179,5 +179,6 @@ class GeneralPaginator:
             item.disabled = True
         try:
             view.message = await self.interaction.original_response()
+            await view.message.edit(view=view)
         except (NotFound, HTTPException):
             pass
