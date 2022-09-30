@@ -5,3 +5,11 @@ equip_types = {
     'Goblet': '<:Goblet_of_Eonothem:982167959835402240>',
     'Circlet': '<:Circlet_of_Logos:982167959692787802>'
 }
+
+good_equip_types = {
+    'Flower': 'flower',
+    'Feather': 'plume',
+    'Sands': 'sands',
+    'Goblet': 'goblet',
+    'Circlet': 'circlet'
+}
