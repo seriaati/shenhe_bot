@@ -107,6 +107,11 @@ class View(BaseView):
                 description=text_map.get(342, locale, user_locale),
                 value="cryo",
             ),
+            SelectOption(
+                label=text_map.get(360, locale, user_locale),
+                description=text_map.get(357, locale, user_locale),
+                value="hydro",
+            ),
         ]
         self.add_item(
             InfusionAuraSelect(options, text_map.get(343, locale, user_locale))
