@@ -444,7 +444,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         options = []
         for index, items in enumerate(result):
             embed = default_embed(
-                f"{text_map.get(2, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
+                f"{text_map.get(13, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
             )
             embed.set_image(url=f"attachment://farm.jpeg")
             embeds.append(embed)
