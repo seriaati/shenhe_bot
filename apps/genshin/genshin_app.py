@@ -323,7 +323,12 @@ class GenshinApp:
     @genshin_error_handler
     async def get_diary(self, user_id: int, month: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
-        diary = await shenhe_user.client.get_diary(month=month)
+        try:
+            diary = await shenhe_user.client.get_diary(month=month)
+        except genshin.errors.GenshinException as e:
+            if e.retcode == -400005:
+                embed = error_embed().set_author(name=text_map.get(14, locale, shenhe_user.user_locale))
+                return embed, False
         d = diary.data
         result = default_embed(
             message=f"{text_map.get(59, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.primogems_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.primogems_rate)}%\n"
