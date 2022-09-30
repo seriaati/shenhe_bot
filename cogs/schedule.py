@@ -357,11 +357,13 @@ class Schedule(commands.Cog):
             "rarity": 5,
             "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerBoy.png",
             "eng": "Traveler",
-            "emoji": find(lambda e: e.name == '10000005', self.bot.emojis)
+            "emoji": str(find(lambda e: e.name == '10000005', self.bot.emojis))
         }
         character_map['10000007'] = character_map['10000005']
-        character_map['10000007']['emoji'] = find(lambda e: e.name == '10000007', self.bot.emojis)
-        
+        character_map['10000007']['emoji'] = str(find(lambda e: e.name == '10000007', self.bot.emojis))
+        with open(f"data/game/character_map.json", "w+", encoding='utf-8') as f:
+            json.dump(character_map, f, ensure_ascii=False, indent=4)
+            
         for thing in things_to_update:
             if thing == "character":
                 objects = await client.get_character()
