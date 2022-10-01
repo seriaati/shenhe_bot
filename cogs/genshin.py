@@ -1197,14 +1197,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         member=_("check other user's data", hash=416),
     )
     async def activity(self, i: Interaction, member: User = None):
-        check = await check_account_predicate(i, member or i.user)
+        check = await check_account_predicate(i, member)
         if not check:
             return
+        await i.response.defer()
         member = member or i.user
         result, success = await self.genshin_app.get_activities(member.id, i.locale)
         if not success:
             return await i.response.send_message(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result, self.bot.db).start()
+        await GeneralPaginator(i, result, self.bot.db).start(followup=True)
 
     @app_commands.command(
         name="beta",
