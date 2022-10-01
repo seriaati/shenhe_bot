@@ -12,7 +12,6 @@ from ambr.models import Character, Material, Weapon
 from apps.genshin.genshin_app import GenshinApp
 from enkanetwork.enum import Language
 from apps.genshin.utils import (
-    NoCharacterFound,
     calculate_artifact_score,
     get_artifact,
     get_character,
@@ -161,11 +160,12 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.followup.send(embed=result, ephemeral=not success)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
+        await i.response.defer()
         check = await check_cookie_predicate(i)
         if not check:
             return
         result, _ = await self.genshin_app.get_real_time_notes(member.id, i.locale)
-        await i.response.send_message(embed=result, ephemeral=True)
+        await i.followup.send(embed=result, ephemeral=True)
 
     @app_commands.command(
         name="stats",
@@ -614,7 +614,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             eng_cache = await load_and_update_enka_cache(
                 eng_cache, eng_data, uid, en=True
             )
-        except NoCharacterFound:
+        except ValueError:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
                 .set_author(
@@ -757,45 +757,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="events", description=_("View ongoing genshin events", hash=452)
     )
     async def events(self, i: Interaction):
-        await i.response.defer()
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        locale = user_locale or i.locale
-        genshin_locale = to_genshin_py(locale)
-        hoyolab_rss_feeds = importlib.import_module("hoyolab-rss-feeds.hoyolab")
-        await hoyolab_rss_feeds.create_game_feeds_from_config(genshin_locale)
-        with open("hoyolab-rss-feeds/feeds/genshin.json", "r") as f:
-            events: Dict = json.load(f)
-        select_options = []
-        tags = []
-        embeds = {}
-        events = events["items"]
-        for event in events:
-            date_published = parser.parse(event["date_published"])
-            embed = default_embed(
-                event["title"],
-                f"{format_dt(date_published)}\n\n[{text_map.get(454, locale)}]({event['url']})",
-            )
-            if "image" in event:
-                embed.set_image(url=event["image"])
-            for tag in event["tags"]:
-                if tag not in tags:
-                    tags.append(tag)
-                if tag not in embeds:
-                    embeds[tag] = []
-                embeds[tag].append(embed)
-            embed.set_author(
-                name="Hoyolab",
-                icon_url="https://play-lh.googleusercontent.com/5_vh9y9wp8s8Agr7_bjTIz5syyp_jYxGgbTCcPDj3VaA-nilI6Fd75xsBqHHXUxMyB8",
-            )
-
-        for tag in tags:
-            select_options.append(SelectOption(label=tag, value=tag))
-        await GeneralPaginator(
-            i,
-            embeds[list(embeds.keys())[0]],
-            self.bot.db,
-            [EventTypeChooser.Select(select_options, embeds, i.locale, user_locale)],
-        ).start(followup=True)
+        await EventTypeChooser.return_events(i)
 
     @app_commands.guild_only()
     @app_commands.command(
