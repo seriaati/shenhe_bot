@@ -11,8 +11,8 @@
 '10': There was an error in Genshin's API
 '11': P.T. doesn't exist
 '12': sec
-'13': ''
-'14': ''
+'13': Today
+'14': The month of diary you are trying to view is unavailable
 '15': Recovery time
 '16': ''
 '17': Serenitea Pot
@@ -320,8 +320,8 @@
 '309': Click on `privacy settings`
 '310': Turn the toggle ON
 '311': How to unblock DM from servers
-'312': Time to farm materials for
-'313': '!'
+'312': Time to farm materials!
+'313': Genshin Impact
 '314': Items you can farm
 '315': Basic information
 '316': Birthday
@@ -375,7 +375,7 @@
   6. Click the submit button and paste the link to the textbox that pops up
 '359': Importing wish history using your android phone
 '360': Hydro infusion
-'361': ''
+'361': Choose your information source
 '362': |-
   1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
   2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
