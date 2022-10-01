@@ -282,6 +282,9 @@ class Schedule(commands.Cog):
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def talent_notification(self):
+        await self.talent_notification_task()
+
+    async def talent_notification_task(self):
         log.info("[Schedule] Talent Notification Start")
         now = datetime.now()
         today_weekday = now.weekday()
@@ -303,9 +306,7 @@ class Schedule(commands.Cog):
                 for domain in domains:
                     if domain.weekday == today_weekday:
                         for item in domain.rewards:
-                            [upgrade] = await client.get_character_upgrade(
-                                str(character_id)
-                            )
+                            [upgrade] = await client.get_character_upgrade(character_id)
                             if item in upgrade.items:
                                 if character_id not in notified:
                                     notified[character_id] = []
@@ -318,7 +319,7 @@ class Schedule(commands.Cog):
                 file = File(fp, "reminder_card.jpeg")
                 embed = default_embed(message=text_map.get(314, "zh-TW", user_locale))
                 embed.set_author(
-                    name=text_map.get(313, "zh-TW", user_locale),
+                    name=f"{text_map.get(312, 'zh-TW', user_locale)}",
                     icon_url=character.icon,
                 )
                 embed.set_image(url="attachment://reminder_card.jpeg")
@@ -341,7 +342,7 @@ class Schedule(commands.Cog):
         await self.update_game_data_task()
 
     async def update_game_data_task(self):
-        log.info("[Schedule] Update Game Data Start")
+        log.info("[Schedule][Update Game Data] Start")
         emoji_server_id = 991560432470999062
         emoji_server = self.bot.get_guild(
             emoji_server_id
@@ -349,21 +350,23 @@ class Schedule(commands.Cog):
         client = AmbrTopAPI(self.bot.session, "cht")
         eng_client = AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
-        with open(f"data/game/character_map.json", "r", encoding='utf-8') as f:
+        with open(f"data/game/character_map.json", "r", encoding="utf-8") as f:
             character_map = json.load(f)
-        character_map['10000005'] = {
+        character_map["10000005"] = {
             "name": "旅行者",
             "element": "Anemo",
             "rarity": 5,
             "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerBoy.png",
             "eng": "Traveler",
-            "emoji": str(find(lambda e: e.name == '10000005', self.bot.emojis))
+            "emoji": str(find(lambda e: e.name == "10000005", self.bot.emojis)),
         }
-        character_map['10000007'] = character_map['10000005']
-        character_map['10000007']['emoji'] = str(find(lambda e: e.name == '10000007', self.bot.emojis))
-        with open(f"data/game/character_map.json", "w+", encoding='utf-8') as f:
+        character_map["10000007"] = character_map["10000005"]
+        character_map["10000007"]["emoji"] = str(
+            find(lambda e: e.name == "10000007", self.bot.emojis)
+        )
+        with open(f"data/game/character_map.json", "w+", encoding="utf-8") as f:
             json.dump(character_map, f, ensure_ascii=False, indent=4)
-            
+
         for thing in things_to_update:
             if thing == "character":
                 objects = await client.get_character()
@@ -403,8 +406,8 @@ class Schedule(commands.Cog):
                     ].name
                 object_map[str(object.id)]["eng"] = english_name
                 object_id = str(object.id)
-                if '-' in object_id:
-                    object_id = (object_id.split('-'))[0]
+                if "-" in object_id:
+                    object_id = (object_id.split("-"))[0]
                 emoji = find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
                     try:
@@ -415,7 +418,9 @@ class Schedule(commands.Cog):
                             image=bytes_obj,
                         )
                     except (Forbidden, HTTPException) as e:
-                        log.warning(f"[Schedule] Emoji creation failed [Object]{object}")
+                        log.warning(
+                            f"[Schedule] Emoji creation failed [Object]{object}"
+                        )
                         sentry_sdk.capture_exception(e)
                     else:
                         object_map[str(object.id)]["emoji"] = str(emoji)
@@ -423,13 +428,13 @@ class Schedule(commands.Cog):
                     object_map[str(object.id)]["emoji"] = str(emoji)
             with open(f"data/game/{thing}_map.json", "w+", encoding="utf-8") as f:
                 json.dump(object_map, f, ensure_ascii=False, indent=4)
-        log.info("[Schedule] Update Game Data Ended")
+        log.info("[Schedule][Update Game Data] Ended")
 
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_text_map(self):
         await self.update_text_map_task()
-        
+
     async def update_text_map_task(self):
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
@@ -478,16 +483,17 @@ class Schedule(commands.Cog):
         with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(dict, f, indent=4, ensure_ascii=False)
         log.info("[Schedule][Update Text Map] Ended")
-    
+
     @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_ambr_cache(self):
         await self.update_ambr_cache_task()
-    
+
     async def update_ambr_cache_task(self):
         log.info("[Schedule][Update Ambr Cache] Start")
         client = AmbrTopAPI(self.bot.session)
-        await client._update_cache(True)
+        await client._update_cache(all_lang=True)
+        await client._update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")
 
     @claim_reward.before_loop
@@ -547,7 +553,7 @@ class Schedule(commands.Cog):
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)
-        
+
     @update_ambr_cache.before_loop
     async def before_update(self):
         await self.bot.wait_until_ready()
@@ -584,6 +590,15 @@ class Schedule(commands.Cog):
         await i.edit_original_response(content="updated text map (2/3)")
         await self.update_game_data_task()
         await i.edit_original_response(content="updated game data (3/3)")
+
+    @is_seria()
+    @app_commands.command(
+        name="instantnotify", description=_("Admin usage only", hash=496)
+    )
+    async def instant_notify(self, i: Interaction):
+        await i.response.send_message(content="started", ephemeral=True)
+        await self.talent_notification_task()
+        await i.edit_original_response(content="talent notification sent")
 
 
 async def setup(bot: commands.Bot) -> None:
