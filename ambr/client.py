@@ -90,8 +90,8 @@ class AmbrTopAPI:
 
         return endpoint_data
 
-    async def _update_cache(self, all: bool = False, endpoint: str = None, static: bool = False) -> None:
-        if all:
+    async def _update_cache(self, all_lang: bool = False, endpoint: str = None, static: bool = False) -> None:
+        if all_lang:
             langs = list(LANGS.keys())
         else:
             langs = [self.lang]
