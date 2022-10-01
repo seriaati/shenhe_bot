@@ -1,3 +1,4 @@
+from UI_base_models import BaseView
 import config
 
 __all__ = ["GeneralPaginator"]
@@ -9,13 +10,13 @@ from typing import List, Optional, Union
 import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import ButtonStyle, Embed, File, HTTPException, Interaction, NotFound, User
-from discord.ui import Button, Select, View, button
+from discord import ButtonStyle, Embed, File, Interaction, User
+from discord.ui import Button, Select, button
 
 from utility.utils import error_embed
 
 
-class _view(View):
+class _view(BaseView):
     def __init__(
         self,
         author: User,
@@ -175,10 +176,3 @@ class GeneralPaginator:
             await self.interaction.response.send_message(**kwargs)
 
         await view.wait()
-        for item in view.children:
-            item.disabled = True
-        try:
-            view.message = await self.interaction.original_response()
-            await view.message.edit(view=view)
-        except (NotFound, HTTPException):
-            pass
