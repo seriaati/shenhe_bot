@@ -174,5 +174,7 @@ class GeneralPaginator:
             await self.interaction.user.send(**kwargs)
         else:
             await self.interaction.response.send_message(**kwargs)
+        
+        view.message = await self.interaction.original_response()
 
         await view.wait()

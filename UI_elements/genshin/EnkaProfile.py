@@ -11,7 +11,7 @@ from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from pyppeteer.browser import Browser
 from UI_elements.genshin import EnkaDamageCalculator
-from utility.utils import default_embed, error_embed, get_user_appearance_mode
+from utility.utils import default_embed, get_user_appearance_mode
 from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card
 
