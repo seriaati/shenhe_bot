@@ -82,14 +82,15 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_analysis(self, i: Interaction, member: User = None):
+        await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         check, msg = await check_user_wish_data(member.id, i, self.bot.db)
         if not check:
-            return await i.response.send_message(embed=msg, ephemeral=True)
+            return await i.followup.send(embed=msg, ephemeral=True)
 
         (
-            get_num,
+            _,
             left_pull,
             use_pull,
             up_guarantee,
@@ -122,7 +123,7 @@ class WishCog(commands.GroupCog, name="wish"):
             name=text_map.get(372, i.locale, user_locale),
             icon_url=member.display_avatar.url,
         )
-        await i.response.send_message(embed=embed)
+        await i.followup.send(embed=embed)
 
     @app_commands.command(
         name="character",
