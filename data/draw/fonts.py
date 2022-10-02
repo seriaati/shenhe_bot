@@ -11,9 +11,9 @@ FONTS = {
     'ja': 'NotoSansJP-Regular.otf',
     'ko': 'NotoSansKR-Regular.otf',
     'th': 'NotoSansThai-Regular.ttf',
-    'pt-BR': 'NotoSans-Regular.otf',
-    'ru': 'NotoSans-Regular.otf',
-    'vi': 'NotoSans-Regular.otf'
+    'pt-BR': 'NotoSans-Regular.ttf',
+    'ru': 'NotoSans-Regular.ttf',
+    'vi': 'NotoSans-Regular.ttf'
 }
 
 def get_font(locale: discord.Locale | str):
