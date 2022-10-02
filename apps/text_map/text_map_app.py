@@ -43,10 +43,11 @@ class TextMap():
         locale = user_locale or locale 
         path = to_paths(locale)
         text_map: Dict = self.text_maps[path]
-        text = text_map.get(str(textMapHash))
-        if text is None:
+        text = text_map.get(str(textMapHash), '')
+        if text == '':
             log.warning(f'[Exception][text_map][text map hash not found]: [Text map hash]{textMapHash}')
-            return None
+            text_map = self.text_maps['en-US']
+            text = text_map.get(str(textMapHash), '')
         text = re.sub(r"<[^\/][^>]*>", "", text)
         return text
 

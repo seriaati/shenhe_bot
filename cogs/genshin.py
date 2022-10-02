@@ -160,10 +160,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.followup.send(embed=result, ephemeral=not success)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
-        await i.response.defer()
         check = await check_cookie_predicate(i)
         if not check:
             return
+        await i.response.defer()
         result, _ = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.followup.send(embed=result, ephemeral=True)
 
@@ -1204,7 +1204,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         result, success = await self.genshin_app.get_activities(member.id, i.locale)
         if not success:
-            return await i.response.send_message(embed=result, ephemeral=True)
+            return await i.followup.send(embed=result, ephemeral=True)
         await GeneralPaginator(i, result, self.bot.db).start(followup=True)
 
     @app_commands.command(

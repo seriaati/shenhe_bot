@@ -343,6 +343,7 @@ class Schedule(commands.Cog):
 
     async def update_game_data_task(self):
         log.info("[Schedule][Update Game Data] Start")
+        await genshin.utility.update_characters_ambr()
         emoji_server_id = 991560432470999062
         emoji_server = self.bot.get_guild(
             emoji_server_id

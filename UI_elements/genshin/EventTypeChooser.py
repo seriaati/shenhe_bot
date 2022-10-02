@@ -30,9 +30,8 @@ class Hoyolab(Button):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.db)
         locale = user_locale or i.locale
-        genshin_locale = to_genshin_py(locale)
         hoyolab_rss_feeds = importlib.import_module("hoyolab-rss-feeds.hoyolab")
-        await hoyolab_rss_feeds.create_game_feeds_from_config(genshin_locale)
+        await hoyolab_rss_feeds.create_game_feeds_from_config('jp')
         with open("hoyolab-rss-feeds/feeds/genshin.json", "r") as f:
             events: Dict = json.load(f)
         select_options = []

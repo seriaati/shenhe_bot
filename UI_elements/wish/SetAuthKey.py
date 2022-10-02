@@ -41,6 +41,8 @@ class Modal(BaseModal):
                 ),
                 ephemeral=True,
             )
+        else:
+            client.authkey = authkey
         await i.response.send_message(
             embed=default_embed(
                 f"<a:LOADER:982128111904776242> {text_map.get(355, i.locale, user_locale)}"
@@ -48,13 +50,18 @@ class Modal(BaseModal):
             ephemeral=True,
         )
         try:
-            wish_history = await client.wish_history(authkey=authkey)
+            wish_history = await client.wish_history()
         except Exception as e:
-            return await i.edit_original_response(
-                embed=error_embed(
-                    text_map.get(135, i.locale, user_locale), f"```py\n{e}\n```"
+            client.region = genshin.Region.CHINESE
+            try:
+                wish_history = await client.wish_history()
+            except:
+                return await i.edit_original_response(
+                    embed=error_embed(message=f"```py\n{e}\n```").set_author(
+                        name=text_map.get(135, i.locale, user_locale),
+                        icon_url=i.user.display_avatar.url,
+                    )
                 )
-            )
         async with i.client.db.cursor() as c:
             c: aiosqlite.Cursor
             for wish in wish_history:

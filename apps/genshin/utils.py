@@ -15,7 +15,6 @@ from discord import Embed, Locale, SelectOption
 from discord.ext import commands
 from diskcache import FanoutCache
 from utility.utils import default_embed, parse_HTML
-
 import genshin
 
 
@@ -345,14 +344,6 @@ async def get_shenhe_user(
     china = True if str(uid)[0] in ["1", "2", "5"] else False
     if china:
         client.lang = "zh-cn"
-
-    try:
-        await client.update_character_names(lang=client.lang)
-    except genshin.errors.InvalidCookies:
-        try:
-            await bot.genshin_client.update_character_names(lang=client.lang)
-        except:
-            pass
 
     user_obj = ShenheUser(
         client=client,

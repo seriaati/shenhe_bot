@@ -98,13 +98,17 @@ class ChooseMethod(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
+        embeds = []
         option = import_options.get(self.values[0])
         embed = default_embed()
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
-        video_embed = default_embed(message=option["link"])
-        video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png")
-        await i.response.edit_message(embeds=[embed, video_embed], view=self.view)
+        embeds.append(embed)
+        if option["link"] != "":
+            video_embed = default_embed(message=option["link"])
+            video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png")
+            embeds.append(video_embed)
+        await i.response.edit_message(embeds=embeds, view=self.view)
         if option["code"] != "":
             await i.followup.send(content=f"```{option['code']}```", ephemeral=True)
 
