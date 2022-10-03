@@ -104,9 +104,7 @@ class ShenheBot(commands.Bot):
                 else:
                     chinese.append(cookie)
         self.genshin_client = genshin.Client()
-        self.genshin_client.cookie_manager = genshin.InternationalCookieManager(
-            {genshin.Region.OVERSEAS: overseas, genshin.Region.CHINESE: chinese}
-        )
+        self.genshin_client.set_cookies(overseas)
 
         # load jishaku
         await self.load_extension("jishaku")

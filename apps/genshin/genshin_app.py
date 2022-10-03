@@ -61,6 +61,7 @@ def genshin_error_handler(func):
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
             embed = error_embed(message=text_map.get(513, locale, user_locale))
+            embed.description += f'\n```{e}```'
             embed.set_author(
                 name=text_map.get(135, locale), icon_url=user.display_avatar.url
             )

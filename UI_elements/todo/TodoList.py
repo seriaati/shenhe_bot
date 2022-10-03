@@ -147,18 +147,6 @@ class AddItemModal(BaseModal):
         await interaction.response.defer()
         self.stop()
 
-    async def on_error(self, i: Interaction, e: Exception) -> None:
-        log.warning(
-            f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
-        )
-        sentry_sdk.capture_exception(e)
-        await i.response.send_message(
-            embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
-
 
 class RemoveItemModal(BaseModal):
     count = TextInput(
@@ -177,18 +165,6 @@ class RemoveItemModal(BaseModal):
     async def on_submit(self, interaction: Interaction) -> None:
         await interaction.response.defer()
         self.stop()
-
-    async def on_error(self, i: Interaction, e: Exception) -> None:
-        log.warning(
-            f": [retcode]{e.retcode} [original]{e.original} [error message]{e.msg}"
-        )
-        sentry_sdk.capture_exception(e)
-        await i.response.send_message(
-            embed=error_embed().set_author(
-                name=text_map.get(135, i.locale), icon_url=i.user.display_avatar.url
-            ),
-            ephemeral=True,
-        )
 
 
 class RemoveItemSelect(Select):
