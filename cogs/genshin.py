@@ -672,9 +672,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 name=text_map.get(301, i.locale, user_locale),
                 value=f"<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n"
                 f"<:ATTACK:982138214305390632> {text_map.get(260, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
-                f"<:DEFENSE:982068463566721064> {text_map.get(264, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
+                f"<:DEFENSE:982068463566721064> {text_map.get(262, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
                 f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(266, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
-                f"<:CRITICAL:982068460731392040> {text_map.get(296, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
+                f"<:CRITICAL:982068460731392040> {text_map.get(264, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
                 f"<:CRITICAL_HURT:982068462081933352> {text_map.get(265, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
                 f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(267, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
                 f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
