@@ -163,7 +163,6 @@ ambr/cache/th/*
 ambr/cache/vi/*
 ambr/cache/static/*
 data/cache/*
-!/**/.gitkeep
 backup.db
 text_maps/avatar.json
 text_maps/dailyDungeon.json
@@ -173,3 +172,5 @@ text_maps/weapon.json
 data/game/artifact_map.json
 data/game/character_map.json
 data/game/weapon_map.json
+feeds/*
+!/**/.gitkeep
