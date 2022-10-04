@@ -12,6 +12,7 @@ from dateutil import parser
 from discord.utils import format_dt
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, parse_HTML
+import hoyolab_rss_feeds.hoyolab
 
 
 class View(BaseView):
@@ -30,9 +31,8 @@ class Hoyolab(Button):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.db)
         locale = user_locale or i.locale
-        hoyolab_rss_feeds = importlib.import_module("hoyolab-rss-feeds.hoyolab")
         genshin_locale = to_genshin_py(locale)
-        await hoyolab_rss_feeds.create_game_feeds_from_config(genshin_locale)
+        await hoyolab_rss_feeds.hoyolab.create_game_feeds_from_config(genshin_locale)
         with open(f"feeds/{genshin_locale}_genshin.json") as f:
             events: Dict = json.load(f)
         select_options = []
