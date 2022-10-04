@@ -31,8 +31,9 @@ class Hoyolab(Button):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         locale = user_locale or i.locale
         hoyolab_rss_feeds = importlib.import_module("hoyolab-rss-feeds.hoyolab")
-        await hoyolab_rss_feeds.create_game_feeds_from_config('jp')
-        with open("hoyolab-rss-feeds/feeds/genshin.json", "r") as f:
+        genshin_locale = to_genshin_py(locale)
+        await hoyolab_rss_feeds.create_game_feeds_from_config(genshin_locale)
+        with open(f"feeds/{genshin_locale}_genshin.json") as f:
             events: Dict = json.load(f)
         select_options = []
         tags = []
@@ -148,14 +149,17 @@ class GOBack(Button):
         super().__init__(label=text_map.get(282, locale), style=ButtonStyle.green, row=3)
     
     async def callback(self, i: Interaction):
-        await return_events(i)
+        await return_events(i, edit=True)
 
-async def return_events(i: Interaction):
+async def return_events(i: Interaction, edit: bool = False):
     user_locale = await get_user_locale(i.user.id, i.client.db)
     view = View(user_locale or i.locale)
     embed = default_embed().set_author(
         name=text_map.get(361, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
     )
-    await i.response.send_message(embed=embed, view=view)
+    if edit:
+        await i.response.edit_message(embed=embed, view=view)
+    else:
+        await i.response.send_message(embed=embed, view=view)
     view.message = await i.original_response()
