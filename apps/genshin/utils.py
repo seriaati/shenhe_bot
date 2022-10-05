@@ -6,6 +6,7 @@ from apps.genshin.custom_model import ShenheUser
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from apps.text_map.cond_text import cond_text
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.elements import elements
@@ -51,10 +52,9 @@ def get_character_builds(
     Returns:
         Tuple[List[Embed], bool]: returns a list of lists of embeds, weapons, and artifacts of different builds + a boolean that indicates whether the character has artifact thoughts
     """
+    locale = user_locale or locale
     character_name = text_map.get_character_name(character_id, "zh-TW", None)
-    translated_character_name = text_map.get_character_name(
-        character_id, locale, user_locale
-    )
+    translated_character_name = text_map.get_character_name(character_id, locale)
     count = 1
     has_thoughts = False
     result = []
@@ -63,31 +63,40 @@ def get_character_builds(
         statStr = ""
         for stat, value in build["stats"].items():
             statStr += f"{stat} ➜ {value}\n"
-        embed = default_embed(
-            f"{translated_character_name} - {text_map.get(90, locale, user_locale)}{count}",
-            f"{text_map.get(91, locale, user_locale)} • {get_weapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
-            f"{text_map.get(92, locale, user_locale)} • {build['artifacts']}\n"
-            f"{text_map.get(93, locale, user_locale)} • {build['main_stats']}\n"
-            f"{text_map.get(94, locale, user_locale)} • {build['talents']}\n"
-            f"{build['move']} • {build['dmg']}\n\n",
+        move_text = cond_text.get_text(
+            locale, "build", f"{character_name}_{build['move']}"
         )
-        embed.add_field(name=text_map.get(95, locale, user_locale), value=statStr)
+        embed = default_embed(
+            f"{translated_character_name} - {text_map.get(90, locale)}{count}",
+            f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
+            f"{text_map.get(92, locale)} • {cond_text.get_text(locale, 'build', build['artifacts'])}\n"
+            f"{text_map.get(93, locale)} • {build['main_stats']}\n"
+            f"{text_map.get(94, locale)} • {build['talents']}\n"
+            f"{move_text} • {build['dmg']}\n\n",
+        )
+        embed.add_field(name=text_map.get(95, locale), value=statStr)
         count += 1
         embed.set_thumbnail(url=get_character(character_id)["icon"])
         embed.set_footer(
-            text=f"[{text_map.get(96, locale, user_locale)}](https://bbs.nga.cn/read.php?tid=25843014)"
+            text=f"[{text_map.get(96, locale)}](https://bbs.nga.cn/read.php?tid=25843014)"
         )
         result.append([embed, build["weapon"], build["artifacts"]])
 
     if "thoughts" in element_builds_dict[character_name]:
         has_thoughts = True
         count = 1
-        embed = default_embed(text_map.get(97, locale, user_locale))
-        for thought in element_builds_dict[character_name]["thoughts"]:
-            embed.add_field(name=f"#{count}", value=thought, inline=False)
+        embed = default_embed(text_map.get(97, locale))
+        for _ in element_builds_dict[character_name]["thoughts"]:
+            embed.add_field(
+                name=f"#{count}",
+                value=cond_text.get_text(
+                    locale, "build", f"{character_name}_thoughts_{count-1}"
+                ),
+                inline=False,
+            )
             count += 1
         embed.set_thumbnail(url=get_character(character_id)["icon"])
-        result.append([embed, text_map.get(97, locale, user_locale), ""])
+        result.append([embed, text_map.get(97, locale), ""])
 
     return result, has_thoughts
 
@@ -211,7 +220,9 @@ def parse_character_wiki_embed(
         name=text_map.get(320, locale, user_locale),
         icon_url=(f'https://api.ambr.top/assets/UI/{avatar_data["icon"]}.png'),
     )
-    embed.set_image(url=f"https://api.ambr.top/assets/UI/generated/ascension/avatar/{avatar_id}.png")
+    embed.set_image(
+        url=f"https://api.ambr.top/assets/UI/generated/ascension/avatar/{avatar_id}.png"
+    )
     for promoteLevel in avatar_data["upgrade"]["promote"][1:]:
         value = ""
         for item_id, item_count in promoteLevel["costItems"].items():
