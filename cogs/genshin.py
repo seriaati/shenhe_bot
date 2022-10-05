@@ -16,6 +16,7 @@ from apps.genshin.utils import (
     get_artifact,
     get_character,
     get_city_emoji,
+    get_farm_data,
     get_fight_prop,
     get_uid,
     get_weapon,
@@ -406,60 +407,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: Interaction):
-        result = []
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        locale = user_locale or i.locale
-        locale = to_ambr_top(locale)
-        ambr = AmbrTopAPI(session=self.bot.session, lang=locale)
-        domains = await ambr.get_domain()
-        character_upgrades = await ambr.get_character_upgrade()
-        weapon_upgrades = await ambr.get_weapon_upgrade()
-        today_domains = []
-        for domain in domains:
-            if domain.weekday == datetime.today().weekday():
-                today_domains.append(domain)
-        for domain in today_domains:
-            characters: Dict[int, Character] = {}
-            for reward in domain.rewards:
-                for upgrade in character_upgrades:
-                    for item in upgrade.items:
-                        if item.id == reward.id:
-                            characters[upgrade.character_id] = (
-                                await ambr.get_character(str(upgrade.character_id))
-                            )[0]
-            weapons: Dict[int, Weapon] = {}
-            for reward in domain.rewards:
-                for upgrade in weapon_upgrades:
-                    for item in upgrade.items:
-                        if item.id == reward.id:
-                            [weapon] = await ambr.get_weapon(id=str(upgrade.weapon_id))
-                            if not weapon.default_icon:
-                                weapons[upgrade.weapon_id] = weapon
-            # merge two dicts
-            items = characters | weapons
-            chunks = list(divide_dict(items, 12))
-            for chunk in chunks:
-                result.append({"domain": domain, "items": chunk})
-        embeds = []
-        options = []
-        for index, items in enumerate(result):
-            embed = default_embed(
-                f"{text_map.get(13, i.locale, user_locale)} ({get_weekday_name(datetime.today().weekday(), i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
-            )
-            embed.set_image(url=f"attachment://farm.jpeg")
-            embeds.append(embed)
-            domain = result[index]["domain"]
-            current_len = 0
-            for option in options:
-                if domain.name in option.label:
-                    current_len += 1
-            options.append(
-                SelectOption(
-                    label=f"{domain.city.name} | {domain.name} #{current_len+1}",
-                    value=index,
-                    emoji=get_city_emoji(domain.city.id),
-                )
-            )
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        result, embeds, options = await get_farm_data(i)
 
         class DomainSelect(Select):
             def __init__(self, placeholder: str, options: List[SelectOption], row: int):
@@ -467,6 +416,36 @@ class GenshinCog(commands.Cog, name="genshin"):
 
             async def callback(self, i: Interaction):
                 self.view.current_page = int(self.values[0])
+                await self.view.update_children(i)
+        
+        class WeekDaySelect(Select):
+            def __init__(self, placeholder: str):
+                options = []
+                for index in range(7):
+                    weekday_text = text_map.get(234 + index, i.locale, user_locale)
+                    options.append(SelectOption(label=weekday_text, value=str(index)))
+                super().__init__(options=options, placeholder=placeholder, row=4)
+
+            async def callback(self, i: Interaction):
+                result, embeds, options = await get_farm_data(i, int(self.values[0]))
+                self.view.files = result
+                self.view.embeds = embeds
+                first = 1
+                row = 2
+                options = list(divide_chunks(options, 25))
+                for option in options:
+                    children.append(
+                        DomainSelect(
+                            f"{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})",
+                            option,
+                            row,
+                        )
+                    )
+                    first += 25
+                    row += 1
+                children.append(self)
+                self.view.current_page = int(self.values[0])
+                self.view.custom_children = children
                 await self.view.update_children(i)
 
         children = []
@@ -483,6 +462,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             first += 25
             row += 1
+        children.append(WeekDaySelect(text_map.get(583, i.locale, user_locale)))
         await DomainPaginator(
             i,
             embeds,

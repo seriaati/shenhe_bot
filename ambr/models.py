@@ -25,7 +25,7 @@ class Weapon(BaseModel):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
         return icon_url
 
-    @validator("default_icon")
+    @validator("default_icon", pre=True)
     def check_default_icon(cls, v, values):
         defaults = [
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Sword_Blunt.png",
