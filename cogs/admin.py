@@ -40,11 +40,10 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
-    @app_commands.rename(module_name="name")
-    async def reload(self, i: Interaction, module_name: str = None):
+    async def reload(self, i: Interaction):
         await i.response.defer(ephemeral=True)
-        if module_name is None:
-            modules = list(sys.modules.values())
+        modules = list(sys.modules.values())
+        for _ in range(2):
             for module in modules:
                 if module is None:
                     continue
@@ -67,39 +66,7 @@ class AdminCog(commands.Cog, name="admin"):
                             embed=error_embed(module.__name__, f"```{e}```"),
                             ephemeral=True,
                         )
-            await i.followup.send("success", ephemeral=True)
-        else:
-            try:
-                importlib.reload(sys.modules[module_name])
-            except KeyError:
-                return await i.response.send_message(
-                    embed=error_embed(message=module_name).set_author(
-                        name="Module not found", icon_url=i.user.display_avatar.url
-                    ),
-                    ephemeral=True,
-                )
-            else:
-                return await i.response.send_message(
-                    embed=default_embed(message=module_name).set_author(
-                        name="Reload completed", icon_url=i.user.display_avatar.url
-                    ),
-                    ephemeral=True,
-                )
-
-    @reload.autocomplete("module_name")
-    async def query_autocomplete(
-        self, i: Interaction, current: str
-    ) -> List[Choice[str]]:
-        query_list = []
-        for key in list(sys.modules.keys()):
-            query_list.append(key)
-
-        result = [
-            app_commands.Choice(name=query, value=query)
-            for query in query_list
-            if current.lower() in query.lower()
-        ]
-        return result[:25]
+        await i.followup.send("success", ephemeral=True)
 
     @is_seria()
     @app_commands.command(name="sync", description=_("Admin usage only", hash=496))
