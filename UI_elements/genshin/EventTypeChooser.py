@@ -1,4 +1,3 @@
-import importlib
 import json
 from discord.ui import Select, Button
 from discord import Interaction, Embed, SelectOption, Locale, ButtonStyle
@@ -94,30 +93,30 @@ class Genshin(Button):
             detail_dict[event["ann_id"]] = event["content"]
         first_id = None
         embeds = {}
-        for event_list in overview["data"]["list"]:
-            list = event_list["list"]
-            if list[0]["type"] not in embeds:
-                embeds[list[0]["type"]] = []
+        for event in overview["data"]["list"]:
+            event_list = event["list"]
+            if event_list[0]["type"] not in embeds:
+                embeds[event_list[0]["type"]] = []
             if first_id is None:
-                first_id = list[0]["type"]
-            for event in list:
-                embed = default_embed(event["title"])
-                embed.set_author(name=event["type_label"], icon_url=event["tag_icon"])
-                embed.set_image(url=event["banner"])
+                first_id = event_list[0]["type"]
+            for e in event_list:
+                embed = default_embed(e["title"])
+                embed.set_author(name=e["type_label"], icon_url=e["tag_icon"])
+                embed.set_image(url=e["banner"])
                 embed.add_field(
                     name=text_map.get(406, i.locale, user_locale),
-                    value=format_dt(parser.parse(event["start_time"]), "R"),
+                    value=format_dt(parser.parse(e["start_time"]), "R"),
                 )
                 embed.add_field(
                     name=text_map.get(407, i.locale, user_locale),
-                    value=format_dt(parser.parse(event["end_time"]), "R"),
+                    value=format_dt(parser.parse(e["end_time"]), "R"),
                 )
                 embed.add_field(
                     name=text_map.get(408, i.locale, user_locale),
-                    value=parse_HTML(detail_dict[event["ann_id"]])[:500] + "...",
+                    value=parse_HTML(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
-                embeds[event["type"]].append(embed)
+                embeds[str(e["type"])].append(embed)
         await GeneralPaginator(
             i,
             embeds[first_id],
