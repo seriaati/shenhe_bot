@@ -1,13 +1,11 @@
 import importlib
 import sys
-from typing import List
 
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
-from discord.app_commands import Choice
 from discord.ext import commands
-from utility.utils import default_embed, error_embed
 from UI_elements.admin import Annouce
+from utility.utils import error_embed
 
 
 def is_seria():
@@ -30,7 +28,7 @@ class AdminCog(commands.Cog, name="admin"):
 
     @is_seria()
     @app_commands.command(
-        name="maintenance", description=_("Admin usage only", hash=496)
+        name="maintenance", description=_("Owner usage only", hash=496)
     )
     async def maintenance(self, i: Interaction, time: str = None):
         i.client.maintenance = not i.client.maintenance
@@ -39,7 +37,7 @@ class AdminCog(commands.Cog, name="admin"):
         await i.response.send_message("success", ephemeral=True)
 
     @is_seria()
-    @app_commands.command(name="reload", description=_("Admin usage only", hash=496))
+    @app_commands.command(name="reload", description=_("Owner usage only", hash=496))
     async def reload(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         modules = list(sys.modules.values())
@@ -69,14 +67,14 @@ class AdminCog(commands.Cog, name="admin"):
         await i.followup.send("success", ephemeral=True)
 
     @is_seria()
-    @app_commands.command(name="sync", description=_("Admin usage only", hash=496))
+    @app_commands.command(name="sync", description=_("Owner usage only", hash=496))
     async def roles(self, i: Interaction):
         await i.response.defer()
         await self.bot.tree.sync()
         await i.followup.send("sync done")
 
     @is_seria()
-    @app_commands.command(name="annouce", description=_("Admin usage only", hash=496))
+    @app_commands.command(name="annouce", description=_("Owner usage only", hash=496))
     async def annouce(self, i: Interaction):
         await i.response.send_modal(Annouce.Modal())
 

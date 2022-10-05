@@ -1,11 +1,14 @@
+from datetime import datetime
 from typing import Dict, List, Tuple, Union
-
+import discord
 import aiosqlite
 import enkanetwork
+from ambr.client import AmbrTopAPI
+from ambr.models import Character, Weapon
 from apps.genshin.custom_model import ShenheUser
-from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
+from apps.text_map.utils import get_user_locale, get_weekday_name
 from apps.text_map.cond_text import cond_text
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
@@ -15,7 +18,7 @@ from data.game.weapon_map import weapon_map
 from discord import Embed, Locale, SelectOption
 from discord.ext import commands
 from diskcache import FanoutCache
-from utility.utils import default_embed, parse_HTML
+from utility.utils import default_embed, divide_dict, parse_HTML
 import genshin
 
 
@@ -411,3 +414,61 @@ async def load_and_update_enka_cache(
         enka_cache[uid] = cache
 
     return cache
+
+async def get_farm_data(i: discord.Interaction, custom_weekday: int = None):
+    result = []
+    user_locale = await get_user_locale(i.user.id, i.client.db)
+    locale = user_locale or i.locale
+    locale = to_ambr_top(locale)
+    ambr = AmbrTopAPI(session=i.client.session, lang=locale)
+    domains = await ambr.get_domain()
+    character_upgrades = await ambr.get_character_upgrade()
+    weapon_upgrades = await ambr.get_weapon_upgrade()
+    today_domains = []
+    weekday = custom_weekday or datetime.today().weekday()
+    for domain in domains:
+        if domain.weekday == weekday:
+            today_domains.append(domain)
+    for domain in today_domains:
+        characters: Dict[int, Character] = {}
+        for reward in domain.rewards:
+            for upgrade in character_upgrades:
+                for item in upgrade.items:
+                    if item.id == reward.id:
+                        characters[upgrade.character_id] = (
+                            await ambr.get_character(str(upgrade.character_id))
+                        )[0]
+        weapons: Dict[int, Weapon] = {}
+        for reward in domain.rewards:
+            for upgrade in weapon_upgrades:
+                for item in upgrade.items:
+                    if item.id == reward.id:
+                        [weapon] = await ambr.get_weapon(id=str(upgrade.weapon_id))
+                        if not weapon.default_icon:
+                            weapons[upgrade.weapon_id] = weapon
+        # merge two dicts
+        items = characters | weapons
+        chunks = list(divide_dict(items, 12))
+        for chunk in chunks:
+            result.append({"domain": domain, "items": chunk})
+    embeds = []
+    options = []
+    for index, items in enumerate(result):
+        embed = default_embed(
+            f"{text_map.get(13, i.locale, user_locale)} ({get_weekday_name(weekday, i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
+        )
+        embed.set_image(url=f"attachment://farm.jpeg")
+        embeds.append(embed)
+        domain = result[index]["domain"]
+        current_len = 0
+        for option in options:
+            if domain.name in option.label:
+                current_len += 1
+        options.append(
+            SelectOption(
+                label=f"{domain.city.name} | {domain.name} #{current_len+1}",
+                value=index,
+                emoji=get_city_emoji(domain.city.id),
+            )
+        )
+    return result, embeds, options

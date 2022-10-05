@@ -566,14 +566,14 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="instantclaim", description=_("Admin usage only", hash=496)
+        name="instantclaim", description=_("Owner usage only", hash=496)
     )
     async def instantclaim(self, i: Interaction):
         await i.response.send_message("started, check console", ephemeral=True)
         await self.claim_reward_task()
 
     @is_seria()
-    @app_commands.command(name="backup", description=_("Admin usage only", hash=496))
+    @app_commands.command(name="backup", description=_("Owner usage only", hash=496))
     async def backup(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
         await self.backup_database_task()
@@ -581,7 +581,7 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="updategamedata", description=_("Admin usage only", hash=496)
+        name="updategamedata", description=_("Owner usage only", hash=496)
     )
     async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
@@ -594,7 +594,7 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="instantnotify", description=_("Admin usage only", hash=496)
+        name="instantnotify", description=_("Owner usage only", hash=496)
     )
     async def instant_notify(self, i: Interaction):
         await i.response.send_message(content="started", ephemeral=True)
