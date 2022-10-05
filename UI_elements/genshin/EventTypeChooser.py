@@ -116,7 +116,7 @@ class Genshin(Button):
                     value=parse_HTML(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
-                embeds[str(e["type"])].append(embed)
+                embeds[e["type"]].append(embed)
         await GeneralPaginator(
             i,
             embeds[first_id],
@@ -140,7 +140,7 @@ class Select(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view.current_page = 0
-        self.view.embeds = self.embeds[self.values[0]]
+        self.view.embeds = self.embeds[int(self.values[0])]
         await i.response.edit_message(embed=self.view.embeds[0], view=self.view)
 
 class GOBack(Button):
