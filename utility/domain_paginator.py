@@ -1,5 +1,5 @@
-from yelan.draw import draw_domain_card
 import config
+from yelan.draw import draw_domain_card
 
 __all__ = ["DomainPaginator"]
 
@@ -8,13 +8,13 @@ from io import BytesIO
 from typing import List, Optional, Union
 
 import aiosqlite
-from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import ButtonStyle, Embed, File, HTTPException, Interaction, NotFound, User
-from discord.ui import Button, Select, View, button
+from discord import ButtonStyle, Embed, File, Interaction, User
+from discord.ui import Button, Select, button
+from UI_base_models import BaseView
 
 
-class _view(View):
+class _view(BaseView):
     def __init__(
         self,
         author: User,
@@ -150,12 +150,8 @@ class DomainPaginator:
 
         kwargs["view"] = view
 
-        await self.interaction.response.send_message(**kwargs)
+        await self.interaction.followup.send(**kwargs)
+
+        view.message = await self.interaction.original_response()
 
         await view.wait()
-        for item in view.children:
-            item.disabled = True
-        try:
-            view.message = await self.interaction.original_response()
-        except (NotFound, HTTPException):
-            pass

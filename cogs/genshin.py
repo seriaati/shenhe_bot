@@ -2,6 +2,7 @@ import asyncio
 import importlib
 import json
 from datetime import datetime
+from pprint import pprint
 from diskcache import FanoutCache
 import random
 from typing import Dict, List, Tuple
@@ -407,8 +408,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: Interaction):
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        result, embeds, options = await get_farm_data(i)
+        result, embeds, options = await get_farm_data(i, datetime.today().weekday())
 
         class DomainSelect(Select):
             def __init__(self, placeholder: str, options: List[SelectOption], row: int):
@@ -421,7 +423,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         class WeekDaySelect(Select):
             def __init__(self, placeholder: str):
                 options = []
-                for index in range(7):
+                for index in range(0, 7):
                     weekday_text = text_map.get(234 + index, i.locale, user_locale)
                     options.append(SelectOption(label=weekday_text, value=str(index)))
                 super().__init__(options=options, placeholder=placeholder, row=4)
@@ -433,6 +435,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 first = 1
                 row = 2
                 options = list(divide_chunks(options, 25))
+                children = []
                 for option in options:
                     children.append(
                         DomainSelect(
@@ -444,8 +447,12 @@ class GenshinCog(commands.Cog, name="genshin"):
                     first += 25
                     row += 1
                 children.append(self)
-                self.view.current_page = int(self.values[0])
-                self.view.custom_children = children
+                for child in self.view.children:
+                    if isinstance(child, DomainSelect) or isinstance(child, WeekDaySelect):
+                        self.view.remove_item(child)
+                for child in children:
+                    self.view.add_item(child)
+                self.view.current_page = 0
                 await self.view.update_children(i)
 
         children = []

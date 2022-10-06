@@ -4,7 +4,7 @@ import discord
 import aiosqlite
 import enkanetwork
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Weapon
+from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import ShenheUser
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -415,17 +415,16 @@ async def load_and_update_enka_cache(
 
     return cache
 
-async def get_farm_data(i: discord.Interaction, custom_weekday: int = None):
+
+async def get_farm_data(i: discord.Interaction, weekday: int):
     result = []
     user_locale = await get_user_locale(i.user.id, i.client.db)
     locale = user_locale or i.locale
-    locale = to_ambr_top(locale)
-    ambr = AmbrTopAPI(session=i.client.session, lang=locale)
+    ambr = AmbrTopAPI(session=i.client.session, lang=to_ambr_top(locale))
     domains = await ambr.get_domain()
     character_upgrades = await ambr.get_character_upgrade()
     weapon_upgrades = await ambr.get_weapon_upgrade()
     today_domains = []
-    weekday = custom_weekday or datetime.today().weekday()
     for domain in domains:
         if domain.weekday == weekday:
             today_domains.append(domain)
@@ -455,20 +454,31 @@ async def get_farm_data(i: discord.Interaction, custom_weekday: int = None):
     options = []
     for index, items in enumerate(result):
         embed = default_embed(
-            f"{text_map.get(13, i.locale, user_locale)} ({get_weekday_name(weekday, i.locale, user_locale)}) {text_map.get(250, i.locale, user_locale)}"
+            f"{get_weekday_name(weekday, i.locale, user_locale, full_name=True)} {text_map.get(250, i.locale, user_locale)}"
         )
         embed.set_image(url=f"attachment://farm.jpeg")
         embeds.append(embed)
-        domain = result[index]["domain"]
-        current_len = 0
+        domain: Domain = items["domain"]
+        current_len = 1
         for option in options:
-            if domain.name in option.label:
+            if get_domain_title(domain, locale) in option.label:
+                options[
+                    -1
+                ].label = f"{get_domain_title(domain, locale)} ({current_len})"
                 current_len += 1
         options.append(
             SelectOption(
-                label=f"{domain.city.name} | {domain.name} #{current_len+1}",
+                label=f"{get_domain_title(domain, locale)} {f'({current_len})' if current_len > 1 else ''}",
                 value=index,
                 emoji=get_city_emoji(domain.city.id),
+                description=domain.rewards[0].name,
             )
         )
     return result, embeds, options
+
+
+def get_domain_title(domain: Domain, locale: Locale | str):
+    if "Forgery" in text_map.get_domain_name(domain.id, 'en-US'):
+        return f"{domain.city.name} - {text_map.get(91, locale)}"
+    elif "Mastery" in text_map.get_domain_name(domain.id, 'en-US'):
+        return f"{domain.city.name} - {text_map.get(105, locale).title()}"
