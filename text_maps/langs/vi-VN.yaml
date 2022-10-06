@@ -103,7 +103,7 @@
 '102': Resing Threshold
 '103': Max. notification number
 '104': Settings saved
-'105': ''
+'105': Character
 '106': This gift code has already been redeemed!
 '107': Gift code invalid
 '108': Gift code
@@ -644,7 +644,7 @@
   One of this user's accounts is linked to a Cookie,
   but the current one is only linked to a UID
 '582': Resin notification
-'583': ''
+'583': Select a weekday
 '584': Realm currency notification
 '585': Test DM
 '586': This feature allows you to receive notification when your resin exceeds a certain amount
