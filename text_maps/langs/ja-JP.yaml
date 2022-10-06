@@ -103,7 +103,7 @@
 '102': 樹脂值
 '103': 最大通知件数
 '104': 設定完了
-'105': ''
+'105': キャラクター
 '106': この交換コードも交換しました。
 '107': 交換コードが無効です
 '108': 交換コード
@@ -385,7 +385,7 @@
   7. 原神に戻り、祈願履歴ページを開く
   8. ページが読み込まれるのを待つ
   9. Stream Appに戻る > Stop Sniffing (Sniffingを停止）
-  10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります） 
+  10. Sniff Historyをクリック > .jsonで終わるリクエストを選択（リンクはhttps://hk4e-api-os.mihoyo.com/ で始まります）
   11. Requestタブをクリックし、リンクをコピーする
   12. 下のボタンをクリックし、表示されたテキストボックスにペースト
 '363': 入力されたリンクは無効です
@@ -421,7 +421,7 @@
 '394': |-
   1. Windowsキーを押し、PowerShellを検索します。
   2. Windows Powershellをクリックし、以下のコードをコピーしてPowershellに貼り付け、Enterキーを1回押す（「Press Enter to continue」と表示されていない時）
-  3. パソコンで「原神」を開く 
+  3. パソコンで「原神」を開く
   4. その後、祈願履歴を開き、読み込まれるのを待ちます。
   5. 祈願履歴の表をクリックし、Ctrl+A、Ctrl+Cの順に押します（この時点でページ上のすべてのテキストが選択されているはずです）
   6. Alt+TabでPowerShellに切り替え、Enterを押すと、既にリンクがクリップボードにコピーされているはずです。
@@ -441,7 +441,7 @@
   4. その後、GenshinImpact_Data → webCaches → Cache → Cache_Data フォルダを開く。
   5. ファイル「data_2」を右クリックし、「プログラムから開く」をクリックして「メモ帳」を選択します（「他のプログラムによって使用されているため、ファイルにアクセスできません」等のエラーが報告された場合は、先にゲームを終了させてください）
   6. Ctrl+Fキーを押しながら、オプションの「折り返しあり」をクリックし、検索する方向は「上へ」を選択し、入力欄に「e20190909gacha-v2」を入力し（カギカッコをコピーしないように注意）「次を検索」をクリックします。
-  7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。 
+  7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。
   完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
   8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '404': 天井からの回数
@@ -642,7 +642,7 @@
 '581': |-
   One of this user's accounts is linked to a Cookie, but the current one is only linked to a UID
 '582': 樹脂の通知
-'583': ''
+'583': Select a weekday
 '584': 洞天宝銭の通知
 '585': DM をテスト
 '586': 樹脂が一定量を超えたときに通知を受け取ることができます。
