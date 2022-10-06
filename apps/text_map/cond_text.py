@@ -1,6 +1,8 @@
 from typing import Literal
 import yaml
 
+from apps.text_map.convert_locale import to_paths
+
 class CondText:
     def __init__(self):
         self.data = {}
@@ -14,7 +16,8 @@ class CondText:
                     self.data[lang][file] = yaml.safe_load(f)
     
     def get_text(self, lang: str, file: Literal['artifact', 'build', 'character',' weapon'], key: str) -> str:
-        text = self.data[str(lang)][file].get(key, '')
+        lang = to_paths(lang)
+        text = self.data[lang][file].get(key, '')
         if text == '':
             text = self.data['zh-TW'][file].get(key, '')
         return text
