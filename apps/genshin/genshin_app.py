@@ -1,6 +1,7 @@
 from typing import Dict, List, Literal, Tuple
 import aiosqlite
 import sentry_sdk
+from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheUser
 from apps.genshin.utils import get_character, get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_genshin_py
@@ -61,7 +62,7 @@ def genshin_error_handler(func):
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
             embed = error_embed(message=text_map.get(513, locale, user_locale))
-            embed.description += f'\n```{e}```'
+            embed.description += f"\n```{e}```"
             embed.set_author(
                 name=text_map.get(135, locale), icon_url=user.display_avatar.url
             )
@@ -278,8 +279,9 @@ class GenshinApp:
             pass
         else:
             genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
-            characters = await self.bot.genshin_client.get_calculator_characters(
-                include_traveler=True
+            ambr = AmbrTopAPI(self.bot.session)
+            characters = await ambr.get_character(
+                include_beta=False, include_traveler=False
             )
 
             mode = await get_user_appearance_mode(user_id, self.db)
@@ -287,7 +289,7 @@ class GenshinApp:
                 genshin_user.stats,
                 namecard,
                 avatar_url,
-                len(characters),
+                len(characters) + 2,
                 mode,
             )
             self.bot.stats_card_cache[uid] = fp
@@ -328,7 +330,9 @@ class GenshinApp:
             diary = await shenhe_user.client.get_diary(month=month)
         except genshin.errors.GenshinException as e:
             if e.retcode == -400005:
-                embed = error_embed().set_author(name=text_map.get(14, locale, shenhe_user.user_locale))
+                embed = error_embed().set_author(
+                    name=text_map.get(14, locale, shenhe_user.user_locale)
+                )
                 return embed, False
         d = diary.data
         result = default_embed(

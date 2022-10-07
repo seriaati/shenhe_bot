@@ -90,7 +90,9 @@ class AmbrTopAPI:
 
         return endpoint_data
 
-    async def _update_cache(self, all_lang: bool = False, endpoint: str = None, static: bool = False) -> None:
+    async def _update_cache(
+        self, all_lang: bool = False, endpoint: str = None, static: bool = False
+    ) -> None:
         if all_lang:
             langs = list(LANGS.keys())
         else:
@@ -102,7 +104,7 @@ class AmbrTopAPI:
                 endpoints = list(STATIC_ENDPOINTS.keys())
         else:
             endpoints = [endpoint]
-            
+
         if static:
             for endpoint in endpoints:
                 data = await self._request_from_endpoint(endpoint, static=True)
@@ -178,11 +180,21 @@ class AmbrTopAPI:
         return result
 
     async def get_character(
-        self, id: Optional[str] = None, retry: bool = False
+        self,
+        id: Optional[str] = None,
+        retry: bool = False,
+        include_beta: bool = True,
+        include_traveler: bool = True,
     ) -> List[Character]:
         result = []
         data = await self._get_cache("character")
         for character_id, character_info in data["data"]["items"].items():
+            if "beta" in character_info and not include_beta:
+                continue
+            if (
+                "10000005" in character_id or "10000007" in character_id
+            ) and not include_traveler:
+                continue
             if id is not None:
                 if id == character_id:
                     result.append(Character(**character_info))
@@ -233,7 +245,9 @@ class AmbrTopAPI:
 
         if len(result) == 0 and not retry:
             await self._update_cache(endpoint="upgrade", static=True)
-            result = await self.get_character_upgrade(character_id=character_id, retry=True)
+            result = await self.get_character_upgrade(
+                character_id=character_id, retry=True
+            )
 
         return result
 
