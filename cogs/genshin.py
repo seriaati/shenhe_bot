@@ -727,7 +727,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             i.locale,
             user_locale,
             data.characters,
-            i.client.browser,
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()

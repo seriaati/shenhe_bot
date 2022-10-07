@@ -26,7 +26,6 @@ class View(BaseView):
         self.calculator = DamageCalculator(
             character_name,
             enka_view.eng_data,
-            enka_view.browser,
             enka_view.character_id,
             user_locale or locale,
             "critHit",

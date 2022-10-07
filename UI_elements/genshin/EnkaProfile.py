@@ -9,7 +9,6 @@ from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption,
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
-from pyppeteer.browser import Browser
 from UI_elements.genshin import EnkaDamageCalculator
 from utility.utils import default_embed, get_user_appearance_mode
 from yelan.damage_calculator import return_damage
@@ -30,7 +29,6 @@ class View(BaseView):
         locale: Locale,
         user_locale: str,
         characters: List[CharacterInfo],
-        browser: Browser,
     ):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
@@ -43,7 +41,6 @@ class View(BaseView):
         self.eng_data = eng_data
         self.db = db
         self.characters = characters
-        self.browser = browser
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
         self.add_item(

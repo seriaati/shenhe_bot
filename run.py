@@ -76,33 +76,18 @@ class ShenheBot(commands.Bot):
         self.db = await aiosqlite.connect("shenhe.db")
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
         self.backup_db = await aiosqlite.connect("backup.db")
-        self.browser = await launch(
-            {
-                "headless": True,
-                "args": [
-                    "--no-sandbox",
-                ],
-            }
-        )
         self.debug = debug
         c = await self.db.cursor()
         overseas = []
-        chinese = []
-        for x in range(2):
-            await c.execute(
-                "SELECT ltuid, ltoken FROM user_accounts WHERE china = ?", (x,)
-            )
-            data = await c.fetchall()
-            for _, tpl in enumerate(data):
-                ltuid = tpl[0]
-                ltoken = tpl[1]
-                if ltuid is None:
-                    continue
-                cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
-                if x == 0:
-                    overseas.append(cookie)
-                else:
-                    chinese.append(cookie)
+        await c.execute(
+            "SELECT ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL"
+        )
+        data = await c.fetchall()
+        for _, tpl in enumerate(data):
+            ltuid = tpl[0]
+            ltoken = tpl[1]
+            cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
+            overseas.append(cookie)
         self.genshin_client = genshin.Client()
         self.genshin_client.set_cookies(overseas)
 
@@ -145,7 +130,6 @@ class ShenheBot(commands.Bot):
             sentry_sdk.capture_exception(error)
 
     async def close(self) -> None:
-        await self.browser.close()
         await self.db.close()
         await self.main_db.close()
         await self.backup_db.close()
