@@ -53,7 +53,7 @@ class _view(BaseView):
 
         kwargs["view"] = self
 
-        await interaction.edit_original_response(**kwargs)
+        self.message = await interaction.edit_original_response(**kwargs)
 
     @button(
         emoji="<:double_left:982588991461281833>",
