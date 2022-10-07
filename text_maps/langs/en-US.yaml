@@ -132,7 +132,7 @@
 '131': Inazuma
 '132': Submit your cookie
 '133': Please paste the text you copied here
-'134': ''
+'134': View the timezone list
 '135': There was an error
 '136': Choose your account
 '137': Account registration tutorial
@@ -149,8 +149,8 @@
 '141': Account data not found!
 '142': Choose your element
 '143': You are not the issuer of this command
-'144': ''
-'145': ''
+'144': Timezone name
+'145': Type the timezone name here
 '146': Floor
 '147': <FLOOR>
 '148': Choose abyss floor
@@ -168,13 +168,13 @@
 '151': Resin notification settings
 '152': Resin threshold
 '153': Shenhe will DM you after resin exceeds this number
-'154': ''
+'154': Setting custom timezone
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
 '157': Choose your characters
 '158': There are currently no notifications set for any characters
 '159': Current characters
-'160': ''
+'160': Invalid timezone, please use the /timezone command to view the list
 '161': Choosing this character will turn OFF its notifications
 '162': Build
 '163': Choose your build
@@ -202,7 +202,7 @@
 '183': Current level
 '184': 'For example: 1'
 '185': Target level
-'186': ''
+'186': Timezone
 '187': Please enter a number
 '188': 'Character level: Please enter a number between 1 and 90'
 '189': 'Talent level: Please enter a number between 1 and 10'
@@ -238,7 +238,7 @@
 '217': Hydro
 '218': Dendro
 '219': Electro
-'220': ''
+'220': Your timezone has been changed to
 '221': January
 '222': February
 '223': March

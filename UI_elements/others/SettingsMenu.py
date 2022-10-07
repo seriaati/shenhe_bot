@@ -4,11 +4,12 @@ import aiosqlite
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseView
+from UI_base_models import BaseModal, BaseView
 from discord import Interaction, Locale, SelectOption
-from discord.ui import Button, Select
+from discord.ui import Button, Select, TextInput
 from utility.utils import default_embed
 from data.others.language_options import lang_options
+import pytz
 
 
 class View(BaseView):
@@ -17,6 +18,7 @@ class View(BaseView):
         self.add_item(Appearance(text_map.get(535, locale)))
         self.add_item(Langauge(text_map.get(128, locale)))
         self.add_item(DeveloperMessage(text_map.get(541, locale)))
+        self.add_item(Timezone(text_map.get(186, locale)))
 
 
 class Appearance(Button):
@@ -94,13 +96,13 @@ class Langauge(Button):
             f"• {text_map.get(511, i.locale, user_locale)}\n"
             "• [crowdin](https://crowdin.com/project/shenhe-bot)"
         )
-        lang_name = lang_options.get(user_locale or str(i.locale))['name']
-        lang_name = lang_name.split('|')[0]
+        lang_name = lang_options.get(user_locale or str(i.locale))["name"]
+        lang_name = lang_name.split("|")[0]
         embed.set_author(
             name=f"{text_map.get(34, i.locale, user_locale)}: {lang_name}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url='https://i.imgur.com/KWWkeyz.png')
+        embed.set_image(url="https://i.imgur.com/KWWkeyz.png")
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(LangSelect(i.locale, user_locale))
@@ -136,7 +138,8 @@ class LangSelect(Select):
             )
         await i.client.db.commit()
         await Langauge.callback(self, i)
-        
+
+
 class DeveloperMessage(Button):
     def __init__(self, label: str):
         super().__init__(emoji="✉️", label=label)
@@ -162,11 +165,15 @@ class DeveloperMessage(Button):
             name=f"{text_map.get(101, i.locale, user_locale)}: {emoji} {text_map.get(toggle_text, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url='https://i.imgur.com/vXEcZnW.png')
+        embed.set_image(url="https://i.imgur.com/vXEcZnW.png")
         self.view.clear_items()
         self.view.add_item(GOBack())
-        self.view.add_item(NotifiactionONButton(text_map.get(99, i.locale, user_locale)))
-        self.view.add_item(NotificationOFFButton(text_map.get(100, i.locale, user_locale)))
+        self.view.add_item(
+            NotifiactionONButton(text_map.get(99, i.locale, user_locale))
+        )
+        self.view.add_item(
+            NotificationOFFButton(text_map.get(100, i.locale, user_locale))
+        )
         await i.response.edit_message(embed=embed, view=self.view)
 
 
@@ -210,6 +217,64 @@ class GOBack(Button):
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url='https://i.imgur.com/WM6C1Tk.png')
+        embed.set_image(url="https://i.imgur.com/WM6C1Tk.png")
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
+
+
+class Timezone(Button):
+    def __init__(self, label: str):
+        super().__init__(emoji="🕛", label=label)
+
+    async def callback(self, i: Interaction):
+        self.view.add_item(CommonTimezoneSelect())
+        await i.response.edit_message(view=self.view)
+    
+class CommonTimezoneSelect(Select):
+    def __init__(self):
+        options = [
+            SelectOption(emoji='🇹🇼', label='UTC+8', value='Asia/Taipei'),
+            SelectOption(emoji='🇺🇸', label='UTC-5', value='America/New_York'),
+            SelectOption(emoji='🇬🇧', label='UTC+0', value='Europe/London'),
+            SelectOption(emoji='🇯🇵', label='UTC+9', value='Asia/Tokyo'),
+            SelectOption(emoji='🇦🇺', label='UTC+10', value='Australia/Sydney'),
+            SelectOption(emoji='🇨🇳', label='UTC+8', value='Asia/Shanghai'),
+            SelectOption(emoji='🇪🇺', label='UTC+2', value='Europe/Brussels'),
+            SelectOption(emoji='🇮🇳', label='UTC+5.5', value='Asia/Kolkata'),
+            SelectOption(emoji='🇰🇷', label='UTC+9', value='Asia/Seoul'),
+            SelectOption(emoji='🇷🇺', label='UTC+3', value='Europe/Moscow'),
+            SelectOption(emoji='🇸🇬', label='UTC+8', value='Asia/Singapore'),
+            SelectOption(emoji='🇺🇦', label='UTC+2', value='Europe/Kiev'),
+        ]
+        super().__init__(options=options)
+
+
+class SubmitTimezone(BaseModal):
+    timezone = TextInput(
+        label="Timezone", placeholder="Timezone", min_length=1, max_length=100
+    )
+
+    def __init__(self, i: Interaction, locale: Locale | str):
+        self.timezone.label = text_map.get(144, locale)
+        self.timezone.placeholder = text_map.get(145, locale)
+        super().__init__(title=text_map.get(154, locale), timeout=config.mid_timeout)
+        self.locale = locale
+
+    async def on_submit(self, i: Interaction) -> None:
+        if self.timezone.value not in pytz.all_timezones:
+            await i.response.send_message(
+                text_map.get(160, self.locale), ephemeral=True
+            )
+        else:
+            async with i.client.db.execute(
+                "INSERT INTO user_settings (user_id, timezone) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET timezone = ? WHERE user_id = ?",
+                (i.user.id, self.timezone.value, self.timezone.value, i.user.id),
+            ) as c:
+                await i.client.db.commit()
+            embed = default_embed(
+                message=f"{text_map.get(220, self.locale)}: {self.timezone.value}"
+            )
+            embed.set_author(
+                name=text_map.get(179, self.locale), icon_url=i.user.display_avatar.url
+            )
+            await i.response.send_message(embed=embed, ephemeral=True)
