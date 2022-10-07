@@ -51,13 +51,19 @@ def genshin_error_handler(func):
             log.warning(
                 f"[Genshin App][GenshinException] in {func.__name__}: [e]{e} [code]{e.retcode} [msg]{e.msg}"
             )
-            sentry_sdk.capture_exception(e)
-            embed = error_embed(message=f"```{e}```")
-            embed.set_author(
-                name=text_map.get(10, locale),
-                icon_url=user.display_avatar.url,
-            )
-            return embed, False
+            if e.retcode == -400005:
+                embed = error_embed().set_author(
+                    name=text_map.get(14, locale)
+                )
+                return embed, False
+            else:
+                sentry_sdk.capture_exception(e)
+                embed = error_embed(message=f"```{e}```")
+                embed.set_author(
+                    name=text_map.get(10, locale),
+                    icon_url=user.display_avatar.url,
+                )
+                return embed, False
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
@@ -326,14 +332,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_diary(self, user_id: int, month: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
-        try:
-            diary = await shenhe_user.client.get_diary(month=month)
-        except genshin.errors.GenshinException as e:
-            if e.retcode == -400005:
-                embed = error_embed().set_author(
-                    name=text_map.get(14, locale, shenhe_user.user_locale)
-                )
-                return embed, False
+        diary = await shenhe_user.client.get_diary(month=month)
         d = diary.data
         result = default_embed(
             message=f"{text_map.get(59, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.primogems_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.primogems_rate)}%\n"
