@@ -381,3 +381,72 @@
 
       副詞條優先級：
       生命百分比>元素充能效率
+賽諾:
+  element: 雷
+  builds:
+    - weapon: 赤沙之杖
+      artifacts: 飾金4件套
+      main_stats: 精雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1351
+        暴率/暴傷: 80/207
+        元素精通: 347
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 24368
+    - weapon: 和璞鳶
+      artifacts: 飾金4件套
+      main_stats: 攻雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1765
+        暴率/暴傷: 80/163
+        元素精通: 160
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 21247
+    - weapon: 決鬥之槍
+      artifacts: 飾金4件套
+      main_stats: 精雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1083
+        暴率/暴傷: 80/193
+        元素精通: 347
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 19597
+    - weapon: 赤沙之杖
+      artifacts: 如雷4件套
+      main_stats: 精雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1310
+        暴率/暴傷: 80/207
+        元素精通: 267
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 22851
+    - weapon: 和璞鳶
+      artifacts: 如雷4件套
+      main_stats: 精雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1303
+        暴率/暴傷: 80/163
+        元素精通: 267
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 22871
+    - weapon: 決鬥之槍
+      artifacts: 如雷4件套
+      main_stats: 精雷暴
+      talents: 2/9/10
+      stats:
+        攻擊力: 1083
+        暴率/暴傷: 80/193
+        元素精通: 267
+        充能效率: 120.00%
+      move: E「裁定」激化
+      dmg: 19630
