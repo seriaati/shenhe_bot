@@ -132,7 +132,7 @@
 '131': 稻妻
 '132': 提交 Cookie
 '133': 請貼上剛剛複製的文字
-'134': View the timezone list
+'134': 查看時區列表
 '135': 未知錯誤
 '136': 選擇要註冊的帳號
 '137': Cookie 設置流程
@@ -149,8 +149,8 @@
 '141': 找不到帳號資料!
 '142': 選擇元素
 '143': 你不是這個指令的發起者
-'144': Timezone name
-'145': Type the timezone name here
+'144': 時區名稱
+'145': 在這裡輸入時區名稱
 '146': 第
 '147': 層
 '148': 樓層導覽
@@ -167,13 +167,13 @@
 '151': 樹脂提醒設定
 '152': 樹脂閥值
 '153': 申鶴會在樹脂超過這個數字後提醒你
-'154': Setting custom timezone
+'154': 設定自定義時區
 '155': 申鶴最多提醒你的次數
 '156': 選擇已經設置過的角色將移除該角色的提醒
 '157': 選擇角色
 '158': 目前尚未設置任何角色
 '159': 目前角色
-'160': Invalid timezone
+'160': 時區錯誤
 '161': 已設置過此角色, 再次選擇將會關閉通知
 '162': 配置
 '163': 選擇配置
@@ -201,7 +201,7 @@
 '183': 目前等級
 '184': '例如: 1'
 '185': 目標等級
-'186': Timezone
+'186': 時區
 '187': 請輸入數字
 '188': '角色等級: 請輸入介於 1~90 的數字'
 '189': '天賦等級: 請輸入介於 1~10 的數字'
@@ -238,7 +238,7 @@
 '217': 水元素
 '218': 草元素
 '219': 雷元素
-'220': Your timezone has been changed to
+'220': 你的時區已更改為
 '221': 一月
 '222': 二月
 '223': 三月
@@ -301,14 +301,14 @@
 '290': 成就
 '291': 深淵已達
 '292': 生命值上限
-'293': Current timezone
+'293': 目前時區
 '294': |-
-  • You can search your timezone by using the /timezone command and submit the timezone name by clicking the button below
-  • Or, select a timezone from the list of popular timezones below
-  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
-  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
-'295': Submit timezone name
-'296': Please use the /timezone command to view the timezone list
+  • 你可以使用 /timezone 指令來搜尋時區，並通過點擊下面的按鈕來提交時區名稱
+  • 或者，你可以從下面的常見時區列表中選擇一個時區
+  • 設置時區後，申鶴將能夠識別您的時區並在正確的時間向您發送通知
+  • 此外，需要時區的指令（例如 </farm:1020580644419551333>）將使用你的時區作為默認時區
+'295': 提交時區名稱
+'296': 請使用 /timezone 指令來查看時區列表
 '297': ''
 '298': ''
 '299': 好感度
