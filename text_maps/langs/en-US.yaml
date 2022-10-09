@@ -174,7 +174,7 @@
 '157': Choose your characters
 '158': There are currently no notifications set for any characters
 '159': Current characters
-'160': Invalid timezone, please use the /timezone command to view the list
+'160': Invalid timezone
 '161': Choosing this character will turn OFF its notifications
 '162': Build
 '163': Choose your build
@@ -301,10 +301,14 @@
 '290': Achievement
 '291': Spiral abyss
 '292': Max HP
-'293': ''
-'294': ''
-'295': ''
-'296': ''
+'293': Current timezone
+'294': |-
+  • You can search your timezone by using the /timezone command and submit the timezone name by clicking the button below
+  • Or, select a timezone from the list of popular timezones below
+  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
+  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
+'295': Submit timezone name
+'296': Please use the /timezone command to view the timezone list
 '297': ''
 '298': ''
 '299': Friendship Level

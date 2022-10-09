@@ -1,11 +1,10 @@
 import asyncio
-import importlib
+import pytz
 import json
 from datetime import datetime
-from pprint import pprint
 from diskcache import FanoutCache
 import random
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 import aiosqlite
 import GGanalysislib
 from ambr.client import AmbrTopAPI
@@ -16,7 +15,6 @@ from apps.genshin.utils import (
     calculate_artifact_score,
     get_artifact,
     get_character,
-    get_city_emoji,
     get_farm_data,
     get_fight_prop,
     get_uid,
@@ -63,6 +61,7 @@ from utility.utils import (
     divide_chunks,
     divide_dict,
     error_embed,
+    get_user_timezone,
     get_weekday_int_with_name,
 )
 from UI_elements.others import ManageAccounts
@@ -339,7 +338,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             return
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        month = datetime.now().month + month
+        user_timezone = await get_user_timezone(i.user.id, self.bot.db)
+        month = datetime.now(pytz.timezone(user_timezone)).month + month
         month = month + 12 if month < 1 else month
         result, success = await self.genshin_app.get_diary(member.id, month, i.locale)
         if not success:
@@ -410,7 +410,10 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def farm(self, i: Interaction):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        result, embeds, options = await get_farm_data(i, datetime.today().weekday())
+        weekday = datetime.now(
+            pytz.timezone(await get_user_timezone(i.user.id, i.client.db))
+        ).weekday()
+        result, embeds, options = await get_farm_data(i, weekday)
 
         class DomainSelect(Select):
             def __init__(self, placeholder: str, options: List[SelectOption], row: int):
@@ -419,7 +422,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             async def callback(self, i: Interaction):
                 self.view.current_page = int(self.values[0])
                 await self.view.update_children(i)
-        
+
         class WeekDaySelect(Select):
             def __init__(self, placeholder: str):
                 options = []
@@ -448,7 +451,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                     row += 1
                 children.append(self)
                 for child in self.view.children:
-                    if isinstance(child, DomainSelect) or isinstance(child, WeekDaySelect):
+                    if isinstance(child, DomainSelect) or isinstance(
+                        child, WeekDaySelect
+                    ):
                         self.view.remove_item(child)
                 for child in children:
                     self.view.add_item(child)

@@ -99,12 +99,15 @@ class OthersCog(commands.Cog, name="others"):
             embeds.append(embed)
             count += 1
         await GeneralPaginator(i, embeds, i.client.db).start()
-        
-    @app_commands.command(name='timezone', description=_("View the timezone list", hash=134))
+
+    @app_commands.command(
+        name="timezone", description=_("View the timezone list", hash=134)
+    )
+    @app_commands.rename(timezone=_("timezone", hash=186))
     async def view_timezone_list(self, i: Interaction, timezone: str):
         await i.response.send_message(content=timezone, ephemeral=True)
-    
-    @view_timezone_list.autocomplete('timezone')
+
+    @view_timezone_list.autocomplete("timezone")
     async def timezone_autocomplete(self, i: Interaction, current: str):
         choices = []
         timezone_list = pytz.all_timezones
