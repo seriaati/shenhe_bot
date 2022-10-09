@@ -79,10 +79,10 @@ class ShenheBot(commands.Bot):
         self.debug = debug
         c = await self.db.cursor()
         overseas = []
-        await c.execute(
+        async with self.db.execute(
             "SELECT ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL"
-        )
-        data = await c.fetchall()
+        ) as c:
+            data = await c.fetchall()
         for _, tpl in enumerate(data):
             ltuid = tpl[0]
             ltoken = tpl[1]

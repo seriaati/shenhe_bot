@@ -1,7 +1,7 @@
 import logging
 import re
 from itertools import islice
-from typing import Dict, List
+from typing import Dict, List, Optional
 import aiosqlite
 import discord
 from dateutil import parser
@@ -114,3 +114,11 @@ async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bo
     if mode is not None and mode[0] == 1:
         return True
     return False
+
+async def get_user_timezone(user_id:int ,db: aiosqlite.Connection) -> str:
+    async with db.execute("SELECT timezone FROM user_settings WHERE user_id = ?", (user_id,)) as cursor:
+        timezone = await cursor.fetchone()
+    if timezone is None:
+        return 'Asia/Taipei'
+    else:
+        return timezone[0] or 'Asia/Taipei'

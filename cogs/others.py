@@ -4,10 +4,12 @@ from data.update.change_log import change_log
 from data.update.change_log_en import change_log_en
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
+from discord.app_commands import Choice
 from discord.ext import commands
 from UI_elements.others import ChangeLog, SettingsMenu, ManageAccounts
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
+import pytz
 
 
 class OthersCog(commands.Cog, name="others"):
@@ -97,6 +99,22 @@ class OthersCog(commands.Cog, name="others"):
             embeds.append(embed)
             count += 1
         await GeneralPaginator(i, embeds, i.client.db).start()
+
+    @app_commands.command(
+        name="timezone", description=_("View the timezone list", hash=134)
+    )
+    @app_commands.rename(timezone=_("timezone", hash=186))
+    async def view_timezone_list(self, i: Interaction, timezone: str):
+        await i.response.send_message(content=timezone, ephemeral=True)
+
+    @view_timezone_list.autocomplete("timezone")
+    async def timezone_autocomplete(self, i: Interaction, current: str):
+        choices = []
+        timezone_list = pytz.all_timezones
+        for timezone in timezone_list:
+            if current.lower() in timezone.lower():
+                choices.append(Choice(name=timezone, value=timezone))
+        return choices[:25]
 
 
 async def setup(bot: commands.Bot) -> None:
