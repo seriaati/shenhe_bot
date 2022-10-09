@@ -49,7 +49,7 @@ class Translator(app_commands.Translator):
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
-            if len(text.split(' ')) == 0: # is a word
+            if len(text.split(' ')) == 1: # is a word
                 return text.lower()
             else: # is a setence
                 return text
