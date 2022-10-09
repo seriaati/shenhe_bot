@@ -48,7 +48,11 @@ class Translator(app_commands.Translator):
         self, string: locale_str, locale: Locale, context: TranslationContext
     ) -> Optional[str]:
         try:
-            return text_map.get(string.extras["hash"], locale)
+            text = text_map.get(string.extras["hash"], locale)
+            if len(text.split(' ')) == 0: # is a word
+                return text.lower()
+            else: # is a setence
+                return text
         except KeyError:
             return None
 
