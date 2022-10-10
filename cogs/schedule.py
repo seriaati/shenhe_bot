@@ -233,17 +233,17 @@ class Schedule(commands.Cog):
                     (user.user_id, user.shenhe_user.uid),
                 )
             if error:
-                await user.discord_user.send(
+                await user.shenhe_user.discord_user.send(
                     embed=error_embed(message=error_message)
                     .set_author(
                         name=text_map.get(
                             505 if notification_type == "resin_notification" else 506,
                             "en-US",
-                            user.user_locale,
+                            user.shenhe_user.user_locale,
                         ),
-                        icon_url=user.discord_user.display_avatar.url,
+                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
-                    .set_footer(text=text_map.get(16, "en-US", user.user_locale))
+                    .set_footer(text=text_map.get(16, "en-US", user.shenhe_user.user_locale))
                 )
             await asyncio.sleep(5)
         await self.bot.db.commit()
@@ -396,6 +396,7 @@ class Schedule(commands.Cog):
                         (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                     )
                     count += 1
+            await asyncio.sleep(5)
         log.info(
             f"[Schedule][Talent Notifiaction] Ended (Notified {count}/{len(users)} users)"
         )
