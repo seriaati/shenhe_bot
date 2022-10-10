@@ -15,13 +15,14 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import File, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
-from discord.errors import HTTPException, Forbidden, NotFound
+from discord.errors import HTTPException, Forbidden
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until, find
-from utility.utils import default_embed, log
+from utility.utils import default_embed, error_embed, get_user_timezone, log
 from yelan.draw import draw_talent_reminder_card
 import genshin
 from cogs.admin import is_seria
+import pytz
 
 
 def schedule_error_handler(func):
@@ -29,6 +30,9 @@ def schedule_error_handler(func):
         try:
             await func(*args, **kwargs)
         except Exception as e:
+            bot = args[0].bot
+            seria = await bot.fetch_user(410036441129943050)
+            await seria.send(f"[Schedule] Error in {func.__name__}: {e}")
             log.warning(f"[Schedule] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
 
@@ -74,6 +78,11 @@ class Schedule(commands.Cog):
         )
 
     async def get_schedule_users(self) -> List[ShenheUser]:
+        """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
+
+        Returns:
+            List[ShenheUser]: List of shenhe users
+        """
         result = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
@@ -98,7 +107,7 @@ class Schedule(commands.Cog):
         result = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            f"SELECT user_id, threshold, current, max, last_notif_time FROM {table_name} WHERE toggle = 1"
+            f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
         )
         data = await c.fetchall()
         for _, tpl in enumerate(data):
@@ -107,11 +116,13 @@ class Schedule(commands.Cog):
             current = tpl[2]
             max = tpl[3]
             last_notif_time = tpl[4]
+            uid = tpl[5]
             notification_user = NotificationUser(
                 user_id=user_id,
                 threshold=threshold,
                 current=current,
                 max=max,
+                uid=uid,
                 last_notif_time=last_notif_time,
             )
             result.append(notification_user)
@@ -121,13 +132,13 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         now = datetime.now()
-        users = await self.get_schedule_users()
+        shenhe_users = await self.get_schedule_users()
         notification_users = await self.get_notification_users(notification_type)
         count = 0
-        for user in notification_users:
-            for u in users:
-                if u.discord_user.id == user.user_id:
-                    user.shenhe_user = u
+        for notif_user in notification_users:
+            for shenhe_user in shenhe_users:
+                if shenhe_user.uid == notif_user.uid:
+                    notif_user.shenhe_user = shenhe_user
                     break
         for user in notification_users:
             if user.shenhe_user is None:
@@ -141,24 +152,34 @@ class Schedule(commands.Cog):
                 time_diff = now - last_notif_time
                 if time_diff.total_seconds() < 7200:
                     continue
+            error = False
+            error_message = ""
             client = user.shenhe_user.client
             locale = user.shenhe_user.user_locale or "en-US"
             try:
                 notes = await client.get_notes(user.shenhe_user.uid)
             except genshin.errors.InvalidCookies:
+                error = True
+                error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(
                     f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}"
                 )
                 continue
             except Exception as e:
+                error = True
+                error_message = f"```{e}```"
                 log.warning(f"[Schedule][{notification_type}] Error: {e}")
                 continue
             if notification_type == "pot_notification":
                 item_current_amount = notes.current_realm_currency
+                item_max_amount = notes.max_realm_currency
             elif notification_type == "resin_notification":
                 item_current_amount = notes.current_resin
-            if item_current_amount >= user.threshold and user.current < user.max:
-                if notes.current_realm_currency == notes.max_realm_currency:
+                item_max_amount = notes.max_resin
+            if item_current_amount >= user.threshold:
+                if user.current >= user.max:
+                    continue
+                if item_current_amount == item_max_amount:
                     recover_time = text_map.get(1, locale)
                 else:
                     if notification_type == "pot_notification":
@@ -206,10 +227,19 @@ class Schedule(commands.Cog):
                         ),
                     )
                     count += 1
-            if item_current_amount < user.threshold:
+            else:
                 await c.execute(
                     f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
                     (user.user_id, user.shenhe_user.uid),
+                )
+            if error:
+                await user.discord_user.send(
+                    embed=error_embed(message=error_message)
+                    .set_author(
+                        name=text_map.get(500, "en-US", user.user_locale),
+                        icon_url=user.discord_user.display_avatar.url,
+                    )
+                    .set_footer(text=text_map.get(16, "en-US", user.user_locale))
                 )
             await asyncio.sleep(5)
         await self.bot.db.commit()
@@ -239,17 +269,22 @@ class Schedule(commands.Cog):
         users = await self.get_schedule_users()
         count = 0
         for user in users:
+            error = False
+            error_message = ""
             client = user.client
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
                 pass
             except genshin.errors.InvalidCookies:
+                error = True
+                error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
             except genshin.errors.GenshinException as e:
                 if e.retcode in [-10002]:
                     pass
                 else:
+                    claimed = False
                     log.warning(f"[Schedule][Claim Reward] We have been rate limited")
                     for index in range(1, 6):
                         await asyncio.sleep(20 * index)
@@ -257,15 +292,30 @@ class Schedule(commands.Cog):
                         try:
                             await client.claim_daily_reward()
                         except genshin.errors.AlreadyClaimed:
+                            claimed = True
                             break
                         except Exception as e:
+                            error_message = f"```{e}```"
                             log.warning(f"[Schedule][Claim Reward] Error: {e}")
                             sentry_sdk.capture_exception(e)
+                    if not claimed:
+                        error = True
             except Exception as e:
+                error = True
+                error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
             else:
                 count += 1
+            if error:
+                await user.discord_user.send(
+                    embed=error_embed(message=error_message)
+                    .set_author(
+                        name=text_map.get(500, "en-US", user.user_locale),
+                        icon_url=user.discord_user.display_avatar.url,
+                    )
+                    .set_footer(text=text_map.get(611, "en-US", user.user_locale))
+                )
             await asyncio.sleep(5)
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
 
@@ -279,32 +329,37 @@ class Schedule(commands.Cog):
     async def resin_notification(self):
         await self.base_notification("resin_notification")
 
-    @tasks.loop(hours=24)
+    @tasks.loop(minutes=30)
     @schedule_error_handler
     async def talent_notification(self):
         await self.talent_notification_task()
 
     async def talent_notification_task(self):
-        log.info("[Schedule] Talent Notification Start")
-        now = datetime.now()
-        today_weekday = now.weekday()
+        log.info("[Schedule][Talent Notification] Start")
         client = AmbrTopAPI(self.bot.session, "cht")
         domains = await client.get_domain()
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT user_id, character_list FROM talent_notification WHERE toggle = 1"
+            "SELECT user_id, character_list, last_notif FROM talent_notification WHERE toggle = 1"
         )
         users = await c.fetchall()
         count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
+            character_list = tpl[1]
+            last_notif = tpl[2]
+            last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
+            timezone = await get_user_timezone(user_id, self.bot.db)
+            now = datetime.now(pytz.timezone(timezone))
+            if last_notif.day == now.day:
+                continue
             user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
             user_locale = await get_user_locale(user_id, self.bot.db)
-            user_notification_list = ast.literal_eval(tpl[1])
+            character_list = ast.literal_eval(character_list)
             notified = {}
-            for character_id in user_notification_list:
+            for character_id in character_list:
                 for domain in domains:
-                    if domain.weekday == today_weekday:
+                    if domain.weekday == now.weekday():
                         for item in domain.rewards:
                             [upgrade] = await client.get_character_upgrade(character_id)
                             if item in upgrade.items:
@@ -314,12 +369,12 @@ class Schedule(commands.Cog):
                                     notified[character_id].append(item.id)
             for character_id, materials in notified.items():
                 [character] = await client.get_character(character_id)
-                fp = await draw_talent_reminder_card(materials, user_locale or "zh-TW")
+                fp = await draw_talent_reminder_card(materials, user_locale or "en-US")
                 fp.seek(0)
                 file = File(fp, "reminder_card.jpeg")
-                embed = default_embed(message=text_map.get(314, "zh-TW", user_locale))
+                embed = default_embed(message=text_map.get(314, "en-US", user_locale))
                 embed.set_author(
-                    name=f"{text_map.get(312, 'zh-TW', user_locale)}",
+                    name=f"{text_map.get(312, 'en-US', user_locale)}",
                     icon_url=character.icon,
                 )
                 embed.set_image(url="attachment://reminder_card.jpeg")
@@ -331,9 +386,12 @@ class Schedule(commands.Cog):
                         (user_id,),
                     )
                 else:
+                    await c.execute(
+                        "UPDATE SET last_notif = ? WHERE user_id = ?",(now.strftime("%Y/%m/%d %H:%M:%S"), user_id)
+                    )
                     count += 1
         log.info(
-            f"[Schedule] Talent Notifiaction Ended (Notified {count}/{len(users)} users)"
+            f"[Schedule][Talent Notifiaction] Ended (Notified {count}/{len(users)} users)"
         )
 
     @tasks.loop(hours=24)
@@ -519,7 +577,7 @@ class Schedule(commands.Cog):
     async def before_notif(self):
         await self.bot.wait_until_ready()
         now = datetime.now()
-        next_run = now.replace(hour=1, minute=20, second=0)  # 等待到早上1點20
+        next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
         if next_run < now:
             next_run += timedelta(days=1)
         await sleep_until(next_run)

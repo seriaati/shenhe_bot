@@ -1,4 +1,5 @@
 import io
+from typing import Optional
 from pydantic import BaseModel
 import discord
 import genshin
@@ -26,5 +27,6 @@ class NotificationUser(BaseModel):
     threshold: int
     current: int
     max: int
-    last_notif_time: str | None
-    shenhe_user: ShenheUser = None
+    uid: int
+    last_notif_time: Optional[str]
+    shenhe_user: Optional[ShenheUser] = None
