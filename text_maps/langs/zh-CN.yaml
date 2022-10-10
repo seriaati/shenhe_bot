@@ -14,7 +14,7 @@
 '13': 今天
 '14': 你正试图查看的日记月份是无效的
 '15': 恢复时间
-'16': ''
+'16': It is recommended to use the /check command
 '17': 尘歌壶
 '18': 没有探索派遣
 '19': 已完成
@@ -547,13 +547,13 @@
   DM me for any feature requests, imporvements, and bug reports!
 '498': 查看 profile
 '499': 查看所有角色
-'500': ''
+'500': An error occured while trying to do daily check-in
 '501': 更新自身排名
 '502': 排名更新成功
 '503': 查看申鹤历来的更新
 '504': '由 seria#5334 制作, 有疑问可以私讯'
-'505': ''
-'506': ''
+'505': An error has occursed while trying to send you a resin notification
+'506': An error has occursed while trying to send you a realm currency notification
 '507': 想要抽到几个自己想要的五星 UP 武器?
 '508': 搜寻任何与原神有关的角色、武器、物品
 '509': 关键词
@@ -689,7 +689,7 @@
 '608': 查看申鹤 5.0 的新功能
 '609': 帐号管理
 '610': 使用新的帐户管理系统在你的帐户之间轻松切换。你可以选择要添加的帐户类型，并为这些帐户取名。
-'611': ''
+'611': It is recommended to do the check-in by yourself today
 '612': 提醒系统进行了大修。你现在可以像以前一样设置树脂、天赋领域和领域货币的提醒，但界面更简洁直观。
 '613': 新的网站
 '614': 网站也进行了大修。现在使用 Bootstrap 技术来增强手机及平板用户的体验，并且新增了常见问题区块来回答大部分使用者的常见问题。
