@@ -238,7 +238,7 @@
 '217': 水元素
 '218': 草元素
 '219': 雷元素
-'220': Your timezone has been changed to
+'220': Developer of Shenhe
 '221': 一月
 '222': 二月
 '223': 三月
@@ -309,8 +309,8 @@
   • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
 '295': Submit timezone name
 '296': Please use the /timezone command to view the timezone list
-'297': ''
-'298': ''
+'297': Meet the awesome people that helped me!
+'298': Translators
 '299': 好感度
 '300': 圣遗物最高分为 99, 只有 +20 才会评分
 '301': 属性
@@ -510,7 +510,7 @@
 '463': 主词条
 '464': 副词条
 '465': 计算武器升级所需的素材
-'466': ''
+'466': Developers that helped me
 '467': 稀有度
 '468': 单手剑
 '469': 法器
@@ -519,11 +519,11 @@
 '472': 长枪
 '473': 查看代办清单
 '474': 导入原神祈愿记录
-'475': ''
+'475': Huge thank you to these people!
 '476': 查看导入祈愿记录教学
 '477': 提交连结
 '478': 查看祈愿记录
-'479': ''
+'479': And you!
 '480': 预测抽到角色的机率
 '481': 角色数量
 '482': 想要抽到几个自己想要的五星 UP 武器?
@@ -541,7 +541,10 @@
 '494': 其他
 '495': 你想要什么样的帮助呢?
 '496': 管理员用
-'497': ''
+'497': |-
+  Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
+  I really appreciate all of you and I hope you enjoy using Shenhe.
+  DM me for any feature requests, imporvements, and bug reports!
 '498': 查看 profile
 '499': 查看所有角色
 '500': ''
