@@ -581,11 +581,6 @@ class Schedule(commands.Cog):
     @talent_notification.before_loop
     async def before_notif(self):
         await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
 
     @change_status.before_loop
     async def before_check(self):
