@@ -392,7 +392,7 @@ class Schedule(commands.Cog):
                     )
                 else:
                     await c.execute(
-                        "UPDATE SET last_notif = ? WHERE user_id = ?",
+                        "UPDATE talent_notification SET last_notif = ? WHERE user_id = ?",
                         (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                     )
                     count += 1
@@ -577,7 +577,6 @@ class Schedule(commands.Cog):
     @pot_notification.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-        await asyncio.sleep(120)
 
     @talent_notification.before_loop
     async def before_notif(self):
