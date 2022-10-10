@@ -17,6 +17,11 @@ class CondText:
     
     def get_text(self, lang: str, file: Literal['artifact', 'build', 'character',' weapon'], key: str) -> str:
         lang = to_paths(lang)
+        if lang not in self.data:
+            if lang == 'zh-CN':
+                lang = 'zh-TW'
+            else:
+                lang = 'en-US'
         text = self.data[lang][file].get(key, '')
         if text == '':
             text = self.data['zh-TW'][file].get(key, '')
