@@ -14,7 +14,7 @@
 '13': 今天
 '14': 你正試圖查看的日記月份是無效的
 '15': 恢復時間
-'16': It is recommended to use the /check command
+'16': 建議使用 /check 指令
 '17': 塵歌壺
 '18': 沒有探索派遣
 '19': 已完成
@@ -238,7 +238,7 @@
 '217': 水元素
 '218': 草元素
 '219': 雷元素
-'220': Developer of Shenhe
+'220': 申鶴的開發者
 '221': 一月
 '222': 二月
 '223': 三月
@@ -309,8 +309,8 @@
   • 此外，需要時區的指令（例如 </farm:1020580644419551333>）將使用你的時區作為默認時區
 '295': 提交時區名稱
 '296': 請使用 /timezone 指令來查看時區列表
-'297': Meet the awesome people that helped me!
-'298': Translators
+'297': 認識一下幫了我的大好人們!
+'298': 翻譯員
 '299': 好感度
 '300': 聖遺物最高分為 99, 只有 +20 才會評分
 '301': 屬性
@@ -510,7 +510,7 @@
 '463': 主詞條
 '464': 副詞條
 '465': 計算武器升級所需的素材
-'466': Developers that helped me
+'466': 幫了我大忙的開發者們
 '467': 稀有度
 '468': 單手劍
 '469': 法器
@@ -519,11 +519,11 @@
 '472': 長槍
 '473': 查看代辦清單
 '474': 導入原神祈願記錄
-'475': Huge thank you to these people!
+'475': 非常感謝這些人！
 '476': 查看導入祈願記錄教學
 '477': 提交連結
 '478': 查看祈願記錄
-'479': And you!
+'479': 還有你！
 '480': 預測抽到角色的機率
 '481': 角色數量
 '482': 想要抽到幾個自己想要的五星 UP 武器?
@@ -542,18 +542,18 @@
 '495': 你想要什麼樣的幫助呢?
 '496': 管理員用
 '497': |-
-  Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
-  I really appreciate all of you and I hope you enjoy using Shenhe.
-  DM me for any feature requests, imporvements, and bug reports!
+  非常感謝你的使用，尤其是那些給了我建議或是回報錯誤的使用者們。
+  我十分欣賞你們的幫助，我也希望你覺得申鶴對你是有幫助的。
+  如果你有任何建議，歡迎私訊我！
 '498': 查看 profile
 '499': 查看所有角色
-'500': An error occured while trying to do daily check-in
+'500': 在試圖執行自動簽到時出錯了
 '501': 更新自身排名
 '502': 排名更新成功
 '503': 查看申鶴歷來的更新
 '504': '由 seria#5334 製作, 有疑問可以私訊'
-'505': An error has occursed while trying to send you a resin notification
-'506': An error has occursed while trying to send you a realm currency notification
+'505': 在試圖通知樹脂數量時出錯了
+'506': 在試圖通知洞天寶錢數量時出錯了
 '507': 想要抽到幾個自己想要的五星 UP 武器?
 '508': 搜尋任何與原神有關的角色、武器、物品
 '509': 關鍵詞
@@ -689,7 +689,7 @@
 '608': 查看申鶴 5.0 的新功能
 '609': 帳號管理
 '610': 使用新的帳戶管理系統在你的帳戶之間輕鬆切換。 你可以選擇要添加的帳戶類型，並為這些帳戶取名。
-'611': It is recommended to do the check-in by yourself today
+'611': 建議今天自行進行簽到
 '612': 提醒系統進行了大修。 你現在可以像以前一樣設置樹脂、天賦領域和領域貨幣的提醒，但界面更簡潔直觀。
 '613': 新的網站
 '614': 網站也進行了大修。 現在使用 Bootstrap 技術來增強手機及平板用戶的體驗，並且新增了常見問題區塊來回答大部分使用者的常見問題。
