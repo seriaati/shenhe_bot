@@ -14,7 +14,7 @@
 '13': 今天
 '14': 你正試圖查看的日記月份是無效的
 '15': 恢復時間
-'16': ''
+'16': It is recommended to use the /check command
 '17': 塵歌壺
 '18': 沒有探索派遣
 '19': 已完成
@@ -547,13 +547,13 @@
   DM me for any feature requests, imporvements, and bug reports!
 '498': 查看 profile
 '499': 查看所有角色
-'500': ''
+'500': An error occured while trying to do daily check-in
 '501': 更新自身排名
 '502': 排名更新成功
 '503': 查看申鶴歷來的更新
 '504': '由 seria#5334 製作, 有疑問可以私訊'
-'505': ''
-'506': ''
+'505': An error has occursed while trying to send you a resin notification
+'506': An error has occursed while trying to send you a realm currency notification
 '507': 想要抽到幾個自己想要的五星 UP 武器?
 '508': 搜尋任何與原神有關的角色、武器、物品
 '509': 關鍵詞
@@ -689,7 +689,7 @@
 '608': 查看申鶴 5.0 的新功能
 '609': 帳號管理
 '610': 使用新的帳戶管理系統在你的帳戶之間輕鬆切換。 你可以選擇要添加的帳戶類型，並為這些帳戶取名。
-'611': ''
+'611': It is recommended to do the check-in by yourself today
 '612': 提醒系統進行了大修。 你現在可以像以前一樣設置樹脂、天賦領域和領域貨幣的提醒，但界面更簡潔直觀。
 '613': 新的網站
 '614': 網站也進行了大修。 現在使用 Bootstrap 技術來增強手機及平板用戶的體驗，並且新增了常見問題區塊來回答大部分使用者的常見問題。
