@@ -352,12 +352,13 @@ class Schedule(commands.Cog):
             user_id = tpl[0]
             character_list = tpl[1]
             last_notif = tpl[2]
-            last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
             timezone = await get_user_timezone(user_id, self.bot.db)
             now = datetime.now(pytz.timezone(timezone))
-            if last_notif.day == now.day:
-                continue
             user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
+            if last_notif is not None:
+                last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
+                if last_notif.day == now.day:
+                    continue
             user_locale = await get_user_locale(user_id, self.bot.db)
             character_list = ast.literal_eval(character_list)
             notified = {}
