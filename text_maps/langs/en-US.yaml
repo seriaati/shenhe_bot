@@ -238,7 +238,7 @@
 '217': Hydro
 '218': Dendro
 '219': Electro
-'220': Your timezone has been changed to
+'220': Developer of Shenhe
 '221': January
 '222': February
 '223': March
@@ -309,8 +309,8 @@
   • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
 '295': Submit timezone name
 '296': Please use the /timezone command to view the timezone list
-'297': ''
-'298': ''
+'297': Meet the awesome people that helped me!
+'298': Translators
 '299': Friendship Level
 '300': The highest artifact score is 99, only +20 artifacts will have scores
 '301': Stats
@@ -510,7 +510,7 @@
 '463': Main stat
 '464': Sub stat
 '465': Calculate materials needed for upgrading a weapon
-'466': ''
+'466': Developers that helped me
 '467': rarity
 '468': sword
 '469': catalyst
@@ -519,11 +519,11 @@
 '472': polearm
 '473': View the todo list
 '474': Import wish history
-'475': ''
+'475': Huge thank you to these people!
 '476': Wish history import tutorial
 '477': Submit link
 '478': View wish history
-'479': ''
+'479': And you!
 '480': Predict the chance of pulling a character
 '481': number
 '482': How many 5-star UP characters do you wish to pull?
@@ -541,7 +541,10 @@
 '494': Others
 '495': Choose your category
 '496': Owner usage only
-'497': ''
+'497': |-
+  Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
+  I really appreciate all of you and I hope you enjoy using Shenhe.
+  DM me for any feature requests, imporvements, and bug reports!
 '498': View profile
 '499': View all characters
 '500': ''
