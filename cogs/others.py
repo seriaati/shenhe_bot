@@ -116,6 +116,64 @@ class OthersCog(commands.Cog, name="others"):
                 choices.append(Choice(name=timezone, value=timezone))
         return choices[:25]
 
+    @app_commands.command(
+        name="credits",
+        description=_("Meet the awesome people that helped me!", hash=297),
+    )
+    async def view_credits(self, i: Interaction):
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        embed = default_embed(text_map.get(475, locale) + " 🎉")
+        kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
+            425140480334888980
+        )
+        ginn = self.bot.get_user(489647643342143491) or await self.bot.fetch_user(
+            489647643342143491
+        )
+        fox_fox = self.bot.get_user(274853284764975104) or await self.bot.fetch_user(
+            274853284764975104
+        )
+        tedd = self.bot.get_user(272394461646946304) or await self.bot.fetch_user(
+            272394461646946304
+        )
+        dinnerbone_3rd = self.bot.get_user(
+            808396055879090267
+        ) or await self.bot.fetch_user(808396055879090267)
+        xiaokuai = self.bot.get_user(780643463946698813) or await self.bot.fetch_user(780643463946698813)
+        embed.add_field(
+            name=text_map.get(298, locale),
+            value=f"{kakaka.mention} - 🇯🇵\n"
+            f"{tedd.mention} - 🇯🇵\n"
+            f"{ginn.mention} - 🇺🇸\n"
+            f"{fox_fox.mention} - 🇺🇸\n"
+            f"{dinnerbone_3rd.mention} - 🇨🇳"
+            f"{xiaokuai.mention} - 🇨🇳",
+            inline=False,
+        )
+        gaurav = self.bot.get_user(327390030689730561) or await self.bot.fetch_user(
+            327390030689730561
+        )
+        kt = self.bot.get_user(153087013447401472) or await self.bot.fetch_user(
+            153087013447401472
+        )
+        algoinde = self.bot.get_user(142949518680391680) or await self.bot.fetch_user(
+            142949518680391680
+        )
+        m_307 = self.bot.get_user(301178730196238339) or await self.bot.fetch_user(301178730196238339)
+        embed.add_field(
+            name=text_map.get(466, locale),
+            value=f"{gaurav.mention}\n"
+            f"{kt.mention}\n"
+            f"{algoinde.mention}\n"
+            f"{m_307.mention}",
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(479, locale),
+            value=text_map.get(497, locale),
+            inline=False,
+        )
+        await i.response.send_message(embed=embed)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(OthersCog(bot))
