@@ -27,6 +27,6 @@ class NotificationUser(BaseModel):
     threshold: int
     current: int
     max: int
-    uid: int
+    uid: Optional[int]
     last_notif_time: Optional[str]
     shenhe_user: Optional[ShenheUser] = None

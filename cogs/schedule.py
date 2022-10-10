@@ -9,7 +9,7 @@ import sentry_sdk
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import NotificationUser, ShenheUser
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import get_shenhe_user
+from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -116,7 +116,7 @@ class Schedule(commands.Cog):
             current = tpl[2]
             max = tpl[3]
             last_notif_time = tpl[4]
-            uid = tpl[5]
+            uid = tpl[5] or await get_uid(user_id, self.bot.db)
             notification_user = NotificationUser(
                 user_id=user_id,
                 threshold=threshold,
@@ -160,7 +160,7 @@ class Schedule(commands.Cog):
                 notes = await client.get_notes(user.shenhe_user.uid)
             except genshin.errors.InvalidCookies:
                 error = True
-                error_message = text_map.get(36, "en-US", user.user_locale)
+                error_message = text_map.get(36, "en-US", user.shenhe_user.user_locale)
                 log.warning(
                     f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}"
                 )
