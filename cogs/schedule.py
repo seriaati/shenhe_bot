@@ -236,7 +236,11 @@ class Schedule(commands.Cog):
                 await user.discord_user.send(
                     embed=error_embed(message=error_message)
                     .set_author(
-                        name=text_map.get(500, "en-US", user.user_locale),
+                        name=text_map.get(
+                            505 if notification_type == "resin_notification" else 506,
+                            "en-US",
+                            user.user_locale,
+                        ),
                         icon_url=user.discord_user.display_avatar.url,
                     )
                     .set_footer(text=text_map.get(16, "en-US", user.user_locale))
@@ -387,7 +391,8 @@ class Schedule(commands.Cog):
                     )
                 else:
                     await c.execute(
-                        "UPDATE SET last_notif = ? WHERE user_id = ?",(now.strftime("%Y/%m/%d %H:%M:%S"), user_id)
+                        "UPDATE SET last_notif = ? WHERE user_id = ?",
+                        (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                     )
                     count += 1
         log.info(
