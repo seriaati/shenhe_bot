@@ -89,6 +89,14 @@ class TextMap():
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
             return avatarText[str(ambr_locale)]
+        
+    def get_weapon_id_with_name(self, weapon_name: str) -> str | int:
+        for weapon_id, weapon_name_dict in self.weapon.items():
+            for _, weapon_lang_name in weapon_name_dict.items():
+                if weapon_lang_name == weapon_name:
+                    return int(weapon_id)
+        log.warning(f'[Exception][get_weapon_id_with_name][weapon_name not found]: [weapon name]{weapon_name}')
+        return weapon_name
 
     def get_domain_name(self, dungeon_id: int, locale: discord.Locale, user_locale: str = None):
         dungeonText = self.dailyDungeon.get(str(dungeon_id))

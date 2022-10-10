@@ -1,0 +1,16 @@
+art_main_stat_map = {
+    "精": "EM",
+    "攻": "ATK",
+    "防": "DEF",
+    "生": "HP",
+    "治": "Heal",
+    "暴": "Crit",
+    "風": "Anemo",
+    "水": "Hydro",
+    "火": "Pyro",
+    "雷": "Electro",
+    "冰": "Cryo",
+    "岩": "Geo",
+    "草": "Dendro",
+    "充": "ER",
+}

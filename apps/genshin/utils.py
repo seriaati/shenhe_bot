@@ -8,7 +8,7 @@ from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import ShenheUser
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale, get_weekday_name
+from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from apps.text_map.cond_text import cond_text
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
@@ -63,25 +63,26 @@ def get_character_builds(
     result = []
 
     for build in element_builds_dict[character_name]["builds"]:
-        statStr = ""
+        stat_str = ""
         for stat, value in build["stats"].items():
-            statStr += f"{stat} ➜ {value}\n"
+            stat_str += f"{cond_text.get_text(locale, 'build', stat)} ➜ {value}\n"
         move_text = cond_text.get_text(
             locale, "build", f"{character_name}_{build['move']}"
         )
+        weapon_id = text_map.get_weapon_id_with_name(build["weapon"])
         embed = default_embed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
-            f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {build['weapon']}\n"
+            f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {text_map.get_weapon_name(weapon_id, locale)}\n"
             f"{text_map.get(92, locale)} • {cond_text.get_text(locale, 'build', build['artifacts'])}\n"
-            f"{text_map.get(93, locale)} • {build['main_stats']}\n"
+            f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
             f"{text_map.get(94, locale)} • {build['talents']}\n"
-            f"{move_text} • {build['dmg']}\n\n",
+            f"{move_text}{'' if str(locale) in ['zh-TW', 'zh-CN'] else 'DMG'} • {build['dmg']}\n\n",
         )
-        embed.add_field(name=text_map.get(95, locale), value=statStr)
+        embed.add_field(name=text_map.get(95, locale), value=stat_str)
         count += 1
         embed.set_thumbnail(url=get_character(character_id)["icon"])
         embed.set_footer(
-            text=f"[{text_map.get(96, locale)}](https://bbs.nga.cn/read.php?tid=25843014)"
+            text=f"{text_map.get(96, locale)}: https://bbs.nga.cn/read.php?tid=25843014"
         )
         result.append([embed, build["weapon"], build["artifacts"]])
 
@@ -478,7 +479,7 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
 
 
 def get_domain_title(domain: Domain, locale: Locale | str):
-    if "Forgery" in text_map.get_domain_name(domain.id, 'en-US'):
+    if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(91, locale)}"
-    elif "Mastery" in text_map.get_domain_name(domain.id, 'en-US'):
+    elif "Mastery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(105, locale).title()}"

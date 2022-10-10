@@ -3,6 +3,7 @@ from typing import Literal
 import aiosqlite
 from apps.text_map.text_map_app import text_map
 from discord import Locale
+from text_maps.artifact_main_stat import art_main_stat_map
 
 
 def get_weekday_name(
@@ -33,6 +34,15 @@ def get_weekday_name(
         }
     return weekday_dict.get(day_num)
 
+def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
+    if str(locale) == "zh-TW" or str(locale) == "zh-CN":
+        return main_stat
+    result = ""
+    for index, stat in enumerate(main_stat):
+        result += art_main_stat_map.get(stat, stat)
+        if index != len(main_stat) - 1:
+            result += "-"
+    return result
 
 def get_element_name(
     element_name: str, locale: Locale, user_locale: Literal["str", None]
