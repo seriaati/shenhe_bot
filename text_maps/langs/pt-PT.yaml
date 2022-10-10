@@ -14,7 +14,7 @@
 '13': Today
 '14': The month of diary you are trying to view is unavailable
 '15': Recovery time
-'16': ''
+'16': It is recommended to use the /check command
 '17': Serenitea Pot
 '18': No expeditions found
 '19': Finished
@@ -547,13 +547,13 @@
   DM me for any feature requests, imporvements, and bug reports!
 '498': View profile
 '499': View all characters
-'500': ''
+'500': An error occured while trying to do daily check-in
 '501': Update self-leaderboard position
 '502': Leaderboard position updated
 '503': View past updates
 '504': 'Made by seria#5334, DM me if you have any questions'
-'505': ''
-'506': ''
+'505': An error has occursed while trying to send you a resin notification
+'506': An error has occursed while trying to send you a realm currency notification
 '507': How many 5-star UP weapons do you wish to pull?
 '508': Search anything genshin related
 '509': query
@@ -692,7 +692,7 @@
 '608': View the Shenhe v5 change log
 '609': Multi-account support
 '610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
-'611': ''
+'611': It is recommended to do the check-in by yourself today
 '612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
 '613': New website
 '614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.
