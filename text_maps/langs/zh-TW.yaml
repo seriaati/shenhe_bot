@@ -303,12 +303,12 @@
 '292': 生命值上限
 '293': 目前時區
 '294': |-
-  • You can search your timezone by using the </timezone:1028913972377817128> command and submit the timezone name by clicking the button below
-  • Or, select a timezone from the list of popular timezones below
-  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
-  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
+  • 你可以使用 </timezone:1028913972377817128> 指令來搜尋時區，並通過點擊下面的按鈕來提交時區名稱
+  • 或者，你可以從下面的常見時區列表中選擇一個時區
+  • 設置時區後，申鶴將能夠識別您的時區並在正確的時間向您發送通知
+  • 此外，需要時區的指令（例如 </farm:1020580644419551333>）將使用你的時區作為默認時區
 '295': 提交時區名稱
-'296': Please use the </timezone:1028913972377817128> command to view the timezone list
+'296': 請使用 </timezone:1028913972377817128> 指令來查看時區列表
 '297': 認識一下幫了我的大好人們!
 '298': 翻譯員
 '299': 好感度
@@ -703,4 +703,4 @@
 '622': 你現在可以查看過去領取過的獎勵，如果申鶴沒有幫你領到，你也可以手動領取獎勵。
 '623': 交互逾時
 '624': 請重試
-'625': Date published
+'625': 發佈日期
