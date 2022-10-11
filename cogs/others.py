@@ -145,7 +145,7 @@ class OthersCog(commands.Cog, name="others"):
             f"{tedd.mention} - 🇯🇵\n"
             f"{ginn.mention} - 🇺🇸\n"
             f"{fox_fox.mention} - 🇺🇸\n"
-            f"{dinnerbone_3rd.mention} - 🇨🇳"
+            f"{dinnerbone_3rd.mention} - 🇨🇳\n"
             f"{xiaokuai.mention} - 🇨🇳",
             inline=False,
         )

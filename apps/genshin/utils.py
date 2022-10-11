@@ -433,6 +433,8 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
         characters: Dict[int, Character] = {}
         for reward in domain.rewards:
             for upgrade in character_upgrades:
+                if '10000005' in upgrade.character_id:
+                    continue
                 for item in upgrade.items:
                     if item.id == reward.id:
                         characters[upgrade.character_id] = (

@@ -1,4 +1,5 @@
 import importlib
+from pathlib import Path
 import sys
 
 from discord import Interaction, app_commands
@@ -47,8 +48,7 @@ class AdminCog(commands.Cog, name="admin"):
                     continue
                 if module.__name__.startswith(
                     (
-                        "ambr."
-                        "cogs.",
+                        "ambr." "cogs.",
                         "apps.",
                         "data.",
                         "text_maps.",
@@ -64,7 +64,17 @@ class AdminCog(commands.Cog, name="admin"):
                             embed=error_embed(module.__name__, f"```{e}```"),
                             ephemeral=True,
                         )
-        await i.followup.send("success", ephemeral=True)
+            await i.edit_original_response(content=f"reloaded modules ({_+1}/2)")
+        for filepath in Path("./cogs").glob("**/*.py"):
+            cog_name = Path(filepath).stem
+            try:
+                await self.bot.reload_extension(f"cogs.{cog_name}")
+            except Exception as e:
+                return await i.followup.send(
+                    embed=error_embed(cog_name, f"```{e}```"),
+                    ephemeral=True,
+                )
+        await i.edit_original_response(content="reloaded cogs")
 
     @is_seria()
     @app_commands.command(name="sync", description=_("Owner usage only", hash=496))

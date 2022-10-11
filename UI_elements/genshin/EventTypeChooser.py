@@ -40,9 +40,13 @@ class Hoyolab(Button):
         events = events["items"]
         for event in events:
             date_published = parser.parse(event["date_published"])
-            embed = default_embed(
-                event["title"],
-                f"{format_dt(date_published)}\n\n{parse_HTML(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
+            embed = default_embed(event["title"])
+            embed.add_field(
+                name=text_map.get(625, locale), value=format_dt(date_published, 'R')
+            )
+            embed.add_field(
+                name=text_map.get(408, locale),
+                value=f"{parse_HTML(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
             )
             if "image" in event:
                 embed.set_image(url=event["image"])
@@ -63,7 +67,10 @@ class Hoyolab(Button):
             i,
             embeds[list(embeds.keys())[0]],
             i.client.db,
-            [Select(select_options, embeds, i.locale, user_locale), GOBack(self.view.locale)],
+            [
+                Select(select_options, embeds, i.locale, user_locale),
+                GOBack(self.view.locale),
+            ],
         ).start(edit=True)
 
 
@@ -143,12 +150,16 @@ class Select(Select):
         self.view.embeds = self.embeds[self.values[0]]
         await i.response.edit_message(embed=self.view.embeds[0], view=self.view)
 
+
 class GOBack(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(label=text_map.get(282, locale), style=ButtonStyle.green, row=3)
-    
+        super().__init__(
+            label=text_map.get(282, locale), style=ButtonStyle.green, row=3
+        )
+
     async def callback(self, i: Interaction):
         await return_events(i, edit=True)
+
 
 async def return_events(i: Interaction, edit: bool = False):
     user_locale = await get_user_locale(i.user.id, i.client.db)
