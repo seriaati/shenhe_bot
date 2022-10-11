@@ -2,6 +2,7 @@ from typing import Dict, List
 import aiosqlite
 import yaml
 from apps.genshin.utils import get_character, get_character_builds
+from apps.text_map.cond_text import cond_text
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from discord import Embed, User, Interaction, SelectOption
@@ -55,9 +56,11 @@ class CharacterSelect(Select):
             if has_thoughts and index + 1 == len(builds):
                 options.append(SelectOption(label=f"{build[1]}", value=index))
             else:
+                weapon_id = text_map.get_weapon_id_with_name(build[1])
                 options.append(
                     SelectOption(
-                        label=f"{text_map.get(162, i.locale, user_locale)} {index+1} | {build[1]} {build[2]}",
+                        label=f"{text_map.get(162, i.locale, user_locale)} {index+1}",
+                        description=f"{text_map.get_weapon_name(weapon_id, i.locale, user_locale)} | {cond_text.get_text(user_locale or i.locale, 'build', build[2])}",
                         value=index,
                     )
                 )

@@ -74,7 +74,7 @@ class TextMap():
         
     def get_material_id_with_name(self, material_name: str) -> str | int:
         for material_id, material_name_dict in self.material.items():
-            for lang_code, material_lang_name in material_name_dict.items():
+            for _, material_lang_name in material_name_dict.items():
                 if material_lang_name == material_name:
                     return int(material_id)
         log.warning(f'[Exception][get_material_id_with_name][material_name not found]: [material_name]{material_name}')
