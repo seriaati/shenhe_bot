@@ -302,12 +302,12 @@
 '292': 最大HP
 '293': 現在のタイムゾーン
 '294': |-
-  ・ タイムゾーンを検索するには、/timezoneコマンドを使用し、以下のボタンをクリックしてタイムゾーン名を送信してください。
-  ・または、以下の一般的なタイムゾーンの一覧からタイムゾーンを選択します。
-  ・タイムゾーンを設定すると、申鶴はあなたのタイムゾーンを認識し、正しい時刻に通知を送ることができるようになります。
-  ・</farm:1020580644419551333>のようなタイムゾーンを必要とするコマンドにはあなたのタイムゾーンがデフォルトとして使用されます。
+  • You can search your timezone by using the </timezone:1028913972377817128> command and submit the timezone name by clicking the button below
+  • Or, select a timezone from the list of popular timezones below
+  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
+  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
 '295': タイムゾーン名を送信
-'296': タイムゾーン一覧を表示するには /timezone コマンドを使用してください
+'296': Please use the </timezone:1028913972377817128> command to view the timezone list
 '297': お世話になった素晴らしい方々をご紹介します！
 '298': 翻訳者
 '299': 好感度レベル

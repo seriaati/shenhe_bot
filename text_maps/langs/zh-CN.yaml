@@ -303,12 +303,12 @@
 '292': 生命值上限
 '293': 目前时区
 '294': |-
-  • 你可以使用 /timezone 指令来搜寻时区，并通过点击下面的按钮来提交时区名称
-  • 或者，你可以从下面的常见时区列表中选择一个时区
-  • 设置时区后，申鹤将能够识别您的时区并在正确的时间向您发送通知
-  • 此外，需要时区的指令（例如 </farm:1020580644419551333>）将使用你的时区作为默认时区
+  • You can search your timezone by using the </timezone:1028913972377817128> command and submit the timezone name by clicking the button below
+  • Or, select a timezone from the list of popular timezones below
+  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
+  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
 '295': 提交时区名称
-'296': 请使用 /timezone 指令来查看时区列表
+'296': Please use the </timezone:1028913972377817128> command to view the timezone list
 '297': 认识一下帮了我的大好人们!
 '298': 翻译员
 '299': 好感度
