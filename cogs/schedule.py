@@ -409,10 +409,6 @@ class Schedule(commands.Cog):
     async def update_game_data_task(self):
         log.info("[Schedule][Update Game Data] Start")
         await genshin.utility.update_characters_ambr()
-        emoji_server_id = 991560432470999062
-        emoji_server = self.bot.get_guild(
-            emoji_server_id
-        ) or await self.bot.fetch_guild(emoji_server_id)
         client = AmbrTopAPI(self.bot.session, "cht")
         eng_client = AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
@@ -476,6 +472,10 @@ class Schedule(commands.Cog):
                     object_id = (object_id.split("-"))[0]
                 emoji = find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
+                    for guild in self.bot.guilds:
+                        if "shenhe asset" in guild.name and guild.me.guild_permissions.manage_emojis and len(guild.emojis) < guild.emoji_limit:
+                            emoji_server = guild
+                            break
                     try:
                         async with self.bot.session.get(object.icon) as r:
                             bytes_obj = await r.read()
