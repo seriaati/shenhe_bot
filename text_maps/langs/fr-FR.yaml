@@ -303,12 +303,12 @@
 '292': Max HP
 '293': Current timezone
 '294': |-
-  • You can search your timezone by using the /timezone command and submit the timezone name by clicking the button below
+  • You can search your timezone by using the </timezone:1028913972377817128> command and submit the timezone name by clicking the button below
   • Or, select a timezone from the list of popular timezones below
   • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
   • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
 '295': Submit timezone name
-'296': Please use the /timezone command to view the timezone list
+'296': Please use the </timezone:1028913972377817128> command to view the timezone list
 '297': Meet the awesome people that helped me!
 '298': Translators
 '299': Friendship Level
