@@ -171,10 +171,11 @@ class GeneralPaginator:
             await self.interaction.followup.send(**kwargs)
         elif dm:
             del kwargs["ephemeral"]
-            await self.interaction.user.send(**kwargs)
+            view.message = await self.interaction.user.send(**kwargs)
         else:
             await self.interaction.response.send_message(**kwargs)
         
-        view.message = await self.interaction.original_response()
+        if not dm:
+            view.message = await self.interaction.original_response()
 
         await view.wait()

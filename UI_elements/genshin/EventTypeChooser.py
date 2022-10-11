@@ -42,7 +42,7 @@ class Hoyolab(Button):
             date_published = parser.parse(event["date_published"])
             embed = default_embed(
                 event["title"],
-                f"{format_dt(date_published)}\n\n{parse_HTML(event['content_html'])[:100]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
+                f"{format_dt(date_published)}\n\n{parse_HTML(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
             )
             if "image" in event:
                 embed.set_image(url=event["image"])
@@ -96,9 +96,9 @@ class Genshin(Button):
         for event in overview["data"]["list"]:
             event_list = event["list"]
             if event_list[0]["type"] not in embeds:
-                embeds[event_list[0]["type"]] = []
+                embeds[str(event_list[0]["type"])] = []
             if first_id is None:
-                first_id = event_list[0]["type"]
+                first_id = str(event_list[0]["type"])
             for e in event_list:
                 embed = default_embed(e["title"])
                 embed.set_author(name=e["type_label"], icon_url=e["tag_icon"])
@@ -116,7 +116,7 @@ class Genshin(Button):
                     value=parse_HTML(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
-                embeds[e["type"]].append(embed)
+                embeds[str(e["type"])].append(embed)
         await GeneralPaginator(
             i,
             embeds[first_id],
@@ -140,7 +140,7 @@ class Select(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view.current_page = 0
-        self.view.embeds = self.embeds[int(self.values[0])]
+        self.view.embeds = self.embeds[self.values[0]]
         await i.response.edit_message(embed=self.view.embeds[0], view=self.view)
 
 class GOBack(Button):
