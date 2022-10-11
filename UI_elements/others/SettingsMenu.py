@@ -239,13 +239,7 @@ class Timezone(Button):
         )
         self.view.add_item(GOBack())
         user_timezone = await get_user_timezone(i.user.id, i.client.db)
-        tz = pytz.timezone(user_timezone)
-        dt = datetime.utcnow()
-        offset_seconds = tz.utcoffset(dt).seconds
-        offset_hours = offset_seconds / 3600.0
-        utc_offset = "UTC " + "{:+d}:{:02d}".format(
-            int(offset_hours), int((offset_hours % 1) * 60)
-        )
+        utc_offset = "UTC" + datetime.now(pytz.timezone(user_timezone)).strftime("%z")
         embed = default_embed()
         embed.set_author(
             name=f"{text_map.get(293, i.locale, user_locale)}: {user_timezone} ({utc_offset})",
@@ -262,67 +256,53 @@ class CommonTimezoneSelect(Select):
             SelectOption(
                 emoji="🇹🇼",
                 label="Asia/Taipei",
-                description="UTC+8",
                 value="Asia/Taipei",
             ),
             SelectOption(
                 emoji="🇺🇸",
                 label="America/New York",
-                description="UTC-5",
                 value="America/New_York",
             ),
             SelectOption(
                 emoji="🇬🇧",
                 label="Europe/London",
-                description="UTC+0",
                 value="Europe/London",
             ),
-            SelectOption(
-                emoji="🇯🇵", label="Asia/Tokyo", description="UTC+9", value="Asia/Tokyo"
-            ),
+            SelectOption(emoji="🇯🇵", label="Asia/Tokyo", value="Asia/Tokyo"),
             SelectOption(
                 emoji="🇦🇺",
                 label="Australia/Sydney",
-                description="UTC+10",
                 value="Australia/Sydney",
             ),
             SelectOption(
                 emoji="🇨🇳",
                 label="Asia/Shanghai",
-                description="UTC+8",
                 value="Asia/Shanghai",
             ),
             SelectOption(
                 emoji="🇪🇺",
                 label="Europe/Brussels",
-                description="UTC+2",
                 value="Europe/Brussels",
             ),
             SelectOption(
                 emoji="🇮🇳",
                 label="Asia/Kolkata",
-                description="UTC+5.5",
                 value="Asia/Kolkata",
             ),
-            SelectOption(
-                emoji="🇰🇷", label="Asia/Seoul", description="UTC+9", value="Asia/Seoul"
-            ),
+            SelectOption(emoji="🇰🇷", label="Asia/Seoul", value="Asia/Seoul"),
             SelectOption(
                 emoji="🇷🇺",
                 label="Europe/Moscow",
-                description="UTC+3",
                 value="Europe/Moscow",
             ),
             SelectOption(
                 emoji="🇸🇬",
                 label="Asia/Singapore",
-                description="UTC+8",
                 value="Asia/Singapore",
             ),
             SelectOption(
                 emoji="🇺🇦",
                 label="Europe/Kiev",
-                description="UTC+2",
                 value="Europe/Kiev",
             ),
         ]
