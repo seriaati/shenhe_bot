@@ -243,7 +243,9 @@ class Schedule(commands.Cog):
                         ),
                         icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
-                    .set_footer(text=text_map.get(16, "en-US", user.shenhe_user.user_locale))
+                    .set_footer(
+                        text=text_map.get(16, "en-US", user.shenhe_user.user_locale)
+                    )
                 )
             await asyncio.sleep(5)
         await self.bot.db.commit()
@@ -374,7 +376,9 @@ class Schedule(commands.Cog):
                                     notified[character_id].append(item.id)
             for character_id, materials in notified.items():
                 [character] = await client.get_character(character_id)
-                fp = await draw_talent_reminder_card(materials, user_locale or "en-US")
+                fp = await draw_talent_reminder_card(
+                    materials, user_locale or "en-US", self.bot.session
+                )
                 fp.seek(0)
                 file = File(fp, "reminder_card.jpeg")
                 embed = default_embed(message=text_map.get(314, "en-US", user_locale))
@@ -473,7 +477,11 @@ class Schedule(commands.Cog):
                 emoji = find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
                     for guild in self.bot.guilds:
-                        if "shenhe asset" in guild.name and guild.me.guild_permissions.manage_emojis and len(guild.emojis) < guild.emoji_limit:
+                        if (
+                            "shenhe asset" in guild.name
+                            and guild.me.guild_permissions.manage_emojis
+                            and len(guild.emojis) < guild.emoji_limit
+                        ):
                             emoji_server = guild
                             break
                     try:

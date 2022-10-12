@@ -62,6 +62,7 @@ class FloorSelect(Select):
                 dark_mode,
                 user_locale or i.locale,
                 self.embeds["floors"][int(self.values[0])],
+                i.client.session,
             )
             fp.seek(0)
             image = File(fp, filename="floor.jpeg")

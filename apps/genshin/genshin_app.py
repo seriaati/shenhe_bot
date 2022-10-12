@@ -294,6 +294,7 @@ class GenshinApp:
                 avatar_url,
                 len(characters) + 2,
                 mode,
+                self.bot.session,
             )
             self.bot.stats_card_cache[uid] = fp
         return {"embed": embed, "fp": fp}, True
@@ -416,7 +417,7 @@ class GenshinApp:
         result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
-        fp = await draw_abyss_overview_card(locale, dark_mode, abyss)
+        fp = await draw_abyss_overview_card(locale, dark_mode, abyss, self.bot.session)
         result["overview_card"] = fp
         result["floors"] = abyss.floors
         return result, True

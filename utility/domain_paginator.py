@@ -42,6 +42,7 @@ class _view(BaseView):
             self.files[self.current_page]["domain"],
             user_locale or interaction.locale,
             self.files[self.current_page]["items"],
+            interaction.client.session
         )
 
         kwargs = {"embed": self.embeds[self.current_page]}
@@ -139,6 +140,7 @@ class DomainPaginator:
             self.files[0]["domain"],
             user_locale or self.interaction.locale,
             self.files[0]["items"],
+            self.interaction.client.session
         )
 
         kwargs = {"embed": self.embeds[view.current_page]}
