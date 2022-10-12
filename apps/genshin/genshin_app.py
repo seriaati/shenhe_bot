@@ -29,19 +29,20 @@ def genshin_error_handler(func):
         user = genshin_app.bot.get_user(user_id) or await genshin_app.bot.fetch_user(
             user_id
         )
+        uid = await get_uid(user_id, genshin_app.bot.db)
         user_locale = await get_user_locale(user_id, genshin_app.bot.db)
         locale = user_locale or locale
         try:
             return await func(*args, **kwargs)
         except genshin.errors.DataNotPublic:
-            embed = error_embed(message=text_map.get(21, locale))
+            embed = error_embed(message=f"{text_map.get(21, locale)}\nUID: {uid}")
             embed.set_author(
                 name=text_map.get(22, locale),
                 icon_url=user.display_avatar.url,
             )
             return embed, False
         except genshin.errors.InvalidCookies:
-            embed = error_embed(message=text_map.get(35, locale))
+            embed = error_embed(message=f"{text_map.get(35, locale)}\nUID: {uid}")
             embed.set_author(
                 name=text_map.get(36, locale),
                 icon_url=user.display_avatar.url,
@@ -52,9 +53,7 @@ def genshin_error_handler(func):
                 f"[Genshin App][GenshinException] in {func.__name__}: [e]{e} [code]{e.retcode} [msg]{e.msg}"
             )
             if e.retcode == -400005:
-                embed = error_embed().set_author(
-                    name=text_map.get(14, locale)
-                )
+                embed = error_embed().set_author(name=text_map.get(14, locale))
                 return embed, False
             else:
                 sentry_sdk.capture_exception(e)
@@ -281,9 +280,7 @@ class GenshinApp:
         embed = default_embed()
         embed.set_image(url="attachment://stat_card.jpeg")
         fp = self.bot.stats_card_cache.get(uid)
-        if fp is not None:
-            pass
-        else:
+        if fp is None:
             genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
             ambr = AmbrTopAPI(self.bot.session)
             characters = await ambr.get_character(
