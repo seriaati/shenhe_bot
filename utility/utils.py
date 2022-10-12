@@ -85,40 +85,38 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     return weekday_name_dict.get(weekday_name)
 
 
-def split_text_and_number(text: str) -> List:
-    list_text = list(text)
-    letter_index = None
-    number_index = None
-    for index, letter in enumerate(list_text):
-        if not letter.isdigit():
-            letter_index = index
-            if letter == " " and list_text[index + 1].isdigit():
-                number_index = index + 2
+def split_text_and_number(text: str) -> List[str]:
+    for i, c in enumerate(text):
+        if (
+            c.isalpha() and text[i + 1].isdigit()
+        ):  # the alphabet is followed by a numer immediately
+            break
+    result = [text[: i + 1], text[i + 1 :]]
+    if result[1] == "":  # if the split fails
+        for i, c in enumerate(text):
+            if (
+                c.isdigit() and text[i - 1] == " "
+            ):  # the character before the number is a space
                 break
-        else:
-            if index - 1 == letter_index:
-                number_index = index
-                break
-    return [text[:number_index], text[number_index:]]
+    result = [text[: i + 1], text[i + 1 :]]
+    return result
 
-
-def extract_integer_from_string(text: str) -> int:
-    text = text.replace("-", " ")
-    text = [int(character) for character in text.split() if character.isdigit()]
-    return int(text[0])
 
 async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bool:
     c = await db.cursor()
-    await c.execute('SELECT dark_mode FROM user_settings WHERE user_id = ?', (user_id,))
+    await c.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,))
     mode = await c.fetchone()
     if mode is not None and mode[0] == 1:
         return True
     return False
 
-async def get_user_timezone(user_id:int ,db: aiosqlite.Connection) -> str:
-    async with db.execute("SELECT timezone FROM user_settings WHERE user_id = ?", (user_id,)) as cursor:
+
+async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
+    async with db.execute(
+        "SELECT timezone FROM user_settings WHERE user_id = ?", (user_id,)
+    ) as cursor:
         timezone = await cursor.fetchone()
     if timezone is None:
-        return 'Asia/Taipei'
+        return "Asia/Taipei"
     else:
-        return timezone[0] or 'Asia/Taipei'
+        return timezone[0] or "Asia/Taipei"
