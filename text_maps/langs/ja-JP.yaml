@@ -14,7 +14,7 @@
 '13': 今日
 '14': 表示しようとした月の日記は利用できません
 '15': 回復時間
-'16': It is recommended to use the /check command
+'16': /check コマンドを使用することをお勧めします
 '17': 塵歌壺
 '18': 探索派遣がありません。
 '19': 完了
@@ -302,12 +302,12 @@
 '292': 最大HP
 '293': 現在のタイムゾーン
 '294': |-
-  • You can search your timezone by using the </timezone:1028913972377817128> command and submit the timezone name by clicking the button below
-  • Or, select a timezone from the list of popular timezones below
-  • After setting a timezone, Shenhe will be able to recognize your timezone and send you notifications at the correct time
-  • Additionally, commands that require a timezone will use your timezone as the default, such as </farm:1020580644419551333>
+  ・ タイムゾーンを検索するには、</timezone:1028913972377817128>コマンドを使用し、以下のボタンをクリックしてタイムゾーン名を送信してください。
+  ・または、以下の一般的なタイムゾーンの一覧からタイムゾーンを選択します。
+  ・タイムゾーンを設定すると、申鶴はあなたのタイムゾーンを認識し、正しい時刻に通知を送ることができるようになります。
+  ・</farm:1020580644419551333>のようなタイムゾーンを必要とするコマンドにはあなたのタイムゾーンがデフォルトとして使用されます。
 '295': タイムゾーン名を送信
-'296': Please use the </timezone:1028913972377817128> command to view the timezone list
+'296': タイムゾーン一覧を表示するには </timezone:1028913972377817128> コマンドを使用してください
 '297': お世話になった素晴らしい方々をご紹介します！
 '298': 翻訳者
 '299': 好感度レベル
@@ -547,13 +547,13 @@
   機能要望、改善点、バグ報告などありましたら、DMでご連絡ください。
 '498': プロフィールを表示
 '499': マイ キャラクター
-'500': An error occured while trying to do daily check-in
+'500': デイリーのチェックイン中にエラーが発生しました
 '501': 自身のランキングデータを更新
 '502': リーダーボードの位置が更新されました
 '503': 過去の更新を表示
 '504': '製作者 : seria#5334 質問がある場合はDMしてください'
-'505': An error has occursed while trying to send you a resin notification
-'506': An error has occursed while trying to send you a realm currency notification
+'505': 樹脂の通知を送信中にエラーが発生しました
+'506': 洞天宝銭の通知を送信中にエラーが発生しました
 '507': 星5限定武器を何個引きたい？
 '508': 原神に関すること を検索してくたさい
 '509': クエリ
@@ -689,7 +689,7 @@
 '608': 申鶴v5の変更履歴を見る
 '609': 複数アカウント対応
 '610': 新しいアカウント管理システムで簡単にアカウントを切り替えることができます。 追加するアカウントの種類を選択し、アカウントに独自のニックネームを与えることができます。
-'611': It is recommended to do the check-in by yourself today
+'611': 今日は自分でチェックインすることをおすすめします
 '612': 通知機能が大きく見直されました。樹脂、天賦秘境、洞天宝銭のリマインダーを設定できるようになり、より直感的に操作できるようになりました。
 '613': 新しいウェブサイト
 '614': また、ウェブサイトも大幅にリニューアルしました。携帯電話やタブレット端末でも見やすいようにBootstrapを採用し、よくある質問に答えるFAQのコーナーも設けました。
@@ -703,4 +703,4 @@
 '622': 過去に獲得した報酬を見ることができ、申鶴が何らかの方法でそれを逃した場合は手動で報酬を受け取ることができます。
 '623': インタラクションがタイムアウトしました
 '624': もう一度お試しください
-'625': Date published
+'625': リリース日
