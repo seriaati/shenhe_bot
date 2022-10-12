@@ -23,19 +23,17 @@ from apps.genshin.utils import (
     parse_character_wiki_embed,
 )
 from apps.genshin.checks import *
-from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
+from apps.text_map.convert_locale import to_ambr_top, to_enka
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from apps.wish.wish_app import get_user_event_wish
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from dateutil import parser
 from discord import File, Interaction, SelectOption, User, app_commands
 from discord.ui import Select
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.utils import format_dt
 from enkanetwork import (
     EnkaNetworkAPI,
     UIDNotFounded,
@@ -59,12 +57,15 @@ from utility.domain_paginator import DomainPaginator
 from utility.utils import (
     default_embed,
     divide_chunks,
-    divide_dict,
     error_embed,
     get_user_timezone,
     get_weekday_int_with_name,
 )
 from UI_elements.others import ManageAccounts
+
+
+class UIDNotFound(Exception):
+    pass
 
 
 class GenshinCog(commands.Cog, name="genshin"):
@@ -511,25 +512,22 @@ class GenshinCog(commands.Cog, name="genshin"):
         self, i: Interaction, player: User, ephemeral: bool = True
     ):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if i.guild is not None and i.guild.id == 916838066117824553:
-            c = await self.bot.main_db.cursor()
-            table_name = "genshin_accounts"
-        else:
-            c = await self.bot.db.cursor()
-            table_name = "user_accounts"
-        c: aiosqlite.Cursor
-        if table_name == "user_accounts":
-            await c.execute(
-                f"SELECT uid FROM {table_name} WHERE user_id = ? AND current = 1",
-                (player.id,),
-            )
-        else:
-            await c.execute(
-                f"SELECT uid FROM {table_name} WHERE user_id = ?",
-                (player.id,),
-            )
-        uid = await c.fetchone()
-        if uid is None:
+        uid = await get_uid(player.id, self.bot.db)
+        try:
+            if uid is None:
+                if i.guild is not None and i.guild.id == 916838066117824553:
+                    async with i.client.main_db.execute(
+                        f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
+                        (player.id,),
+                    ) as c:
+                        uid = await c.fetchone()
+                    if uid is None:
+                        raise UIDNotFound
+                    else:
+                        uid = uid[0]
+                else:
+                    raise UIDNotFound
+        except UIDNotFound:
             return await i.response.send_message(
                 embed=error_embed(
                     message=text_map.get(165, i.locale, user_locale)
@@ -539,7 +537,6 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ),
                 ephemeral=True,
             )
-        uid = uid[0]
         embed = default_embed(uid)
         embed.set_author(
             name=f"{player.display_name}{text_map.get(167, i.locale, user_locale)}",
