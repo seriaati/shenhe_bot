@@ -233,20 +233,23 @@ class Schedule(commands.Cog):
                     (user.user_id, user.shenhe_user.uid),
                 )
             if error:
-                await user.shenhe_user.discord_user.send(
-                    embed=error_embed(message=error_message)
-                    .set_author(
-                        name=text_map.get(
-                            505 if notification_type == "resin_notification" else 506,
-                            "en-US",
-                            user.shenhe_user.user_locale,
-                        ),
-                        icon_url=user.shenhe_user.discord_user.display_avatar.url,
+                try:
+                    await user.shenhe_user.discord_user.send(
+                        embed=error_embed(message=error_message)
+                        .set_author(
+                            name=text_map.get(
+                                505 if notification_type == "resin_notification" else 506,
+                                "en-US",
+                                user.shenhe_user.user_locale,
+                            ),
+                            icon_url=user.shenhe_user.discord_user.display_avatar.url,
+                        )
+                        .set_footer(
+                            text=text_map.get(16, "en-US", user.shenhe_user.user_locale)
+                        )
                     )
-                    .set_footer(
-                        text=text_map.get(16, "en-US", user.shenhe_user.user_locale)
-                    )
-                )
+                except Forbidden:
+                    pass
             await asyncio.sleep(5)
         await self.bot.db.commit()
         log.info(
@@ -314,14 +317,17 @@ class Schedule(commands.Cog):
             else:
                 count += 1
             if error:
-                await user.discord_user.send(
-                    embed=error_embed(message=error_message)
-                    .set_author(
-                        name=text_map.get(500, "en-US", user.user_locale),
-                        icon_url=user.discord_user.display_avatar.url,
+                try:
+                    await user.discord_user.send(
+                        embed=error_embed(message=error_message)
+                        .set_author(
+                            name=text_map.get(500, "en-US", user.user_locale),
+                            icon_url=user.discord_user.display_avatar.url,
+                        )
+                        .set_footer(text=text_map.get(611, "en-US", user.user_locale))
                     )
-                    .set_footer(text=text_map.get(611, "en-US", user.user_locale))
-                )
+                except Forbidden:
+                    pass
             await asyncio.sleep(5)
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
 
