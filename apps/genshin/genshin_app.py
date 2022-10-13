@@ -397,10 +397,10 @@ class GenshinApp:
     @genshin_error_handler
     async def get_abyss(self, user_id: int, previous: bool, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
+        user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         abyss = await shenhe_user.client.get_genshin_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
-        user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         locale = shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
             embed = error_embed(
