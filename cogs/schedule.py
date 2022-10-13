@@ -31,7 +31,7 @@ def schedule_error_handler(func):
             await func(*args, **kwargs)
         except Exception as e:
             bot = args[0].bot
-            seria = await bot.fetch_user(410036441129943050)
+            seria = bot.get_user(410036441129943050) or await bot.fetch_user(410036441129943050)
             await seria.send(f"[Schedule] Error in {func.__name__}: {e}")
             log.warning(f"[Schedule] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)

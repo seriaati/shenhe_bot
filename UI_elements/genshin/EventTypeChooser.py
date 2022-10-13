@@ -42,11 +42,14 @@ class Hoyolab(Button):
             date_published = parser.parse(event["date_published"])
             embed = default_embed(event["title"])
             embed.add_field(
-                name=text_map.get(625, locale), value=format_dt(date_published, 'R')
+                name=text_map.get(625, locale),
+                value=format_dt(date_published, "R"),
+                inline=False,
             )
             embed.add_field(
                 name=text_map.get(408, locale),
                 value=f"{parse_HTML(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
+                inline=False,
             )
             if "image" in event:
                 embed.set_image(url=event["image"])

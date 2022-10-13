@@ -208,9 +208,9 @@ def parse_character_wiki_embed(
         name=text_map.get(315, locale, user_locale),
         value=f'{text_map.get(316, locale, user_locale)}: {avatar_data["birthday"][0]}/{avatar_data["birthday"][1]}\n'
         f'{text_map.get(317, locale, user_locale)}: {avatar_data["fetter"]["title"]}\n'
-        f'*{avatar_data["fetter"]["detail"]}*\n'
         f'{text_map.get(318, locale, user_locale)}: {avatar_data["fetter"]["constellation"]}\n'
-        f'{text_map.get(319, locale, user_locale)}: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n',
+        f'{text_map.get(319, locale, user_locale)}: {avatar_data["other"]["nameCard"]["name"] if "name" in avatar_data["other"]["nameCard"]else "???"}\n\n'
+        f'*{avatar_data["fetter"]["detail"]}*\n',
     )
     embed.set_image(
         url=f'https://api.ambr.top/assets/UI/namecard/{avatar_data["other"]["nameCard"]["icon"].replace("Icon", "Pic")}_P.png'

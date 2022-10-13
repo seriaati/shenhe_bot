@@ -397,9 +397,10 @@ class GenshinApp:
     @genshin_error_handler
     async def get_abyss(self, user_id: int, previous: bool, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
-        abyss = await shenhe_user.client.get_spiral_abyss(
+        abyss = await shenhe_user.client.get_genshin_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
+        user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         locale = shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
             embed = error_embed(
@@ -414,10 +415,13 @@ class GenshinApp:
         result["abyss"] = abyss
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
+        overview.set_author(name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}", icon_url=shenhe_user.discord_user.display_avatar.url)
         result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
-        fp = await draw_abyss_overview_card(locale, dark_mode, abyss, self.bot.session)
+        fp = await draw_abyss_overview_card(
+            locale, dark_mode, abyss, user, self.bot.session
+        )
         result["overview_card"] = fp
         result["floors"] = abyss.floors
         return result, True
