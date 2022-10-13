@@ -79,10 +79,10 @@
 '78': Deepest descent
 '79': Challenge Summary
 '80': Strongest single strike
-'81': Most defeats
+'81': Most kills
 '82': Most damage taken
-'83': Elemental bursts unleashed
-'84': Elemental skills cast
+'83': Most bursts used
+'84': Most skills used
 '85': Spiral Abyss Overview
 '86': Chamber
 '87': <CHAMBER>
@@ -707,3 +707,4 @@
 '623': Interaction timed out
 '624': Please try again
 '625': Date published
+'626': Most used characters
