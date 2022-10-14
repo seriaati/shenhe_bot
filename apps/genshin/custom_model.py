@@ -1,6 +1,6 @@
 import io
 from typing import Optional
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 import discord
 import genshin
 
@@ -10,7 +10,7 @@ class ShenheUser(BaseModel):
     discord_user: discord.User | discord.Member | discord.ClientUser
     user_locale: str | None
     china: bool
-    daily_checkin: bool
+    daily_checkin: bool = True
     
     class Config:
         arbitrary_types_allowed = True
