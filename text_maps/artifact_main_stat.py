@@ -4,7 +4,8 @@ art_main_stat_map = {
     "防": "DEF",
     "生": "HP",
     "治": "Heal",
-    "暴": "Crit",
+    "暴": "CR/CD",
+    "爆": "CR/CD",
     "風": "Anemo",
     "水": "Hydro",
     "火": "Pyro",
@@ -13,4 +14,5 @@ art_main_stat_map = {
     "岩": "Geo",
     "草": "Dendro",
     "充": "ER",
+    "物": "Physical",
 }
