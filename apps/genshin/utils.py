@@ -319,6 +319,7 @@ async def get_shenhe_user(
     locale: Locale = None,
     cookie: Dict[str, str | int] = None,
     custom_uid: int = None,
+    daily_checkin: int = 1,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if not cookie:
@@ -366,6 +367,7 @@ async def get_shenhe_user(
         discord_user=discord_user,
         user_locale=user_locale,
         china=china,
+        daily_checkin=True if daily_checkin == 1 else False,
     )
     return user_obj
 

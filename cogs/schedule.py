@@ -31,7 +31,9 @@ def schedule_error_handler(func):
             await func(*args, **kwargs)
         except Exception as e:
             bot = args[0].bot
-            seria = bot.get_user(410036441129943050) or await bot.fetch_user(410036441129943050)
+            seria = bot.get_user(410036441129943050) or await bot.fetch_user(
+                410036441129943050
+            )
             await seria.send(f"[Schedule] Error in {func.__name__}: {e}")
             log.warning(f"[Schedule] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
@@ -86,19 +88,22 @@ class Schedule(commands.Cog):
         result = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
-            "SELECT ltuid, ltoken, user_id, uid FROM user_accounts WHERE ltuid IS NOT NULL"
+            "SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         users = await c.fetchall()
         for _, tpl in enumerate(users):
             ltuid = tpl[0]
             ltoken = tpl[1]
             user_id = tpl[2]
+            uid = tpl[3]
+            daily_checkin = tpl[4]
             shenhe_user = await get_shenhe_user(
                 user_id,
                 self.bot.db,
                 self.bot,
                 cookie={"ltuid": ltuid, "ltoken": ltoken},
-                custom_uid=tpl[3],
+                custom_uid=uid,
+                daily_checkin=True if daily_checkin == 1 else False,
             )
             result.append(shenhe_user)
         return result
@@ -164,11 +169,19 @@ class Schedule(commands.Cog):
                 log.warning(
                     f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}"
                 )
+                await c.execute(
+                    f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                    (user.user_id, user.shenhe_user.uid),
+                )
                 continue
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][{notification_type}] Error: {e}")
+                await c.execute(
+                    f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                    (user.user_id, user.shenhe_user.uid),
+                )
                 continue
             if notification_type == "pot_notification":
                 item_current_amount = notes.current_realm_currency
@@ -235,10 +248,12 @@ class Schedule(commands.Cog):
             if error:
                 try:
                     await user.shenhe_user.discord_user.send(
-                        embed=error_embed(message=error_message)
+                        embed=error_embed(message=f"{error_message}\n\n{text_map.get(631, 'en-US', user.shenhe_user.user_locale)}")
                         .set_author(
                             name=text_map.get(
-                                505 if notification_type == "resin_notification" else 506,
+                                505
+                                if notification_type == "resin_notification"
+                                else 506,
                                 "en-US",
                                 user.shenhe_user.user_locale,
                             ),
@@ -278,6 +293,8 @@ class Schedule(commands.Cog):
         users = await self.get_schedule_users()
         count = 0
         for user in users:
+            if not user.daily_checkin:
+                continue
             error = False
             error_message = ""
             client = user.client
@@ -289,6 +306,10 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
+                await self.bot.db.execute(
+                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
+                    (user.discord_user.id, user.uid),
+                )
             except genshin.errors.GenshinException as e:
                 if e.retcode in [-10002]:
                     pass
@@ -313,13 +334,17 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
+                await self.bot.db.execute(
+                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
+                    (user.discord_user.id, user.uid),
+                )
                 sentry_sdk.capture_exception(e)
             else:
                 count += 1
             if error:
                 try:
                     await user.discord_user.send(
-                        embed=error_embed(message=error_message)
+                        embed=error_embed(message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}")
                         .set_author(
                             name=text_map.get(500, "en-US", user.user_locale),
                             icon_url=user.discord_user.display_avatar.url,
@@ -329,6 +354,7 @@ class Schedule(commands.Cog):
                 except Forbidden:
                     pass
             await asyncio.sleep(5)
+        await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
 
     @tasks.loop(hours=1)
