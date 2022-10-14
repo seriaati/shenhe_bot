@@ -57,10 +57,8 @@ class FloorSelect(Select):
             embed = default_embed()
             embed.set_image(url="attachment://floor.jpeg")
             dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
-            user_locale = await get_user_locale(i.user.id, i.client.db)
             fp = await draw_abyss_floor_card(
                 dark_mode,
-                user_locale or i.locale,
                 self.embeds["floors"][int(self.values[0])],
                 i.client.session,
             )
