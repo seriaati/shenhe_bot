@@ -252,25 +252,14 @@
   element: 岩
   icon: Yunjin
   builds:
-    - weapon: 薙草之稻光
+    - weapon: 喜多院十文字
       artifacts: 華館4件套
       main_stats: 防防防
       talents: 2/11/13
       stats:
-        攻擊力: 1632
+        攻擊力: 1218
         暴率/暴傷: 任意
-        充能效率: 262%
-        防禦力: 2511
-      move: 任意
-      dmg: 任意
-    - weapon: 天空之脊
-      artifacts: 華館4件套
-      main_stats: 防防防
-      talents: 2/11/13
-      stats:
-        攻擊力: 1349
-        暴率/暴傷: 任意
-        充能效率: 244%
+        充能效率: 207%
         防禦力: 2511
       move: 任意
       dmg: 任意

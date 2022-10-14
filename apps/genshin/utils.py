@@ -421,7 +421,7 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
     result = []
     user_locale = await get_user_locale(i.user.id, i.client.db)
     locale = user_locale or i.locale
-    ambr = AmbrTopAPI(session=i.client.session, lang=to_ambr_top(locale))
+    ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
     domains = await ambr.get_domain()
     character_upgrades = await ambr.get_character_upgrade()
     weapon_upgrades = await ambr.get_weapon_upgrade()

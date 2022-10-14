@@ -181,7 +181,7 @@ async def on_interaction(i: Interaction):
     if isinstance(i.command, app_commands.Command):
         namespace_str = "" if not i.namespace.__dict__ else ": "
         for key, value in i.namespace.__dict__.items():
-            namespace_str += f"[{key}] {value} \n"
+            namespace_str += f"[{key}] {value} "
         if i.command.parent is None:
             log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
         else:
