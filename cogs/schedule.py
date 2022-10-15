@@ -321,25 +321,24 @@ class Schedule(commands.Cog):
                     (user.discord_user.id, user.uid),
                 )
             except genshin.errors.GenshinException as e:
-                if e.retcode in [-10002]:
-                    pass
-                else:
-                    claimed = False
-                    log.warning(f"[Schedule][Claim Reward] We have been rate limited")
-                    for index in range(1, 6):
-                        await asyncio.sleep(20 * index)
-                        log.info(f"[Schedule][Claim Reward] Retry {index}")
-                        try:
-                            await client.claim_daily_reward()
-                        except genshin.errors.AlreadyClaimed:
-                            claimed = True
-                            break
-                        except Exception as e:
-                            error_message = f"```{e}```"
-                            log.warning(f"[Schedule][Claim Reward] Error: {e}")
-                            sentry_sdk.capture_exception(e)
-                    if not claimed:
-                        error = True
+                claimed = False
+                log.warning(f"[Schedule][Claim Reward] We have been rate limited")
+                for index in range(1, 6):
+                    await asyncio.sleep(20 * index)
+                    log.info(f"[Schedule][Claim Reward] Retry {index}")
+                    try:
+                        await client.claim_daily_reward()
+                    except genshin.errors.AlreadyClaimed:
+                        claimed = True
+                        break
+                    except genshin.errors.InvalidCookies:
+                        break
+                    except Exception as e:
+                        error_message = f"```{e}```"
+                        log.warning(f"[Schedule][Claim Reward] Error: {e}")
+                        sentry_sdk.capture_exception(e)
+                if not claimed:
+                    error = True
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
@@ -365,7 +364,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
 
