@@ -170,13 +170,13 @@
 '154': 设定自定义时区
 '155': 申鹤最多提醒你的次数
 '156': 选择已经设置过的角色将移除该角色的提醒
-'157': 选择角色
+'157': Choose a character
 '158': 目前尚未设置任何角色
 '159': 目前角色
 '160': 时区错误
 '161': 已设置过此角色, 再次选择将会关闭通知
 '162': 配置
-'163': 选择配置
+'163': Choose a build
 '164': 种配置
 '165': |-
   这个用户还没有注册过帐号
@@ -195,7 +195,7 @@
 '177': 代办清单可存素材数量已达最大值 (125)
 '178': 使用 </todo:1006486283855605804> 来查看你的代办清单
 '179': 新增成功
-'180': 选择武器
+'180': Choose a weapon
 '181': 设置
 '182': 的等级
 '183': 目前等级
@@ -708,5 +708,15 @@
 '627': 每日签到开关
 '628': 已开启自动签到功能
 '629': 已关闭自动签到功能
-'630': 申鹤已将你的自动签到功能关闭，如欲重新开启，请使用 </claim:1020580644365021250> 指令
+'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
 '631': 申鹤已将你的通知功能关闭，如欲重新开启，请使用 </remind:1020580644365021255> 指令
+'632': Weapon notification
+'633': |-
+  • This feature allows you to receive notification when a weapon's domain is farmable
+  • Simply select the weapons you want to be notified about
+  • Selecting a weapon that already has notification enabled will disable its notification
+'634': Add/Remove weapons
+'635': Remove all weapons
+'636': Current weapons
+'637': There are currently no notifications set for any weapons
+'638': Choosing this weapon will turn OFF its notifications
