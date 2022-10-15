@@ -60,7 +60,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         await i.response.defer(ephemeral=True)
         is_nsfw = True if sese == 1 else False
         if tags == 1:
-            view = WaifuImTag.View(await get_waifu_im_tags(sese), i.user)
+            view = WaifuImTag.View(await get_waifu_im_tags(sese, i.client.session), i.user)
             await i.followup.send(view=view, ephemeral=True)
             view.message = await i.original_response()
             await view.wait()
