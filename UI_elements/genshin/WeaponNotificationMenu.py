@@ -53,7 +53,7 @@ class GOBack(Button):
                 )
             )
         self.view.add_item(GOBackReminder())
-        await self.view.message.edit(view=self.view)
+        await i.response.edit_message(view=self.view)
 
 
 class WeaponTypeButton(Button):
