@@ -682,7 +682,7 @@
 '601': ニックネーム
 '602': ニックネームを変更したいアカウントを選択してください
 '603': 報酬を受け取る
-'604': Hoyolabのデイリーボーナス
+'604': HoYoLABのデイリーログインボーナス
 '605': 獲得した報酬
 '606': 現在の状態
 '607': 獲得した報酬を確認する
@@ -705,8 +705,8 @@
 '624': もう一度お試しください
 '625': リリース日
 '626': 最多出撃キャラクター
-'627': Toggle daily check-in
-'628': You have enabled the daily check-in feature
-'629': You have disabled the daily check-in feature
+'627': デイリーログインボーナスの切り替え
+'628': デイリーログインボーナスのチェックイン機能を有効にしました
+'629': デイリーログインボーナスのチェックイン機能を無効にしました
 '630': Shenhe has automatically disabled the daily check-in for you, to enable it again, please use </claim:1020580644365021250>
 '631': Shenhe has automatically disabled this notification feature for you, to enable it again, please use </remind:1020580644365021255>
