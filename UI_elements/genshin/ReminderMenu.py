@@ -1,7 +1,7 @@
 import ast
 import asyncio
 from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.utils import get_character, get_uid
+from apps.genshin.utils import get_character, get_uid, get_weapon
 from UI_base_models import BaseModal, BaseView
 import config
 from discord import Locale, Interaction, ButtonStyle, Embed
@@ -10,7 +10,7 @@ from discord.errors import InteractionResponded, Forbidden, NotFound
 from apps.text_map.text_map_app import text_map
 from utility.utils import default_embed, error_embed
 import aiosqlite
-from UI_elements.genshin import TalentNotificationMenu
+from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
 
 
 class View(BaseView):
@@ -20,6 +20,7 @@ class View(BaseView):
         self.add_item(ResinNotification(locale))
         self.add_item(PotNotification(locale))
         self.add_item(TalentNotification(locale))
+        self.add_item(WeaponNotification(locale))
         self.add_item(PrivacySettings(locale))
 
 
@@ -46,7 +47,9 @@ async def return_resin_notification(i: Interaction, view: View):
     value += f"{text_map.get(103, view.locale)}: {max}"
     embed = default_embed(message=text_map.get(586, view.locale))
     embed.add_field(name=text_map.get(591, view.locale), value=value)
-    embed.set_author(name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url)
+    embed.set_author(
+        name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url
+    )
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(ChangeSettings(view.locale, "resin_notification"))
@@ -88,7 +91,9 @@ async def return_pot_notification(i: Interaction, view: View):
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
     embed = default_embed(message=text_map.get(586, view.locale))
-    embed.set_author(name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url)
+    embed.set_author(
+        name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url
+    )
     embed.add_field(name=text_map.get(591, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
@@ -113,6 +118,77 @@ class TalentNotification(Button):
         await return_talent_notification(i, self.view)
 
 
+class WeaponNotification(Button):
+    def __init__(self, locale: Locale | str):
+        super().__init__(emoji="🗡️", label=text_map.get(632, locale), row=2)
+
+    async def callback(self, i: Interaction):
+        await return_weapon_notification(i, self.view)
+
+
+class AddWeapon(Button):
+    def __init__(self, locale: Locale | str):
+        super().__init__(emoji="✏️", label=text_map.get(634, locale))
+        self.locale = locale
+
+    async def callback(self, i: Interaction):
+        view = WeaponNotificationMenu.View(self.locale)
+        await i.response.edit_message(view=view)
+        view.author = i.user
+        view.message = await i.original_response()
+
+
+class RemoveAllWeapon(Button):
+    def __init__(self, locale: Locale | str):
+        super().__init__(emoji="🗑️", label=text_map.get(635, locale))
+
+    async def callback(self, i: Interaction):
+        await i.client.db.execute(
+            "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
+            (i.user.id,),
+        )
+        await i.client.db.commit()
+        await return_weapon_notification(i, self.view)
+
+
+async def return_weapon_notification(i: Interaction, view: View):
+    async with i.client.db.execute(
+        "SELECT toggle, weapon_list FROM weapon_notification WHERE user_id = ?",
+        (i.user.id,),
+    ) as c:
+        toggle, weapon_list = await c.fetchone()
+    weapon_list = ast.literal_eval(weapon_list)
+    if not weapon_list:
+        value = text_map.get(637, view.locale)
+    else:
+        value = ""
+        for weapon in weapon_list:
+            value += f'{get_weapon(weapon)["emoji"]} {text_map.get_weapon_name(weapon, view.locale)}\n'
+    embed = default_embed(message=text_map.get(633, view.locale))
+    embed.set_author(
+        name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
+    )
+    embed.add_field(name=text_map.get(636, view.locale), value=value)
+    view.clear_items()
+    view.add_item(GOBack())
+    view.add_item(AddWeapon(view.locale))
+    view.add_item(RemoveAllWeapon(view.locale))
+    view.add_item(
+        NotificationON(
+            view.locale, "weapon_notification", True if toggle == 1 else False
+        )
+    )
+    view.add_item(
+        NotificationOFF(
+            view.locale, "weapon_notification", True if toggle == 0 else False
+        )
+    )
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
 async def return_talent_notification(i: Interaction, view: View):
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
@@ -128,7 +204,9 @@ async def return_talent_notification(i: Interaction, view: View):
         for character in character_list:
             value += f'{get_character(character)["emoji"]} {text_map.get_character_name(character, view.locale)}\n'
     embed = default_embed(message=text_map.get(590, view.locale))
-    embed.set_author(name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url)
+    embed.set_author(
+        name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
+    )
     embed.add_field(name=text_map.get(159, view.locale), value=value)
     view.clear_items()
     view.add_item(GOBack())
@@ -228,7 +306,7 @@ class NotificationON(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.table_name == "talent_notification":
+        if self.table_name == "talent_notification" or self.table_name == "weapon_notification":
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ?",
                 (i.user.id,),
@@ -245,6 +323,8 @@ class NotificationON(Button):
             await return_pot_notification(i, self.view)
         elif self.table_name == "talent_notification":
             await return_talent_notification(i, self.view)
+        elif self.table_name == "weapon_notification":
+            await return_weapon_notification(i, self.view)
 
 
 class NotificationOFF(Button):
@@ -258,7 +338,7 @@ class NotificationOFF(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.table_name == "talent_notification":
+        if self.table_name == "talent_notification" or self.table_name == "weapon_notification":
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ?",
                 (i.user.id,),
@@ -275,6 +355,8 @@ class NotificationOFF(Button):
             await return_pot_notification(i, self.view)
         elif self.table_name == "talent_notification":
             await return_talent_notification(i, self.view)
+        elif self.table_name == "weapon_notification":
+            await return_weapon_notification(i, self.view)
 
 
 class ChangeSettings(Button):
@@ -360,6 +442,10 @@ async def return_notification_menu(
     )
     await c.execute(
         "INSERT INTO talent_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
+        (i.user.id,),
+    )
+    await c.execute(
+        "INSERT INTO weapon_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
         (i.user.id,),
     )
     await i.client.db.commit()

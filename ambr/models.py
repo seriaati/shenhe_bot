@@ -142,21 +142,24 @@ class WeaponEffect(BaseModel):
             result.append(parse_HTML(_))
         return result
 
+
 class WeaponStat(BaseModel):
     prop_id: Optional[str] = Field(alias="propType", default=None)
     initial_value: int = Field(alias="initValue")
+
 
 class WeaponUpgradeDetail(BaseModel):
     awaken_cost: List[int] = Field(alias="awakenCost")
     stats: List[WeaponStat] = Field(alias="prop")
     upgrade_info: List = Field(alias="promote")
-    
+
     @validator("stats", pre=True)
     def get_stats(cls, v):
         result = []
         for stat in v:
             result.append(WeaponStat(**stat))
         return result
+
 
 class WeaponDetail(BaseModel):
     name: str
@@ -182,11 +185,12 @@ class WeaponDetail(BaseModel):
             return None
         else:
             v = list(v.values())[0]
-            return (WeaponEffect(**v))
-    
+            return WeaponEffect(**v)
+
     @validator("upgrade", pre=True)
     def get_upgrade(cls, v):
         return WeaponUpgradeDetail(**v)
+
 
 class Artifact(BaseModel):
     id: int
@@ -194,11 +198,12 @@ class Artifact(BaseModel):
     rarity_list: List[int] = Field(alias="levelList")
     effects: Dict[str, str] = Field(alias="affixList")
     icon: str
-    
+
     @validator("icon")
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png"
         return icon_url
+
 
 class ArtifactEffect(BaseModel):
     two_piece: str

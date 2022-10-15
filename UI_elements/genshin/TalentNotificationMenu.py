@@ -88,6 +88,7 @@ class GoBack(Button):
             self.view.add_item(
                 ElementButton(element_names[index], element_emojis[index], index // 4)
             )
+        self.view.add_item(GoBackTwo())
         await i.response.edit_message(view=self.view)
 
 

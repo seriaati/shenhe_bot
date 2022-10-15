@@ -171,13 +171,13 @@
 '154': Setting custom timezone
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
-'157': Choose your characters
+'157': Choose a character
 '158': There are currently no notifications set for any characters
 '159': Current characters
 '160': Invalid timezone
 '161': Choosing this character will turn OFF its notifications
 '162': Build
-'163': Choose your build
+'163': Choose a build
 '164': builds
 '165': |-
   This user hasn't registered their account yet
@@ -196,7 +196,7 @@
 '177': You have reached the limit of materials you can have on your todo list (125)
 '178': Use </todo:1006486283855605804> to view your todo list
 '179': Success
-'180': Choose your weapon
+'180': Choose a weapon
 '181': Set the levels for
 '182': <'S LEVEL>
 '183': Current level
@@ -711,5 +711,15 @@
 '627': Toggle daily check-in
 '628': You have enabled the daily check-in feature
 '629': You have disabled the daily check-in feature
-'630': Shenhe has automatically disabled the daily check-in for you, to enable it again, please use </claim:1020580644365021250>
+'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
 '631': Shenhe has automatically disabled this notification feature for you, to enable it again, please use </remind:1020580644365021255>
+'632': Weapon notification
+'633': |-
+  • This feature allows you to receive notification when a weapon's domain is farmable
+  • Simply select the weapons you want to be notified about
+  • Selecting a weapon that already has notification enabled will disable its notification
+'634': Add/Remove weapons
+'635': Remove all weapons
+'636': Current weapons
+'637': There are currently no notifications set for any weapons
+'638': Choosing this weapon will turn OFF its notifications

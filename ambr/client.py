@@ -206,6 +206,10 @@ class AmbrTopAPI:
             result = await self.get_character(id=id, retry=True)
 
         return result
+    
+    async def get_weapon_types(self) -> Dict[str, str]:
+        data = await self._get_cache("weapon")
+        return data["data"]["types"]
 
     async def get_weapon(
         self, id: Optional[str] = None, retry: bool = False

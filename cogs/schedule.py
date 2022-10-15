@@ -3,14 +3,14 @@ import asyncio
 import json
 import random
 from datetime import datetime, timedelta
-from typing import List
+from typing import Dict, List
 import aiosqlite
 import sentry_sdk
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import NotificationUser, ShenheUser
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import get_shenhe_user, get_uid
-from apps.text_map.convert_locale import to_ambr_top_dict
+from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import File, Game, Interaction, app_commands
@@ -18,7 +18,13 @@ from discord.app_commands import locale_str as _
 from discord.errors import HTTPException, Forbidden
 from discord.ext import commands, tasks
 from discord.utils import format_dt, sleep_until, find
-from utility.utils import default_embed, error_embed, get_user_timezone, log
+from utility.utils import (
+    default_embed,
+    error_embed,
+    get_user_appearance_mode,
+    get_user_timezone,
+    log,
+)
 from yelan.draw import draw_talent_reminder_card
 import genshin
 from cogs.admin import is_seria
@@ -55,6 +61,7 @@ class Schedule(commands.Cog):
         self.update_game_data.start()
         self.update_text_map.start()
         self.update_ambr_cache.start()
+        self.weapon_notification.start()
 
     def cog_unload(self):
         self.claim_reward.cancel()
@@ -66,6 +73,7 @@ class Schedule(commands.Cog):
         self.update_game_data.cancel()
         self.update_text_map.cancel()
         self.update_ambr_cache.cancel()
+        self.weapon_notification.cancel()
 
     @tasks.loop(minutes=10)
     async def change_status(self):
@@ -248,7 +256,9 @@ class Schedule(commands.Cog):
             if error:
                 try:
                     await user.shenhe_user.discord_user.send(
-                        embed=error_embed(message=f"{error_message}\n\n{text_map.get(631, 'en-US', user.shenhe_user.user_locale)}")
+                        embed=error_embed(
+                            message=f"{error_message}\n\n{text_map.get(631, 'en-US', user.shenhe_user.user_locale)}"
+                        )
                         .set_author(
                             name=text_map.get(
                                 505
@@ -344,7 +354,9 @@ class Schedule(commands.Cog):
             if error:
                 try:
                     await user.discord_user.send(
-                        embed=error_embed(message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}")
+                        embed=error_embed(
+                            message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
+                        )
                         .set_author(
                             name=text_map.get(500, "en-US", user.user_locale),
                             icon_url=user.discord_user.display_avatar.url,
@@ -370,22 +382,33 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=30)
     @schedule_error_handler
     async def talent_notification(self):
-        await self.talent_notification_task()
+        await self.weapon_talent_base_notifiction("talent_notification")
 
-    async def talent_notification_task(self):
-        log.info("[Schedule][Talent Notification] Start")
-        client = AmbrTopAPI(self.bot.session, "cht")
-        domains = await client.get_domain()
+    @tasks.loop(minutes=30)
+    @schedule_error_handler
+    async def weapon_notification(self):
+        await self.weapon_talent_base_notifiction("weapon_notification")
+
+    async def weapon_talent_base_notifiction(self, notification_type: str):
+        log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
+        list_name = (
+            "weapon_list"
+            if notification_type == "weapon_notification"
+            else "character_list"
+        )
         await c.execute(
-            "SELECT user_id, character_list, last_notif FROM talent_notification WHERE toggle = 1"
+            f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
         )
         users = await c.fetchall()
         count = 0
         for _, tpl in enumerate(users):
             user_id = tpl[0]
-            character_list = tpl[1]
+            item_list = tpl[1]
             last_notif = tpl[2]
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or "en-US"))
+            domains = await client.get_domain()
             timezone = await get_user_timezone(user_id, self.bot.db)
             now = datetime.now(pytz.timezone(timezone))
             user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
@@ -394,47 +417,66 @@ class Schedule(commands.Cog):
                 if last_notif.day == now.day:
                     continue
             user_locale = await get_user_locale(user_id, self.bot.db)
-            character_list = ast.literal_eval(character_list)
-            notified = {}
-            for character_id in character_list:
+            item_list = ast.literal_eval(item_list)
+            notified: Dict[str, List[int]] = {}
+            for item_id in item_list:
                 for domain in domains:
                     if domain.weekday == now.weekday():
                         for item in domain.rewards:
-                            [upgrade] = await client.get_character_upgrade(character_id)
+                            if notification_type == "talent_notification":
+                                upgrade = await client.get_character_upgrade(item_id)
+                            elif notification_type == "weapon_notification":
+                                upgrade = await client.get_weapon_upgrade(item_id)
+                            if not upgrade:
+                                continue
+                            else:
+                                upgrade = upgrade[0]
                             if item in upgrade.items:
-                                if character_id not in notified:
-                                    notified[character_id] = []
-                                if item.id not in notified[character_id]:
-                                    notified[character_id].append(item.id)
-            for character_id, materials in notified.items():
-                [character] = await client.get_character(character_id)
+                                if item_id not in notified:
+                                    notified[item_id] = []
+                                if item.id not in notified[item_id]:
+                                    notified[item_id].append(item.id)
+            for item_id, materials in notified.items():
+                if notification_type == "talent_notification":
+                    item = await client.get_character(item_id)
+                elif notification_type == "weapon_notification":
+                    item = await client.get_weapon(item_id)
+                if not item:
+                    continue
+                else:
+                    item = item[0]
+                dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
                 fp = await draw_talent_reminder_card(
-                    materials, user_locale or "en-US", self.bot.session
+                    materials,
+                    user_locale or "en-US",
+                    self.bot.session,
+                    dark_mode,
+                    notification_type,
                 )
                 fp.seek(0)
                 file = File(fp, "reminder_card.jpeg")
                 embed = default_embed(message=text_map.get(314, "en-US", user_locale))
                 embed.set_author(
                     name=f"{text_map.get(312, 'en-US', user_locale)}",
-                    icon_url=character.icon,
+                    icon_url=item.icon,
                 )
                 embed.set_image(url="attachment://reminder_card.jpeg")
                 try:
                     await user.send(embed=embed, files=[file])
                 except Forbidden:
                     await c.execute(
-                        "UPDATE talent_notification SET toggle = 0 WHERE user_id = ?",
+                        f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
                         (user_id,),
                     )
                 else:
                     await c.execute(
-                        "UPDATE talent_notification SET last_notif = ? WHERE user_id = ?",
+                        f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
                         (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                     )
                     count += 1
             await asyncio.sleep(5)
         log.info(
-            f"[Schedule][Talent Notifiaction] Ended (Notified {count}/{len(users)} users)"
+            f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
         )
 
     @tasks.loop(hours=24)
@@ -623,6 +665,10 @@ class Schedule(commands.Cog):
     async def before_notif(self):
         await self.bot.wait_until_ready()
 
+    @weapon_notification.before_loop
+    async def before_notif(self):
+        await self.bot.wait_until_ready()
+
     @change_status.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
@@ -665,7 +711,7 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="instantclaim", description=_("Owner usage only", hash=496)
+        name="insta_claim", description=_("Owner usage only", hash=496)
     )
     async def instantclaim(self, i: Interaction):
         await i.response.send_message("started, check console", ephemeral=True)
@@ -680,7 +726,7 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="updategamedata", description=_("Owner usage only", hash=496)
+        name="update_game_data", description=_("Owner usage only", hash=496)
     )
     async def updategamedata(self, i: Interaction):
         await i.response.send_message("started", ephemeral=True)
@@ -693,12 +739,13 @@ class Schedule(commands.Cog):
 
     @is_seria()
     @app_commands.command(
-        name="instantnotify", description=_("Owner usage only", hash=496)
+        name="insta_notify", description=_("Owner usage only", hash=496)
     )
     async def instant_notify(self, i: Interaction):
         await i.response.send_message(content="started", ephemeral=True)
-        await self.talent_notification_task()
-        await i.edit_original_response(content="talent notification sent")
+        await self.weapon_talent_base_notifiction("talent_notification")
+        await self.weapon_talent_base_notifiction("weapon_notification")
+        await i.edit_original_response(content="notiifcations sent")
 
 
 async def setup(bot: commands.Bot) -> None:
