@@ -316,10 +316,6 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-                await self.bot.db.execute(
-                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
-                    (user.discord_user.id, user.uid),
-                )
             except genshin.errors.GenshinException as e:
                 claimed = False
                 log.warning(f"[Schedule][Claim Reward] We have been rate limited")
@@ -351,6 +347,10 @@ class Schedule(commands.Cog):
             else:
                 count += 1
             if error:
+                await self.bot.db.execute(
+                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
+                    (user.discord_user.id, user.uid),
+                )
                 try:
                     await user.discord_user.send(
                         embed=error_embed(
