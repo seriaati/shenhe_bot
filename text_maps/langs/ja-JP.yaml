@@ -171,13 +171,13 @@
 '154': カスタムタイムゾーンの設定
 '155': この回数でDMが停止します
 '156': 既に通知をONにしているキャラクターを選択すると通知がOFFになります
-'157': キャラクターを選択してください
+'157': Choose a character
 '158': 現在、どのキャラクターにも通知は設定されていません。
 '159': 現在のキャラクター
 '160': 無効なタイムゾーン
 '161': キャラクターを選択すると、そのキャラクターの通知がOFFになります。
 '162': 装備
-'163': 装備を選択してください
+'163': Choose a build
 '164': 装備
 '165': |-
   This user hasn't registered their account yet </register:1006486283725590528> to register
@@ -195,7 +195,7 @@
 '177': ToDoリストに登録できる素材の数の上限に達しました (125件)
 '178': </todo:1006486283855605804> を使用してTODOリストを表示します
 '179': 成功
-'180': 武器を選択してください
+'180': Choose a weapon
 '181': レベルを設定：
 '182': のレベル
 '183': 現在のレベル
@@ -682,7 +682,7 @@
 '601': ニックネーム
 '602': ニックネームを変更したいアカウントを選択してください
 '603': 報酬を受け取る
-'604': Hoyolabのデイリーボーナス
+'604': HoYoLABのデイリーログインボーナス
 '605': 獲得した報酬
 '606': 現在の状態
 '607': 獲得した報酬を確認する
@@ -705,8 +705,18 @@
 '624': もう一度お試しください
 '625': リリース日
 '626': 最多出撃キャラクター
-'627': Toggle daily check-in
-'628': You have enabled the daily check-in feature
-'629': You have disabled the daily check-in feature
-'630': Shenhe has automatically disabled the daily check-in for you, to enable it again, please use </claim:1020580644365021250>
+'627': デイリーログインボーナスの切り替え
+'628': デイリーログインボーナスのチェックイン機能を有効にしました
+'629': デイリーログインボーナスのチェックイン機能を無効にしました
+'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
 '631': Shenhe has automatically disabled this notification feature for you, to enable it again, please use </remind:1020580644365021255>
+'632': Weapon notification
+'633': |-
+  • This feature allows you to receive notification when a weapon's domain is farmable
+  • Simply select the weapons you want to be notified about
+  • Selecting a weapon that already has notification enabled will disable its notification
+'634': Add/Remove weapons
+'635': Remove all weapons
+'636': Current weapons
+'637': There are currently no notifications set for any weapons
+'638': Choosing this weapon will turn OFF its notifications
