@@ -170,13 +170,13 @@
 '154': 設定自定義時區
 '155': 申鶴最多提醒你的次數
 '156': 選擇已經設置過的角色將移除該角色的提醒
-'157': Choose a character
+'157': 選擇角色
 '158': 目前尚未設置任何角色
 '159': 目前角色
 '160': 時區錯誤
-'161': 已設置過此角色, 再次選擇將會關閉通知
+'161': 已新增過此角色, 再次選擇將會移除該角色
 '162': 配置
-'163': Choose a build
+'163': 選擇配置
 '164': 種配置
 '165': |-
   這個用戶還沒有註冊過帳號
@@ -195,7 +195,7 @@
 '177': 代辦清單可存素材數量已達最大值 (125)
 '178': 使用 </todo:1006486283855605804> 來查看你的代辦清單
 '179': 新增成功
-'180': Choose a weapon
+'180': 選擇武器
 '181': 設置
 '182': 的等級
 '183': 目前等級
@@ -708,15 +708,15 @@
 '627': 每日簽到開關
 '628': 已開啟自動簽到功能
 '629': 已關閉自動簽到功能
-'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
+'630': 申鶴已將你的自動簽到功能關閉，如欲重新開啟，請使用 </claim:1020580644365021250> 指令
 '631': 申鶴已將你的通知功能關閉，如欲重新開啟，請使用 </remind:1020580644365021255> 指令
-'632': Weapon notification
+'632': 武器素材提醒
 '633': |-
-  • This feature allows you to receive notification when a weapon's domain is farmable
-  • Simply select the weapons you want to be notified about
-  • Selecting a weapon that already has notification enabled will disable its notification
-'634': Add/Remove weapons
-'635': Remove all weapons
-'636': Current weapons
-'637': There are currently no notifications set for any weapons
-'638': Choosing this weapon will turn OFF its notifications
+  • 當一個武器的素材副本可以刷的時候，申鶴會提醒你
+  • 請在下方選擇想要被提醒的武器
+  • 選擇一個已經選擇過的武器將會移除該武器的提醒
+'634': 新增/移除 武器
+'635': 移除所有武器
+'636': 當前已設定的武器
+'637': 目前尚未設置任何武器
+'638': 已新增過此武器, 再次選擇將會移除該武器
