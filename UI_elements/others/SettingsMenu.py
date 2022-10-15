@@ -213,6 +213,7 @@ class GOBack(Button):
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         view = View(user_locale or i.locale)
+        view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))
         embed.set_author(
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",

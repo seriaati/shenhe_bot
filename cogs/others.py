@@ -53,6 +53,7 @@ class OthersCog(commands.Cog, name="others"):
     async def settings(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.db)
         view = SettingsMenu.View(user_locale or i.locale)
+        view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))
         embed.set_author(
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
@@ -61,7 +62,6 @@ class OthersCog(commands.Cog, name="others"):
         embed.set_image(url="https://i.imgur.com/WM6C1Tk.png")
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
-        view.author = i.user
 
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
