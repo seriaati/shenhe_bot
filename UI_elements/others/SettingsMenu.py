@@ -103,7 +103,6 @@ class Langauge(Button):
             name=f"{text_map.get(34, i.locale, user_locale)}: {lang_name}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url="https://i.imgur.com/KWWkeyz.png")
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(LangSelect(i.locale, user_locale))
@@ -166,7 +165,6 @@ class DeveloperMessage(Button):
             name=f"{text_map.get(101, i.locale, user_locale)}: {emoji} {text_map.get(toggle_text, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url="https://i.imgur.com/vXEcZnW.png")
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(
@@ -219,7 +217,6 @@ class GOBack(Button):
             name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url="https://i.imgur.com/WM6C1Tk.png")
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
 
@@ -246,7 +243,6 @@ class Timezone(Button):
             name=f"{text_map.get(293, i.locale, user_locale)}: {user_timezone} ({utc_offset})",
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url="https://i.imgur.com/mA580iP.png")
         embed.description = text_map.get(294, i.locale, user_locale)
         await i.response.edit_message(embed=embed, view=self.view)
 
