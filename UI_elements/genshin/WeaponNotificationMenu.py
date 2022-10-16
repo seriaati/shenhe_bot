@@ -70,7 +70,7 @@ class WeaponTypeButton(Button):
             (weapon_list,) = await c.fetchone()
         weapon_list: List[str] = ast.literal_eval(weapon_list)
         select_options = []
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
+        ambr = AmbrTopAPI(i.client.session)
         weapons = await ambr.get_weapon()
         weapon_types = await ambr.get_weapon_types()
         for weapon in weapons:
@@ -83,7 +83,7 @@ class WeaponTypeButton(Button):
                 select_options.append(
                     SelectOption(
                         emoji=get_weapon(weapon.id)["emoji"],
-                        label=weapon.name,
+                        label=text_map.get_weapon_name(weapon.id, self.view.locale),
                         value=weapon.id,
                         description=description,
                     )
