@@ -487,3 +487,39 @@ def get_domain_title(domain: Domain, locale: Locale | str):
         return f"{domain.city.name} - {text_map.get(91, locale)}"
     elif "Mastery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(105, locale).title()}"
+
+def convert_ar_to_wl(ar: int) -> int:
+    if 1 <= ar <= 19:
+        return 0
+    elif 20 <= ar < 25:
+        return 1
+    elif 25 <= ar < 29:
+        return 2
+    elif 30 <= ar < 35:
+        return 3
+    elif 35 <= ar < 39:
+        return 4
+    elif 40 <= ar < 45:
+        return 5
+    elif 45 <= ar < 50:
+        return 6
+    elif 50 <= ar < 54:
+        return 7
+    else:
+        return 8
+
+def convert_wl_to_mora(wl: int) -> int:
+    if wl == 0:
+        return 12000
+    elif wl == 1:
+        return 20000
+    elif wl == 2:
+        return 28000
+    elif wl == 3:
+        return 36000
+    elif wl ==4 :
+        return 44000
+    elif wl == 5:
+        return 52000
+    else:
+        return 60000

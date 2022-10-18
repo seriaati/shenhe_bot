@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 import aiosqlite
 from apps.text_map.text_map_app import text_map
@@ -63,7 +63,7 @@ def get_element_name(
     )
 
 
-def get_month_name(month: int, locale: Locale, user_locale: Literal["str", None]):
+def get_month_name(month: int, locale: Locale, user_locale: Optional[str] = None) -> str:
     month_dict = {
         1: text_map.get(221, locale, user_locale),
         2: text_map.get(222, locale, user_locale),

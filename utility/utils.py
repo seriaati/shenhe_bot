@@ -7,6 +7,7 @@ import discord
 from dateutil import parser
 from discord.utils import format_dt
 from sentry_sdk.integrations.logging import LoggingIntegration
+from PIL.ImageFont import FreeTypeFont
 
 logging.basicConfig(
     level=logging.INFO,
@@ -120,3 +121,13 @@ async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
         return "Asia/Taipei"
     else:
         return timezone[0] or "Asia/Taipei"
+
+def dynamic_font_size(text: str, initial_font_size: int, max_font_size: int, max_width: int, font: FreeTypeFont) -> int:
+    font = font.font_variant(size=initial_font_size)
+    font_size = initial_font_size
+    while font.getlength(text) < max_width:
+        if font_size == max_font_size:
+            break
+        font_size += 1
+        font = font.font_variant(size=font_size)
+    return font_size

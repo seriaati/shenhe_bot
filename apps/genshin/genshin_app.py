@@ -12,7 +12,12 @@ from discord import Embed, Locale, SelectOption, User
 from discord.ext import commands
 from discord.utils import format_dt
 from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
-from yelan.draw import draw_abyss_overview_card, draw_area_card, draw_stats_card
+from yelan.draw import (
+    draw_abyss_overview_card,
+    draw_area_card,
+    draw_diary_card,
+    draw_stats_card,
+)
 
 import genshin
 
@@ -331,34 +336,25 @@ class GenshinApp:
     async def get_diary(self, user_id: int, month: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
         diary = await shenhe_user.client.get_diary(month=month)
-        d = diary.data
-        result = default_embed(
-            message=f"{text_map.get(59, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.primogems_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.primogems_rate)}%\n"
-            f"{text_map.get(62, locale, shenhe_user.user_locale)} {text_map.get(60, locale, shenhe_user.user_locale) if d.mora_rate > 0 else text_map.get(61, locale, shenhe_user.user_locale)} {abs(d.mora_rate)}%"
+        user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
+        result = {}
+        embed = default_embed()
+        fp = await draw_diary_card(
+            diary,
+            user,
+            shenhe_user.user_locale or locale,
+            await get_user_appearance_mode(user_id, self.db),
+            month,
         )
-        result.add_field(
-            name=text_map.get(63, locale, shenhe_user.user_locale),
-            value=f"<:PRIMO:1010048703312171099> {d.current_primogems} ({int(d.current_primogems/160)} <:pink_ball:984652245851316254>) • {text_map.get(64, locale, shenhe_user.user_locale)}: {d.last_primogems} ({int(d.last_primogems/160)} <:pink_ball:984652245851316254>)\n"
-            f"<:MORA:1010048704901828638> {d.current_mora} • {text_map.get(64, locale, shenhe_user.user_locale)}: {d.last_mora}",
-            inline=False,
-        )
-        msg = ""
-        for cat in d.categories:
-            msg += f"{cat.name}: {cat.amount} | {cat.percentage}%\n"
-        result.add_field(
-            name=text_map.get(65, locale, shenhe_user.user_locale),
-            value=msg,
-            inline=False,
-        )
-        result.add_field(
-            name=text_map.get(66, locale, shenhe_user.user_locale),
-            value=f"{text_map.get(67, locale, shenhe_user.user_locale)}\n{text_map.get(68, locale, shenhe_user.user_locale)}",
-            inline=False,
-        )
-        result.set_author(
+        fp.seek(0)
+        embed.set_image(url="attachment://diary.jpeg")
+        embed.set_author(
             name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(month, locale, shenhe_user.user_locale)}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
+        embed.set_footer(text=text_map.get(639, locale, shenhe_user.user_locale))
+        result["embed"] = embed
+        result["fp"] = fp
         return result, True
 
     @genshin_error_handler
@@ -415,7 +411,10 @@ class GenshinApp:
         result["abyss"] = abyss
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
-        overview.set_author(name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}", icon_url=shenhe_user.discord_user.display_avatar.url)
+        overview.set_author(
+            name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}",
+            icon_url=shenhe_user.discord_user.display_avatar.url,
+        )
         result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)

@@ -314,40 +314,31 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="diary",
         description=_(
-            "View your traveler's diary: primo and mora income (needs /regsiter)",
+            "View your traveler's diary: primo and mora income (needs /register)",
             hash=422,
         ),
     )
-    @app_commands.rename(month=_("month", hash=423), member=_("user", hash=415))
+    @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        month=_("The month of the diary you're trying to view", hash=424),
         member=_("check other user's data", hash=416),
     )
-    @app_commands.choices(
-        month=[
-            app_commands.Choice(name=_("This month", hash=425), value=0),
-            app_commands.Choice(name=_("Last month", hash=64), value=-1),
-            app_commands.Choice(
-                name=_("The month before last month", hash=427), value=-2
-            ),
-        ]
-    )
-    async def diary(self, i: Interaction, month: int = 0, member: User = None):
+    async def diary(self, i: Interaction, member: User = None):
         member = member or i.user
         check = await check_cookie_predicate(i, member)
         if not check:
             return
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_timezone = await get_user_timezone(i.user.id, self.bot.db)
-        month = datetime.now(pytz.timezone(user_timezone)).month + month
-        month = month + 12 if month < 1 else month
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_timezone = await get_user_timezone(i.user.id, i.client.db)
+        month = datetime.now(pytz.timezone(user_timezone)).month
         result, success = await self.genshin_app.get_diary(member.id, month, i.locale)
         if not success:
             await i.followup.send(embed=result)
         else:
-            view = Diary.View(i.user, member, self.genshin_app, i.locale, user_locale)
-            await i.followup.send(embed=result, view=view)
+            view = Diary.View(i.user, member, self.genshin_app, i.locale, user_locale, month)
+            await i.followup.send(
+                embed=result["embed"], view=view, files=[File(result["fp"], "diary.jpeg")]
+            )
             view.message = await i.original_response()
 
     @app_commands.command(
