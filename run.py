@@ -17,7 +17,6 @@ from discord import (
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from dotenv import load_dotenv
-from pyppeteer import launch
 from discord.ext.commands import Context
 from UI_base_models import global_error_handler
 from apps.text_map.text_map_app import text_map

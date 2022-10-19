@@ -131,3 +131,6 @@ def dynamic_font_size(text: str, initial_font_size: int, max_font_size: int, max
         font_size += 1
         font = font.font_variant(size=font_size)
     return font_size
+
+def format_number(text: str) -> str:
+    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)

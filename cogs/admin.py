@@ -41,9 +41,10 @@ class AdminCog(commands.Cog, name="admin"):
     @app_commands.command(name="reload", description=_("Owner usage only", hash=496))
     async def reload(self, i: Interaction):
         await i.response.defer(ephemeral=True)
-        g = git.cmd.Git(Path(__file__).parent.parent)
-        g.pull()
-        await i.edit_original_response(content="Git Pulled")
+        if not i.client.debug:
+            g = git.cmd.Git(Path(__file__).parent.parent)
+            g.pull()
+            await i.edit_original_response(content="Git Pulled")
         modules = list(sys.modules.values())
         for _ in range(2):
             for module in modules:
@@ -51,7 +52,8 @@ class AdminCog(commands.Cog, name="admin"):
                     continue
                 if module.__name__.startswith(
                     (
-                        "ambr." "cogs.",
+                        "ambr.",
+                        "cogs.",
                         "apps.",
                         "data.",
                         "text_maps.",

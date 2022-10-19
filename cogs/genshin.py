@@ -335,9 +335,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         if not success:
             await i.followup.send(embed=result)
         else:
-            view = Diary.View(i.user, member, self.genshin_app, i.locale, user_locale, month)
+            view = Diary.View(
+                i.user, member, self.genshin_app, i.locale, user_locale, month
+            )
             await i.followup.send(
-                embed=result["embed"], view=view, files=[File(result["fp"], "diary.jpeg")]
+                embed=result["embed"],
+                view=view,
+                files=[File(result["fp"], "diary.jpeg")],
             )
             view.message = await i.original_response()
 
@@ -1063,9 +1067,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             rarity_str = ""
             for _ in range(weapon_detail.rarity):
                 rarity_str += "<:white_star:982456919224615002>"
-            embed = default_embed(
-                weapon_detail.name, f"{rarity_str}\n\n{weapon_detail.description}"
-            )
+            embed = default_embed(weapon_detail.name, f"{rarity_str}")
+            embed.set_footer(text=weapon_detail.description)
             embed.add_field(
                 name=text_map.get(529, i.locale, user_locale),
                 value=weapon_detail.type,
@@ -1077,11 +1080,12 @@ class GenshinCog(commands.Cog, name="genshin"):
                     value=weapon_detail.effect.descriptions[0],
                     inline=False,
                 )
-                embed.add_field(
-                    name=f"{weapon_detail.effect.name} (R5)",
-                    value=weapon_detail.effect.descriptions[4],
-                    inline=False,
-                )
+                if len(weapon_detail.effect.descriptions) > 4:
+                    embed.add_field(
+                        name=f"{weapon_detail.effect.name} (R5)",
+                        value=weapon_detail.effect.descriptions[4],
+                        inline=False,
+                    )
             embed.set_image(
                 url=f"https://api.ambr.top/assets/UI/generated/ascension/weapon_detail/{query}.png"
             )
@@ -1138,10 +1142,20 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.set_thumbnail(url=material.icon)
             await i.followup.send(embed=embed)
         elif item_type == 3:
+            rarity_str = ""
             artifact = await client.get_artifact_detail(query)
-            embed = default_embed(
-                artifact.name,
-                f"2x: {artifact.effects.two_piece}\n\n4x: {artifact.effects.four_piece}",
+            for _ in range(artifact.rarities[10]):
+                rarity_str += "<:white_star:982456919224615002>"
+            embed = default_embed(artifact.name, rarity_str)
+            embed.add_field(
+                name=text_map.get(640, i.locale, user_locale),
+                value=artifact.effects.two_piece,
+                inline=False,
+            )
+            embed.add_field(
+                name=text_map.get(641, i.locale, user_locale),
+                value=artifact.effects.four_piece,
+                inline=False,
             )
             embed.set_thumbnail(url=artifact.icon)
             await i.followup.send(embed=embed)
