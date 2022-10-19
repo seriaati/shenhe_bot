@@ -1,7 +1,7 @@
 import importlib
 from pathlib import Path
 import sys
-
+import git
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -41,6 +41,9 @@ class AdminCog(commands.Cog, name="admin"):
     @app_commands.command(name="reload", description=_("Owner usage only", hash=496))
     async def reload(self, i: Interaction):
         await i.response.defer(ephemeral=True)
+        g = git.cmd.Git(Path(__file__).parent.parent)
+        g.pull()
+        await i.edit_original_response(content="Git Pulled")
         modules = list(sys.modules.values())
         for _ in range(2):
             for module in modules:
