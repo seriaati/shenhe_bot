@@ -468,7 +468,7 @@
 '421': View all owned characters (need /register)
 '422': View traveler's diary (need /register)
 '423': month
-'424': The month you're trying to search with
+'424': Choose a month to view
 '425': This month
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
@@ -723,3 +723,4 @@
 '636': Current weapons
 '637': There are currently no notifications set for any weapons
 '638': Choosing this weapon will turn OFF its notifications
+'639': Percentage is calculated by comparing earnings to the previous month
