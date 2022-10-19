@@ -1144,7 +1144,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         elif item_type == 3:
             rarity_str = ""
             artifact = await client.get_artifact_detail(query)
-            for _ in range(artifact.rarities[10]):
+            for _ in range(artifact.rarities[-1]):
                 rarity_str += "<:white_star:982456919224615002>"
             embed = default_embed(artifact.name, rarity_str)
             embed.add_field(
