@@ -85,7 +85,7 @@ class DarkModeButton(Button):
 
 class Langauge(Button):
     def __init__(self, label: str):
-        super().__init__(emoji="🌍", label=label)
+        super().__init__(emoji="🌍", label=label, row=2)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -142,7 +142,7 @@ class LangSelect(Select):
 
 class DeveloperMessage(Button):
     def __init__(self, label: str):
-        super().__init__(emoji="✉️", label=label)
+        super().__init__(emoji="✉️", label=label, row=2)
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
