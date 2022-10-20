@@ -18,4 +18,4 @@ FONTS = {
 
 
 def get_font(locale: discord.Locale | str):
-    return FONTS.get(str(locale), "NotoSans-Regular.ttf")
+    return f"resources/fonts/{FONTS.get(str(locale), 'NotoSans-Regular.ttf')}"

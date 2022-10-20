@@ -409,12 +409,14 @@ class GenshinApp:
             return embed, False
         result = {}
         result["abyss"] = abyss
+        result["user"] = user
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(
             name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
+        result["title"] = f"{text_map.get(47, locale)} | {text_map.get(77, locale)} {abyss.season}"
         result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)

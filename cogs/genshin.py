@@ -144,6 +144,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
+    @check_cookie()
     @app_commands.command(
         name="check",
         description=_("Check resin, pot, and expedition status", hash=414),
@@ -152,9 +153,6 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def check(self, i: Interaction, member: User = None):
         member = member or i.user
-        check = await check_cookie_predicate(i, member)
-        if not check:
-            return
         await i.response.defer()
         result, success = await self.genshin_app.get_real_time_notes(
             member.id, i.locale
@@ -162,13 +160,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.followup.send(embed=result, ephemeral=not success)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
-        check = await check_cookie_predicate(i)
+        check = await check_cookie_predicate(i, member)
         if not check:
             return
         await i.response.defer()
         result, _ = await self.genshin_app.get_real_time_notes(member.id, i.locale)
         await i.followup.send(embed=result, ephemeral=True)
 
+    @check_account()
     @app_commands.command(
         name="stats",
         description=_(
@@ -184,6 +183,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.stats_command(i, member)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
+        print(i.namespace.__dict__)
+        check = await check_account_predicate(i, member)
+        if not check:
+            return
         await self.stats_command(i, member, context_command=True)
 
     async def stats_command(
@@ -192,9 +195,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         member: User = None,
         context_command: bool = False,
     ) -> None:
-        check = await check_account_predicate(i, member or i.user)
-        if not check:
-            return
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -240,6 +240,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 files=[file],
             )
 
+    @check_account()
     @app_commands.command(
         name="area",
         description=_("View exploration rates of different areas in genshin", hash=419),
@@ -249,9 +250,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         member=_("check other user's data", hash=416),
     )
     async def area(self, i: Interaction, member: User = None):
-        check = await check_account_predicate(i, member or i.user)
-        if not check:
-            return
         await i.response.defer()
         member = member or i.user
         result, success = await self.genshin_app.get_area(member.id, i.locale)
@@ -276,6 +274,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def claim(self, i: Interaction):
         await return_claim_reward(i, self.genshin_app)
 
+    @check_cookie()
     @app_commands.command(
         name="characters",
         description=_(
@@ -289,15 +288,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.characters_comamnd(i, member, False)
 
     async def characters_ctx_menu(self, i: Interaction, member: User):
+        check = await check_cookie_predicate(i, member)
+        if not check:
+            return
         await self.characters_comamnd(i, member)
 
     async def characters_comamnd(
         self, i: Interaction, member: User = None, ephemeral: bool = True
     ):
         member = member or i.user
-        check = await check_cookie_predicate(i, member)
-        if not check:
-            return
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         result, success = await self.genshin_app.get_all_characters(member.id, i.locale)
@@ -345,6 +344,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             view.message = await i.original_response()
 
+    @check_cookie()
     @app_commands.command(
         name="abyss",
         description=_("View abyss information", hash=428),
@@ -365,9 +365,6 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def abyss(self, i: Interaction, previous: int = 0, member: User = None):
         member = member or i.user
-        check = await check_cookie_predicate(i, member or i.user)
-        if not check:
-            return
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         previous = True if previous == 1 else False
@@ -539,6 +536,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         await i.response.send_message(embed=embed, ephemeral=ephemeral)
 
+    @check_account()
     @app_commands.command(
         name="profile",
         description=_(
@@ -554,6 +552,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.profile_command(i, member, False)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
+        check = await check_account_predicate(i, member)
+        if not check:
+            return
         await self.profile_command(i, member)
 
     async def profile_command(
@@ -562,9 +563,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         member: User = None,
         ephemeral: bool = True,
     ):
-        check = await check_account_predicate(i, member or i.user)
-        if not check:
-            return
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -1181,6 +1179,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         random.shuffle(result)
         return result[:25]
 
+    @check_account()
     @app_commands.command(
         name="activity",
         description=_("View your past genshin activity stats", hash=459),
@@ -1190,9 +1189,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         member=_("check other user's data", hash=416),
     )
     async def activity(self, i: Interaction, member: User = None):
-        check = await check_account_predicate(i, member)
-        if not check:
-            return
         await i.response.defer()
         member = member or i.user
         result, success = await self.genshin_app.get_activities(member.id, i.locale)

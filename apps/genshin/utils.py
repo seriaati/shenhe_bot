@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 import discord
 import aiosqlite
 import enkanetwork
@@ -372,7 +372,7 @@ async def get_shenhe_user(
     return user_obj
 
 
-async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
+async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
     c = await db.cursor()
     await c.execute(
         "SELECT uid, current FROM user_accounts WHERE user_id = ?",
@@ -383,6 +383,8 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> int | None:
         uid = tpl[0]
         if tpl[1] == 1:
             break
+    if not uid:
+        return None
     return uid
 
 

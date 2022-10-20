@@ -29,7 +29,7 @@ class ResinNotification(Button):
         super().__init__(emoji="🌙", label=text_map.get(582, locale))
 
     async def callback(self, i: Interaction):
-        check = await check_cookie_predicate(i, i.user)
+        check = await check_cookie_predicate(i)
         if not check:
             return
         await return_resin_notification(i, self.view)
@@ -74,7 +74,7 @@ class PotNotification(Button):
         super().__init__(emoji="🫖", label=text_map.get(584, locale))
 
     async def callback(self, i: Interaction):
-        check = await check_cookie_predicate(i, i.user)
+        check = await check_cookie_predicate(i)
         if not check:
             return
         await return_pot_notification(i, self.view)
