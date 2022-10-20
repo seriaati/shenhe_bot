@@ -320,7 +320,7 @@ class Schedule(commands.Cog):
                 claimed = False
                 log.warning(f"[Schedule][Claim Reward] We have been rate limited")
                 for index in range(1, 6):
-                    await asyncio.sleep(20 * index)
+                    await asyncio.sleep(120 * index)
                     log.info(f"[Schedule][Claim Reward] Retry {index}")
                     try:
                         await client.claim_daily_reward()
@@ -364,7 +364,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(10)
+            await asyncio.sleep(60)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
 
