@@ -7,7 +7,7 @@ from apps.text_map.text_map_app import text_map
 from typing import Any
 import config
 from utility.utils import default_embed, get_user_appearance_mode
-from yelan.draw import draw_abyss_floor_card
+from yelan.draw import draw_abyss_floor_card, draw_abyss_one_page
 
 
 class View(BaseView):
@@ -41,10 +41,13 @@ class FloorSelect(Select):
         super().__init__(
             placeholder=text_map.get(148, locale, user_locale), options=options
         )
+        self.add_option(label=text_map.get(643, locale, user_locale), value="one-page")
         self.embeds = embeds
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id, i.client.db)
         if self.values[0] == "overview":
             fp = self.embeds["overview_card"]
             fp.seek(0)
@@ -53,10 +56,40 @@ class FloorSelect(Select):
                 embed=self.embeds["overview"],
                 attachments=[image],
             )
+        elif self.values[0] == "one-page":
+            embed = default_embed()
+            embed.set_author(
+                name=text_map.get(644, i.locale, user_locale),
+                icon_url="https://i.imgur.com/V76M9Wa.gif",
+            )
+            await i.edit_original_response(embed=embed, attachments=[])
+            fp = await draw_abyss_one_page(
+                self.embeds["user"],
+                self.embeds["abyss"],
+                user_locale or i.locale,
+                dark_mode,
+                i.client.session,
+            )
+            fp.seek(0)
+            image = File(fp, filename="abyss_one_page.jpeg")
+            embed = default_embed()
+            embed.set_image(url="attachment://abyss_one_page.jpeg")
+            embed.set_author(
+                name=self.embeds["title"], icon_url=i.user.display_avatar.url
+            )
+            await i.edit_original_response(embed=embed, attachments=[image])
         else:
             embed = default_embed()
+            embed.set_author(
+                name=text_map.get(644, i.locale, user_locale),
+                icon_url="https://i.imgur.com/V76M9Wa.gif",
+            )
+            await i.edit_original_response(embed=embed, attachments=[])
+            embed = default_embed()
             embed.set_image(url="attachment://floor.jpeg")
-            dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+            embed.set_author(
+                name=self.embeds["title"], icon_url=i.user.display_avatar.url
+            )
             fp = await draw_abyss_floor_card(
                 dark_mode,
                 self.embeds["floors"][int(self.values[0])],
