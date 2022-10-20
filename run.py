@@ -83,18 +83,21 @@ class ShenheBot(commands.Bot):
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
         c = await self.db.cursor()
-        overseas = []
+        cookies = []
         async with self.db.execute(
-            "SELECT ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL"
+            "SELECT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
         ) as c:
             data = await c.fetchall()
         for _, tpl in enumerate(data):
-            ltuid = tpl[0]
-            ltoken = tpl[1]
+            uid = tpl[0]
+            if str(uid) in ["1", "2", "5"]:
+                continue
+            ltuid = tpl[1]
+            ltoken = tpl[2]
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
-            overseas.append(cookie)
+            cookies.append(cookie)
         self.genshin_client = genshin.Client()
-        self.genshin_client.set_cookies(overseas)
+        self.genshin_client.set_cookies(cookies)
 
         # load jishaku
         await self.load_extension("jishaku")
