@@ -50,13 +50,14 @@ class WaifuCog(commands.GroupCog, name="waifu"):
         await self.hm_tai_command(i, num, "wallpaper")
 
     @app_commands.command(name="waifu_im", description="利用 waifu.im API 隨機產生一張二次元老婆的照片")
-    @app_commands.rename(sese="色色模式", tags="標籤選擇", many="數量")
+    @app_commands.rename(sese="色色模式", tags="標籤選擇", many="多張模式")
     @app_commands.choices(
         sese=[Choice(name="開啟", value=1), Choice(name="關閉", value=0)],
         tags=[Choice(name="開啟", value=1), Choice(name="關閉", value=0)],
+        many=[Choice(name="開啟", value=1), Choice(name="關閉", value=0)],
     )
     @app_commands.describe(sese="是否要色色", many="產生多張老婆的照片", tags="透過標籤找到更符合你的需求的老婆")
-    async def waifu(self, i: Interaction, many: int = 1, sese: int = 0, tags: int = 0):
+    async def waifu(self, i: Interaction, many: int = 0, sese: int = 0, tags: int = 0):
         await i.response.defer(ephemeral=True)
         is_nsfw = True if sese == 1 else False
         if tags == 1:
@@ -73,7 +74,7 @@ class WaifuCog(commands.GroupCog, name="waifu"):
             wf: WaifuAioClient
             try:
                 many_var = True if many > 1 else False
-                image = await wf.random(
+                images = await wf.random(
                     is_nsfw=is_nsfw,
                     selected_tags=view.tags[0] if tags == 1 else [],
                     many=many_var,
@@ -85,16 +86,16 @@ class WaifuCog(commands.GroupCog, name="waifu"):
                     )
                 )
             embeds = []
-            if not isinstance(image, list):
-                image = [image]
-            for index in range(many):
+            if not isinstance(images, list):
+                images = [images]
+            for index, image in enumerate(images):
                 embed = default_embed()
                 embed.set_author(
                     name=f"{i.user.display_name}的{'色色'if sese==1 else ''}後宮",
                     icon_url=i.user.display_avatar.url,
                 )
-                embed.set_image(url=image[index])
-                embed.set_footer(text=f"API: waifu.im | {index+1}/{many}")
+                embed.set_image(url=image)
+                embed.set_footer(text=f"API: waifu.im | {index}/{len(images)}")
                 embeds.append(embed)
             await GeneralPaginator(i, embeds, i.client.db).start(edit=True)
 
