@@ -335,6 +335,8 @@ class GenshinApp:
     @genshin_error_handler
     async def get_diary(self, user_id: int, month: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
+        if shenhe_user.china:
+            shenhe_user.client.region = genshin.Region.CHINESE
         diary = await shenhe_user.client.get_diary(month=month)
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         result = {}
