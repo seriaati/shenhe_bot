@@ -1,5 +1,5 @@
 import io
-from typing import Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel
 import discord
 import genshin
@@ -31,3 +31,11 @@ class NotificationUser(BaseModel):
     uid: Optional[int]
     last_notif_time: Optional[str]
     shenhe_user: Optional[ShenheUser] = None
+
+class WishData(BaseModel):
+    title: str
+    total_wishes: int
+    pity: int
+    four_star: int
+    five_star: int
+    recents: List[Dict[str, str|int]]

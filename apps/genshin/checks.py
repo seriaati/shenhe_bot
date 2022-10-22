@@ -16,11 +16,14 @@ def check_account():
 
     return app_commands.check(predicate)
 
-async def check_account_predicate(i: Interaction, member: Optional[User] = None) -> bool:
-    if 'member' in i.namespace.__dict__:
-        user = i.namespace['member']
-    elif 'user' in i.namespace.__dict__:
-        user = i.namespace['user']
+
+async def check_account_predicate(
+    i: Interaction, member: Optional[User] = None
+) -> bool:
+    if "member" in i.namespace.__dict__:
+        user = i.namespace["member"]
+    elif "user" in i.namespace.__dict__:
+        user = i.namespace["user"]
     else:
         user = i.user
     user = member or user
@@ -34,11 +37,12 @@ async def check_account_predicate(i: Interaction, member: Optional[User] = None)
                 name=text_map.get(571 if user.id == i.user.id else 579, locale),
                 icon_url=user.display_avatar.url,
             ),
-            ephemeral=True
+            ephemeral=True,
         )
         return False
     else:
         return True
+
 
 def check_cookie():
     """Checks if the current user account has a cookie."""
@@ -50,14 +54,46 @@ def check_cookie():
     return app_commands.check(predicate)
 
 
+def check_wish_history():
+    """Checks if the current user account has a wish history."""
+
+    async def predicate(i: Interaction) -> bool:
+        if "member" in i.namespace.__dict__:
+            user = i.namespace["member"]
+        elif "user" in i.namespace.__dict__:
+            user = i.namespace["user"]
+        else:
+            user = i.user
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        async with i.client.db.execute(
+            "SELECT wish_id FROM wish_history WHERE user_id = ?", (user.id,)
+        ) as c:
+            data = await c.fetchone()
+        if data is None:
+            await i.response.send_message(
+                embed=error_embed(
+                    message=text_map.get(368, i.locale, user_locale)
+                ).set_author(
+                    name=text_map.get(367, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
+            return False
+        else:
+            return True
+
+    return app_commands.check(predicate)
+
+
 async def check_cookie_predicate(i: Interaction, member: Optional[User] = None) -> bool:
     check = await check_account_predicate(i, member)
     if not check:
         return False
-    if 'member' in i.namespace.__dict__:
-        user = i.namespace['member']
-    elif 'user' in i.namespace.__dict__:
-        user = i.namespace['user']
+    if "member" in i.namespace.__dict__:
+        user = i.namespace["member"]
+    elif "user" in i.namespace.__dict__:
+        user = i.namespace["user"]
     else:
         user = i.user
     user = member or user

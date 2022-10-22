@@ -1,21 +1,31 @@
-import discord
+from typing import Literal
 
 
 FONTS = {
-    "zh-CN": "NotoSansSC-Regular.otf",
-    "zh-TW": "NotoSansTC-Regular.otf",
-    "de": "NotoSans-Regular.ttf",
-    "en-US": "NotoSans-Regular.ttf",
-    "es-ES": "NotoSans-Regular.ttf",
-    "fr": "NotoSans-Regular.ttf",
-    "ja": "NotoSansJP-Regular.otf",
-    "ko": "NotoSansKR-Regular.otf",
-    "th": "NotoSansThai-Regular.ttf",
-    "pt-BR": "NotoSans-Regular.ttf",
-    "ru": "NotoSans-Regular.ttf",
-    "vi": "NotoSans-Regular.ttf",
+    "de": {"extension": "ttf", "name": "NotoSans"},
+    "en-US": {"extension": "ttf", "name": "NotoSans"},
+    "es-ES": {"extension": "ttf", "name": "NotoSans"},
+    "fr": {"extension": "ttf", "name": "NotoSans"},
+    "ja": {"extension": "otf", "name": "NotoSansJP"},
+    "ko": {"extension": "otf", "name": "NotoSansKR"},
+    "pt-BR": {"extension": "ttf", "name": "NotoSans"},
+    "ru": {"extension": "ttf", "name": "NotoSans"},
+    "th": {"extension": "ttf", "name": "NotoSansThai"},
+    "vi": {"extension": "ttf", "name": "NotoSans"},
+    "zh-CN": {"extension": "otf", "name": "NotoSansSC"},
+    "zh-TW": {"extension": "otf", "name": "NotoSansTC"},
 }
 
 
-def get_font(locale: discord.Locale | str):
-    return f"resources/fonts/{FONTS.get(str(locale), 'NotoSans-Regular.ttf')}"
+def get_font(
+    locale, variation: Literal["Bold", "Light", "Thin", "Black", "Medium"] = "Regular"
+) -> str:
+    path = "resources/fonts/"
+    return (
+        path
+        + FONTS.get(str(locale), f"NotoSans")["name"]
+        + "-"
+        + variation
+        + "."
+        + FONTS.get(str(locale), "ttf")["extension"]
+    )

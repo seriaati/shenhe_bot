@@ -1,22 +1,23 @@
 from datetime import datetime
-from typing import Optional
+from typing import Dict, List, Optional
 
 import aiosqlite
 import GGanalysislib
+from apps.genshin.checks import check_wish_history
+from apps.genshin.custom_model import WishData
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from apps.wish.wish_app import (
-    check_user_wish_data,
     get_user_event_wish,
     get_user_weapon_wish,
-    get_user_wish_overview,
 )
-from discord import Interaction, User, app_commands, User
+from discord import File, Interaction, User, app_commands, SelectOption
+from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.wish import ChoosePlatform, ChooseWeapon
+from UI_elements.wish import ChoosePlatform, ChooseWeapon, ChooseBanner
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, divide_chunks, error_embed
-from discord.app_commands import locale_str as _
+from yelan.draw import draw_wish_overview_card
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -30,13 +31,10 @@ class WishCog(commands.GroupCog, name="wish"):
     async def set_key(self, i: Interaction):
         await ChoosePlatform.GOBack.callback(self, i)
 
-    # /wish history
+    @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
     async def wish_history(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        check, msg = await check_user_wish_data(i.user.id, i, self.bot.db)
-        if not check:
-            return await i.response.send_message(embed=msg, ephemeral=True)
 
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute("SELECT * FROM wish_history WHERE user_id = ?", (i.user.id,))
@@ -78,6 +76,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         await GeneralPaginator(i, embeds, self.bot.db).start()
 
+    @check_wish_history()
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
@@ -85,9 +84,6 @@ class WishCog(commands.GroupCog, name="wish"):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        check, msg = await check_user_wish_data(member.id, i, self.bot.db)
-        if not check:
-            return await i.followup.send(embed=msg, ephemeral=True)
 
         (
             _,
@@ -125,6 +121,7 @@ class WishCog(commands.GroupCog, name="wish"):
         )
         await i.followup.send(embed=embed)
 
+    @check_wish_history()
     @app_commands.command(
         name="character",
         description=_("Predict the chance of pulling a character", hash=480),
@@ -134,7 +131,6 @@ class WishCog(commands.GroupCog, name="wish"):
         num=_("How many five star UP characters do you wish to pull?", hash=482)
     )
     async def wish_char(self, i: Interaction, num: int):
-        check, embed = await check_user_wish_data(i.user.id, i, self.bot.db)
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if num > 10:
             return await i.response.send_message(
@@ -144,8 +140,6 @@ class WishCog(commands.GroupCog, name="wish"):
                 ),
                 ephemeral=True,
             )
-        if not check:
-            return await i.response.send_message(embed=embed, ephemeral=True)
         await i.response.defer()
 
         (
@@ -184,6 +178,7 @@ class WishCog(commands.GroupCog, name="wish"):
         )
         await i.followup.send(embed=embed)
 
+    @check_wish_history()
     @app_commands.command(
         name="weapon",
         description=_("Predict the chance of pulling a weapon you want", hash=483),
@@ -194,9 +189,6 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     async def wish_weapon(self, i: Interaction, item_num: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        check, msg = await check_user_wish_data(i.user.id, i, self.bot.db)
-        if not check:
-            return await i.response.send_message(embed=msg, ephemeral=True)
 
         last_name, pull_state = await get_user_weapon_wish(i.user.id, self.bot.db)
         if last_name == "":
@@ -251,56 +243,109 @@ class WishCog(commands.GroupCog, name="wish"):
         )
         await i.edit_original_response(embed=embed, view=None)
 
+    @check_wish_history()
     @app_commands.command(
         name="overview", description=_("View you genshin wish overview", hash=484)
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_overview(self, i: Interaction, member: Optional[User] = None):
+        await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        check, embed = await check_user_wish_data(member.id, i, self.bot.db)
-        if not check:
-            return await i.response.send_message(embed=embed, ephemeral=True)
 
-        overview = await get_user_wish_overview(member.id, self.bot.db)
+        async with i.client.db.execute(
+            "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ?",
+            (member.id,),
+        ) as cursor:
+            data = await cursor.fetchall()
 
-        # banner_ids = [200, 301+400, 302]
-        banner_names = [
-            text_map.get(398, i.locale, user_locale),
-            text_map.get(399, i.locale, user_locale),
-            text_map.get(400, i.locale, user_locale),
-        ]
-        total = 0
-        for banner in overview.values():
-            total += banner["total"]
-        embed = default_embed(
-            message=f"{text_map.get(375, i.locale, user_locale)} {total} {text_map.get(376,i.locale, user_locale)}\n"
-            f"{text_map.get(396, i.locale, user_locale)} {160*total} <:PRIMO:1010048703312171099> {text_map.get(397, i.locale, user_locale)}"
+        data.sort(
+            key=lambda x: datetime.strptime(x[3], "%Y/%m/%d %H:%M:%S"), reverse=True
         )
 
-        for index, banner in enumerate(overview.values()):
-            average = (
-                (banner["total"] // banner["five_star"])
-                if banner["five_star"] != 0
-                else 0
+        items: List[Dict[str, int | str]] = []
+        images = {}
+        options = []
+        for _, tpl in enumerate(data):
+            name = tpl[0]
+            banner = tpl[1]
+            wish_rarity = tpl[2]
+            if banner == 400:
+                banner = 301
+            items.append({"name": name, "banner": banner, "rarity": wish_rarity})
+
+        novice_banner = [i for i in items if i["banner"] == 100]
+        character_banner = [i for i in items if i["banner"] == 301]
+        weapon_banner = [i for i in items if i["banner"] == 302]
+        permanent_banner = [i for i in items if i["banner"] == 200]
+        banners = {
+            100: novice_banner,
+            301: character_banner,
+            302: weapon_banner,
+            200: permanent_banner,
+        }
+        for banner_id, banner in banners.items():
+            if not banner:
+                continue
+            five_star = [i for i in banner if i["rarity"] == 5]
+            four_star = [i for i in banner if i["rarity"] == 4]
+            pity = 0
+            for item in items:
+                pity += 1
+                if item["rarity"] == 5:
+                    break
+            reversed_banner = banner
+            reversed_banner.reverse()
+            pull = 0
+            recents = []
+            for item in reversed_banner:
+                pull += 1
+                if item["rarity"] == 5:
+                    recents.append({"name": item["name"], "pull": pull})
+                    pull = 0
+            recents.reverse()
+            title = ""
+            if banner_id == 100:
+                title = text_map.get(647, i.locale, user_locale)
+            elif banner_id == 301:
+                title = text_map.get(645, i.locale, user_locale)
+            elif banner_id == 302:
+                title = text_map.get(646, i.locale, user_locale)
+            elif banner_id == 200:
+                title = text_map.get(655, i.locale, user_locale)
+            wish_data = WishData(
+                title=title,
+                total_wishes=len(banner),
+                four_star=len(four_star),
+                five_star=len(five_star),
+                pity=pity,
+                recents=recents,
             )
-            std_str = (
-                f'• {text_map.get(387, i.locale, user_locale)}: **{banner["std"]}**\n'
-                if index == 1
-                else ""
+            fp = await draw_wish_overview_card(
+                i.client.session,
+                user_locale or i.locale,
+                wish_data,
+                "weapon" if banner == 302 else "character",
+                member.display_avatar.url,
+                member.name,
             )
-            embed.add_field(
-                name=f"{banner_names[index]}",
-                value=f'• {text_map.get(375, i.locale, user_locale)} **{banner["total"]}** {text_map.get(376, i.locale, user_locale)}\n({banner["total"]*160} <:PRIMO:1010048703312171099> {text_map.get(397, i.locale, user_locale)})\n'
-                f'• 5<:white_star:982456919224615002> **{banner["five_star"]}**\n'
-                f'• 4<:white_star:982456919224615002> **{banner["four_star"]}**\n'
-                f"• {text_map.get(401, i.locale, user_locale)} **{average}** {text_map.get(402, i.locale, user_locale)}\n"
-                f'• {text_map.get(380, i.locale, user_locale)} **{(80 if index == 2 else 90)-banner["left_pull"]}** {text_map.get(404, i.locale, user_locale)}\n'
-                f"{std_str}",
+            images[banner_id] = fp
+            options.append(
+                SelectOption(
+                    label=title,
+                    value=str(banner_id),
+                )
             )
-        embed.set_author(name=member, icon_url=member.display_avatar.url)
-        await i.response.send_message(embed=embed)
+        fp = list(images.values())[0]
+        fp.seek(0)
+        await i.followup.send(
+            embed=default_embed().set_image(url="attachment://overview.jpeg"),
+            file=File(fp, filename="overview.jpeg"),
+            view=ChooseBanner.View(
+                images, text_map.get(656, i.locale, user_locale), options
+            ),
+        )
 
 
 async def setup(bot: commands.Bot) -> None:

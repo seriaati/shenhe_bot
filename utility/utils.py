@@ -1,7 +1,8 @@
 import logging
 import re
 from itertools import islice
-from typing import Dict, List, Optional
+from typing import Dict, List
+from PIL import Image, ImageDraw
 import aiosqlite
 import discord
 from dateutil import parser
@@ -122,7 +123,14 @@ async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
     else:
         return timezone[0] or "Asia/Taipei"
 
-def dynamic_font_size(text: str, initial_font_size: int, max_font_size: int, max_width: int, font: FreeTypeFont) -> int:
+
+def dynamic_font_size(
+    text: str,
+    initial_font_size: int,
+    max_font_size: int,
+    max_width: int,
+    font: FreeTypeFont,
+) -> int:
     font = font.font_variant(size=initial_font_size)
     font_size = initial_font_size
     while font.getlength(text) < max_width:
@@ -131,6 +139,20 @@ def dynamic_font_size(text: str, initial_font_size: int, max_font_size: int, max
         font_size += 1
         font = font.font_variant(size=font_size)
     return font_size
+
+
+def circular_crop(image: Image.Image) -> Image.Image:
+    """Crop an image into a circle."""
+    mask = Image.new("L", image.size, 0)
+    empty = Image.new("RGBA", image.size, 0)
+    draw = ImageDraw.Draw(mask)
+    x, y = image.size
+    eX, eY = image.size
+    bbox = (x / 2 - eX / 2, y / 2 - eY / 2, x / 2 + eX / 2, y / 2 + eY / 2)
+    draw.ellipse(bbox, fill=255)
+    image = Image.composite(image, empty, mask)
+    return image
+
 
 def format_number(text: str) -> str:
     return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
