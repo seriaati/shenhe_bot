@@ -15,7 +15,7 @@ class WaifuCog(commands.Cog):
         view = View()
         view.add_item(
             Button(
-                label="邀請萊依菈" if locale in ["zh-TW", "zh-CN"] else "Invite Leyla",
+                label="邀請萊依菈" if locale in ["zh-TW", "zh-CN"] else "Invite Layla",
                 url="https://discord.com/oauth2/authorize?client_id=841806468722589774&permissions=0&scope=bot%20applications.commands",
             )
         )
@@ -27,7 +27,7 @@ class WaifuCog(commands.Cog):
         else:
             embed = default_embed(
                 "Where did all the commands go?",
-                "Discord's new policy states that any bot that wants to be listed on the App Directory cannot have any NSFW content.\nSo, I removed all the commands and ported them to another bot: Leyla\nIf you want to continue using the waifu commands, please invite Leyla to your server.\nSorry for the inconvenience.",
+                "Discord's new policy states that any bot that wants to be listed on the App Directory cannot have any NSFW content.\nSo, I removed all the commands and ported them to another bot: Layla\nIf you want to continue using the waifu commands, please invite Layla to your server.\nSorry for the inconvenience.",
             )
         await i.response.send_message(
             embed=embed,
