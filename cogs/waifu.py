@@ -12,6 +12,7 @@ class WaifuCog(commands.Cog):
     @app_commands.command(name="waifu", description="指令都去哪了？")
     async def waifu_command(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = str(locale)
         view = View()
         view.add_item(
             Button(
