@@ -10,6 +10,3 @@
 [submodule "shenhe_external"]
 	path = shenhe_external
 	url = https://github.com/seriaati/shenhe_external
-[submodule "hmtai_async"]
-	path = hmtai_async
-	url = https://github.com/seriaati/hmtai_async

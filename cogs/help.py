@@ -21,8 +21,6 @@ class Dropdown(Select):
                          emoji='<:CALCULATOR:999540912319369227>'),
             SelectOption(label=text_map.get(202, locale, user_locale),
                          emoji='✅'),
-            SelectOption(label=text_map.get(493, locale, user_locale),
-                         emoji='2️⃣'),
             SelectOption(label=text_map.get(494, locale, user_locale),
                          emoji='❄️'),
         ]
@@ -31,7 +29,7 @@ class Dropdown(Select):
 
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        cogs = ['genshin', 'wish', 'calc', 'todo', 'waifu', 'others']
+        cogs = ['genshin', 'wish', 'calc', 'todo', 'others']
         for index, option in enumerate(self.options):
             if option.value == self.values[0]:
                 selected_option = option
