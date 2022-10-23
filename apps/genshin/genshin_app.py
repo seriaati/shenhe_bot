@@ -472,7 +472,7 @@ class GenshinApp:
         except genshin.errors.RedemptionClaimed:
             return (
                 error_embed().set_author(
-                    name=text_map.get(45, locale, shenhe_user.user_locale),
+                    name=text_map.get(106, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
                 False,
