@@ -319,3 +319,50 @@
         生命值: 36763
       move: Q水波
       dmg: 3740
+妮露:
+  element: 水
+  builds:
+    - weapon: 聖顯之鑰
+      artifacts: 千岩樂團2件套
+      main_stats: 生生生
+      talents: 2/8/9
+      stats:
+        生命值: 66740
+        暴率/暴傷: 任意
+        充能效率: 170.00%
+        元素精通: 120
+      move: 豐壤之核
+      dmg: 22608
+    - weapon: 聖顯之鑰
+      artifacts: 千岩樂團2件套
+      main_stats: 生生生
+      talents: 2/8/9
+      stats:
+        生命值: 66740
+        暴率/暴傷: 任意
+        充能效率: 120.00%
+        元素精通: 360
+      move: 豐壤之核
+      dmg: 25176
+    - weapon: 磐岩結綠
+      artifacts: 千岩樂團2件套
+      main_stats: 生生生
+      talents: 2/8/9
+      stats:
+        生命值: 56687
+        暴率/暴傷: 任意
+        充能效率: 120.00%
+        元素精通: 360
+      move: 豐壤之核
+      dmg: 18610
+    - weapon: 西福斯的月光
+      artifacts: 千岩樂團2件套
+      main_stats: 生生生
+      talents: 2/8/9
+      stats:
+        生命值: 53650
+        暴率/暴傷: 任意
+        充能效率: 157.80%
+        元素精通: 525
+      move: 豐壤之核
+      dmg: 19900
