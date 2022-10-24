@@ -2,10 +2,20 @@ import ast
 import asyncio
 import json
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
+from time import process_time
 from typing import Dict, List
+
 import aiosqlite
+import genshin
+import pytz
 import sentry_sdk
+from discord import File, Game
+from discord.app_commands import locale_str as _
+from discord.errors import Forbidden, HTTPException
+from discord.ext import commands, tasks
+from discord.utils import find, format_dt
+
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import NotificationUser, ShenheUser
 from apps.genshin.genshin_app import GenshinApp
@@ -13,11 +23,6 @@ from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import File, Game, Interaction, app_commands
-from discord.app_commands import locale_str as _
-from discord.errors import HTTPException, Forbidden
-from discord.ext import commands, tasks
-from discord.utils import format_dt, sleep_until, find
 from utility.utils import (
     default_embed,
     error_embed,
@@ -26,9 +31,6 @@ from utility.utils import (
     log,
 )
 from yelan.draw import draw_talent_reminder_card
-import genshin
-from cogs.admin import is_seria
-import pytz
 
 
 def schedule_error_handler(func):
@@ -40,7 +42,11 @@ def schedule_error_handler(func):
             seria = bot.get_user(410036441129943050) or await bot.fetch_user(
                 410036441129943050
             )
-            await seria.send(f"[Schedule] Error in {func.__name__}: {e}")
+            await seria.send(
+                embed=error_embed(
+                    f"[Schedule] Error in {func.__name__}", f"```\n{e}\n```"
+                )
+            )
             log.warning(f"[Schedule] Error in {func.__name__}: {e}")
             sentry_sdk.capture_exception(e)
 
@@ -52,34 +58,43 @@ class Schedule(commands.Cog):
         self.bot: commands.Bot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
-        self.claim_reward.start()
-        self.resin_notification.start()
-        self.talent_notification.start()
+        self.run_tasks.start()
         self.change_status.start()
-        self.pot_notification.start()
-        self.backup_database.start()
-        self.update_game_data.start()
-        self.update_text_map.start()
-        self.update_ambr_cache.start()
-        self.weapon_notification.start()
 
     def cog_unload(self):
-        self.claim_reward.cancel()
-        self.resin_notification.cancel()
-        self.talent_notification.cancel()
+        self.run_tasks.cancel()
         self.change_status.cancel()
-        self.pot_notification.cancel()
-        self.backup_database.cancel()
-        self.update_game_data.cancel()
-        self.update_text_map.cancel()
-        self.update_ambr_cache.cancel()
-        self.weapon_notification.cancel()
 
-    @tasks.loop(minutes=10)
+    loop_interval = 1
+
+    @tasks.loop(minutes=loop_interval)
+    async def run_tasks(self):
+        now = datetime.now()
+        if now.hour == 0 and now.minute < self.loop_interval:  # midnight
+            await asyncio.create_task(self.claim_reward())
+
+        if now.hour == 1 and now.minute < self.loop_interval:  # 1am
+            await asyncio.create_task(self.update_ambr_cache())
+            await asyncio.create_task(self.update_text_map())
+            await asyncio.create_task(self.update_game_data())
+            await asyncio.create_task(self.backup_database())
+
+        if now.minute < self.loop_interval:  # every hour
+            await asyncio.create_task(self.base_notification("resin_notification"))
+            await asyncio.create_task(self.base_notification("pot_notification"))
+            await asyncio.create_task(
+                self.weapon_talent_base_notifiction("talent_notification")
+            )
+            await asyncio.create_task(
+                self.weapon_talent_base_notifiction("weapon_notification")
+            )
+
+    @tasks.loop(minutes=20)
     async def change_status(self):
         status_list = [
             "/help",
             "shenhe.bot.nu",
+            "https://discord.gg/b22kMKuwbS",
         ]
         await self.bot.change_presence(
             activity=Game(
@@ -117,6 +132,14 @@ class Schedule(commands.Cog):
         return result
 
     async def get_notification_users(self, table_name: str) -> List[NotificationUser]:
+        """Gets a list of notification users that has the reminder feature enabled
+
+        Args:
+            table_name (str): the table name in the database
+
+        Returns:
+            List[NotificationUser]: a list of notification users
+        """
         result = []
         c: aiosqlite.Cursor = await self.bot.db.cursor()
         await c.execute(
@@ -141,6 +164,7 @@ class Schedule(commands.Cog):
             result.append(notification_user)
         return result
 
+    @schedule_error_handler
     async def base_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -281,70 +305,48 @@ class Schedule(commands.Cog):
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
         )
 
-    @tasks.loop(hours=24)
     @schedule_error_handler
     async def backup_database(self):
-        await self.backup_database_task()
-
-    async def backup_database_task(self):
+        """Backs up the shenhe database, the new database is named backup.db"""
         log.info("[Schedule][Backup] Start")
         db: aiosqlite.Connection = self.bot.db
         await db.commit()
         await db.backup(self.bot.backup_db)
         log.info("[Schedule][Backup] Ended")
 
-    @tasks.loop(hours=24)
     @schedule_error_handler
     async def claim_reward(self):
-        await self.claim_reward_task()
-
-    async def claim_reward_task(self):
-        log.info("[Schedule] Claim Reward Start")
+        """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
+        log.info("[Schedule][Claim Reward] Start")
+        start = process_time()
         users = await self.get_schedule_users()
         count = 0
+        user_count = 0
         for user in users:
             if not user.daily_checkin:
                 continue
-            error = False
+            user_count += 1
+            error = True
             error_message = ""
             client = user.client
             try:
                 await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
+                error = False
                 pass
             except genshin.errors.InvalidCookies:
-                error = True
                 error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
             except genshin.errors.GenshinException as e:
-                claimed = False
-                log.warning(f"[Schedule][Claim Reward] We have been rate limited")
-                for index in range(1, 6):
-                    await asyncio.sleep(120 * index)
-                    log.info(f"[Schedule][Claim Reward] Retry {index}")
-                    try:
-                        await client.claim_daily_reward()
-                    except genshin.errors.AlreadyClaimed:
-                        claimed = True
-                        break
-                    except genshin.errors.InvalidCookies:
-                        break
-                    except Exception as e:
-                        error_message = f"```{e}```"
-                        log.warning(f"[Schedule][Claim Reward] Error: {e}")
-                        sentry_sdk.capture_exception(e)
-                if not claimed:
-                    error = True
+                error_message = f"```{e}```"
+                log.warning(f"[Schedule][Claim Reward] Genshin Exception: {e}")
+                sentry_sdk.capture_exception(e)
             except Exception as e:
-                error = True
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
-                await self.bot.db.execute(
-                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
-                    (user.discord_user.id, user.uid),
-                )
                 sentry_sdk.capture_exception(e)
             else:
+                error = False
                 count += 1
             if error:
                 await self.bot.db.execute(
@@ -364,30 +366,20 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(60)
+            await asyncio.sleep(1.2)
         await self.bot.db.commit()
-        log.info(f"[Schedule][Claim Reward] Ended ({count}/{len(users)} users)")
+        log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
+        end = process_time()
+        seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
+            410036441129943050
+        )
+        await seria.send(
+            embed=default_embed(
+                "Automatic daily check-in report", f"Claimed {count}/{user_count}"
+            ).add_field(name="Time taken", value=f"{end - start:.2f}s")
+        )
 
-    @tasks.loop(hours=1)
     @schedule_error_handler
-    async def pot_notification(self):
-        await self.base_notification("pot_notification")
-
-    @tasks.loop(hours=1)
-    @schedule_error_handler
-    async def resin_notification(self):
-        await self.base_notification("resin_notification")
-
-    @tasks.loop(minutes=30)
-    @schedule_error_handler
-    async def talent_notification(self):
-        await self.weapon_talent_base_notifiction("talent_notification")
-
-    @tasks.loop(minutes=30)
-    @schedule_error_handler
-    async def weapon_notification(self):
-        await self.weapon_talent_base_notifiction("weapon_notification")
-
     async def weapon_talent_base_notifiction(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
@@ -405,16 +397,16 @@ class Schedule(commands.Cog):
             user_id = tpl[0]
             item_list = tpl[1]
             last_notif = tpl[2]
-            user_locale = await get_user_locale(user_id, self.bot.db)
-            client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or "en-US"))
-            domains = await client.get_domain()
             timezone = await get_user_timezone(user_id, self.bot.db)
             now = datetime.now(pytz.timezone(timezone))
-            user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
             if last_notif is not None:
                 last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
                 if last_notif.day == now.day:
                     continue
+            user_locale = await get_user_locale(user_id, self.bot.db)
+            client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or "en-US"))
+            domains = await client.get_domain()
+            user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
             user_locale = await get_user_locale(user_id, self.bot.db)
             item_list = ast.literal_eval(item_list)
             notified: Dict[str, List[int]] = {}
@@ -478,12 +470,9 @@ class Schedule(commands.Cog):
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
         )
 
-    @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_game_data(self):
-        await self.update_game_data_task()
-
-    async def update_game_data_task(self):
+        """Updates genshin game data and adds emojis"""
         log.info("[Schedule][Update Game Data] Start")
         await genshin.utility.update_characters_ambr()
         client = AmbrTopAPI(self.bot.session, "cht")
@@ -577,12 +566,9 @@ class Schedule(commands.Cog):
                 json.dump(object_map, f, ensure_ascii=False, indent=4)
         log.info("[Schedule][Update Game Data] Ended")
 
-    @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_text_map(self):
-        await self.update_text_map_task()
-
-    async def update_text_map_task(self):
+        """Updates genshin text map"""
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
         things_to_update = ["avatar", "weapon", "material", "reliquary"]
@@ -631,120 +617,22 @@ class Schedule(commands.Cog):
             json.dump(dict, f, indent=4, ensure_ascii=False)
         log.info("[Schedule][Update Text Map] Ended")
 
-    @tasks.loop(hours=24)
     @schedule_error_handler
     async def update_ambr_cache(self):
-        await self.update_ambr_cache_task()
-
-    async def update_ambr_cache_task(self):
+        """Updates data from ambr.top"""
         log.info("[Schedule][Update Ambr Cache] Start")
         client = AmbrTopAPI(self.bot.session)
         await client._update_cache(all_lang=True)
         await client._update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")
 
-    @claim_reward.before_loop
-    async def before_claiming_reward(self):
-        await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=1, minute=0, second=0)  # 等待到早上1點
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
-
-    @resin_notification.before_loop
-    async def before_check(self):
-        await self.bot.wait_until_ready()
-
-    @pot_notification.before_loop
-    async def before_check(self):
-        await self.bot.wait_until_ready()
-
-    @talent_notification.before_loop
-    async def before_notif(self):
-        await self.bot.wait_until_ready()
-
-    @weapon_notification.before_loop
-    async def before_notif(self):
+    @run_tasks.before_loop
+    async def before_run_tasks(self):
         await self.bot.wait_until_ready()
 
     @change_status.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-
-    @update_text_map.before_loop
-    async def before_update(self):
-        await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=2, minute=0, second=0)  # 等待到早上2點
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
-
-    @backup_database.before_loop
-    async def before_backup(self):
-        await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=0, minute=30, second=0)  # 等待到早上0點30分
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
-
-    @update_game_data.before_loop
-    async def before_update(self):
-        await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=2, minute=30, second=0)  # 等待到早上2點30分
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
-
-    @update_ambr_cache.before_loop
-    async def before_update(self):
-        await self.bot.wait_until_ready()
-        now = datetime.now()
-        next_run = now.replace(hour=2, minute=30, second=0)  # 等待到早上2點30分
-        if next_run < now:
-            next_run += timedelta(days=1)
-        await sleep_until(next_run)
-
-    @is_seria()
-    @app_commands.command(
-        name="insta_claim", description=_("Owner usage only", hash=496)
-    )
-    async def instantclaim(self, i: Interaction):
-        await i.response.send_message("started, check console", ephemeral=True)
-        await self.claim_reward_task()
-
-    @is_seria()
-    @app_commands.command(name="backup", description=_("Owner usage only", hash=496))
-    async def backup(self, i: Interaction):
-        await i.response.send_message("started", ephemeral=True)
-        await self.backup_database_task()
-        await i.edit_original_response(content="backup completed")
-
-    @is_seria()
-    @app_commands.command(
-        name="update_game_data", description=_("Owner usage only", hash=496)
-    )
-    async def updategamedata(self, i: Interaction):
-        await i.response.send_message("started", ephemeral=True)
-        await self.update_ambr_cache_task()
-        await i.edit_original_response(content="updated amber cache (1/3)")
-        await self.update_text_map_task()
-        await i.edit_original_response(content="updated text map (2/3)")
-        await self.update_game_data_task()
-        await i.edit_original_response(content="updated game data (3/3)")
-
-    @is_seria()
-    @app_commands.command(
-        name="insta_notify", description=_("Owner usage only", hash=496)
-    )
-    async def instant_notify(self, i: Interaction):
-        await i.response.send_message(content="started", ephemeral=True)
-        await self.weapon_talent_base_notifiction("talent_notification")
-        await self.weapon_talent_base_notifiction("weapon_notification")
-        await i.edit_original_response(content="notiifcations sent")
 
 
 async def setup(bot: commands.Bot) -> None:
