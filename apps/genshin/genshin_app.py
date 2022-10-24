@@ -390,7 +390,7 @@ class GenshinApp:
                 name=text_map.get(72, locale, shenhe_user.user_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
-        return embed
+        return embed, True
 
     @genshin_error_handler
     async def get_abyss(self, user_id: int, previous: bool, locale: Locale):

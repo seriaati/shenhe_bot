@@ -61,7 +61,7 @@ class Primo(Button):
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         self.view: View
-        result = await self.view.genshin_app.get_diary_logs(
+        result, _ = await self.view.genshin_app.get_diary_logs(
             self.view.member.id, True, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)
@@ -74,7 +74,7 @@ class Mora(Button):
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         self.view: View
-        result = await self.view.genshin_app.get_diary_logs(
+        result, _ = await self.view.genshin_app.get_diary_logs(
             self.view.member.id, False, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)
