@@ -299,7 +299,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
         await self.bot.db.commit()
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
@@ -366,7 +366,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(1.2)
+            await asyncio.sleep(3)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
         end = process_time()
@@ -465,7 +465,7 @@ class Schedule(commands.Cog):
                         (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                     )
                     count += 1
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
         )
