@@ -362,6 +362,8 @@ class GenshinApp:
     @genshin_error_handler
     async def get_diary_logs(self, user_id: int, primo: bool, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
+        if shenhe_user.china:
+            shenhe_user.client.region = genshin.Region.CHINESE
         if primo:
             primo_log = ""
             async for action in shenhe_user.client.diary_log(limit=30):
