@@ -181,7 +181,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.stats_command(i, member)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
-        print(i.namespace.__dict__)
         check = await check_account_predicate(i, member)
         if not check:
             return
