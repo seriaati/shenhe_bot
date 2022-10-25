@@ -166,7 +166,7 @@ class WishCog(commands.GroupCog, name="wish"):
         embed = default_embed(
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
-            f"• {text_map.get(371 if up_guarantee==1 else 370, i.locale, user_locale)}\n"
+            f"• {text_map.get(370 if up_guarantee==1 else 371, i.locale, user_locale)}\n"
             f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_c.exp))}\n"
         )
         embed.set_author(
