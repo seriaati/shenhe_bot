@@ -405,7 +405,7 @@
 '372': Wish luck analysis
 '373': Your luck is better than **{luck}%** of players
 '374': Choosing this filter will remove it
-'375': ''
+'375': You have spent
 '376': ''
 '378': Method 1
 '379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
@@ -733,7 +733,7 @@
 '646': Weapon Banner
 '647': Novice Banner
 '648': Search failed
-'649': primogems spent
+'649': {a} primogems spent
 '650': Total Wishes
 '651': 5-star Pity
 '652': Four Stars
