@@ -17,8 +17,6 @@ from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-from logingateway import HuTaoLoginAPI
-from logingateway.model import Player
 
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
