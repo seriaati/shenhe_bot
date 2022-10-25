@@ -540,7 +540,6 @@ def convert_wl_to_mora(wl: int) -> int:
 async def get_wish_history_embed(
     i: discord.Interaction, query: str
 ) -> List[discord.Embed]:
-    print(query)
     user_locale = await get_user_locale(i.user.id, i.client.db)
     async with i.client.db.execute(
         f"SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE {query} user_id = ?",
