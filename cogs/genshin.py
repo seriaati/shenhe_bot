@@ -6,7 +6,6 @@ from diskcache import FanoutCache
 import random
 from typing import List, Tuple
 import aiosqlite
-import GGanalysislib
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
 from apps.genshin.genshin_app import GenshinApp
@@ -26,7 +25,6 @@ from apps.genshin.checks import *
 from apps.text_map.convert_locale import to_ambr_top, to_enka
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
-from apps.wish.wish_app import get_user_event_wish
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
 from discord import File, Interaction, SelectOption, User, app_commands
@@ -875,71 +873,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     ephemeral=True,
                 )
         elif type == 2:
-            await c.execute("SELECT DISTINCT user_id FROM wish_history")
-            leaderboard = await c.fetchall()
-            leaderboard_dict = {}
-            for index, tpl in enumerate(leaderboard):
-                member = i.guild.get_member(tpl[0])
-                if member is not None:
-                    (
-                        get_num,
-                        left_pull,
-                        use_pull,
-                        up_guarantee,
-                        up_five_star_num,
-                    ) = await get_user_event_wish(member.id, self.bot.db)
-                    player = GGanalysislib.Up5starCharacter()
-                    player_luck = round(
-                        100
-                        * player.luck_evaluate(
-                            get_num=up_five_star_num,
-                            use_pull=use_pull,
-                            left_pull=left_pull,
-                        ),
-                        2,
-                    )
-                    if player_luck > 0:
-                        leaderboard_dict[tpl[0]] = player_luck
-            leaderboard_dict = dict(
-                sorted(leaderboard_dict.items(), key=lambda item: item[1], reverse=True)
-            )
-            leaderboard_str_list = []
-            rank = 1
-            user_rank = text_map.get(253, i.locale, user_locale)
-            for user_id, luck in leaderboard_dict.items():
-                if i.guild is None:
-                    member = i.client.get_user(user_id)
-                else:
-                    member = i.guild.get_member(user_id)
-                if member is None:
-                    continue
-                if i.user.id == member.id:
-                    user_rank = f"#{rank}"
-                leaderboard_str_list.append(
-                    f"{rank}. {member.display_name} - {luck}%\n"
-                )
-                rank += 1
-            leaderboard_str_list = divide_chunks(leaderboard_str_list, 10)
-            embeds = []
-            for str_list in leaderboard_str_list:
-                message = ""
-                for string in str_list:
-                    message += string
-                embed = default_embed(
-                    f"🏆 {text_map.get(257, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})",
-                    message,
-                )
-                embeds.append(embed)
-            try:
-                await GeneralPaginator(i, embeds, self.bot.db).start()
-            except ValueError:
-                await i.response.send_message(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+            await i.response.send_message(embed=error_embed("currently unavailable"))
         elif type == 3:
             check = await check_account_predicate(i)
             if not check:

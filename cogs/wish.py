@@ -1,22 +1,21 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import aiosqlite
-import GGanalysislib
-from apps.genshin.checks import check_wish_history
-from apps.genshin.custom_model import WishData
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
-from apps.wish.wish_app import (
-    get_user_event_wish,
-    get_user_weapon_wish,
-)
-from discord import File, Interaction, User, app_commands, SelectOption
+import GGanalysis.games.genshin_impact as GI
+from discord import File, Interaction, SelectOption, User, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.wish import ChoosePlatform, ChooseWeapon, ChooseBanner
+
+from apps.genshin.checks import check_wish_history
+from apps.genshin.custom_model import WishData
+from apps.genshin.utils import get_wish_history_embed
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from data.game.standard_characters import get_standard_characters
+from UI_elements.wish import ChooseBanner, ChoosePlatform, ChooseWeapon, WishFilter
 from utility.paginator import GeneralPaginator
-from utility.utils import default_embed, divide_chunks, error_embed
+from utility.utils import default_embed, error_embed
 from yelan.draw import draw_wish_overview_card
 
 
@@ -34,47 +33,16 @@ class WishCog(commands.GroupCog, name="wish"):
     @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
     async def wish_history(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        await c.execute("SELECT * FROM wish_history WHERE user_id = ?", (i.user.id,))
-        user_wish_history = await c.fetchall()
-        user_wish_history.sort(key=lambda index: index[3], reverse=True)
-
-        user_wish = []
-
-        for index, tpl in enumerate(user_wish_history):
-            wish_name = tpl[1]
-            wish_rarity = tpl[2]
-            wish_time = (datetime.strptime(tpl[3], "%Y/%m/%d %H:%M:%S")).strftime(
-                "%Y/%m/%d"
-            )
-            wish_type = tpl[4]
-            if (
-                wish_rarity == 5 or wish_rarity == 4
-            ):  # mark high rarity wishes with blue
-                user_wish.append(
-                    f"[{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})](https://seriaati.github.io/shenhe_website/)"
-                )
-            else:
-                user_wish.append(
-                    f"{wish_time} {wish_name} ({wish_rarity} ✦ {wish_type})"
-                )
-
-        user_wish = list(divide_chunks(user_wish, 20))
-        embeds = []
-        for small_segment in user_wish:
-            embed_str = ""
-            for wish_str in small_segment:
-                embed_str += f"{wish_str}\n"
-            embed = default_embed(message=embed_str)
-            embed.set_author(
-                name=text_map.get(369, i.locale, user_locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embeds.append(embed)
-
-        await GeneralPaginator(i, embeds, self.bot.db).start()
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        embeds = await get_wish_history_embed(i, "")
+        options = [
+            SelectOption(label=text_map.get(645, i.locale, user_locale), value="301"),
+            SelectOption(label=text_map.get(646, i.locale, user_locale), value="302"),
+            SelectOption(label=text_map.get(647, i.locale, user_locale), value="100"),
+            SelectOption(label=text_map.get(655, i.locale, user_locale), value="200"),
+        ]
+        select_banner = WishFilter.SelectBanner(text_map.get(662, i.locale, user_locale), options)
+        await GeneralPaginator(i, embeds, self.bot.db, [select_banner, WishFilter.SelectRarity(text_map.get(661, i.locale, user_locale), select_banner)]).start()
 
     @check_wish_history()
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
@@ -85,35 +53,44 @@ class WishCog(commands.GroupCog, name="wish"):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
-        (
-            _,
-            left_pull,
-            use_pull,
-            up_guarantee,
-            up_five_star_num,
-        ) = await get_user_event_wish(member.id, self.bot.db)
-        player = GGanalysislib.Up5starCharacter()
-        player_luck = str(
-            round(
-                100
-                * player.luck_evaluate(
-                    get_num=up_five_star_num, use_pull=use_pull, left_pull=left_pull
-                ),
-                2,
-            )
-        )
-        guarantee = (
-            text_map.get(370, i.locale, user_locale)
-            if up_guarantee == 1
-            else text_map.get(371, i.locale, user_locale)
-        )
+        # chacter banner data
+        async with i.client.db.execute(
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)",
+            (i.user.id,),
+        ) as cursor:
+            data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
+        dist_c = None
+
+        if data is not None:
+            data.sort(
+                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
+            )
+            up_num = 0
+            std = get_standard_characters()
+            for _, tpl in enumerate(data):
+                name = tpl[0]
+                rarity = tpl[1]
+                if rarity == 5:
+                    if name not in std:
+                        up_num += 1
+
+            dist_c = GI.up_5star_character(item_num=up_num)
+
+        if dist_c is None:
+            return await i.response.send_message(
+                embed=error_embed().set_author(
+                    name=text_map.get(660, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
+        else:
+            player_luck = str(round(100*sum((dist_c)[:len(data)]), 2))
+        
         embed = default_embed(
-            message=f"• {text_map.get(373, i.locale, user_locale)} **{player_luck}%** {text_map.get(374, i.locale, user_locale)}\n"
-            f"• {text_map.get(375, i.locale, user_locale)} **{use_pull}** {text_map.get(376, i.locale, user_locale)}\n"
-            f"• {text_map.get(375, i.locale, user_locale)} **{up_five_star_num}** {text_map.get(379, i.locale, user_locale)}\n"
-            f"• {text_map.get(380, i.locale, user_locale)} **{left_pull}** {text_map.get(381, i.locale, user_locale)}\n"
-            f"• {guarantee}"
+            message=f"• {text_map.get(373, i.locale, user_locale).format(luck=player_luck)}\n"
+            f"• {text_map.get(379, i.locale, user_locale).format(a=len(data), b=up_num)}\n"
         )
         embed.set_author(
             name=text_map.get(372, i.locale, user_locale),
@@ -123,16 +100,18 @@ class WishCog(commands.GroupCog, name="wish"):
 
     @check_wish_history()
     @app_commands.command(
-        name="character",
-        description=_("Predict the chance of pulling a character", hash=480),
+        name="predict-character",
+        description=_(
+            "Predict the chance of pulling a 5-star banner character", hash=480
+        ),
     )
-    @app_commands.rename(num=_("number", hash=481))
+    @app_commands.rename(item_num=_("number", hash=481))
     @app_commands.describe(
-        num=_("How many five star UP characters do you wish to pull?", hash=482)
+        item_num=_("How many 5-star banner characters do you wish to pull?", hash=482)
     )
-    async def wish_char(self, i: Interaction, num: int):
+    async def wish_char(self, i: Interaction, item_num: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        if num > 10:
+        if item_num > 10:
             return await i.response.send_message(
                 embed=error_embed(message="number <= 10").set_author(
                     name=text_map.get(190, i.locale, user_locale),
@@ -142,35 +121,48 @@ class WishCog(commands.GroupCog, name="wish"):
             )
         await i.response.defer()
 
-        (
-            get_num,
-            left_pull,
-            use_pull,
-            up_guarantee,
-            up_five_star_num,
-        ) = await get_user_event_wish(i.user.id, self.bot.db)
-        guarantee = (
-            text_map.get(370, i.locale, user_locale)
-            if up_guarantee == 1
-            else text_map.get(371, i.locale, user_locale)
-        )
-        player = GGanalysislib.Up5starCharacter()
-        calc_pull = 1
-        p = 0
-        while p < 80:
-            p = 100 * player.get_p(
-                item_num=num,
-                calc_pull=calc_pull,
-                pull_state=left_pull,
-                up_guarantee=up_guarantee,
+        async with i.client.db.execute(
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)",
+            (i.user.id,),
+        ) as cursor:
+            data: List[Tuple[str, int, str]] = await cursor.fetchall()
+
+        if not data:
+            return await i.response.send_message(
+                embed=error_embed().set_author(
+                    name=text_map.get(660, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
             )
-            calc_pull += 1
+
+        # sort wish data from newest to oldest
+        data.sort(
+            key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
+        )
+
+        std = get_standard_characters()
+
+        pull_state = 0
+        up_guarantee = 0
+        for pull, tpl in enumerate(data):
+            name = tpl[0]
+            rarity = tpl[1]
+            if rarity == 5:
+                if name in std:
+                    up_guarantee = 1
+                pull_state = pull
+                break
+
+        dist_c = GI.up_5star_character(
+            item_num=item_num, pull_state=pull_state, up_guarantee=up_guarantee
+        )
 
         embed = default_embed(
-            message=f"• {text_map.get(382, i.locale, user_locale)} **{num}** {text_map.get(383, i.locale, user_locale)}\n"
-            f"• {text_map.get(380, i.locale, user_locale)} **{left_pull}** {text_map.get(381, i.locale, user_locale)}\n"
-            f"• {guarantee}\n"
-            f"• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}\n"
+            message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
+            f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
+            f"• {text_map.get(371 if up_guarantee==1 else 370, i.locale, user_locale)}\n"
+            f"• {text_map.get(384, i.locale, user_locale).format(round(dist_c.exp))}\n"
         )
         embed.set_author(
             name=text_map.get(386, i.locale, user_locale),
@@ -180,18 +172,44 @@ class WishCog(commands.GroupCog, name="wish"):
 
     @check_wish_history()
     @app_commands.command(
-        name="weapon",
-        description=_("Predict the chance of pulling a weapon you want", hash=483),
+        name="predict-weapon",
+        description=_("Predict the chance of pulling a 5-star banner weapon", hash=483),
     )
-    @app_commands.rename(item_num=_("number", hash=481))
+    @app_commands.rename(
+        item_num=_("number", hash=481), fate_point=_("fate-point", hash=657)
+    )
     @app_commands.describe(
-        item_num=_("How many five star UP weapons do you wish to pull?", hash=507)
+        item_num=_("How many 5-star banner weapons do you wish to pull?", hash=507),
+        fate_point=_("A number that is either 0, 1, or 2", hash=658),
     )
-    async def wish_weapon(self, i: Interaction, item_num: int):
+    async def wish_weapon(self, i: Interaction, item_num: int, fate_point: int):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
+        if fate_point not in [0, 1, 2]:
+            return await i.response.send_message(
+                embed=error_embed(
+                    message=text_map.get(659, user_locale or i.locale)
+                ).set_author(
+                    name=text_map.get(23, user_locale or i.locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+            )
 
-        last_name, pull_state = await get_user_weapon_wish(i.user.id, self.bot.db)
-        if last_name == "":
+        if item_num > 1000:
+            return await i.response.send_message(
+                embed=error_embed(message="number <= 1000").set_author(
+                    name=text_map.get(190, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
+
+        async with i.client.db.execute(
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302",
+            (i.user.id,),
+        ) as cursor:
+            data: List[Tuple[str, int, str]] = await cursor.fetchall()
+
+        if not data:
             return await i.response.send_message(
                 embed=error_embed().set_author(
                     name=text_map.get(405, i.locale, user_locale),
@@ -200,7 +218,23 @@ class WishCog(commands.GroupCog, name="wish"):
                 ephemeral=True,
             )
 
-        view = ChooseWeapon.View(self.bot.db, i.user, i.locale, user_locale)
+        # sort wish data from newest to oldest
+        data.sort(
+            key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
+        )
+
+        last_name = ""
+        pull_state = 0
+        for pull, tpl in enumerate(data):
+            name = tpl[0]
+            rarity = tpl[1]
+            if rarity == 5:
+                if last_name == "":
+                    last_name = name
+                    pull_state = pull
+
+        view = ChooseWeapon.View(i.locale, user_locale)
+        view.author = i.user
         embed = default_embed(
             message=f"{text_map.get(391, i.locale, user_locale)}:\n"
             f"**{last_name}**\n"
@@ -213,29 +247,22 @@ class WishCog(commands.GroupCog, name="wish"):
             return
 
         if view.up:  # 是UP
-            if view.want:  # 是想要的UP
-                up_guarantee = 0
-            else:  # 是不想要的UP
-                up_guarantee = 1
+            up_guarantee = 0
         else:  # 是常駐
-            up_guarantee = 2
+            up_guarantee = 1
 
-        player = GGanalysislib.Up5starWeaponEP()
-        calc_pull = 1
-        p = 0
-        while p < 80:
-            p = 100 * player.get_p(
-                item_num=item_num,
-                calc_pull=calc_pull,
-                pull_state=pull_state,
-                up_guarantee=up_guarantee,
-            )
-            calc_pull += 1
+        dist_w = GI.up_5star_ep_weapon(
+            item_num=item_num,
+            fate_point=fate_point,
+            pull_state=pull_state,
+            up_guarantee=up_guarantee,
+        )
 
         embed = default_embed(
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
-            f"• {text_map.get(380, i.locale, user_locale)} **{pull_state}** {text_map.get(381, i.locale, user_locale)}\n"
-            f"• {text_map.get(384, i.locale, user_locale)} **{calc_pull}** {text_map.get(385, i.locale, user_locale)}"
+            f"• {text_map.get(657, i.locale, user_locale).replace('-', ' ')}: **{fate_point}**\n"
+            f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
+            f"• {text_map.get(384, i.locale, user_locale).format(round(dist_w.exp))}\n"
         )
         embed.set_author(
             name=text_map.get(393, i.locale, user_locale),
@@ -339,13 +366,15 @@ class WishCog(commands.GroupCog, name="wish"):
             )
         fp = list(images.values())[0]
         fp.seek(0)
+        view = ChooseBanner.View(
+            images, text_map.get(656, i.locale, user_locale), options
+        )
         await i.followup.send(
             embed=default_embed().set_image(url="attachment://overview.jpeg"),
             file=File(fp, filename="overview.jpeg"),
-            view=ChooseBanner.View(
-                images, text_map.get(656, i.locale, user_locale), options
-            ),
+            view=view,
         )
+        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:

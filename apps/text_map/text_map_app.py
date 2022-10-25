@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict, Literal
+from typing import Dict, Literal, Optional
 
 import discord
 import yaml
@@ -48,7 +48,8 @@ class TextMap():
             log.warning(f'[Text Map][{locale}][Hash not found]: [Hash]{textMapHash}')
             text_map = self.text_maps['en-US']
             text = text_map.get(str(textMapHash), '')
-        text = re.sub(r"<[^\/][^>]*>", "", text)
+        if textMapHash != 139:
+            text = re.sub(r"<[^\/][^>]*>", "", text)
         return text
 
     def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Literal[None, 'str']:
@@ -83,19 +84,18 @@ class TextMap():
     def get_weapon_name(self, weapon_id: int, locale: discord.Locale, user_locale: str = None) -> (int | str):
         avatarText = self.weapon.get(str(weapon_id))
         if avatarText is None:
-            log.warning(f'[Exception][get_weapon_name][charcter_id not found]: [weapon_id]{weapon_id}')
+            log.warning(f'[Exception][get_weapon_name][weapon_id not found]: [weapon_id]{weapon_id}')
             return weapon_id
         else:
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
             return avatarText[str(ambr_locale)]
         
-    def get_weapon_id_with_name(self, weapon_name: str) -> str | int:
+    def get_weapon_id_with_name(self, weapon_name: str) -> int | str:
         for weapon_id, weapon_name_dict in self.weapon.items():
             for _, weapon_lang_name in weapon_name_dict.items():
                 if weapon_lang_name == weapon_name:
                     return int(weapon_id)
-        log.warning(f'[Exception][get_weapon_id_with_name][weapon_name not found]: [weapon name]{weapon_name}')
         return weapon_name
 
     def get_domain_name(self, dungeon_id: int, locale: discord.Locale, user_locale: str = None):
@@ -111,13 +111,12 @@ class TextMap():
     def get_character_id_with_name(self, character_name: str) -> str | int:
         character_id: str
         for character_id, character_name_dict in self.avatar.items():
-            for lang_code, character_lang_name in character_name_dict.items():
+            for _, character_lang_name in character_name_dict.items():
                 if character_lang_name == character_name:
                     if not character_id.isdigit():
                         return character_id
                     else:
                         return int(character_id)
-        log.warning(f'[Exception][get_character_id_with_name][character name not found]: [character_name]{character_name}')
         return character_name
 
 

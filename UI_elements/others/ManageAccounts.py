@@ -195,8 +195,8 @@ async def add_cookie_callback(view: View, i: Interaction):
         text_map.get(137, locale),
         text_map.get(138, locale),
     )
-    embed.set_image(url="https://i.imgur.com/OQ8arx0.gif")
-    code_msg = f"script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, locale)}'); c && document.write(d)"
+    embed.set_image(url="https://i.imgur.com/WQGr0x2.gif")
+    code_msg = text_map.get(139, locale)
     code_embed = default_embed(message=code_msg)
     view.clear_items()
     view.add_item(GOBack(2))

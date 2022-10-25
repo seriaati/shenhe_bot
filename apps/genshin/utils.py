@@ -1,25 +1,33 @@
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union
-import discord
+
 import aiosqlite
+import discord
 import enkanetwork
+import genshin
+from discord import Embed, Locale, SelectOption
+from discord.ext import commands
+from diskcache import FanoutCache
+from discord.utils import format_dt
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import ShenheUser
+from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
-from apps.text_map.cond_text import cond_text
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from discord import Embed, Locale, SelectOption
-from discord.ext import commands
-from diskcache import FanoutCache
-from utility.utils import default_embed, divide_dict, parse_HTML
-import genshin
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    divide_dict,
+    error_embed,
+    parse_HTML,
+)
 
 
 def calculate_artifact_score(substats: dict):
@@ -437,7 +445,7 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
         characters: Dict[int, Character] = {}
         for reward in domain.rewards:
             for upgrade in character_upgrades:
-                if '10000005' in upgrade.character_id:
+                if "10000005" in upgrade.character_id:
                     continue
                 for item in upgrade.items:
                     if item.id == reward.id:
@@ -490,6 +498,7 @@ def get_domain_title(domain: Domain, locale: Locale | str):
     elif "Mastery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(105, locale).title()}"
 
+
 def convert_ar_to_wl(ar: int) -> int:
     if 1 <= ar <= 19:
         return 0
@@ -510,6 +519,7 @@ def convert_ar_to_wl(ar: int) -> int:
     else:
         return 8
 
+
 def convert_wl_to_mora(wl: int) -> int:
     if wl == 0:
         return 12000
@@ -519,9 +529,61 @@ def convert_wl_to_mora(wl: int) -> int:
         return 28000
     elif wl == 3:
         return 36000
-    elif wl ==4 :
+    elif wl == 4:
         return 44000
     elif wl == 5:
         return 52000
     else:
         return 60000
+
+
+async def get_wish_history_embed(
+    i: discord.Interaction, query: str
+) -> List[discord.Embed]:
+    print(query)
+    user_locale = await get_user_locale(i.user.id, i.client.db)
+    async with i.client.db.execute(
+        f"SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE {query} user_id = ?",
+        (i.user.id,),
+    ) as cursor:
+        wish_history = await cursor.fetchall()
+
+    if not wish_history:
+        embed = error_embed(message=text_map.get(75, i.locale, user_locale)).set_author(
+            name=text_map.get(648, i.locale, user_locale),
+            icon_url=i.user.display_avatar.url,
+        )
+        return [embed]
+    else:
+        wish_history.sort(key=lambda tpl: tpl[2], reverse=True)
+        user_wish = []
+
+        for _, tpl in enumerate(wish_history):
+            wish_name = tpl[0]
+            wish_rarity = tpl[1]
+            wish_time = datetime.strptime(tpl[2], "%Y/%m/%d %H:%M:%S")
+            wish_type = tpl[3]
+            item_id = text_map.get_weapon_id_with_name(wish_name)
+            if isinstance(item_id, int):
+                emoji = get_weapon(item_id)["emoji"]
+            else:
+                item_id = text_map.get_character_id_with_name(wish_name)
+                emoji = get_character(item_id)["emoji"]
+            user_wish.append(
+                f"{format_dt(wish_time, 'd')} {emoji} {wish_name} ({wish_rarity} ✦ {wish_type})"
+            )
+
+        user_wish = list(divide_chunks(user_wish, 20))
+        embeds = []
+        for small_segment in user_wish:
+            embed_str = ""
+            for wish_str in small_segment:
+                embed_str += f"{wish_str}\n"
+            embed = default_embed(message=embed_str)
+            embed.set_author(
+                name=text_map.get(369, i.locale, user_locale),
+                icon_url=i.user.display_avatar.url,
+            )
+            embeds.append(embed)
+
+        return embeds

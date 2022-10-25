@@ -88,7 +88,7 @@ standard_characters = {
 }
 
 
-def get_standard_characters() -> List:
+def get_standard_characters() -> List[str]:
     result = []
     for _, character_names in standard_characters.items():
         for _, character_name in character_names.items():

@@ -2,27 +2,27 @@
 
 import getpass
 import os
+from ast import Dict
 from pathlib import Path
 from typing import Optional
+
 import aiohttp
 import aiosqlite
+import genshin
 import sentry_sdk
-from discord import (
-    Intents,
-    Interaction,
-    Locale,
-    Message,
-    app_commands,
-)
+from cachetools import TTLCache
+from discord import (Intents, Interaction, Locale, Message, WebhookMessage,
+                     app_commands)
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
-from dotenv import load_dotenv
 from discord.ext.commands import Context
-from UI_base_models import global_error_handler
+from dotenv import load_dotenv
+from logingateway import HuTaoLoginAPI
+from logingateway.model import Player
+
 from apps.text_map.text_map_app import text_map
+from UI_base_models import global_error_handler
 from utility.utils import error_embed, log, sentry_logging
-import genshin
-from cachetools import TTLCache
 
 load_dotenv()
 user_name = getpass.getuser()
@@ -48,11 +48,11 @@ class Translator(app_commands.Translator):
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
-            if text == '':
+            if text == "":
                 return None
-            if len(text.split(' ')) == 1: # is a word
+            if len(text.split(" ")) == 1:  # is a word
                 return text.lower()
-            else: # is a setence
+            else:  # is a setence
                 return text
         except KeyError:
             return None
@@ -66,6 +66,7 @@ class ShenheBot(commands.Bot):
             application_id=application_id,
             chunk_guilds_at_startup=False,
         )
+        self.tokenStore: Dict[str, WebhookMessage] = {}
 
     async def setup_hook(self) -> None:
         # cache
@@ -114,7 +115,7 @@ class ShenheBot(commands.Bot):
     async def on_ready(self):
         tree = self.tree
         await tree.set_translator(Translator())
-        log.info(f"[System]on_ready: You have logged in as {self.user}")
+        log.info(f"[System]on_ready: Logged in as {self.user}")
         log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
 
     async def on_message(self, message: Message):

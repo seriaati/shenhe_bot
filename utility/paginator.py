@@ -33,6 +33,10 @@ class _view(BaseView):
         self.files = files
 
         self.current_page = 0
+        
+        # wish paginator things
+        self.rarity_filters = []
+        self.banner_filters = []
 
     async def interaction_check(self, i: Interaction) -> bool:
         if not self.check:
