@@ -41,8 +41,20 @@ class WishCog(commands.GroupCog, name="wish"):
             SelectOption(label=text_map.get(647, i.locale, user_locale), value="100"),
             SelectOption(label=text_map.get(655, i.locale, user_locale), value="200"),
         ]
-        select_banner = WishFilter.SelectBanner(text_map.get(662, i.locale, user_locale), options)
-        await GeneralPaginator(i, embeds, self.bot.db, [select_banner, WishFilter.SelectRarity(text_map.get(661, i.locale, user_locale), select_banner)]).start()
+        select_banner = WishFilter.SelectBanner(
+            text_map.get(662, i.locale, user_locale), options
+        )
+        await GeneralPaginator(
+            i,
+            embeds,
+            self.bot.db,
+            [
+                select_banner,
+                WishFilter.SelectRarity(
+                    text_map.get(661, i.locale, user_locale), select_banner
+                ),
+            ],
+        ).start()
 
     @check_wish_history()
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
@@ -86,8 +98,8 @@ class WishCog(commands.GroupCog, name="wish"):
                 ephemeral=True,
             )
         else:
-            player_luck = str(round(100*sum((dist_c)[:len(data)]), 2))
-        
+            player_luck = str(round(100 * sum((dist_c)[: len(data)]), 2))
+
         embed = default_embed(
             message=f"• {text_map.get(373, i.locale, user_locale).format(luck=player_luck)}\n"
             f"• {text_map.get(379, i.locale, user_locale).format(a=len(data), b=up_num)}\n"
@@ -127,32 +139,25 @@ class WishCog(commands.GroupCog, name="wish"):
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
-        if not data:
-            return await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(660, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-
-        # sort wish data from newest to oldest
-        data.sort(
-            key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
-        )
-
-        std = get_standard_characters()
-
         pull_state = 0
         up_guarantee = 0
-        for pull, tpl in enumerate(data):
-            name = tpl[0]
-            rarity = tpl[1]
-            if rarity == 5:
-                if name in std:
-                    up_guarantee = 1
-                pull_state = pull
-                break
+
+        if data:
+            # sort wish data from newest to oldest
+            data.sort(
+                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
+            )
+
+            std = get_standard_characters()
+
+            for pull, tpl in enumerate(data):
+                name = tpl[0]
+                rarity = tpl[1]
+                if rarity == 5:
+                    if name in std:
+                        up_guarantee = 1
+                    pull_state = pull
+                    break
 
         dist_c = GI.up_5star_character(
             item_num=item_num, pull_state=pull_state, up_guarantee=up_guarantee
@@ -162,7 +167,7 @@ class WishCog(commands.GroupCog, name="wish"):
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
             f"• {text_map.get(371 if up_guarantee==1 else 370, i.locale, user_locale)}\n"
-            f"• {text_map.get(384, i.locale, user_locale).format(round(dist_c.exp))}\n"
+            f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_c.exp))}\n"
         )
         embed.set_author(
             name=text_map.get(386, i.locale, user_locale),
@@ -209,47 +214,42 @@ class WishCog(commands.GroupCog, name="wish"):
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
-        if not data:
-            return await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(405, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
+        pull_state = 0
+
+        if data:
+            # sort wish data from newest to oldest
+            data.sort(
+                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
             )
 
-        # sort wish data from newest to oldest
-        data.sort(
-            key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
-        )
+            last_name = ""
+            for pull, tpl in enumerate(data):
+                name = tpl[0]
+                rarity = tpl[1]
+                if rarity == 5:
+                    if last_name == "":
+                        last_name = name
+                        pull_state = pull
 
-        last_name = ""
-        pull_state = 0
-        for pull, tpl in enumerate(data):
-            name = tpl[0]
-            rarity = tpl[1]
-            if rarity == 5:
-                if last_name == "":
-                    last_name = name
-                    pull_state = pull
+            view = ChooseWeapon.View(i.locale, user_locale)
+            view.author = i.user
+            embed = default_embed(
+                message=f"{text_map.get(391, i.locale, user_locale)}:\n"
+                f"**{last_name}**\n"
+                f"{text_map.get(392, i.locale, user_locale)}\n"
+            )
+            await i.response.send_message(embed=embed, view=view)
+            view.message = await i.original_response()
+            await view.wait()
+            if view.up is None:
+                return
 
-        view = ChooseWeapon.View(i.locale, user_locale)
-        view.author = i.user
-        embed = default_embed(
-            message=f"{text_map.get(391, i.locale, user_locale)}:\n"
-            f"**{last_name}**\n"
-            f"{text_map.get(392, i.locale, user_locale)}\n"
-        )
-        await i.response.send_message(embed=embed, view=view)
-        view.message = await i.original_response()
-        await view.wait()
-        if view.up is None:
-            return
-
-        if view.up:  # 是UP
+            if view.up:  # 是UP
+                up_guarantee = 0
+            else:  # 是常駐
+                up_guarantee = 1
+        else:
             up_guarantee = 0
-        else:  # 是常駐
-            up_guarantee = 1
 
         dist_w = GI.up_5star_ep_weapon(
             item_num=item_num,
