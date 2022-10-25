@@ -188,6 +188,7 @@ class WishCog(commands.GroupCog, name="wish"):
         fate_point=_("A number that is either 0, 1, or 2", hash=658),
     )
     async def wish_weapon(self, i: Interaction, item_num: int, fate_point: int):
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if fate_point not in [0, 1, 2]:
             return await i.response.send_message(
