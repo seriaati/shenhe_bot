@@ -262,7 +262,7 @@ class WishCog(commands.GroupCog, name="wish"):
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
             f"• {text_map.get(657, i.locale, user_locale).replace('-', ' ')}: **{fate_point}**\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
-            f"• {text_map.get(384, i.locale, user_locale).format(round(dist_w.exp))}\n"
+            f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_w.exp))}\n"
         )
         embed.set_author(
             name=text_map.get(393, i.locale, user_locale),
