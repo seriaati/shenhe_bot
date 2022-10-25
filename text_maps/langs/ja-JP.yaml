@@ -73,7 +73,7 @@
 '72': モラ 記録
 '73': モラ
 '74': </stats:1006486283725590530> を使用して深淵螺旋の進行状況を確認します。このコマンドは9層以降のデータのみを表示します。
-'75': No wish data found for this filter
+'75': 選択されたフィルターに祈願履歴が見つかりませんでした
 '76': 深境螺旋 の データ は見つかえりません
 '77': 今期
 '78': 最高記録
@@ -137,15 +137,14 @@
 '136': アカウントを選択してください
 '137': アカウント登録チュートリアル
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, click on the button to copy it
-  6. Submit your cookie here
-
-  Too complicated? The image below might help!
-'139': script:check = document.cookie.includes('account_id') && document.cookie.includes('cookie_token') || alert('Please logout and log back in before trying again, cookie is currently expired/invalid!'); cookie=document.cookie.match(/(lt(oken|uid)|cookie_token)=(.*?);/gm).join(" "); check && document.write(cookie + \`<br><button onclick="navigator.clipboard.writeText('${cookie}')">Click here to copy!</button>\`)
+  1. 以下のコードをコピーしてください。
+  2. お使いのデバイスでChromeを開き、https://www.hoyolab.com/home のアカウントにログインします。
+  3. アドレスバーをクリックし、すべて選択します。
+  4. `java` と入力し、コピーしたコードを貼り付けます。アドレスバーが `javascript:` で始まっていることを確認してください。
+  5. ENTERを押すと、あなたのクッキーを表示する空白のページが表示されます。
+  6.ここにクッキーを送信してください
+  複雑すぎますか？下の画像が参考になるかもしれません。
+'139': "script:check = document.cookie.includes('account_id') && document.cookie.includes('cookie_token') || alert('Cookieが期限切れか無効です。ログインし直してやり直してください！'); cookie=document.cookie.match(/(lt(oken|uid)|cookie_token)=(.*?);/gm).join(\" \"); check && document.write(cookie + \\`<br><button onclick=\"navigator.clipboard.writeText('${cookie}')\">ここをクリックしてコピーしてください！\n</button>\\`)"
 '140': </register:1006486283725590528> コマンドを使用してください
 '141': アカウントデータが見つかりません！
 '142': アカウントを選択してください
@@ -157,14 +156,14 @@
 '148': 深境螺旋の層を選んでください。
 '149': 權限がありません。
 '150': |-
-  Please go to https://www.hoyolab.com/home and login
-  Follow the steps in the image below
+  https://www.hoyolab.com/home にアクセスし、ログインしてください。
+  以下の画像のステップに従ってください。
 
-  1. Click the avatar on the top right
-  2. Personal homepage
-  3. Click `Genshin` on the top right corner
-  4. Click the gear icon
-  5. Toggle all the switches
+  1. 右上のアバターをクリック
+  2. マイページをクリック
+  3. 右上の「原神」をクリック
+  4. 歯車のアイコンをクリック
+  5. すべてのスイッチをONに変更
 '151': 樹脂通知設定
 '152': 樹脂しきい値
 '153': 樹脂がしきい値を超えたとき、申鶴はあなたにDMで通知します
@@ -399,21 +398,21 @@
 '367': 祈願履歴データが見つかりません
 '368': </wish import:1000187021635104890>で祈願履歴をインポート
 '369': 祈願履歴
-'370': The last 5-star character you pulled was a standard character
-'371': The last 5-star character you pulled was a banner character
+'370': 最後に引いた星5キャラは恒常キャラ
+'371': 最後に引いた星5キャラはPUキャラ
 '372': 祈願履歴の分析
-'373': Your luck is better than **{luck}%** of players
-'374': Choosing this filter will remove it
+'373': あなたは、**{luck}%** のプレイヤーよりも運が良い！
+'374': フィルターを解除
 '375': ''
 '376': ''
 '378': 方法1
-'379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
-'380': Your current number of five-star pity is **{a}**
+'379': 合計**{a}**を消費して、**{b}**の星５PUキャラクターを引き当てた
+'380': 現在の星５のすり抜け回数は **{a}**回
 '381': ''
 '382': 引きたいと思う
 '383': 限定星５キャラクター
-'384': It is estimated that you will pull a five-star banner character in **{a}** pulls
-'385': It is estimated that you will pull a five-star banner weapon in **{a}** pulls
+'384': 星5PUキャラは**{a}**回以内に引けます
+'385': 星5PU武器は**{a}**回以内に引けます
 '386': イベント祈願回数予測
 '387': 通常
 '388': 'はい'
@@ -431,7 +430,7 @@
   6. Alt+TabでPowerShellに切り替え、Enterを押すと、既にリンクがクリップボードにコピーされているはずです。
   7. 下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '395': あなたが欲しい星5武器
-'396': ''
+'396': pulls
 '397': ''
 '398': ''
 '399': ''
@@ -449,7 +448,7 @@
   完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
   8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '404': 回 ― 天井からの回数
-'405': You haven't pulled in the weapon banner yet
+'405': あなたはまだ武器祈願をしていないようです
 '406': 開始時間
 '407': 終了時間
 '408': 詳細
@@ -524,10 +523,10 @@
 '477': リンクを送信
 '478': 祈願履歴を表示
 '479': そしてあなた!
-'480': Predict the chance of pulling a 5-star banner character
+'480': 星５PUキャラクターを引く確率を予想
 '481': 数値
-'482': How many 5-star banner characters do you wish to pull?
-'483': Predict the chance of pulling a 5-star banner weapon
+'482': 星５PUキャラクターを何体引きたい？
+'483': 星５PU武器を引く確率を予想
 '484': 祈願の概要を見る
 '485': 申鶴 (このbot) があなたに反応する際の言語を変更します
 '486': すべてのコマンドを表示
@@ -554,7 +553,7 @@
 '504': '製作者 : seria#5334 質問がある場合はDMしてください'
 '505': 樹脂の通知を送信中にエラーが発生しました
 '506': 洞天宝銭の通知を送信中にエラーが発生しました
-'507': How many 5-star banner weapons do you wish to pull?
+'507': 星５PU武器を何個引きたい？
 '508': 原神に関すること を検索してくたさい
 '509': クエリ
 '510': スメール
@@ -729,7 +728,7 @@
 '645': キャラクター祈願
 '646': 武器祈願
 '647': 初心者祈願
-'648': Search failed
+'648': 検索に失敗しました
 '649': 原石
 '650': 祈願 合計
 '651': 星5 天井
@@ -738,11 +737,11 @@
 '654': 直近の星5祈願
 '655': 恒常祈願
 '656': 祈願を選択
-'657': fate-point
-'658': A number that is either 0, 1, or 2
+'657': 命定値
+'658': 0、1、2のいずれかの数値
 '659': |-
-  Fate point must be a number that is either 0, 1, or 2.
-  You can view your current fate point number in the weapon banner.
-'660': You haven't pulled in the character banner yet
-'661': Choose a rarity filter
-'662': Choose a banner filter
+  命定値は0、1、2のいずれかの数値でなければなりません。
+  現在の命定値は武器祈願の神鋳軌定から確認できます。
+'660': あなたはまだキャラクター祈願をしていないようです
+'661': レアリティを選択してください
+'662': 祈願の種類を選択してください
