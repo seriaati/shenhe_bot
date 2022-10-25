@@ -42,11 +42,12 @@ async def filter_callback(self_var, i: Interaction, filter_list: List):
             option.description = None
 
     query = ""
-    for filter in self_var.view.banner_filters:
-        if filter == "301":
-            query += "(wish_banner_type = 301 OR wish_banner_type = 400) AND "
-        else:
-            query += f"wish_banner_type = {filter} AND "
+    for index, filter in enumerate(self_var.view.banner_filters):
+        if index == 0:
+            query += "("
+        query += f"wish_banner_type = {filter} OR "
+        if index == len(self_var.view.banner_filters) - 1:
+            query = query[:-4] + ") AND "
 
     for index, filter in enumerate(self_var.view.rarity_filters):
         if index == 0:
