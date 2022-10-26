@@ -354,7 +354,6 @@ class WishCog(commands.GroupCog, name="wish"):
                 i.client.session,
                 user_locale or i.locale,
                 wish_data,
-                "weapon" if banner == 302 else "character",
                 member.display_avatar.url,
                 member.name,
             )
