@@ -126,7 +126,7 @@ class AmbrTopAPI:
         if id is not None:
             result.append(Material(**data["data"]["items"][str(id)]))
         else:
-            for material in data["data"].values():
+            for material in data["data"]["items"].values():
                 result.append(Material(**material))
 
         return result
@@ -154,7 +154,7 @@ class AmbrTopAPI:
         if id is not None:
             result.append(Material(**data["data"]["items"][str(id)]))
         else:
-            for material in data["data"].values():
+            for material in data["data"]["items"].values():
                 result.append(Material(**material))
                 
         return result
@@ -191,7 +191,7 @@ class AmbrTopAPI:
         if id is not None:
             result.append(Weapon(**data["data"]["items"][str(id)]))
         else:
-            for weapon in data["data"].values():
+            for weapon in data["data"]["items"].values():
                 result.append(Weapon(**weapon))
 
         return result

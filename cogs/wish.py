@@ -191,7 +191,7 @@ class WishCog(commands.GroupCog, name="wish"):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         if fate_point not in [0, 1, 2]:
-            return await i.response.send_message(
+            return await i.followup.send(
                 embed=error_embed(
                     message=text_map.get(659, user_locale or i.locale)
                 ).set_author(
@@ -201,7 +201,7 @@ class WishCog(commands.GroupCog, name="wish"):
             )
 
         if item_num > 1000:
-            return await i.response.send_message(
+            return await i.followup.send(
                 embed=error_embed(message="number <= 1000").set_author(
                     name=text_map.get(190, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
@@ -239,7 +239,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 f"**{last_name}**\n"
                 f"{text_map.get(392, i.locale, user_locale)}\n"
             )
-            await i.response.send_message(embed=embed, view=view)
+            await i.followup.send(embed=embed, view=view)
             view.message = await i.original_response()
             await view.wait()
             if view.up is None:
