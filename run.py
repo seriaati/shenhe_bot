@@ -68,12 +68,12 @@ class ShenheBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         # cache
-        self.enka_card_cache = TTLCache(maxsize=512, ttl=180)
-        self.stats_card_cache = TTLCache(maxsize=512, ttl=180)
-        self.area_card_cache = TTLCache(maxsize=512, ttl=180)
-        self.abyss_overview_card_cache = TTLCache(maxsize=512, ttl=180)
-        self.abyss_floor_card_cache = TTLCache(maxsize=512, ttl=180)
-        self.abyss_one_page_cache = TTLCache(maxsize=512, ttl=180)
+        self.enka_card_cache = TTLCache(maxsize=512, ttl=120)
+        self.stats_card_cache = TTLCache(maxsize=512, ttl=120)
+        self.area_card_cache = TTLCache(maxsize=512, ttl=120)
+        self.abyss_overview_card_cache = TTLCache(maxsize=512, ttl=120)
+        self.abyss_floor_card_cache = TTLCache(maxsize=512, ttl=120)
+        self.abyss_one_page_cache = TTLCache(maxsize=512, ttl=120)
 
         # bot variables
         self.maintenance = False

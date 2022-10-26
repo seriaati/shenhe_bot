@@ -84,7 +84,7 @@ def get_character_builds(
             f"{text_map.get(92, locale)} • {cond_text.get_text(locale, 'build', build['artifacts'])}\n"
             f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
             f"{text_map.get(94, locale)} • {build['talents']}\n"
-            f"{move_text}{'' if str(locale) in ['zh-TW', 'zh-CN'] else ' DMG'} • {str(build['dmg']).replace('任意', 'ANY')}\n\n",
+            f"{move_text} • {str(build['dmg']).replace('任意', 'ANY')}\n\n",
         )
         embed.add_field(name=text_map.get(95, locale), value=stat_str)
         count += 1
