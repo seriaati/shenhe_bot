@@ -10,7 +10,7 @@ from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 from enkanetwork.model.character import CharacterInfo
 from UI_elements.genshin import EnkaDamageCalculator
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
 from yelan.damage_calculator import return_damage
 from yelan.draw import draw_character_card
 
@@ -43,9 +43,13 @@ class View(BaseView):
         self.characters = characters
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
-        self.add_item(
-            PageSelect(character_options, text_map.get(157, locale, user_locale))
-        )
+        options = list(divide_chunks(self.character_options, 25))
+        count = 1
+        for option in options:
+            self.add_item(
+                PageSelect(option, text_map.get(157, locale, user_locale)+f" ({count}~{count+len(option)})")
+            )
+            count += len(option)
         self.children[0].disabled = True
         self.children[1].disabled = True
 
