@@ -189,7 +189,7 @@ class AmbrTopAPI:
         result = []
         data = await self._get_cache("weapon")
         if id is not None:
-            result.append(Character(**data["data"]["items"][str(id)]))
+            result.append(Weapon(**data["data"]["items"][str(id)]))
         else:
             for weapon in data["data"].values():
                 result.append(Weapon(**weapon))
