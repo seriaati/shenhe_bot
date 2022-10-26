@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 from pathlib import Path
 import sys
@@ -43,7 +44,8 @@ class AdminCog(commands.Cog, name="admin"):
         await i.response.defer(ephemeral=True)
         if not i.client.debug:
             g = git.cmd.Git(Path(__file__).parent.parent)
-            g.pull()
+            task = asyncio.create_task(g.pull())
+            await task
             await i.edit_original_response(content="Git Pulled")
         modules = list(sys.modules.values())
         for _ in range(2):
