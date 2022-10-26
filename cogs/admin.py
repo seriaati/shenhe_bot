@@ -44,9 +44,8 @@ class AdminCog(commands.Cog, name="admin"):
         await i.response.defer(ephemeral=True)
         if not i.client.debug:
             g = git.cmd.Git(Path(__file__).parent.parent)
-            task = asyncio.create_task(g.pull())
-            await task
-            await i.edit_original_response(content="Git Pulled")
+            asyncio.create_task(g.pull())
+            await i.edit_original_response(content="`git pull` executed")
         modules = list(sys.modules.values())
         for _ in range(2):
             for module in modules:
