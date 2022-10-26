@@ -414,9 +414,9 @@ class Schedule(commands.Cog):
                     if domain.weekday == now.weekday():
                         for item in domain.rewards:
                             if notification_type == "talent_notification":
-                                upgrade = await client.get_character_upgrade(item_id)
+                                upgrade = await client.get_character_upgrade(str(item_id))
                             elif notification_type == "weapon_notification":
-                                upgrade = await client.get_weapon_upgrade(item_id)
+                                upgrade = await client.get_weapon_upgrade(int(item_id))
                             if not upgrade:
                                 continue
                             else:
@@ -430,7 +430,7 @@ class Schedule(commands.Cog):
                 if notification_type == "talent_notification":
                     item = await client.get_character(item_id)
                 elif notification_type == "weapon_notification":
-                    item = await client.get_weapon(item_id)
+                    item = await client.get_weapon(int(item_id))
                 if not item:
                     continue
                 else:
@@ -514,21 +514,21 @@ class Schedule(commands.Cog):
                         "rarity": object.rairty,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_character(object.id))[0].name
+                    english_name = (await eng_client.get_character(str(object.id)))[0].name
                 elif thing == "weapon":
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_weapon(str(object.id)))[0].name
+                    english_name = (await eng_client.get_weapon(int(object.id)))[0].name
                 elif thing == "artifact":
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity_list,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_artifact(str(object.id)))[
+                    english_name = (await eng_client.get_artifact(int(object.id)))[
                         0
                     ].name
                 object_map[str(object.id)]["eng"] = english_name

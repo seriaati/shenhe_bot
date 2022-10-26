@@ -7,19 +7,9 @@ import aiohttp
 
 from ambr.constants import CITIES, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
-from ambr.models import (
-    Artifact,
-    ArtifactDetail,
-    Character,
-    CharacterUpgrade,
-    City,
-    Domain,
-    Material,
-    MaterialDetail,
-    Weapon,
-    WeaponDetail,
-    WeaponUpgrade,
-)
+from ambr.models import (Artifact, ArtifactDetail, Character, CharacterUpgrade,
+                         City, Domain, Material, MaterialDetail, Weapon,
+                         WeaponDetail, WeaponUpgrade)
 
 
 class AmbrTopAPI:
@@ -133,13 +123,12 @@ class AmbrTopAPI:
     ) -> List[Material]:
         result = []
         data = await self._get_cache("material")
-        for _, material_info in data["data"]["items"].items():
-            if id is not None:
-                if id == material_info["id"]:
-                    result.append(Material(**material_info))
-            else:
-                result.append(Material(**material_info))
-
+        if id is not None:
+            result.append(Material(**data["data"]["items"][str(id)]))
+        else:
+            for material in data["data"].values():
+                result.append(Material(**material))
+                
         if len(result) == 0 and not retry:
             await self._update_cache(endpoint="material")
             result = await self.get_material(id=id, retry=True)
@@ -162,16 +151,15 @@ class AmbrTopAPI:
         return result
 
     async def get_artifact(
-        self, id: Optional[str] = None, retry: bool = False
+        self, id: Optional[int] = None, retry: bool = False
     ) -> List[Artifact]:
         result = []
         data = await self._get_cache("artifact")
-        for artifact_id, aritfact_info in data["data"]["items"].items():
-            if id is not None:
-                if id == artifact_id:
-                    result.append(Artifact(**aritfact_info))
-            else:
-                result.append(Artifact(**aritfact_info))
+        if id is not None:
+            result.append(Material(**data["data"]["items"][str(id)]))
+        else:
+            for material in data["data"].values():
+                result.append(Material(**material))
 
         if len(result) == 0 and not retry:
             await self._update_cache(endpoint="artifact")
@@ -188,17 +176,16 @@ class AmbrTopAPI:
     ) -> List[Character]:
         result = []
         data = await self._get_cache("character")
-        for character_id, character_info in data["data"]["items"].items():
-            if "beta" in character_info and not include_beta:
-                continue
-            if (
-                "10000005" in character_id or "10000007" in character_id
-            ) and not include_traveler:
-                continue
-            if id is not None:
-                if id == character_id:
-                    result.append(Character(**character_info))
-            else:
+        if id is not None:
+            result.append(Character(**data["data"]["items"][str(id)]))
+        else:
+            for character_id, character_info in data["data"]["items"].items():
+                if "beta" in character_info and not include_beta:
+                    continue
+                if (
+                    "10000005" in character_id or "10000007" in character_id
+                ) and not include_traveler:
+                    continue
                 result.append(Character(**character_info))
 
         if len(result) == 0 and not retry:
@@ -212,16 +199,15 @@ class AmbrTopAPI:
         return data["data"]["types"]
 
     async def get_weapon(
-        self, id: Optional[str] = None, retry: bool = False
+        self, id: Optional[int] = None, retry: bool = False
     ) -> List[Weapon]:
         result = []
         data = await self._get_cache("weapon")
-        for weapon_id, weapon_info in data["data"]["items"].items():
-            if id is not None:
-                if id == weapon_id:
-                    result.append(Weapon(**weapon_info))
-            else:
-                result.append(Weapon(**weapon_info))
+        if id is not None:
+            result.append(Character(**data["data"]["items"][str(id)]))
+        else:
+            for weapon in data["data"].values():
+                result.append(Weapon(**weapon))
 
         if len(result) == 0 and not retry:
             await self._update_cache(endpoint="weapon")
@@ -242,8 +228,9 @@ class AmbrTopAPI:
             upgrade_info["item_list"] = item_list
             upgrade_info["character_id"] = upgrade_id
             if character_id is not None:
-                if character_id == upgrade_id:
+                if str(character_id) == upgrade_id:
                     result.append(CharacterUpgrade(**upgrade_info))
+                    break
             else:
                 result.append(CharacterUpgrade(**upgrade_info))
 
@@ -256,7 +243,7 @@ class AmbrTopAPI:
         return result
 
     async def get_weapon_upgrade(
-        self, weapon_id: Optional[str] = None, retry: bool = False
+        self, weapon_id: Optional[int] = None, retry: bool = False
     ) -> List[WeaponUpgrade]:
         result = []
         data = await self._get_cache("upgrade", static=True)
@@ -268,8 +255,9 @@ class AmbrTopAPI:
             upgrade_info["item_list"] = item_list
             upgrade_info["weapon_id"] = upgrade_id
             if weapon_id is not None:
-                if weapon_id == upgrade_id:
+                if str(weapon_id) == upgrade_id:
                     result.append(WeaponUpgrade(**upgrade_info))
+                    break
             else:
                 result.append(WeaponUpgrade(**upgrade_info))
 
@@ -300,6 +288,7 @@ class AmbrTopAPI:
                 if id is not None:
                     if id == domain_info["id"]:
                         result.append(Domain(**domain_info))
+                        break
                 else:
                     result.append(Domain(**domain_info))
 
