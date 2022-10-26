@@ -232,7 +232,7 @@ class AmbrTopAPI:
                 (await self.get_material(id=int(material_id)))[0]
                 for material_id in upgrade_info["items"]
             ]
-            result.append(CharacterUpgrade(**upgrade_info))
+            result.append(WeaponUpgrade(**upgrade_info))
         else:
             for upgrade_id, upgrade_info in data["data"]["weapon"].items():
                 upgrade_info["weapon_id"] = upgrade_id
@@ -240,7 +240,7 @@ class AmbrTopAPI:
                     (await self.get_material(id=int(material_id)))[0]
                     for material_id in upgrade_info["items"]
                 ]
-                result.append(CharacterUpgrade(**upgrade_info))
+                result.append(WeaponUpgrade(**upgrade_info))
 
         return result
 

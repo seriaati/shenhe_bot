@@ -1,11 +1,13 @@
+from typing import Any
+
 import aiosqlite
+from discord import Embed, File, Interaction, Locale, SelectOption, User
+from discord.ui import Select
+
+import config
+from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from discord import User, Interaction, Locale, Embed, SelectOption, File
-from discord.ui import Select
-from apps.text_map.text_map_app import text_map
-from typing import Any
-import config
 from utility.utils import default_embed, get_user_appearance_mode
 from yelan.draw import draw_abyss_floor_card, draw_abyss_one_page
 
@@ -63,13 +65,18 @@ class FloorSelect(Select):
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             )
             await i.edit_original_response(embed=embed, attachments=[])
-            fp = await draw_abyss_one_page(
-                self.embeds["user"],
-                self.embeds["abyss"],
-                user_locale or i.locale,
-                dark_mode,
-                i.client.session,
-            )
+            cache = i.client.abyss_one_page_cache
+            key = self.embeds["user"].info.nickname
+            fp = cache.get(key)
+            if fp is None:
+                fp = await draw_abyss_one_page(
+                    self.embeds["user"],
+                    self.embeds["abyss"],
+                    user_locale or i.locale,
+                    dark_mode,
+                    i.client.session,
+                )
+                cache[key] = fp
             fp.seek(0)
             image = File(fp, filename="abyss_one_page.jpeg")
             embed = default_embed()
@@ -90,11 +97,16 @@ class FloorSelect(Select):
             embed.set_author(
                 name=self.embeds["title"], icon_url=i.user.display_avatar.url
             )
-            fp = await draw_abyss_floor_card(
-                dark_mode,
-                self.embeds["floors"][int(self.values[0])],
-                i.client.session,
-            )
+            cache = i.client.abyss_floor_card_cache
+            key = str(self.embeds["floors"][int(self.values[0])])
+            fp = cache.get(key)
+            if fp is None:
+                fp = await draw_abyss_floor_card(
+                    dark_mode,
+                    self.embeds["floors"][int(self.values[0])],
+                    i.client.session,
+                )
+                cache[key] = fp
             fp.seek(0)
             image = File(fp, filename="floor.jpeg")
             await i.edit_original_response(embed=embed, attachments=[image])

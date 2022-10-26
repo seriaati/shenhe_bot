@@ -1,25 +1,24 @@
 from typing import Dict, List, Literal, Tuple
+
 import aiosqlite
+import genshin
 import sentry_sdk
+from discord import Embed, Locale, SelectOption, User
+from discord.ext import commands
+from discord.utils import format_dt
+
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheUser
 from apps.genshin.utils import get_character, get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
+from apps.text_map.utils import (get_element_name, get_month_name,
+                                 get_user_locale)
 from data.game.elements import element_emojis
-from discord import Embed, Locale, SelectOption, User
-from discord.ext import commands
-from discord.utils import format_dt
-from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
-from yelan.draw import (
-    draw_abyss_overview_card,
-    draw_area_card,
-    draw_diary_card,
-    draw_stats_card,
-)
-
-import genshin
+from utility.utils import (default_embed, error_embed,
+                           get_user_appearance_mode, log)
+from yelan.draw import (draw_abyss_overview_card, draw_area_card,
+                        draw_diary_card, draw_stats_card)
 
 
 class CookieInvalid(Exception):
@@ -403,9 +402,7 @@ class GenshinApp:
         )
         locale = shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
-            embed = error_embed(
-                message=f"{text_map.get(74, locale)}\n{text_map.get(75, locale)}"
-            )
+            embed = error_embed(message=text_map.get(74, locale))
             embed.set_author(
                 name=text_map.get(76, locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
@@ -420,13 +417,20 @@ class GenshinApp:
             name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
-        result["title"] = f"{text_map.get(47, locale)} | {text_map.get(77, locale)} {abyss.season}"
+        result[
+            "title"
+        ] = f"{text_map.get(47, locale)} | {text_map.get(77, locale)} {abyss.season}"
         result["overview"] = overview
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
-        fp = await draw_abyss_overview_card(
-            locale, dark_mode, abyss, user, self.bot.session
-        )
+        cache = self.bot.abyss_overview_card_cache
+        fp = cache.get(
+            shenhe_user.uid)
+        if fp is None:
+            fp = await draw_abyss_overview_card(
+                locale, dark_mode, abyss, user, self.bot.session
+            )
+            cache[shenhe_user.uid] = fp
         result["overview_card"] = fp
         result["floors"] = abyss.floors
         return result, True
