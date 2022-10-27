@@ -6,7 +6,7 @@ from apps.text_map.text_map_app import text_map
 from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.utils import get_month_name, get_user_locale
 import config
-from utility.utils import get_user_timezone
+from utility.utils import default_embed, get_user_timezone
 import pytz
 
 
@@ -39,7 +39,13 @@ class MonthSelect(Select):
     
     async def callback(self, i: Interaction):
         self.view: View
-        await i.response.defer()
+        user_locale = await get_user_locale(i.user.id, i.client.db)
+        embed = default_embed()
+        embed.set_author(
+            name=text_map.get(644, i.locale, user_locale),
+            icon_url="https://i.imgur.com/V76M9Wa.gif",
+        )
+        await i.response.edit_message(embed=embed, attachments=[])
         user_locale = await get_user_locale(i.user.id, i.client.db)
         user_timezone = await get_user_timezone(i.user.id, i.client.db)
         month = datetime.now(pytz.timezone(user_timezone)).month + int(self.values[0])
@@ -48,7 +54,7 @@ class MonthSelect(Select):
         if not success:
             await i.followup.send(embed=result)
         else:
-            view = View(i.user, i.user, self.view.genshin_app, i.locale, user_locale, month)
+            view = View(i.user, i.user, self.view.genshin_app, i.locale, user_locale, datetime.now(pytz.timezone(user_timezone)).month)
             view.message = await i.edit_original_response(
                 embed=result["embed"], view=view, attachments=[File(result["fp"], "diary.jpeg")]
             )
