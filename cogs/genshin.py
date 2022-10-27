@@ -14,31 +14,49 @@ from discord.ui import Select
 from diskcache import FanoutCache
 from enkanetwork import EnkaNetworkAPI, EnkaNetworkResponse, UIDNotFounded
 from enkanetwork.enum import DigitType, EquipmentsType, Language
-
+from discord.utils import format_dt
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Material, Weapon
+from ambr.models import Character, Event, Material, Weapon
 from apps.genshin.checks import *
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (calculate_artifact_score, get_artifact,
-                                get_character, get_farm_data, get_fight_prop,
-                                get_uid, get_weapon,
-                                load_and_update_enka_cache,
-                                parse_character_wiki_embed)
-from apps.text_map.convert_locale import to_ambr_top, to_enka
+from apps.genshin.utils import (
+    calculate_artifact_score,
+    get_artifact,
+    get_character,
+    get_farm_data,
+    get_fight_prop,
+    get_uid,
+    get_weapon,
+    load_and_update_enka_cache,
+    parse_character_wiki_embed,
+)
+from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from UI_elements.genshin import (Abyss, ArtifactLeaderboard, Build,
-                                 CharacterWiki, Diary, EnkaProfile,
-                                 EventTypeChooser, ShowAllCharacters)
+from UI_elements.genshin import (
+    Abyss,
+    ArtifactLeaderboard,
+    Build,
+    CharacterWiki,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_timezone, get_weekday_int_with_name)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_timezone,
+    get_weekday_int_with_name,
+)
 
 
 class UIDNotFound(Exception):
@@ -1145,6 +1163,39 @@ class GenshinCog(commands.Cog, name="genshin"):
                 if first_icon_url == "":
                     first_icon_url = item.icon
         return result, first_icon_url
+
+    @app_commands.command(
+        name="banners", description=_("View ongoing Genshin banners", hash=375)
+    )
+    async def banners(self, i: Interaction):
+        await i.response.defer()
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        client = AmbrTopAPI(i.client.session)
+        events = await client.get_events()
+        banners: List[Event] = []
+        for event in events:
+            if "祈願" in event.name["CHT"]:
+                banners.append(event)
+        if len(banners) == 0:
+            return await i.followup.send(
+                embed=default_embed(message=text_map.get(376, locale)).set_author(
+                    name=text_map.get(23, locale)
+                )
+            )
+        event_lang = to_event_lang(locale)
+        embeds = []
+        for banner in banners:
+            embed = default_embed(
+                banner.name[event_lang],
+                text_map.get(381, locale).format(
+                    time=format_dt(
+                        datetime.strptime(banner.end_time, "%Y-%m-%d %H:%M:%S")
+                    )
+                ),
+            )
+            embed.set_image(url=banner.banner[event_lang])
+            embeds.append(embed)
+        await GeneralPaginator(i, embeds, i.client.db).start(followup=True)
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -10,6 +10,13 @@ class City(BaseModel):
     id: int
     name: str
 
+class Event(BaseModel):
+    id: int
+    name: Dict[str, str]
+    full_name: Dict[str, str] = Field(alias="nameFull")
+    description: Dict[str, str]
+    banner: Dict[str, str]
+    end_time: str = Field(alias="endAt")
 
 class Weapon(BaseModel):
     id: int

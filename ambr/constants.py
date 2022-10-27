@@ -76,3 +76,5 @@ LANGS= {
     'id': "id",
     'th': "th"
 }
+
+EVENTS_URL = "https://api.ambr.top/assets/data/event.json"

@@ -5,10 +5,10 @@ from typing import Dict, List, Optional
 
 import aiohttp
 
-from ambr.constants import CITIES, LANGS
+from ambr.constants import CITIES, EVENTS_URL, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 from ambr.models import (Artifact, ArtifactDetail, Character, CharacterUpgrade,
-                         City, Domain, Material, MaterialDetail, Weapon,
+                         City, Domain, Event, Material, MaterialDetail, Weapon,
                          WeaponDetail, WeaponUpgrade)
 
 
@@ -263,3 +263,12 @@ class AmbrTopAPI:
                 result.append(Domain(**domain_info))
 
         return result
+    
+    async def get_events(self) -> List[Event]:
+        result = []
+        async with self.session.get(EVENTS_URL) as resp:
+            data = await resp.json()
+            for event in list(data.values()):
+                result.append(Event(**event))
+        return result
+        
