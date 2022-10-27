@@ -47,7 +47,7 @@ class AdminCog(commands.Cog, name="admin"):
             g = git.cmd.Git(Path(__file__).parent.parent)
             pull = functools.partial(g.pull)
             await self.bot.loop.run_in_executor(None, pull)
-            await i.edit_original_response(content="`git pull` executed")
+            await i.edit_original_response(content="Git Pulled")
         modules = list(sys.modules.values())
         for _ in range(2):
             for module in modules:

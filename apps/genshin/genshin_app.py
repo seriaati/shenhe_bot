@@ -428,7 +428,7 @@ class GenshinApp:
             shenhe_user.uid)
         if fp is None:
             fp = await draw_abyss_overview_card(
-                locale, dark_mode, abyss, user, self.bot.session
+                locale, dark_mode, abyss, user, self.bot.session, self.bot.loop
             )
             cache[shenhe_user.uid] = fp
         result["overview_card"] = fp
