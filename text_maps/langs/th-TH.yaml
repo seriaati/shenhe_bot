@@ -405,12 +405,12 @@
 '372': Wish luck analysis
 '373': Your luck is better than **{luck}%** of players
 '374': Choosing this filter will remove it
-'375': ''
-'376': ''
+'375': View ongoing Genshin banners
+'376': There are currently no ongoing banners
 '378': Method 1
 '379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
 '380': Your current number of five-star pity is **{a}**
-'381': ''
+'381': "Ends at: {time}"
 '382': Wishing to pull
 '383': UP 5-star characters
 '384': It is estimated that you will pull a five-star banner character in **{a}** pulls
