@@ -430,7 +430,7 @@ class GenshinApp:
             )
             cache[shenhe_user.uid] = fp
         result["overview_card"] = fp
-        result["floors"] = abyss.floors
+        result["floors"] = [floor for floor in abyss.floors if floor.floor >= 9]
         return result, True
 
     @genshin_error_handler
