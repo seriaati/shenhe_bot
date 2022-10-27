@@ -123,6 +123,12 @@ async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
     else:
         return timezone[0] or "Asia/Taipei"
 
+def human_format(num: int):
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '%.2f%s' % (num, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
 
 def dynamic_font_size(
     text: str,

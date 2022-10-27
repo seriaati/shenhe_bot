@@ -344,7 +344,6 @@ class GenshinApp:
             diary,
             user,
             shenhe_user.user_locale or locale,
-            await get_user_appearance_mode(user_id, self.db),
             month,
         )
         fp.seek(0)
