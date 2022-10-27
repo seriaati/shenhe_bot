@@ -366,7 +366,7 @@ class GenshinApp:
             async for action in shenhe_user.client.diary_log(limit=30):
                 primo_log = (
                     primo_log
-                    + f"{action.action} - {action.amount} {text_map.get(71, locale, shenhe_user.user_locale)}"
+                    + f"{format_dt(action.time, 'd')} {action.action} - {action.amount} {text_map.get(71, locale, shenhe_user.user_locale)}"
                     + "\n"
                 )
             embed = default_embed(message=f"{primo_log}")
@@ -381,7 +381,7 @@ class GenshinApp:
             ):
                 mora_log = (
                     mora_log
-                    + f"{action.action} - {action.amount} {text_map.get(73, locale, shenhe_user.user_locale)}"
+                    + f"{format_dt(action.time, 'd')} {action.action} - {action.amount} {text_map.get(73, locale, shenhe_user.user_locale)}"
                     + "\n"
                 )
             embed = default_embed(message=f"{mora_log}")
