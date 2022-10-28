@@ -45,6 +45,7 @@ class ElementButton(Button):
         self.element = element_name
 
     async def callback(self, i: Interaction):
+        await i.response.defer()
         self.view: View
         user_locale = await get_user_locale(i.user.id, self.view.db)
         locale = user_locale or i.locale
@@ -61,7 +62,7 @@ class ElementButton(Button):
         placeholder = text_map.get(157, locale)
         self.view.clear_items()
         self.view.add_item(CharacterSelect(options, placeholder))
-        await i.response.edit_message(view=self.view)
+        await i.edit_original_response(view=self.view)
 
 
 class CharacterSelect(Select):

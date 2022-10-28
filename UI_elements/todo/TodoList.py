@@ -1,14 +1,13 @@
 from typing import List
 
 import aiosqlite
-import sentry_sdk
 from UI_base_models import BaseModal, BaseView
 from discord import ButtonStyle, Interaction, Locale, User, SelectOption
 from discord.ui import Button, Select, TextInput
 from apps.text_map.utils import get_user_locale
 from apps.text_map.text_map_app import text_map
 from apps.todo.todo_app import get_todo_embed, return_todo
-from utility.utils import error_embed, log
+from utility.utils import error_embed
 import config
 
 

@@ -2,7 +2,8 @@ from typing import Optional
 import aiosqlite
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Interaction, app_commands, User, Member
+from discord import Interaction, app_commands, User
+from discord.errors import InteractionResponded
 from utility.utils import error_embed
 
 
@@ -109,21 +110,29 @@ async def check_cookie_predicate(i: Interaction, member: Optional[User] = None) 
                 (user.id,),
             )
             if (await c.fetchone()) is None:
-                await i.response.send_message(
-                    embed=error_embed(message=text_map.get(572, locale)).set_author(
-                        name=text_map.get(573 if user.id == i.user.id else 580, locale),
-                        icon_url=user.display_avatar.url,
-                    ),
-                    ephemeral=True,
+                embed = error_embed(message=text_map.get(572, locale)).set_author(
+                    name=text_map.get(573 if user.id == i.user.id else 580, locale),
+                    icon_url=user.display_avatar.url,
                 )
+                try:
+                    await i.response.send_message(
+                        embed=embed,
+                        ephemeral=True,
+                    )
+                except InteractionResponded:
+                    await i.followup.send(embed=embed, ephemeral=True)
             else:
-                await i.response.send_message(
-                    embed=error_embed(message=text_map.get(575, locale)).set_author(
-                        name=text_map.get(574 if user.id == i.user.id else 581, locale),
-                        icon_url=user.display_avatar.url,
-                    ),
-                    ephemeral=True,
+                embed = error_embed(message=text_map.get(575, locale)).set_author(
+                    name=text_map.get(574 if user.id == i.user.id else 581, locale),
+                    icon_url=user.display_avatar.url,
                 )
+                try:
+                    await i.response.send_message(
+                        embe=embed,
+                        ephemeral=True,
+                    )
+                except InteractionResponded:
+                    await i.followup.send(embed=embed, ephemeral=True)
             return False
         else:
             return True

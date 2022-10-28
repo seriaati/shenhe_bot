@@ -68,20 +68,19 @@ class Character(BaseModel):
 class Material(BaseModel):
     id: int
     name: str
-    type: str
-    recipe: bool
-    map_mark: bool = Field(alias="mapMark")
+    type: Optional[str] = None
     icon: str
-    rarity: int = Field(alias="rank")
+    recipe: bool = False
+    rarity: int = Field(alias="rank", default=0)
     beta: bool = False
 
-    @validator("icon", allow_reuse=True)
+    @validator("icon", pre=True, allow_reuse=True)
     def get_icon_url(cls, v, values):
         if "type" in values and values["type"] == "custom":
-            return "https://i.imgur.com/ByIyBa7.png"
+            icon_url = "https://i.imgur.com/GDLac2a.png"
         else:
             icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
-            return icon_url
+        return icon_url
 
 
 class Domain(BaseModel):

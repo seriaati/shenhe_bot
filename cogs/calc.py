@@ -43,6 +43,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         ]
     )
     async def calc_characters(self, i: Interaction, sync: int = 0):
+        await i.response.defer()
         sync = True if sync == 1 else False
         special_talent_characters = [10000041, 10000002]
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -60,7 +61,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         try:
             characters = await client.get_calculator_characters(sync=sync)
         except InvalidCookies:
-            return await i.response.send_message(
+            return await i.followup.send(
                 embed=error_embed(
                     message=text_map.get(35, i.locale, user_locale)
                 ).set_author(
@@ -70,7 +71,7 @@ class CalcCog(commands.GroupCog, name="calc"):
             )
 
         view = CalcCharacter.View(i.user, self.bot.session, self.bot.db, characters)
-        await i.response.send_message(view=view)
+        await i.followup.send(view=view)
         view.message = await i.original_response()
         await view.wait()
         if view.character_id == "":

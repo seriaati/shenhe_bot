@@ -6,7 +6,7 @@ import aiosqlite
 from discord import Embed, Interaction, Locale, User
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
-
+from discord.errors import InteractionResponded
 from yelan.draw import draw_todo_card
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -39,13 +39,12 @@ async def return_todo(
     view,
     db: aiosqlite.Connection,
 ):
-    interacted = i.response.is_done()
+    try:
+        await i.response.defer()
+    except InteractionResponded:
+        pass
     if isinstance(result, Embed):
-        if interacted:
-            await i.edit_original_response(embed=result, view=view, attachments=[])
-        else:
-            await i.response.send_message(embed=result, view=view, files=[])
-        view.message = await i.original_response()
+        view.message = await i.edit_original_response(embed=result, view=view, attachments=[])
     else:
         embeds = []
         for index in range(len(result)):
@@ -54,4 +53,4 @@ async def return_todo(
             embeds.append(embed)
         await GeneralPaginator(
             i, embeds, db, custom_children=view.children, files=result
-        ).start(edit=interacted)
+        ).start(edit=True)
