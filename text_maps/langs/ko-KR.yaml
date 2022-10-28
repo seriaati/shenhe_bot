@@ -141,11 +141,11 @@
   2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
   3. Click the address bar and select all the text there
   4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, click on the button to copy it
+  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
   6. Submit your cookie here
 
   Too complicated? The image below might help!
-'139': script:check = document.cookie.includes('account_id') && document.cookie.includes('cookie_token') || alert('Please logout and log back in before trying again, cookie is currently expired/invalid!'); cookie=document.cookie.match(/(lt(oken|uid)|cookie_token)=(.*?);/gm).join(" "); check && document.write(cookie + \`<br><button onclick="navigator.clipboard.writeText('${cookie}')">Click here to copy!</button>\`)
+'139': Expired or invalid Cookie, please log out and login again!
 '140': Please use the </register:1006486283725590528> command
 '141': Account data not found!
 '142': Choose your element
@@ -433,7 +433,7 @@
   7. Click the submit button and paste the link to the textbox that pops up
 '395': weapons you want
 '396': pulls
-'397': ''
+'397': Transformative Reactions
 '398': ''
 '399': ''
 '400': ''
