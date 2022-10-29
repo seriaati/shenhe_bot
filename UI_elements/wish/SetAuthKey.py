@@ -8,6 +8,7 @@ from discord import Interaction, Locale, TextStyle
 from discord.ui import TextInput
 from UI_base_models import BaseModal
 from utility.utils import default_embed, error_embed, log
+import sentry_sdk
 
 
 class Modal(BaseModal):
@@ -44,8 +45,9 @@ class Modal(BaseModal):
         else:
             client.authkey = authkey
         await i.response.send_message(
-            embed=default_embed(
-                f"<a:LOADER:982128111904776242> {text_map.get(355, i.locale, user_locale)}"
+            embed=default_embed().set_author(
+                name=text_map.get(355, i.locale, user_locale),
+                icon_url="https://i.imgur.com/V76M9Wa.gif",
             ),
             ephemeral=True,
         )
@@ -55,7 +57,8 @@ class Modal(BaseModal):
             client.region = genshin.Region.CHINESE
             try:
                 wish_history = await client.wish_history()
-            except:
+            except Exception as e:
+                sentry_sdk.capture_exception(e)
                 return await i.edit_original_response(
                     embed=error_embed(message=f"```py\n{e}\n```").set_author(
                         name=text_map.get(135, i.locale, user_locale),

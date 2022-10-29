@@ -352,6 +352,7 @@ class GenshinApp:
             name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(month, locale, shenhe_user.user_locale)}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
+        embed.set_footer(text=text_map.get(398, locale, shenhe_user.user_locale))
         result["embed"] = embed
         result["fp"] = fp
         return result, True

@@ -434,8 +434,15 @@
 '395': weapons you want
 '396': pulls
 '397': Transformative Reactions
-'398': ''
-'399': ''
+'398': |- 
+  The number of ley line outcrops is converted from the number of mora you obtained this month.
+  You didn't farm that many ley line outcrops, it just makes numbers easier to understand.
+'399': |-
+  Characters are automatically cached when you use this command.
+  Even if you switch off characters from your showcase in-game,
+  they will still appear here. To update the showcase, place the characters back
+  and use this command again. Theoretically, you can have all of your characters
+  in your /profile and use them in the damage calculator.
 '400': ''
 '401': ''
 '402': ''

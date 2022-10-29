@@ -128,7 +128,7 @@ async def check_cookie_predicate(i: Interaction, member: Optional[User] = None) 
                 )
                 try:
                     await i.response.send_message(
-                        embe=embed,
+                        embed=embed,
                         ephemeral=True,
                     )
                 except InteractionResponded:

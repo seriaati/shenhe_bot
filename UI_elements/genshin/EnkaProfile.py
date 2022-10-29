@@ -44,12 +44,13 @@ class View(BaseView):
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
         options = list(divide_chunks(self.character_options, 25))
-        count = 1
+        count = 0
         for option in options:
+            character_num = len([o for o in option if o.value != 0])
             self.add_item(
-                PageSelect(option, text_map.get(157, locale, user_locale)+f" ({count}~{count+len(option)})")
+                PageSelect(option, text_map.get(157, locale, user_locale)+f" ({count+1}~{count+character_num})")
             )
-            count += len(option)
+            count += character_num
         self.children[0].disabled = True
         self.children[1].disabled = True
 
