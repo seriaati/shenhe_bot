@@ -137,15 +137,14 @@
 '136': アカウントを選択してください
 '137': アカウント登録チュートリアル
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6. Submit your cookie here
-
-  Too complicated? The image below might help!
-'139': Expired or invalid Cookie, please log out and login again!
+  1. 以下のコードをコピーしてください。
+  2. お使いのデバイスでChromeを開き、https://www.hoyolab.com/home のアカウントにログインします。
+  3. アドレスバーをクリックし、すべて選択します。
+  4. `java` と入力し、コピーしたコードを貼り付けます。アドレスバーが `javascript:` で始まっていることを確認してください。
+  5. ENTERを押すと、あなたのクッキーを表示する空白のページが表示されます。
+  6.ここにクッキーを送信してください
+  複雑すぎますか？下の画像が参考になるかもしれません。
+'139': 期限切れまたは無効なCookieです。ログアウトして再度ログインしてください！
 '140': </register:1006486283725590528> コマンドを使用してください
 '141': アカウントデータが見つかりません！
 '142': アカウントを選択してください
@@ -432,7 +431,7 @@
   7. 下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
 '395': あなたが欲しい星5武器
 '396': 回 祈願
-'397': Transformative Reactions
+'397': 固定ダメージ系反応
 '398': ''
 '399': ''
 '400': ''
