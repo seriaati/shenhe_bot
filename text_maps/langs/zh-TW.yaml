@@ -137,14 +137,15 @@
 '136': 選擇要註冊的帳號
 '137': Cookie 設置流程
 '138': |-
-  1.先複製下面的程式碼。
-  2.電腦或手機使用 Chrome 開啟 Hoyolab 並登入帳號 https://www.hoyolab.com
-  3.長摁地址欄，選取所有文字。
-  4.在網址列先輸入 `java`, 然後貼上代碼, 確保網址開頭變成 `javascript:`
-  5.按下確認，一個全白的網頁會出現並顯示你的 Cookie，點擊按鈕來複製它
-  6.在這裡提交你的cookie
-  無法理解嗎? 按照下面的圖示操作吧!
-'139': script:check = document.cookie.includes('account_id') && document.cookie.includes('cookie_token') || alert('Cookie 無效或過期! 請登出並登入後再試一遍'); cookie=document.cookie.match(/(lt(oken|uid)|cookie_token)=(.*?);/gm).join(" "); check && document.write(cookie + \`<br><button onclick="navigator.clipboard.writeText('${cookie}')">點我複製!</button>\`)
+  1. Copy the code below
+  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
+  3. Click the address bar and select all the text there
+  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
+  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
+  6. Submit your cookie here
+
+  Too complicated? The image below might help!
+'139': Expired or invalid Cookie, please log out and login again!
 '140': 請使用 </register:1006486283725590528> 指令
 '141': 找不到帳號資料!
 '142': 選擇元素
@@ -433,7 +434,7 @@
   7. 點擊下方的按鈕來將複製的連結黏貼到文字框中
 '395': 個想要的五星 Up 武器
 '396': 抽
-'397': ''
+'397': Transformative Reactions
 '398': ''
 '399': ''
 '400': ''
