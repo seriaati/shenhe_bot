@@ -97,6 +97,7 @@ class ShenheBot(commands.Bot):
             ltoken = tpl[2]
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
             cookies.append(cookie)
+        cookies = list(dict.fromkeys(cookies))
         self.genshin_client = genshin.Client()
         self.genshin_client.set_cookies(cookies)
 
