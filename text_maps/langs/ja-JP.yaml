@@ -433,14 +433,12 @@
 '396': 回 祈願
 '397': 固定ダメージ系反応
 '398': |-
-  The number of ley line outcrops is converted from the number of mora you obtained this month.
-  You didn't farm that many ley line outcrops, it just makes numbers easier to understand.
+  地脈の花芽・蔵金の花の数値は今月のモラの数を元に計算しています。
+  あくまで、モラの数をわかりやすくするために単位として表示しています。
 '399': |-
-  Characters are automatically cached when you use this command.
-  Even if you switch off characters from your showcase in-game,
-  they will still appear here. To update the showcase, place the characters back
-  and use this command again. Theoretically, you can have all of your characters
-  in your /profile and use them in the damage calculator.
+  このコマンドを使用すると、キャラクターは自動的にキャッシュされます。
+  ゲーム内でショーケースからキャラクターを消しても、ここに表示されます。
+  ショーケースを更新するには、キャラクターを元に戻し、再度このコマンドを使用してください。理論的にはすべてのキャラクターを/profileに登録した上でダメージ計算機で使用することができます。
 '400': ''
 '401': ''
 '402': ''
