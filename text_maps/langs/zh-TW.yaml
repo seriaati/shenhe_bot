@@ -137,15 +137,15 @@
 '136': 選擇要註冊的帳號
 '137': Cookie 設置流程
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6. Submit your cookie here
+  1.先複製下面的程式碼。
+  2.電腦或手機使用 Chrome 開啟 Hoyolab 並登入帳號 https://www.hoyolab.com
+  3.長摁地址欄，選取所有文字。
+  4.在網址列先輸入 `java`, 然後貼上代碼, 確保網址開頭變成 `javascript:`
+  5.按下確認，網頁展示會變成你的Cookie, 全選然後復制
+  6.在這裡提交你的cookie
 
-  Too complicated? The image below might help!
-'139': Expired or invalid Cookie, please log out and login again!
+  無法理解嗎? 按照下面的圖示操作吧!
+'139': 無效或過期的 Cookie，請登出並登入後再試一遍！
 '140': 請使用 </register:1006486283725590528> 指令
 '141': 找不到帳號資料!
 '142': 選擇元素
@@ -434,16 +434,15 @@
   7. 點擊下方的按鈕來將複製的連結黏貼到文字框中
 '395': 個想要的五星 Up 武器
 '396': 抽
-'397': Transformative Reactions
+'397': 元素反應
 '398': |-
-  The number of ley line outcrops is converted from the number of mora you obtained this month.
-  You didn't farm that many ley line outcrops, it just makes numbers easier to understand.
+  藏金之花的數量是由你這個月獲得的摩拉數量換算的。
+  你並沒有真的刷了這麼多藏金之花，這只是為了上數字更容易理解而已。
 '399': |-
-  Characters are automatically cached when you use this command.
-  Even if you switch off characters from your showcase in-game,
-  they will still appear here. To update the showcase, place the characters back
-  and use this command again. Theoretically, you can have all of your characters
-  in your /profile and use them in the damage calculator.
+  在你使用這個指令時，角色將會自動儲存。
+  就算你在遊戲中將角色從展示櫃中拿下，他們仍然會在這裡出現。
+  如欲更新他們的資料，請將角色重新放回展示櫃後使用一次這個指令。
+  理論上，你可以將遊戲中所有角色放到 /profile 裡，並在傷害計算器中使用他們。
 '400': ''
 '401': ''
 '402': ''
@@ -728,7 +727,7 @@
 '636': 當前已設定的武器
 '637': 目前尚未設置任何武器
 '638': 已新增過此武器, 再次選擇將會移除該武器
-'639': ''
+'639': 當寶錢超過一定數量時提醒你
 '640': 二件套效果
 '641': 四件套效果
 '642': 支援伺服器
