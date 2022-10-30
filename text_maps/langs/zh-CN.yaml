@@ -137,15 +137,15 @@
 '136': 选择要注册的帐号
 '137': Cookie 设置流程
 '138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6. Submit your cookie here
+  1.先复制下面的程式码。
+  2.电脑或手机使用 Chrome 开启 Hoyolab 并登入帐号 https://www.hoyolab.com
+  3.长摁地址栏，选取所有文字。
+  4.在网址列先输入 `java`, 然后贴上代码, 确保网址开头变成 `javascript:`
+  5.按下确认，网页展示会变成你的Cookie, 全选然后复制
+  6.在这里提交你的cookie
 
-  Too complicated? The image below might help!
-'139': Expired or invalid Cookie, please log out and login again!
+  无法理解吗? 按照下面的图示操作吧!
+'139': 无效或过期的 Cookie，请登出并登入后再试一遍！
 '140': 请使用 </register:1006486283725590528> 指令
 '141': 找不到帐号资料!
 '142': 选择元素
@@ -434,16 +434,15 @@
   7. 点击下方的按钮来将复制的连结黏贴到文字框中
 '395': 个想要的五星 Up 武器
 '396': 抽
-'397': Transformative Reactions
+'397': 元素反应
 '398': |-
-  The number of ley line outcrops is converted from the number of mora you obtained this month.
-  You didn't farm that many ley line outcrops, it just makes numbers easier to understand.
+  藏金之花的数量是由你这个月获得的摩拉数量换算的。
+  你并没有真的刷了这么多藏金之花，这只是为了上数字更容易理解而已。
 '399': |-
-  Characters are automatically cached when you use this command.
-  Even if you switch off characters from your showcase in-game,
-  they will still appear here. To update the showcase, place the characters back
-  and use this command again. Theoretically, you can have all of your characters
-  in your /profile and use them in the damage calculator.
+  在你使用这个指令时，角色将会自动储存。
+  就算你在游戏中将角色从展示柜中拿下，他们仍然会在这里出现。
+  如欲更新他们的资料，请将角色重新放回展示柜后使用一次这个指令。
+  理论上，你可以将游戏中所有角色放到 /profile 里，并在伤害计算器中使用他们。
 '400': ''
 '401': ''
 '402': ''
@@ -728,7 +727,7 @@
 '636': 当前已设定的武器
 '637': 目前尚未设置任何武器
 '638': 已新增过此武器, 再次选择将会移除该武器
-'639': ''
+'639': This feature allows you to receive notification when your realm currency exceeds a certain amount
 '640': 二件套效果
 '641': 四件套效果
 '642': 支援服务器
