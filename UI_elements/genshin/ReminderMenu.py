@@ -90,7 +90,7 @@ async def return_pot_notification(i: Interaction, view: View):
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
-    embed = default_embed(message=text_map.get(586, view.locale))
+    embed = default_embed(message=text_map.get(639, view.locale))
     embed.set_author(
         name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url
     )
