@@ -152,10 +152,10 @@ class AmbrTopAPI:
         result = []
         data = await self._get_cache("artifact")
         if id is not None:
-            result.append(Material(**data["data"]["items"][str(id)]))
+            result.append(Artifact(**data["data"]["items"][str(id)]))
         else:
             for material in data["data"]["items"].values():
-                result.append(Material(**material))
+                result.append(Artifact(**material))
                 
         return result
 
