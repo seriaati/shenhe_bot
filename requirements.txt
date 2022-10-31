@@ -6,7 +6,7 @@ genshin @ git+https://github.com/thesadru/genshin.py
 hmtai==3.2.0
 matplotlib==3.6.1
 numpy==1.23.4
-Pillow==9.2.0
+Pillow==9.3.0
 pydantic==1.10.2
 pyppeteer==1.0.2
 python-dotenv==0.21.0
