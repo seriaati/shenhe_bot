@@ -443,9 +443,9 @@
   就算你在游戏中将角色从展示柜中拿下，他们仍然会在这里出现。
   如欲更新他们的资料，请将角色重新放回展示柜后使用一次这个指令。
   理论上，你可以将游戏中所有角色放到 /profile 里，并在伤害计算器中使用他们。
-'400': ''
-'401': ''
-'402': ''
+'400': Link generated, awaiting response from the login gateway...
+'401': Generate login link
+'402': Generating login link...
 '403': |-
   1. 在电脑开启原神（如果你使用多组帐号，请重新启动游戏）
   2. 接着打开祈愿纪录并等待读取
@@ -625,15 +625,11 @@
 '561': 帐户已删除
 '562': 选择你想要新增的帐户类型
 '563': |-
-  • 有些指令只需要你的 UID，像是</profile:1006486283805265953>, </area:1006486283725590531>, 以及</stats:1006486283725590530>
-  • 其他指令需要 Cookie，像是 </check:1006486283725590529>, </abyss:1006486283725590535>, 以及 </diary:1006486283725590534>
-
-  • 新增 UID 只需要输入 UID 即可
-  • 注册 Cookie 则需要经过一个大约 30 秒的注册流程
-
-  • Cookie 是一个储存你的浏览器中的加密字符串，用于识别你和你的帐户
-  • 你随时可以移除你的帐户资料
-  • 更多资讯请参阅[官网](https://seriaati.github.io/shenhe_website/index-zh-TW.html)
+  • Click on the button below to generate a login link
+  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only require your UID
+  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
+  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+  • You can always remove your account data by using </accounts:1020188057628065866>
 '564': 新增 UID
 '565': 新增 Cookie
 '566': 请在这里放入你的 UID
@@ -760,3 +756,4 @@
 '667': 與上個月比較
 '668': 原石
 '669': 摩拉
+'670': Go to login page
