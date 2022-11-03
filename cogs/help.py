@@ -47,8 +47,6 @@ class Dropdown(Select):
         embed = default_embed(
             f'{selected_option.emoji} {selected_option.label}')
         for command in commands:
-            if len(command.checks) != 0:
-                continue
             try:
                 hash = command._locale_description.extras['hash']
             except KeyError:

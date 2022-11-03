@@ -88,6 +88,14 @@ to_event_lang_dict = {
     "ru": "RU",
 }
 
+to_hutao_login_dict = {
+    "zh-TW": "zh-tw",
+    "zh-CN": "zh-cn",
+    "th": "th",
+    "ja": "jp",
+    "en-US": "en",
+}
+
 
 def to_enka(locale: Locale | str):
     return to_enka_dict.get(str(locale)) or "en"
@@ -111,3 +119,7 @@ def to_paths(locale: Locale | str):
 
 def to_event_lang(locale: Locale | str):
     return to_event_lang_dict.get(str(locale), "EN")
+
+
+def to_hutao_login_lang(locale: Locale | str):
+    return to_hutao_login_dict.get(str(locale), "en")

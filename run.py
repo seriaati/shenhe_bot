@@ -1,26 +1,32 @@
 # shenhe-bot by seria
 
+import asyncio
 import getpass
 import os
-from ast import Dict
 from pathlib import Path
 from typing import Optional
-
 import aiohttp
 import aiosqlite
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
-from discord import (Intents, Interaction, Locale, Message, WebhookMessage,
-                     app_commands)
+from discord import Intents, Interaction, Locale, Message, app_commands
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
+from typing import Dict
+
+from discord import WebhookMessage, app_commands
+from discord.ext import commands
+
+from logingateway import HuTaoLoginAPI
+from logingateway.model import Player, Ready, LoginMethod
+from UI_elements.others.ManageAccounts import return_accounts
 
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
-from utility.utils import error_embed, log, sentry_logging
+from utility.utils import default_embed, error_embed, log, sentry_logging
 
 load_dotenv()
 user_name = getpass.getuser()
@@ -64,7 +70,6 @@ class ShenheBot(commands.Bot):
             application_id=application_id,
             chunk_guilds_at_startup=False,
         )
-        self.tokenStore: Dict[str, WebhookMessage] = {}
 
     async def setup_hook(self) -> None:
         # cache
@@ -83,8 +88,16 @@ class ShenheBot(commands.Bot):
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
+        self.gateway = HuTaoLoginAPI(
+            client_id=os.getenv("HUTAO_CLIENT_ID"),
+            client_secret=os.getenv("HUTAO_CLIENT_SECRET"),
+        )
+        self.tokenStore: Dict[str, WebhookMessage] = {}
+        self.gateway.ready(self.gateway_connect)
+        self.gateway.player(self.gateway_player)
+
         c = await self.db.cursor()
-        cookies = []
+        cookie_list = []
         async with self.db.execute(
             "SELECT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
         ) as c:
@@ -96,11 +109,10 @@ class ShenheBot(commands.Bot):
             ltuid = tpl[1]
             ltoken = tpl[2]
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
-            if cookie in cookies:
+            if cookie in cookie_list:
                 continue
-            cookies.append(cookie)
-        self.genshin_client = genshin.Client()
-        self.genshin_client.set_cookies(cookies)
+            cookie_list.append(cookie)
+        self.genshin_client = genshin.Client(cookie_list)
 
         # load jishaku
         await self.load_extension("jishaku")
@@ -119,6 +131,60 @@ class ShenheBot(commands.Bot):
         await tree.set_translator(Translator())
         log.info(f"[System]on_ready: Logged in as {self.user}")
         log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
+        self.gateway.start()
+
+    async def gateway_connect(self, data: Ready):
+        log.info(f"[System][Hutao Login Gateway] Connected")
+
+    async def gateway_player(self, data: Player):
+        if not data.token in self.tokenStore:
+            return
+
+        ctx = self.tokenStore[data.token]
+        log.info(f"[System][Hutao Login Gateway] {data}")
+        uid = data.genshin.uid
+        user_id = data.genshin.userid
+        if data.genshin.login_type == LoginMethod.UID:
+            cookie = {
+                "ltuid": None,
+                "ltoken": None,
+                "cookie_token": None,
+            }
+        else:
+            cookie = {
+                "ltuid": data.genshin.ltuid,
+                "ltoken": data.genshin.ltoken,
+                "cookie_token": data.genshin.cookie_token,
+            }
+        china = 1 if str(uid)[0] in [1, 2, 5] else 0
+        await self.db.execute(
+            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
+            (
+                uid,
+                user_id,
+                cookie["ltuid"],
+                cookie["ltoken"],
+                cookie["cookie_token"],
+                china,
+                cookie["ltuid"],
+                cookie["ltoken"],
+                cookie["cookie_token"],
+                uid,
+                user_id,
+            ),
+        )
+        await self.db.commit()
+
+        await ctx["message"].edit(
+            embed=default_embed().set_author(
+                name=text_map.get(39, ctx["locale"]),
+                icon_url=ctx["author"].display_avatar.url,
+            ),
+            view=None,
+        )
+
+        await asyncio.sleep(1)
+        await return_accounts(ctx["interaction"])
 
     async def on_message(self, message: Message):
         if message.author.id == self.user.id:
@@ -145,7 +211,6 @@ class ShenheBot(commands.Bot):
         await self.main_db.close()
         await self.backup_db.close()
         await self.session.close()
-        await self.close()
 
 
 sentry_sdk.init(

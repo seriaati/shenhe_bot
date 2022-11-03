@@ -2,17 +2,17 @@ import asyncio
 from typing import List
 
 import aiosqlite
-from apps.genshin.utils import get_uid_region
+from discord import ButtonStyle, Interaction, Locale, SelectOption
+from discord.errors import InteractionResponded
+from discord.ui import Button, Select, TextInput
+
 import config
+from apps.genshin.utils import get_uid_region
+from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
-from discord import ButtonStyle, Interaction, Locale, SelectOption, TextStyle
-from discord.errors import InteractionResponded, NotFound
-from discord.ui import Button, Select, TextInput
-from utility.utils import default_embed, error_embed
-import genshin
-from apps.genshin.genshin_app import GenshinApp
+from utility.utils import default_embed
 
 
 class View(BaseView):
@@ -41,26 +41,52 @@ class AddAccount(Button):
 async def add_account_callback(view: View, i: Interaction):
     view: View
     locale = view.locale
+    await i.response.defer()
     view.clear_items()
     view.add_item(GOBack())
-    view.add_item(AddUID(locale))
-    view.add_item(AddCookie(locale))
+    view.add_item(GenerateLink(locale))
     embed = default_embed(message=text_map.get(563, locale)).set_author(
-        name=text_map.get(562, locale), icon_url=i.user.display_avatar.url
+        name=text_map.get(556, locale), icon_url=i.user.display_avatar.url
     )
-    await i.response.edit_message(embed=embed, view=view)
+    await i.edit_original_response(embed=embed, view=view)
 
 
-class AddUID(Button):
+class GenerateLink(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(
-            emoji="<:uid_add:1018777895663063040>",
-            label=text_map.get(564, locale),
+            emoji="<:song_link:1021667672225763419>",
+            label=text_map.get(401, locale),
             style=ButtonStyle.blurple,
         )
 
     async def callback(self, i: Interaction):
-        await i.response.send_modal(AddUIDModal(self.view.locale))
+        self.view: View
+        locale = self.view.locale
+        embed = default_embed().set_author(
+            name=text_map.get(402, locale), icon_url="https://i.imgur.com/V76M9Wa.gif"
+        )
+        self.disabled = True
+        await i.response.edit_message(embed=embed, view=self.view)
+        url, token = i.client.gateway.generate_login_url(
+            user_id=str(i.user.id),
+            guild_id=str(i.guild_id),
+            channel_id=str(i.channel_id),
+            language=to_hutao_login_lang(locale),
+        )
+        embed = default_embed().set_author(
+            name=text_map.get(400, locale), icon_url="https://i.imgur.com/V76M9Wa.gif"
+        )
+        await asyncio.sleep(1)
+        self.view.clear_items()
+        self.view.add_item(GOBack(layer=2, blurple=True))
+        self.view.add_item(Button(label=text_map.get(670, locale), url=url))
+        message = await i.edit_original_response(embed=embed, view=self.view)
+        i.client.tokenStore[token] = {
+            "message": message,
+            "locale": self.view.locale,
+            "interaction": i,
+            "author": i.user,
+        }
 
 
 class ChangeNickname(Button):
@@ -105,200 +131,6 @@ class NicknameModal(BaseModal):
         )
         await i.client.db.commit()
         await return_accounts(i)
-
-
-class AddUIDModal(BaseModal):
-    uid = TextInput(label="UID", placeholder="Put your UID here", min_length=9, max_length=9)
-
-    def __init__(self, locale: Locale | str) -> None:
-        super().__init__(title=text_map.get(564, locale), timeout=config.mid_timeout)
-        self.locale = locale
-        self.uid.placeholder = text_map.get(566, locale)
-
-    async def on_submit(self, i: Interaction) -> None:
-        view = View(self.locale, [])
-        view.clear_items()
-        view.add_item(GOBack())
-        view.add_item(AddUID(self.locale))
-        view.add_item(AddCookie(self.locale))
-        for item in view.children:
-            item.disabled = True
-        await i.response.edit_message(
-            embed=default_embed(
-                message="<a:LOADER:982128111904776242> "
-                + text_map.get(578, self.locale)
-            ).set_author(
-                name=text_map.get(576, self.locale), icon_url=i.user.display_avatar.url
-            ),
-            view=view,
-        )
-        view.message = await i.original_response()
-
-        try:
-            if not self.uid.value.isdigit():
-                raise ValueError
-            if int(self.uid.value[0]) not in [0, 1, 2, 5, 6, 7, 8, 9]:
-                raise ValueError
-            if len(self.uid.value) != 9:
-                raise ValueError
-            client = i.client.genshin_client
-            try:
-                await client.get_partial_genshin_user(self.uid.value)
-            except genshin.errors.AccountNotFound:
-                raise ValueError
-            except:
-                pass
-        except ValueError:
-            await i.edit_original_response(
-                embed=error_embed()
-                .set_author(
-                    name=f"{text_map.get(286, self.locale)}: {self.uid.value}",
-                    icon_url=i.user.display_avatar.url,
-                )
-                .set_footer(text=text_map.get(567, self.locale)),
-            )
-            await asyncio.sleep(2)
-            return await return_accounts(i)
-
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "INSERT INTO user_accounts (uid, user_id) VALUES (?, ?) ON CONFLICT (uid, user_id) DO NOTHING",
-            (self.uid.value, i.user.id),
-        )
-        await i.client.db.commit()
-
-        await i.edit_original_response(
-            embed=default_embed(message=self.uid.value).set_author(
-                name=text_map.get(568, self.locale),
-                icon_url=i.user.display_avatar.url,
-            )
-        )
-        await asyncio.sleep(2)
-        await return_accounts(i)
-
-
-class AddCookie(Button):
-    def __init__(self, locale: Locale | str):
-        super().__init__(
-            emoji="<:cookie_add:1018776813922693120>",
-            label=text_map.get(565, locale),
-            style=ButtonStyle.blurple,
-        )
-
-    async def callback(self, i: Interaction):
-        await add_cookie_callback(self.view, i)
-
-
-async def add_cookie_callback(view: View, i: Interaction):
-    locale = view.locale
-    embed = default_embed(
-        text_map.get(137, locale),
-        text_map.get(138, locale),
-    )
-    embed.set_image(url="https://imgur.com/pc8eYGU.gif")
-    code_msg = f"script:d=document.cookie; c=d.includes('account_id') || alert('{text_map.get(139, locale)}'); c && document.write(d)"
-    code_embed = default_embed(message=code_msg)
-    view.clear_items()
-    view.add_item(GOBack(2))
-    view.add_item(SubmitCookie(locale))
-    await i.response.edit_message(embed=embed, view=view)
-    await i.followup.send(embed=code_embed, ephemeral=True)
-
-
-class SubmitCookie(Button):
-    def __init__(self, locale: Locale | str):
-        super().__init__(
-            emoji="<:submit_cookie:1019068169882718258>",
-            label=text_map.get(413, locale),
-            style=ButtonStyle.blurple,
-        )
-
-    async def callback(self, i: Interaction):
-        try:
-            await i.response.send_modal(SubmitCookieModal(self.view.locale))
-        except NotFound as e:
-            if e.code == 10062:
-                pass
-
-
-class SubmitCookieModal(BaseModal):
-    cookie = TextInput(label="Cookie", style=TextStyle.long)
-
-    def __init__(self, locale: Locale | str) -> None:
-        super().__init__(
-            title="CookieModal", timeout=config.mid_timeout, custom_id="cookie_modal"
-        )
-        self.locale = locale
-        self.title = text_map.get(132, locale)
-        self.cookie.placeholder = text_map.get(133, locale)
-
-    async def on_submit(self, i: Interaction) -> None:
-        view = View(self.locale, [])
-        view.clear_items()
-        view.add_item(GOBack())
-        view.add_item(AddUID(self.locale))
-        view.add_item(AddCookie(self.locale))
-        for item in view.children:
-            item.disabled = True
-        await i.response.edit_message(
-            embed=default_embed(
-                message="<a:LOADER:982128111904776242> "
-                + text_map.get(578, self.locale)
-            ).set_author(
-                name=text_map.get(577, self.locale), icon_url=i.user.display_avatar.url
-            ),
-            view=view,
-        )
-        view.message = await i.original_response()
-        genshin_app = GenshinApp(i.client.db, i.client)
-        result, success = await genshin_app.set_cookie(
-            i.user.id, self.cookie.value, i.locale
-        )
-
-        if not success:
-            result.description = text_map.get(567, self.locale)
-            await i.edit_original_response(embed=result)
-            await asyncio.sleep(2)
-            return await return_accounts(i)
-        if isinstance(result, list):  # 有多個帳號
-            view = View(self.locale, [])
-            view.clear_items()
-            view.add_item(UIDSelect(self.locale, result, self.cookie.value))
-            view.add_item(GOBack(3))
-            embed = default_embed().set_author(
-                name=text_map.get(570, self.locale), icon_url=i.user.display_avatar.url
-            )
-            view.message=  await i.edit_original_response(embed=embed, view=view)
-        else:  # 一個帳號而已
-            await i.edit_original_response(embed=result)
-            await asyncio.sleep(2)
-            await return_accounts(i)
-
-
-class UIDSelect(Select):
-    def __init__(
-        self, locale: Locale | str, select_options: list[SelectOption], cookie: str
-    ) -> None:
-        super().__init__(
-            placeholder=text_map.get(136, locale),
-            options=select_options,
-        )
-        self.cookie = cookie
-
-    async def callback(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
-        genshin_app = GenshinApp(i.client.db, i.client)
-        result = (
-            await genshin_app.set_cookie(
-                i.user.id, self.cookie, i.locale, int(self.values[0])
-            )
-        )[0]
-        for item in self.view.children:
-            item.disabled = True
-        await i.edit_original_response(embed=result, view=self.view)
-        await asyncio.sleep(2)
-        await return_accounts(i)
-
 
 class RemoveAccount(Button):
     def __init__(self, locale: Locale | str, disabled: bool):
@@ -378,15 +210,16 @@ class SwitchAccount(Select):
 
 
 class GOBack(Button):
-    def __init__(self, layer: int = 1):
-        super().__init__(emoji="<:left:982588994778972171>")
+    def __init__(self, layer: int = 1, blurple: bool = False):
+        super().__init__(
+            emoji="<:left:982588994778972171>",
+            style=ButtonStyle.blurple if blurple else ButtonStyle.gray,
+        )
         self.layer = layer
 
     async def callback(self, i: Interaction):
         if self.layer == 2:
             await add_account_callback(self.view, i)
-        elif self.layer == 3:
-            await add_cookie_callback(self.view, i)
         else:
             await return_accounts(i)
 

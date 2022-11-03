@@ -94,7 +94,6 @@ class Schedule(commands.Cog):
         status_list = [
             "/help",
             "shenhe.bot.nu",
-            "https://discord.gg/b22kMKuwbS",
         ]
         await self.bot.change_presence(
             activity=Game(
