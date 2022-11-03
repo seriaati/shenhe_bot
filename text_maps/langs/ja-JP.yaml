@@ -439,9 +439,9 @@
   このコマンドを使用すると、キャラクターは自動的にキャッシュされます。
   ゲーム内でショーケースからキャラクターを消しても、ここに表示されます。
   ショーケースを更新するには、キャラクターを元に戻し、再度このコマンドを使用してください。理論的にはすべてのキャラクターを/profileに登録した上でダメージ計算機で使用することができます。
-'400': ''
-'401': ''
-'402': ''
+'400': Link generated, awaiting response from the login gateway...
+'401': Generate login link
+'402': Generating login link...
 '403': |-
   1. パソコンで原神を開く（複数のアカウントを使用している場合は、ゲームを再起動してください。）
   2. その後、祈願履歴を開き、読み込まれるのを待ちます。
@@ -622,14 +622,11 @@
 '561': アカウントが削除されました。
 '562': 追加するアカウントの種類を選択してください
 '563': |-
-  • </profile:1006486283805265953>, </area:1006486283725590531>, </stats:1006486283725590530> など、一部のコマンドはあなたの UID を必要とします。
-  • </check:1020580644365021247>, </abyss:1020580644365021253>, </diary:1020580644365021252> などのコマンドは、Cookieが必要です。
-
-  • UIDを追加するには、あなたのUIDを入力します。
-  • Cookieを取得するには、約30秒の登録プロセスが必要です。
-
-  • Cookieはあなたのアカウントを識別するために使われる固有の識別子です。
-  • </accounts:1020580644478275615>を使用して、いつでもアカウントデータを削除することができます。
+  • Click on the button below to generate a login link
+  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only require your UID
+  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
+  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+  • You can always remove your account data by using </accounts:1020188057628065866>
 '564': UIDを追加
 '565': Cookieを追加
 '566': ここにあなたのUIDを入れてください
@@ -757,3 +754,4 @@
 '667': 先月と比較して
 '668': 原石
 '669': モラ
+'670': Go to login page
