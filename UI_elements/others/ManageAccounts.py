@@ -74,7 +74,7 @@ class GenerateLink(Button):
             language=to_hutao_login_lang(locale),
         )
         embed = default_embed().set_author(
-            name=text_map.get(400, locale), icon_url="https://i.imgur.com/V76M9Wa.gif"
+            name=text_map.get(400, locale), icon_url=i.user.display_avatar.url
         )
         await asyncio.sleep(1)
         self.view.clear_items()
@@ -131,6 +131,7 @@ class NicknameModal(BaseModal):
         )
         await i.client.db.commit()
         await return_accounts(i)
+
 
 class RemoveAccount(Button):
     def __init__(self, locale: Locale | str, disabled: bool):

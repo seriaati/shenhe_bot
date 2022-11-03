@@ -443,7 +443,7 @@
   they will still appear here. To update the showcase, place the characters back
   and use this command again. Theoretically, you can have all of your characters
   in your /profile and use them in the damage calculator.
-'400': Link generated, awaiting response from the login gateway...
+'400': Link generated, click on the button below to login
 '401': Generate login link
 '402': Generating login link...
 '403': |-
@@ -761,3 +761,4 @@
 '668': Primogems
 '669': Mora
 '670': Go to login page
+'671': Wish History
