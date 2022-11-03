@@ -443,9 +443,9 @@
   they will still appear here. To update the showcase, place the characters back
   and use this command again. Theoretically, you can have all of your characters
   in your /profile and use them in the damage calculator.
-'400': ''
-'401': ''
-'402': ''
+'400': Link generated, awaiting response from the login gateway...
+'401': Generate login link
+'402': Generating login link...
 '403': |-
   1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
   2. Then open the wish history in the game and wait it to load
@@ -625,13 +625,10 @@
 '561': Accounts removed
 '562': Choose the account type you want to add
 '563': |-
-  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only requires your UID
-  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> requires your Cookie
-
-  • To add your UID, you only have to enter your UID
-  • To obtain your Cookie, you will go through a registration process that takes around 30 seconds
-
-  • Cookie is a unique identifier that is used to identify your account, note that I won't have access to your Genshin account by having your Cookie
+  • Click on the button below to generate a login link
+  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only require your UID
+  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
+  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
   • You can always remove your account data by using </accounts:1020188057628065866>
 '564': Add UID
 '565': Add Cookie
@@ -763,3 +760,4 @@
 '667': Compared to last month
 '668': Primogems
 '669': Mora
+'670': Go to login page
