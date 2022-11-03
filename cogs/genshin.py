@@ -611,7 +611,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         overview.set_author(
             name=data.player.nickname, icon_url=data.player.icon.url.url
         )
-        overview.set_footer(text=text_map.get(399, i.locale, user_locale))
         embeds["0"] = overview
         options = [
             SelectOption(

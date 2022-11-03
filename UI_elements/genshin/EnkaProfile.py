@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 import aiosqlite
 import config
+import asset
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
@@ -41,18 +42,35 @@ class View(BaseView):
         self.eng_data = eng_data
         self.db = db
         self.characters = characters
+        self.locale = locale or user_locale
         self.add_item(ViewArtifacts(text_map.get(92, locale, user_locale)))
         self.add_item(CalculateDamageButton(text_map.get(348, locale, user_locale)))
+        self.add_item(InfoButton())
         options = list(divide_chunks(self.character_options, 25))
         count = 0
         for option in options:
             character_num = len([o for o in option if o.value != 0])
             self.add_item(
-                PageSelect(option, text_map.get(157, locale, user_locale)+f" ({count+1}~{count+character_num})")
+                PageSelect(
+                    option,
+                    text_map.get(157, locale, user_locale)
+                    + f" ({count+1}~{count+character_num})",
+                )
             )
             count += character_num
         self.children[0].disabled = True
         self.children[1].disabled = True
+
+
+class InfoButton(Button):
+    def __init__(self):
+        super().__init__(style=ButtonStyle.secondary, emoji=asset.info_emoji)
+
+    async def callback(self, i: Interaction):
+        await i.response.send_message(
+            embed=default_embed(message=text_map.get(399, self.view.locale)),
+            ephemeral=True,
+        )
 
 
 class PageSelect(Select):

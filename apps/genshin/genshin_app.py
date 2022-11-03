@@ -86,101 +86,6 @@ class GenshinApp:
         self.db = db
         self.bot = bot
 
-    async def set_cookie(
-        self, user_id: int, cookie: str, locale: Locale, uid: int = None
-    ):
-        log.info(f"[Set Cookie][Start][{user_id}]: [Cookie]{cookie} [UID]{uid}")
-        user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-        user_locale = await get_user_locale(user_id, self.db)
-        user_id = int(user_id)
-        try:
-            try:
-                cookie = dict(item.split("=") for item in cookie.split("; "))
-            except (KeyError, ValueError):
-                raise CookieInvalid
-            except Exception as e:
-                log.warning(
-                    f"[Set Cookie][Failed][{user_id}]: [type]{type(e)} [error]{e}"
-                )
-                sentry_sdk.capture_exception(e)
-                embed = error_embed().set_author(
-                    name=text_map.get(135, locale, user_locale),
-                    icon_url=user.display_avatar.url,
-                )
-                return embed, False
-            required_keys = ["ltuid", "ltoken", "cookie_token"]
-            for key in required_keys:
-                if key not in cookie:
-                    raise CookieInvalid
-
-            client = genshin.Client()
-            user_locale = user_locale or locale
-            client.lang = to_genshin_py(user_locale)
-            cookies = {"ltuid": int(cookie["ltuid"]), "ltoken": cookie["ltoken"]}
-            client.set_cookies(cookies)
-            if uid is None:
-                try:
-                    accounts = await client.get_game_accounts()
-                except genshin.InvalidCookies:
-                    try:
-                        client.region = genshin.Region.CHINESE
-                        accounts = await client.get_game_accounts()
-                    except genshin.errors.InvalidCookies:
-                        raise CookieInvalid
-                if len(accounts) == 0:
-                    result = error_embed(
-                        message=text_map.get(37, locale, user_locale)
-                    ).set_author(
-                        name=text_map.get(38, locale, user_locale),
-                        icon_url=user.display_avatar.url,
-                    )
-                    return result, False
-                account_options: List[SelectOption] = []
-                for account in accounts:
-                    if account.game is not genshin.Game.GENSHIN:
-                        continue
-                    account_options.append(
-                        SelectOption(
-                            label=f"{account.uid} | Lvl. {account.level} | {account.nickname}",
-                            value=account.uid,
-                        )
-                    )
-                if len(account_options) == 1:
-                    uid = account_options[0].value
-                else:
-                    return account_options, True
-        except CookieInvalid:
-            result = error_embed().set_author(
-                name=text_map.get(36, locale, user_locale),
-                icon_url=user.display_avatar.url,
-            )
-            return result, False
-        china = 1 if str(uid)[0] in [1, 2, 5] else 0
-        c = await self.db.cursor()
-        await c.execute(
-            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
-            (
-                uid,
-                user_id,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                china,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                uid,
-                user_id,
-            ),
-        )
-        result = default_embed().set_author(
-            name=text_map.get(39, locale, user_locale),
-            icon_url=user.display_avatar.url,
-        )
-        await self.db.commit()
-        log.info(f"[Set Cookie][Success][{user_id}]")
-        return result, True
-
     @genshin_error_handler
     async def claim_daily_reward(self, user_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
@@ -352,7 +257,6 @@ class GenshinApp:
             name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(month, locale, shenhe_user.user_locale)}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
-        embed.set_footer(text=text_map.get(398, locale, shenhe_user.user_locale))
         result["embed"] = embed
         result["fp"] = fp
         return result, True

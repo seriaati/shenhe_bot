@@ -1,13 +1,16 @@
 from datetime import datetime
-from UI_base_models import BaseView
-from discord import Interaction, Locale, User, File
-from discord.ui import Button, Select
-from apps.text_map.text_map_app import text_map
-from apps.genshin.genshin_app import GenshinApp
-from apps.text_map.utils import get_month_name, get_user_locale
-import config
-from utility.utils import default_embed, get_user_timezone
+
 import pytz
+from discord import File, Interaction, Locale, User
+from discord.ui import Button, Select
+
+import asset
+import config
+from apps.genshin.genshin_app import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_month_name, get_user_locale
+from UI_base_models import BaseView
+from utility.utils import default_embed, get_user_timezone
 
 
 class View(BaseView):
@@ -29,6 +32,14 @@ class View(BaseView):
         self.add_item(MonthSelect(text_map.get(424, locale, user_locale), user_locale or locale, current_month))
         self.add_item(Primo(text_map.get(70, locale, user_locale)))
         self.add_item(Mora(text_map.get(72, locale, user_locale)))
+        self.add_item(InfoButton())
+
+class InfoButton(Button):
+    def __init__(self):
+        super().__init__(emoji=asset.info_emoji)
+        
+    async def callback(self, i: Interaction):
+        await i.response.send_message(embed=default_embed(message=text_map.get(398, self.view.locale, self.view.user_locale)), ephemeral=True)
 
 class MonthSelect(Select):
     def __init__(self, placeholder: str, locale: Locale | str, current_month: int):
