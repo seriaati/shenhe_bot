@@ -56,7 +56,7 @@ class CharacterSelect(Select):
             if has_thoughts and index + 1 == len(builds):
                 options.append(SelectOption(label=f"{build[1]}", value=index))
             else:
-                weapon_id = text_map.get_weapon_id_with_name(build[1])
+                weapon_id = text_map.get_id_from_name(build[1])
                 options.append(
                     SelectOption(
                         label=f"{text_map.get(162, i.locale, user_locale)} {index+1}",
@@ -113,7 +113,7 @@ async def element_button_callback(i: Interaction, element: str, view: View):
     placeholder = text_map.get(157, i.locale, user_locale)
     user_locale = await get_user_locale(i.user.id, view.db)
     for character_name, character_builds in builds.items():
-        character_id = text_map.get_character_id_with_name(character_name)
+        character_id = text_map.get_id_from_name(character_name)
         localized_character_name = text_map.get_character_name(
             character_id, i.locale, user_locale
         )
