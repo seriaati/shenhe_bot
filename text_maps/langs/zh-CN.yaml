@@ -368,7 +368,7 @@
 '352': 祈愿记录总结
 '353': 导入祈愿记录
 '354': 请贴上复制的连结
-'355': Please wait while Shenhe is processing your wish history...
+'355': 请稍等，申鹤正在处理您的祈愿纪录...
 '356': 祈愿记录导入成功
 '357': 坎蒂丝 Q
 '358': |-
@@ -399,7 +399,7 @@
 '365': 选择你的平台
 '366': ""
 '367': ""
-'368': Use </wish import:1000187021635104890> to import your wish history
+'368': 使用 </wish import:1000187021635104890> 来导入你的祈愿纪录
 '369': 祈愿记录
 '370': 你抽到的最后一个五星角色是一个常驻角色
 '371': 你抽到的最后一个五星角色是一个 Up 角色
@@ -443,7 +443,7 @@
   就算你在游戏中将角色从展示柜中拿下，他们仍然会在这里出现。
   如欲更新他们的资料，请将角色重新放回展示柜后使用一次这个指令。
   理论上，你可以将游戏中所有角色放到 /profile 里，并在伤害计算器中使用他们。
-'400': Link generated, click on the button below to login
+'400': 连结已生成，点击下方的按钮开始登入
 '401': 生成登入连结
 '402': 正在生成登入连结...
 '403': |-
@@ -757,16 +757,16 @@
 '668': 原石
 '669': 摩拉
 '670': 前往登入页面
-'671': Wish History
-'672': Please add an account with UID before using this command
-'673': You currently have **{a}** wishes stored in Shenhe's database
-'674': Please link a UID before importing new wishes
-'675': Newest wish
-'676': Oldest wish
-'677': Link UID
-'678': Import
-'679': Export
-'680': Clear wish history
+'671': 祈愿记录
+'672': 请在使用这个指令前新增一个带有 UID 的帐户
+'673': 你目前共有 **{a}** 笔祈愿纪录资料储存在申鹤的资料库中
+'674': 请在导入新的祈愿纪录前连结一个 UID
+'675': 最新的祈愿纪录
+'676': 最早的祈愿纪录
+'677': 连结 UID
+'678': 导入
+'679': 导出
+'680': 清除祈愿纪录
 '681': |-
   You can now have separate wish history for each account you have registered.
   For past wishes, you have to choose an account from below to link them to
