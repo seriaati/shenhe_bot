@@ -17,7 +17,7 @@ class ShenheUser(BaseModel):
 
 class DamageResult(BaseModel):
     result_embed: discord.Embed
-    cond_embed: discord.Embed | None
+    cond_embed: Optional[discord.Embed] = None
     
     class Config:
         arbitrary_types_allowed = True
@@ -38,3 +38,18 @@ class WishData(BaseModel):
     four_star: int
     five_star: int
     recents: List[Dict[str, str|int]]
+
+    
+class Wish(BaseModel):
+    time: str
+    rarity: int
+    name: str
+
+class WishInfo(BaseModel):
+    total: int
+    newest_wish: Wish
+    oldest_wish: Wish
+    character_banner_num: int
+    permanent_banner_num: int
+    weapon_banner_num: int
+    novice_banner_num: int
