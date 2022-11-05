@@ -1,72 +1,137 @@
-# Your account and Shenhe
+<a name="readme-top"></a>
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
 
-There are two major ways of linking your Genshin Impact account: UID and Cookie (Using script or email & password)
 
-### 🔢 UID
 
-This is the safest login method, the only thing you are giving to Shenhe is your UID in Genshin Impact, and there's nothing else. However, the commands you can use will be limited, this is why most players move on to the second login method: Cookie.\
-Noticeably, with the power of [Enka](https://enka.shinshin.moe/), you get to use many useful features with just your UID.
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/seriaati/shenhe_bot">
+    <img src="https://i.imgur.com/bwWfOJH.png" alt="Logo" width="400" height="400">
+  </a>
 
-### 🍪 Cookie
+<h3 align="center">申鶴</h3>
 
-#### What is a Cookie?
+  <p align="center">
+    一個功能強大的原神 discord 機器人
+    <br />
+    <a href="https://seriaati.github.io/shenhe_website/">官網</a>
+    ·
+    <a href="https://github.com/seriaati/shenhe_bot/issues">回報錯誤</a>
+    ·
+    <a href="https://github.com/seriaati/shenhe_bot/issues">功能請求</a>
+    ·
+    <a href="https://github.com/seriaati/shenhe_bot/blob/main/en_README.md">English README</a> <br> <br> <br>
+    <a href="https://bit.ly/shenhe_bot">
+      <img src="https://i.imgur.com/QfGbpIU.png" alt="Invite Banner" width="367" height="127">
+    </a>
+  </p>
+</div>
 
-When you first login into the Hoyolab website with your account, a text file called "Cookie" is created and stored on your computer.\
-Have you ever wondered why the next time you go to the Hoyolab website, you don't need to enter your email and password again?\
-It's because your browser uses the Cookie that was stored to identify you as the owner of the Hoyolab account.\
-The Cookie is an encrypted string of text that temporarily stores your account's information so that you don't have to log in with your email and password every single time.\
-This feature is convenient, but of course, it comes with security issues.\
-In other words, anyone that has access to your account's Cookie will be treated as the owner of your account.\
-And yes! Shenhe asks you to give her your Cookie because data like Spiral Abyss and real-time notes are only visible to the owner of the Hoyolab account, this is why you can't use these commands without linking your account to a Cookie.
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>目錄</summary>
+  <ol>
+    <li><a href="#功能亮點">功能亮點</a></li>
+    <li><a href="#參與協作">參與協作</a></li>
+    <ul>
+        <li><a href="#程式方面">程式方面</a></li>
+        <li><a href="#翻譯方面">翻譯方面</a></li>
+        <li><a href="#一般/其他">一般/其他</a></li>
+     </ul>
+    <li><a href="#使用許可">使用許可</a></li>
+    <li><a href="#聯絡方式">聯絡方式</a></li>
+    <li><a href="#致謝">致謝</a></li>
+  </ol>
+</details>
 
-#### Can I hack your account?
+<!-- USAGE EXAMPLES -->
+## 功能亮點
+- 樹脂提醒
+- 天賦提醒
+- 每日可刷素材
+- 傷害計算
+- 每日自動 hoyolab 網頁簽到
+- 代辦清單
+- 養成計算機
+- 傷害計算器
+- 角色組態
+- 角色展示
+- 聖遺物評分計算
+- 詳情可參閱[網站](http://shenhe.bot.nu/)
 
-NO! Even though I have your Cookie, that doesn't mean I can do anything I want with your account.
+<p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
-1. I can't change your password because that requires confirmation with your email. I have no idea what your email address is, not to mention its password.
-2. Two-factor authentication exists, which makes it completely impossible to steal your account if you have it set up.
 
-### ✉️ Email and password
+<!-- CONTRIBUTING -->
+## 參與協作
+任何協作方式都是值得欣賞的！以下是一些協作的方式：
 
-Normally, you obtain your Cookie by typing a javascript in the address bar.\
-However, some users struggle with that approach.\
-So Shenhe partners with the [Hutao Login Gateway Service](https://github.com/Hu-tao-bot/login-service-library-python) that allows you to obtain your account's Cookie with the method you are familiar with - Email and password.
+### 程式方面
+1. 創建一個 fork
+2. 創建一個 branch (`git checkout -b feature/AmazingFeature`)
+3. Commit 你所作的變更 (`git commit -m 'Add some AmazingFeature'`)
+4. Push 到 剛才的 branch 裡 (`git push origin feature/AmazingFeature`)
+5. 開一個 pull request
 
-#### What's going on here?
+### 翻譯方面
+申鶴已上架至 [crowdin](https://crowdin.com/project/shenhe-bot)
 
-You enter your email and password -> complete the CAPTCHA test -> the HLGS will send an API request to Hoyoverse with your email and password encrypted -> Hoyoverse responds the request with your account's Cookie\
-Neither me and [the author of HLGS](https://github.com/mrwan200) store your Hoyoverse email and password.\
-We're just trying to get your account's Cookie, that's all.\
-If you don't trust us, DON'T use this method. I personally strongly recommend you to use the script approach.\
-Even if we attempt to login to Genshin Impact with your email and password, we still need an email verification from you. I have no idea what your email address is, not to mention its password.
+### 一般/其他
+回報錯誤以及功能請求皆可至申鶴的 [issue 頁面](https://github.com/seriaati/shenhe_bot/issues)
 
-### 🤝 Trust between you and me
+<p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
-I can do the following things, but I swear I won't do them:
 
-1. Create community posts with your Hoyolab account
-2. Share your Cookie with other people (But remember, nobody can hack your account with only the Cookie)
 
-### ⛔ Can your account get banned?
+<!-- LICENSE -->
+## 使用許可
 
-1. There have been 0 record of Hoyoverse banning accounts for using their API (with Cookies)
-2. Large Genshin Discord bots like Genshin Wizard have millions of users using the same API
+根據 MIT 許可分發. 更多資訊請參閱 `LICENSE.md`
 
-### 🛡️ Is your data secure?
+<p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
-Your Cookie is stored in Shenhe's database, which locates on Amazon's AWS server.\
-Amazon is a pretty huge company, that's all I can say.
 
-### ⚠️ Use at your own risk
 
-Now that you have been informed of all the things above, it's still up to you to decide whether you want to link your account with Cookie or not.\
-I will try my best to keep your account data secure, but I can't guarantee that something unexpected won't happen.\
-Remember, I am not responsible for any account-related issues.\
-Lastly, you can always remove your account data at any time you want using the /accounts command.\
-Additionally, your Cookie will expire/become invalid once you change your account's password.
+<!-- CONTACT -->
+## 聯絡方式
 
-### 📖 Source Code
+discord: [seria#5334](http://discord.com/users/410036441129943050)
 
-Shenhe: [https://github.com/seriaati/shenhe\_bot](https://github.com/seriaati/shenhe\_bot)
+<p align="right">(<a href="#readme-top">回到最上面</a>)</p>
 
-Hutao Login Gateway: [https://github.com/Hu-tao-bot/login-service-library-python](https://github.com/Hu-tao-bot/login-service-library-python)
+
+
+<!-- ACKNOWLEDGMENTS -->
+## 致謝
+感謝這些大佬們！如果我遺漏了你，請務必告訴我
+
+* [KT 的原神小幫手](https://github.com/KT-Yeh/Genshin-Discord-Bot)
+* [genshin.py](https://github.com/thesadru/genshin.py)
+* [discord.py](https://github.com/Rapptz/discord.py)
+* [翻頁](https://github.com/soosBot-com/Pagination)
+* [祈願分析](https://github.com/OneBST/GGanalysis)
+* [enkanetwork.py](https://github.com/mrwan200/EnkaNetwork.py)
+
+<p align="right">(<a href="#readme-top">回到最上面</a>)</p>
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/seriaati/shenhe_bot.svg?style=for-the-badge
+[contributors-url]: https://github.com/seriaati/shenhe_bot/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/seriaati/shenhe_bot.svg?style=for-the-badge
+[forks-url]: https://github.com/seriaati/shenhe_bot/network/members
+[stars-shield]: https://img.shields.io/github/stars/seriaati/shenhe_bot.svg?style=for-the-badge
+[stars-url]: https://github.com/seriaati/shenhe_bot/stargazers
+[issues-shield]: https://img.shields.io/github/issues/seriaati/shenhe_bot.svg?style=for-the-badge
+[issues-url]: https://github.com/seriaati/shenhe_bot/issues
+[license-shield]: https://img.shields.io/github/license/seriaati/shenhe_bot.svg?style=for-the-badge
+[license-url]: https://github.com/seriaati/shenhe_bot/blob/master/LICENSE.md
+[invite-image]: https://i.imgur.com/QfGbpIU.png
+[invite-url]: https://bit.ly/shenhe_bot
