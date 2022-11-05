@@ -44,9 +44,9 @@ import_options = {
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale, user_locale: str | None):
+    def __init__(self, locale: Locale):
         super().__init__(timeout=config.short_timeout)
-        self.locale = user_locale or locale
+        self.locale = locale
 
     @button(emoji="<:windows_logo:1024250977731223552>")
     async def pc(self, i: Interaction, button: Button):
@@ -57,24 +57,30 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
+        embed = default_embed().set_author(
+            name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
+        )
         self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
-        await i.response.edit_message(view=self)
+        await i.response.edit_message(embed=embed, view=self)
 
-    @button(emoji="<:android_logo:1024250973222350919>")
-    async def android(self, i: Interaction, button: Button):
-        self.clear_items()
-        options = []
-        for option in list(import_options.keys()):
-            if "ANDROID" in option:
-                options.append(
-                    SelectOption(label=option, value=option, emoji=button.emoji)
-                )
-        self.add_item(ChooseMethod(options, self.locale))
-        self.add_item(GOBack())
-        self.add_item(SubmitLink(self.locale))
-        await i.response.edit_message(view=self)
+    # @button(emoji="<:android_logo:1024250973222350919>")
+    # async def android(self, i: Interaction, button: Button):
+    #     self.clear_items()
+    #     options = []
+    #     for option in list(import_options.keys()):
+    #         if "ANDROID" in option:
+    #             options.append(
+    #                 SelectOption(label=option, value=option, emoji=button.emoji)
+    #             )
+    #     embed = default_embed().set_author(
+    #         name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
+    #     )
+    #     self.add_item(ChooseMethod(options, self.locale))
+    #     self.add_item(GOBack())
+    #     self.add_item(SubmitLink(self.locale))
+    #     await i.response.edit_message(view=self, embed=embed)
 
     @button(emoji="<:apple_logo:1024250975390814269> ")
     async def ios(self, i: Interaction, button: Button):
@@ -85,10 +91,13 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
+        embed = default_embed().set_author(
+            name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
+        )
         self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
-        await i.response.edit_message(view=self)
+        await i.response.edit_message(view=self,embed=embed)
 
 
 class ChooseMethod(Select):
@@ -106,7 +115,10 @@ class ChooseMethod(Select):
         embeds.append(embed)
         if option["link"] != "":
             video_embed = default_embed(message=option["link"])
-            video_embed.set_author(name=text_map.get(364, self.locale), icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png")
+            video_embed.set_author(
+                name=text_map.get(364, self.locale),
+                icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png",
+            )
             embeds.append(video_embed)
         await i.response.edit_message(embeds=embeds, view=self.view)
         if option["code"] != "":
@@ -133,11 +145,10 @@ class GOBack(Button):
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        view = View(i.locale, user_locale)
-        embed = default_embed(message=text_map.get(366, i.locale, user_locale))
+        view = View(self.view.locale)
+        embed = default_embed()
         embed.set_author(
             name=text_map.get(365, i.locale, user_locale),
             icon_url=i.user.display_avatar.url,
         )
-        await i.edit_original_response(embed=embed, view=view)
-        view.message = await i.original_response()
+        view.message = await i.edit_original_response(embed=embed, view=view)
