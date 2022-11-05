@@ -768,21 +768,21 @@
 '679': 导出
 '680': 清除祈愿纪录
 '681': |-
-  You can now have separate wish history for each account you have registered.
-  For past wishes, you have to choose an account from below to link them to
-'682': Select an account
-'683': No wish history found for this account
-'684': Shenhe
-'685': Select a method of importing wishes
-'686': Import your Genshin wish history from a file
+  你现在可以为你注册的每个帐户储存个别的祈愿纪录。
+  因此，你需要从下方选择一个帐户来将其与之前已导入的祈愿纪录绑定。
+'682': 选择一个帐户
+'683': 此帐户没有任何祈愿纪录
+'684': 申鶴
+'685': 选择导入祈愿纪录的方法
+'686': '从档案汇入祈愿纪录'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.txt` files exported from Shenhe
-'688': Are you sure?
+  你可以使用 </wish file-import:123123> 指令來從一個檔案導入祈願紀錄，目前僅支援申鶴導出的 `.txt` 檔案。
+'688': 你确定吗？
 '689': |-
-  • You are about to clear your wish history for this account, this action cannot be undone.
-  • It is recommended to export your wish history before clearing it.
-  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
-'690': Shenhe has found **{a}** wishes in this link/file
-'691': Confirm wish import
-'692': Import your Genshin wish history from a txt file exported by Shenhe
+  • 你即将清除这个帐户的所有祈愿纪录，此操作无法撤销。
+  • 建议你的清除祈愿纪录前先进行导出备份。
+  • 你可能有储存在申鹤，但已经不在游戏内的祈愿纪录，你将会永远失去那些祈愿纪录。
+'690': 申鹤在这个连结/档案中发现了 **{a}** 笔祈愿纪录资料
+'691': 确认祈愿纪录导入
+'692': 从申鹤导出的 txt 档案中导入你的祈愿纪录
+'693': Please check the file you have provided
