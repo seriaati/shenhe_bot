@@ -583,13 +583,13 @@ async def get_wish_history_embed(
 
 
 async def get_wish_info_embed(
-    i: discord.Interaction, locale: str, wish_info: WishInfo, import_command: bool = False
+    i: discord.Interaction, locale: str, wish_info: WishInfo, import_command: bool = False, linked: bool = False
 ) -> discord.Embed:
     embed = default_embed(
         message= text_map.get(673 if import_command else 690, locale).format(a=wish_info.total) 
     ).set_author(name=text_map.get(474 if import_command else 691, locale), icon_url=i.user.display_avatar.url)
     embed.add_field(
-        name="UID", value=await get_uid(i.user.id, i.client.db), inline=False
+        name="UID", value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.db)), inline=False
     )
     newest_wish = wish_info.newest_wish
     oldest_wish = wish_info.oldest_wish

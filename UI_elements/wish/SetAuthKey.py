@@ -393,21 +393,6 @@ class Modal(BaseModal):
 
 
 async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
-    # remove this block of code after update
-    async with i.client.db.execute(
-        "SELECT DISTINCT wish_name FROM wish_history WHERE item_id is NULL"
-    ) as c:
-        missing_ids = await c.fetchall()
-    for wish in missing_ids:
-        item_id = text_map.get_id_from_name(wish[0])
-        if item_id is not None:
-            await i.client.db.execute(
-                "UPDATE wish_history SET item_id = ? WHERE wish_name = ?",
-                (item_id,
-                wish[0],)
-            )
-    await i.client.db.commit()
-
     linked = True
     locale = await get_user_locale(i.user.id, i.client.db) or i.locale
     uid = await get_uid(i.user.id, i.client.db)
@@ -463,5 +448,5 @@ async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
         permanent_banner_num=permanent_banner,
         novice_banner_num=novice_banner,
     )
-    embed = await get_wish_info_embed(i, locale, wish_info, import_command=True)
+    embed = await get_wish_info_embed(i, locale, wish_info, import_command=True, linked=linked)
     return embed, linked, False
