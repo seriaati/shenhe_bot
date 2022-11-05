@@ -118,7 +118,7 @@ class TextMap():
     
     def get_artifact_name(self, artifact_id: int, locale: discord.Locale, user_locale: str = None):
         artifact_text = self.artifact.get(str(artifact_id))
-        if artifact_text == '':
+        if artifact_text is None:
             log.warning(f'[Exception][get_artifact_name][artifact_id not found]: [artifact_id]{artifact_id}')
             return artifact_id
         else:
