@@ -211,7 +211,6 @@ class ShenheBot(commands.Bot):
         await self.main_db.close()
         await self.backup_db.close()
         await self.session.close()
-        await self.close()
 
 
 sentry_sdk.init(
