@@ -367,7 +367,7 @@
 '352': Authkey URL
 '353': Importing wish history
 '354': Please paste the link here
-'355': Please wait while shenhe is processing your wish history
+'355': Please wait while Shenhe is processing your wish history...
 '356': Successfully imported wish history
 '357': Candace Q
 '358': |-
@@ -396,9 +396,9 @@
 '363': The link you have provided is invalid
 '364': Video Tutorial
 '365': Choose your platform
-'366': The language of your wish history is based on your current selected language, changing the language afterward will not affect previous records
-'367': No wish history data found
-'368': </wish import:1000187021635104890> to import your wish history
+'366': ""
+'367': ""
+'368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
 '370': The last 5-star character you pulled was a standard character
 '371': The last 5-star character you pulled was a banner character
@@ -762,3 +762,31 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
+'672': Please add an account with UID before using this command
+'673': You currently have **{a}** wishes stored in Shenhe's database
+'674': Please link a UID before importing new wishes
+'675': Newest wish
+'676': Oldest wish
+'677': Link UID
+'678': Import
+'679': Export
+'680': Clear wish history
+'681': |- 
+  You can now have separate wish history for each account you have registered.
+  For past wishes, you have to choose an account from below to link them to
+'682': Select an account
+'683': No wish history found for this account
+'684': Shenhe
+'685': Select a method of importing wishes
+'686': Import your Genshin wish history from a file
+'687': |-
+  You can use the </wish file-import:123123> command to import wishes from a file
+  Only support `.txt` files exported from Shenhe
+'688': Are you sure?
+'689': |-
+  • You are about to clear your wish history for this account, this action cannot be undone.
+  • It is recommended to export your wish history before clearing it.
+  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+'690': Shenhe has found **{a}** wishes in this link/file
+'691': Confirm wish import
+'692': Import your Genshin wish history from a txt file exported by Shenhe
