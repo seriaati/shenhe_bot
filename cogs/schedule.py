@@ -10,7 +10,7 @@ import aiosqlite
 import genshin
 import pytz
 import sentry_sdk
-from discord import File, Game
+from discord import File, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
@@ -23,13 +23,9 @@ from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from utility.utils import (
-    default_embed,
-    error_embed,
-    get_user_appearance_mode,
-    get_user_timezone,
-    log,
-)
+from cogs.admin import is_seria
+from utility.utils import (default_embed, error_embed,
+                           get_user_appearance_mode, get_user_timezone, log)
 from yelan.draw import draw_talent_reminder_card
 
 
@@ -614,6 +610,21 @@ class Schedule(commands.Cog):
                     dict[str(domain_info["id"])][lang] = domain_info["name"]
         with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(dict, f, indent=4, ensure_ascii=False)
+        # item name text map
+        huge_text_map = {}
+        for thing in things_to_update:
+            with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
+                text_map = json.load(f)
+            for item_id, item_info in text_map.items():
+                for lang, name in item_info.items():
+                    if "10000005" in item_id:
+                        huge_text_map[name] = "10000005"
+                    elif "10000007" in item_id:
+                        huge_text_map[name] = "10000007"
+                    else:
+                        huge_text_map[name] = item_id
+        with open(f"text_maps/item_name.json", "w+", encoding="utf-8") as f:
+            json.dump(huge_text_map, f, indent=4, ensure_ascii=False)
         log.info("[Schedule][Update Text Map] Ended")
 
     @schedule_error_handler
@@ -632,7 +643,14 @@ class Schedule(commands.Cog):
     @change_status.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-
+        
+    @is_seria()
+    @app_commands.command(name="update-data", description="Update game data and text map")
+    async def update_data(self, i: Interaction):
+        await asyncio.create_task(self.update_ambr_cache())
+        await asyncio.create_task(self.update_text_map())
+        await asyncio.create_task(self.update_game_data())
+        await i.response.send_message("Tasks started", ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Schedule(bot))
