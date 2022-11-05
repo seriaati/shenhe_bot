@@ -43,6 +43,11 @@ class TextMap():
                 self.item_name_text_map = json.load(f)
         except FileNotFoundError:
             self.item_name_text_map = {}
+        try:
+            with open('text_maps/reliquary.json', 'r', encoding='utf-8') as f:
+                self.artifact = json.load(f)
+        except FileNotFoundError:
+            self.artifact = {}
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
         locale = user_locale or locale 
@@ -110,6 +115,16 @@ class TextMap():
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
             return dungeonText[str(ambr_locale)]
+    
+    def get_artifact_name(self, artifact_id: int, locale: discord.Locale, user_locale: str = None):
+        artifact_text = self.artifact.get(str(artifact_id))
+        if artifact_text == '':
+            log.warning(f'[Exception][get_artifact_name][artifact_id not found]: [artifact_id]{artifact_id}')
+            return artifact_id
+        else:
+            locale = user_locale or locale
+            ambr_locale = to_ambr_top(str(locale))
+            return artifact_text[str(ambr_locale)]
 
 
 # initialize the class first to load the text maps
