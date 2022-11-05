@@ -7,7 +7,7 @@ from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
 
 import config
-from apps.genshin.utils import get_uid_region
+from apps.genshin.utils import get_account_options, get_uid_region
 from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -265,13 +265,7 @@ async def return_accounts(i: Interaction):
             account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**__\n"
         else:
             account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}\n"
-        select_options.append(
-            SelectOption(
-                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)}",
-                emoji=emoji,
-                value=account[0],
-            )
-        )
+    select_options = get_account_options(accounts, user_locale or i.locale)
     if not current_account:
         await c.execute(
             "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
