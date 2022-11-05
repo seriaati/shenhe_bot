@@ -778,7 +778,7 @@
 '683': No wish history found for this account
 '684': Shenhe
 '685': Select a method of importing wishes
-'686': Import your Genshin wish history from a file
+'686': 'Import your Genshin wish history from a file'
 '687': |-
   You can use the </wish file-import:123123> command to import wishes from a file
   Only support `.txt` files exported from Shenhe
@@ -790,3 +790,4 @@
 '690': Shenhe has found **{a}** wishes in this link/file
 '691': Confirm wish import
 '692': Import your Genshin wish history from a txt file exported by Shenhe
+'693': Please check the file you have provided
