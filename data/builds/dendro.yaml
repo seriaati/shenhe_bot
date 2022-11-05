@@ -157,3 +157,40 @@
 
       副詞條優先順序：
       雙暴（自適應）>元素精通>百分比攻擊≥充能效率
+納西妲:
+  element: 草
+  builds:
+    - weapon: 千夜浮夢
+      artifacts: 深林4件套
+      main_stats: 精精精
+      talents: 6/10/9
+      stats:
+        攻擊力: 1152
+        暴率/暴傷: 28.1/96.2
+        元素精通: 941
+        充能效率: 130%
+      move: 激化滅淨三業
+      dmg: 26998
+    - weapon: 流浪的晚星
+      artifacts: 深林4件套
+      main_stats: 精精精
+      talents: 6/10/9
+      stats:
+        攻擊力: 1524
+        暴率/暴傷: 28.1/96.2
+        元素精通: 841
+        充能效率: 130%
+      move: 激化滅淨三業
+      dmg: 22205
+    - weapon: 祭禮殘章
+      artifacts: 深林4件套
+      main_stats: 精精精
+      talents: 6/10/9
+      stats:
+        攻擊力: 1064
+        暴率/暴傷: 28.1/96.2
+        元素精通: 897
+        充能效率: 130%
+      move: 激化滅淨三業
+      dmg: 21896
+    
