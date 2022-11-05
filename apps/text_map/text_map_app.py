@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict, Literal, Optional
+from typing import Dict, Optional
 
 import discord
 import yaml
@@ -38,6 +38,11 @@ class TextMap():
                 self.dailyDungeon = json.load(f)
         except FileNotFoundError:
             self.dailyDungeon = {}
+        try:
+            with open('text_maps/item_name.json', 'r', encoding='utf-8') as f:
+                self.item_name_text_map = json.load(f)
+        except FileNotFoundError:
+            self.item_name_text_map = {}
 
     def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
         locale = user_locale or locale 
@@ -51,12 +56,18 @@ class TextMap():
         if textMapHash != 139:
             text = re.sub(r"<[^\/][^>]*>", "", text)
         return text
+    
+    def get_id_from_name(self, name: str) -> Optional[int]:
+        result = self.item_name_text_map.get(name)
+        if result is None:
+            return None
+        else:
+            return int(result)
 
-    def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Literal[None, 'str']:
+    def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Optional[str]:
         avatar_text = self.avatar.get(str(character_id))
         if avatar_text is None:
-            log.warning(f'[Exception][get_character_name][charcter_id not found]: [character_id]{character_id}')
-            return character_id
+            return None
         else:
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
@@ -81,22 +92,14 @@ class TextMap():
         log.warning(f'[Exception][get_material_id_with_name][material_name not found]: [material_name]{material_name}')
         return material_name
 
-    def get_weapon_name(self, weapon_id: int, locale: discord.Locale, user_locale: str = None) -> (int | str):
+    def get_weapon_name(self, weapon_id: int, locale: discord.Locale, user_locale: str = None) -> Optional[str]:
         avatarText = self.weapon.get(str(weapon_id))
         if avatarText is None:
-            log.warning(f'[Exception][get_weapon_name][weapon_id not found]: [weapon_id]{weapon_id}')
-            return weapon_id
+            return None
         else:
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
             return avatarText[str(ambr_locale)]
-        
-    def get_weapon_id_with_name(self, weapon_name: str) -> int | str:
-        for weapon_id, weapon_name_dict in self.weapon.items():
-            for _, weapon_lang_name in weapon_name_dict.items():
-                if weapon_lang_name == weapon_name:
-                    return int(weapon_id)
-        return weapon_name
 
     def get_domain_name(self, dungeon_id: int, locale: discord.Locale, user_locale: str = None):
         dungeonText = self.dailyDungeon.get(str(dungeon_id))
@@ -107,17 +110,6 @@ class TextMap():
             locale = user_locale or locale
             ambr_locale = to_ambr_top(str(locale))
             return dungeonText[str(ambr_locale)]
-
-    def get_character_id_with_name(self, character_name: str) -> str | int:
-        character_id: str
-        for character_id, character_name_dict in self.avatar.items():
-            for _, character_lang_name in character_name_dict.items():
-                if character_lang_name == character_name:
-                    if not character_id.isdigit():
-                        return character_id
-                    else:
-                        return int(character_id)
-        return character_name
 
 
 # initialize the class first to load the text maps
