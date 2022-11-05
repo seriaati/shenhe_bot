@@ -174,3 +174,4 @@ data/game/character_map.json
 data/game/weapon_map.json
 feeds/*
 !/**/.gitkeep
+text_maps/item_name.json
