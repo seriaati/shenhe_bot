@@ -11,7 +11,7 @@ from diskcache import FanoutCache
 from discord.utils import format_dt
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import ShenheUser
+from apps.genshin.custom_model import ShenheUser, WishInfo
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -77,7 +77,7 @@ def get_character_builds(
         move_text = cond_text.get_text(
             locale, "build", f"{character_name}_{build['move']}"
         )
-        weapon_id = text_map.get_weapon_id_with_name(build["weapon"])
+        weapon_id = text_map.get_id_from_name(build["weapon"])
         embed = default_embed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
             f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {text_map.get_weapon_name(weapon_id, locale)}\n"
@@ -114,30 +114,32 @@ def get_character_builds(
 
 
 def get_character(id: int = "", name: str = "", eng: str = ""):
-    for character_id, character_info in character_map.items():
-        if (
-            str(id) == character_id
-            or character_info["name"] == name
-            or character_info["eng"] == eng
-        ):
-            return character_info
-    return {
+    if id != "":
+        character = character_map.get(str(id))
+    else:
+        for character in character_map.values():
+            if character["name"] == name or character["eng"] == eng:
+                return character
+    return character or {
         "name": f"{id}{name}{eng}",
         "element": "Cryo",
         "rarity": 5,
         "icon": "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png",
-        "emoji": "<:WARNING:992552271378386944>",
+        "emoji": "❓",
         "eng": "Unknown",
     }
 
 
 def get_weapon(id: int = "", name: str = ""):
-    for weapon_id, weapon_info in weapon_map.items():
-        if weapon_id == str(id) or weapon_info["name"] == name:
-            return weapon_info
-    return {
+    if id != "":
+        weapon_info = weapon_map.get(str(id))
+    else:
+        for weapon_info in weapon_map.values():
+            if weapon_info["name"] == name:
+                return weapon_info
+    return weapon_info or {
         "name": f"{id}{name}",
-        "emoji": "⚠️",
+        "emoji": "❓",
         "rarity": 5,
         "icon": "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png",
         "eng": "Unknown",
@@ -542,8 +544,8 @@ async def get_wish_history_embed(
 ) -> List[discord.Embed]:
     user_locale = await get_user_locale(i.user.id, i.client.db)
     async with i.client.db.execute(
-        f"SELECT wish_name, wish_rarity, wish_time, wish_type FROM wish_history WHERE {query} user_id = ?",
-        (i.user.id,),
+        f"SELECT wish_rarity, wish_time, item_id FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
     ) as cursor:
         wish_history = await cursor.fetchall()
 
@@ -554,22 +556,14 @@ async def get_wish_history_embed(
         )
         return [embed]
     else:
-        wish_history.sort(key=lambda tpl: tpl[2], reverse=True)
         user_wish = []
 
         for _, tpl in enumerate(wish_history):
-            wish_name = tpl[0]
-            wish_rarity = tpl[1]
-            wish_time = datetime.strptime(tpl[2], "%Y/%m/%d %H:%M:%S")
-            wish_type = tpl[3]
-            item_id = text_map.get_weapon_id_with_name(wish_name)
-            if isinstance(item_id, int):
-                emoji = get_weapon(item_id)["emoji"]
-            else:
-                item_id = text_map.get_character_id_with_name(wish_name)
-                emoji = get_character(item_id)["emoji"]
             user_wish.append(
-                f"{format_dt(wish_time, 'd')} {emoji} {wish_name} ({wish_rarity} ✦ {wish_type})"
+                format_wish_str(
+                    {"item_rarity": tpl[0], "time": tpl[1], "item_id": tpl[2]},
+                    user_locale or i.locale,
+                )
             )
 
         user_wish = list(divide_chunks(user_wish, 20))
@@ -586,3 +580,88 @@ async def get_wish_history_embed(
             embeds.append(embed)
 
         return embeds
+
+
+async def get_wish_info_embed(
+    i: discord.Interaction, locale: str, wish_info: WishInfo, import_command: bool = False
+) -> discord.Embed:
+    embed = default_embed(
+        message= text_map.get(673 if import_command else 690, locale).format(a=wish_info.total) 
+    ).set_author(name=text_map.get(474 if import_command else 691, locale), icon_url=i.user.display_avatar.url)
+    embed.add_field(
+        name="UID", value=await get_uid(i.user.id, i.client.db), inline=False
+    )
+    newest_wish = wish_info.newest_wish
+    oldest_wish = wish_info.oldest_wish
+    embed.add_field(
+        name=text_map.get(675, locale),
+        value=format_wish_str(
+            {
+                "time": newest_wish.time,
+                "item_rarity": newest_wish.rarity,
+                "item_id": text_map.get_id_from_name(newest_wish.name),
+            },
+            locale,
+        ),
+        inline=False,
+    )
+    embed.add_field(
+        name=text_map.get(676, locale),
+        value=format_wish_str(
+            {
+                "time": oldest_wish.time,
+                "item_rarity": oldest_wish.rarity,
+                "item_id": text_map.get_id_from_name(oldest_wish.name),
+            },
+            locale,
+        ),
+        inline=False,
+    )
+
+    embed.add_field(
+        name=text_map.get(645, locale),
+        value=wish_info.character_banner_num,
+        inline=False,
+    )
+    embed.add_field(
+        name=text_map.get(646, locale), value=wish_info.weapon_banner_num, inline=False
+    )
+    embed.add_field(
+        name=text_map.get(655, locale),
+        value=wish_info.permanent_banner_num,
+        inline=False,
+    )
+    embed.add_field(
+        name=text_map.get(647, locale), value=wish_info.novice_banner_num, inline=False
+    )
+    
+    return embed
+
+
+def format_wish_str(wish_data: Dict, locale: Locale | str):
+    wish_time = datetime.strptime(wish_data["time"], "%Y/%m/%d %H:%M:%S")
+    item_emoji = get_weapon(wish_data["item_id"])["emoji"]
+    if item_emoji == "❓":
+        item_emoji = get_character(str(wish_data["item_id"]))["emoji"]
+    return f"{format_dt(wish_time, 'd')} {item_emoji} {text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)} ({wish_data['item_rarity']} ✦)"
+
+
+def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption]:
+    options = []
+    for account in accounts:
+        emoji = (
+            "<:cookie_add:1018776813922693120>"
+            if account[1] is not None
+            else "<:number:1018838745614667817>"
+        )
+        nickname = f"{account[3]} | " if account[3] is not None else ""
+        if len(nickname) > 15:
+            nickname = nickname[:15] + "..."
+        options.append(
+            SelectOption(
+                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), locale)}",
+                emoji=emoji,
+                value=account[0],
+            )
+        )
+    return options
