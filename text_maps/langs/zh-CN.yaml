@@ -368,7 +368,7 @@
 '352': 祈愿记录总结
 '353': 导入祈愿记录
 '354': 请贴上复制的连结
-'355': 请稍等, 处理祈愿历史纪录中...
+'355': Please wait while Shenhe is processing your wish history...
 '356': 祈愿记录导入成功
 '357': 坎蒂丝 Q
 '358': |-
@@ -397,9 +397,9 @@
 '363': 你所提供的连结是无效的
 '364': 影片教学
 '365': 选择你的平台
-'366': "祈愿记录的语言是根据你目前设置的语言决定的\n 之后更改语言不会改变先前记录的语言"
-'367': 找不到任何祈愿记录
-'368': 使用 </wish import:1000187021635104890> 指令来导入你的祈愿记录
+'366': ""
+'367': ""
+'368': Use </wish import:1000187021635104890> to import your wish history
 '369': 祈愿记录
 '370': 你抽到的最后一个五星角色是一个常驻角色
 '371': 你抽到的最后一个五星角色是一个 Up 角色
@@ -443,7 +443,7 @@
   就算你在游戏中将角色从展示柜中拿下，他们仍然会在这里出现。
   如欲更新他们的资料，请将角色重新放回展示柜后使用一次这个指令。
   理论上，你可以将游戏中所有角色放到 /profile 里，并在伤害计算器中使用他们。
-'400': 连结已生成，正在等待登入通道回应...
+'400': Link generated, click on the button below to login
 '401': 生成登入连结
 '402': 正在生成登入连结...
 '403': |-
@@ -757,3 +757,32 @@
 '668': 原石
 '669': 摩拉
 '670': 前往登入页面
+'671': Wish History
+'672': Please add an account with UID before using this command
+'673': You currently have **{a}** wishes stored in Shenhe's database
+'674': Please link a UID before importing new wishes
+'675': Newest wish
+'676': Oldest wish
+'677': Link UID
+'678': Import
+'679': Export
+'680': Clear wish history
+'681': |-
+  You can now have separate wish history for each account you have registered.
+  For past wishes, you have to choose an account from below to link them to
+'682': Select an account
+'683': No wish history found for this account
+'684': Shenhe
+'685': Select a method of importing wishes
+'686': Import your Genshin wish history from a file
+'687': |-
+  You can use the </wish file-import:123123> command to import wishes from a file
+  Only support `.txt` files exported from Shenhe
+'688': Are you sure?
+'689': |-
+  • You are about to clear your wish history for this account, this action cannot be undone.
+  • It is recommended to export your wish history before clearing it.
+  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+'690': Shenhe has found **{a}** wishes in this link/file
+'691': Confirm wish import
+'692': Import your Genshin wish history from a txt file exported by Shenhe
