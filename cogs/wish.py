@@ -1,19 +1,18 @@
-from datetime import datetime
+import ast
 from typing import Dict, List, Optional, Tuple
 
-import aiosqlite
 import GGanalysis.games.genshin_impact as GI
-from discord import File, Interaction, SelectOption, User, app_commands
+from discord import File, Interaction, SelectOption, User, app_commands, Attachment
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-
-from apps.genshin.checks import check_wish_history
-from apps.genshin.custom_model import WishData
-from apps.genshin.utils import get_wish_history_embed
+from UI_elements.wish.SetAuthKey import wish_import_command
+from apps.genshin.checks import check_account, check_wish_history
+from apps.genshin.custom_model import Wish, WishData, WishInfo
+from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
-from UI_elements.wish import ChooseBanner, ChoosePlatform, ChooseWeapon, WishFilter
+from UI_elements.wish import ChooseBanner, ChooseWeapon, WishFilter, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from yelan.draw import draw_wish_overview_card
@@ -24,11 +23,67 @@ class WishCog(commands.GroupCog, name="wish"):
         self.bot = bot
         super().__init__()
 
+    @check_account()
     @app_commands.command(
         name="import", description=_("Import your genshin wish history", hash=474)
     )
-    async def set_key(self, i: Interaction):
-        await ChoosePlatform.GOBack.callback(self, i)
+    async def wish_import(self, i: Interaction):
+        await wish_import_command(i)
+
+    @app_commands.command(
+        name="file-import",
+        description=_(
+            "Import your Genshin wish history from a txt file exported by Shenhe",
+            hash=692,
+        ),
+    )
+    async def wish_file_import(self, i: Interaction, file: Attachment):
+        wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
+        character_banner = 0
+        weapon_banner = 0
+        permanent_banner = 0
+        novice_banner = 0
+
+        for wish in wish_history:
+            if wish[3] in [301, 400]:
+                character_banner += 1
+            elif wish[3] == 302:
+                weapon_banner += 1
+            elif wish[3] == 200:
+                permanent_banner += 1
+            elif wish[3] == 100:
+                novice_banner += 1
+
+        newest_wish = wish_history[0]
+        oldest_wish = wish_history[-1]
+        wish_info = WishInfo(
+            total=len(wish_history),
+            newest_wish=Wish(
+                time=newest_wish[2],
+                name=newest_wish[0],
+                rarity=newest_wish[1],
+            ),
+            oldest_wish=Wish(
+                time=oldest_wish[2],
+                name=oldest_wish[0],
+                rarity=oldest_wish[1],
+            ),
+            character_banner_num=character_banner,
+            weapon_banner_num=weapon_banner,
+            permanent_banner_num=permanent_banner,
+            novice_banner_num=novice_banner,
+        )
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        embed = await get_wish_info_embed(i, locale, wish_info)
+        view = SetAuthKey.View(locale, True, True)
+        view.clear_items()
+        view.add_item(
+            SetAuthKey.ConfirmWishImport(locale, wish_history, from_text_file=True)
+        )
+        view.add_item(SetAuthKey.CancelWishImport(locale))
+        view.author = i.user
+        await i.response.send_message(embed=embed, view=view)
+        view.message = await i.original_response()
 
     @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
@@ -67,17 +122,14 @@ class WishCog(commands.GroupCog, name="wish"):
 
         # chacter banner data
         async with i.client.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)",
-            (i.user.id,),
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
+            (i.user.id, await get_uid(member.id, i.client.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
         dist_c = None
 
         if data is not None:
-            data.sort(
-                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
-            )
             up_num = 0
             std = get_standard_characters()
             for _, tpl in enumerate(data):
@@ -134,8 +186,8 @@ class WishCog(commands.GroupCog, name="wish"):
         await i.response.defer()
 
         async with i.client.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400)",
-            (i.user.id,),
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
+            (i.user.id, await get_uid(i.user.id, i.client.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -143,11 +195,6 @@ class WishCog(commands.GroupCog, name="wish"):
         up_guarantee = 0
 
         if data:
-            # sort wish data from newest to oldest
-            data.sort(
-                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
-            )
-
             std = get_standard_characters()
 
             for pull, tpl in enumerate(data):
@@ -210,19 +257,14 @@ class WishCog(commands.GroupCog, name="wish"):
             )
 
         async with i.client.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302",
-            (i.user.id,),
+            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND uid = ? ORDER BY wish_id DESC",
+            (i.user.id, await get_uid(i.user.id, i.client.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
         pull_state = 0
 
         if data:
-            # sort wish data from newest to oldest
-            data.sort(
-                key=lambda x: datetime.strptime(x[2], "%Y/%m/%d %H:%M:%S"), reverse=True
-            )
-
             last_name = ""
             for pull, tpl in enumerate(data):
                 name = tpl[0]
@@ -283,14 +325,10 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
         async with i.client.db.execute(
-            "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ?",
-            (member.id,),
+            "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
+            (member.id, await get_uid(member.id, i.client.db)),
         ) as cursor:
             data = await cursor.fetchall()
-
-        data.sort(
-            key=lambda x: datetime.strptime(x[3], "%Y/%m/%d %H:%M:%S"), reverse=True
-        )
 
         items: List[Dict[str, int | str]] = []
         images = {}
