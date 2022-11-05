@@ -16,6 +16,7 @@ from UI_elements.wish import ChooseBanner, ChooseWeapon, WishFilter, SetAuthKey
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
 from yelan.draw import draw_wish_overview_card
+import sentry_sdk
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -38,52 +39,61 @@ class WishCog(commands.GroupCog, name="wish"):
         ),
     )
     async def wish_file_import(self, i: Interaction, file: Attachment):
-        wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
-        character_banner = 0
-        weapon_banner = 0
-        permanent_banner = 0
-        novice_banner = 0
-
-        for wish in wish_history:
-            if wish[3] in [301, 400]:
-                character_banner += 1
-            elif wish[3] == 302:
-                weapon_banner += 1
-            elif wish[3] == 200:
-                permanent_banner += 1
-            elif wish[3] == 100:
-                novice_banner += 1
-
-        newest_wish = wish_history[0]
-        oldest_wish = wish_history[-1]
-        wish_info = WishInfo(
-            total=len(wish_history),
-            newest_wish=Wish(
-                time=newest_wish[2],
-                name=newest_wish[0],
-                rarity=newest_wish[1],
-            ),
-            oldest_wish=Wish(
-                time=oldest_wish[2],
-                name=oldest_wish[0],
-                rarity=oldest_wish[1],
-            ),
-            character_banner_num=character_banner,
-            weapon_banner_num=weapon_banner,
-            permanent_banner_num=permanent_banner,
-            novice_banner_num=novice_banner,
-        )
         locale = await get_user_locale(i.user.id, i.client.db) or i.locale
-        embed = await get_wish_info_embed(i, locale, wish_info)
-        view = SetAuthKey.View(locale, True, True)
-        view.clear_items()
-        view.add_item(
-            SetAuthKey.ConfirmWishImport(locale, wish_history, from_text_file=True)
-        )
-        view.add_item(SetAuthKey.CancelWishImport(locale))
-        view.author = i.user
-        await i.response.send_message(embed=embed, view=view)
-        view.message = await i.original_response()
+        try:
+            wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
+            character_banner = 0
+            weapon_banner = 0
+            permanent_banner = 0
+            novice_banner = 0
+
+            for wish in wish_history:
+                if wish[3] in [301, 400]:
+                    character_banner += 1
+                elif wish[3] == 302:
+                    weapon_banner += 1
+                elif wish[3] == 200:
+                    permanent_banner += 1
+                elif wish[3] == 100:
+                    novice_banner += 1
+
+            newest_wish = wish_history[0]
+            oldest_wish = wish_history[-1]
+            wish_info = WishInfo(
+                total=len(wish_history),
+                newest_wish=Wish(
+                    time=newest_wish[2],
+                    name=newest_wish[0],
+                    rarity=newest_wish[1],
+                ),
+                oldest_wish=Wish(
+                    time=oldest_wish[2],
+                    name=oldest_wish[0],
+                    rarity=oldest_wish[1],
+                ),
+                character_banner_num=character_banner,
+                weapon_banner_num=weapon_banner,
+                permanent_banner_num=permanent_banner,
+                novice_banner_num=novice_banner,
+            )
+            embed = await get_wish_info_embed(i, locale, wish_info)
+            view = SetAuthKey.View(locale, True, True)
+            view.clear_items()
+            view.add_item(
+                SetAuthKey.ConfirmWishImport(locale, wish_history, from_text_file=True)
+            )
+            view.add_item(SetAuthKey.CancelWishImport(locale))
+            view.author = i.user
+            await i.response.send_message(embed=embed, view=view)
+            view.message = await i.original_response()
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            await i.response.send_message(
+                embed=error_embed(message=text_map.get(693, locale)).set_author(
+                    name=text_map.get(135, locale), icon_url=i.user.avatar_url
+                ),
+                ephemeral=True,
+            )
 
     @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
