@@ -403,8 +403,8 @@ async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
         if item_id is not None:
             await i.client.db.execute(
                 "UPDATE wish_history SET item_id = ? WHERE wish_name = ?",
-                item_id,
-                wish[0],
+                (item_id,
+                wish[0],)
             )
     await i.client.db.commit()
 

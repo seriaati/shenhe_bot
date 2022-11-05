@@ -647,10 +647,11 @@ class Schedule(commands.Cog):
     @is_seria()
     @app_commands.command(name="update-data", description="Update game data and text map")
     async def update_data(self, i: Interaction):
+        await i.response.defer(ephemeral=True)
         await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
-        await i.response.send_message("Tasks started", ephemeral=True)
+        await i.followup.send("Tasks started", ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Schedule(bot))
