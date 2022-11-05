@@ -1,5 +1,6 @@
 from typing import Optional
 import aiosqlite
+from apps.genshin.utils import get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from discord import Interaction, app_commands, User
@@ -67,7 +68,8 @@ def check_wish_history():
             user = i.user
         user_locale = await get_user_locale(i.user.id, i.client.db)
         async with i.client.db.execute(
-            "SELECT wish_id FROM wish_history WHERE user_id = ?", (user.id,)
+            "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
+            (user.id, await get_uid(i.user.id, i.client.db)),
         ) as c:
             data = await c.fetchone()
         if data is None:
@@ -75,7 +77,7 @@ def check_wish_history():
                 embed=error_embed(
                     message=text_map.get(368, i.locale, user_locale)
                 ).set_author(
-                    name=text_map.get(367, i.locale, user_locale),
+                    name=text_map.get(683, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
