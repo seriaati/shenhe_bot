@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 from discord.utils import find, format_dt
 
 from ambr.client import AmbrTopAPI
+from ambr.models import Artifact, Character, CharacterUpgrade, Weapon, WeaponUpgrade
 from apps.genshin.custom_model import NotificationUser, ShenheUser
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import get_shenhe_user, get_uid
@@ -411,26 +412,27 @@ class Schedule(commands.Cog):
                         for item in domain.rewards:
                             if notification_type == "talent_notification":
                                 upgrade = await client.get_character_upgrade(str(item_id))
-                            elif notification_type == "weapon_notification":
-                                upgrade = await client.get_weapon_upgrade(int(item_id))
-                            if not upgrade:
-                                continue
                             else:
-                                upgrade = upgrade[0]
+                                upgrade = await client.get_weapon_upgrade(int(item_id))
+                                
+                            if upgrade is None or isinstance(upgrade, List):
+                                continue
+                            
                             if item in upgrade.items:
                                 if item_id not in notified:
                                     notified[item_id] = []
                                 if item.id not in notified[item_id]:
                                     notified[item_id].append(item.id)
+                                    
             for item_id, materials in notified.items():
+                item = None
                 if notification_type == "talent_notification":
                     item = await client.get_character(item_id)
                 elif notification_type == "weapon_notification":
                     item = await client.get_weapon(int(item_id))
-                if not item:
+                if item is None:
                     continue
-                else:
-                    item = item[0]
+                
                 dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
                 fp = await draw_talent_reminder_card(
                     materials,
@@ -491,48 +493,60 @@ class Schedule(commands.Cog):
             json.dump(character_map, f, ensure_ascii=False, indent=4)
 
         for thing in things_to_update:
+            objects = None
             if thing == "character":
                 objects = await client.get_character()
             elif thing == "weapon":
                 objects = await client.get_weapon()
             elif thing == "artifact":
                 objects = await client.get_artifact()
+                
+            if not isinstance(objects, List) or objects is None:
+                continue
             try:
                 with open(f"data/game/{thing}_map.json", "r", encoding="utf-8") as f:
                     object_map = json.load(f)
             except FileNotFoundError:
                 object_map = {}
+                
             for object in objects:
-                if thing == "character":
+                english_name = ""
+                if isinstance(object, Character):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "element": object.element,
                         "rarity": object.rairty,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_character(str(object.id)))[0].name
-                elif thing == "weapon":
+                    eng_object = await eng_client.get_character(object.id)
+                    if isinstance(eng_object, Character) and eng_object is not None:
+                        english_name = eng_object.name
+                elif isinstance(object, Weapon):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_weapon(int(object.id)))[0].name
-                elif thing == "artifact":
+                    eng_object = await eng_client.get_weapon(object.id)
+                    if isinstance(eng_object, Weapon) and eng_object is not None:
+                        english_name = eng_object.name
+                elif isinstance(object, Artifact):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity_list,
                         "icon": object.icon,
                     }
-                    english_name = (await eng_client.get_artifact(int(object.id)))[
-                        0
-                    ].name
+                    eng_object = await eng_client.get_artifact(object.id)
+                    if isinstance(eng_object, Artifact) and eng_object is not None:
+                        english_name = eng_object.name
+                        
                 object_map[str(object.id)]["eng"] = english_name
                 object_id = str(object.id)
                 if "-" in object_id:
                     object_id = (object_id.split("-"))[0]
                 emoji = find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
+                    emoji_server = None
                     for guild in self.bot.guilds:
                         if (
                             "shenhe asset" in guild.name
@@ -541,20 +555,21 @@ class Schedule(commands.Cog):
                         ):
                             emoji_server = guild
                             break
-                    try:
-                        async with self.bot.session.get(object.icon) as r:
-                            bytes_obj = await r.read()
-                        emoji = await emoji_server.create_custom_emoji(
-                            name=object_id,
-                            image=bytes_obj,
-                        )
-                    except (Forbidden, HTTPException) as e:
-                        log.warning(
-                            f"[Schedule] Emoji creation failed [Object]{object}"
-                        )
-                        sentry_sdk.capture_exception(e)
-                    else:
-                        object_map[str(object.id)]["emoji"] = str(emoji)
+                    if emoji_server is not None:
+                        try:
+                            async with self.bot.session.get(object.icon) as r:
+                                bytes_obj = await r.read()
+                            emoji = await emoji_server.create_custom_emoji(
+                                name=object_id,
+                                image=bytes_obj,
+                            )
+                        except (Forbidden, HTTPException) as e:
+                            log.warning(
+                                f"[Schedule] Emoji creation failed [Object]{object}"
+                            )
+                            sentry_sdk.capture_exception(e)
+                        else:
+                            object_map[str(object.id)]["emoji"] = str(emoji)
                 else:
                     object_map[str(object.id)]["emoji"] = str(emoji)
             with open(f"data/game/{thing}_map.json", "w+", encoding="utf-8") as f:
@@ -632,8 +647,8 @@ class Schedule(commands.Cog):
         """Updates data from ambr.top"""
         log.info("[Schedule][Update Ambr Cache] Start")
         client = AmbrTopAPI(self.bot.session)
-        await client._update_cache(all_lang=True)
-        await client._update_cache(static=True)
+        await client.update_cache(all_lang=True)
+        await client.update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")
 
     @run_tasks.before_loop

@@ -49,7 +49,7 @@ class TextMap():
         except FileNotFoundError:
             self.artifact = {}
 
-    def get(self, textMapHash: int, locale: discord.Locale, user_locale: str = None) -> str:
+    def get(self, textMapHash: int, locale: discord.Locale | str, user_locale: Optional[str] = None) -> str:
         locale = user_locale or locale 
         path = to_paths(locale)
         text_map: Dict = self.text_maps[path]
@@ -69,7 +69,7 @@ class TextMap():
         else:
             return int(result)
 
-    def get_character_name(self, character_id: int, locale: discord.Locale, user_locale: str = None) -> Optional[str]:
+    def get_character_name(self, character_id: str, locale: discord.Locale | str, user_locale: str = None) -> Optional[str]:
         avatar_text = self.avatar.get(str(character_id))
         if avatar_text is None:
             return None

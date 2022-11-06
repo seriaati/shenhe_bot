@@ -67,12 +67,14 @@ class WeaponTypeButton(Button):
             "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
             (i.user.id,),
         ) as c:
-            (weapon_list,) = await c.fetchone()
-        weapon_list: List[str] = ast.literal_eval(weapon_list)
+            weapon_list = await c.fetchone()
+        weapon_list: List[str] = ast.literal_eval(weapon_list[0])
         select_options = []
         ambr = AmbrTopAPI(i.client.session)
         weapons = await ambr.get_weapon()
         weapon_types = await ambr.get_weapon_types()
+        if not isinstance(weapons, List):
+            raise TypeError("weapons is not a list")
         for weapon in weapons:
             if weapon_types.get(weapon.type) == self.weapon_type:
                 description = (

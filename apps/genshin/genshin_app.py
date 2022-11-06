@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Tuple
+from typing import Dict, Literal, Optional, Tuple
 
 import aiosqlite
 import genshin
@@ -117,13 +117,19 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
         fp = await draw_realtime_notes_card(
-            notes, shenhe_user.user_locale or locale, self.bot.session
+            notes,
+            shenhe_user.user_locale or str(locale),
+            self.bot.session,
+            await get_user_appearance_mode(user_id, self.db),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
-        return ({'embed': embed, 'file': fp}, True)
+        return ({"embed": embed, "file": fp}, True)
 
     async def parse_resin_embed(
-        self, notes: genshin.models.Notes, locale: Locale, user_locale: str
+        self,
+        notes: genshin.models.Notes,
+        locale: Locale,
+        user_locale: Optional[str] = None,
     ) -> Embed:
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, locale, user_locale)

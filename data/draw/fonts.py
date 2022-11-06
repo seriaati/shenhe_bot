@@ -18,14 +18,14 @@ FONTS = {
 
 
 def get_font(
-    locale, variation: Literal["Bold", "Light", "Thin", "Black", "Medium"] = "Regular"
+    locale, variation: Literal["Bold", "Light", "Thin", "Black", "Medium", "Regular"] = "Regular"
 ) -> str:
     path = "resources/fonts/"
     return (
         path
-        + FONTS.get(str(locale), f"NotoSans")["name"]
+        + FONTS.get(str(locale), {"extension": "ttf", "name": "NotoSans"})["name"]
         + "-"
         + variation
         + "."
-        + FONTS.get(str(locale), "ttf")["extension"]
+        + FONTS.get(str(locale), {"extension": "ttf", "name": "NotoSans"})["extension"]
     )

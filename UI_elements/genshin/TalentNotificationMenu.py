@@ -1,5 +1,5 @@
 import ast
-from typing import Any
+from typing import Any, List
 
 import aiosqlite
 import config
@@ -41,18 +41,20 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
+        async with i.client.db.execute(
             "SELECT character_list FROM talent_notification WHERE user_id = ?",
             (i.user.id,),
-        )
-        (character_list,) = await c.fetchone()
-        character_list = ast.literal_eval(character_list)
+        ) as cursor:
+            character_list = await cursor.fetchone()
+        character_list = ast.literal_eval(character_list[0])
         locale = self.view.locale
         options = []
         ambr_locale = to_ambr_top(locale)
         client = AmbrTopAPI(i.client.session, ambr_locale)
         characters = await client.get_character()
+        if not isinstance(characters, List):
+            raise TypeError("Characters is not a list")
+        
         for character in characters:
             if character.element == self.element:
                 description = (
@@ -63,7 +65,7 @@ class ElementButton(Button):
                 options.append(
                     SelectOption(
                         label=character.name,
-                        emoji=get_character(character.id)["emoji"],
+                        emoji=get_character(int(character.id))["emoji"],
                         value=character.id,
                         description=description,
                     )

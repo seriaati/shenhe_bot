@@ -972,140 +972,149 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search(self, i: Interaction, query: str):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        ambr_top_locale = to_ambr_top(user_locale or i.locale)
-        names = ["avatar", "weapon", "material", "reliquary"]
-        item_type = None
-        client = AmbrTopAPI(self.bot.session, ambr_top_locale)
-        for index, file in enumerate(self.text_map_files):
-            if query in file:
-                item_type = index
-                break
-        if item_type is None:
-            return await i.followup.send(
+        try:
+            ambr_top_locale = to_ambr_top(user_locale or i.locale)
+            names = ["avatar", "weapon", "material", "reliquary"]
+            item_type = None
+            client = AmbrTopAPI(self.bot.session, ambr_top_locale)
+            for index, file in enumerate(self.text_map_files):
+                if query in file:
+                    item_type = index
+                    break
+            if item_type is None:
+                raise ValueError
+            if item_type == 0:
+                async with self.bot.session.get(
+                    f"https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}"
+                ) as r:
+                    data = await r.json()
+                embeds, material_embed, options = parse_character_wiki_embed(
+                    data, query, i.locale, user_locale
+                )
+                await GeneralPaginator(
+                    i,
+                    embeds,
+                    self.bot.db,
+                    [
+                        CharacterWiki.ShowTalentMaterials(
+                            material_embed, text_map.get(322, i.locale, user_locale)
+                        ),
+                        CharacterWiki.QuickNavigation(
+                            options, text_map.get(315, i.locale, user_locale)
+                        ),
+                    ],
+                ).start(followup=True)
+            elif item_type == 1:
+                weapon_detail = await client.get_weapon_detail(int(query))
+                if weapon_detail is None:
+                    raise ValueError
+                rarity_str = ""
+                for _ in range(weapon_detail.rarity):
+                    rarity_str += "<:white_star:982456919224615002>"
+                embed = default_embed(weapon_detail.name, f"{rarity_str}")
+                embed.set_footer(text=weapon_detail.description)
+                embed.add_field(
+                    name=text_map.get(529, i.locale, user_locale),
+                    value=weapon_detail.type,
+                    inline=False,
+                )
+                if weapon_detail.effect is not None:
+                    embed.add_field(
+                        name=f"{weapon_detail.effect.name} (R1)",
+                        value=weapon_detail.effect.descriptions[0],
+                        inline=False,
+                    )
+                    if len(weapon_detail.effect.descriptions) > 4:
+                        embed.add_field(
+                            name=f"{weapon_detail.effect.name} (R5)",
+                            value=weapon_detail.effect.descriptions[4],
+                            inline=False,
+                        )
+                embed.set_image(
+                    url=f"https://api.ambr.top/assets/UI/generated/ascension/weapon_detail/{query}.png"
+                )
+
+                main_stat = weapon_detail.upgrade.stats[0]
+                sub_stat = weapon_detail.upgrade.stats[1]
+                stat_str = ""
+                if main_stat.prop_id is not None:
+                    main_stat_hash = get_fight_prop(id=main_stat.prop_id)["text_map_hash"]
+                    stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
+                if sub_stat.prop_id is not None:
+                    sub_stat_hash = get_fight_prop(id=sub_stat.prop_id)["text_map_hash"]
+                    stat_str += f"{text_map.get(464, i.locale, user_locale)}: {text_map.get(sub_stat_hash, i.locale, user_locale)}"
+                if stat_str != "":
+                    embed.add_field(
+                        name=text_map.get(531, i.locale, user_locale),
+                        value=stat_str,
+                        inline=False,
+                    )
+                embed.set_thumbnail(url=weapon_detail.icon)
+                await i.followup.send(embed=embed)
+            elif item_type == 2:
+                material = await client.get_material_detail(int(query))
+                if material is None:
+                    raise ValueError
+                rarity_str = ""
+                for _ in range(material.rarity):
+                    rarity_str += "<:white_star:982456919224615002>"
+                embed = default_embed(
+                    material.name, f"{rarity_str}\n\n{material.description}"
+                )
+                embed.add_field(
+                    name=text_map.get(529, i.locale, user_locale),
+                    value=material.type,
+                    inline=False,
+                )
+                source_str = ""
+                for source in material.sources:
+                    day_str = ""
+                    if len(source.days) != 0:
+                        day_list = [
+                            get_weekday_name(
+                                get_weekday_int_with_name(day), i.locale, user_locale
+                            )
+                            for day in source.days
+                        ]
+                        day_str = ", ".join(day_list)
+                    day_str = "" if len(source.days) == 0 else f"({day_str})"
+                    source_str += f"• {source.name} {day_str}\n"
+                source_str = "❌" if source_str == "" else source_str
+                embed.add_field(
+                    name=text_map.get(530, i.locale, user_locale),
+                    value=source_str,
+                    inline=False,
+                )
+                embed.set_thumbnail(url=material.icon)
+                await i.followup.send(embed=embed)
+            elif item_type == 3:
+                rarity_str = ""
+                artifact = await client.get_artifact_detail(int(query))
+                if artifact is None:
+                    raise ValueError
+                for _ in range(artifact.rarities[-1]):
+                    rarity_str += "<:white_star:982456919224615002>"
+                embed = default_embed(artifact.name, rarity_str)
+                embed.add_field(
+                    name=text_map.get(640, i.locale, user_locale),
+                    value=artifact.effects.two_piece,
+                    inline=False,
+                )
+                embed.add_field(
+                    name=text_map.get(641, i.locale, user_locale),
+                    value=artifact.effects.four_piece,
+                    inline=False,
+                )
+                embed.set_thumbnail(url=artifact.icon)
+                await i.followup.send(embed=embed)
+        except ValueError:
+            await i.followup.send(
                 embed=error_embed().set_author(
                     name=text_map.get(542, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
-        if item_type == 0:
-            async with self.bot.session.get(
-                f"https://api.ambr.top/v2/{ambr_top_locale}/{names[item_type]}/{query}"
-            ) as r:
-                data = await r.json()
-            embeds, material_embed, options = parse_character_wiki_embed(
-                data, query, i.locale, user_locale
-            )
-            await GeneralPaginator(
-                i,
-                embeds,
-                self.bot.db,
-                [
-                    CharacterWiki.ShowTalentMaterials(
-                        material_embed, text_map.get(322, i.locale, user_locale)
-                    ),
-                    CharacterWiki.QuickNavigation(
-                        options, text_map.get(315, i.locale, user_locale)
-                    ),
-                ],
-            ).start(followup=True)
-        elif item_type == 1:
-            weapon_detail = await client.get_weapon_detail(query)
-            rarity_str = ""
-            for _ in range(weapon_detail.rarity):
-                rarity_str += "<:white_star:982456919224615002>"
-            embed = default_embed(weapon_detail.name, f"{rarity_str}")
-            embed.set_footer(text=weapon_detail.description)
-            embed.add_field(
-                name=text_map.get(529, i.locale, user_locale),
-                value=weapon_detail.type,
-                inline=False,
-            )
-            if weapon_detail.effect is not None:
-                embed.add_field(
-                    name=f"{weapon_detail.effect.name} (R1)",
-                    value=weapon_detail.effect.descriptions[0],
-                    inline=False,
-                )
-                if len(weapon_detail.effect.descriptions) > 4:
-                    embed.add_field(
-                        name=f"{weapon_detail.effect.name} (R5)",
-                        value=weapon_detail.effect.descriptions[4],
-                        inline=False,
-                    )
-            embed.set_image(
-                url=f"https://api.ambr.top/assets/UI/generated/ascension/weapon_detail/{query}.png"
-            )
-
-            main_stat = weapon_detail.upgrade.stats[0]
-            sub_stat = weapon_detail.upgrade.stats[1]
-            stat_str = ""
-            if main_stat.prop_id is not None:
-                main_stat_hash = fight_prop.get(main_stat.prop_id)["text_map_hash"]
-                stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
-            if sub_stat.prop_id is not None:
-                sub_stat_hash = fight_prop.get(sub_stat.prop_id)["text_map_hash"]
-                stat_str += f"{text_map.get(464, i.locale, user_locale)}: {text_map.get(sub_stat_hash, i.locale, user_locale)}"
-            if stat_str != "":
-                embed.add_field(
-                    name=text_map.get(531, i.locale, user_locale),
-                    value=stat_str,
-                    inline=False,
-                )
-            embed.set_thumbnail(url=weapon_detail.icon)
-            await i.followup.send(embed=embed)
-        elif item_type == 2:
-            material = await client.get_material_detail(query)
-            rarity_str = ""
-            for _ in range(material.rarity):
-                rarity_str += "<:white_star:982456919224615002>"
-            embed = default_embed(
-                material.name, f"{rarity_str}\n\n{material.description}"
-            )
-            embed.add_field(
-                name=text_map.get(529, i.locale, user_locale),
-                value=material.type,
-                inline=False,
-            )
-            source_str = ""
-            for source in material.sources:
-                day_str = ""
-                if len(source.days) != 0:
-                    day_list = [
-                        get_weekday_name(
-                            get_weekday_int_with_name(day), i.locale, user_locale
-                        )
-                        for day in source.days
-                    ]
-                    day_str = ", ".join(day_list)
-                day_str = "" if len(source.days) == 0 else f"({day_str})"
-                source_str += f"• {source.name} {day_str}\n"
-            source_str = "❌" if source_str == "" else source_str
-            embed.add_field(
-                name=text_map.get(530, i.locale, user_locale),
-                value=source_str,
-                inline=False,
-            )
-            embed.set_thumbnail(url=material.icon)
-            await i.followup.send(embed=embed)
-        elif item_type == 3:
-            rarity_str = ""
-            artifact = await client.get_artifact_detail(query)
-            for _ in range(artifact.rarities[-1]):
-                rarity_str += "<:white_star:982456919224615002>"
-            embed = default_embed(artifact.name, rarity_str)
-            embed.add_field(
-                name=text_map.get(640, i.locale, user_locale),
-                value=artifact.effects.two_piece,
-                inline=False,
-            )
-            embed.add_field(
-                name=text_map.get(641, i.locale, user_locale),
-                value=artifact.effects.four_piece,
-                inline=False,
-            )
-            embed.set_thumbnail(url=artifact.icon)
-            await i.followup.send(embed=embed)
 
     @search.autocomplete("query")
     async def query_autocomplete(

@@ -157,11 +157,13 @@ def get_artifact(id: int = "", name: str = ""):
     raise ValueError(f"Unknwon artifact {id}{name}")
 
 
-def get_fight_prop(id: str = "", name: str = ""):
-    for fight_prop_id, fight_prop_info in fight_prop.items():
-        if fight_prop_id == str(id) or name == fight_prop_info["name"]:
-            return fight_prop_info
-    raise ValueError(f"Unknwon fight prop {id}{name}")
+def get_fight_prop(id: str) -> Dict[str, str | int | bool]:
+    return fight_prop[id] or {
+        "name": "未知角色數據",
+        "emoji": "",
+        "substat": False,
+        "text_map_hash": 700,
+    }
 
 
 def get_area_emoji(exploration_id: int):
