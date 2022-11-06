@@ -120,6 +120,7 @@ class ImportWishHistory(Button):
         self.view.add_item(GOBack())
         self.view.add_item(ImportGenshinImpact(locale))
         self.view.add_item(ImportShenhe(locale))
+        self.view.add_item(ImportPaimonMoe())
         await i.response.edit_message(embed=embed, view=self.view)
 
 
@@ -157,6 +158,17 @@ class ImportShenhe(Button):
         )
         await i.response.send_message(embed=embed, ephemeral=True)
 
+class ImportPaimonMoe(Button):
+    def __init__(self):
+        super().__init__(label="Paimon.moe", row=0)
+        
+    async def callback(self, i: Interaction):
+        embed = default_embed(message=(text_map.get(687, self.view.locale))).set_author(
+            name=(text_map.get(686, self.view.locale)),
+            icon_url=i.user.display_avatar.url,
+        )
+        await i.response.send_message(embed=embed, ephemeral=True)
+        
 
 class ExportWishHistory(Button):
     def __init__(self, locale: Locale | str, disabled: bool):

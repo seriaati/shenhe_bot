@@ -1,17 +1,26 @@
 import ast
+from datetime import datetime
+import io
 from typing import Dict, List, Optional, Tuple
-
+import openpyxl
 import GGanalysis.games.genshin_impact as GI
 import sentry_sdk
-from discord import (Attachment, File, Interaction, Member, SelectOption, User,
-                     app_commands)
+from discord import (
+    Attachment,
+    File,
+    Interaction,
+    Member,
+    SelectOption,
+    User,
+    app_commands,
+)
 from discord.app_commands import locale_str as _
 from discord.ext import commands
+from discord.app_commands import Choice
 
 from apps.genshin.checks import check_account, check_wish_history
 from apps.genshin.custom_model import ShenheBot, Wish, WishData, WishInfo
-from apps.genshin.utils import (get_uid, get_wish_history_embed,
-                                get_wish_info_embed)
+from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
@@ -41,45 +50,122 @@ class WishCog(commands.GroupCog, name="wish"):
             hash=692,
         ),
     )
-    async def wish_file_import(self, i: Interaction, file: Attachment):
+    @app_commands.rename(file=_("file", hash=701), source=_("source", hash=96))
+    @app_commands.choices(
+        source=[
+            Choice(name=_("Shenhe", hash=684), value=1),
+            Choice(name="paimon.moe", value=2),
+        ]
+    )
+    async def wish_file_import(self, i: Interaction, file: Attachment, source: int):
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        character_banner = 0
+        weapon_banner = 0
+        permanent_banner = 0
+        novice_banner = 0
         try:
-            wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
-            character_banner = 0
-            weapon_banner = 0
-            permanent_banner = 0
-            novice_banner = 0
+            if source == 1: # Shenhe
+                wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
 
-            for wish in wish_history:
-                if wish[3] in [301, 400]:
-                    character_banner += 1
-                elif wish[3] == 302:
-                    weapon_banner += 1
-                elif wish[3] == 200:
-                    permanent_banner += 1
-                elif wish[3] == 100:
-                    novice_banner += 1
-
-            newest_wish = wish_history[0]
-            oldest_wish = wish_history[-1]
-            wish_info = WishInfo(
-                total=len(wish_history),
-                newest_wish=Wish(
-                    time=newest_wish[2],
-                    name=newest_wish[0],
-                    rarity=newest_wish[1],
-                ),
-                oldest_wish=Wish(
-                    time=oldest_wish[2],
-                    name=oldest_wish[0],
-                    rarity=oldest_wish[1],
-                ),
-                character_banner_num=character_banner,
-                weapon_banner_num=weapon_banner,
-                permanent_banner_num=permanent_banner,
-                novice_banner_num=novice_banner,
-            )
-            embed = await get_wish_info_embed(i, locale, wish_info)
+                for wish in wish_history:
+                    if wish[3] in [301, 400]:
+                        character_banner += 1
+                    elif wish[3] == 302:
+                        weapon_banner += 1
+                    elif wish[3] == 200:
+                        permanent_banner += 1
+                    elif wish[3] == 100:
+                        novice_banner += 1
+                
+                newest_wish = wish_history[0]
+                oldest_wish = wish_history[-1]
+                wish_info = WishInfo(
+                    total=len(wish_history),
+                    newest_wish=Wish(
+                        time=newest_wish[2],
+                        name=newest_wish[0],
+                        rarity=newest_wish[1],
+                    ),
+                    oldest_wish=Wish(
+                        time=oldest_wish[2],
+                        name=oldest_wish[0],
+                        rarity=oldest_wish[1],
+                    ),
+                    character_banner_num=character_banner,
+                    weapon_banner_num=weapon_banner,
+                    permanent_banner_num=permanent_banner,
+                    novice_banner_num=novice_banner,
+                )
+            elif source == 2: #paimon.moe
+                excel_file = openpyxl.load_workbook(io.BytesIO(await file.read()))
+                character_event = excel_file.worksheets[0]
+                weapon_event = excel_file.worksheets[1]
+                standard = excel_file.worksheets[2]
+                beginners_wish = excel_file.worksheets[3]
+                newest_wish = None
+                oldest_wish = None
+                total = 0
+                wish_history = []
+                for index, sheet in enumerate([character_event, weapon_event, standard, beginners_wish]):
+                    for row in sheet.iter_rows(min_row=2, values_only=True):
+                        if row[0] is None:
+                            continue
+                        # find newest wish and oldest wish
+                        if newest_wish is None or row[2]>newest_wish[2]:
+                            newest_wish = row
+                        if oldest_wish is None or row[2]<oldest_wish[2]:
+                            oldest_wish = row
+                        
+                        # count banner
+                        if index == 0:
+                            character_banner += 1
+                        elif index == 1:
+                            weapon_banner += 1
+                        elif index == 2:
+                            permanent_banner += 1
+                        elif index == 3:
+                            novice_banner += 1
+                        total += 1
+                        
+                        # add to wish history
+                        name = row[1]
+                        time = datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S").strftime("%Y/%m/%d %H:%M:%S")
+                        rarity = row[3]
+                        if index == 0:
+                            banner = 301
+                        elif index == 1:
+                            banner = 302
+                        elif index == 2:
+                            banner = 200
+                        elif index == 3:
+                            banner = 100
+                        wish_id = None # we will need to find this
+                        item_id = text_map.get_id_from_name(name)
+                        
+                        wish_history.append((name, rarity, time, banner, wish_id, item_id))
+                        
+                if total == 0 or newest_wish is None or oldest_wish is None:
+                    raise ValueError("No wish history found in the file")
+                
+                wish_info = WishInfo(
+                    total=total,
+                    newest_wish=Wish(
+                        time=datetime.strptime(newest_wish[2], "%Y-%m-%d %H:%M:%S").strftime("%Y/%m/%d %H:%M:%S"),
+                        name=newest_wish[1],
+                        rarity=newest_wish[3],
+                    ),
+                    oldest_wish=Wish(
+                        time=datetime.strptime(oldest_wish[2], "%Y-%m-%d %H:%M:%S").strftime("%Y/%m/%d %H:%M:%S"),
+                        name=oldest_wish[1],
+                        rarity=oldest_wish[3],
+                    ),
+                    character_banner_num=character_banner,
+                    weapon_banner_num=weapon_banner,
+                    permanent_banner_num=permanent_banner,
+                    novice_banner_num=novice_banner,
+                )
+                
+            embed = await get_wish_info_embed(i, str(locale), wish_info, linked=True)
             view = SetAuthKey.View(locale, True, True)
             view.clear_items()
             view.add_item(
@@ -92,8 +178,8 @@ class WishCog(commands.GroupCog, name="wish"):
         except Exception as e:
             sentry_sdk.capture_exception(e)
             await i.response.send_message(
-                embed=error_embed(message=text_map.get(693, locale)).set_author(
-                    name=text_map.get(135, locale), icon_url=i.user.avatar_url
+                embed=error_embed(message=f"{text_map.get(693, locale)}\n\n```\n{e}\n```").set_author(
+                    name=text_map.get(135, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -334,7 +420,9 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_overview(self, i: Interaction, member: Optional[User | Member] = None):
+    async def wish_overview(
+        self, i: Interaction, member: Optional[User | Member] = None
+    ):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -410,7 +498,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 )
             )
             all_wish_data[str(banner_id)] = wish_data
-            
+
         fp = await draw_wish_overview_card(
             self.bot.session,
             user_locale or i.locale,

@@ -781,7 +781,7 @@
 '686': 'Import your Genshin wish history from a file'
 '687': |-
   You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.txt` files exported from Shenhe
+  Currently supports importing from Shenhe and paimon.moe
 '688': Are you sure?
 '689': |-
   • You are about to clear your wish history for this account, this action cannot be undone.
@@ -798,3 +798,4 @@
 '698': Today
 '699': Tomorrow
 '700': Unknown
+'701': file
