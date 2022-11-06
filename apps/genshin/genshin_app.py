@@ -120,10 +120,6 @@ class GenshinApp:
             notes, shenhe_user.user_locale or locale, self.bot.session
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
-        embed.set_author(
-            name=text_map.get(24, locale, shenhe_user.user_locale),
-            icon_url=shenhe_user.discord_user.display_avatar.url,
-        )
         return ({'embed': embed, 'file': fp}, True)
 
     async def parse_resin_embed(
