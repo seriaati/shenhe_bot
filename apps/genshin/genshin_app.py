@@ -10,15 +10,17 @@ from discord.utils import format_dt
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheUser
 from apps.genshin.utils import get_character, get_shenhe_user, get_uid
-from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import (get_element_name, get_month_name,
-                                 get_user_locale)
+from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import (default_embed, error_embed,
-                           get_user_appearance_mode, log)
-from yelan.draw import (draw_abyss_overview_card, draw_area_card,
-                        draw_diary_card, draw_stats_card)
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
+from yelan.draw import (
+    draw_abyss_overview_card,
+    draw_area_card,
+    draw_diary_card,
+    draw_realtime_notes_card,
+    draw_stats_card,
+)
 
 
 class CookieInvalid(Exception):
@@ -114,14 +116,15 @@ class GenshinApp:
     async def get_real_time_notes(self, user_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
-        embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
-        return (
-            embed.set_author(
-                name=text_map.get(24, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            ),
-            True,
+        fp = await draw_realtime_notes_card(
+            notes, shenhe_user.user_locale or locale, self.bot.session
         )
+        embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
+        embed.set_author(
+            name=text_map.get(24, locale, shenhe_user.user_locale),
+            icon_url=shenhe_user.discord_user.display_avatar.url,
+        )
+        return ({'embed': embed, 'file': fp}, True)
 
     async def parse_resin_embed(
         self, notes: genshin.models.Notes, locale: Locale, user_locale: str
@@ -145,39 +148,11 @@ class GenshinApp:
                     notes.transformer_recovery_time, "R"
                 )
         result = default_embed(
-            message=f"<:daily:1004648484877651978> {text_map.get(6, locale, user_locale)}: {notes.completed_commissions}/{notes.max_commissions}\n"
+            message=f"<:resin:1004648472995168326> {text_map.get(15, locale, user_locale)}: {resin_recover_time}\n"
+            f"<:realm:1004648474266062880> {text_map.get(15, locale, user_locale)}: {realm_recover_time}\n"
             f"<:transformer:1004648470981902427> {text_map.get(8, locale, user_locale)}: {transformer_recover_time}"
         )
-        result.add_field(
-            name=f"<:resin:1004648472995168326> {text_map.get(4, locale, user_locale)}",
-            value=f"{text_map.get(303, locale, user_locale)}: {notes.current_resin}/{notes.max_resin}\n"
-            f"{text_map.get(15, locale, user_locale)}: {resin_recover_time}\n"
-            f"{text_map.get(5, locale, user_locale)}: {notes.remaining_resin_discounts}/3",
-            inline=False,
-        )
-        result.add_field(
-            name=f"<:realm:1004648474266062880> {text_map.get(17, locale, user_locale)}",
-            value=f" {text_map.get(2, locale, user_locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-            f"{text_map.get(15, locale, user_locale)}: {realm_recover_time}",
-            inline=False,
-        )
-        exped_finished = 0
-        exped_msg = ""
-        total_exped = len(notes.expeditions)
-        if not notes.expeditions:
-            exped_msg = text_map.get(18, locale, user_locale)
-        for expedition in notes.expeditions:
-            exped_msg += f"• {expedition.character.name}"
-            if expedition.finished:
-                exped_finished += 1
-                exped_msg += f": {text_map.get(19, locale, user_locale)}\n"
-            else:
-                exped_msg += f': {format_dt(expedition.completion_time, "R")}\n'
-        result.add_field(
-            name=f"<:ADVENTURERS_GUILD:998780550615679086> {text_map.get(20, locale, user_locale)} ({exped_finished}/{total_exped})",
-            value=exped_msg,
-            inline=False,
-        )
+        result.set_image(url="attachment://realtime_notes.jpeg")
         return result
 
     @genshin_error_handler
@@ -327,8 +302,7 @@ class GenshinApp:
         locale = shenhe_user.user_locale or locale
         dark_mode = await get_user_appearance_mode(user_id, self.db)
         cache = self.bot.abyss_overview_card_cache
-        fp = cache.get(
-            shenhe_user.uid)
+        fp = cache.get(shenhe_user.uid)
         if fp is None:
             fp = await draw_abyss_overview_card(
                 locale, dark_mode, abyss, user, self.bot.session, self.bot.loop

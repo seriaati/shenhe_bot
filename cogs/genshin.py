@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 import aiosqlite
 import pytz
 from utility.utils import log
-from discord import (File, Interaction, SelectOption, User, WebhookMessage,
-                     app_commands)
+from discord import File, Interaction, SelectOption, User, WebhookMessage, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -26,28 +25,47 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character, Event, Material, Weapon
 from apps.genshin.checks import *
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (calculate_artifact_score, get_artifact,
-                                get_character, get_farm_data, get_fight_prop,
-                                get_uid, get_weapon,
-                                load_and_update_enka_cache,
-                                parse_character_wiki_embed)
+from apps.genshin.utils import (
+    calculate_artifact_score,
+    get_artifact,
+    get_character,
+    get_farm_data,
+    get_fight_prop,
+    get_uid,
+    get_weapon,
+    load_and_update_enka_cache,
+    parse_character_wiki_embed,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from UI_elements.genshin import (Abyss, ArtifactLeaderboard, Build,
-                                 CharacterWiki, Diary, EnkaProfile,
-                                 EventTypeChooser, ShowAllCharacters)
+from UI_elements.genshin import (
+    Abyss,
+    ArtifactLeaderboard,
+    Build,
+    CharacterWiki,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_timezone, get_weekday_int_with_name)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_timezone,
+    get_weekday_int_with_name,
+)
 
 load_dotenv()
+
 
 class UIDNotFound(Exception):
     pass
@@ -142,7 +160,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         result, success = await self.genshin_app.get_real_time_notes(
             member.id, i.locale
         )
-        await i.followup.send(embed=result, ephemeral=not success)
+        if not success:
+            await i.followup.send(embed=result, ephemeral=True)
+        else:
+            fp = result["file"]
+            fp.seek(0)
+            await i.followup.send(
+                embed=result["embed"], file=File(fp, filename="realtime_notes.jpeg")
+            )
 
     async def check_ctx_menu(self, i: Interaction, member: User):
         check = await check_cookie_predicate(i, member)
@@ -870,7 +895,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 async with EnkaNetworkAPI("cht") as enka:
                     try:
                         data = await enka.fetch_user(uid)
-                    except (UIDNotFounded, asyncio.exceptions.TimeoutError, EnkaServerError):
+                    except (
+                        UIDNotFounded,
+                        asyncio.exceptions.TimeoutError,
+                        EnkaServerError,
+                    ):
                         return await i.followup.send(
                             embed=error_embed(
                                 message=text_map.get(519, i.locale, user_locale)
