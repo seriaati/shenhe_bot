@@ -540,19 +540,20 @@ def convert_wl_to_mora(wl: int) -> int:
 
 
 async def get_wish_history_embed(
-    i: discord.Interaction, query: str
+    i: discord.Interaction, query: str, member: Optional[discord.User] = None
 ) -> List[discord.Embed]:
+    member = member or i.user
     user_locale = await get_user_locale(i.user.id, i.client.db)
     async with i.client.db.execute(
         f"SELECT wish_rarity, wish_time, item_id FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),
+        (member.id, await get_uid(member.id, i.client.db)),
     ) as cursor:
         wish_history = await cursor.fetchall()
 
     if not wish_history:
         embed = error_embed(message=text_map.get(75, i.locale, user_locale)).set_author(
             name=text_map.get(648, i.locale, user_locale),
-            icon_url=i.user.display_avatar.url,
+            icon_url=member.display_avatar.url,
         )
         return [embed]
     else:
@@ -575,7 +576,7 @@ async def get_wish_history_embed(
             embed = default_embed(message=embed_str)
             embed.set_author(
                 name=text_map.get(369, i.locale, user_locale),
-                icon_url=i.user.display_avatar.url,
+                icon_url=member.display_avatar.url,
             )
             embeds.append(embed)
 

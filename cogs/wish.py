@@ -97,9 +97,11 @@ class WishCog(commands.GroupCog, name="wish"):
 
     @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
-    async def wish_history(self, i: Interaction):
+    @app_commands.rename(member=_("user", hash=415))
+    @app_commands.describe(member=_("check other user's data", hash=416))
+    async def wish_history(self, i: Interaction, member: Optional[User] = None):
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        embeds = await get_wish_history_embed(i, "")
+        embeds = await get_wish_history_embed(i, "", member)
         options = [
             SelectOption(label=text_map.get(645, i.locale, user_locale), value="301"),
             SelectOption(label=text_map.get(646, i.locale, user_locale), value="302"),

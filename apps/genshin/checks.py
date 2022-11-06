@@ -78,7 +78,7 @@ def check_wish_history():
                     message=text_map.get(368, i.locale, user_locale)
                 ).set_author(
                     name=text_map.get(683, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
+                    icon_url=user.display_avatar.url,
                 ),
                 ephemeral=True,
             )
