@@ -2,7 +2,7 @@ import ast
 from typing import Dict, List, Optional, Tuple
 
 import GGanalysis.games.genshin_impact as GI
-from discord import File, Interaction, SelectOption, User, app_commands, Attachment
+from discord import File, Interaction, SelectOption, User, app_commands, Attachment, Member
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from UI_elements.wish.SetAuthKey import wish_import_command
@@ -331,7 +331,7 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_overview(self, i: Interaction, member: Optional[User] = None):
+    async def wish_overview(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -343,7 +343,6 @@ class WishCog(commands.GroupCog, name="wish"):
             data = await cursor.fetchall()
 
         items: List[Dict[str, int | str]] = []
-        images = {}
         options = []
         for _, tpl in enumerate(data):
             name = tpl[0]
@@ -363,6 +362,7 @@ class WishCog(commands.GroupCog, name="wish"):
             302: weapon_banner,
             200: permanent_banner,
         }
+        all_wish_data = {}
         for banner_id, banner in banners.items():
             if not banner:
                 continue
@@ -400,25 +400,25 @@ class WishCog(commands.GroupCog, name="wish"):
                 pity=pity,
                 recents=recents,
             )
-            fp = await draw_wish_overview_card(
-                i.client.session,
-                user_locale or i.locale,
-                wish_data,
-                member.display_avatar.url,
-                member.name,
-                await get_user_appearance_mode(i.user.id, i.client.db),
-            )
-            images[banner_id] = fp
             options.append(
                 SelectOption(
                     label=title,
                     value=str(banner_id),
                 )
             )
-        fp = list(images.values())[0]
+            all_wish_data[str(banner_id)] = wish_data
+            
+        fp = await draw_wish_overview_card(
+            i.client.session,
+            user_locale or i.locale,
+            all_wish_data["301"],
+            member.display_avatar.url,
+            member.name,
+            await get_user_appearance_mode(i.user.id, i.client.db),
+        )
         fp.seek(0)
         view = ChooseBanner.View(
-            images, text_map.get(656, i.locale, user_locale), options
+            member, text_map.get(656, i.locale, user_locale), options, all_wish_data
         )
         await i.followup.send(
             embed=default_embed().set_image(url="attachment://overview.jpeg"),
