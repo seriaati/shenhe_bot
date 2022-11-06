@@ -332,7 +332,7 @@ class GenshinApp:
             result["options"].append(
                 SelectOption(
                     emoji=element_emojis.get(element),
-                    label=f"{get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(45, locale, shenhe_user.user_locale)}",
+                    label=f"{get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(105, locale, shenhe_user.user_locale)}",
                     value=index,
                 )
             )
@@ -340,7 +340,7 @@ class GenshinApp:
             for character in characters:
                 message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
             embed = default_embed(
-                f"{element_emojis.get(element)} {get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(45, locale, shenhe_user.user_locale)}",
+                f"{element_emojis.get(element)} {get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(105, locale, shenhe_user.user_locale)}",
                 message,
             ).set_author(
                 name=text_map.get(105, locale, shenhe_user.user_locale),
