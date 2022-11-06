@@ -227,6 +227,7 @@ class GenshinApp:
             user,
             shenhe_user.user_locale or locale,
             month,
+            await get_user_appearance_mode(user_id, self.db),
         )
         fp.seek(0)
         embed.set_image(url="attachment://diary.jpeg")
