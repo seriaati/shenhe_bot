@@ -14,7 +14,7 @@ from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
 from UI_elements.wish import ChooseBanner, ChooseWeapon, WishFilter, SetAuthKey
 from utility.paginator import GeneralPaginator
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, error_embed, get_user_appearance_mode
 from yelan.draw import draw_wish_overview_card
 import sentry_sdk
 
@@ -406,6 +406,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 wish_data,
                 member.display_avatar.url,
                 member.name,
+                await get_user_appearance_mode(i.user.id, i.client.db),
             )
             images[banner_id] = fp
             options.append(
