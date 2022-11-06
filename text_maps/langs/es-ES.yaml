@@ -1,69 +1,69 @@
 ---
-'1': Full
-'2': Realm currency
-'3': Choose an import method
-'4': Resin
-'5': Resin discounts
-'6': Daily comission
+'1': Lleno
+'2': Intramora
+'3': Elige un método de importación
+'4': Resina
+'5': Descuento de resina
+'6': Misión de encargo
 '7': min
 '8': P.T. remaining time
-'9': Available to use
-'10': There was an error in Genshin's API
+'9': Disponible para usar
+'10': Hubo un error en la API de Genshin
 '11': P.T. not found
-'12': sec
-'13': Today
-'14': The month of diary you are trying to view is unavailable
-'15': Recovery time
-'16': It is recommended to use the /check command
+'12': segs
+'13': Hoy
+'14': El mes del diario que estás intentando ver no está disponible
+'15': Tiempo de recuperación
+'16': Se recomienda utilizar el comando /check
 '17': ''
 '18': ''
 '19': ''
-'20': Expeditions
-'21': </stuck:1006486283725590536> for more information
-'22': Data not public
+'20': Expediciones
+'21': </stuck:1006486283725590536> para más información
+'22': Datos privados
 '23': Error
-'24': Realtime notes
-'25': Mon.
-'26': Tue.
-'27': Wed.
-'28': Thu.
-'29': Fri.
-'30': Sat.
-'31': Sun.
-'32': Select a language
-'33': Language changed
-'34': Current language
-'35': </register:1006486283725590528> for more information
-'36': Cookie invalid
-'37': Account register canceled
-'38': No valid accounts were obtained from the cookie
-'39': Account added
-'40': You have already claimed today's login reward!
-'41': Obtained
-'42': Claim successful
-'43': Overview
-'44': Days Active
-'45': Characters
-'46': Achievements
-'47': Spiral Abyss
+'24': Notas en tiempo real
+'25': Lun.
+'26': Mar.
+'27': Mié.
+'28': Jue.
+'29': Vie.
+'30': Sáb.
+'31': Dom.
+'32': Selecciona un idioma
+'33': Idioma cambiado
+'34': Idioma actual
+'35': </register:1006486283725590528> para más información
+'36': Cookie inválida
+'37': Registro de cuenta cancelado
+'38': No se han obtenido cuentas válidas de la cookie
+'39': Cuenta añadida
+'40': '¡Ya has reclamado la recompensa de inicio de sesión de hoy!'
+'41': Obtenido
+'42': Reclamación exitosa
+'43': Resumen
+'44': Días activos
+'45': Personajes
+'46': Logros
+'47': Espiral del Abismo
 '48': Oculi
-'49': Anemoculi
-'50': Geoculi
-'51': Electroculi
-'52': Chests
-'53': Common Chests
-'54': Exquisite Chests
-'55': Luxurious Chests
-'56': Genshin stats
-'57': Precious Chests
-'58': World Exploration
-'59': Primogem income v.s last month
-'60': increased
-'61': decreased
-'62': Mora income v.s last month
-'63': Acquired this month
-'64': Last month
-'65': Primogems obtained
+'49': Anemóculus
+'50': Geóculus
+'51': Electróculus
+'52': Cofres
+'53': Cofres Comunes
+'54': Cofres Sofisticados
+'55': Cofres Lujosos
+'56': Estadísticas de Genshin
+'57': Cofres Valiosos
+'58': Exploración del mundo
+'59': Ingreso de Protogemas v.s el mes pasado
+'60': aumentado
+'61': disminuido
+'62': Ingresos de Mora v.s el mes pasado
+'63': Adquiridos este mes
+'64': El mes pasado
+'65': Protogemas obtenidos
 '66': Diary log
 '67': Click the button below
 '68': to view the last 30 primo or mora records
@@ -152,7 +152,7 @@
 '143': You are not the issuer of this command
 '144': Timezone name
 '145': Type the timezone name here
-'146': Floor No.
+'146': Piso
 '147': <FLOOR>
 '148': Choose abyss floor
 '149': Data not public?
@@ -471,7 +471,7 @@
 '417': 'View genshin stats: Active days, oculis, number of chests'
 '418': A user's genshin UID
 '419': View area exploration rates
-'420': Claim hoyolab daily login reward
+'420': Ver información sobre tus recompensas de inicio de sesión diario de Hoyolab
 '421': View all owned characters (need /register)
 '422': View traveler's diary (need /register)
 '423': month
@@ -547,7 +547,7 @@
 '493': Waifus
 '494': Others
 '495': Choose your category
-'496': Admin usage only
+'496': Solo uso del propietario
 '497': |-
   Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
   I really appreciate all of you and I hope you enjoy using Shenhe.
@@ -791,10 +791,10 @@
 '691': Confirm wish import
 '692': Import your Genshin wish history from a txt file exported by Shenhe
 '693': Please check the file you have provided
-'694': Ongoing
-'695': Finished
-'696': Remaining
-'697': Completed
-'698': Today
-'699': Tomorrow
-'700': Unknown
+'694': En curso
+'695': Terminado
+'696': Restante
+'697': Completado
+'698': Hoy
+'699': Mañana
+'700': Desconocido
