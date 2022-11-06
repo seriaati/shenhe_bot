@@ -1,4 +1,5 @@
 {
-    "python.linting.enabled": true,
-    "python.analysis.typeCheckingMode": "basic"
+    "python.linting.enabled": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.pylintEnabled": true
 }

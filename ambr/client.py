@@ -79,9 +79,9 @@ class AmbrTopAPI:
     async def request_from_endpoint(
         self,
         endpoint: str,
-        lang: Optional[str] = None,
+        lang: Optional[str] = "",
         static: bool = False,
-        id: Optional[str | int] = None,
+        id: Optional[str | int] = "",
     ) -> Dict:
         """Request data from a specific endpoint.
 
@@ -144,7 +144,7 @@ class AmbrTopAPI:
     async def update_cache(
         self,
         all_lang: bool = False,
-        endpoint: Optional[str] = None,
+        endpoint: str = "",
         static: bool = False,
     ) -> None:
         """Update the cache of the API by sending requests to the API through an aiohttp session.
@@ -158,7 +158,7 @@ class AmbrTopAPI:
             langs = list(LANGS.keys())
         else:
             langs = [self.lang]
-        if endpoint is None:
+        if endpoint == "":
             if not static:
                 endpoints = list(ENDPOINTS.keys())
             else:

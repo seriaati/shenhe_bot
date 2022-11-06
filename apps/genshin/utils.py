@@ -328,9 +328,9 @@ async def get_shenhe_user(
     user_id: int,
     db: aiosqlite.Connection,
     bot: commands.Bot,
-    locale: Locale = None,
-    cookie: Dict[str, str | int] = None,
-    custom_uid: int = None,
+    locale: Optional[Locale] = None,
+    cookie: Optional[Dict[str, str | int]] = None,
+    custom_uid: Optional[int] = None,
     daily_checkin: int = 1,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)

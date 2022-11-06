@@ -1,12 +1,15 @@
-import asyncio
 import functools
 import importlib
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Optional
+
 import git
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
+
+from apps.genshin.custom_model import ShenheBot
 from UI_elements.admin import Annouce
 from utility.utils import error_embed
 
@@ -26,24 +29,24 @@ def is_seria():
 
 
 class AdminCog(commands.Cog, name="admin"):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
+    def __init__(self, bot):
+        self.bot: ShenheBot = bot
 
     @is_seria()
     @app_commands.command(
         name="maintenance", description=_("Owner usage only", hash=496)
     )
-    async def maintenance(self, i: Interaction, time: str = None):
-        i.client.maintenance = not i.client.maintenance
-        if time is not None:
-            i.client.maintenance_time = time
+    async def maintenance(self, i: Interaction, time: Optional[str] = ""):
+        self.bot.maintenance = not self.bot.maintenance
+        if time != "":
+            self.bot.maintenance_time = time
         await i.response.send_message("success", ephemeral=True)
 
     @is_seria()
     @app_commands.command(name="reload", description=_("Owner usage only", hash=496))
     async def reload(self, i: Interaction):
         await i.response.defer(ephemeral=True)
-        if not i.client.debug:
+        if not self.bot.debug:
             g = git.cmd.Git(Path(__file__).parent.parent)
             pull = functools.partial(g.pull)
             await self.bot.loop.run_in_executor(None, pull)

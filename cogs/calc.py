@@ -1,29 +1,28 @@
-from genshin import InvalidCookies
-from apps.genshin.checks import check_cookie_predicate
-from yelan.draw import draw_todo_card
-from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (
-    get_character,
-    get_weapon,
-)
-from apps.text_map.convert_locale import to_genshin_py
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
+from genshin import InvalidCookies
+from genshin.errors import GenshinException
+
+from apps.genshin.checks import check_cookie_predicate
+from apps.genshin.custom_model import ShenheBot
+from apps.genshin.genshin_app import GenshinApp
+from apps.genshin.utils import get_character, get_weapon
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from UI_elements.calc import AddToTodo, CalcCharacter, CalcWeapon
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed
-from genshin.errors import GenshinException
+from yelan.draw import draw_todo_card
 
 
 class CalcCog(commands.GroupCog, name="calc"):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         super().__init__()
-        self.bot = bot
-        self.genshin_app = GenshinApp(bot.db, bot)
+        self.bot: ShenheBot = bot
+        self.genshin_app = GenshinApp(self.bot.db, self.bot)
 
     @app_commands.command(
         name="character",

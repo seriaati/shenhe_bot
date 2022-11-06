@@ -1,20 +1,22 @@
+import pytz
+from discord import Interaction, app_commands
+from discord.app_commands import Choice
+from discord.app_commands import locale_str as _
+from discord.ext import commands
+
+from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.update.change_log import change_log
 from data.update.change_log_en import change_log_en
-from discord import Interaction, app_commands
-from discord.app_commands import locale_str as _
-from discord.app_commands import Choice
-from discord.ext import commands
-from UI_elements.others import ChangeLog, SettingsMenu, ManageAccounts
+from UI_elements.others import ChangeLog, ManageAccounts, SettingsMenu
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed
-import pytz
 
 
 class OthersCog(commands.Cog, name="others"):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
+    def __init__(self, bot):
+        self.bot: ShenheBot = bot
 
     @app_commands.command(
         name="version", description=_("View shenhe's change logs", hash=503)
@@ -51,7 +53,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("View and change your user settings in Shenhe", hash=534),
     )
     async def settings(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         view = SettingsMenu.View(user_locale or i.locale)
         view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))
@@ -83,7 +85,7 @@ class OthersCog(commands.Cog, name="others"):
             "https://i.imgur.com/cgV10Jw.png",
             "https://i.imgur.com/XDlxJOE.png",
         ]
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         count = 0
         for hash in range(609, 622 + 1):
             if hash % 2 == 0:
@@ -97,7 +99,7 @@ class OthersCog(commands.Cog, name="others"):
             embed.set_image(url=images[count])
             embeds.append(embed)
             count += 1
-        await GeneralPaginator(i, embeds, i.client.db).start()
+        await GeneralPaginator(i, embeds, self.bot.db).start()
 
     @app_commands.command(
         name="timezone", description=_("View the timezone list", hash=134)
@@ -120,7 +122,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("Meet the awesome people that helped me!", hash=297),
     )
     async def view_credits(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         embed = default_embed(text_map.get(475, locale) + " 🎉")
         kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
             425140480334888980

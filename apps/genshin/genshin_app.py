@@ -478,6 +478,6 @@ class GenshinApp:
         uid = await get_uid(user_id, self.db)
         return uid
 
-    async def get_user_cookie(self, user_id: int, locale: Locale = None) -> ShenheUser:
+    async def get_user_cookie(self, user_id: int, locale: Optional[Locale] = None) -> ShenheUser:
         shenhe_user = await get_shenhe_user(user_id, self.db, self.bot, locale)
         return shenhe_user

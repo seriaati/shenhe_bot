@@ -1,15 +1,17 @@
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseView
 from discord import Interaction, Locale, SelectOption, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import Select
+
+from apps.genshin.custom_model import ShenheBot
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from UI_base_models import BaseView
 from utility.utils import default_embed
 
 
 class Dropdown(Select):
-    def __init__(self, bot: commands.Bot, locale: Locale, user_locale: str | None):
+    def __init__(self, bot, locale: Locale, user_locale: str | None):
         options = [
             SelectOption(label=text_map.get(487, locale, user_locale),
                          emoji='🌟'),
@@ -25,10 +27,11 @@ class Dropdown(Select):
                          emoji='❄️'),
         ]
         super().__init__(placeholder=text_map.get(495, locale, user_locale), options=options)
-        self.bot = bot
+        self.bot: ShenheBot = bot
 
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
+        index = 0
         cogs = ['genshin', 'wish', 'calc', 'todo', 'others']
         for index, option in enumerate(self.options):
             if option.value == self.values[0]:
@@ -36,6 +39,8 @@ class Dropdown(Select):
                 index = index
                 break
         command_cog = self.bot.get_cog(cogs[index])
+        if command_cog is None:
+            raise ValueError(f'Cog {cogs[index]} not found')
         commands = command_cog.__cog_app_commands__
         is_group = command_cog.__cog_is_app_commands_group__
         group_name = command_cog.__cog_group_name__

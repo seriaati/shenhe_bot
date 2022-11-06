@@ -17,8 +17,8 @@ from discord.ext import commands, tasks
 from discord.utils import find, format_dt
 
 from ambr.client import AmbrTopAPI
-from ambr.models import Artifact, Character, CharacterUpgrade, Weapon, WeaponUpgrade
-from apps.genshin.custom_model import NotificationUser, ShenheUser
+from ambr.models import Artifact, Character, Weapon
+from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
@@ -52,7 +52,7 @@ def schedule_error_handler(func):
 
 class Schedule(commands.Cog):
     def __init__(self, bot):
-        self.bot: commands.Bot = bot
+        self.bot: ShenheBot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
         self.run_tasks.start()
@@ -66,6 +66,7 @@ class Schedule(commands.Cog):
 
     @tasks.loop(minutes=loop_interval)
     async def run_tasks(self):
+        """Run the tasks every loop_interval minutes"""
         now = datetime.now()
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
@@ -333,6 +334,7 @@ class Schedule(commands.Cog):
             except genshin.errors.InvalidCookies:
                 error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
+                count += 1
             except genshin.errors.GenshinException as e:
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Genshin Exception: {e}")
@@ -346,7 +348,7 @@ class Schedule(commands.Cog):
                 count += 1
             if error:
                 await self.bot.db.execute(
-                    f"UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
+                    "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
                     (user.discord_user.id, user.uid),
                 )
                 try:
@@ -362,7 +364,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(2.3)
+            await asyncio.sleep(2.2)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
         end = process_time()

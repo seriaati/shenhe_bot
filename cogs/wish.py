@@ -2,26 +2,29 @@ import ast
 from typing import Dict, List, Optional, Tuple
 
 import GGanalysis.games.genshin_impact as GI
-from discord import File, Interaction, SelectOption, User, app_commands, Attachment, Member
+import sentry_sdk
+from discord import (Attachment, File, Interaction, Member, SelectOption, User,
+                     app_commands)
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from UI_elements.wish.SetAuthKey import wish_import_command
+
 from apps.genshin.checks import check_account, check_wish_history
-from apps.genshin.custom_model import Wish, WishData, WishInfo
-from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
+from apps.genshin.custom_model import ShenheBot, Wish, WishData, WishInfo
+from apps.genshin.utils import (get_uid, get_wish_history_embed,
+                                get_wish_info_embed)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
-from UI_elements.wish import ChooseBanner, ChooseWeapon, WishFilter, SetAuthKey
+from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
+from UI_elements.wish.SetAuthKey import wish_import_command
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed, get_user_appearance_mode
 from yelan.draw import draw_wish_overview_card
-import sentry_sdk
 
 
 class WishCog(commands.GroupCog, name="wish"):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: ShenheBot = bot
         super().__init__()
 
     @check_account()
@@ -39,7 +42,7 @@ class WishCog(commands.GroupCog, name="wish"):
         ),
     )
     async def wish_file_import(self, i: Interaction, file: Attachment):
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         try:
             wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
             character_banner = 0
@@ -100,7 +103,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
     async def wish_history(self, i: Interaction, member: Optional[User] = None):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id, self.bot.db)
         embeds = await get_wish_history_embed(i, "", member)
         options = [
             SelectOption(label=text_map.get(645, i.locale, user_locale), value="301"),
@@ -133,9 +136,9 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
         # chacter banner data
-        async with i.client.db.execute(
+        async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(member.id, i.client.db)),
+            (i.user.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -197,9 +200,9 @@ class WishCog(commands.GroupCog, name="wish"):
             )
         await i.response.defer()
 
-        async with i.client.db.execute(
+        async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id, i.client.db)),
+            (i.user.id, await get_uid(i.user.id, self.bot.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -268,9 +271,9 @@ class WishCog(commands.GroupCog, name="wish"):
                 ephemeral=True,
             )
 
-        async with i.client.db.execute(
+        async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id, i.client.db)),
+            (i.user.id, await get_uid(i.user.id, self.bot.db)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -336,9 +339,9 @@ class WishCog(commands.GroupCog, name="wish"):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
 
-        async with i.client.db.execute(
+        async with self.bot.db.execute(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (member.id, await get_uid(member.id, i.client.db)),
+            (member.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
             data = await cursor.fetchall()
 
@@ -409,12 +412,12 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data[str(banner_id)] = wish_data
             
         fp = await draw_wish_overview_card(
-            i.client.session,
+            self.bot.session,
             user_locale or i.locale,
             all_wish_data["301"],
             member.display_avatar.url,
             member.name,
-            await get_user_appearance_mode(i.user.id, i.client.db),
+            await get_user_appearance_mode(i.user.id, self.bot.db),
         )
         fp.seek(0)
         view = ChooseBanner.View(

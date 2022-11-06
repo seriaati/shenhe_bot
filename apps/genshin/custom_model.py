@@ -1,8 +1,10 @@
-import io
+import aiohttp
+import aiosqlite
 from typing import Dict, List, Optional
 from pydantic import BaseModel
 import discord
 import genshin
+from discord.ext import commands
 
 class ShenheUser(BaseModel):
     client: genshin.Client
@@ -53,3 +55,12 @@ class WishInfo(BaseModel):
     permanent_banner_num: int
     weapon_banner_num: int
     novice_banner_num: int
+
+class ShenheBot(commands.Bot):
+    genshin_client: genshin.Client
+    session: aiohttp.ClientSession
+    db: aiosqlite.Connection
+    backup_db: aiosqlite.Connection
+    debug: bool
+    maintenance: bool = False
+    maintenance_time: Optional[str] = ""

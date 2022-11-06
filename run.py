@@ -62,7 +62,7 @@ class Translator(app_commands.Translator):
             return None
 
 
-class ShenheBot(commands.Bot):
+class Shenhe(commands.Bot):
     def __init__(self):
         super().__init__(
             command_prefix=commands.when_mentioned,
@@ -89,8 +89,8 @@ class ShenheBot(commands.Bot):
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
         self.gateway = HuTaoLoginAPI(
-            client_id=os.getenv("HUTAO_CLIENT_ID"),
-            client_secret=os.getenv("HUTAO_CLIENT_SECRET"),
+            client_id=os.getenv("HUTAO_CLIENT_ID", ""),
+            client_secret=os.getenv("HUTAO_CLIENT_SECRET", ""),
         )
         self.tokenStore: Dict[str, WebhookMessage] = {}
         self.gateway.ready(self.gateway_connect)
@@ -217,7 +217,7 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"), integrations=[sentry_logging], traces_sample_rate=1.0
 )
 
-bot = ShenheBot()
+bot = Shenhe()
 
 
 @bot.before_invoke

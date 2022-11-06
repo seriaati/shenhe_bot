@@ -1,14 +1,16 @@
 from discord import Interaction, app_commands
-from discord.ext import commands
-from apps.text_map.utils import get_user_locale
-from UI_elements.todo import TodoList
-from apps.todo.todo_app import get_todo_embed, return_todo
 from discord.app_commands import locale_str as _
+from discord.ext import commands
+
+from apps.genshin.custom_model import ShenheBot
+from apps.text_map.utils import get_user_locale
+from apps.todo.todo_app import get_todo_embed, return_todo
+from UI_elements.todo import TodoList
 
 
 class Todo(commands.Cog, name="todo"):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: ShenheBot = bot
 
     @app_commands.command(name="todo", description=_("View your todo list", hash=473))
     async def todo_list(self, i: Interaction):
