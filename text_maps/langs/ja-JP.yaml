@@ -771,17 +771,17 @@
 '682': アカウントを選択
 '683': このアカウントの祈願履歴は見つかりませんでした
 '684': 申鶴
-'685': Select a method of importing wishes
-'686': 'Import your Genshin wish history from a file'
+'685': 祈願をインポートする方法を選択してください
+'686': 'ファイルから原神の祈願履歴をインポート'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.txt` files exported from Shenhe
-'688': Are you sure?
+  </wish file-import:123123> コマンドを使用してファイルから祈願をインポートすることができます
+  申鶴からエクスポートされた `.txt` ファイルのみをサポートします
+'688': 本当によろしいですか？
 '689': |-
-  • You are about to clear your wish history for this account, this action cannot be undone.
-  • It is recommended to export your wish history before clearing it.
-  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
-'690': Shenhe has found **{a}** wishes in this link/file
-'691': Confirm wish import
-'692': Import your Genshin wish history from a txt file exported by Shenhe
-'693': Please check the file you have provided
+  ・このアカウントの祈願履歴を削除しようとしています！この操作は元に戻すことができません。
+  ・祈願履歴を消去する前に、祈願履歴をエクスポートすることをおすすめします。
+  ・ゲーム内で保存されなくなった祈願が申鶴に保存されている場合があります。
+'690': 申鶴はこのファイル/リンクから **{a}**個の祈願が見つかりました
+'691': 祈願のインポートを確認
+'692': 申鶴がエクスポートしたtxtファイルから原神の祈願履歴をインポート
+'693': 送信されたファイルに問題があります。ファイルを確認してください。
