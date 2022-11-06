@@ -1,23 +1,23 @@
 ---
 '1': Full
-'2': Current realm currency
+'2': Realm currency
 '3': Choose an import method
 '4': Resin
 '5': Resin discounts
-'6': Daily mission
+'6': Daily comission
 '7': min
 '8': P.T. remaining time
 '9': Available to use
 '10': There was an error in Genshin's API
-'11': P.T. doesn't exist
+'11': P.T. not found
 '12': sec
 '13': Today
 '14': The month of diary you are trying to view is unavailable
 '15': Recovery time
 '16': It is recommended to use the /check command
-'17': Serenitea Pot
-'18': No expeditions found
-'19': Finished
+'17': ''
+'18': ''
+'19': ''
 '20': Expeditions
 '21': </stuck:1006486283725590536> for more information
 '22': Data not public
@@ -30,7 +30,7 @@
 '29': Fri.
 '30': Sat.
 '31': Sun.
-'32': Choose your language
+'32': Select a language
 '33': Language changed
 '34': Current language
 '35': </register:1006486283725590528> for more information
@@ -791,3 +791,9 @@
 '691': Confirm wish import
 '692': Import your Genshin wish history from a txt file exported by Shenhe
 '693': Please check the file you have provided
+'694': Ongoing
+'695': Finished
+'696': Remaining
+'697': Completed
+'698': Today
+'699': Tomorrow
