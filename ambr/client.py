@@ -29,7 +29,6 @@ def get_decorator(func):
             return await func(*args, **kwargs)
         except KeyError:
             return None
-
     return wrapper
 
 
