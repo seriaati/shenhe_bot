@@ -54,9 +54,9 @@ class ElementButton(Button):
             if character.element == self.element:
                 options.append(
                     SelectOption(
-                        label=text_map.get_character_name(character.id, locale),
-                        emoji=get_character(character.id)["emoji"],
-                        value=character.id,
+                        label=text_map.get_character_name(str(character.id), locale),
+                        emoji=get_character(str(character.id))["emoji"],
+                        value=str(character.id),
                     )
                 )
         placeholder = text_map.get(157, locale)
