@@ -1,7 +1,7 @@
 from typing import Dict, List
 import aiosqlite
 import yaml
-from apps.genshin.utils import get_character, get_character_builds
+from apps.genshin.utils import get_character_builds, get_character_emoji
 from apps.text_map.cond_text import cond_text
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
@@ -115,12 +115,14 @@ async def element_button_callback(i: Interaction, element: str, view: View):
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
         localized_character_name = text_map.get_character_name(
-            str(character_id), i.locale, user_locale
+            str(character_id), user_locale or i.locale
         )
+        if localized_character_name is None:
+            continue
         options.append(
             SelectOption(
                 label=localized_character_name,
-                emoji=get_character(str(character_id))["emoji"],
+                emoji=get_character_emoji(str(character_id)),
                 value=str(character_id),
                 description=f'{len(character_builds["builds"])} {text_map.get(164, i.locale, user_locale)}',
             )

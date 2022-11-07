@@ -112,23 +112,8 @@ def get_character_builds(
 
     return result, has_thoughts
 
-
-def get_character(id: int = "", name: str = "", eng: str = ""):
-    if id != "":
-        character = character_map.get(str(id))
-    else:
-        for character in character_map.values():
-            if character["name"] == name or character["eng"] == eng:
-                return character
-    return character or {
-        "name": f"{id}{name}{eng}",
-        "element": "Cryo",
-        "rarity": 5,
-        "icon": "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png",
-        "emoji": "❓",
-        "eng": "Unknown",
-    }
-
+def get_character_emoji(id: str) -> str:
+    return character_map.get(id, {}).get("emoji", "")
 
 def get_weapon(id: int = "", name: str = ""):
     if id != "":
@@ -665,7 +650,7 @@ def format_wish_str(wish_data: Dict, locale: Locale | str):
     wish_time = datetime.strptime(wish_data["time"], "%Y/%m/%d %H:%M:%S")
     item_emoji = get_weapon(wish_data["item_id"])["emoji"]
     if item_emoji == "❓":
-        item_emoji = get_character(str(wish_data["item_id"]))["emoji"]
+        item_emoji = get_character_emoji(str(wish_data["item_id"]))
     return f"{format_dt(wish_time, 'd')} {item_emoji} {text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)} ({wish_data['item_rarity']} ✦)"
 
 

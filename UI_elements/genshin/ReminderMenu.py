@@ -1,16 +1,18 @@
 import ast
 import asyncio
-from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.utils import get_character, get_uid, get_weapon
-from UI_base_models import BaseModal, BaseView
-import config
-from discord import Locale, Interaction, ButtonStyle, Embed
-from discord.ui import Button, TextInput
-from discord.errors import InteractionResponded, Forbidden, NotFound
-from apps.text_map.text_map_app import text_map
-from utility.utils import default_embed, error_embed
+
 import aiosqlite
+from discord import ButtonStyle, Embed, Interaction, Locale
+from discord.errors import Forbidden, InteractionResponded, NotFound
+from discord.ui import Button, TextInput
+
+import config
+from apps.genshin.checks import check_cookie_predicate
+from apps.genshin.utils import get_character_emoji, get_uid, get_weapon
+from apps.text_map.text_map_app import text_map
+from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
+from utility.utils import default_embed, error_embed
 
 
 class View(BaseView):
@@ -202,7 +204,7 @@ async def return_talent_notification(i: Interaction, view: View):
     else:
         value = ""
         for character in character_list:
-            value += f'{get_character(character)["emoji"]} {text_map.get_character_name(character, view.locale)}\n'
+            value += f"{get_character_emoji(character)} {text_map.get_character_name(character, view.locale)}\n"
     embed = default_embed(message=text_map.get(590, view.locale))
     embed.set_author(
         name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
@@ -306,7 +308,10 @@ class NotificationON(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.table_name == "talent_notification" or self.table_name == "weapon_notification":
+        if (
+            self.table_name == "talent_notification"
+            or self.table_name == "weapon_notification"
+        ):
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ?",
                 (i.user.id,),
@@ -338,7 +343,10 @@ class NotificationOFF(Button):
 
     async def callback(self, i: Interaction):
         c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.table_name == "talent_notification" or self.table_name == "weapon_notification":
+        if (
+            self.table_name == "talent_notification"
+            or self.table_name == "weapon_notification"
+        ):
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ?",
                 (i.user.id,),

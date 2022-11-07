@@ -4,11 +4,13 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 from genshin import InvalidCookies
 from genshin.errors import GenshinException
+from ambr.client import AmbrTopAPI
+from ambr.models import Character
 
 from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.custom_model import ShenheBot
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import get_character, get_weapon
+from apps.genshin.utils import get_weapon
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -96,7 +98,10 @@ class CalcCog(commands.GroupCog, name="calc"):
             name=text_map.get(191, i.locale, user_locale),
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_thumbnail(url=get_character(view.character_id)["icon"])
+        ambr = AmbrTopAPI(i.client.session)
+        character = await ambr.get_character(view.character_id)
+        if isinstance(character, Character):
+            embed.set_thumbnail(url=character.icon)
 
         if sync:
             character_level = (

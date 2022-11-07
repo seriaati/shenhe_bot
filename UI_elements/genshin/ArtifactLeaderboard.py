@@ -1,7 +1,7 @@
 from typing import Any
 
 import aiosqlite
-from apps.genshin.utils import get_artifact, get_character, get_fight_prop
+from apps.genshin.utils import get_artifact, get_fight_prop
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.equip_types import equip_types

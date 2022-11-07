@@ -2,17 +2,15 @@ from typing import List, Literal, Sequence
 
 import aiohttp
 import aiosqlite
-import sentry_sdk
 import config
-from apps.genshin.utils import get_character
+from apps.genshin.utils import get_character_emoji
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import convert_elements, elements
 from UI_base_models import BaseModal, BaseView
 from discord import Interaction, User, SelectOption, User
-from discord.ui import Button, Modal, Select, TextInput
+from discord.ui import Button, Select, TextInput
 from genshin.models import BaseCharacter
-from utility.utils import error_embed, log
 
 
 class View(BaseView):
@@ -52,10 +50,13 @@ class ElementButton(Button):
         options = []
         for character in self.view.characters:
             if character.element == self.element:
+                label = text_map.get_character_name(str(character.id), locale)
+                if label is None:
+                    label = character.name
                 options.append(
                     SelectOption(
-                        label=text_map.get_character_name(str(character.id), locale),
-                        emoji=get_character(str(character.id))["emoji"],
+                        label=label,
+                        emoji=get_character_emoji(str(character.id)),
                         value=str(character.id),
                     )
                 )

@@ -4,7 +4,7 @@ from typing import Any, List
 import aiosqlite
 import config
 from ambr.client import AmbrTopAPI
-from apps.genshin.utils import get_character
+from apps.genshin.utils import get_character_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.elements import convert_elements, elements
@@ -65,7 +65,7 @@ class ElementButton(Button):
                 options.append(
                     SelectOption(
                         label=character.name,
-                        emoji=get_character(int(character.id))["emoji"],
+                        emoji=get_character_emoji(str(character.id)),
                         value=character.id,
                         description=description,
                     )
