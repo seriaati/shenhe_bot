@@ -65,25 +65,25 @@
 '64': El mes pasado
 '65': Protogemas obtenidos
 '66': Diary log
-'67': Click the button below
-'68': to view the last 30 primo or mora records
-'69': Traveler's Diary
-'70': Primo Log
-'71': primos
-'72': Mora Log
+'67': Presiona el botón de abajo
+'68': para ver los últimos 30 registros de protogemas o moras
+'69': Diario del viajero
+'70': Registro de protogemas
+'71': protogemas
+'72': Registro de Mora
 '73': mora
-'74': Use the </stats:1006486283725590530> to check your abyss progress, this command only shows data above floor 9
-'75': No wish data found for this filter
-'76': Spiral abyss data not found
-'77': Lunar phase
-'78': Deepest descent
-'79': Challenge Summary
-'80': Strongest single strike
-'81': Most kills
-'82': Most damage taken
-'83': Most bursts used
-'84': Most skills used
-'85': Spiral Abyss Overview
+'74': Usa </stats:1006486283725590530> para revisar tu progreso del abismo, este comando solo muestra información del piso 9 en adelante
+'75': No se encontraron datos de deseos con este filtro
+'76': No han sido encontrados datos del Espiral del Abismo
+'77': Fase lunar
+'78': Nivel máximo
+'79': Historial de desafíos
+'80': Golpe único más fuerte
+'81': Más muertes
+'82': Más daño recibido
+'83': Más habilidades definitivas usadas
+'84': Maestro de la Habilidad Elemental
+'85': Logros del Espiral del Abismo
 '86': Chamber
 '87': <CHAMBER>
 '88': '[First Half]'
@@ -799,3 +799,4 @@
 '699': Mañana
 '700': Desconocido
 '701': All
+'702': The link you have provided has expired, please generate a new one
