@@ -36,7 +36,7 @@ class FloorSelect(Select):
         for index in range(len(embeds["floors"])):
             options.append(
                 SelectOption(
-                    label=f"{text_map.get(146, locale, user_locale)} {9+index} {text_map.get(147, locale, user_locale)}",
+                    label=text_map.get(146, locale, user_locale).format(a=9+index),
                     value=index,
                 )
             )
