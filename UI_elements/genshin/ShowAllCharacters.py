@@ -36,7 +36,6 @@ class ElementSelect(Select):
                 name=text_map.get(644, self.view.locale), icon_url=asset.loader
             ),
             attachments=[],
-            view=None,
         )
         fp = await draw_big_character_card(
             self.view.characters,
@@ -48,4 +47,4 @@ class ElementSelect(Select):
         fp.seek(0)
         file = File(fp, filename="characters.jpeg")
         embed = default_embed().set_image(url="attachment://characters.jpeg")
-        await i.edit_original_response(embed=embed, attachments=[file], view=self.view)
+        await i.edit_original_response(embed=embed, attachments=[file])

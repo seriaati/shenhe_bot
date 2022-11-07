@@ -322,7 +322,7 @@ class GenshinApp:
     ) -> Tuple[Dict | Embed, bool]:
         shenhe_user = await self.get_user_cookie(user_id, locale)
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
-        locale = shenhe_user.user_locale or locale
+        locale = shenhe_user.user_locale or str(locale)
         # organize characters according to elements
         result = {
             "embed": default_embed().set_image(url="attachment://characters.jpeg"),

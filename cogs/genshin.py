@@ -327,11 +327,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp = result["file"]
         fp.seek(0)
         file = File(fp, "characters.jpeg")
+        view = ShowAllCharacters.View(locale, result["characters"], result["options"])
+        view.author = i.user
         await i.edit_original_response(
             embed=result["embed"],
             attachments=[file],
-            view=ShowAllCharacters.View(locale, result["characters"], result["options"]),
+            view=view,
         )
+        view.message = await i.original_response()
 
     @app_commands.command(
         name="diary",
