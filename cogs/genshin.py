@@ -1,14 +1,12 @@
 import asyncio
 import json
-import os
 import random
 from datetime import datetime
 from typing import Dict, List, Tuple
 
 import aiosqlite
 import pytz
-from discord import (File, Interaction, SelectOption, User, WebhookMessage,
-                     app_commands)
+from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -16,37 +14,59 @@ from discord.ui import Select
 from discord.utils import format_dt
 from diskcache import FanoutCache
 from dotenv import load_dotenv
-from enkanetwork import (EnkaNetworkAPI, EnkaNetworkResponse, EnkaServerError,
-                         UIDNotFounded)
+from enkanetwork import (
+    EnkaNetworkAPI,
+    EnkaNetworkResponse,
+    EnkaServerError,
+    UIDNotFounded,
+)
 from enkanetwork.enum import DigitType, EquipmentsType, Language
-from logingateway import HuTaoLoginAPI
-from logingateway.model import Player, Ready
 
+import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Event, Material, Weapon
 from apps.genshin.checks import *
 from apps.genshin.custom_model import ShenheBot
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (calculate_artifact_score, get_artifact,
-                                get_character, get_farm_data, get_fight_prop,
-                                get_uid, get_weapon,
-                                load_and_update_enka_cache,
-                                parse_character_wiki_embed)
+from apps.genshin.utils import (
+    calculate_artifact_score,
+    get_artifact,
+    get_character,
+    get_farm_data,
+    get_fight_prop,
+    get_uid,
+    get_weapon,
+    load_and_update_enka_cache,
+    parse_character_wiki_embed,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from UI_elements.genshin import (Abyss, ArtifactLeaderboard, Build,
-                                 CharacterWiki, Diary, EnkaProfile,
-                                 EventTypeChooser, ShowAllCharacters)
+from UI_elements.genshin import (
+    Abyss,
+    ArtifactLeaderboard,
+    Build,
+    CharacterWiki,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_timezone, get_weekday_int_with_name, log)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_timezone,
+    get_weekday_int_with_name,
+    log,
+)
 
 load_dotenv()
 
@@ -138,7 +158,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def check(self, i: Interaction, member: User = None):
+    async def check(self, i: Interaction, member: Optional[User | Member] = None):
         member = member or i.user
         await i.response.defer()
         result, success = await self.genshin_app.get_real_time_notes(
@@ -173,7 +193,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def stats(self, i: Interaction, member: User = None):
+    async def stats(self, i: Interaction, member: Optional[User | Member] = None):
         await self.stats_command(i, member)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
@@ -185,7 +205,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def stats_command(
         self,
         i: Interaction,
-        member: User = None,
+        member: Optional[User | Member] = None,
         context_command: bool = False,
     ) -> None:
         await i.response.defer()
@@ -242,7 +262,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def area(self, i: Interaction, member: User = None):
+    async def area(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
         result, success = await self.genshin_app.get_area(member.id, i.locale)
@@ -277,7 +297,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def characters(self, i: Interaction, member: User = None):
+    async def characters(self, i: Interaction, member: Optional[User | Member] = None):
         await self.characters_comamnd(i, member, False)
 
     async def characters_ctx_menu(self, i: Interaction, member: User):
@@ -287,21 +307,31 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.characters_comamnd(i, member)
 
     async def characters_comamnd(
-        self, i: Interaction, member: User = None, ephemeral: bool = True
+        self,
+        i: Interaction,
+        member: Optional[User | Member] = None,
+        ephemeral: bool = True,
     ):
         member = member or i.user
-        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        result, success = await self.genshin_app.get_all_characters(member.id, i.locale)
-        if not success:
+        locale = user_locale or i.locale
+        await i.response.send_message(
+            embed=default_embed().set_author(
+                name=text_map.get(644, locale), icon_url=asset.loader
+            ),
+            ephemeral=ephemeral,
+        )
+        result, _ = await self.genshin_app.get_all_characters(member.id, i.locale)
+        if not isinstance(result, Dict):
             return await i.followup.send(embed=result)
-        placeholder = text_map.get(142, i.locale, user_locale)
-        await GeneralPaginator(
-            i,
-            result["embeds"],
-            self.bot.db,
-            [ShowAllCharacters.ElementSelect(result["options"], placeholder)],
-        ).start(check=False, ephemeral=ephemeral, followup=True)
+        fp = result["file"]
+        fp.seek(0)
+        file = File(fp, "characters.jpeg")
+        await i.edit_original_response(
+            embed=result["embed"],
+            attachments=[file],
+            view=ShowAllCharacters.View(locale, result["characters"], result["options"]),
+        )
 
     @app_commands.command(
         name="diary",
@@ -314,7 +344,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def diary(self, i: Interaction, member: User = None):
+    async def diary(self, i: Interaction, member: Optional[User | Member] = None):
         member = member or i.user
         check = await check_cookie_predicate(i, member)
         if not check:
@@ -356,7 +386,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             Choice(name=_("Last season", hash=436), value=1),
         ],
     )
-    async def abyss(self, i: Interaction, previous: int = 0, member: User = None):
+    async def abyss(
+        self, i: Interaction, previous: int = 0, member: Optional[User | Member] = None
+    ):
         member = member or i.user
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -541,7 +573,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def profile(self, i: Interaction, member: User = None):
+    async def profile(self, i: Interaction, member: Optional[User | Member] = None):
         await self.profile_command(i, member, False)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
@@ -553,7 +585,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def profile_command(
         self,
         i: Interaction,
-        member: User = None,
+        member: Optional[User | Member] = None,
         ephemeral: bool = True,
     ):
         await i.response.defer(ephemeral=ephemeral)
@@ -1022,7 +1054,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 sub_stat = weapon_detail.upgrade.stats[1]
                 stat_str = ""
                 if main_stat.prop_id is not None:
-                    main_stat_hash = get_fight_prop(id=main_stat.prop_id)["text_map_hash"]
+                    main_stat_hash = get_fight_prop(id=main_stat.prop_id)[
+                        "text_map_hash"
+                    ]
                     stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
                 if sub_stat.prop_id is not None:
                     sub_stat_hash = get_fight_prop(id=sub_stat.prop_id)["text_map_hash"]
@@ -1130,7 +1164,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def activity(self, i: Interaction, member: User = None):
+    async def activity(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
         result, success = await self.genshin_app.get_activities(member.id, i.locale)

@@ -45,7 +45,7 @@ def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
     return result
 
 def get_element_name(
-    element_name: str, locale: Locale, user_locale: Literal["str", None]
+    element_name: str, locale: Locale, user_locale: Optional[str] = None
 ) -> str:
     element_dict = {
         "Cryo": text_map.get(213, locale, user_locale),

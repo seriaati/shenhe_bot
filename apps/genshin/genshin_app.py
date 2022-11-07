@@ -8,8 +8,8 @@ from discord.ext import commands
 from discord.utils import format_dt
 
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import ShenheUser
-from apps.genshin.utils import get_character, get_shenhe_user, get_uid
+from apps.genshin.custom_model import ShenheBot, ShenheUser
+from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
@@ -17,6 +17,7 @@ from utility.utils import default_embed, error_embed, get_user_appearance_mode, 
 from yelan.draw import (
     draw_abyss_overview_card,
     draw_area_card,
+    draw_big_character_card,
     draw_diary_card,
     draw_realtime_notes_card,
     draw_stats_card,
@@ -84,9 +85,9 @@ def genshin_error_handler(func):
 
 
 class GenshinApp:
-    def __init__(self, db: aiosqlite.Connection, bot: commands.Bot) -> None:
+    def __init__(self, db: aiosqlite.Connection, bot) -> None:
         self.db = db
-        self.bot = bot
+        self.bot: ShenheBot = bot
 
     @genshin_error_handler
     async def claim_daily_reward(self, user_id: int, locale: Locale):
@@ -316,38 +317,40 @@ class GenshinApp:
         return result, True
 
     @genshin_error_handler
-    async def get_all_characters(self, user_id: int, locale: Locale):
+    async def get_all_characters(
+        self, user_id: int, locale: Locale
+    ) -> Tuple[Dict | Embed, bool]:
         shenhe_user = await self.get_user_cookie(user_id, locale)
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
+        locale = shenhe_user.user_locale or locale
         # organize characters according to elements
-        result = {"embeds": [], "options": []}
-        organized_characters = {}
+        result = {
+            "embed": default_embed().set_image(url="attachment://characters.jpeg"),
+            "options": [SelectOption(label=text_map.get(701, locale), value="All")],
+        }
+        elements = []
         for character in characters:
-            if character.element not in organized_characters:
-                organized_characters[character.element] = []
-            organized_characters[character.element].append(character)
+            if character.element not in elements:
+                elements.append(character.element)
 
-        index = 0
-        for element, characters in organized_characters.items():
+        for element in elements:
             result["options"].append(
                 SelectOption(
                     emoji=element_emojis.get(element),
-                    label=f"{get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(105, locale, shenhe_user.user_locale)}",
-                    value=index,
+                    label=f"{get_element_name(element, locale)} {text_map.get(105, locale)}",
+                    value=element,
                 )
             )
-            message = ""
-            for character in characters:
-                message += f'{get_character(character.id)["emoji"]} {character.name} | Lvl. {character.level} | C{character.constellation}R{character.weapon.refinement}\n\n'
-            embed = default_embed(
-                f"{element_emojis.get(element)} {get_element_name(element, locale, shenhe_user.user_locale)} {text_map.get(105, locale, shenhe_user.user_locale)}",
-                message,
-            ).set_author(
-                name=text_map.get(105, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-            result["embeds"].append(embed)
-            index += 1
+        fp = await draw_big_character_card(
+            list(characters),
+            self.bot.session,
+            await get_user_appearance_mode(user_id, self.db),
+            locale,
+            "All",
+        )
+        result["file"] = fp
+        result["characters"] = characters
+
         return result, True
 
     @genshin_error_handler
@@ -478,6 +481,8 @@ class GenshinApp:
         uid = await get_uid(user_id, self.db)
         return uid
 
-    async def get_user_cookie(self, user_id: int, locale: Optional[Locale] = None) -> ShenheUser:
+    async def get_user_cookie(
+        self, user_id: int, locale: Optional[Locale] = None
+    ) -> ShenheUser:
         shenhe_user = await get_shenhe_user(user_id, self.db, self.bot, locale)
         return shenhe_user

@@ -148,7 +148,7 @@
 '139': Expired or invalid Cookie, please log out and login again!
 '140': Please use the </register:1006486283725590528> command
 '141': Account data not found!
-'142': Choose your element
+'142': Select an element
 '143': You are not the issuer of this command
 '144': Timezone name
 '145': Type the timezone name here
@@ -623,19 +623,19 @@
 '559': Switch account
 '560': Choose one or multiple accounts below to remove
 '561': Accounts removed
-'562': Choose the account type you want to add
+'562': ''
 '563': |-
   • Click on the button below to generate a login link
   • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only require your UID
   • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
   • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
   • You can always remove your account data by using </accounts:1020188057628065866>
-'564': Add UID
-'565': Add Cookie
-'566': Put your UID here
-'567': If this shouldn't be happening, please contact [seria#5334](http://discord.com/users/410036441129943050)
-'568': UID added
-'569': Current account
+'564': ''
+'565': ''
+'566': ''
+'567': ''
+'568': ''
+'569': ''
 '570': |-
   Your Cookie contains multiple accounts
   please choose the one you want to add
@@ -646,9 +646,9 @@
   One of your other accounts is linked to a Cookie,
   but the current one is only linked to a UID
 '575': Use </accounts:1020188057628065866> to switch between accounts
-'576': Please wait while we are validating your UID
-'577': Please wait while we are validating your Cookie
-'578': If you are not redirected, please contact [seria#5334](http://discord.com/users/410036441129943050)
+'576': ''
+'577': ''
+'578': ''
 '579': This user doesn't have an account registered
 '580': This user's current account is not linked to a Cookie
 '581': |-
@@ -798,3 +798,4 @@
 '698': Today
 '699': Tomorrow
 '700': Unknown
+'701': All
