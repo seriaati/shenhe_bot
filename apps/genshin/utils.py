@@ -441,27 +441,34 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
     domains = await ambr.get_domain()
     character_upgrades = await ambr.get_character_upgrade()
     weapon_upgrades = await ambr.get_weapon_upgrade()
+    if not isinstance(character_upgrades, List) or not isinstance(
+        weapon_upgrades, List
+    ):
+        raise ValueError("Invalid upgrade data")
     today_domains = []
     for domain in domains:
         if domain.weekday == weekday:
             today_domains.append(domain)
     for domain in today_domains:
-        characters: Dict[int, Character] = {}
+        characters: Dict[str, Character] = {}
         for reward in domain.rewards:
             for upgrade in character_upgrades:
                 if "10000005" in upgrade.character_id:
                     continue
                 for item in upgrade.items:
                     if item.id == reward.id:
-                        characters[upgrade.character_id] = (
-                            await ambr.get_character(str(upgrade.character_id))
-                        )[0]
+                        character = await ambr.get_character(upgrade.character_id)
+                        if not isinstance(character, Character):
+                            raise ValueError("Invalid character data")
+                        characters[upgrade.character_id] = character
         weapons: Dict[int, Weapon] = {}
         for reward in domain.rewards:
             for upgrade in weapon_upgrades:
                 for item in upgrade.items:
                     if item.id == reward.id:
-                        [weapon] = await ambr.get_weapon(id=str(upgrade.weapon_id))
+                        weapon = await ambr.get_weapon(upgrade.weapon_id)
+                        if not isinstance(weapon, Weapon):
+                            raise ValueError("Invalid weapon data")
                         if not weapon.default_icon:
                             weapons[upgrade.weapon_id] = weapon
         # merge two dicts
@@ -586,13 +593,26 @@ async def get_wish_history_embed(
 
 
 async def get_wish_info_embed(
-    i: discord.Interaction, locale: str, wish_info: WishInfo, import_command: bool = False, linked: bool = False
+    i: discord.Interaction,
+    locale: str,
+    wish_info: WishInfo,
+    import_command: bool = False,
+    linked: bool = False,
 ) -> discord.Embed:
     embed = default_embed(
-        message= text_map.get(673 if import_command else 690, locale).format(a=wish_info.total) 
-    ).set_author(name=text_map.get(474 if import_command else 691, locale), icon_url=i.user.display_avatar.url)
+        message=text_map.get(673 if import_command else 690, locale).format(
+            a=wish_info.total
+        )
+    ).set_author(
+        name=text_map.get(474 if import_command else 691, locale),
+        icon_url=i.user.display_avatar.url,
+    )
     embed.add_field(
-        name="UID", value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.db)), inline=False
+        name="UID",
+        value=text_map.get(674, locale)
+        if not linked
+        else (await get_uid(i.user.id, i.client.db)),
+        inline=False,
     )
     newest_wish = wish_info.newest_wish
     oldest_wish = wish_info.oldest_wish
@@ -637,7 +657,7 @@ async def get_wish_info_embed(
     embed.add_field(
         name=text_map.get(647, locale), value=wish_info.novice_banner_num, inline=False
     )
-    
+
     return embed
 
 

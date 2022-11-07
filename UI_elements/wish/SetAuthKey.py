@@ -343,6 +343,20 @@ class Modal(BaseModal):
         )
         try:
             wish_history = await client.wish_history()
+        except genshin.errors.InvalidAuthkey:
+            return await i.edit_original_response(
+                embed=error_embed().set_author(
+                    name=text_map.get(363, locale),
+                    icon_url=i.user.display_avatar.url,
+                )
+            )
+        except genshin.errors.AuthkeyTimeout:
+            return await i.edit_original_response(
+                embed=error_embed().set_author(
+                    name=text_map.get(702, locale),
+                    icon_url=i.user.display_avatar.url,
+                )
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             return await i.edit_original_response(

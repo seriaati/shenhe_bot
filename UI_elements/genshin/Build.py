@@ -115,13 +115,13 @@ async def element_button_callback(i: Interaction, element: str, view: View):
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
         localized_character_name = text_map.get_character_name(
-            character_id, i.locale, user_locale
+            str(character_id), i.locale, user_locale
         )
         options.append(
             SelectOption(
                 label=localized_character_name,
-                emoji=get_character(character_id)["emoji"],
-                value=character_id,
+                emoji=get_character(str(character_id))["emoji"],
+                value=str(character_id),
                 description=f'{len(character_builds["builds"])} {text_map.get(164, i.locale, user_locale)}',
             )
         )
