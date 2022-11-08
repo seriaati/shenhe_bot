@@ -6,6 +6,8 @@ ENDPOINTS = {
     'weapon': 'weapon',
     'artifact': 'reliquary',
     'domain': 'dailyDungeon',
+    'monster': 'monster',
+    'namecard': 'namecard',
 }
 
 STATIC_ENDPOINTS = {

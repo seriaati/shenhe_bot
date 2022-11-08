@@ -11,12 +11,14 @@ from ambr.models import (
     Artifact,
     ArtifactDetail,
     Character,
+    CharacterDetail,
     CharacterUpgrade,
     City,
     Domain,
     Event,
     Material,
     MaterialDetail,
+    Monster,
     Weapon,
     WeaponDetail,
     WeaponUpgrade,
@@ -189,6 +191,19 @@ class AmbrTopAPI:
                     ) as f:
                         json.dump(data, f, ensure_ascii=False, indent=4)
 
+    async def get_character_detail(self, id: str) -> Optional[CharacterDetail]:
+        """Get the detail of a character.
+
+        Args:
+            id (str): id of the character.
+
+        Returns:
+            Optional[CharacterDetail]: A CharacterDetail object.
+        """
+        data = await self.request_from_endpoint("character", id=id)
+        result = CharacterDetail(**data["data"])
+        return result
+
     async def get_material_detail(self, id: int) -> Optional[MaterialDetail]:
         """Get a material detail by id.
 
@@ -324,7 +339,25 @@ class AmbrTopAPI:
         else:
             for weapon in data["data"]["items"].values():
                 result.append(Weapon(**weapon))
+        return result
+    
+    @get_decorator
+    async def get_monster(self, id: Optional[int] = None) -> Optional[List[Monster] | Monster]:
+        """Get a list of all monsters or a specific monster by id.
 
+        Args:
+            id (Optional[int], optional): id of the monster. Defaults to None.
+
+        Returns:
+            Optional[List[Monster] | Monster]: A list of all monsters or a specific monster.
+        """
+        result = []
+        data = self.get_cache("monster")
+        if id is not None:
+            return Monster(**data["data"]["items"][str(id)])
+        else:
+            for monster in data["data"]["items"].values():
+                result.append(Monster(**monster))
         return result
 
     async def get_weapon_types(self) -> Dict[str, str]:

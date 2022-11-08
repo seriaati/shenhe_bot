@@ -47,7 +47,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         await i.response.defer()
         sync = True if sync == 1 else False
         special_talent_characters = [10000041, 10000002]
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
 
         if sync:
             check = await check_cookie_predicate(i)
@@ -57,16 +57,16 @@ class CalcCog(commands.GroupCog, name="calc"):
             client = shenhe_user.client
         else:
             client = self.bot.genshin_client
-            client.lang = to_genshin_py(user_locale or i.locale)
+            client.lang = to_genshin_py(locale)
 
         try:
             characters = await client.get_calculator_characters(sync=sync)
         except InvalidCookies:
             return await i.followup.send(
                 embed=error_embed(
-                    message=text_map.get(35, i.locale, user_locale)
+                    message=text_map.get(35, locale)
                 ).set_author(
-                    name=text_map.get(36, i.locale, user_locale),
+                    name=text_map.get(36, locale),
                     icon_url=i.user.display_avatar.url,
                 )
             )
@@ -84,9 +84,9 @@ class CalcCog(commands.GroupCog, name="calc"):
                 await i.delete_original_response()
                 return await i.followup.send(
                     embed=error_embed(
-                        message=text_map.get(187, i.locale, user_locale)
+                        message=text_map.get(187, locale)
                     ).set_author(
-                        name=text_map.get(190, i.locale, user_locale),
+                        name=text_map.get(190, locale),
                         icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
@@ -95,7 +95,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         embeds = []
         embed = default_embed()
         embed.set_author(
-            name=text_map.get(191, i.locale, user_locale),
+            name=text_map.get(191, locale),
             icon_url=i.user.display_avatar.url,
         )
         ambr = AmbrTopAPI(i.client.session)
@@ -149,18 +149,18 @@ class CalcCog(commands.GroupCog, name="calc"):
                 await i.delete_original_response()
                 return await i.followup.send(
                     embed=error_embed().set_author(
-                        name=text_map.get(190, i.locale, user_locale),
+                        name=text_map.get(190, locale),
                         icon_url=i.user.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
 
         embed.add_field(
-            name=text_map.get(192, i.locale, user_locale),
-            value=f'{text_map.get(193, i.locale, user_locale)} {character_level} ▸ {view.levels["target"]}\n'
-            f'{text_map.get(194, i.locale, user_locale)} {talents[0].level if sync else 1} ▸ {view.levels["a"]}\n'
-            f'{text_map.get(195, i.locale, user_locale)} {talents[1].level if sync else 1} ▸ {view.levels["e"]}\n'
-            f'{text_map.get(196, i.locale, user_locale)} {burst_talent.level if sync else 1} ▸ {view.levels["q"]}',
+            name=text_map.get(192, locale),
+            value=f'{text_map.get(193, locale)} {character_level} ▸ {view.levels["target"]}\n'
+            f'{text_map.get(194, locale)} {talents[0].level if sync else 1} ▸ {view.levels["a"]}\n'
+            f'{text_map.get(195, locale)} {talents[1].level if sync else 1} ▸ {view.levels["e"]}\n'
+            f'{text_map.get(196, locale)} {burst_talent.level if sync else 1} ▸ {view.levels["q"]}',
             inline=False,
         )
 
@@ -197,7 +197,7 @@ class CalcCog(commands.GroupCog, name="calc"):
 
         disabled = True if len(materials) == 0 else False
         button = AddToTodo.AddToTodo(
-            disabled, self.bot.db, materials, text_map.get(175, i.locale, user_locale)
+            disabled, self.bot.db, materials, text_map.get(175, locale)
         )
         await GeneralPaginator(
             i, embeds, self.bot.db, custom_children=[button], files=result

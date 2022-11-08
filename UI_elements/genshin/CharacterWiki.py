@@ -1,78 +1,30 @@
-from typing import Any
+import io
 
-import aiosqlite
-from data.game.elements import elements
-from UI_base_models import BaseView
-from discord import ButtonStyle, Embed, Interaction, User, SelectOption
-from discord.ui import Button, Select
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
+from discord import Interaction, SelectOption, Embed, File
+from discord.ui import Select
+
 import config
+from UI_base_models import BaseView
+from typing import List
 
 
 class View(BaseView):
-    def __init__(self, data: dict, author: User, db: aiosqlite.Connection):
-        super().__init__(timeout=config.short_timeout)
-        self.author = author
-        self.db = db
-        for index in range(0, 7):
-            self.add_item(ElementButton(data, index))
-        self.avatar_id = None
-
-
-class ElementButton(Button):
-    def __init__(self, data: dict, index: int):
-        super().__init__(emoji=(list(elements.values()))[index], row=index // 4)
-        self.index = index
-        self.data = data
-
-    async def callback(self, i: Interaction) -> Any:
-        self.view: View
-        user_locale = await get_user_locale(i.user.id, self.view.db)
-        self.view.clear_items()
-        self.view.add_item(
-            CharacterSelect(
-                self.data,
-                list(elements.keys())[self.index],
-                text_map.get(157, i.locale, user_locale),
-            )
-        )
-        await i.response.edit_message(view=self.view)
-
-
-class CharacterSelect(Select):
-    def __init__(self, data: dict, element: str, placeholder: str):
-        options = []
-        for avatar_id, avatar_info in data["data"]["items"].items():
-            if avatar_info["element"] == element:
-                options.append(
-                    SelectOption(
-                        label=avatar_info["name"],
-                        emoji=get_character(avatar_id)["emoji"],
-                        value=avatar_id,
-                    )
-                )
-        super().__init__(placeholder=placeholder, options=options)
-
-    async def callback(self, i: Interaction):
-        await i.response.defer()
-        self.view.avatar_id = self.values[0]
-        self.view.stop()
-
-
-class ShowTalentMaterials(Button):
-    def __init__(self, embed: Embed, label: str):
-        super().__init__(label=label, style=ButtonStyle.green, row=2)
-        self.embed = embed
-
-    async def callback(self, i: Interaction):
-        await i.response.send_message(embed=self.embed, ephemeral=True)
-
-
+    def __init__(self, embeds: List[Embed], options: List[SelectOption], placeholder: str, file: io.BytesIO):
+        super().__init__(timeout=config.long_timeout)
+        self.add_item(QuickNavigation(options, placeholder, file))
+        self.embeds = embeds
+        
 class QuickNavigation(Select):
-    def __init__(self, options: list[SelectOption], placeholder: str):
+    def __init__(self, options: List[SelectOption], placeholder: str, file: io.BytesIO):
         super().__init__(placeholder=placeholder, options=options)
+        self.file = file
 
     async def callback(self, i: Interaction):
-        self.view.current_page = int(self.values[0])
-        await self.view.update_children(i)
+        self.view: View
+        if self.values[0] == "1":
+            fp = self.file
+            fp.seek(0)
+            file = File(fp, filename="ascension.jpeg")
+            await i.response.edit_message(embed=self.view.embeds[1], attachments=[file])
+        else:
+            await i.response.edit_message(embed=self.view.embeds[int(self.values[0])], attachments=[])

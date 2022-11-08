@@ -27,3 +27,22 @@ convert_elements = {
     'Fire': 'Pyro',
     'Grass': 'Dendro'
 }
+
+colors = {
+    "Pyro": "#EF9A9A",
+    "Hydro": "#91B9F4",
+    "Geo": "#CFC09A",
+    "Electro": "#B39DDB",
+    "Anemo": "#80CBC4",
+    "Cryo": "#C5EDFF",
+    "Dendro": "#C5E1A5",
+}
+
+def get_element_emoji(element: str) -> str:
+    return element_emojis.get(element, "")
+
+def convert_element(element: str) -> str:
+    return convert_elements.get(element, "Unknown")
+
+def get_element_color(element: str) -> str:
+    return colors.get(element, "#e5e5e5")

@@ -72,19 +72,16 @@ class BaseView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-        try:
-            await self.message.edit(view=self)
-        except AttributeError:
-            log.warning(
-                f"[Edit View] Attribute Error: [children]{self.children} [view]{self}"
-            )
-        except discord.HTTPException:
-            log.warning(
-                f"[Edit View] HTTPException: [children]{self.children} [view]{self}"
-            )
-        except Exception as e:
-            log.warning(f"[Edit View] Failed{e}")
-            sentry_sdk.capture_event(e)
+        if hasattr(self, "message") and self.message is not None:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                log.warning(
+                    f"[Edit View] HTTPException: [children]{self.children} [view]{self}"
+                )
+            except Exception as e:
+                sentry_sdk.capture_exception(e)
+                log.warning(f"[Edit View] Failed{e}")
 
 
 class BaseModal(discord.ui.Modal):

@@ -23,7 +23,7 @@ class _view(BaseView):
         embeds: List[Embed],
         db: aiosqlite.Connection,
         check: bool = True,
-        files: Optional[List[BytesIO]] = [],
+        files: List[BytesIO] = [],
     ):
         super().__init__(timeout=config.mid_timeout)
         self.author = author
