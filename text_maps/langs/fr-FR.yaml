@@ -50,29 +50,31 @@
 '49': Anemoculi
 '50': Geoculi
 '51': Electroculi
-'52': Chests
+'52': ''
 '53': Common Chests
 '54': Exquisite Chests
 '55': Luxurious Chests
 '56': Genshin stats
 '57': Precious Chests
 '58': World Exploration
-'59': Primogem income v.s last month
-'60': increased
-'61': decreased
-'62': Mora income v.s last month
-'63': Acquired this month
-'64': Last month
-'65': Primogems obtained
-'66': Diary log
-'67': Click the button below
-'68': to view the last 30 primo or mora records
+'59': ''
+'60': ''
+'61': ''
+'62': ''
+'63': ''
+'64': ''
+'65': ''
+'66': ''
+'67': ''
+'68': ''
 '69': Traveler's Diary
 '70': Primo Log
 '71': primos
 '72': Mora Log
 '73': mora
-'74': Use the </stats:1006486283725590530> to check your abyss progress, this command only shows data above floor 9
+'74': |-
+  Use the </stats:1006486283725590530> to check your abyss progress,
+  this command only shows data above floor 9.
 '75': No wish data found for this filter
 '76': Spiral abyss data not found
 '77': Lunar phase
@@ -84,10 +86,10 @@
 '83': Most bursts used
 '84': Most skills used
 '85': Spiral Abyss Overview
-'86': Chamber
-'87': <CHAMBER>
-'88': '[First Half]'
-'89': '[Second Half]'
+'86': ''
+'87': ''
+'88': ''
+'89': ''
 '90': 'Build #'
 '91': Weapon
 '92': Artifacts
@@ -152,8 +154,8 @@
 '143': You are not the issuer of this command
 '144': Timezone name
 '145': Type the timezone name here
-'146': Floor
-'147': <FLOOR>
+'146': Floor {a}
+'147': ''
 '148': Choose abyss floor
 '149': Data not public?
 '150': |-
@@ -455,7 +457,7 @@
   6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
-'404': pulls from pity
+'404': ''
 '405': You haven't pulled in the weapon banner yet
 '406': Start time
 '407': End time
@@ -463,8 +465,8 @@
 '409': Choose event type
 '410': Register your genshin account to use commands that require one
 '411': options
-'412': Registration tutorial
-'413': Submit cookie
+'412': ''
+'413': ''
 '414': 'View real-time notes: Current resin, pot, expedition status (need /register)'
 '415': user
 '416': Check other user's data
