@@ -206,7 +206,7 @@
 '185': Weapon {level_type}
 '186': 時區
 '187': 請輸入數字
-'188': ''
+'188': Use the {command} command to calculate the number of materials needed to level up this weapon
 '189': ''
 '190': 無效的輸入
 '191': 計算結果
