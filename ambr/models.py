@@ -294,7 +294,7 @@ class CharacterUpgradeDetail(BaseModel):
 
 
 class NameCard(BaseModel):
-    id: int
+    id: int | str
     name: str
     description: str
     icon: str

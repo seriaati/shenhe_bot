@@ -110,8 +110,10 @@ def get_character_builds(
 
     return result, has_thoughts
 
+
 def get_character_emoji(id: str) -> str:
     return character_map.get(id, {}).get("emoji", "")
+
 
 def get_weapon(id: int = "", name: str = ""):
     if id != "":
@@ -188,6 +190,7 @@ def get_uid_region(uid: int) -> int:
         "0": 554,
     }
     return region_map.get(uid[0], 553)
+
 
 async def get_shenhe_user(
     user_id: int,
@@ -553,3 +556,69 @@ def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption
             )
         )
     return options
+
+
+def character_level_to_ascension_phase(level: int) -> int:
+    if level <= 20:
+        return 0
+    elif level <= 40:
+        return 1
+    elif level <= 50:
+        return 2
+    elif level <= 60:
+        return 3
+    elif level <= 70:
+        return 4
+    elif level <= 80:
+        return 5
+    elif level <= 90:
+        return 6
+    else:
+        raise ValueError("Level is too high")
+
+
+class InvalidLevelInput(Exception):
+    pass
+
+
+async def validate_level_input(
+    target: str,
+    a: str,
+    e: str,
+    q: str,
+    i: discord.Interaction,
+    locale: discord.Locale | str,
+):
+    try:
+        int_target = int(target)
+        int_a = int(a)
+        int_e = int(e)
+        int_q = int(q)
+    except ValueError:
+        await i.followup.send(
+            embed=default_embed(message=text_map.get(187, locale)).set_author(
+                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+        raise InvalidLevelInput
+    if int_target < 1 or int_target > 90:
+        await i.followup.send(
+            embed=default_embed(
+                message=text_map.get(172, locale).format(a=1, b=90)
+            ).set_author(
+                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+        raise InvalidLevelInput
+    if int_a < 1 or int_a > 10 or int_e < 1 or int_e > 10 or int_q < 1 or int_q > 10:
+        await i.followup.send(
+            embed=default_embed(
+                message=text_map.get(172, locale).format(a=1, b=10)
+            ).set_author(
+                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+        raise InvalidLevelInput

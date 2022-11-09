@@ -1,3 +1,6 @@
+from typing import List
+
+
 elements = {
     'Wind': '<:WIND_ADD_HURT:982138235239137290>',
     'Ice': '<:ICE_ADD_HURT:982138229140635648>',
@@ -46,3 +49,6 @@ def convert_element(element: str) -> str:
 
 def get_element_color(element: str) -> str:
     return colors.get(element, "#e5e5e5")
+
+def get_element_list() -> List[str]:
+    return list(convert_elements.values())

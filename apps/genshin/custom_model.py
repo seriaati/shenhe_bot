@@ -64,3 +64,26 @@ class ShenheBot(commands.Bot):
     debug: bool
     maintenance: bool = False
     maintenance_time: Optional[str] = ""
+
+class TodoList:
+    def __init__(self):
+        self.dict: Dict[int, int] = {}
+    
+    def add_item(self, item: Dict[int, int]):
+        key = list(item.keys())[0]
+        value = list(item.values())[0]
+        if key in self.dict:
+            self.dict[key] += value
+        else:
+            self.dict[key] = value
+    
+    def remove_item(self, item: Dict[int, int]):
+        key = list(item.keys())[0]
+        value = list(item.values())[0]
+        if key in self.dict:
+            self.dict[key] -= value
+            if self.dict[key] <= 0:
+                self.dict.pop(key)
+    
+    def return_list(self) -> Dict[int, int]:
+        return self.dict

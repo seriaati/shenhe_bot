@@ -1044,7 +1044,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embeds.append(embed)
                 
                 # ascension
-                embed = default_embed()
+                embed = default_embed(message=text_map.get(184, locale).format(command="</calc character:1020188057628065862>"))
                 embed.set_author(
                     name=text_map.get(320, locale), icon_url=character_detail.icon
                 )
