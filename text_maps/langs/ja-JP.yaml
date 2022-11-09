@@ -203,7 +203,7 @@
 '185': Weapon {level_type}
 '186': タイムゾーン
 '187': Please enter numbers only
-'188': ''
+'188': Use the {command} command to calculate the number of materials needed to level up this weapon
 '189': ''
 '190': 無効な入力
 '191': 計算結果
