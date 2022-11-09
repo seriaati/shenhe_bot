@@ -1,7 +1,7 @@
 from typing import Any
 
 import aiosqlite
-from apps.genshin.utils import get_artifact, get_fight_prop
+from apps.genshin.utils import get_artifact, get_character_emoji, get_fight_prop
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.equip_types import equip_types
@@ -100,7 +100,7 @@ class GoBack(Button):
             if member.id == i.user.id:
                 user_rank = f"#{rank}"
             str_list.append(
-                f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
+                f'{rank}. {get_character_emoji(avatar_id)} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
             )
             rank += 1
 

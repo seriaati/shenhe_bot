@@ -86,7 +86,7 @@ def get_character_builds(
         )
         embed.add_field(name=text_map.get(95, locale), value=stat_str)
         count += 1
-        embed.set_thumbnail(url=get_character(character_id)["icon"])
+        embed.set_thumbnail(url=get_character_icon(str(character_id)))
         embed.set_footer(
             text=f"{text_map.get(96, locale)}: https://bbs.nga.cn/read.php?tid=25843014"
         )
@@ -105,7 +105,7 @@ def get_character_builds(
                 inline=False,
             )
             count += 1
-        embed.set_thumbnail(url=get_character(character_id)["icon"])
+        embed.set_thumbnail(url=get_character_icon(str(character_id)))
         result.append([embed, text_map.get(97, locale), ""])
 
     return result, has_thoughts
@@ -114,6 +114,11 @@ def get_character_builds(
 def get_character_emoji(id: str) -> str:
     return character_map.get(id, {}).get("emoji", "")
 
+def get_weapon_emoji(id: int) -> str:
+    return weapon_map.get(str(id), {}).get("emoji", "")
+
+def get_character_icon(id: str) -> str:
+    return character_map.get(id, {}).get("icon", "")
 
 def get_weapon(id: int = "", name: str = ""):
     if id != "":

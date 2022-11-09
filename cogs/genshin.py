@@ -75,6 +75,7 @@ load_dotenv()
 class UIDNotFound(Exception):
     pass
 
+
 class ItemNotFound(Exception):
     pass
 
@@ -188,9 +189,18 @@ class GenshinCog(commands.Cog, name="genshin"):
         check = await check_cookie_predicate(i, member)
         if not check:
             return
-        await i.response.defer()
-        result, _ = await self.genshin_app.get_real_time_notes(member.id, i.locale)
-        await i.followup.send(embed=result, ephemeral=True)
+        await i.response.defer(ephemeral=True)
+        result, success = await self.genshin_app.get_real_time_notes(
+            member.id, i.locale
+        )
+        if not success:
+            await i.followup.send(embed=result, ephemeral=True)
+        else:
+            fp = result["file"]
+            fp.seek(0)
+            await i.followup.send(
+                embed=result["embed"], file=File(fp, filename="realtime_notes.jpeg")
+            )
 
     @check_account()
     @app_commands.command(
@@ -880,7 +890,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 if member.id == i.user.id:
                     user_rank = f"#{rank}"
                 str_list.append(
-                    f'{rank}. {get_character(avatar_id)["emoji"]} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
+                    f'{rank}. {get_character_emoji(avatar_id)} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
                 )
                 rank += 1
             str_list = divide_chunks(str_list, 10)
@@ -1042,9 +1052,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                     embed.add_field(name="CV", value=cv_str, inline=False)
                 embed.set_footer(text=character_detail.info.description)
                 embeds.append(embed)
-                
+
                 # ascension
-                embed = default_embed(message=text_map.get(184, locale).format(command="</calc character:1020188057628065862>"))
+                embed = default_embed(
+                    message=text_map.get(184, locale).format(
+                        command="</calc character:1020188057628065862>"
+                    )
+                )
                 embed.set_author(
                     name=text_map.get(320, locale), icon_url=character_detail.icon
                 )
@@ -1125,11 +1139,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                                 value=str(index),
                             )
                         )
-                view = CharacterWiki.View(embeds, options, text_map.get(325, locale), fp)
+                view = CharacterWiki.View(
+                    embeds, options, text_map.get(325, locale), fp
+                )
                 view.author = i.user
                 await i.edit_original_response(embed=embeds[0], view=view)
                 view.messsage = await i.original_response()
-                
+
             elif item_type == 1:
                 weapon_detail = await client.get_weapon_detail(int(query))
                 if weapon_detail is None:
@@ -1178,7 +1194,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         inline=False,
                     )
                 embed.set_thumbnail(url=weapon_detail.icon)
-                
+
                 # ascension
                 embed.set_image(url="attachment://ascension.jpeg")
                 all_materials = []
@@ -1197,7 +1213,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 fp.seek(0)
                 await i.followup.send(embed=embed, file=File(fp, "ascension.jpeg"))
-                
+
             elif item_type == 2:
                 material = await client.get_material_detail(int(query))
                 if material is None:
@@ -1234,7 +1250,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.set_thumbnail(url=material.icon)
                 await i.followup.send(embed=embed)
-                
+
             elif item_type == 3:
                 rarity_str = ""
                 artifact = await client.get_artifact_detail(int(query))

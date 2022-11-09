@@ -13,3 +13,12 @@ weapon_text_map = {
     "Polearm": 472,
     "Sword": 468,
 }
+
+def get_weapon_types() -> list[str]:
+    return list(weapon_emoji_map.keys())
+
+def get_weapon_type_emoji(weapon_type: str) -> str:
+    return weapon_emoji_map.get(weapon_type, "")
+
+def get_weapon_type_text(weapon_type: str) -> int:
+    return weapon_text_map.get(weapon_type, 700)

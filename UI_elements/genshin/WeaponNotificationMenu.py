@@ -1,28 +1,32 @@
 import ast
-from typing import List
+from typing import Dict, List
 from UI_base_models import BaseView
 from ambr.client import AmbrTopAPI
-from apps.genshin.utils import get_weapon
-from apps.text_map.convert_locale import to_ambr_top
+from apps.genshin.utils import get_weapon_emoji
 import config
 from discord.ui import Button, Select
 from discord import SelectOption, Interaction, Locale
-from data.game.weapon_types import weapon_emoji_map, weapon_text_map
 from apps.text_map.text_map_app import text_map
 from UI_elements.genshin import ReminderMenu
+from data.game.weapon_types import (
+    get_weapon_type_emoji,
+    get_weapon_type_text,
+)
 from utility.utils import divide_chunks
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str):
+    def __init__(self, locale: Locale | str, weapon_types: Dict[str, str]):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
-        for weapon_type, emoji in weapon_emoji_map.items():
+        for weapon_type_id, weapon_type in weapon_types.items():
             self.add_item(
                 WeaponTypeButton(
-                    emoji,
-                    text_map.get(weapon_text_map[weapon_type], locale).capitalize(),
-                    weapon_type,
+                    get_weapon_type_emoji(weapon_type),
+                    text_map.get(
+                        get_weapon_type_text(weapon_type), self.locale
+                    ).capitalize(),
+                    weapon_type_id,
                 )
             )
         self.add_item(GOBackReminder())
@@ -44,12 +48,17 @@ class GOBack(Button):
         self.view: View
         self.view.clear_items()
 
-        for weapon_type, emoji in weapon_emoji_map.items():
+        ambr = AmbrTopAPI(i.client.session)
+        weapon_types = await ambr.get_weapon_types()
+
+        for weapon_type_id, weapon_type in weapon_types.items():
             self.view.add_item(
                 WeaponTypeButton(
-                    emoji,
-                    text_map.get(weapon_text_map[weapon_type], self.view.locale),
-                    weapon_type,
+                    get_weapon_type_emoji(weapon_type),
+                    text_map.get(
+                        get_weapon_type_text(weapon_type), self.view.locale
+                    ).capitalize(),
+                    weapon_type_id,
                 )
             )
         self.view.add_item(GOBackReminder())
@@ -72,11 +81,10 @@ class WeaponTypeButton(Button):
         select_options = []
         ambr = AmbrTopAPI(i.client.session)
         weapons = await ambr.get_weapon()
-        weapon_types = await ambr.get_weapon_types()
         if not isinstance(weapons, List):
             raise TypeError("weapons is not a list")
         for weapon in weapons:
-            if weapon_types.get(weapon.type) == self.weapon_type:
+            if weapon.type == self.weapon_type:
                 description = (
                     text_map.get(638, self.view.locale)
                     if str(weapon.id) in weapon_list
@@ -84,9 +92,9 @@ class WeaponTypeButton(Button):
                 )
                 select_options.append(
                     SelectOption(
-                        emoji=get_weapon(weapon.id)["emoji"],
-                        label=text_map.get_weapon_name(weapon.id, self.view.locale),
-                        value=weapon.id,
+                        emoji=get_weapon_emoji(weapon.id),
+                        label=weapon.name,
+                        value=str(weapon.id),
                         description=description,
                     )
                 )
@@ -96,7 +104,10 @@ class WeaponTypeButton(Button):
         count = 1
         for options in select_options:
             self.view.add_item(
-                WeaponSelect(options, f"{text_map.get(180, self.view.locale)} ({count}~{count+len(options)-1})")
+                WeaponSelect(
+                    options,
+                    f"{text_map.get(180, self.view.locale)} ({count}~{count+len(options)-1})",
+                )
             )
             count += len(options)
         await i.response.edit_message(view=self.view)
@@ -104,7 +115,9 @@ class WeaponTypeButton(Button):
 
 class WeaponSelect(Select):
     def __init__(self, options: List[SelectOption], placeholder: str):
-        super().__init__(options=options, placeholder=placeholder, max_values=len(options))
+        super().__init__(
+            options=options, placeholder=placeholder, max_values=len(options)
+        )
 
     async def callback(self, i: Interaction):
         self.view: View

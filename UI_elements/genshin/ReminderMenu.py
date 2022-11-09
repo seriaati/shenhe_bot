@@ -5,6 +5,7 @@ import aiosqlite
 from discord import ButtonStyle, Embed, Interaction, Locale
 from discord.errors import Forbidden, InteractionResponded, NotFound
 from discord.ui import Button, TextInput
+from ambr.client import AmbrTopAPI
 
 import config
 from apps.genshin.checks import check_cookie_predicate
@@ -134,7 +135,8 @@ class AddWeapon(Button):
         self.locale = locale
 
     async def callback(self, i: Interaction):
-        view = WeaponNotificationMenu.View(self.locale)
+        ambr = AmbrTopAPI(i.client.session)
+        view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user
         view.message = await i.original_response()
