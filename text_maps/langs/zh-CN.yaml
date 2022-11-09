@@ -15,8 +15,8 @@
 '14': 你正试图查看的日记月份是无效的
 '15': 恢复时间
 '16': 建议使用 /check 指令
-'17': Click on me to continue
-'18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
+'17': 点我继续
+'18': Discord 不允许在送出一个文字框后再送出一个，所以你必须点击下方的按钮来继续 ¯\_(ツ)_/¯
 '19': ''
 '20': 探索派遣
 '21': </stuck:1006486283725590536> 来获取更多资讯
@@ -186,26 +186,26 @@
   </register:1006486283725590528> 来注册帐号
 '166': 未知用户
 '167': '的 UID'
-'168': current level
-'169': Character {level_type}
-'170': 'For Example: {a}'
-'171': Auto attack target (A) {level_type}
-'172': Level needs to be between {a} and {b}
-'173': Elemental skill (E) {level_type}
-'174': Elemental burst (Q) {level_type}
-'175': Add to todo list
+'168': 当前等级
+'169': 角色{level_type}
+'170': '例如: {a}'
+'171': 普通攻击 (A) {level_type}
+'172': 等级必须在 {a} 和 {b} 之间
+'173': 元素戰技 (E) {level_type}
+'174': 元素爆发 (Q) {level_type}
+'175': 新增到代办清单
 '176': 请输入 `/todo` 并使用「删除素材」按钮
 '177': 代办清单可存素材数量已达最大值 (125)
 '178': 使用 </todo:1006486283855605804> 来查看你的代办清单
 '179': 新增成功
 '180': 选择武器
-'181': Input calculation data
-'182': target level
-'183': Character level
-'184': Use the {command} command to calculate the number of materials needed to level up this character
+'181': 输入计算数据
+'182': 目标等级
+'183': 角色等级
+'184': 使用 {command} 指令来计算升级这个角色所需的材料数量
 '185': ''
 '186': 时区
-'187': Please enter numbers only
+'187': 请输入数字
 '188': ''
 '189': ''
 '190': 无效的输入
