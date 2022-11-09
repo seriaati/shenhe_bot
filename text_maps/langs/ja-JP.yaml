@@ -15,8 +15,8 @@
 '14': 表示しようとした月の日記は利用できません
 '15': 回復時間
 '16': /check コマンドを使用することをお勧めします
-'17': ''
-'18': ''
+'17': Click on me to continue
+'18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
 '19': ''
 '20': 探索派遣
 '21': 詳細は</stuck:1006486283725590536>で確認してください
@@ -183,35 +183,35 @@
   This user hasn't registered their account yet </register:1006486283725590528> to register
 '166': 参量物質変化器がありません。
 '167': 'の UID'
-'168': データを入力してください
-'169': キャラクター目標レベル
-'170': '例: 90'
-'171': 通常攻擊の目標天賦レベル
-'172': '例: 5'
-'173': 元素スキル(E) の目標天賦レベル
-'174': 元素爆発(Q) の目標天賦レベル
-'175': ToDoリストに追加
+'168': current level
+'169': Character {level_type}
+'170': 'For Example: {a}'
+'171': Auto attack target (A) {level_type}
+'172': Level needs to be between {a} and {b}
+'173': Elemental skill (E) {level_type}
+'174': Elemental burst (Q) {level_type}
+'175': Add to todo list
 '176': '「素材削除」ボタンを押して、ToDoリスト内の一部の素材を削除してください。'
 '177': ToDoリストに登録できる素材の数の上限に達しました (125件)
 '178': </todo:1006486283855605804> を使用してTODOリストを表示します
 '179': 成功
 '180': 武器を選択
-'181': レベルを設定：
-'182': のレベル
-'183': 現在のレベル
-'184': '例: 1'
-'185': 目標レベル
+'181': Input calculation data
+'182': target level
+'183': Character level
+'184': Use the {command} command to calculate the number of materials needed to level up this character
+'185': ''
 '186': タイムゾーン
-'187': 数字を入力してください
-'188': 'キャラクターレベル: 1~90の範囲内で入力してください。'
-'189': '天賦レベル: 1~10の範囲内で入力してください。'
+'187': Please enter numbers only
+'188': ''
+'189': ''
 '190': 無効な入力
 '191': 計算結果
 '192': 計算内容
-'193': キャラクターレベル
-'194': 通常攻擊 レベル
-'195': 元素スキル レベル
-'196': 元素爆発 レベル
+'193': ''
+'194': ''
+'195': ''
+'196': ''
 '197': 必要な材料はありません
 '198': キャラクターレベル
 '199': 天賦のレベルアップ
