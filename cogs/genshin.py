@@ -1027,7 +1027,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                     break
             if item_type is None:
                 raise ItemNotFound
-            if item_type == 0:
+            
+            if item_type == 0: # character
                 embeds: List[Embed] = []
                 character_detail = await client.get_character_detail(query)
                 if character_detail is None:
@@ -1146,7 +1147,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.edit_original_response(embed=embeds[0], view=view)
                 view.messsage = await i.original_response()
 
-            elif item_type == 1:
+            elif item_type == 1: # weapon
                 weapon_detail = await client.get_weapon_detail(int(query))
                 if weapon_detail is None:
                     raise ItemNotFound
@@ -1172,9 +1173,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             value=weapon_detail.effect.descriptions[4],
                             inline=False,
                         )
-                embed.set_image(
-                    url=f"https://api.ambr.top/assets/UI/generated/ascension/weapon_detail/{query}.png"
-                )
+                embed.add_field(name=text_map.get(320, locale), value=text_map.get(188, locale).format(command="</calc weapon:1020188057628065862>"), inline=False)
 
                 main_stat = weapon_detail.upgrade.stats[0]
                 sub_stat = weapon_detail.upgrade.stats[1]
