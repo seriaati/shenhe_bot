@@ -18,7 +18,6 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
-from data.game.elements import elements
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from utility.utils import (
@@ -26,7 +25,6 @@ from utility.utils import (
     divide_chunks,
     divide_dict,
     error_embed,
-    parse_HTML,
 )
 
 
