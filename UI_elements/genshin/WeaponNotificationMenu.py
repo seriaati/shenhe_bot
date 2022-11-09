@@ -1,17 +1,17 @@
 import ast
 from typing import Dict, List
-from UI_base_models import BaseView
+
+from discord import Interaction, Locale, SelectOption
+from discord.ui import Button, Select
+from apps.genshin.custom_model import ShenheBot
+
+import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.utils import get_weapon_emoji
-import config
-from discord.ui import Button, Select
-from discord import SelectOption, Interaction, Locale
 from apps.text_map.text_map_app import text_map
+from data.game.weapon_types import get_weapon_type_emoji
+from UI_base_models import BaseView
 from UI_elements.genshin import ReminderMenu
-from data.game.weapon_types import (
-    get_weapon_type_emoji,
-    get_weapon_type_text,
-)
 from utility.utils import divide_chunks
 
 
@@ -22,10 +22,8 @@ class View(BaseView):
         for weapon_type_id, weapon_type in weapon_types.items():
             self.add_item(
                 WeaponTypeButton(
-                    get_weapon_type_emoji(weapon_type),
-                    text_map.get(
-                        get_weapon_type_text(weapon_type), self.locale
-                    ).capitalize(),
+                    get_weapon_type_emoji(weapon_type_id),
+                    weapon_type,
                     weapon_type_id,
                 )
             )
@@ -54,10 +52,8 @@ class GOBack(Button):
         for weapon_type_id, weapon_type in weapon_types.items():
             self.view.add_item(
                 WeaponTypeButton(
-                    get_weapon_type_emoji(weapon_type),
-                    text_map.get(
-                        get_weapon_type_text(weapon_type), self.view.locale
-                    ).capitalize(),
+                    get_weapon_type_emoji(weapon_type_id),
+                    weapon_type,
                     weapon_type_id,
                 )
             )

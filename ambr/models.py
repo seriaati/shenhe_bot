@@ -1,9 +1,9 @@
 from enum import Enum, IntEnum
 from typing import Dict, List, Optional, Tuple
 
-from data.game.elements import convert_element, convert_elements
 from pydantic import BaseModel, Field, validator
 
+from data.game.elements import convert_element, convert_elements
 from utility.utils import format_number, parse_HTML
 
 
@@ -11,6 +11,8 @@ class City(BaseModel):
     id: int
     name: str
 
+class PartialMaterial(BaseModel):
+    id: str
 
 class Event(BaseModel):
     id: int
@@ -154,17 +156,40 @@ class WeaponStat(BaseModel):
     prop_id: Optional[str] = Field(alias="propType", default=None)
     initial_value: int = Field(alias="initValue")
 
+class WeaponAscension(BaseModel):
+    new_max_level: int = Field(alias="unlockMaxLevel")
+    ascension_level: int = Field(alias="promoteLevel")
+    cost_items: Optional[List[Tuple[PartialMaterial, int]]] = Field(
+        alias="costItems", default=None
+    )
+    required_player_level: Optional[int] = Field(
+        alias="requiredPlayerLevel", default=None
+    )
+    mora_cost: Optional[int] = Field(alias="coinCost", default=None)
+
+    @validator("cost_items", pre=True, allow_reuse=True)
+    def get_cost_items(cls, v):
+        result = []
+        for key, value in v.items():
+            result.append((PartialMaterial(id=key), value))
+        return result
 
 class WeaponUpgradeDetail(BaseModel):
-    awaken_cost: List[int] = Field(alias="awakenCost")
     stats: List[WeaponStat] = Field(alias="prop")
-    upgrade_info: List = Field(alias="promote")
+    ascensions: List[WeaponAscension] = Field(alias="promote")
 
     @validator("stats", pre=True, allow_reuse=True)
     def get_stats(cls, v):
         result = []
         for stat in v:
             result.append(WeaponStat(**stat))
+        return result
+    
+    @validator("ascensions", pre=True, allow_reuse=True)
+    def get_ascensions(cls, v):
+        result = []
+        for ascension in v:
+            result.append(WeaponAscension(**ascension))
         return result
 
 
@@ -219,11 +244,6 @@ class CharacterInfo(BaseModel):
     native: str
     cv: Dict[str, str]
 
-
-class PartialMaterial(BaseModel):
-    id: str
-
-
 class WeaponDetail(BaseModel):
     name: str
     description: str
@@ -263,9 +283,9 @@ class WeaponDetail(BaseModel):
         return result
 
 
-class CharacterAscention(BaseModel):
+class CharacterAscension(BaseModel):
     new_max_level: int = Field(alias="unlockMaxLevel")
-    ascention_level: int = Field(alias="promoteLevel")
+    ascension_level: int = Field(alias="promoteLevel")
     cost_items: Optional[List[Tuple[PartialMaterial, int]]] = Field(
         alias="costItems", default=None
     )
@@ -283,15 +303,14 @@ class CharacterAscention(BaseModel):
 
 
 class CharacterUpgradeDetail(BaseModel):
-    ascentions: List[CharacterAscention] = Field(alias="promote")
+    ascensions: List[CharacterAscension] = Field(alias="promote")
 
-    @validator("ascentions", pre=True, allow_reuse=True)
-    def get_ascentions(cls, v):
+    @validator("ascensions", pre=True, allow_reuse=True)
+    def get_ascensions(cls, v):
         result = []
-        for ascention in v:
-            result.append(CharacterAscention(**ascention))
+        for ascension in v:
+            result.append(CharacterAscension(**ascension))
         return result
-
 
 class NameCard(BaseModel):
     id: int | str

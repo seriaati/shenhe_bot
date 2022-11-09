@@ -563,7 +563,7 @@ def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption
     return options
 
 
-def character_level_to_ascension_phase(level: int) -> int:
+def level_to_ascension_phase(level: int) -> int:
     if level <= 20:
         return 0
     elif level <= 40:
@@ -601,7 +601,7 @@ async def validate_level_input(
         int_q = int(q)
     except ValueError:
         await i.followup.send(
-            embed=default_embed(message=text_map.get(187, locale)).set_author(
+            embed=error_embed(message=text_map.get(187, locale)).set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
@@ -609,7 +609,7 @@ async def validate_level_input(
         raise InvalidLevelInput
     if int_target < 1 or int_target > 90:
         await i.followup.send(
-            embed=default_embed(
+            embed=error_embed(
                 message=text_map.get(172, locale).format(a=1, b=90)
             ).set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
@@ -619,7 +619,7 @@ async def validate_level_input(
         raise InvalidLevelInput
     if int_a < 1 or int_a > 10 or int_e < 1 or int_e > 10 or int_q < 1 or int_q > 10:
         await i.followup.send(
-            embed=default_embed(
+            embed=error_embed(
                 message=text_map.get(172, locale).format(a=1, b=10)
             ).set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url

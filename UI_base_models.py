@@ -1,6 +1,9 @@
+from typing import Optional
+
 import discord
 import sentry_sdk
 
+from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log
@@ -51,8 +54,13 @@ async def global_error_handler(
 
 
 class BaseView(discord.ui.View):
+    def __init__(self, timeout: Optional[float] = 60.0):
+        super().__init__(timeout=timeout)
+        self.message: Optional[discord.Message | discord.InteractionMessage] = None
+        self.author: Optional[discord.Member | discord.User] = None
+
     async def interaction_check(self, i: discord.Interaction) -> bool:
-        if not hasattr(self, "author"):
+        if self.author is None:
             return True
         user_locale = await get_user_locale(i.user.id, i.client.db)
         if self.author.id != i.user.id:
@@ -72,7 +80,7 @@ class BaseView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-        if hasattr(self, "message") and self.message is not None:
+        if self.message is not None:
             try:
                 await self.message.edit(view=self)
             except discord.HTTPException:

@@ -6,11 +6,11 @@ from UI_elements.calc import AddToTodo
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, CharacterDetail, CharacterInfo, CharacterTalentType, Material
+from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
 from apps.genshin.custom_model import TodoList
 from apps.genshin.utils import (
     InvalidLevelInput,
-    character_level_to_ascension_phase,
+    level_to_ascension_phase,
     get_character_emoji,
     validate_level_input,
 )
@@ -90,24 +90,32 @@ class InitLevelModal(BaseModal):
         label="level_init",
         placeholder="like: 90",
         default="1",
+        min_length=1,
+        max_length=2,
     )
 
     a = TextInput(
         label="attack_init",
         placeholder="like: 9",
         default="1",
+        min_length=1,
+        max_length=2,
     )
 
     e = TextInput(
         label="skill_init",
         placeholder="like: 4",
         default="1",
+        min_length=1,
+        max_length=2,
     )
 
     q = TextInput(
         label="burst_init",
         placeholder="like: 10",
         default="1",
+        min_length=1,
+        max_length=2,
     )
 
     def __init__(self, character_id: str, locale: Locale | str) -> None:
@@ -165,21 +173,29 @@ class TargetLevelModal(BaseModal):
     target = TextInput(
         label="level_target",
         placeholder="like: 90",
+        min_length=1,
+        max_length=2,
     )
 
     a = TextInput(
         label="attack_target",
         placeholder="like: 9",
+        min_length=1,
+        max_length=2,
     )
 
     e = TextInput(
         label="skill_target",
         placeholder="like: 4",
+        min_length=1,
+        max_length=2,
     )
 
     q = TextInput(
         label="burst_target",
         placeholder="like: 10",
+        min_length=1,
+        max_length=2,
     )
 
     def __init__(
@@ -203,6 +219,7 @@ class TargetLevelModal(BaseModal):
         self.locale = locale
 
     async def on_submit(self, i: Interaction) -> None:
+        await i.response.defer()
         # validate input
         try:
             await validate_level_input(
@@ -216,7 +233,8 @@ class TargetLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
-        await i.response.edit_message(
+        
+        await i.edit_original_response(
             embed=default_embed().set_author(
                 name=text_map.get(644, self.locale), icon_url=asset.loader
             ),view=None
@@ -239,9 +257,9 @@ class TargetLevelModal(BaseModal):
         todo_list = TodoList()
 
         # ascension items
-        start = character_level_to_ascension_phase(init)
-        end = character_level_to_ascension_phase(target)
-        ascension_items = character.upgrade.ascentions[start:end]
+        start = level_to_ascension_phase(init)
+        end = level_to_ascension_phase(target)
+        ascension_items = character.upgrade.ascensions[start:end]
         for asc in ascension_items:
             cost_items = asc.cost_items
             if cost_items is not None:
@@ -319,8 +337,8 @@ class TargetLevelModal(BaseModal):
         embed = default_embed()
         embed.add_field(
             name=text_map.get(192, self.locale),
-            value=f"{text_map.get(183, self.locale)}: {init} -> {target}\n"
-            f"{normal_attack.name}: {init} ▸ {target}\n"
+            value=f"{text_map.get(183, self.locale)}: {init} ▸ {target}\n"
+            f"{normal_attack.name}: {init_a} ▸ {a}\n"
             f"{elemental_skill.name}: {init_e} ▸ {e}\n"
             f"{elemental_burst.name}: {init_q} ▸ {q}",
         )
