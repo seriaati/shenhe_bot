@@ -15,8 +15,8 @@
 '14': El mes del diario que estás intentando ver no está disponible
 '15': Tiempo de recuperación
 '16': Se recomienda utilizar el comando /check
-'17': ''
-'18': ''
+'17': Click on me to continue
+'18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
 '19': ''
 '20': Expediciones
 '21': </stuck:1006486283725590536> para más información
@@ -186,35 +186,35 @@
   </register:1006486283725590528> to register
 '166': User not found
 '167': '''s UID'
-'168': Enter your data
-'169': Character target level
-'170': 'For example: 90'
-'171': Auto attack target level
-'172': 'For example: 5'
-'173': Elemental skill (E) target level
-'174': Elemental burst (Q) target level
-'175': Add to the todo list
+'168': current level
+'169': Character {level_type}
+'170': 'For Example: {a}'
+'171': Auto attack target (A) {level_type}
+'172': Level needs to be between {a} and {b}
+'173': Elemental skill (E) {level_type}
+'174': Elemental burst (Q) {level_type}
+'175': Add to todo list
 '176': Please remove some materials from your todo list using the `remove materials` button
 '177': You have reached the limit of materials you can have on your todo list (125)
 '178': Use </todo:1006486283855605804> to view your todo list
 '179': Success
 '180': Choose a weapon
-'181': Set the levels for
-'182': <'S LEVEL>
-'183': Current level
-'184': 'For example: 1'
-'185': Target level
+'181': Input calculation data
+'182': target level
+'183': Character level
+'184': Use the {command} command to calculate the number of materials needed to level up this character
+'185': ''
 '186': Timezone
-'187': Please enter a number
-'188': 'Character level: Please enter a number between 1 and 90'
-'189': 'Talent level: Please enter a number between 1 and 10'
+'187': Please enter numbers only
+'188': ''
+'189': ''
 '190': Invalid Input
 '191': Calculation results
 '192': Calculation content
-'193': Character level
-'194': Normal attack level
-'195': Elemental skill level
-'196': Elemental burst level
+'193': ''
+'194': ''
+'195': ''
+'196': ''
 '197': No materials needed
 '198': Character level-up
 '199': Talent level-up
