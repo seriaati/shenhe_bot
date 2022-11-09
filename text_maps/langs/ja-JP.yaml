@@ -200,7 +200,7 @@
 '182': target level
 '183': Character level
 '184': Use the {command} command to calculate the number of materials needed to level up this character
-'185': ''
+'185': Weapon {level_type}
 '186': タイムゾーン
 '187': Please enter numbers only
 '188': ''
@@ -213,10 +213,10 @@
 '195': ''
 '196': ''
 '197': 必要な材料はありません
-'198': キャラクターレベル
-'199': 天賦のレベルアップ
+'198': ''
+'199': ''
 '200': 武器レベル
-'201': 武器のレベルアップ
+'201': ''
 '202': ToDoリスト
 '203': 素材を追加
 '204': |-
