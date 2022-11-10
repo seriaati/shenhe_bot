@@ -6,7 +6,8 @@ from typing import Dict, List, Tuple
 
 import aiosqlite
 import pytz
-from discord import File, Interaction, Member, SelectOption, User, app_commands, Embed
+from discord import (Embed, File, Interaction, Member, SelectOption, User,
+                     app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -14,12 +15,8 @@ from discord.ui import Select
 from discord.utils import format_dt
 from diskcache import FanoutCache
 from dotenv import load_dotenv
-from enkanetwork import (
-    EnkaNetworkAPI,
-    EnkaNetworkResponse,
-    EnkaServerError,
-    UIDNotFounded,
-)
+from enkanetwork import (EnkaNetworkAPI, EnkaNetworkResponse, EnkaServerError,
+                         UIDNotFounded)
 from enkanetwork.enum import DigitType, EquipmentsType, Language
 
 import asset
@@ -28,45 +25,26 @@ from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
 from apps.genshin.custom_model import ShenheBot
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (
-    calculate_artifact_score,
-    get_artifact,
-    get_character_emoji,
-    get_farm_data,
-    get_fight_prop,
-    get_uid,
-    get_weapon,
-    load_and_update_enka_cache,
-)
+from apps.genshin.utils import (get_artifact, get_character_emoji,
+                                get_farm_data, get_fight_prop, get_uid,
+                                load_and_update_enka_cache)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from UI_elements.genshin import (
-    Abyss,
-    ArtifactLeaderboard,
-    Build,
-    CharacterWiki,
-    Diary,
-    EnkaProfile,
-    EventTypeChooser,
-    ShowAllCharacters,
-)
+from UI_elements.genshin import (Abyss, ArtifactLeaderboard, Build,
+                                 CharacterWiki, Diary, EnkaProfile,
+                                 EventTypeChooser, ShowAllCharacters)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator
-from utility.utils import (
-    default_embed,
-    divide_chunks,
-    error_embed,
-    get_user_appearance_mode,
-    get_user_timezone,
-    get_weekday_int_with_name,
-)
+from utility.utils import (default_embed, divide_chunks, error_embed,
+                           get_user_appearance_mode, get_user_timezone,
+                           get_weekday_int_with_name)
 from yelan.draw import draw_big_material_card
 
 load_dotenv()

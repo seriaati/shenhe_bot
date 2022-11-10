@@ -337,7 +337,13 @@ class GenshinApp:
             result["options"].append(
                 SelectOption(
                     emoji=element_emojis.get(element),
-                    label=f"{get_element_name(element, locale)} {text_map.get(105, locale)}",
+                    label=(
+                        text_map.get(19, locale)
+                        if element == "All"
+                        else text_map.get(52, locale).format(
+                            element=get_element_name(element, locale)
+                        )
+                    ),
                     value=element,
                 )
             )

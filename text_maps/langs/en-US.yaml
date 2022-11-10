@@ -17,7 +17,7 @@
 '16': It is recommended to use the /check command
 '17': Click on me to continue
 '18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
-'19': ''
+'19': All characters
 '20': Expeditions
 '21': </stuck:1006486283725590536> for more information
 '22': Data not public
@@ -43,14 +43,14 @@
 '42': Claim successful
 '43': Overview
 '44': Days Active
-'45': Characters
+'45': ''
 '46': Achievements
 '47': Spiral Abyss
 '48': Oculi
 '49': Anemoculi
 '50': Geoculi
 '51': Electroculi
-'52': ''
+'52': {element} characters
 '53': Common Chests
 '54': Exquisite Chests
 '55': Luxurious Chests
