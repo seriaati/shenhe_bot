@@ -93,7 +93,7 @@ class WishCog(commands.GroupCog, name="wish"):
             sentry_sdk.capture_exception(e)
             await i.response.send_message(
                 embed=error_embed(message=text_map.get(693, locale)).set_author(
-                    name=text_map.get(135, locale), icon_url=i.user.avatar_url
+                    name=text_map.get(135, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
             )
@@ -130,7 +130,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_analysis(self, i: Interaction, member: User = None):
+    async def wish_analysis(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
