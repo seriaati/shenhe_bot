@@ -61,7 +61,7 @@ class Character(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
     @validator("element", allow_reuse=True)
