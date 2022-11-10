@@ -203,10 +203,10 @@
 '182': 目標等級
 '183': 角色等級
 '184': 使用 {command} 指令來計算升級這個角色所需的材料數量
-'185': Weapon {level_type}
+'185': 武器 {level_type}
 '186': 時區
 '187': 請輸入數字
-'188': Use the {command} command to calculate the number of materials needed to level up this weapon
+'188': 使用 {command} 指令來計算升級這個武器所需的材料數量
 '189': ''
 '190': 無效的輸入
 '191': 計算結果
