@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import discord
 import genshin
 from discord.ext import commands
+from enkanetwork.model import EnkaNetworkResponse
 
 class ShenheUser(BaseModel):
     client: genshin.Client
@@ -87,3 +88,15 @@ class TodoList:
     
     def return_list(self) -> Dict[int, int]:
         return self.dict
+    
+class EnkaView(BaseModel):
+    overview_embed: discord.Embed
+    character_options: List[discord.SelectOption]
+    character_id: str
+    data: EnkaNetworkResponse
+    eng_data: EnkaNetworkResponse
+    member: discord.User | discord.Member
+    locale: discord.Locale | str
+    
+    class Config:
+        arbitrary_types_allowed = True

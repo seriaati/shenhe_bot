@@ -680,15 +680,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         options = [
             SelectOption(
                 label=text_map.get(43, i.locale, user_locale),
-                value=0,
+                value="0",
                 emoji="<:SCORE:983948729293897779>",
             )
         ]
-        artifact_embeds = {}
         for character in data.characters:
             options.append(
                 SelectOption(
-                    label=f"{character.name} | Lvl. {character.level}",
+                    label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
                     description=text_map.get(543, i.locale, user_locale)
                     if character.id in from_cache
                     else "",
@@ -696,81 +695,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                     emoji=get_character_emoji(str(character.id)),
                 )
             )
-            embed = default_embed(
-                f"{character.name} C{character.constellations_unlocked}R{character.equipments[-1].refinement} | Lvl. {character.level}/{character.max_level}"
-            )
-            embed.add_field(
-                name=text_map.get(301, i.locale, user_locale),
-                value=f"<:HP:982068466410463272> {text_map.get(292, i.locale, user_locale)} - {character.stats.FIGHT_PROP_MAX_HP.to_rounded()}\n"
-                f"<:ATTACK:982138214305390632> {text_map.get(260, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded()}\n"
-                f"<:DEFENSE:982068463566721064> {text_map.get(262, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded()}\n"
-                f"<:ELEMENT_MASTERY:982068464938270730> {text_map.get(266, i.locale, user_locale)} - {character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded()}\n"
-                f"<:CRITICAL:982068460731392040> {text_map.get(264, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol()}\n"
-                f"<:CRITICAL_HURT:982068462081933352> {text_map.get(265, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol()}\n"
-                f"<:CHARGE_EFFICIENCY:982068459179503646> {text_map.get(267, i.locale, user_locale)} - {character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol()}\n"
-                f"<:FRIENDSHIP:982843487697379391> {text_map.get(299, i.locale, user_locale)} - {character.friendship_level}\n",
-                inline=False,
-            )
-            # talents
-            value = ""
-            for skill in character.skills:
-                value += f"{skill.name} | Lvl. {skill.level}\n"
-            embed.add_field(name=text_map.get(94, i.locale, user_locale), value=value)
-            # weapon
-            weapon = character.equipments[-1]
-            weapon_sub_stats = ""
-            for substat in weapon.detail.substats:
-                weapon_sub_stats += f"{get_fight_prop(substat.prop_id)['emoji']} {substat.name} {substat.value}{'%' if substat.type == DigitType.PERCENT else ''}\n"
-            embed.add_field(
-                name=text_map.get(91, i.locale, user_locale),
-                value=f'{get_weapon(weapon.id)["emoji"]} {weapon.detail.name} | Lvl. {weapon.level}\n'
-                f"{get_fight_prop(weapon.detail.mainstats.prop_id)['emoji']} {weapon.detail.mainstats.name} {weapon.detail.mainstats.value}{'%' if weapon.detail.mainstats.type == DigitType.PERCENT else ''}\n"
-                f"{weapon_sub_stats}",
-                inline=False,
-            )
-            embed.set_thumbnail(url=character.image.icon.url)
-            embed.set_author(
-                name=member.display_name, icon_url=member.display_avatar.url
-            )
-            embeds[str(character.id)] = embed
-            # artifacts
-            artifact_embed = default_embed(
-                f"{character.name} | {text_map.get(92, i.locale, user_locale)}"
-            )
-            index = 0
-            for artifact in filter(
-                lambda x: x.type == EquipmentsType.ARTIFACT, character.equipments
-            ):
-                artifact_sub_stats = f'**__{get_fight_prop(artifact.detail.mainstats.prop_id)["emoji"]} {text_map.get(fight_prop.get(artifact.detail.mainstats.prop_id)["text_map_hash"], i.locale, user_locale)}+{artifact.detail.mainstats.value}__**\n'
-                artifact_sub_stat_dict = {}
-                for substat in artifact.detail.substats:
-                    artifact_sub_stat_dict[substat.prop_id] = substat.value
-                    artifact_sub_stats += f'{get_fight_prop(substat.prop_id)["emoji"]} {text_map.get(fight_prop.get(substat.prop_id)["text_map_hash"], i.locale, user_locale)}+{substat.value}{"%" if substat.type == DigitType.PERCENT else ""}\n'
-                if artifact.level == 20:
-                    artifact_sub_stats += f"<:SCORE:983948729293897779> {int(calculate_artifact_score(artifact_sub_stat_dict))}"
-                artifact_embed.add_field(
-                    name=f"{list(equip_types.values())[index]}{artifact.detail.name} +{artifact.level}",
-                    value=artifact_sub_stats,
-                )
-                artifact_embed.set_thumbnail(url=character.image.icon.url)
-                artifact_embed.set_author(
-                    name=member.display_name, icon_url=member.display_avatar.url
-                )
-                artifact_embed.set_footer(text=text_map.get(300, i.locale, user_locale))
-                index += 1
-            artifact_embeds[str(character.id)] = artifact_embed
+
         view = EnkaProfile.View(
-            embeds,
-            artifact_embeds,
-            options,
-            data,
-            member,
-            eng_data,
-            i.user,
-            self.bot.db,
-            i.locale,
-            user_locale,
-            data.characters,
+            overview, options, data, eng_data, member, user_locale or i.locale
         )
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
@@ -1027,8 +954,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                     break
             if item_type is None:
                 raise ItemNotFound
-            
-            if item_type == 0: # character
+
+            if item_type == 0:  # character
                 embeds: List[Embed] = []
                 character_detail = await client.get_character_detail(query)
                 if character_detail is None:
@@ -1147,7 +1074,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 await i.edit_original_response(embed=embeds[0], view=view)
                 view.messsage = await i.original_response()
 
-            elif item_type == 1: # weapon
+            elif item_type == 1:  # weapon
                 weapon_detail = await client.get_weapon_detail(int(query))
                 if weapon_detail is None:
                     raise ItemNotFound
@@ -1173,7 +1100,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                             value=weapon_detail.effect.descriptions[4],
                             inline=False,
                         )
-                embed.add_field(name=text_map.get(320, locale), value=text_map.get(188, locale).format(command="</calc weapon:1020188057628065862>"), inline=False)
+                embed.add_field(
+                    name=text_map.get(320, locale),
+                    value=text_map.get(188, locale).format(
+                        command="</calc weapon:1020188057628065862>"
+                    ),
+                    inline=False,
+                )
 
                 main_stat = weapon_detail.upgrade.stats[0]
                 sub_stat = weapon_detail.upgrade.stats[1]
