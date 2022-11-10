@@ -203,10 +203,10 @@
 '182': target level
 '183': Character level
 '184': Use the {command} command to calculate the number of materials needed to level up this character
-'185': ''
+'185': Weapon {level_type}
 '186': Timezone
 '187': Please enter numbers only
-'188': ''
+'188': Use the {command} command to calculate the number of materials needed to level up this weapon
 '189': ''
 '190': Invalid Input
 '191': Calculation results
@@ -216,10 +216,10 @@
 '195': ''
 '196': ''
 '197': No materials needed
-'198': Character level-up
-'199': Talent level-up
+'198': ''
+'199': ''
 '200': Weapon Level
-'201': Weapon level-up
+'201': ''
 '202': Todo list
 '203': Add item
 '204': |-
