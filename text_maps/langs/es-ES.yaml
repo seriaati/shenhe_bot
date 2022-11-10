@@ -17,7 +17,7 @@
 '16': Se recomienda utilizar el comando /check
 '17': Click on me to continue
 '18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
-'19': ''
+'19': All characters
 '20': Expediciones
 '21': </stuck:1006486283725590536> para más información
 '22': Datos privados
@@ -43,14 +43,14 @@
 '42': Reclamación exitosa
 '43': Resumen
 '44': Días activos
-'45': Personajes
+'45': ''
 '46': Logros
 '47': Espiral del Abismo
 '48': Oculi
 '49': Anemóculus
 '50': Geóculus
 '51': Electróculus
-'52': ''
+'52': '{element} characters'
 '53': Cofres Comunes
 '54': Cofres Sofisticados
 '55': Cofres Lujosos
