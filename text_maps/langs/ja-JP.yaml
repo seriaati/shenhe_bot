@@ -15,9 +15,9 @@
 '14': 表示しようとした月の日記は利用できません
 '15': 回復時間
 '16': /check コマンドを使用することをお勧めします
-'17': Click on me to continue
-'18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
-'19': All characters
+'17': 続行するにはクリックしてください
+'18': Discordはモーダルの後にモーダルを表示するのを許可していないため、ボタンをクリックしてください  ┐(’～｀；)┌
+'19': すべてのキャラクター
 '20': 探索派遣
 '21': 詳細は</stuck:1006486283725590536>で確認してください
 '22': 權限がありません。
@@ -50,7 +50,7 @@
 '49': 風神の瞳
 '50': 岩神の瞳
 '51': 雷神の瞳
-'52': "{element} characters"
+'52': "{element}キャラクター"
 '53': 普通の宝箱
 '54': 精巧な宝箱
 '55': 豪華な宝箱
@@ -183,28 +183,28 @@
   This user hasn't registered their account yet </register:1006486283725590528> to register
 '166': 参量物質変化器がありません。
 '167': 'の UID'
-'168': current level
-'169': Character {level_type}
-'170': 'For Example: {a}'
-'171': Auto attack target (A) {level_type}
-'172': Level needs to be between {a} and {b}
-'173': Elemental skill (E) {level_type}
-'174': Elemental burst (Q) {level_type}
-'175': Add to todo list
+'168': 現在のレベル
+'169': キャラクター{level_type}
+'170': '例: {a}'
+'171': 自動攻撃対象(A) {level_type}
+'172': レベルは {a} から {b} の間でなければなりません
+'173': 元素スキル (E) {level_type}
+'174': 元素爆発(Q) {level_type}
+'175': ToDoリストに追加
 '176': '「素材削除」ボタンを押して、ToDoリスト内の一部の素材を削除してください。'
 '177': ToDoリストに登録できる素材の数の上限に達しました (125件)
 '178': </todo:1006486283855605804> を使用してTODOリストを表示します
 '179': 成功
 '180': 武器を選択
-'181': Input calculation data
-'182': target level
-'183': Character level
-'184': Use the {command} command to calculate the number of materials needed to level up this character
-'185': Weapon {level_type}
+'181': 計算データを入力
+'182': 目標レベル
+'183': キャラクターレベル
+'184': このキャラクターのレベルアップに必要な材料の数を計算するには {command} コマンドを使用してください
+'185': 武器 {level_type}
 '186': タイムゾーン
-'187': Please enter numbers only
-'188': Use the {command} command to calculate the number of materials needed to level up this weapon
-'189': No card for this character yet, check back later!
+'187': 数字のみを入力してください
+'188': この武器のレベルアップに必要な材料の数を計算するには {command} コマンドを使用してください
+'189': このキャラクターのカードはまだありません。後で確認してください！
 '190': 無効な入力
 '191': 計算結果
 '192': 計算内容
