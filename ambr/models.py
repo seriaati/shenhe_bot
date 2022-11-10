@@ -34,17 +34,17 @@ class Weapon(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
     @validator("default_icon", pre=True, allow_reuse=True)
     def check_default_icon(cls, v, values):
         defaults = [
-            "https://api.ambr.top/assets/UI/UI_EquipIcon_Sword_Blunt.png",
-            "https://api.ambr.top/assets/UI/UI_EquipIcon_Claymore_Aniki.png",
-            "https://api.ambr.top/assets/UI/UI_EquipIcon_Pole_Gewalt.png",
-            "https://api.ambr.top/assets/UI/UI_EquipIcon_Catalyst_Apprentice.png",
-            "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Hunters.png",
+            "https://api.ambr.top/assets/UI/UI_EquipIcon_Sword_Blunt.png?a",
+            "https://api.ambr.top/assets/UI/UI_EquipIcon_Claymore_Aniki.png?a",
+            "https://api.ambr.top/assets/UI/UI_EquipIcon_Pole_Gewalt.png?a",
+            "https://api.ambr.top/assets/UI/UI_EquipIcon_Catalyst_Apprentice.png?a",
+            "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Hunters.png?a",
         ]
         if values["icon"] in defaults:
             return True
@@ -82,9 +82,9 @@ class Material(BaseModel):
     @validator("icon", pre=True, allow_reuse=True)
     def get_icon_url(cls, v, values):
         if "type" in values and values["type"] == "custom":
-            icon_url = "https://i.imgur.com/GDLac2a.png"
+            icon_url = "https://i.imgur.com/GDLac2a.png?a"
         else:
-            icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+            icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
 
@@ -136,7 +136,7 @@ class MaterialDetail(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
 
@@ -202,7 +202,7 @@ class Artifact(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png?a"
         return icon_url
 
 
@@ -228,7 +228,7 @@ class ArtifactDetail(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/reliquary/{v}.png?a"
         return icon_url
 
     @validator("effects", pre=True, allow_reuse=True)
@@ -260,7 +260,7 @@ class WeaponDetail(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
     @validator("effect", pre=True, allow_reuse=True)
@@ -325,7 +325,7 @@ class NameCard(BaseModel):
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
         v = v.replace("Icon", "Pic")
-        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}_P.png"
+        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}_P.png?a"
         return icon_url
 
 
@@ -376,7 +376,7 @@ class CharacterTalent(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
     @validator("upgrades", pre=True, allow_reuse=True)
@@ -400,7 +400,7 @@ class CharacterConstellation(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
 
@@ -425,7 +425,7 @@ class CharacterDetail(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
     @validator("birthday", allow_reuse=True, pre=True)
@@ -493,5 +493,5 @@ class Monster(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/monster/{v}.png"
+        icon_url = f"https://api.ambr.top/assets/UI/monster/{v}.png?a"
         return icon_url
