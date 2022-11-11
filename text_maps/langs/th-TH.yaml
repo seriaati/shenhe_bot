@@ -43,7 +43,7 @@
 '42': รับสำเร็จ
 '43': ภาพรวม
 '44': จำนวนวันใช้งาน
-'45': ''
+'45': Type a nickname for the custom image
 '46': ความสำเร็จ
 '47': Spiral Abyss
 '48': Oculi
@@ -57,10 +57,10 @@
 '56': สถิติ Genshin
 '57': Precious Chests
 '58': การสำรวจโลก
-'59': ''
-'60': ''
-'61': ''
-'62': ''
+'59': Set custom image for {character_name}
+'60': Image URL
+'61': Remove image
+'62': Set custom image
 '63': ''
 '64': ''
 '65': ''
@@ -283,13 +283,18 @@
 '270': Base Def.
 '271': Healing Bonus
 '272': Physic DMG Bonus
-'273': Pyro DMG Bonus
-'274': Elec DMG Bonus
-'275': Hydro DMG Bonus
-'276': Dendro DMG Bonus
-'277': Anemo DMG Bonus
-'278': Geo DMG Bonus
-'279': Cryo DMG Bonus
+'273': Ele. DMG Bonus
+'274': Invalid image URL
+'275': Custom Image
+'276': |-
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 25 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Shenhe crops the image for you, but the position of the crop is fixed, so you might want to crop it yourself using a tool like [this](https://www.iloveimg.com/crop-image)
+  • The dimension of the image should be 1663x629, or other dimensions that are multiples of 1663x629
+'277': Current Image
+'278': You have reached the limit of images you can have for this character (25)
+'279': No custom image set for this character
 '280': Base Speed
 '281': Speed%
 '282': Go back
@@ -457,7 +462,7 @@
   6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
-'404': ''
+'404': Select a custom image
 '405': You haven't pulled in the weapon banner yet
 '406': Start time
 '407': End time
@@ -465,8 +470,8 @@
 '409': Choose event type
 '410': Register your genshin account to use commands that require one
 '411': options
-'412': ''
-'413': ''
+'412': Manage your custom images in </settings:1020580644478275614>
+'413': Add image
 '414': 'View real-time notes: Current resin, pot, expedition status (need /register)'
 '415': user
 '416': Check other user's data
