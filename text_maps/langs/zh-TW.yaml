@@ -43,7 +43,7 @@
 '42': 簽到成功
 '43': 總覽
 '44': 活躍天數
-'45': ''
+'45': Type a nickname for the custom image
 '46': 獲得成就數
 '47': 深淵已達
 '48': 神瞳
@@ -57,10 +57,10 @@
 '56': 原神數據
 '57': 珍貴寶箱
 '58': 世界探索度
-'59': ''
-'60': ''
-'61': ''
-'62': ''
+'59': Set custom image for {character_name}
+'60': Image URL
+'61': Remove image
+'62': Set custom image
 '63': ''
 '64': ''
 '65': ''
@@ -284,13 +284,18 @@
 '270': 基礎防禦力
 '271': 治療加成
 '272': 物傷加成
-'273': 火傷加成
-'274': 雷傷加成
-'275': 水傷加成
-'276': 草傷加成
-'277': 風傷加成
-'278': 岩傷加成
-'279': 冰傷加成
+'273': Ele. DMG Bonus
+'274': Invalid image URL
+'275': Custom Image
+'276': |-
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 25 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Shenhe crops the image for you, but the position of the crop is fixed, so you might want to crop it yourself using a tool like [this](https://www.iloveimg.com/crop-image)
+  • The dimension of the image should be 1663x629, or other dimensions that are multiples of 1663x629
+'277': Current Image
+'278': You have reached the limit of images you can have for this character (25)
+'279': No custom image set for this character
 '280': 基礎移速
 '281': 移速%
 '282': 返回
@@ -457,7 +462,7 @@
   6. 按 Ctrl+F，在選項中點選「環繞」，搜尋方向選擇「向上」，然後在輸入的地方填入「e20190909gacha-v2」（注意不要複製引號），按「找下一個」
   7. 複製完整的連結，https://webstatic 開頭，game_biz=hk4e_global 結尾。完整連結類似於這樣：https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?……&game_biz=hk4e_global
   8. 點擊下方的按鈕來將複製的連結黏貼到文字框中
-'404': ''
+'404': Select a custom image
 '405': 你沒有在武器池祈願過
 '406': 活動開始時間
 '407': 活動結束時間
@@ -465,8 +470,8 @@
 '409': 選擇活動類型
 '410': 在申鶴的資料庫中註冊你的原神帳號，來使用部份需要帳戶的指令
 '411': 選項
-'412': ''
-'413': ''
+'412': Manage your custom images in </settings:1020580644478275614>
+'413': Add image
 '414': '查看即時便簽: 目前樹脂、洞天寶錢、探索派遣 (需註冊)'
 '415': 使用者
 '416': 查看其他使用者該指令提供的資料
