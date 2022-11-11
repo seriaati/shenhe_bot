@@ -370,7 +370,7 @@ class CustomProfileImage(Button):
     async def callback(self, i: Interaction):
         embed = default_embed(message=text_map.get(276, self.locale))
         embed.set_author(
-            name=text_map.get(52, self.locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(62, self.locale), icon_url=i.user.display_avatar.url
         )
         view = CustomImage.View(self.locale)
         view.author = i.user
