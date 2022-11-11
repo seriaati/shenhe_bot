@@ -290,8 +290,7 @@
   • You can set custom images for the character cards in </profile:1020580644419551336>
   • You can have up to 25 images for each character
   • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Shenhe crops the image for you, but the position of the crop is fixed, so you might want to crop it yourself using a tool like [this](https://www.iloveimg.com/crop-image)
-  • The dimension of the image should be 1663x629, or other dimensions that are multiples of 1663x629
+  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': Current Image
 '278': You have reached the limit of images you can have for this character (25)
 '279': No custom image set for this character
@@ -593,7 +592,7 @@
 '529': Item type
 '530': Sources
 '531': Weapon effect
-'532': ''
+'532': "{num} custom images"
 '533': Error while calculating damage
 '534': View and change your user settings in Shenhe
 '535': Appearance
