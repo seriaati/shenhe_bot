@@ -91,9 +91,17 @@ async def element_button_callback(i: discord.Interaction, view: View, element: s
 
 
 class AddImage(discord.ui.Button):
-    def __init__(self, locale: discord.Locale | str, character_id: int, element: str):
+    def __init__(
+        self,
+        locale: discord.Locale | str,
+        character_id: int,
+        element: str,
+        disabled: bool,
+    ):
         super().__init__(
-            label=text_map.get(413, locale), style=discord.ButtonStyle.green
+            label=text_map.get(413, locale),
+            style=discord.ButtonStyle.green,
+            disabled=disabled,
         )
         self.character_id = character_id
         self.element = element
@@ -217,8 +225,9 @@ async def return_custom_image_interaction(
 ):
     view.clear_items()
     view.add_item(GoBackCharacter(element))
-    view.add_item(AddImage(view.locale, character_id, element))
     options = await get_user_custom_image_options(i, character_id)
+    disabled = True if len(options) == 25 else False
+    view.add_item(AddImage(view.locale, character_id, element, disabled))
     disabled = True if not options else False
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
