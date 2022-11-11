@@ -43,7 +43,7 @@
 '42': 签到成功
 '43': 总览
 '44': 活跃天数
-'45': Type a nickname for the custom image
+'45': 输入自订图片的昵称
 '46': 获得成就数
 '47': 深渊已达
 '48': 神瞳
@@ -57,10 +57,10 @@
 '56': 原神数据
 '57': 珍贵宝箱
 '58': 世界探索度
-'59': Set custom image for {character_name}
-'60': Image URL
-'61': Remove image
-'62': Set custom image
+'59': 设置 {character_name} 的自定义图片
+'60': 图片地址
+'61': 删除图片
+'62': 设置自定义图片
 '63': ''
 '64': ''
 '65': ''
@@ -284,18 +284,18 @@
 '270': 基础防御力
 '271': 治疗加成
 '272': 物伤加成
-'273': Ele. DMG Bonus
-'274': Invalid image URL
-'275': Custom Image
+'273': 元素伤害加成
+'274': 无效的图片连结
+'275': 自定义图片
 '276': |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 25 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Shenhe crops the image for you, but the position of the crop is fixed, so you might want to crop it yourself using a tool like [this](https://www.iloveimg.com/crop-image)
-  • The dimension of the image should be 1663x629, or other dimensions that are multiples of 1663x629
-'277': Current Image
-'278': You have reached the limit of images you can have for this character (25)
-'279': No custom image set for this character
+  • 你可以自订 </profile:1020580644419551336> 中角色卡片的图片
+  • 每个角色最多可以有 25 张图片
+  • 请提供一个图片连结，[imgur](https://imgur.com/)是一个好工具
+  • 申鹤会自动帮你裁切图片，但是位置可能不是你想要的，这时[这个工具](https://www.iloveimg.com/crop-image)便可以派上用场
+  • 图片的尺寸应该是 1663x629，或是 1663x629 的倍数
+'277': 当前图片
+'278': 你已达到此角色可以拥有的图片数量限制 (25)
+'279': 没有为此角色设置自定义图片
 '280': 基础移速
 '281': 移速%
 '282': 返回副词条选择
@@ -462,7 +462,7 @@
   6. 按 Ctrl+F，在选项中点选「环绕」，搜寻方向选择「向上」，然后在输入的地方填入「e20190909gacha-v2」（注意不要复制引号），按「找下一个」
   7. 复制完整的连结，https://webstatic 开头，game_biz=hk4e_global 结尾。完整连结类似于这样：https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?……&game_biz=hk4e_global
   8. 点击下方的按钮来将复制的连结黏贴到文字框中
-'404': Select a custom image
+'404': 设置自定义图片
 '405': 你没有在武器池祈愿过
 '406': 活动开始时间
 '407': 活动结束时间
@@ -470,8 +470,8 @@
 '409': 选择活动类型
 '410': 在申鹤的资料库中注册你的原神帐号，来使用部份需要帐户的指令
 '411': 选项
-'412': Manage your custom images in </settings:1020580644478275614>
-'413': Add image
+'412': 在 </settings:1020580644478275614> 中管理你的自定义图片
+'413': 添加图片
 '414': '查看即时便签: 目前树脂、洞天宝钱、探索派遣 (需注册)'
 '415': 使用者
 '416': 查看其他使用者该指令提供的资料
@@ -734,8 +734,8 @@
 '640': 二件套效果
 '641': 四件套效果
 '642': 支援服务器
-'643': 单张图像
-'644': 申鹤正在生成图像，请稍候...
+'643': 单张图片
+'644': 申鹤正在生成图片，请稍候...
 '645': 角色祈愿
 '646': 武器祈愿
 '647': 新手祈愿
