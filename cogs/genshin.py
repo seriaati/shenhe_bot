@@ -575,8 +575,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def profile(self, i: Interaction, member: Optional[User | Member] = None):
-        await self.profile_command(i, member, False)
+    async def profile(self, i: Interaction, member: Optional[User | Member] = None, uid: Optional[int] = None):
+        await self.profile_command(i, member, False, uid)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
         check = await check_account_predicate(i, member)
@@ -589,12 +589,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         i: Interaction,
         member: Optional[User | Member] = None,
         ephemeral: bool = True,
+        custom_uid: Optional[int] = None,
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         enka_locale = to_enka(user_locale or i.locale)
-        uid = await get_uid(member.id, self.bot.db)
+        uid = custom_uid or await get_uid(member.id, self.bot.db)
+        if uid is None:
+            raise ValueError("UID not found")
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
             cache: EnkaNetworkResponse = enka_cache.get(uid)
         with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
