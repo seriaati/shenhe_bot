@@ -114,11 +114,14 @@ def get_character_builds(
 def get_character_emoji(id: str) -> str:
     return character_map.get(id, {}).get("emoji", "")
 
+
 def get_weapon_emoji(id: int) -> str:
     return weapon_map.get(str(id), {}).get("emoji", "")
 
+
 def get_character_icon(id: str) -> str:
     return character_map.get(id, {}).get("icon", "")
+
 
 def get_weapon(id: int = "", name: str = ""):
     if id != "":
@@ -422,12 +425,14 @@ def convert_wl_to_mora(wl: int) -> int:
 
 
 async def get_wish_history_embed(
-    i: discord.Interaction, query: str, member: Optional[discord.User] = None
+    i: discord.Interaction,
+    query: str,
+    member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
     member = member or i.user
     user_locale = await get_user_locale(i.user.id, i.client.db)
     async with i.client.db.execute(
-        f"SELECT wish_rarity, wish_time, item_id FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
+        f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
         (member.id, await get_uid(member.id, i.client.db)),
     ) as cursor:
         wish_history = await cursor.fetchall()
@@ -444,7 +449,12 @@ async def get_wish_history_embed(
         for _, tpl in enumerate(wish_history):
             user_wish.append(
                 format_wish_str(
-                    {"item_rarity": tpl[0], "time": tpl[1], "item_id": tpl[2]},
+                    {
+                        "item_rarity": tpl[0],
+                        "time": tpl[1],
+                        "item_id": tpl[2],
+                        "pity_pull": tpl[3],
+                    },
                     user_locale or i.locale,
                 )
             )
@@ -536,10 +546,11 @@ async def get_wish_info_embed(
 
 def format_wish_str(wish_data: Dict, locale: Locale | str):
     wish_time = datetime.strptime(wish_data["time"], "%Y/%m/%d %H:%M:%S")
-    item_emoji = get_weapon(wish_data["item_id"])["emoji"]
-    if item_emoji == "❓":
-        item_emoji = get_character_emoji(str(wish_data["item_id"]))
-    return f"{format_dt(wish_time, 'd')} {item_emoji} {text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)} ({wish_data['item_rarity']} ✦)"
+    item_emoji = get_weapon_emoji(int(wish_data["item_id"])) or get_character_emoji(
+        str(wish_data["item_id"])
+    )
+    pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
+    return f"{format_dt(wish_time, 'd')} {item_emoji} **{text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)}** ({wish_data['item_rarity']} ✦) {pity_pull}"
 
 
 def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption]:
