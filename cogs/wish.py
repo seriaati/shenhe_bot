@@ -38,36 +38,6 @@ class WishCog(commands.GroupCog, name="wish"):
         name="import", description=_("Import your genshin wish history", hash=474)
     )
     async def wish_import(self, i: Interaction):
-        if i.user.id == 410036441129943050:
-            await i.response.defer()
-            async with i.client.db.execute(
-                "SELECT DISTINCT user_id FROM wish_history"
-            ) as cursor:
-                user_ids: List[int] = [row[0] for row in await cursor.fetchall()]
-                for user_id in user_ids:
-                    banners = [100, 301, 400, 200, 302]
-                    for banner in banners:
-                        await cursor.execute(
-                            "SELECT wish_id, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ? ORDER BY wish_id ASC",
-                            (user_id, banner),
-                        )
-                        wishes: List[Tuple[int, int]] = await cursor.fetchall()
-                        if not wishes:
-                            continue
-                        count = 1
-                        for wish in wishes:
-                            wish_id = wish[0]
-                            rarity = wish[1]
-                            await cursor.execute(
-                                "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
-                                (count, wish_id),
-                            )
-                            if rarity == 5:
-                                count = 1
-                            else:
-                                count += 1
-            await i.client.db.commit()
-            return
         await wish_import_command(i)
 
     @app_commands.command(
