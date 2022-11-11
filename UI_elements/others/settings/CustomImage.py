@@ -182,7 +182,7 @@ class ImageSelect(discord.ui.Select):
         element: str,
     ):
         super().__init__(
-            placeholder=text_map.get(404, locale),
+            placeholder=text_map.get(562, locale),
             options=options
             if options
             else [discord.SelectOption(label="none", value="none")],
