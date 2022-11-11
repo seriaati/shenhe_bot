@@ -1,15 +1,21 @@
 from typing import Any, List
 
-from cachetools import TTLCache
+import aiohttp
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
+from UI_elements.others.settings.CustomImage import get_user_custom_image
 
 import asset
 import config
 from apps.genshin.custom_model import EnkaView
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
-from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_appearance_mode,
+)
 from yelan.damage_calculator import DamageCalculator, return_damage
 from yelan.data.GO_modes import hit_mode_texts
 from yelan.draw import draw_character_card
@@ -111,7 +117,10 @@ class View(BaseView):
             count = 1
             for teammate_options_chunk in divided:
                 self.add_item(
-                    TeamSelect(teammate_options_chunk, f"{text_map.get(344, locale)} ({count}~{count + len(teammate_options_chunk) - 1})")
+                    TeamSelect(
+                        teammate_options_chunk,
+                        f"{text_map.get(344, locale)} ({count}~{count + len(teammate_options_chunk) - 1})",
+                    )
                 )
                 count += len(teammate_options_chunk)
 
@@ -135,28 +144,44 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         attachments=[],
     )
     if enka_view.character_id == "0":
+        enka_view.children[0].disabled = True
+        enka_view.children[1].disabled = True
         return await i.edit_original_response(
-            embed=enka_view.overview_embed, attachments=[]
+            embed=enka_view.overview_embed, attachments=[], view=enka_view
         )
-    card = i.client.enka_card_cache.get(
-        f"{enka_view.member.id} - {enka_view.character_id}"
-    )
-    if card is None:
-        character = [
-            c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
-        ][0]
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+    character = [
+        c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
+    ][0]
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+    try:
+        custom_image = await get_user_custom_image(
+            i.user.id, i.client.db, int(enka_view.character_id)
+        )
+        url = None if custom_image is None else custom_image.url
         card = await draw_character_card(
-            character, enka_view.locale, i.client.session, dark_mode
+            character,
+            enka_view.locale,
+            i.client.session,
+            dark_mode,
+            url,
         )
-        cache: TTLCache = i.client.enka_card_cache
-        cache[f"{enka_view.member.id} - {enka_view.character_id}"] = card
-        if card is None:
-            embed = default_embed().set_author(
-                name=text_map.get(189, enka_view.locale),
+    except aiohttp.InvalidURL:
+        return await i.edit_original_response(
+            embed=error_embed().set_author(
+                name=text_map.get(274, enka_view.locale),
                 icon_url=i.user.display_avatar.url,
-            )
-            return await i.edit_original_response(embed=embed, attachments=[], view=enka_view)
+            ),
+            attachments=[],
+            view=enka_view,
+        )
+    if card is None:
+        embed = default_embed().set_author(
+            name=text_map.get(189, enka_view.locale),
+            icon_url=i.user.display_avatar.url,
+        )
+        return await i.edit_original_response(
+            embed=embed, attachments=[], view=enka_view
+        )
 
     embed = default_embed()
     embed.set_image(url=f"attachment://card.jpeg")
@@ -167,6 +192,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     card.seek(0)
     file = File(card, "card.jpeg")
     enka_view.children[0].disabled = False
+    enka_view.children[1].disabled = False
     await i.edit_original_response(embed=embed, attachments=[file], view=enka_view)
 
 

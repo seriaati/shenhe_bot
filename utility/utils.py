@@ -1,7 +1,7 @@
 import logging
 import re
 from itertools import islice
-from typing import Dict, List
+from typing import Dict, List, Optional
 from PIL import Image, ImageDraw
 import aiosqlite
 import discord
@@ -9,6 +9,7 @@ from dateutil import parser
 from discord.utils import format_dt
 from sentry_sdk.integrations.logging import LoggingIntegration
 from PIL.ImageFont import FreeTypeFont
+from apps.genshin.custom_model import UserCustomImage
 
 logging.basicConfig(
     level=logging.INFO,
@@ -112,7 +113,6 @@ async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bo
         return True
     return False
 
-
 async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
     async with db.execute(
         "SELECT timezone FROM user_settings WHERE user_id = ?", (user_id,)
@@ -123,12 +123,14 @@ async def get_user_timezone(user_id: int, db: aiosqlite.Connection) -> str:
     else:
         return timezone[0] or "Asia/Taipei"
 
+
 def human_format(num: int):
     magnitude = 0
     while abs(num) >= 1000:
         magnitude += 1
         num /= 1000.0
-    return '%.2f%s' % (num, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+    return "%.2f%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
+
 
 def dynamic_font_size(
     text: str,

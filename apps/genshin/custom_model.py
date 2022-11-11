@@ -1,7 +1,7 @@
 import aiohttp
 import aiosqlite
 from typing import Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 import discord
 import genshin
 from discord.ext import commands
@@ -97,6 +97,18 @@ class EnkaView(BaseModel):
     eng_data: EnkaNetworkResponse
     member: discord.User | discord.Member
     locale: discord.Locale | str
+    custom_image_url: Optional[str] = None
     
     class Config:
         arbitrary_types_allowed = True
+        
+class UserCustomImage(BaseModel):
+    url: str
+    nickname: str
+    character_id: str
+    user_id: int
+    current: bool
+    
+    @validator("current", pre=True, allow_reuse=True)
+    def parse_current(cls, v):
+        return True if v == 1 else False

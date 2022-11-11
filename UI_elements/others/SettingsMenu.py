@@ -8,9 +8,14 @@ from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
 from discord import Interaction, Locale, SelectOption, ButtonStyle
 from discord.ui import Button, Select, TextInput
-from utility.utils import default_embed, get_user_timezone, error_embed
+from utility.utils import (
+    default_embed,
+    get_user_timezone,
+    error_embed,
+)
 from data.others.language_options import lang_options
 import pytz
+from UI_elements.others.settings import CustomImage
 
 
 class View(BaseView):
@@ -20,6 +25,7 @@ class View(BaseView):
         self.add_item(Langauge(text_map.get(128, locale)))
         self.add_item(DeveloperMessage(text_map.get(541, locale)))
         self.add_item(Timezone(text_map.get(186, locale)))
+        self.add_item(CustomProfileImage(locale))
 
 
 class Appearance(Button):
@@ -181,8 +187,7 @@ class NotifiactionONButton(Button):
         super().__init__(emoji="🔔", label=label)
 
     async def callback(self, i: Interaction) -> Any:
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
+        await i.client.db.execute(
             "UPDATE user_settings SET dev_msg = 1 WHERE user_id = ?",
             (i.user.id,),
         )
@@ -306,11 +311,11 @@ class CommonTimezoneSelect(Select):
         super().__init__(options=options)
 
     async def callback(self, i: Interaction):
-        async with i.client.db.execute(
+        await i.client.db.execute(
             "INSERT INTO user_settings (user_id, timezone) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET timezone = ?",
             (i.user.id, self.values[0], self.values[0]),
-        ) as c:
-            await i.client.db.commit()
+        )
+        await i.client.db.commit()
         await Timezone.callback(self, i)
 
 
@@ -349,9 +354,25 @@ class SubmitTimezone(BaseModal):
                 ephemeral=True,
             )
         else:
-            async with i.client.db.execute(
+            await i.client.db.execute(
                 "INSERT INTO user_settings (user_id, timezone) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET timezone = ? WHERE user_id = ?",
                 (i.user.id, self.timezone.value, self.timezone.value, i.user.id),
-            ) as c:
-                await i.client.db.commit()
+            )
+            await i.client.db.commit()
             await Timezone.callback(self.submit_button, i)
+
+
+class CustomProfileImage(Button):
+    def __init__(self, locale: str | Locale):
+        super().__init__(emoji="🖼️", label=text_map.get(275, locale))
+        self.locale = locale
+
+    async def callback(self, i: Interaction):
+        embed = default_embed(message=text_map.get(276, self.locale))
+        embed.set_author(
+            name=text_map.get(52, self.locale), icon_url=i.user.display_avatar.url
+        )
+        view = CustomImage.View(self.locale)
+        view.author = i.user
+        await i.response.edit_message(embed=embed, view=view)
+        view.message = await i.original_response()
