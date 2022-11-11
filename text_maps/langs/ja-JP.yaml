@@ -43,7 +43,7 @@
 '42': デイリーログインは 完了した。
 '43': データ一覧
 '44': 活動日数
-'45': ''
+'45': Type a nickname for the custom image
 '46': アチーブメント
 '47': 深境螺旋
 '48': 風神の瞳
@@ -57,10 +57,10 @@
 '56': 原神データ
 '57': 貴重な宝箱
 '58': 世界探索
-'59': ''
-'60': ''
-'61': ''
-'62': ''
+'59': Set custom image for {character_name}
+'60': Image URL
+'61': Remove image
+'62': Set custom image
 '63': ''
 '64': ''
 '65': ''
@@ -280,13 +280,18 @@
 '270': 基礎防御力
 '271': 与える治療效果
 '272': 物理ダメージ
-'273': 炎元素ダメージ
-'274': 雷元素ダメージ
-'275': 水元素ダメージ
-'276': 草元素ダメージ
-'277': 風元素ダメージ
-'278': 岩元素ダメージ
-'279': 氷元素ダメージ
+'273': Ele. DMG Bonus
+'274': Invalid image URL
+'275': Custom Image
+'276': |-
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 25 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Shenhe crops the image for you, but the position of the crop is fixed, so you might want to crop it yourself using a tool like [this](https://www.iloveimg.com/crop-image)
+  • The dimension of the image should be 1663x629, or other dimensions that are multiples of 1663x629
+'277': Current Image
+'278': You have reached the limit of images you can have for this character (25)
+'279': No custom image set for this character
 '280': 基本速度
 '281': 速度%
 '282': 戻る
@@ -453,7 +458,7 @@
   7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。
   完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
   8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
-'404': ''
+'404': Select a custom image
 '405': あなたはまだ武器祈願をしていないようです
 '406': 開始時間
 '407': 終了時間
@@ -461,8 +466,8 @@
 '409': イベントの種類を選択
 '410': 原神アカウント情報を必要とするコマンドを使用するために、原神アカウント情報を登録します。
 '411': オプション
-'412': ''
-'413': ''
+'412': Manage your custom images in </settings:1020580644478275614>
+'413': Add image
 '414': 'リアルタイムノートを表示: 現在の天然樹脂、塵歌壺 、探索派遣 ( ''/register'' で登録している必要があります)'
 '415': ユーザー
 '416': 他のユーザーのデータを確認
