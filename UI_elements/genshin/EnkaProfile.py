@@ -97,7 +97,7 @@ class SetCustomImage(Button):
             i.user.id, i.client.db, int(self.view.character_id)
         )
         embed = get_user_custom_image_embed(
-            i, self.view.locale, str(self.view.character_id), custom_image
+            i, self.view.locale, str(self.view.character_id), custom_image, False
         )
         view = CustomImageView(options, self.view.locale, self.view)
         view.author = i.user
