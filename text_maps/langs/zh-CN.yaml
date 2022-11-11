@@ -288,10 +288,10 @@
 '274': 无效的图片连结
 '275': 自定义图片
 '276': |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 25 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  • 你可以在 </profile:1020580644419551336> 中为角色卡设置自定义图像
+  • 每个角色最多可以有 25 张图像
+  • 请提供图片网址，[imgur] 是一個好工具(https://imgur.com/)
+  • 使用 [這個](https://croppola.com/) 裁剪图像，选择 2.64:1 的比例
 '277': 当前图片
 '278': 你已达到此角色可以拥有的图片数量限制 (25)
 '279': 没有为此角色设置自定义图片
@@ -592,7 +592,7 @@
 '529': 物品类型
 '530': 获取途径
 '531': 武器效果
-'532': "{num} custom images"
+'532': "{num} 張自定义图像"
 '533': 伤害计算时发生错误
 '534': 查看并更改你的使用者设定
 '535': 外观
