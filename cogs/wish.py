@@ -3,15 +3,21 @@ from typing import Dict, List, Optional, Tuple
 
 import GGanalysis.games.genshin_impact as GI
 import sentry_sdk
-from discord import (Attachment, File, Interaction, Member, SelectOption, User,
-                     app_commands)
+from discord import (
+    Attachment,
+    File,
+    Interaction,
+    Member,
+    SelectOption,
+    User,
+    app_commands,
+)
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 from apps.genshin.checks import check_account, check_wish_history
 from apps.genshin.custom_model import ShenheBot, Wish, WishData, WishInfo
-from apps.genshin.utils import (get_uid, get_wish_history_embed,
-                                get_wish_info_embed)
+from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
@@ -32,6 +38,36 @@ class WishCog(commands.GroupCog, name="wish"):
         name="import", description=_("Import your genshin wish history", hash=474)
     )
     async def wish_import(self, i: Interaction):
+        if i.user.id == 410036441129943050:
+            await i.response.defer()
+            async with i.client.db.execute(
+                "SELECT DISTINCT user_id FROM wish_history"
+            ) as cursor:
+                user_ids: List[int] = [row[0] for row in await cursor.fetchall()]
+                for user_id in user_ids:
+                    banners = [100, 301, 400, 200, 302]
+                    for banner in banners:
+                        await cursor.execute(
+                            "SELECT wish_id, wish_rarity FROM wish_history WHERE user_id = ? AND wish_banner_type = ? ORDER BY wish_id ASC",
+                            (user_id, banner),
+                        )
+                        wishes: List[Tuple[int, int]] = await cursor.fetchall()
+                        if not wishes:
+                            continue
+                        count = 1
+                        for wish in wishes:
+                            wish_id = wish[0]
+                            rarity = wish[1]
+                            await cursor.execute(
+                                "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
+                                (count, wish_id),
+                            )
+                            if rarity == 5:
+                                count = 1
+                            else:
+                                count += 1
+            await i.client.db.commit()
+            return
         await wish_import_command(i)
 
     @app_commands.command(
@@ -106,7 +142,8 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embeds = await get_wish_history_embed(i, "", member)
         options = [
-            SelectOption(label=text_map.get(645, i.locale, user_locale), value="301"),
+            SelectOption(label=text_map.get(645, i.locale, user_locale)+" 1", value="301"),
+            SelectOption(label=text_map.get(645, i.locale, user_locale)+" 2", value="400"),
             SelectOption(label=text_map.get(646, i.locale, user_locale), value="302"),
             SelectOption(label=text_map.get(647, i.locale, user_locale), value="100"),
             SelectOption(label=text_map.get(655, i.locale, user_locale), value="200"),
@@ -130,7 +167,9 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_analysis(self, i: Interaction, member: Optional[User | Member] = None):
+    async def wish_analysis(
+        self, i: Interaction, member: Optional[User | Member] = None
+    ):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -334,7 +373,9 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("check other user's data", hash=416))
-    async def wish_overview(self, i: Interaction, member: Optional[User | Member] = None):
+    async def wish_overview(
+        self, i: Interaction, member: Optional[User | Member] = None
+    ):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
@@ -351,17 +392,17 @@ class WishCog(commands.GroupCog, name="wish"):
             name = tpl[0]
             banner = tpl[1]
             wish_rarity = tpl[2]
-            if banner == 400:
-                banner = 301
             items.append({"name": name, "banner": banner, "rarity": wish_rarity})
 
         novice_banner = [i for i in items if i["banner"] == 100]
         character_banner = [i for i in items if i["banner"] == 301]
+        character_banner_alt = [i for i in items if i["banner"] == 400]
         weapon_banner = [i for i in items if i["banner"] == 302]
         permanent_banner = [i for i in items if i["banner"] == 200]
         banners = {
             100: novice_banner,
             301: character_banner,
+            400: character_banner_alt,
             302: weapon_banner,
             200: permanent_banner,
         }
@@ -390,7 +431,9 @@ class WishCog(commands.GroupCog, name="wish"):
             if banner_id == 100:
                 title = text_map.get(647, i.locale, user_locale)
             elif banner_id == 301:
-                title = text_map.get(645, i.locale, user_locale)
+                title = text_map.get(645, i.locale, user_locale)+" 1"
+            elif banner_id == 400:
+                title = text_map.get(645, i.locale, user_locale)+" 2"
             elif banner_id == 302:
                 title = text_map.get(646, i.locale, user_locale)
             elif banner_id == 200:
@@ -410,7 +453,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 )
             )
             all_wish_data[str(banner_id)] = wish_data
-            
+
         fp = await draw_wish_overview_card(
             self.bot.session,
             user_locale or i.locale,

@@ -244,6 +244,8 @@ class ConfirmWishImport(Button):
         self.from_text_file = from_text_file
 
     async def callback(self, i: Interaction):
+        self.view: View
+        uid = await get_uid(i.user.id, i.client.db)
         embed = default_embed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
@@ -265,14 +267,14 @@ class ConfirmWishImport(Button):
                         time,
                         banner,
                         wish_id,
-                        await get_uid(i.user.id, i.client.db),
+                        uid,
                         item_id,
                     ),
                 )
         else:
             for wish in self.wish_history:
                 await i.client.db.execute(
-                    "INSERT INTO wish_history VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
+                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id, uid, item_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                     (
                         i.user.id,
                         wish.name,
@@ -281,10 +283,36 @@ class ConfirmWishImport(Button):
                         wish.type,
                         wish.banner_type,
                         wish.id,
-                        await get_uid(i.user.id, i.client.db),
+                        uid,
                         text_map.get_id_from_name(wish.name),
                     ),
                 )
+        banners = [100, 200, 301, 302, 400]
+        for banner in banners:
+            async with i.client.db.execute(
+                "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND uid = ? ORDER BY wish_id ASC",
+                (i.user.id, banner, uid),
+            ) as c:
+                wishes = await c.fetchall()
+            if not wishes:
+                count = 1
+            else:
+                if wishes[-1][2] is None:
+                    count = 1
+                else:
+                    count = wishes[-1][2] + 1
+            for wish in wishes:
+                wish_id = wish[0]
+                rarity = wish[1]
+                await i.client.db.execute(
+                    "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
+                    (count, wish_id),
+                )
+                if rarity == 5:
+                    count = 1
+                else:
+                    count += 1
+
         await i.client.db.commit()
         await wish_import_command(i, True)
 
@@ -397,11 +425,11 @@ class Modal(BaseModal):
             permanent_banner_num=permanent_banner,
             novice_banner_num=novice_banner,
         )
-        embed = await get_wish_info_embed(i, locale, wish_info)
+        embed = await get_wish_info_embed(i, str(locale), wish_info)
         view = View(locale, True, True)
         view.author = i.user
         view.clear_items()
-        view.add_item(ConfirmWishImport(locale, wish_history))
+        view.add_item(ConfirmWishImport(locale, list(wish_history)))
         view.add_item(CancelWishImport(locale))
         view.message = await i.edit_original_response(embed=embed, view=view)
 
@@ -450,17 +478,21 @@ async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
         newest_wish=Wish(
             time=newest_wish[0],
             rarity=newest_wish[1],
-            name=text_map.get_weapon_name(int(newest_wish[2]), locale) or text_map.get_character_name(int(newest_wish[2]), locale),
+            name=text_map.get_weapon_name(int(newest_wish[2]), locale)
+            or text_map.get_character_name(str(newest_wish[2]), locale) or "",
         ),
         oldest_wish=Wish(
             time=oldest_wish[0],
             rarity=oldest_wish[1],
-            name=text_map.get_weapon_name(int(oldest_wish[2]), locale) or text_map.get_character_name(int(oldest_wish[2]), locale),
+            name=text_map.get_weapon_name(int(oldest_wish[2]), locale)
+            or text_map.get_character_name(str(oldest_wish[2]), locale) or "",
         ),
         character_banner_num=character_banner,
         weapon_banner_num=weapon_banner,
         permanent_banner_num=permanent_banner,
         novice_banner_num=novice_banner,
     )
-    embed = await get_wish_info_embed(i, locale, wish_info, import_command=True, linked=linked)
+    embed = await get_wish_info_embed(
+        i, str(locale), wish_info, import_command=True, linked=linked
+    )
     return embed, linked, False

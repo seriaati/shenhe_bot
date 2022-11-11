@@ -677,6 +677,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         view = EnkaProfile.View(
             overview, options, data, eng_data, member, user_locale or i.locale
         )
+        view.author = i.user
         await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
         view.message = await i.original_response()
 
