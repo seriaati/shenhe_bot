@@ -288,11 +288,10 @@
 '274': 無效的圖片連結
 '275': 自訂圖片
 '276': |-
-  • 你可以自訂 </profile:1020580644419551336> 中角色卡片的圖片
-  • 每個角色最多可以有 25 張圖片
-  • 請提供一個圖片連結，[imgur](https://imgur.com/)是一個好工具
-  • 申鶴會自動幫你裁切圖片，但是位置可能不是你想要的，這時[這個工具](https://www.iloveimg.com/crop-image)便可以派上用場
-  • 圖片的尺寸應該是 1663x629，或是 1663x629 的倍數
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 25 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': 當前圖片
 '278': 你已達到此角色可以擁有的圖片數量限制 (25)
 '279': 沒有為此角色設定自訂圖片
@@ -593,7 +592,7 @@
 '529': 物品類型
 '530': 獲取途徑
 '531': 武器效果
-'532': ''
+'532': "{num} custom images"
 '533': 傷害計算時發生錯誤
 '534': 查看並更改你的使用者設定
 '535': 外觀
