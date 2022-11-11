@@ -68,10 +68,15 @@ async def element_button_callback(i: discord.Interaction, view: View, element: s
     options = []
     for character in characters:
         if character.element == element:
+            character_id = character.id.split("-")[0]
+            image_options = await get_user_custom_image_options(i, int(character_id))
             options.append(
                 discord.SelectOption(
                     label=character.name,
-                    value=character.id,
+                    description=text_map.get(532, view.locale).format(
+                        num=len(image_options)
+                    ),
+                    value=str(character_id),
                     emoji=get_character_emoji(character.id),
                 )
             )
@@ -287,7 +292,9 @@ def get_user_custom_image_embed(
     custom_image: Optional[UserCustomImage] = None,
     from_settings: bool = True,
 ) -> discord.Embed:
-    embed = default_embed(message=text_map.get(412, locale) if not from_settings else "")
+    embed = default_embed(
+        message=text_map.get(412, locale) if not from_settings else ""
+    )
     embed.set_author(
         name=text_map.get(59, locale).format(
             character_name=text_map.get_character_name(character_id, locale)
