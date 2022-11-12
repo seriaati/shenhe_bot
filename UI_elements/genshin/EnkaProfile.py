@@ -96,7 +96,7 @@ class SetCustomImage(Button):
         custom_image = await get_user_custom_image(
             i.user.id, i.client.db, int(self.view.character_id)
         )
-        embed = get_user_custom_image_embed(
+        embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
         view = CustomImageView(options, self.view.locale, self.view)
@@ -124,7 +124,7 @@ class Reload(Button):
         custom_image = await get_user_custom_image(
             i.user.id, i.client.db, int(self.view.character_id)
         )
-        embed = get_user_custom_image_embed(
+        embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
         options = await get_user_custom_image_options(i, int(self.view.character_id))
@@ -153,7 +153,7 @@ class SelectImage(Select):
         custom_image = await get_user_custom_image(
             i.user.id, i.client.db, int(self.view.character_id)
         )
-        embed = get_user_custom_image_embed(
+        embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
         await i.response.edit_message(embed=embed)
