@@ -1,3 +1,4 @@
+from datetime import datetime
 import aiohttp
 import aiosqlite
 from typing import Dict, List, Optional
@@ -65,6 +66,7 @@ class ShenheBot(commands.Bot):
     debug: bool
     maintenance: bool = False
     maintenance_time: Optional[str] = ""
+    launch_time: datetime
 
 class TodoList:
     def __init__(self):

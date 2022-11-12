@@ -61,7 +61,7 @@
 '60': Image URL
 '61': Remove image
 '62': Set custom image
-'63': ''
+'63': View the bot's info
 '64': ''
 '65': ''
 '66': ''
@@ -155,7 +155,7 @@
 '144': Timezone name
 '145': Type the timezone name here
 '146': Floor {a}
-'147': ''
+'147': Uptime
 '148': Choose abyss floor
 '149': Data not public?
 '150': |-
@@ -212,7 +212,7 @@
 '191': Calculation results
 '192': Calculation content
 '193': Powered by Genshin Optimizer
-'194': ''
+'194': Python version
 '195': ''
 '196': ''
 '197': No materials needed
@@ -563,7 +563,7 @@
 '500': An error occured while trying to do daily check-in
 '501': Update self-leaderboard position
 '502': Leaderboard position updated
-'503': View past updates
+'503': Number of guilds
 '504': Made by seria#5334, DM me if you have any questions
 '505': An error has occursed while trying to send you a resin notification
 '506': An error has occursed while trying to send you a realm currency notification
@@ -636,9 +636,9 @@
   • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
   • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
   • You can always remove your account data by using </accounts:1020188057628065866>
-'564': ''
-'565': ''
-'566': ''
+'564': Latency
+'565': Credits
+'566': Libraries used
 '567': ''
 '568': ''
 '569': ''
@@ -699,21 +699,21 @@
 '605': Claimed rewards
 '606': Current status
 '607': View claimed rewards
-'608': View the Shenhe v5 change log
-'609': Multi-account support
-'610': Easily switch between your accounts with the new account management system. You get to choose the account type you want to add, as well as giving the accounts your own nicknames.
+'608': ''
+'609': ''
+'610': ''
 '611': It is recommended to do the check-in by yourself today
-'612': The reminder system got a major overhaul. You can now set reminders for resin, talent domains, and realm currency as before, but with a cleaner and more intuitive interface.
-'613': New website
-'614': The website also got a major overhaul. It's using Bootstrap right now to look good on phones and tablets, and it has a FAQ section answering the most common questions.
-'615': Dark mode support for profile cards
-'616': Profile cards now have a dark mode version, which is automatically used when you enable dark mode in Shenhe.
-'617': Abyss cards
-'618': Abyss cards are now available, you can use them to display your abyss progress as well as details in battles.
-'619': Cache support for profile command
-'620': The profile command now caches your data, which means that you can use it to display more than the 8 characters on your profile showcase. When you use the commnd, Shenhe will remember all the character data, and when you remove those characters from the showcase in-game, they will still appear in the command. If you put those characters back up in the showcase, they will be updated automatically. This feature can also be used as a backup when the Enka API is down.
-'621': The new /claim command
-'622': You can now see the rewards you have claimed in the past, and claim rewards manually if Shenhe somehow misses it.
+'612': ''
+'613': ''
+'614': ''
+'615': ''
+'616': ''
+'617': ''
+'618': ''
+'619': ''
+'620': ''
+'621': ''
+'622': ''
 '623': Interaction timed out
 '624': Please try again
 '625': Date published

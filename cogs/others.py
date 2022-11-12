@@ -1,52 +1,22 @@
+import sys
+from datetime import datetime
+
 import pytz
 from discord import Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-
+from discord.ui import View, Button
 from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.update.change_log import change_log
-from data.update.change_log_en import change_log_en
-from UI_elements.others import ChangeLog, ManageAccounts, SettingsMenu
-from utility.paginator import GeneralPaginator
+from UI_elements.others import ManageAccounts, SettingsMenu
 from utility.utils import default_embed
 
 
 class OthersCog(commands.Cog, name="others"):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
-
-    @app_commands.command(
-        name="version", description=_("View shenhe's change logs", hash=503)
-    )
-    async def version(self, i: Interaction):
-        embeds = []
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        seria = self.bot.get_user(410036441129943050)
-        if seria is None:
-            seria = await self.bot.fetch_user(410036441129943050)
-        locale = user_locale or i.locale
-        if str(locale) == "zh-TW" or str(locale) == "zh-CN":
-            display_change_log = change_log
-        else:
-            display_change_log = change_log_en
-        for version, log in display_change_log.items():
-            if self.bot.debug:
-                log = f"`{log}`"
-            embed = default_embed(version, log)
-            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
-            embed.set_footer(
-                text=text_map.get(504, i.locale, user_locale), icon_url=seria.avatar
-            )
-            embeds.append(embed)
-        if i.channel.id != 965964989875757156:
-            view = ChangeLog.View(self.bot.db, embeds, i.locale, user_locale)
-            await i.response.send_message(embed=embeds[0], view=view)
-            view.message = await i.original_response()
-        else:
-            await i.response.send_message(embed=embeds[0])
 
     @app_commands.command(
         name="settings",
@@ -70,36 +40,6 @@ class OthersCog(commands.Cog, name="others"):
     async def accounts_command(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
-
-    @app_commands.command(
-        name="v5", description=_("View the Shenhe v5 change log", hash=608)
-    )
-    async def version_five(self, i: Interaction):
-        embeds = []
-        images = [
-            "https://i.imgur.com/Le1AyPz.png",
-            "https://i.imgur.com/4jCFh5v.png",
-            "https://i.imgur.com/9mwDGsp.png",
-            "https://i.imgur.com/seuqAnc.png",
-            "https://i.imgur.com/G4SrF4r.png",
-            "https://i.imgur.com/cgV10Jw.png",
-            "https://i.imgur.com/XDlxJOE.png",
-        ]
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
-        count = 0
-        for hash in range(609, 622 + 1):
-            if hash % 2 == 0:
-                continue
-            period = "。" if str(locale) == "zh-TW" or str(locale) == "zh-CN" else "."
-            desc_text = text_map.get(hash + 1, locale).split(period)
-            desc = ""
-            for words in desc_text[:-1]:
-                desc += f"{words}{period}\n\n"
-            embed = default_embed(text_map.get(hash, locale), desc)
-            embed.set_image(url=images[count])
-            embeds.append(embed)
-            count += 1
-        await GeneralPaginator(i, embeds, self.bot.db).start()
 
     @app_commands.command(
         name="timezone", description=_("View the timezone list", hash=134)
@@ -139,7 +79,9 @@ class OthersCog(commands.Cog, name="others"):
         dinnerbone_3rd = self.bot.get_user(
             808396055879090267
         ) or await self.bot.fetch_user(808396055879090267)
-        xiaokuai = self.bot.get_user(780643463946698813) or await self.bot.fetch_user(780643463946698813)
+        xiaokuai = self.bot.get_user(780643463946698813) or await self.bot.fetch_user(
+            780643463946698813
+        )
         embed.add_field(
             name=text_map.get(298, locale),
             value=f"{kakaka.mention} - 🇯🇵\n"
@@ -159,7 +101,9 @@ class OthersCog(commands.Cog, name="others"):
         algoinde = self.bot.get_user(142949518680391680) or await self.bot.fetch_user(
             142949518680391680
         )
-        m_307 = self.bot.get_user(301178730196238339) or await self.bot.fetch_user(301178730196238339)
+        m_307 = self.bot.get_user(301178730196238339) or await self.bot.fetch_user(
+            301178730196238339
+        )
         embed.add_field(
             name=text_map.get(466, locale),
             value=f"{gaurav.mention}\n"
@@ -174,6 +118,69 @@ class OthersCog(commands.Cog, name="others"):
             inline=False,
         )
         await i.response.send_message(embed=embed)
+
+    @app_commands.command(name="info", description=_("View the bot's info", hash=63))
+    async def view_bot_info(self, i: Interaction):
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        embed = default_embed(self.bot.user.name)
+        delta_uptime = datetime.utcnow() - self.bot.launch_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        embed.add_field(
+            name=text_map.get(147, locale),
+            value=f"{days}d {hours}h {minutes}m {seconds}s",
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(194, locale), value=f"`{sys.version}`", inline=False
+        )
+        embed.add_field(
+            name=text_map.get(503, locale),
+            value=str(len(self.bot.guilds)),
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(564, locale),
+            value=f"{round(self.bot.latency*1000, 2)} ms",
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(565, locale),
+            value="</credits:1028913972377817129>",
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(566, locale),
+            value=f"[discord.py](https://github.com/Rapptz/discord.py)\n"
+            f"[genshin.py](https://github.com/thesadru/genshin.py)\n"
+            f"[Enkanetwork.py](https://github.com/mrwan200/EnkaNetwork.py)\n"
+            f"[GGanalysis](https://github.com/OneBST/GGanalysis)\n"
+            f"[pyppeteer](https://github.com/pyppeteer/pyppeteer)\n"
+            f"[Pillow](https://github.com/python-pillow/Pillow)\n"
+            f"[pydantic](https://github.com/pydantic/pydantic)\n"
+            f"[aiosqlite](https://github.com/omnilib/aiosqlite)\n"
+            f"[matplotlib](https://github.com/matplotlib/matplotlib)\n",
+            inline=False,
+        )
+        embed.add_field(
+            name=text_map.get(220, locale),
+            value=f"[seria#5334](http://discord.com/users/410036441129943050)",
+            inline=False,
+        )
+        embed.set_thumbnail(url=self.bot.user.avatar.url)
+        view = View()
+        view.add_item(
+            Button(
+                label=text_map.get(642, locale),
+                url="https://discord.gg/ryfamUykRw",
+                emoji="<:discord_icon:1032123254103621632>",
+            )
+        )
+        view.add_item(
+            Button(label="GitHub", url="https://github.com/seriaati/shenhe_bot")
+        )
+        await i.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:

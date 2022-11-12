@@ -1,6 +1,7 @@
 # shenhe-bot by seria
 
 import asyncio
+from datetime import datetime
 import getpass
 import os
 from pathlib import Path
@@ -83,6 +84,7 @@ class Shenhe(commands.Bot):
         # bot variables
         self.maintenance = False
         self.maintenance_time = ""
+        self.launch_time = datetime.utcnow()
         self.session = aiohttp.ClientSession()
         self.db = await aiosqlite.connect("shenhe.db")
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
