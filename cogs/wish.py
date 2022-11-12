@@ -95,6 +95,13 @@ class WishCog(commands.GroupCog, name="wish"):
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
+        except UnicodeEncodeError:
+            await i.response.send_message(
+                embed=error_embed(message=text_map.get(567, locale)).set_author(
+                    name=text_map.get(195, locale), icon_url=i.user.display_avatar.url
+                ),
+                ephemeral=True,
+            )
         except Exception as e:
             sentry_sdk.capture_exception(e)
             await i.response.send_message(
@@ -112,8 +119,12 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embeds = await get_wish_history_embed(i, "", member)
         options = [
-            SelectOption(label=text_map.get(645, i.locale, user_locale)+" 1", value="301"),
-            SelectOption(label=text_map.get(645, i.locale, user_locale)+" 2", value="400"),
+            SelectOption(
+                label=text_map.get(645, i.locale, user_locale) + " 1", value="301"
+            ),
+            SelectOption(
+                label=text_map.get(645, i.locale, user_locale) + " 2", value="400"
+            ),
             SelectOption(label=text_map.get(646, i.locale, user_locale), value="302"),
             SelectOption(label=text_map.get(647, i.locale, user_locale), value="100"),
             SelectOption(label=text_map.get(655, i.locale, user_locale), value="200"),
@@ -401,9 +412,9 @@ class WishCog(commands.GroupCog, name="wish"):
             if banner_id == 100:
                 title = text_map.get(647, i.locale, user_locale)
             elif banner_id == 301:
-                title = text_map.get(645, i.locale, user_locale)+" 1"
+                title = text_map.get(645, i.locale, user_locale) + " 1"
             elif banner_id == 400:
-                title = text_map.get(645, i.locale, user_locale)+" 2"
+                title = text_map.get(645, i.locale, user_locale) + " 2"
             elif banner_id == 302:
                 title = text_map.get(646, i.locale, user_locale)
             elif banner_id == 200:
