@@ -129,6 +129,7 @@ class AddItemModal(BaseModal):
     item = TextInput(
         label="item_name",
         placeholder="for_example:_mora",
+        max_length=50,
     )
 
     count = TextInput(label="item_amount", placeholder="for_example:_90")
@@ -152,6 +153,7 @@ class RemoveItemModal(BaseModal):
         label="item_amount",
         placeholder="for_example:_90_(leave_blank_clear)",
         required=False,
+        max_length=20,
     )
 
     def __init__(self, locale: Locale, user_locale: str) -> None:

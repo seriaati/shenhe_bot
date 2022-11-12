@@ -497,8 +497,8 @@ async def return_notification_menu(
 
 
 class ResinModal(BaseModal):
-    resin_threshold = TextInput(label="樹脂閥值", placeholder="例如: 140 (不得大於 160)")
-    max_notif = TextInput(label="最大提醒值", placeholder="例如: 5")
+    resin_threshold = TextInput(label="樹脂閥值", placeholder="例如: 140 (不得大於 160)", max_length=3)
+    max_notif = TextInput(label="最大提醒值", placeholder="例如: 5", max_length=3)
 
     def __init__(self, locale: Locale | str):
         super().__init__(title=text_map.get(151, locale))
@@ -513,8 +513,8 @@ class ResinModal(BaseModal):
 
 
 class PotModal(BaseModal):
-    threshold = TextInput(label="寶錢閥值")
-    max_notif = TextInput(label="最大提醒值")
+    threshold = TextInput(label="寶錢閥值", max_length=5)
+    max_notif = TextInput(label="最大提醒值", max_length=3)
 
     def __init__(self, locale: Locale):
         super().__init__(title=text_map.get(515, locale))
