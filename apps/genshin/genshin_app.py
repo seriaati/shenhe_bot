@@ -317,6 +317,7 @@ class GenshinApp:
         result = {}
         result["abyss"] = abyss
         result["user"] = user
+        result["discord_user"] = shenhe_user.discord_user
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(

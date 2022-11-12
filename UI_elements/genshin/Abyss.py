@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 import aiosqlite
 from discord import Embed, File, Interaction, Locale, SelectOption, User
@@ -29,33 +29,33 @@ class View(BaseView):
 
 
 class FloorSelect(Select):
-    def __init__(self, embeds: list[Embed], locale: Locale, user_locale: str):
+    def __init__(self, embeds: Dict, locale: Locale, user_locale: str):
         options = [
             SelectOption(label=text_map.get(43, locale, user_locale), value="overview")
         ]
         for index in range(len(embeds["floors"])):
             options.append(
                 SelectOption(
-                    label=text_map.get(146, locale, user_locale).format(a=9+index),
-                    value=index,
+                    label=text_map.get(146, locale, user_locale).format(a=9 + index),
+                    value=str(index),
                 )
             )
         super().__init__(
             placeholder=text_map.get(148, locale, user_locale), options=options
         )
         self.add_option(label=text_map.get(643, locale, user_locale), value="one-page")
-        self.embeds = embeds
+        self.abyss_result = embeds
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
         user_locale = await get_user_locale(i.user.id, i.client.db)
         if self.values[0] == "overview":
-            fp = self.embeds["overview_card"]
+            fp = self.abyss_result["overview_card"]
             fp.seek(0)
             image = File(fp, filename="overview_card.jpeg")
             await i.edit_original_response(
-                embed=self.embeds["overview"],
+                embed=self.abyss_result["overview"],
                 attachments=[image],
             )
         elif self.values[0] == "one-page":
@@ -66,12 +66,12 @@ class FloorSelect(Select):
             )
             await i.edit_original_response(embed=embed, attachments=[])
             cache = i.client.abyss_one_page_cache
-            key = self.embeds["user"].info.nickname
+            key = self.abyss_result["user"].info.nickname
             fp = cache.get(key)
             if fp is None:
                 fp = await draw_abyss_one_page(
-                    self.embeds["user"],
-                    self.embeds["abyss"],
+                    self.abyss_result["user"],
+                    self.abyss_result["abyss"],
                     user_locale or i.locale,
                     dark_mode,
                     i.client.session,
@@ -82,7 +82,8 @@ class FloorSelect(Select):
             embed = default_embed()
             embed.set_image(url="attachment://abyss_one_page.jpeg")
             embed.set_author(
-                name=self.embeds["title"], icon_url=i.user.display_avatar.url
+                name=self.abyss_result["title"],
+                icon_url=self.abyss_result["discord_user"].display_avatar.url,
             )
             await i.edit_original_response(embed=embed, attachments=[image])
         else:
@@ -95,15 +96,16 @@ class FloorSelect(Select):
             embed = default_embed()
             embed.set_image(url="attachment://floor.jpeg")
             embed.set_author(
-                name=self.embeds["title"], icon_url=i.user.display_avatar.url
+                name=self.abyss_result["title"],
+                icon_url=self.abyss_result["discord_user"].display_avatar.url,
             )
             cache = i.client.abyss_floor_card_cache
-            key = str(self.embeds["floors"][int(self.values[0])])
+            key = str(self.abyss_result["floors"][int(self.values[0])])
             fp = cache.get(key)
             if fp is None:
                 fp = await draw_abyss_floor_card(
                     dark_mode,
-                    self.embeds["floors"][int(self.values[0])],
+                    self.abyss_result["floors"][int(self.values[0])],
                     i.client.session,
                 )
                 cache[key] = fp
