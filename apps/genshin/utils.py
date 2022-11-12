@@ -277,6 +277,8 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
         return None
     return uid
 
+class NoCharacterFound(Exception):
+    pass
 
 async def load_and_update_enka_cache(
     cache: enkanetwork.EnkaNetworkResponse,
@@ -285,7 +287,7 @@ async def load_and_update_enka_cache(
     en: bool = False,
 ) -> enkanetwork.EnkaNetworkResponse:
     if data.characters is None:
-        raise ValueError("No characters found in data")
+        raise NoCharacterFound
     if cache is None or cache.characters is None:
         cache = data
     c_dict = {}

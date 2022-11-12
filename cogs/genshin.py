@@ -29,6 +29,7 @@ from apps.genshin.checks import *
 from apps.genshin.custom_model import ShenheBot
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
+    NoCharacterFound,
     get_artifact,
     get_character_emoji,
     get_farm_data,
@@ -643,7 +644,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             message=text_map.get(519, i.locale, user_locale)
                         ).set_author(
                             name=text_map.get(286, i.locale, user_locale),
-                            icon_url=i.user.display_avatar.url,
+                            icon_url=member.display_avatar.url,
                         ),
                         ephemeral=True,
                     )
@@ -655,12 +656,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             eng_cache = await load_and_update_enka_cache(
                 eng_cache, eng_data, uid, en=True
             )
-        except ValueError:
+        except NoCharacterFound:
             embed = (
                 default_embed(message=text_map.get(287, i.locale, user_locale))
                 .set_author(
                     name=text_map.get(141, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
+                    icon_url=member.display_avatar.url,
                 )
                 .set_image(url="https://i.imgur.com/frMsGHO.gif")
             )
