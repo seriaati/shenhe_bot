@@ -213,7 +213,7 @@
 '192': 计算内容
 '193': 由 Genshin Optimizer 提供服务
 '194': Python 版本
-'195': ''
+'195': Invalid file type
 '196': ''
 '197': 不需要任何素材
 '198': ''
@@ -639,7 +639,9 @@
 '564': 延迟
 '565': 制作人员
 '566': 使用的程式库
-'567': ''
+'567': |-
+  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
+  The only file that is supported is the .txt file exported from Shenhe.
 '568': ''
 '569': ''
 '570': |-
