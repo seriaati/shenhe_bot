@@ -1,11 +1,10 @@
-from typing import Dict, Literal, Optional, Tuple
-
+from typing import Dict, List, Literal, Optional, Tuple
 import aiosqlite
 import genshin
 import sentry_sdk
-from discord import Embed, Locale, SelectOption, User
+from discord import Embed, Locale, SelectOption, User, Asset
 from discord.utils import format_dt
-
+import enkanetwork
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheBot, ShenheUser
 from apps.genshin.utils import get_shenhe_user, get_uid
@@ -24,6 +23,10 @@ from yelan.draw import (
 
 
 class CookieInvalid(Exception):
+    pass
+
+
+class UIDNotFound(Exception):
     pass
 
 
@@ -142,7 +145,10 @@ class GenshinApp:
             realm_recover_time = text_map.get(1, locale, user_locale)
         else:
             realm_recover_time = format_dt(notes.realm_currency_recovery_time, "R")
-        if notes.transformer_recovery_time is None:
+        if (
+            notes.remaining_transformer_recovery_time is None
+            or notes.transformer_recovery_time is None
+        ):
             transformer_recover_time = text_map.get(11, locale, user_locale)
         else:
             if notes.remaining_transformer_recovery_time.total_seconds() <= 0:
@@ -161,10 +167,17 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_stats(
-        self, user_id: int, author_id: int, namecard: str, avatar_url: str, locale: Locale
+        self,
+        user_id: int,
+        author_id: int,
+        namecard: enkanetwork.model.assets.IconAsset,
+        avatar_url: Asset,
+        locale: Locale,
     ) -> Tuple[Embed | Dict, bool]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
+        if uid is None:
+            raise UIDNotFound
         embed = default_embed()
         embed.set_image(url="attachment://stat_card.jpeg")
         fp = self.bot.stats_card_cache.get(uid)
@@ -174,6 +187,8 @@ class GenshinApp:
             characters = await ambr.get_character(
                 include_beta=False, include_traveler=False
             )
+            if not isinstance(characters, List):
+                raise TypeError("Characters is not a list")
 
             mode = await get_user_appearance_mode(author_id, self.db)
             fp = await draw_stats_card(
@@ -191,6 +206,8 @@ class GenshinApp:
     async def get_area(self, user_id: int, author_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
+        if uid is None:
+            raise UIDNotFound
         embed = default_embed()
         embed.set_author(
             name=text_map.get(58, locale, shenhe_user.user_locale),
@@ -200,16 +217,13 @@ class GenshinApp:
         genshin_user = await shenhe_user.client.get_partial_genshin_user(uid)
         explorations = genshin_user.explorations
         fp = self.bot.area_card_cache.get(uid)
-        if fp is not None:
-            pass
-        else:
-            mode = await get_user_appearance_mode(author_id, user_id, self.db)
-            if fp is None:
-                fp = await draw_area_card(explorations, mode)
-            result = {
-                "embed": embed,
-                "image": fp,
-            }
+        if fp is None:
+            mode = await get_user_appearance_mode(author_id, self.db)
+            fp = await draw_area_card(explorations, mode)
+        result = {
+            "embed": embed,
+            "image": fp,
+        }
         return (
             result,
             True,
@@ -221,6 +235,8 @@ class GenshinApp:
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
         diary = await shenhe_user.client.get_diary(month=month)
+        if shenhe_user.uid is None:
+            raise UIDNotFound
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         result = {}
         embed = default_embed()
@@ -229,7 +245,7 @@ class GenshinApp:
             user,
             shenhe_user.user_locale or locale,
             month,
-            await get_user_appearance_mode(user_id, author_id, self.db),
+            await get_user_appearance_mode(author_id, self.db),
         )
         fp.seek(0)
         embed.set_image(url="attachment://diary.jpeg")
@@ -242,7 +258,9 @@ class GenshinApp:
         return result, True
 
     @genshin_error_handler
-    async def get_diary_logs(self, user_id: int, author_id: int, primo: bool, locale: Locale):
+    async def get_diary_logs(
+        self, user_id: int, author_id: int, primo: bool, locale: Locale
+    ):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
@@ -277,18 +295,22 @@ class GenshinApp:
         return embed, True
 
     @genshin_error_handler
-    async def get_abyss(self, user_id: int, author_id: int, previous: bool, locale: Locale):
+    async def get_abyss(
+        self, user_id: int, author_id: int, previous: bool, locale: Locale
+    ):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
+        if shenhe_user.uid is None:
+            raise UIDNotFound
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         abyss = await shenhe_user.client.get_genshin_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
         author_locale = await get_user_locale(author_id, self.db)
-        locale = author_locale or shenhe_user.user_locale or locale
+        new_locale = author_locale or shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
-            embed = error_embed(message=text_map.get(74, locale))
+            embed = error_embed(message=text_map.get(74, new_locale))
             embed.set_author(
-                name=text_map.get(76, locale),
+                name=text_map.get(76, new_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             return embed, False
@@ -298,19 +320,19 @@ class GenshinApp:
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(
-            name=f"{text_map.get(85, locale)} | {text_map.get(77, locale)} {abyss.season}",
+            name=f"{text_map.get(85, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         result[
             "title"
-        ] = f"{text_map.get(47, locale)} | {text_map.get(77, locale)} {abyss.season}"
+        ] = f"{text_map.get(47, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}"
         result["overview"] = overview
         dark_mode = await get_user_appearance_mode(author_id, self.db)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
         if fp is None:
             fp = await draw_abyss_overview_card(
-                locale, dark_mode, abyss, user, self.bot.session, self.bot.loop
+                new_locale, dark_mode, abyss, user, self.bot.session, self.bot.loop
             )
             cache[shenhe_user.uid] = fp
         result["overview_card"] = fp
@@ -322,13 +344,15 @@ class GenshinApp:
         self, user_id: int, author_id: int, locale: Locale
     ) -> Tuple[Dict | Embed, bool]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
+        if shenhe_user.uid is None:
+            raise UIDNotFound
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
         author_locale = await get_user_locale(author_id, self.db)
-        locale = author_locale or shenhe_user.user_locale or str(locale)
+        new_locale = author_locale or shenhe_user.user_locale or str(locale)
         # organize characters according to elements
         result = {
             "embed": default_embed().set_image(url="attachment://characters.jpeg"),
-            "options": [SelectOption(label=text_map.get(701, locale), value="All")],
+            "options": [SelectOption(label=text_map.get(701, new_locale), value="All")],
         }
         elements = []
         for character in characters:
@@ -340,10 +364,10 @@ class GenshinApp:
                 SelectOption(
                     emoji=element_emojis.get(element),
                     label=(
-                        text_map.get(19, locale)
+                        text_map.get(19, new_locale)
                         if element == "All"
-                        else text_map.get(52, locale).format(
-                            element=get_element_name(element, locale)
+                        else text_map.get(52, new_locale).format(
+                            element=get_element_name(element, new_locale)
                         )
                     ),
                     value=element,
@@ -352,8 +376,8 @@ class GenshinApp:
         fp = await draw_big_character_card(
             list(characters),
             self.bot.session,
-            await get_user_appearance_mode(user_id, author_id, self.db),
-            locale,
+            await get_user_appearance_mode(author_id, self.db),
+            new_locale,
             "All",
         )
         result["file"] = fp
@@ -362,7 +386,9 @@ class GenshinApp:
         return result, True
 
     @genshin_error_handler
-    async def redeem_code(self, user_id: int, author_id: int, code: str, locale: Locale):
+    async def redeem_code(
+        self, user_id: int, author_id: int, code: str, locale: Locale
+    ):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             await shenhe_user.client.redeem_code(code)
@@ -397,6 +423,8 @@ class GenshinApp:
     async def get_activities(self, user_id: int, author_id: int, locale: Locale):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
+        if uid is None:
+            raise UIDNotFound
         activities = await shenhe_user.client.get_genshin_activities(uid)
         summer = activities.summertime_odyssey
         if summer is None:

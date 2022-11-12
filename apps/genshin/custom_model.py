@@ -7,6 +7,7 @@ import discord
 import genshin
 from discord.ext import commands
 from enkanetwork.model import EnkaNetworkResponse
+import cachetools
 
 class ShenheUser(BaseModel):
     client: genshin.Client
@@ -67,6 +68,12 @@ class ShenheBot(commands.Bot):
     maintenance: bool = False
     maintenance_time: Optional[str] = ""
     launch_time: datetime
+    stats_card_cache: cachetools.TTLCache
+    enka_card_cache: cachetools.TTLCache
+    area_card_cache: cachetools.TTLCache
+    abyss_overview_card_cache: cachetools.TTLCache
+    abyss_floor_card_cache: cachetools.TTLCache
+    abyss_one_page_cache: cachetools.TTLCache
 
 class TodoList:
     def __init__(self):

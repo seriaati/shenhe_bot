@@ -259,7 +259,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 enka_cache[uid] = cache
         namecard = data.player.namecard.banner
         result, success = await self.genshin_app.get_stats(
-            member.id, namecard, member.display_avatar, i.locale
+            member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
@@ -380,7 +380,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         user_timezone = await get_user_timezone(i.user.id, self.bot.db)
         month = datetime.now(pytz.timezone(user_timezone)).month
-        result, success = await self.genshin_app.get_diary(member.id, month, i.locale)
+        result, success = await self.genshin_app.get_diary(member.id, i.user.id, month, i.locale)
         if not success:
             await i.followup.send(embed=result)
         else:
@@ -421,7 +421,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         previous = True if previous == 1 else False
         result, success = await self.genshin_app.get_abyss(
-            member.id, previous, i.locale
+            member.id, i.user.id, previous, i.locale
         )
         if not success:
             return await i.followup.send(embed=result)
@@ -719,7 +719,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
         await i.response.defer()
-        result, success = await self.genshin_app.redeem_code(i.user.id, code, i.locale)
+        result, success = await self.genshin_app.redeem_code(i.user.id, i.user.id, code, i.locale)
         await i.followup.send(embed=result, ephemeral=not success)
 
     @app_commands.command(
