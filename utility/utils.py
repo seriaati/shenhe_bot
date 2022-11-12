@@ -39,7 +39,7 @@ def time_in_range(start, end, x):
         return start <= x or x <= end
 
 
-def divide_chunks(l: list, n: int):
+def divide_chunks(l: List, n: int):
     for i in range(0, len(l), n):
         yield l[i : i + n]
 

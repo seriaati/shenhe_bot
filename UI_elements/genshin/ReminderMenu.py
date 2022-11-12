@@ -1,5 +1,6 @@
 import ast
 import asyncio
+from typing import List, Tuple
 
 import aiosqlite
 from discord import ButtonStyle, Embed, Interaction, Locale
@@ -9,11 +10,16 @@ from ambr.client import AmbrTopAPI
 
 import config
 from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.utils import get_character_emoji, get_uid, get_weapon
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_uid,
+    get_weapon,
+    get_weapon_emoji,
+)
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import default_embed, error_embed
+from utility.utils import default_embed, divide_chunks, error_embed
 
 
 class View(BaseView):
@@ -162,17 +168,24 @@ async def return_weapon_notification(i: Interaction, view: View):
     ) as c:
         toggle, weapon_list = await c.fetchone()
     weapon_list = ast.literal_eval(weapon_list)
-    if not weapon_list:
-        value = text_map.get(637, view.locale)
-    else:
-        value = ""
-        for weapon in weapon_list:
-            value += f'{get_weapon(weapon)["emoji"]} {text_map.get_weapon_name(weapon, view.locale)}\n'
     embed = default_embed(message=text_map.get(633, view.locale))
     embed.set_author(
         name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
     )
-    embed.add_field(name=text_map.get(636, view.locale), value=value)
+    if not weapon_list:
+        value = text_map.get(637, view.locale)
+        embed.add_field(name=text_map.get(636, view.locale), value=value)
+    else:
+        values = []
+        for weapon in weapon_list:
+            values.append(
+                f"{get_weapon_emoji(int(weapon))} {text_map.get_weapon_name(weapon, view.locale)}\n"
+            )
+        values = list(divide_chunks(values, 20))
+        for index, value in enumerate(values):
+            embed.add_field(
+                name=text_map.get(636, view.locale) + f" ({index})", value=value
+            )
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(AddWeapon(view.locale))
@@ -194,24 +207,31 @@ async def return_weapon_notification(i: Interaction, view: View):
 
 
 async def return_talent_notification(i: Interaction, view: View):
-    c: aiosqlite.Cursor = await i.client.db.cursor()
-    await c.execute(
+    async with i.client.db.execute(
         "SELECT toggle, character_list FROM talent_notification WHERE user_id = ?",
         (i.user.id,),
-    )
-    toggle, character_list = await c.fetchone()
+    ) as c:
+        toggle, character_list = await c.fetchone()
     character_list = ast.literal_eval(character_list)
-    if not character_list:
-        value = text_map.get(158, view.locale)
-    else:
-        value = ""
-        for character in character_list:
-            value += f"{get_character_emoji(character)} {text_map.get_character_name(character, view.locale)}\n"
     embed = default_embed(message=text_map.get(590, view.locale))
     embed.set_author(
         name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
     )
-    embed.add_field(name=text_map.get(159, view.locale), value=value)
+    if not character_list:
+        value = text_map.get(158, view.locale)
+        embed.add_field(name=text_map.get(159, view.locale), value=value)
+    else:
+        values = []
+        for character in character_list:
+            values.append(
+                f"{get_character_emoji(character)} {text_map.get_character_name(character, view.locale)}\n"
+            )
+        values = list(divide_chunks(values, 20))
+        for index, value in enumerate(values):
+            embed.add_field(
+                name=text_map.get(159, view.locale) + f" ({index})",
+                value="".join(value),
+            )
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(AddCharacter(view.locale))
