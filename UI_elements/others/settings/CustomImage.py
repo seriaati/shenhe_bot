@@ -244,12 +244,7 @@ async def return_custom_image_interaction(
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
     custom_image = await get_user_custom_image(i.user.id, i.client.db, character_id)
-    embed = get_user_custom_image_embed(i, view.locale, str(character_id), custom_image)
-    if custom_image is not None and not (
-        await validate_image_url(custom_image.url, i.client.session)
-    ):
-        embed.set_image(url=None)
-        embed.set_footer(text=text_map.get(274, view.locale), icon_url=asset.red_icon)
+    embed = await get_user_custom_image_embed(i, view.locale, str(character_id), custom_image)
     await i.edit_original_response(embed=embed, view=view)
 
 
@@ -311,7 +306,7 @@ async def get_user_custom_image_options(
     return options
 
 
-def get_user_custom_image_embed(
+async def get_user_custom_image_embed(
     i: discord.Interaction,
     locale: discord.Locale | str,
     character_id: str,
@@ -333,6 +328,11 @@ def get_user_custom_image_embed(
             value=custom_image.url,
         )
         embed.set_image(url=custom_image.url)
+    if custom_image is not None and not (
+        await validate_image_url(custom_image.url, i.client.session)
+    ):
+        embed.set_image(url=None)
+        embed.set_footer(text=text_map.get(274, locale), icon_url=asset.red_icon)
     return embed
 
 
