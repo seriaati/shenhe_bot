@@ -204,10 +204,11 @@ async def get_shenhe_user(
     user_id: int,
     db: aiosqlite.Connection,
     bot: commands.Bot,
-    locale: Optional[Locale] = None,
+    locale: Optional[Locale | str] = None,
     cookie: Optional[Dict[str, str | int]] = None,
     custom_uid: Optional[int] = None,
     daily_checkin: int = 1,
+    author_locale: Optional[Locale | str] = None,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if not cookie:
@@ -242,7 +243,8 @@ async def get_shenhe_user(
 
     uid = custom_uid or uid
     user_locale = await get_user_locale(user_id, db)
-    client.lang = to_genshin_py(user_locale or locale) or "en-us"
+    locale = author_locale or user_locale or locale
+    client.lang = to_genshin_py(str(locale)) or "en-us"
     client.default_game = genshin.Game.GENSHIN
     client.uid = uid
     china = True if str(uid)[0] in ["1", "2", "5"] else False
@@ -253,7 +255,7 @@ async def get_shenhe_user(
         client=client,
         uid=uid,
         discord_user=discord_user,
-        user_locale=user_locale,
+        user_locale=str(locale),
         china=china,
         daily_checkin=True if daily_checkin == 1 else False,
     )

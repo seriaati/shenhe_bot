@@ -6,8 +6,7 @@ from typing import Dict, List, Tuple
 
 import aiosqlite
 import pytz
-from discord import (Embed, File, Interaction, Member, SelectOption, User,
-                     app_commands)
+from discord import Embed, File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -15,8 +14,12 @@ from discord.ui import Select
 from discord.utils import format_dt
 from diskcache import FanoutCache
 from dotenv import load_dotenv
-from enkanetwork import (EnkaNetworkAPI, EnkaNetworkResponse, EnkaServerError,
-                         UIDNotFounded)
+from enkanetwork import (
+    EnkaNetworkAPI,
+    EnkaNetworkResponse,
+    EnkaServerError,
+    UIDNotFounded,
+)
 from enkanetwork.enum import DigitType, EquipmentsType, Language
 
 import asset
@@ -25,26 +28,43 @@ from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
 from apps.genshin.custom_model import ShenheBot
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (get_artifact, get_character_emoji,
-                                get_farm_data, get_fight_prop, get_uid,
-                                load_and_update_enka_cache)
+from apps.genshin.utils import (
+    get_artifact,
+    get_character_emoji,
+    get_farm_data,
+    get_fight_prop,
+    get_uid,
+    load_and_update_enka_cache,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
 from data.game.equip_types import equip_types
 from data.game.fight_prop import fight_prop
-from UI_elements.genshin import (Abyss, ArtifactLeaderboard, Build,
-                                 CharacterWiki, Diary, EnkaProfile,
-                                 EventTypeChooser, ShowAllCharacters)
+from UI_elements.genshin import (
+    Abyss,
+    ArtifactLeaderboard,
+    Build,
+    CharacterWiki,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_appearance_mode, get_user_timezone,
-                           get_weekday_int_with_name)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_appearance_mode,
+    get_user_timezone,
+    get_weekday_int_with_name,
+)
 from yelan.draw import draw_big_material_card
 
 load_dotenv()
@@ -152,7 +172,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         await i.response.defer()
         result, success = await self.genshin_app.get_real_time_notes(
-            member.id, i.locale
+            member.id, i.user.id, i.locale
         )
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
@@ -169,7 +189,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             return
         await i.response.defer(ephemeral=True)
         result, success = await self.genshin_app.get_real_time_notes(
-            member.id, i.locale
+            member.id, i.user.id, i.locale
         )
         if not success:
             await i.followup.send(embed=result, ephemeral=True)
@@ -264,7 +284,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def area(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
-        result, success = await self.genshin_app.get_area(member.id, i.locale)
+        result, success = await self.genshin_app.get_area(
+            member.id, i.user.id, i.locale
+        )
         if not success:
             await i.followup.send(embed=result)
         else:
@@ -320,7 +342,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             ),
             ephemeral=ephemeral,
         )
-        result, _ = await self.genshin_app.get_all_characters(member.id, i.locale)
+        result, _ = await self.genshin_app.get_all_characters(
+            member.id, i.user.id, i.locale
+        )
         if not isinstance(result, Dict):
             return await i.followup.send(embed=result)
         fp = result["file"]
@@ -575,7 +599,12 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("check other user's data", hash=416),
     )
-    async def profile(self, i: Interaction, member: Optional[User | Member] = None, uid: Optional[int] = None):
+    async def profile(
+        self,
+        i: Interaction,
+        member: Optional[User | Member] = None,
+        uid: Optional[int] = None,
+    ):
         await self.profile_command(i, member, False, uid)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
@@ -1225,7 +1254,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def activity(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
-        result, success = await self.genshin_app.get_activities(member.id, i.locale)
+        result, success = await self.genshin_app.get_activities(
+            member.id, i.user.id, i.locale
+        )
         if not success:
             return await i.followup.send(embed=result, ephemeral=True)
         await GeneralPaginator(i, result, self.bot.db).start(followup=True)

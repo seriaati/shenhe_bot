@@ -3,7 +3,6 @@ from typing import Optional
 import discord
 import sentry_sdk
 
-from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from utility.utils import error_embed, log
@@ -22,7 +21,8 @@ async def global_error_handler(
         log.warning(f"[{i.user.id}]{type(e)}: {e}")
         sentry_sdk.capture_exception(e)
         embed = error_embed(message=text_map.get(513, i.locale, user_locale))
-        embed.description += f"\n```{e}```"
+        if embed.description is not None:
+            embed.description += f"\n\n```{e}```"
         embed.set_author(
             name=text_map.get(135, i.locale, user_locale),
             icon_url=i.user.display_avatar.url,
