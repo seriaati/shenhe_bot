@@ -4,7 +4,7 @@ import aiohttp
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from UI_elements.others.settings.CustomImage import get_user_custom_image
-
+import PIL
 import asset
 import config
 from apps.genshin.custom_model import EnkaView
@@ -165,7 +165,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
             dark_mode,
             url,
         )
-    except aiohttp.InvalidURL:
+    except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
             embed=error_embed().set_author(
                 name=text_map.get(274, enka_view.locale),
