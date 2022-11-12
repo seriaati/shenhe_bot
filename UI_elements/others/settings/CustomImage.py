@@ -6,7 +6,7 @@ from apps.genshin.custom_model import UserCustomImage
 from apps.genshin.utils import get_character_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from data.game.elements import get_element_emoji, get_element_list
-from utility.utils import default_embed
+from utility.utils import default_embed, error_embed
 from apps.text_map.text_map_app import text_map
 from typing import List, Optional
 import aiosqlite
@@ -135,6 +135,17 @@ class AddImageModal(BaseModal):
         self.element = element
 
     async def on_submit(self, i: discord.Interaction) -> None:
+        check = await validate_image_url(self.url.value, i.client.session)
+        if not check:
+            return await i.response.send_message(
+                embed=error_embed(
+                    message=text_map.get(568, self.view.locale)
+                ).set_author(
+                    name=text_map.get(274, self.view.locale),
+                    icon_url=i.user.display_avatar.url,
+                ),
+                ephemeral=True,
+            )
         await add_user_custom_image(
             i, self.url.value, self.character_id, self.nickname.value
         )
@@ -223,6 +234,7 @@ class CharacterSelect(discord.ui.Select):
 async def return_custom_image_interaction(
     view: View, i: discord.Interaction, character_id: int, element: str
 ):
+    await i.response.defer()
     view.clear_items()
     view.add_item(GoBackCharacter(element))
     options = await get_user_custom_image_options(i, character_id)
@@ -233,7 +245,12 @@ async def return_custom_image_interaction(
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
     custom_image = await get_user_custom_image(i.user.id, i.client.db, character_id)
     embed = get_user_custom_image_embed(i, view.locale, str(character_id), custom_image)
-    await i.response.edit_message(embed=embed, view=view)
+    if custom_image is not None and not (
+        await validate_image_url(custom_image.url, i.client.session)
+    ):
+        embed.set_image(url=None)
+        embed.set_footer(text=text_map.get(274, view.locale), icon_url=asset.red_icon)
+    await i.edit_original_response(embed=embed, view=view)
 
 
 async def change_user_custom_image(
@@ -317,6 +334,16 @@ def get_user_custom_image_embed(
         )
         embed.set_image(url=custom_image.url)
     return embed
+
+
+async def validate_image_url(url: str, session) -> bool:
+    if ".jpg" not in url and ".png" not in url:
+        return False
+    async with session.get(url) as response:
+        if response.status == 200:
+            return True
+        else:
+            return False
 
 
 async def get_user_custom_image(
