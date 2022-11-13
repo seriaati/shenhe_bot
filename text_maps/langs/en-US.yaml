@@ -62,11 +62,11 @@
 '61': Remove image
 '62': Set custom image
 '63': View the bot's info
-'64': Image file
+'64': image-file
 '65': The image file to upload
 '66': The nickname for the image
 '67': The character to use the image
-'68': ''
+'68': Upload a custom image for /profile character cards
 '69': Traveler's Diary
 '70': Primo Log
 '71': primos
@@ -694,7 +694,7 @@
 '598': Add/Remove characters
 '599': Remove all characters
 '600': Change nicknames
-'601': Nickname
+'601': nickname
 '602': Select the account you want to change the nickname of
 '603': Claim reward
 '604': Hoyolab daily check in
