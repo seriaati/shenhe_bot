@@ -1,22 +1,38 @@
+import json
 import sys
 from datetime import datetime
-
+from ambr.client import AmbrTopAPI
+from ambr.models import Character
+import config
 import pytz
-from discord import Interaction, app_commands
+from discord import Interaction, app_commands, Attachment
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import View, Button
+from UI_base_models import BaseView
 from apps.genshin.custom_model import ShenheBot
+from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_elements.others import ManageAccounts, SettingsMenu
+from UI_elements.others.settings import CustomImage
 from utility.utils import default_embed
+from aioimgur import ImgurClient
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class OthersCog(commands.Cog, name="others"):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
+        try:
+            with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
+                self.avatar = json.load(f)
+        except FileNotFoundError:
+            self.avatar = {}
 
     @app_commands.command(
         name="settings",
@@ -181,6 +197,56 @@ class OthersCog(commands.Cog, name="others"):
             Button(label="GitHub", url="https://github.com/seriaati/shenhe_bot")
         )
         await i.response.send_message(embed=embed, view=view)
+
+    @app_commands.command(
+        name="custom-image-upload",
+        description=_("Upload a custom image for /profile character cards", hash=68),
+    )
+    @app_commands.rename(
+        image_file=_("image-file", hash=64),
+        image_name=_("image-name", hash=86),
+        character_id=_("character", hash=105),
+    )
+    @app_commands.describe(
+        image_file=_("The image file to upload", hash=65),
+        image_name=_("The nickname for the image", hash=66),
+        character_id=_("The character to use the image", hash=67),
+    )
+    async def custom_image_upload(
+        self, i: Interaction, image_file: Attachment, image_name: str, character_id: str
+    ):
+        await i.response.defer()
+        imgur = ImgurClient(
+            os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET")
+        )
+        something = await imgur.upload(await image_file.read())
+        converted_character_id = int(character_id.split("-")[0])
+        await CustomImage.add_user_custom_image(
+            i, something["link"], converted_character_id, image_name
+        )
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        view = CustomImage.View(locale)
+        view.author = i.user
+        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+        character = await ambr.get_character(character_id)
+        if not isinstance(character, Character):
+            raise TypeError("character is not a Character")
+        await CustomImage.return_custom_image_interaction(
+            view, i, converted_character_id, character.element
+        )
+
+    @custom_image_upload.autocomplete(name="character_id")
+    async def custom_image_upload_autocomplete(self, i: Interaction, current: str):
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        options = []
+        for character_id, character_names in self.avatar.items():
+            if current.lower() in character_names[to_ambr_top(locale)].lower():
+                options.append(
+                    Choice(
+                        name=character_names[to_ambr_top(locale)], value=character_id
+                    )
+                )
+        return options[:25]
 
 
 async def setup(bot: commands.Bot) -> None:

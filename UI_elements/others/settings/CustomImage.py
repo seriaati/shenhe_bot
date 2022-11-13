@@ -234,7 +234,10 @@ class CharacterSelect(discord.ui.Select):
 async def return_custom_image_interaction(
     view: View, i: discord.Interaction, character_id: int, element: str
 ):
-    await i.response.defer()
+    try:
+        await i.response.defer()
+    except discord.InteractionResponded:
+        pass
     view.clear_items()
     view.add_item(GoBackCharacter(element))
     options = await get_user_custom_image_options(i, character_id)
@@ -245,7 +248,7 @@ async def return_custom_image_interaction(
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
     custom_image = await get_user_custom_image(i.user.id, i.client.db, character_id)
     embed = await get_user_custom_image_embed(i, view.locale, str(character_id), custom_image)
-    await i.edit_original_response(embed=embed, view=view)
+    view.message = await i.edit_original_response(embed=embed, view=view)
 
 
 async def change_user_custom_image(
@@ -301,7 +304,7 @@ async def get_user_custom_image_options(
     options = []
     for row in rows:
         options.append(
-            discord.SelectOption(label=row[3], description=row[2], value=row[2])
+            discord.SelectOption(label=row[3][:100], description=row[2][:100], value=row[2])
         )
     return options
 
@@ -337,7 +340,7 @@ async def get_user_custom_image_embed(
 
 
 async def validate_image_url(url: str, session) -> bool:
-    if ".jpg" not in url and ".png" not in url:
+    if ".jpg" not in url and ".png" not in url and ".jpeg" not in url:
         return False
     async with session.get(url) as response:
         if response.status == 200:
