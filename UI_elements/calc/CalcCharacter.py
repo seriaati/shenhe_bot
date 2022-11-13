@@ -10,6 +10,7 @@ from ambr.models import Character, CharacterDetail, CharacterTalentType, Materia
 from apps.genshin.custom_model import TodoList
 from apps.genshin.utils import (
     InvalidLevelInput,
+    get_character_suggested_talent_levels,
     level_to_ascension_phase,
     get_character_emoji,
     validate_level_input,
@@ -73,15 +74,16 @@ class CharacterSelect(Select):
 
 
 class SpawnTargetLevelModal(Button):
-    def __init__(self, locale: Locale | str, character_id: str, init_levels: List[int]):
+    def __init__(self, locale: Locale | str, character_id: str, init_levels: List[int], suggested_levels: List[int]):
         super().__init__(label=text_map.get(17, locale), style=ButtonStyle.blurple)
         self.locale = locale
         self.character_id = character_id
         self.init_levels = init_levels
+        self.suggested_levels = suggested_levels
 
     async def callback(self, i: Interaction):
         await i.response.send_modal(
-            TargetLevelModal(self.character_id, self.locale, self.init_levels)
+            TargetLevelModal(self.character_id, self.locale, self.init_levels, self.suggested_levels)
         )
 
 
@@ -145,6 +147,7 @@ class InitLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
+        suggested_levlels = await get_character_suggested_talent_levels(self.character_id, i.client.session)
         view = View()
         view.author = i.user
         view.clear_items()
@@ -158,6 +161,7 @@ class InitLevelModal(BaseModal):
                     int(self.e.value),
                     int(self.q.value),
                 ],
+                suggested_levlels
             )
         )
         await i.response.edit_message(
@@ -199,7 +203,7 @@ class TargetLevelModal(BaseModal):
     )
 
     def __init__(
-        self, character_id: str, locale: Locale | str, init_levels: List[int]
+        self, character_id: str, locale: Locale | str, init_levels: List[int], suggested_levels: List[int]
     ) -> None:
         super().__init__(
             title=text_map.get(181, locale),
@@ -210,10 +214,13 @@ class TargetLevelModal(BaseModal):
         self.target.placeholder = text_map.get(170, locale).format(a=90)
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.a.placeholder = text_map.get(170, locale).format(a=9)
+        self.a.default = str(suggested_levels[0])
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
         self.e.placeholder = text_map.get(170, locale).format(a=4)
+        self.e.default = str(suggested_levels[1])
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
         self.q.placeholder = text_map.get(170, locale).format(a=10)
+        self.q.default = str(suggested_levels[2])
         self.character_id = character_id
         self.init_levels = init_levels
         self.locale = locale

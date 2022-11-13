@@ -1,14 +1,16 @@
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union
 
+import aiohttp
 import aiosqlite
 import discord
 import enkanetwork
 import genshin
 from discord import Embed, Locale, SelectOption
 from discord.ext import commands
-from diskcache import FanoutCache
 from discord.utils import format_dt
+from diskcache import FanoutCache
+import yaml
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import ShenheUser, WishInfo
@@ -20,12 +22,7 @@ from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from utility.utils import (
-    default_embed,
-    divide_chunks,
-    divide_dict,
-    error_embed,
-)
+from utility.utils import default_embed, divide_chunks, divide_dict, error_embed
 
 
 def calculate_artifact_score(substats: dict):
@@ -277,8 +274,10 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
         return None
     return uid
 
+
 class NoCharacterFound(Exception):
     pass
+
 
 async def load_and_update_enka_cache(
     cache: enkanetwork.EnkaNetworkResponse,
@@ -642,3 +641,21 @@ async def validate_level_input(
             ephemeral=True,
         )
         raise InvalidLevelInput
+
+
+async def get_character_suggested_talent_levels(
+    character_id: str, session: aiohttp.ClientSession
+) -> List[int]:
+    chinese_character_name = text_map.get_character_name(character_id, "zh-TW")
+    ambr = AmbrTopAPI(session)
+    character = await ambr.get_character(character_id)
+    if not isinstance(character, Character):
+        return [1, 1, 1]
+    with open(f"data/builds/{character.element.lower()}.yaml") as f:
+        builds = yaml.safe_load(f)
+        character_build = builds.get(chinese_character_name)
+        if character_build is None:
+            return [1, 1, 1]
+        talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
+        talents = talents.split("/")
+        return [int(talent) for talent in talents]
