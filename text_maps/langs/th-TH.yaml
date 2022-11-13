@@ -291,6 +291,7 @@
   • You can have up to 25 images for each character
   • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
   • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  • Alternatively, upload an image using </custom-image-upload:123>
 '277': Current Image
 '278': You have reached the limit of images you can have for this character (25)
 '279': No custom image set for this character
