@@ -120,7 +120,7 @@ class AddImageModal(BaseModal):
         max_length=25,
     )
     url = discord.ui.TextInput(
-        label="Image URL", placeholder="https://i.imgur.com/8lO5xNk.jpg"
+        label="Image URL", placeholder="https://i.imgur.com/8lO5xNk.jpg", max_length=100
     )
 
     def __init__(
