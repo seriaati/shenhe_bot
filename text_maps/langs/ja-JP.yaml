@@ -62,11 +62,11 @@
 '61': 画像を削除
 '62': カスタム画像を設定
 '63': View the bot's info
-'64': Image file
+'64': image-file
 '65': The image file to upload
 '66': The nickname for the image
 '67': The character to use the image
-'68': ''
+'68': Upload a custom image for /profile character cards
 '69': 旅人手帳
 '70': 原石日記
 '71': 原石
@@ -687,7 +687,7 @@
 '598': キャラクターの追加/削除
 '599': すべてのキャラクターを削除する
 '600': ニックネームの変更
-'601': ニックネーム
+'601': nickname
 '602': ニックネームを変更したいアカウントを選択してください
 '603': 報酬を受け取る
 '604': HoYoLABのデイリーログインボーナス
