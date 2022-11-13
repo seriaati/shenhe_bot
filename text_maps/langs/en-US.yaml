@@ -62,10 +62,10 @@
 '61': Remove image
 '62': Set custom image
 '63': View the bot's info
-'64': ''
-'65': ''
-'66': ''
-'67': ''
+'64': Image file
+'65': The image file to upload
+'66': The nickname for the image
+'67': The character to use the image
 '68': ''
 '69': Traveler's Diary
 '70': Primo Log
