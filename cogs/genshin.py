@@ -26,7 +26,7 @@ import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
-from apps.genshin.custom_model import ShenheBot
+from apps.genshin.custom_model import AbyssResult, ShenheBot
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     NoCharacterFound,
@@ -420,17 +420,18 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         previous = True if previous == 1 else False
-        result, success = await self.genshin_app.get_abyss(
+        result = await self.genshin_app.get_abyss(
             member.id, i.user.id, previous, i.locale
         )
-        if not success:
-            return await i.followup.send(embed=result)
+        if not result.success:
+            return await i.followup.send(embed=result.result)
         else:
-            view = Abyss.View(i.user, result, i.locale, user_locale, self.bot.db)
-            fp = result["overview_card"]
+            abyss_result: AbyssResult = result.result
+            view = Abyss.View(i.user, abyss_result, user_locale or i.locale, self.bot.db)
+            fp = abyss_result.overview_file
             fp.seek(0)
             image = File(fp, "overview_card.jpeg")
-            await i.followup.send(embed=result["overview"], view=view, files=[image])
+            await i.followup.send(embed=abyss_result.overview_embed, view=view, files=[image])
             view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))

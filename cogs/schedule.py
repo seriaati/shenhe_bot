@@ -54,7 +54,6 @@ def schedule_error_handler(func):
 
     return inner_function
 
-
 class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
@@ -479,6 +478,7 @@ class Schedule(commands.Cog):
                         )
                         count += 1
                 await asyncio.sleep(2.3)
+        await self.bot.db.commit()
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
         )
@@ -685,7 +685,6 @@ class Schedule(commands.Cog):
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
         await i.followup.send("Tasks started", ephemeral=True)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Schedule(bot))

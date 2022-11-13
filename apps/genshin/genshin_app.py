@@ -6,7 +6,12 @@ from discord import Embed, Locale, SelectOption, User, Asset
 from discord.utils import format_dt
 import enkanetwork
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import ShenheBot, ShenheUser
+from apps.genshin.custom_model import (
+    AbyssResult,
+    GenshinAppResult,
+    ShenheBot,
+    ShenheUser,
+)
 from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
@@ -297,7 +302,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_abyss(
         self, user_id: int, author_id: int, previous: bool, locale: Locale
-    ):
+    ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
             raise UIDNotFound
@@ -313,7 +318,7 @@ class GenshinApp:
                 name=text_map.get(76, new_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
-            return embed, False
+            return GenshinAppResult(result=embed, success=False)
         result = {}
         result["abyss"] = abyss
         result["user"] = user
@@ -324,10 +329,6 @@ class GenshinApp:
             name=f"{text_map.get(85, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
-        result[
-            "title"
-        ] = f"{text_map.get(47, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}"
-        result["overview"] = overview
         dark_mode = await get_user_appearance_mode(author_id, self.db)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
@@ -336,9 +337,13 @@ class GenshinApp:
                 new_locale, dark_mode, abyss, user, self.bot.session, self.bot.loop
             )
             cache[shenhe_user.uid] = fp
+        result[
+            "title"
+        ] = f"{text_map.get(47, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}"
+        result["overview"] = overview
         result["overview_card"] = fp
         result["floors"] = [floor for floor in abyss.floors if floor.floor >= 9]
-        return result, True
+        return GenshinAppResult(result=AbyssResult(**result), success=True)
 
     @genshin_error_handler
     async def get_all_characters(
