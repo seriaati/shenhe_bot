@@ -62,10 +62,10 @@
 '61': 删除图片
 '62': 设置自定义图片
 '63': 查看机器人的信息
-'64': Image file
-'65': The image file to upload
-'66': The nickname for the image
-'67': The character to use the image
+'64': 图像文件
+'65': 要上传的图像文件
+'66': 图像的昵称
+'67': 使用该图像的角色
 '68': ''
 '69': 旅行者札记
 '70': 原石获取记录
