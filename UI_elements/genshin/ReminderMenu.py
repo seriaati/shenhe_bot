@@ -7,13 +7,13 @@ from discord import ButtonStyle, Embed, Interaction, Locale
 from discord.errors import Forbidden, InteractionResponded, NotFound
 from discord.ui import Button, TextInput
 from ambr.client import AmbrTopAPI
+from apps.text_map.convert_locale import to_ambr_top
 
 import config
 from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import (
     get_character_emoji,
     get_uid,
-    get_weapon,
     get_weapon_emoji,
 )
 from apps.text_map.text_map_app import text_map
@@ -141,7 +141,7 @@ class AddWeapon(Button):
         self.locale = locale
 
     async def callback(self, i: Interaction):
-        ambr = AmbrTopAPI(i.client.session)
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
         view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user

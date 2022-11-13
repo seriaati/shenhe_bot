@@ -4,6 +4,7 @@ from typing import Dict, List
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 from apps.genshin.custom_model import ShenheBot
+from apps.text_map.convert_locale import to_ambr_top
 
 import config
 from ambr.client import AmbrTopAPI
@@ -46,7 +47,7 @@ class GOBack(Button):
         self.view: View
         self.view.clear_items()
 
-        ambr = AmbrTopAPI(i.client.session)
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapon_types = await ambr.get_weapon_types()
 
         for weapon_type_id, weapon_type in weapon_types.items():
@@ -75,7 +76,7 @@ class WeaponTypeButton(Button):
             weapon_list = await c.fetchone()
         weapon_list: List[str] = ast.literal_eval(weapon_list[0])
         select_options = []
-        ambr = AmbrTopAPI(i.client.session)
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, List):
             raise TypeError("weapons is not a list")

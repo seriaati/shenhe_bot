@@ -25,8 +25,13 @@ from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
-from utility.utils import (default_embed, error_embed,
-                           get_user_appearance_mode, get_user_timezone, log)
+from utility.utils import (
+    default_embed,
+    error_embed,
+    get_user_appearance_mode,
+    get_user_timezone,
+    log,
+)
 from yelan.draw import draw_talent_reminder_card
 
 
@@ -215,7 +220,7 @@ class Schedule(commands.Cog):
             if notification_type == "pot_notification":
                 item_current_amount = notes.current_realm_currency
                 item_max_amount = notes.max_realm_currency
-            elif notification_type == "resin_notification":
+            else:  # resin_notification
                 item_current_amount = notes.current_resin
                 item_max_amount = notes.max_resin
             if item_current_amount >= user.threshold:
@@ -228,7 +233,7 @@ class Schedule(commands.Cog):
                         recover_time = format_dt(
                             notes.realm_currency_recovery_time, "R"
                         )
-                    elif notification_type == "resin_notification":
+                    else:  # resin_notification
                         recover_time = format_dt(notes.resin_recovery_time, "R")
                 if notification_type == "pot_notification":
                     embed = default_embed(
@@ -240,7 +245,7 @@ class Schedule(commands.Cog):
                         name=text_map.get(518, locale),
                         icon_url=user.shenhe_user.discord_user.display_avatar.url,
                     )
-                elif notification_type == "resin_notification":
+                else:  # resin_notification
                     embed = default_embed(
                         message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
                         f"{text_map.get(15, locale)}: {recover_time}\n"
@@ -380,91 +385,100 @@ class Schedule(commands.Cog):
     @schedule_error_handler
     async def weapon_talent_base_notifiction(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Start")
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
         list_name = (
             "weapon_list"
             if notification_type == "weapon_notification"
             else "character_list"
         )
-        await c.execute(
+        async with self.bot.db.execute(
             f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
-        )
-        users = await c.fetchall()
-        count = 0
-        for _, tpl in enumerate(users):
-            user_id = tpl[0]
-            item_list = tpl[1]
-            last_notif = tpl[2]
-            timezone = await get_user_timezone(user_id, self.bot.db)
-            now = datetime.now(pytz.timezone(timezone))
-            if last_notif is not None:
-                last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
-                if last_notif.day == now.day:
-                    continue
-            user_locale = await get_user_locale(user_id, self.bot.db)
-            client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or "en-US"))
-            domains = await client.get_domain()
-            user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(user_id)
-            user_locale = await get_user_locale(user_id, self.bot.db)
-            item_list = ast.literal_eval(item_list)
-            notified: Dict[str, List[int]] = {}
-            for item_id in item_list:
-                for domain in domains:
-                    if domain.weekday == now.weekday():
-                        for item in domain.rewards:
-                            if notification_type == "talent_notification":
-                                upgrade = await client.get_character_upgrade(str(item_id))
-                            else:
-                                upgrade = await client.get_weapon_upgrade(int(item_id))
-                                
-                            if upgrade is None or isinstance(upgrade, List):
-                                continue
-                            
-                            if item in upgrade.items:
-                                if item_id not in notified:
-                                    notified[item_id] = []
-                                if item.id not in notified[item_id]:
-                                    notified[item_id].append(item.id)
-                                    
-            for item_id, materials in notified.items():
-                item = None
-                if notification_type == "talent_notification":
-                    item = await client.get_character(item_id)
-                elif notification_type == "weapon_notification":
-                    item = await client.get_weapon(int(item_id))
-                if item is None:
-                    continue
-                
-                dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
-                fp = await draw_talent_reminder_card(
-                    materials,
-                    user_locale or "en-US",
-                    self.bot.session,
-                    dark_mode,
-                    notification_type,
+        ) as c:
+            users = await c.fetchall()
+            count = 0
+            for _, tpl in enumerate(users):
+                user_id = tpl[0]
+                item_list = tpl[1]
+                last_notif = tpl[2]
+                timezone = await get_user_timezone(user_id, self.bot.db)
+                now = datetime.now(pytz.timezone(timezone))
+                if last_notif is not None:
+                    last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
+                    if last_notif.day == now.day:
+                        continue
+                user_locale = await get_user_locale(user_id, self.bot.db)
+                client = AmbrTopAPI(
+                    self.bot.session, to_ambr_top(user_locale or "en-US")
                 )
-                fp.seek(0)
-                file = File(fp, "reminder_card.jpeg")
-                embed = default_embed(message=text_map.get(314, "en-US", user_locale))
-                embed.set_author(
-                    name=f"{text_map.get(312, 'en-US', user_locale)}",
-                    icon_url=item.icon,
+                domains = await client.get_domain()
+                user = (self.bot.get_user(user_id)) or await self.bot.fetch_user(
+                    user_id
                 )
-                embed.set_image(url="attachment://reminder_card.jpeg")
-                try:
-                    await user.send(embed=embed, files=[file])
-                except Forbidden:
-                    await c.execute(
-                        f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
-                        (user_id,),
+                user_locale = await get_user_locale(user_id, self.bot.db)
+                item_list = ast.literal_eval(item_list)
+                notified: Dict[str, List[int]] = {}
+                for item_id in item_list:
+                    for domain in domains:
+                        if domain.weekday == now.weekday():
+                            for item in domain.rewards:
+                                if notification_type == "talent_notification":
+                                    upgrade = await client.get_character_upgrade(
+                                        str(item_id)
+                                    )
+                                else:
+                                    upgrade = await client.get_weapon_upgrade(
+                                        int(item_id)
+                                    )
+
+                                if upgrade is None or isinstance(upgrade, List):
+                                    continue
+
+                                if item in upgrade.items:
+                                    if item_id not in notified:
+                                        notified[item_id] = []
+                                    if item.id not in notified[item_id]:
+                                        notified[item_id].append(item.id)
+
+                for item_id, materials in notified.items():
+                    item = None
+                    if notification_type == "talent_notification":
+                        item = await client.get_character(item_id)
+                    elif notification_type == "weapon_notification":
+                        item = await client.get_weapon(int(item_id))
+                    if not isinstance(item, (Character, Weapon)):
+                        continue
+
+                    dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
+                    fp = await draw_talent_reminder_card(
+                        materials,
+                        user_locale or "en-US",
+                        self.bot.session,
+                        dark_mode,
+                        notification_type,
                     )
-                else:
-                    await c.execute(
-                        f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
-                        (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
+                    fp.seek(0)
+                    file = File(fp, "reminder_card.jpeg")
+                    embed = default_embed(
+                        message=text_map.get(314, "en-US", user_locale)
                     )
-                    count += 1
-            await asyncio.sleep(2.3)
+                    embed.set_author(
+                        name=f"{text_map.get(312, 'en-US', user_locale)}",
+                        icon_url=item.icon,
+                    )
+                    embed.set_image(url="attachment://reminder_card.jpeg")
+                    try:
+                        await user.send(embed=embed, files=[file])
+                    except Forbidden:
+                        await c.execute(
+                            f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
+                            (user_id,),
+                        )
+                    else:
+                        await c.execute(
+                            f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
+                            (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
+                        )
+                        count += 1
+                await asyncio.sleep(2.3)
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
         )
@@ -502,7 +516,7 @@ class Schedule(commands.Cog):
                 objects = await client.get_weapon()
             elif thing == "artifact":
                 objects = await client.get_artifact()
-                
+
             if not isinstance(objects, List) or objects is None:
                 continue
             try:
@@ -510,7 +524,7 @@ class Schedule(commands.Cog):
                     object_map = json.load(f)
             except FileNotFoundError:
                 object_map = {}
-                
+
             for object in objects:
                 english_name = ""
                 if isinstance(object, Character):
@@ -541,7 +555,7 @@ class Schedule(commands.Cog):
                     eng_object = await eng_client.get_artifact(object.id)
                     if isinstance(eng_object, Artifact) and eng_object is not None:
                         english_name = eng_object.name
-                        
+
                 object_map[str(object.id)]["eng"] = english_name
                 object_id = str(object.id)
                 if "-" in object_id:
@@ -653,6 +667,10 @@ class Schedule(commands.Cog):
         await client.update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")
 
+    @test_loop.before_loop
+    async def before_test_loop(self):
+        await self.bot.wait_until_ready()
+
     @run_tasks.before_loop
     async def before_run_tasks(self):
         await self.bot.wait_until_ready()
@@ -660,15 +678,18 @@ class Schedule(commands.Cog):
     @change_status.before_loop
     async def before_check(self):
         await self.bot.wait_until_ready()
-        
+
     @is_seria()
-    @app_commands.command(name="update-data", description="Update game data and text map")
+    @app_commands.command(
+        name="update-data", description="Update game data and text map"
+    )
     async def update_data(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
         await i.followup.send("Tasks started", ephemeral=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Schedule(bot))

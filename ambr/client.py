@@ -414,7 +414,6 @@ class AmbrTopAPI:
         Returns:
             Optional[List[WeaponUpgrade] | WeaponUpgrade]: A list of all weapon upgrades or a specific weapon upgrade.
         """
-        result = []
         data = self.get_cache("upgrade", static=True)
         if weapon_id is not None:
             upgrade_info = data["data"]["weapon"][str(weapon_id)]
@@ -423,8 +422,9 @@ class AmbrTopAPI:
                 (await self.get_material(id=int(material_id)))
                 for material_id in upgrade_info["items"]
             ]
-            result.append(WeaponUpgrade(**upgrade_info))
+            return WeaponUpgrade(**upgrade_info)
         else:
+            result = []
             for upgrade_id, upgrade_info in data["data"]["weapon"].items():
                 upgrade_info["weapon_id"] = upgrade_id
                 upgrade_info["item_list"] = [
@@ -433,7 +433,7 @@ class AmbrTopAPI:
                 ]
                 result.append(WeaponUpgrade(**upgrade_info))
 
-        return result
+            return result
 
     async def get_domain(self) -> List[Domain]:
         """Get a list of all domains.
