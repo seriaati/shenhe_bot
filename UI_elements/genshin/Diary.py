@@ -61,11 +61,11 @@ class MonthSelect(Select):
         user_timezone = await get_user_timezone(i.user.id, i.client.db)
         month = datetime.now(pytz.timezone(user_timezone)).month + int(self.values[0])
         month = month + 12 if month < 1 else month
-        result, success = await self.view.genshin_app.get_diary(i.user.id, month, i.locale)
+        result, success = await self.view.genshin_app.get_diary(self.view.member.id, i.user.id, month, i.locale)
         if not success:
             await i.followup.send(embed=result)
         else:
-            view = View(i.user, i.user, self.view.genshin_app, i.locale, user_locale, datetime.now(pytz.timezone(user_timezone)).month)
+            view = View(i.user, self.view.member, self.view.genshin_app, i.locale, user_locale, datetime.now(pytz.timezone(user_timezone)).month)
             view.message = await i.edit_original_response(
                 embed=result["embed"], view=view, attachments=[File(result["fp"], "diary.jpeg")]
             )
@@ -79,7 +79,7 @@ class Primo(Button):
         await i.response.defer(ephemeral=True)
         self.view: View
         result, _ = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, True, i.locale
+            self.view.member.id, i.user.id,True, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)
 
@@ -92,6 +92,6 @@ class Mora(Button):
         await i.response.defer(ephemeral=True)
         self.view: View
         result, _ = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, False, i.locale
+            self.view.member.id, i.user.id, False, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)

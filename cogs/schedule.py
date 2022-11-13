@@ -19,7 +19,6 @@ from discord.utils import find, format_dt
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Weapon
 from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
-from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
@@ -57,7 +56,6 @@ def schedule_error_handler(func):
 class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
-        self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
         self.run_tasks.start()
         self.change_status.start()
