@@ -667,10 +667,6 @@ class Schedule(commands.Cog):
         await client.update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")
 
-    @test_loop.before_loop
-    async def before_test_loop(self):
-        await self.bot.wait_until_ready()
-
     @run_tasks.before_loop
     async def before_run_tasks(self):
         await self.bot.wait_until_ready()
