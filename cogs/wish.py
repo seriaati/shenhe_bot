@@ -114,7 +114,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
     @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
+    @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_history(self, i: Interaction, member: Optional[User] = None):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         embeds = await get_wish_history_embed(i, "", member)
@@ -147,7 +147,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @check_wish_history()
     @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
+    @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_analysis(
         self, i: Interaction, member: Optional[User | Member] = None
     ):
@@ -353,7 +353,7 @@ class WishCog(commands.GroupCog, name="wish"):
         name="overview", description=_("View you genshin wish overview", hash=484)
     )
     @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
+    @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_overview(
         self, i: Interaction, member: Optional[User | Member] = None
     ):

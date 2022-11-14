@@ -41,8 +41,8 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))  # type: ignore
         characters = await ambr.get_character()
         if not isinstance(characters, List):
             raise TypeError("characters is not a list")
@@ -68,7 +68,7 @@ class CharacterSelect(Select):
     async def callback(self, i: Interaction):
         self.view: View
         modal = InitLevelModal(
-            self.values[0], await get_user_locale(i.user.id, i.client.db) or i.locale
+            self.values[0], await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
         )
         await i.response.send_modal(modal)
 
@@ -147,7 +147,7 @@ class InitLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
-        suggested_levlels = await get_character_suggested_talent_levels(self.character_id, i.client.session)
+        suggested_levlels = await get_character_suggested_talent_levels(self.character_id, i.client.session)  # type: ignore
         view = View()
         view.author = i.user
         view.clear_items()
@@ -256,7 +256,7 @@ class TargetLevelModal(BaseModal):
         init_e = self.init_levels[2]
         init_q = self.init_levels[3]
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  # type: ignore
         character = await ambr.get_character_detail(self.character_id)
         if not isinstance(character, CharacterDetail):
             raise TypeError("character is not a Character")
@@ -336,8 +336,8 @@ class TargetLevelModal(BaseModal):
             all_materials,
             f"{character.name}: {text_map.get(191, self.locale)}",
             get_element_color(character.element),
-            i.client.session,
-            await get_user_appearance_mode(i.user.id, i.client.db),
+            i.client.session,  # type: ignore
+            await get_user_appearance_mode(i.user.id, i.client.db),  # type: ignore
             self.locale,
         )
         fp.seek(0)

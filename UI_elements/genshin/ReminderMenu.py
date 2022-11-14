@@ -229,7 +229,7 @@ async def return_talent_notification(i: Interaction, view: View):
         values = list(divide_chunks(values, 20))
         for index, value in enumerate(values):
             embed.add_field(
-                name=text_map.get(159, view.locale) + f" (#{index})",
+                name=text_map.get(159, view.locale) + f" (#{index+1})",
                 value="".join(value),
             )
     view.clear_items()

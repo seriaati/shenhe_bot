@@ -1,8 +1,9 @@
 from datetime import datetime
 
 import pytz
-from discord import File, Interaction, Locale, User
+from discord import File, Interaction, Locale, User, Member
 from discord.ui import Button, Select
+from apps.genshin.custom_model import DiaryResult
 
 import asset
 import config
@@ -16,11 +17,10 @@ from utility.utils import default_embed, get_user_timezone
 class View(BaseView):
     def __init__(
         self,
-        author: User,
-        member: User,
+        author: User | Member,
+        member: User | Member,
         genshin_app: GenshinApp,
-        locale: Locale,
-        user_locale: str,
+        locale: Locale | str,
         current_month: int,
     ):
         super().__init__(timeout=config.mid_timeout)
@@ -28,26 +28,31 @@ class View(BaseView):
         self.member = member
         self.genshin_app = genshin_app
         self.locale = locale
-        self.user_locale = user_locale
-        self.add_item(MonthSelect(text_map.get(424, locale, user_locale), user_locale or locale, current_month))
-        self.add_item(Primo(text_map.get(70, locale, user_locale)))
-        self.add_item(Mora(text_map.get(72, locale, user_locale)))
+        self.add_item(MonthSelect(text_map.get(424, locale), locale, current_month))
+        self.add_item(Primo(text_map.get(70, locale)))
+        self.add_item(Mora(text_map.get(72, locale)))
         self.add_item(InfoButton())
+
 
 class InfoButton(Button):
     def __init__(self):
         super().__init__(emoji=asset.info_emoji)
-        
+
     async def callback(self, i: Interaction):
-        await i.response.send_message(embed=default_embed(message=text_map.get(398, self.view.locale, self.view.user_locale)), ephemeral=True)
+        self.view: View
+        await i.response.send_message(
+            embed=default_embed(message=text_map.get(398, self.view.locale)),
+            ephemeral=True,
+        )
+
 
 class MonthSelect(Select):
     def __init__(self, placeholder: str, locale: Locale | str, current_month: int):
         super().__init__(placeholder=placeholder)
         self.add_option(label=get_month_name(current_month, locale), value="0")
-        self.add_option(label=get_month_name(current_month-1, locale), value="-1")
-        self.add_option(label=get_month_name(current_month-2, locale), value="-2")
-    
+        self.add_option(label=get_month_name(current_month - 1, locale), value="-1")
+        self.add_option(label=get_month_name(current_month - 2, locale), value="-2")
+
     async def callback(self, i: Interaction):
         self.view: View
         user_locale = await get_user_locale(i.user.id, i.client.db)
@@ -61,32 +66,45 @@ class MonthSelect(Select):
         user_timezone = await get_user_timezone(i.user.id, i.client.db)
         month = datetime.now(pytz.timezone(user_timezone)).month + int(self.values[0])
         month = month + 12 if month < 1 else month
-        result, success = await self.view.genshin_app.get_diary(self.view.member.id, i.user.id, month, i.locale)
-        if not success:
-            await i.followup.send(embed=result)
+        result = await self.view.genshin_app.get_diary(
+            self.view.member.id, i.user.id, month, i.locale
+        )
+        if not result.success:
+            await i.followup.send(embed=result.result)
         else:
-            view = View(i.user, self.view.member, self.view.genshin_app, i.locale, user_locale, datetime.now(pytz.timezone(user_timezone)).month)
-            view.message = await i.edit_original_response(
-                embed=result["embed"], view=view, attachments=[File(result["fp"], "diary.jpeg")]
+            diary_result: DiaryResult = result.result
+            fp = diary_result.file
+            fp.seek(0)
+            view = View(
+                i.user,
+                self.view.member,
+                self.view.genshin_app,
+                user_locale or i.locale,
+                datetime.now(pytz.timezone(user_timezone)).month,
             )
-    
+            view.message = await i.edit_original_response(
+                embed=diary_result.embed,
+                view=view,
+                attachments=[File(fp, "diary.jpeg")],
+            )
+
 
 class Primo(Button):
     def __init__(self, label: str):
-        super().__init__(label=label, emoji="<:PRIMO:1010048703312171099>")
+        super().__init__(label=label, emoji=asset.primo_emoji)
 
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         self.view: View
         result, _ = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.user.id,True, i.locale
+            self.view.member.id, i.user.id, True, i.locale
         )
         await i.followup.send(embed=result, ephemeral=True)
 
 
 class Mora(Button):
     def __init__(self, label: str):
-        super().__init__(label=label, emoji="<:MORA:1010048704901828638>")
+        super().__init__(label=label, emoji=asset.mora_emoji)
 
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)

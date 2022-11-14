@@ -1,28 +1,26 @@
-from typing import Dict, List
-import aiosqlite
+from typing import Dict, List, Optional
+
 import yaml
+from discord import Embed, Interaction, SelectOption
+from discord.ui import Button, Select
+
+import config
 from apps.genshin.utils import get_character_builds, get_character_emoji
 from apps.text_map.cond_text import cond_text
-from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseView
-from discord import Embed, User, Interaction, SelectOption
-from discord.ui import Button, Select
 from apps.text_map.text_map_app import text_map
-from data.game.elements import convert_elements, elements
-import config
+from apps.text_map.utils import get_user_locale
+from data.game.elements import get_element_emoji, get_element_list
+from UI_base_models import BaseView
 
 
 class View(BaseView):
-    def __init__(self, author: User, db: aiosqlite.Connection):
+    def __init__(self):
         super().__init__(timeout=config.long_timeout)
-        self.author = author
-        self.db = db
 
-        element_names = list(convert_elements.values())
-        element_emojis = list(elements.values())
-        for index in range(0, 7):
+        elements = get_element_list()
+        for index, element in enumerate(elements):
             self.add_item(
-                ElementButton(element_names[index], element_emojis[index], index // 4)
+                ElementButton(element, get_element_emoji(element), index // 4)
             )
 
 
@@ -32,6 +30,7 @@ class ElementButton(Button):
         self.element = element
 
     async def callback(self, i: Interaction):
+        self.view: View
         await element_button_callback(i, self.element, self.view)
 
 
@@ -45,26 +44,28 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        user_locale = await get_user_locale(i.user.id, self.view.db)
-        builds, has_thoughts = get_character_builds(
-            self.values[0], self.builds, i.locale, user_locale
-        )
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        builds = get_character_builds(self.values[0], self.builds, locale)
         embeds = []
         options = []
         for index, build in enumerate(builds):
-            embeds.append(build[0])
-            if has_thoughts and index + 1 == len(builds):
-                options.append(SelectOption(label=f"{build[1]}", value=index))
-            else:
-                weapon_id = text_map.get_id_from_name(build[1])
+            embeds.append(build.embed)
+            if build.is_thought:
+                options.append(
+                    SelectOption(label=text_map.get(97, locale), value=str(index))
+                )
+            elif build.weapon is not None and build.artifact is not None:
+                weapon_id = text_map.get_id_from_name(build.weapon)
+                if weapon_id is None:
+                    raise ValueError(f"Could not find weapon {build.weapon}")
                 options.append(
                     SelectOption(
-                        label=f"{text_map.get(162, i.locale, user_locale)} {index+1}",
-                        description=f"{text_map.get_weapon_name(weapon_id, i.locale, user_locale)} | {cond_text.get_text(user_locale or i.locale, 'build', build[2])}",
-                        value=index,
+                        label=f"{text_map.get(162, locale)} {index+1}",
+                        description=f"{text_map.get_weapon_name(weapon_id, locale)} | {cond_text.get_text(str(locale), 'build', build.artifact)}",
+                        value=str(index),
                     )
                 )
-        placeholder = text_map.get(163, i.locale, user_locale)
+        placeholder = text_map.get(163, locale)
         self.view.clear_items()
         self.view.add_item(BuildSelect(options, placeholder, embeds))
         self.view.add_item(GoBack("character", self.element))
@@ -83,7 +84,7 @@ class BuildSelect(Select):
 
 
 class GoBack(Button):
-    def __init__(self, place_to_go_back: str, element: str = None):
+    def __init__(self, place_to_go_back: str, element: Optional[str] = None):
         super().__init__(emoji="<:left:982588994778972171>")
         self.place_to_go_back = place_to_go_back
         self.element = element
@@ -92,26 +93,23 @@ class GoBack(Button):
         self.view: View
         self.view.clear_items()
         if self.place_to_go_back == "element":
-            element_names = list(convert_elements.values())
-            element_emojis = list(elements.values())
-            for index in range(0, 7):
+            elements = get_element_list()
+            for index, element in enumerate(elements):
                 self.view.add_item(
-                    ElementButton(
-                        element_names[index], element_emojis[index], index // 4
-                    )
+                    ElementButton(element, get_element_emoji(element), index // 4)
                 )
             await i.response.edit_message(view=self.view)
-        elif self.place_to_go_back == "character":
+        elif self.place_to_go_back == "character" and self.element is not None:
             await element_button_callback(i, self.element, self.view)
 
 
 async def element_button_callback(i: Interaction, element: str, view: View):
     with open(f"data/builds/{element.lower()}.yaml", "r", encoding="utf-8") as f:
         builds = yaml.full_load(f)
-    user_locale = await get_user_locale(i.user.id, view.db)
+    user_locale = await get_user_locale(i.user.id, i.client.db)
     options = []
     placeholder = text_map.get(157, i.locale, user_locale)
-    user_locale = await get_user_locale(i.user.id, view.db)
+    user_locale = await get_user_locale(i.user.id, i.client.db)
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
         localized_character_name = text_map.get_character_name(

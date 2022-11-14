@@ -1,7 +1,7 @@
 from typing import Dict
 
 
-fight_prop = {
+fight_prop: Dict[str, Dict[str, str | bool | int]] = {
     "FIGHT_PROP_HP": {
         "name": "生命值",
         "emoji": "<:HP:982068466410463272>",

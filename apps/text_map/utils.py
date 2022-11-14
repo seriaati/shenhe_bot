@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Optional
 
 import aiosqlite
 from apps.text_map.text_map_app import text_map
@@ -8,8 +8,8 @@ from text_maps.artifact_main_stat import art_main_stat_map
 
 def get_weekday_name(
     day_num: int,
-    locale: Locale,
-    user_locale: Literal["str", None],
+    locale: Locale | str,
+    user_locale: Optional[str] = None,
     full_name: bool = False,
 ) -> str:
     if not full_name:
@@ -32,7 +32,8 @@ def get_weekday_name(
             5: text_map.get(239, locale, user_locale),
             6: text_map.get(240, locale, user_locale),
         }
-    return weekday_dict.get(day_num)
+    return weekday_dict.get(day_num, "Unknown weekday")
+
 
 def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
     if str(locale) == "zh-TW" or str(locale) == "zh-CN":
@@ -44,8 +45,9 @@ def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
             result += "-"
     return result
 
+
 def get_element_name(
-    element_name: str, locale: Locale, user_locale: Optional[str] = None
+    element_name: str, locale: Locale | str, user_locale: Optional[str] = None
 ) -> str:
     element_dict = {
         "Cryo": text_map.get(213, locale, user_locale),
@@ -63,7 +65,9 @@ def get_element_name(
     )
 
 
-def get_month_name(month: int, locale: Locale, user_locale: Optional[str] = None) -> str:
+def get_month_name(
+    month: int, locale: Locale | str, user_locale: Optional[str] = None
+) -> str:
     month_dict = {
         1: text_map.get(221, locale, user_locale),
         2: text_map.get(222, locale, user_locale),
@@ -78,7 +82,7 @@ def get_month_name(month: int, locale: Locale, user_locale: Optional[str] = None
         11: text_map.get(231, locale, user_locale),
         12: text_map.get(232, locale, user_locale),
     }
-    return month_dict.get(month) or month
+    return month_dict.get(month, str(month))
 
 
 async def get_user_locale(user_id: int, db: aiosqlite.Connection) -> str | None:

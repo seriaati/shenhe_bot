@@ -26,7 +26,15 @@ import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
-from apps.genshin.custom_model import AbyssResult, ShenheBot
+from apps.genshin.custom_model import (
+    AbyssResult,
+    AreaResult,
+    CharacterResult,
+    DiaryResult,
+    RealtimeNoteResult,
+    ShenheBot,
+    StatsResult,
+)
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     NoCharacterFound,
@@ -57,7 +65,7 @@ from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
-from utility.paginator import GeneralPaginator
+from utility.paginator import GeneralPaginator, _view
 from utility.utils import (
     default_embed,
     divide_chunks,
@@ -168,37 +176,35 @@ class GenshinCog(commands.Cog, name="genshin"):
         description=_("Check resin, pot, and expedition status", hash=414),
     )
     @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
-    async def check(self, i: Interaction, member: Optional[User | Member] = None):
-        member = member or i.user
-        await i.response.defer()
-        result, success = await self.genshin_app.get_real_time_notes(
-            member.id, i.user.id, i.locale
-        )
-        if not success:
-            await i.followup.send(embed=result, ephemeral=True)
-        else:
-            fp = result["file"]
-            fp.seek(0)
-            await i.followup.send(
-                embed=result["embed"], file=File(fp, filename="realtime_notes.jpeg")
-            )
+    @app_commands.describe(member=_("Check other user's data", hash=416))
+    async def slash_check(self, i: Interaction, member: Optional[User | Member] = None):
+        await self.check_command(i, member or i.user)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
-        check = await check_cookie_predicate(i, member)
+        check = await check_account_predicate(i, member)
         if not check:
             return
-        await i.response.defer(ephemeral=True)
-        result, success = await self.genshin_app.get_real_time_notes(
+        await self.check_command(i, member, ephemeral=True)
+
+    async def check_command(
+        self,
+        i: Interaction,
+        member: Optional[User | Member] = None,
+        ephemeral: bool = False,
+    ):
+        member = member or i.user
+        await i.response.defer()
+        result = await self.genshin_app.get_real_time_notes(
             member.id, i.user.id, i.locale
         )
-        if not success:
-            await i.followup.send(embed=result, ephemeral=True)
+        if not result.success:
+            await i.followup.send(embed=result.result, ephemeral=True)
         else:
-            fp = result["file"]
+            note_result: RealtimeNoteResult = result.result
+            fp = note_result.file
             fp.seek(0)
             await i.followup.send(
-                embed=result["embed"], file=File(fp, filename="realtime_notes.jpeg")
+                embed=note_result.embed, file=File(fp, filename="realtime_notes.jpeg")
             )
 
     @check_account()
@@ -211,7 +217,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     async def stats(self, i: Interaction, member: Optional[User | Member] = None):
         await self.stats_command(i, member)
@@ -232,43 +238,48 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         uid = await get_uid(member.id, self.bot.db)
+        if uid is None:
+            raise UIDNotFound
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-            cache: EnkaNetworkResponse = enka_cache.get(uid)
-        async with EnkaNetworkAPI() as enka:
-            try:
-                data = await enka.fetch_user(uid)
-            except (UIDNotFounded, asyncio.exceptions.TimeoutError):
-                if cache is None:
-                    return await i.followup.send(
-                        embed=error_embed(
-                            message=text_map.get(519, i.locale, user_locale)
-                        ).set_author(
-                            name=text_map.get(286, i.locale, user_locale),
-                            icon_url=i.user.display_avatar.url,
-                        ),
-                        ephemeral=True,
-                    )
-                else:
-                    data = cache
-        if cache is None:
-            with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+            cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+            async with EnkaNetworkAPI() as enka:
+                try:
+                    data = await enka.fetch_user(uid)
+                except (UIDNotFounded, asyncio.exceptions.TimeoutError):
+                    if cache is None:
+                        return await i.followup.send(
+                            embed=error_embed(
+                                message=text_map.get(519, i.locale, user_locale)
+                            ).set_author(
+                                name=text_map.get(286, i.locale, user_locale),
+                                icon_url=i.user.display_avatar.url,
+                            ),
+                            ephemeral=True,
+                        )
+                    else:
+                        data = cache
+            if cache is None:
                 enka_cache[uid] = data
-        if cache is not None and cache.player.namecard.id != data.player.namecard.id:
-            cache.player.namecard.id = data.player.namecard.id
-            with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+            if (
+                cache is not None
+                and cache.player.namecard.id != data.player.namecard.id
+            ):
+                cache.player.namecard.id = data.player.namecard.id
                 enka_cache[uid] = cache
+
         namecard = data.player.namecard.banner
-        result, success = await self.genshin_app.get_stats(
+        result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
-        if not success:
-            await i.followup.send(embed=result, ephemeral=True)
+        if not result.success:
+            await i.followup.send(embed=result.result, ephemeral=True)
         else:
-            fp = result["fp"]
+            stats_result: StatsResult = result.result
+            fp = stats_result.file
             fp.seek(0)
             file = File(fp, "stat_card.jpeg")
             await i.followup.send(
-                embed=result["embed"],
+                embed=stats_result.embed,
                 ephemeral=False if not context_command else True,
                 files=[file],
             )
@@ -280,23 +291,20 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     async def area(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
-        result, success = await self.genshin_app.get_area(
-            member.id, i.user.id, i.locale
-        )
-        if not success:
-            await i.followup.send(embed=result)
+        result = await self.genshin_app.get_area(member.id, i.user.id, i.locale)
+        if not result.success:
+            await i.followup.send(embed=result.result)
         else:
-            fp = result["image"]
+            area_result: AreaResult = result.result
+            fp = area_result.file
             fp.seek(0)
             image = File(fp, "area.jpeg")
-            await i.followup.send(
-                embed=result["embed"], ephemeral=not success, files=[image]
-            )
+            await i.followup.send(embed=area_result.embed, files=[image])
 
     @check_cookie()
     @app_commands.command(
@@ -318,7 +326,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("check other user's data", hash=416))
+    @app_commands.describe(member=_("Check other user's data", hash=416))
     async def characters(self, i: Interaction, member: Optional[User | Member] = None):
         await self.characters_comamnd(i, member, False)
 
@@ -343,18 +351,21 @@ class GenshinCog(commands.Cog, name="genshin"):
             ),
             ephemeral=ephemeral,
         )
-        result, _ = await self.genshin_app.get_all_characters(
+        result = await self.genshin_app.get_all_characters(
             member.id, i.user.id, i.locale
         )
-        if not isinstance(result, Dict):
-            return await i.followup.send(embed=result)
-        fp = result["file"]
+        if not result.success:
+            return await i.followup.send(embed=result.result)
+        character_result: CharacterResult = result.result
+        fp = character_result.file
         fp.seek(0)
         file = File(fp, "characters.jpeg")
-        view = ShowAllCharacters.View(locale, result["characters"], result["options"])
+        view = ShowAllCharacters.View(
+            locale, character_result.characters, character_result.options
+        )
         view.author = i.user
         await i.edit_original_response(
-            embed=result["embed"],
+            embed=character_result.embed,
             attachments=[file],
             view=view,
         )
@@ -369,7 +380,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     async def diary(self, i: Interaction, member: Optional[User | Member] = None):
         member = member or i.user
@@ -380,17 +391,20 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         user_timezone = await get_user_timezone(i.user.id, self.bot.db)
         month = datetime.now(pytz.timezone(user_timezone)).month
-        result, success = await self.genshin_app.get_diary(member.id, i.user.id, month, i.locale)
-        if not success:
-            await i.followup.send(embed=result)
+        result = await self.genshin_app.get_diary(member.id, i.user.id, month, i.locale)
+        if not result.success:
+            await i.followup.send(embed=result.result)
         else:
+            diary_result: DiaryResult = result.result
             view = Diary.View(
-                i.user, member, self.genshin_app, i.locale, user_locale, month
+                i.user, member, self.genshin_app, user_locale or i.locale, month
             )
+            fp = diary_result.file
+            fp.seek(0)
             await i.followup.send(
-                embed=result["embed"],
+                embed=diary_result.embed,
                 view=view,
-                files=[File(result["fp"], "diary.jpeg")],
+                files=[File(fp, "diary.jpeg")],
             )
             view.message = await i.original_response()
 
@@ -405,7 +419,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.describe(
         previous=_("Which abyss season?", hash=432),
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     @app_commands.choices(
         previous=[
@@ -427,11 +441,15 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result.result)
         else:
             abyss_result: AbyssResult = result.result
-            view = Abyss.View(i.user, abyss_result, user_locale or i.locale, self.bot.db)
+            view = Abyss.View(
+                i.user, abyss_result, user_locale or i.locale, self.bot.db
+            )
             fp = abyss_result.overview_file
             fp.seek(0)
             image = File(fp, "overview_card.jpeg")
-            await i.followup.send(embed=abyss_result.overview_embed, view=view, files=[image])
+            await i.followup.send(
+                embed=abyss_result.overview_embed, view=view, files=[image]
+            )
             view.message = await i.original_response()
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
@@ -466,6 +484,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 super().__init__(options=options, placeholder=placeholder, row=row)
 
             async def callback(self, i: Interaction):
+                self.view: _view
                 self.view.current_page = int(self.values[0])
                 await self.view.update_children(i)
 
@@ -478,6 +497,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 super().__init__(options=options, placeholder=placeholder, row=4)
 
             async def callback(self, i: Interaction):
+                self.view: _view
                 result, embeds, options = await get_farm_data(i, int(self.values[0]))
                 self.view.files = result
                 self.view.embeds = embeds
@@ -536,7 +556,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def build(self, i: Interaction):
-        view = Build.View(i.user, self.bot.db)
+        view = Build.View()
+        view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()
 
@@ -561,7 +582,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         try:
             if uid is None:
                 if i.guild is not None and i.guild.id == 916838066117824553:
-                    async with i.client.main_db.execute(
+                    async with self.bot.main_db.execute(
                         f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
                         (player.id,),
                     ) as c:
@@ -582,7 +603,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ),
                 ephemeral=True,
             )
-        embed = default_embed(uid)
+        embed = default_embed(str(uid))
         embed.set_author(
             name=f"{player.display_name}{text_map.get(167, i.locale, user_locale)}",
             icon_url=player.avatar,
@@ -599,7 +620,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     async def profile(
         self,
@@ -630,9 +651,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         if uid is None:
             raise ValueError("UID not found")
         with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-            cache: EnkaNetworkResponse = enka_cache.get(uid)
+            cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
         with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
-            eng_cache: EnkaNetworkResponse = enka_cache.get(uid)
+            eng_cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
         async with EnkaNetworkAPI(enka_locale) as enka:
             try:
                 data = await enka.fetch_user(uid)
@@ -720,7 +741,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
         await i.response.defer()
-        result, success = await self.genshin_app.redeem_code(i.user.id, i.user.id, code, i.locale)
+        result, success = await self.genshin_app.redeem_code(
+            i.user.id, i.user.id, code, i.locale
+        )
         await i.followup.send(embed=result, ephemeral=not success)
 
     @app_commands.command(
@@ -731,219 +754,211 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @app_commands.guild_only()
     @app_commands.command(
-        name="leaderboard", description=_("View different leaderbaords", hash=453)
+        name="leaderboard", description=_("View the leaderboard", hash=453)
     )
-    @app_commands.rename(type=_("option", hash=429))
-    @app_commands.choices(
-        type=[
-            Choice(name=_("Achievement leaderboard", hash=251), value=0),
-            Choice(name=_("Artifact substat leaderboard", hash=455), value=1),
-            Choice(name=_("Wish luck leaderboard", hash=456), value=2),
-            Choice(name=_("Update self leaderboard position", hash=501), value=3),
-        ]
-    )
-    async def leaderboard(self, i: Interaction, type: int):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        if type == 0:
-            # fetch the leaderboard from database
-            await c.execute("SELECT user_id, achievements FROM leaderboard")
-            leaderboard = await c.fetchall()
-            # sort the leaderboard
-            leaderboard.sort(key=lambda tup: tup[1], reverse=True)
-            # convert data into str
-            str_list = []
-            rank = 1
-            user_rank = text_map.get(253, i.locale, user_locale)
-            for index, tpl in enumerate(leaderboard):
-                user_id = tpl[0]
-                achievement_num = tpl[1]
-                if i.guild is None:
-                    member = i.client.get_user(user_id)
-                else:
-                    member = i.guild.get_member(user_id)
-                if member is None:
-                    continue
-                if i.user.id == member.id:
-                    user_rank = f"#{rank}"
-                str_list.append(f"{rank}. {member.display_name} - {achievement_num}\n")
-                rank += 1
-            # 10 str per page
-            str_list = list(divide_chunks(str_list, 10))
-            # write the str into embed
-            embeds = []
-            for str_list in str_list:
-                message = ""
-                for string in str_list:
-                    message += string
-                embed = default_embed(
-                    f"🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})",
-                    message,
-                )
-                embeds.append(embed)
-            try:
-                await GeneralPaginator(i, embeds, self.bot.db).start()
-            except ValueError:
-                await i.response.send_message(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-        elif type == 1:
-            view = ArtifactLeaderboard.View(i.user, self.bot.db, i.locale, user_locale)
-            await i.response.send_message(
-                embed=default_embed().set_author(
-                    name=text_map.get(255, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                view=view,
-            )
-            view.message = await i.original_response()
-            await view.wait()
-            if view.sub_stat is None:
-                return
-            await c.execute(
-                "SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?",
-                (view.sub_stat,),
-            )
-            leaderboard = await c.fetchall()
-            leaderboard.sort(
-                key=lambda tup: float(str(tup[4]).replace("%", "")), reverse=True
-            )
-            str_list = []
-            rank = 1
-            user_rank = text_map.get(253, i.locale, user_locale)
-            for _, tpl in enumerate(leaderboard):
-                user_id = tpl[0]
-                avatar_id = tpl[1]
-                artifact_name = tpl[2]
-                equip_type = tpl[3]
-                sub_stat_value = tpl[4]
-                if i.guild is None:
-                    member = i.client.get_user(user_id)
-                else:
-                    member = i.guild.get_member(user_id)
-                if member is None:
-                    continue
-                if member.id == i.user.id:
-                    user_rank = f"#{rank}"
-                str_list.append(
-                    f'{rank}. {get_character_emoji(avatar_id)} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
-                )
-                rank += 1
-            str_list = divide_chunks(str_list, 10)
-            embeds = []
-            for str_list in str_list:
-                message = ""
-                for string in str_list:
-                    message += string
-                embed = default_embed(
-                    f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})',
-                    message,
-                )
-                embeds.append(embed)
-            try:
-                await GeneralPaginator(
-                    i,
-                    embeds,
-                    self.bot.db,
-                    [
-                        ArtifactLeaderboard.GoBack(
-                            text_map.get(282, i.locale, user_locale), self.bot.db
-                        )
-                    ],
-                ).start(edit=True)
-            except ValueError:
-                await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(254, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-        elif type == 2:
-            await i.response.send_message(embed=error_embed("currently unavailable"))
-        elif type == 3:
-            check = await check_account_predicate(i)
-            if not check:
-                return
-            await i.response.defer(ephemeral=True)
-            uid = await get_uid(i.user.id, self.bot.db)
-            try:
-                async with EnkaNetworkAPI("cht") as enka:
-                    try:
-                        data = await enka.fetch_user(uid)
-                    except (
-                        UIDNotFounded,
-                        asyncio.exceptions.TimeoutError,
-                        EnkaServerError,
-                    ):
-                        return await i.followup.send(
-                            embed=error_embed(
-                                message=text_map.get(519, i.locale, user_locale)
-                            ).set_author(
-                                name=text_map.get(286, i.locale, user_locale),
-                                icon_url=i.user.display_avatar.url,
-                            ),
-                            ephemeral=True,
-                        )
-                achievement = data.player.achievement
-                await c.execute(
-                    "INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?",
-                    (i.user.id, achievement, i.user.id, achievement),
-                )
-                if data.characters is not None:
-                    for character in data.characters:
-                        for artifact in filter(
-                            lambda x: x.type == EquipmentsType.ARTIFACT,
-                            character.equipments,
-                        ):
-                            for substat in artifact.detail.substats:
-                                await c.execute(
-                                    "SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?",
-                                    (substat.prop_id, i.user.id),
-                                )
-                                sub_stat_value = await c.fetchone()
-                                if (
-                                    sub_stat_value is None
-                                    or float(str(sub_stat_value[0]).replace("%", ""))
-                                    < substat.value
-                                ):
-                                    await c.execute(
-                                        "INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?",
-                                        (
-                                            i.user.id,
-                                            character.id,
-                                            artifact.detail.name,
-                                            artifact.detail.artifact_type.name,
-                                            substat.prop_id,
-                                            f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
-                                            character.id,
-                                            artifact.detail.name,
-                                            artifact.detail.artifact_type.name,
-                                            f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
-                                            i.user.id,
-                                            substat.prop_id,
-                                        ),
-                                    )
-            except Exception as e:
-                return await i.followup.send(
-                    embed=error_embed(message=f"```py\n{e}\n```").set_author(
-                        name=text_map.get(512, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-            else:
-                await i.followup.send(
-                    embed=default_embed().set_author(
-                        name=text_map.get(502, i.locale, user_locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
+    async def leaderboard(self, i: Interaction):
+        await i.response.send_message(embed=default_embed("Under construction 🛠️"))
+        # user_locale = await get_user_locale(i.user.id, self.bot.db)
+        # c: aiosqlite.Cursor = await self.bot.db.cursor()
+        # if type == 0:
+        #     # fetch the leaderboard from database
+        #     await c.execute("SELECT user_id, achievements FROM leaderboard")
+        #     leaderboard = await c.fetchall()
+        #     # sort the leaderboard
+        #     leaderboard.sort(key=lambda tup: tup[1], reverse=True)
+        #     # convert data into str
+        #     str_list = []
+        #     rank = 1
+        #     user_rank = text_map.get(253, i.locale, user_locale)
+        #     for index, tpl in enumerate(leaderboard):
+        #         user_id = tpl[0]
+        #         achievement_num = tpl[1]
+        #         if i.guild is None:
+        #             member = i.client.get_user(user_id)
+        #         else:
+        #             member = i.guild.get_member(user_id)
+        #         if member is None:
+        #             continue
+        #         if i.user.id == member.id:
+        #             user_rank = f"#{rank}"
+        #         str_list.append(f"{rank}. {member.display_name} - {achievement_num}\n")
+        #         rank += 1
+        #     # 10 str per page
+        #     str_list = list(divide_chunks(str_list, 10))
+        #     # write the str into embed
+        #     embeds = []
+        #     for str_list in str_list:
+        #         message = ""
+        #         for string in str_list:
+        #             message += string
+        #         embed = default_embed(
+        #             f"🏆 {text_map.get(251, i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})",
+        #             message,
+        #         )
+        #         embeds.append(embed)
+        #     try:
+        #         await GeneralPaginator(i, embeds, self.bot.db).start()
+        #     except ValueError:
+        #         await i.response.send_message(
+        #             embed=error_embed().set_author(
+        #                 name=text_map.get(254, i.locale, user_locale),
+        #                 icon_url=i.user.display_avatar.url,
+        #             ),
+        #             ephemeral=True,
+        #         )
+        # elif type == 1:
+        #     view = ArtifactLeaderboard.View(i.user, self.bot.db, i.locale, user_locale)
+        #     await i.response.send_message(
+        #         embed=default_embed().set_author(
+        #             name=text_map.get(255, i.locale, user_locale),
+        #             icon_url=i.user.display_avatar.url,
+        #         ),
+        #         view=view,
+        #     )
+        #     view.message = await i.original_response()
+        #     await view.wait()
+        #     if view.sub_stat is None:
+        #         return
+        #     await c.execute(
+        #         "SELECT user_id, avatar_id, artifact_name, equip_type, sub_stat_value FROM substat_leaderboard WHERE sub_stat = ?",
+        #         (view.sub_stat,),
+        #     )
+        #     leaderboard = await c.fetchall()
+        #     leaderboard.sort(
+        #         key=lambda tup: float(str(tup[4]).replace("%", "")), reverse=True
+        #     )
+        #     str_list = []
+        #     rank = 1
+        #     user_rank = text_map.get(253, i.locale, user_locale)
+        #     for _, tpl in enumerate(leaderboard):
+        #         user_id = tpl[0]
+        #         avatar_id = tpl[1]
+        #         artifact_name = tpl[2]
+        #         equip_type = tpl[3]
+        #         sub_stat_value = tpl[4]
+        #         if i.guild is None:
+        #             member = i.client.get_user(user_id)
+        #         else:
+        #             member = i.guild.get_member(user_id)
+        #         if member is None:
+        #             continue
+        #         if member.id == i.user.id:
+        #             user_rank = f"#{rank}"
+        #         str_list.append(
+        #             f'{rank}. {get_character_emoji(avatar_id)} {get_artifact(name=artifact_name)["emoji"]} {equip_types.get(equip_type)} {member.display_name} | {sub_stat_value}\n\n'
+        #         )
+        #         rank += 1
+        #     str_list = divide_chunks(str_list, 10)
+        #     embeds = []
+        #     for str_list in str_list:
+        #         message = ""
+        #         for string in str_list:
+        #             message += string
+        #         embed = default_embed(
+        #             f'🏆 {text_map.get(256, i.locale, user_locale)} - {text_map.get(fight_prop.get(view.sub_stat)["text_map_hash"], i.locale, user_locale)} ({text_map.get(252, i.locale, user_locale)}: {user_rank})',
+        #             message,
+        #         )
+        #         embeds.append(embed)
+        #     try:
+        #         await GeneralPaginator(
+        #             i,
+        #             embeds,
+        #             self.bot.db,
+        #             [
+        #                 ArtifactLeaderboard.GoBack(
+        #                     text_map.get(282, i.locale, user_locale), self.bot.db
+        #                 )
+        #             ],
+        #         ).start(edit=True)
+        #     except ValueError:
+        #         await i.followup.send(
+        #             embed=error_embed().set_author(
+        #                 name=text_map.get(254, i.locale, user_locale),
+        #                 icon_url=i.user.display_avatar.url,
+        #             ),
+        #             ephemeral=True,
+        #         )
+        # elif type == 2:
+        #     await i.response.send_message(embed=error_embed("currently unavailable"))
+        # elif type == 3:
+        #     check = await check_account_predicate(i)
+        #     if not check:
+        #         return
+        #     await i.response.defer(ephemeral=True)
+        #     uid = await get_uid(i.user.id, self.bot.db)
+        #     try:
+        #         async with EnkaNetworkAPI("cht") as enka:
+        #             try:
+        #                 data = await enka.fetch_user(uid)
+        #             except (
+        #                 UIDNotFounded,
+        #                 asyncio.exceptions.TimeoutError,
+        #                 EnkaServerError,
+        #             ):
+        #                 return await i.followup.send(
+        #                     embed=error_embed(
+        #                         message=text_map.get(519, i.locale, user_locale)
+        #                     ).set_author(
+        #                         name=text_map.get(286, i.locale, user_locale),
+        #                         icon_url=i.user.display_avatar.url,
+        #                     ),
+        #                     ephemeral=True,
+        #                 )
+        #         achievement = data.player.achievement
+        #         await c.execute(
+        #             "INSERT INTO leaderboard (user_id, achievements) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET user_id = ?, achievements = ?",
+        #             (i.user.id, achievement, i.user.id, achievement),
+        #         )
+        #         if data.characters is not None:
+        #             for character in data.characters:
+        #                 for artifact in filter(
+        #                     lambda x: x.type == EquipmentsType.ARTIFACT,
+        #                     character.equipments,
+        #                 ):
+        #                     for substat in artifact.detail.substats:
+        #                         await c.execute(
+        #                             "SELECT sub_stat_value FROM substat_leaderboard WHERE sub_stat = ? AND user_id = ?",
+        #                             (substat.prop_id, i.user.id),
+        #                         )
+        #                         sub_stat_value = await c.fetchone()
+        #                         if (
+        #                             sub_stat_value is None
+        #                             or float(str(sub_stat_value[0]).replace("%", ""))
+        #                             < substat.value
+        #                         ):
+        #                             await c.execute(
+        #                                 "INSERT INTO substat_leaderboard (user_id, avatar_id, artifact_name, equip_type, sub_stat, sub_stat_value) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, sub_stat) DO UPDATE SET avatar_id = ?, artifact_name = ?, equip_type = ?, sub_stat_value = ? WHERE user_id = ? AND sub_stat = ?",
+        #                                 (
+        #                                     i.user.id,
+        #                                     character.id,
+        #                                     artifact.detail.name,
+        #                                     artifact.detail.artifact_type.name,
+        #                                     substat.prop_id,
+        #                                     f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
+        #                                     character.id,
+        #                                     artifact.detail.name,
+        #                                     artifact.detail.artifact_type.name,
+        #                                     f"{substat.value}{'%' if substat.type == DigitType.PERCENT else ''}",
+        #                                     i.user.id,
+        #                                     substat.prop_id,
+        #                                 ),
+        #                             )
+        #     except Exception as e:
+        #         return await i.followup.send(
+        #             embed=error_embed(message=f"```py\n{e}\n```").set_author(
+        #                 name=text_map.get(512, i.locale, user_locale),
+        #                 icon_url=i.user.display_avatar.url,
+        #             ),
+        #             ephemeral=True,
+        #         )
+        #     else:
+        #         await i.followup.send(
+        #             embed=default_embed().set_author(
+        #                 name=text_map.get(502, i.locale, user_locale),
+        #                 icon_url=i.user.display_avatar.url,
+        #             ),
+        #             ephemeral=True,
+        #         )
 
     @app_commands.command(
         name="search", description=_("Search anything related to genshin", hash=508)
@@ -1085,7 +1100,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 view.author = i.user
                 await i.edit_original_response(embed=embeds[0], view=view)
-                view.messsage = await i.original_response()
+                view.message = await i.original_response()
 
             elif item_type == 1:  # weapon
                 weapon_detail = await client.get_weapon_detail(int(query))
@@ -1123,12 +1138,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                 sub_stat = weapon_detail.upgrade.stats[1]
                 stat_str = ""
                 if main_stat.prop_id is not None:
-                    main_stat_hash = get_fight_prop(id=main_stat.prop_id)[
-                        "text_map_hash"
-                    ]
+                    main_stat_hash = get_fight_prop(id=main_stat.prop_id).text_map_hash
                     stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
                 if sub_stat.prop_id is not None:
-                    sub_stat_hash = get_fight_prop(id=sub_stat.prop_id)["text_map_hash"]
+                    sub_stat_hash = get_fight_prop(id=sub_stat.prop_id).text_map_hash
                     stat_str += f"{text_map.get(464, i.locale, user_locale)}: {text_map.get(sub_stat_hash, i.locale, user_locale)}"
                 if stat_str != "":
                     embed.add_field(
@@ -1178,7 +1191,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     if len(source.days) != 0:
                         day_list = [
                             get_weekday_name(
-                                get_weekday_int_with_name(day), i.locale, user_locale
+                                get_weekday_int_with_name(day), locale
                             )
                             for day in source.days
                         ]
@@ -1249,17 +1262,17 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(
-        member=_("check other user's data", hash=416),
+        member=_("Check other user's data", hash=416),
     )
     async def activity(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
-        result, success = await self.genshin_app.get_activities(
+        result = await self.genshin_app.get_activities(
             member.id, i.user.id, i.locale
         )
-        if not success:
-            return await i.followup.send(embed=result, ephemeral=True)
-        await GeneralPaginator(i, result, self.bot.db).start(followup=True)
+        if not result.success:
+            return await i.followup.send(embed=result.result, ephemeral=True)
+        await GeneralPaginator(i, result.result, self.bot.db).start(followup=True)
 
     @app_commands.command(
         name="beta",

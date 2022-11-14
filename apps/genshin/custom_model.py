@@ -70,6 +70,7 @@ class ShenheBot(commands.Bot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
     db: aiosqlite.Connection
+    main_db: aiosqlite.Connection
     backup_db: aiosqlite.Connection
     debug: bool
     maintenance: bool = False
@@ -147,3 +148,55 @@ class AbyssResult(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+class RealtimeNoteResult(BaseModel):
+    embed: discord.Embed
+    file: io.BytesIO
+
+    class Config:
+        arbitrary_types_allowed = True
+        
+class StatsResult(BaseModel):
+    embed: discord.Embed
+    file: io.BytesIO
+
+    class Config:
+        arbitrary_types_allowed = True
+
+class AreaResult(BaseModel):
+    embed: discord.Embed
+    file: io.BytesIO
+
+    class Config:
+        arbitrary_types_allowed = True
+
+class DiaryResult(BaseModel):
+    embed: discord.Embed
+    file: io.BytesIO
+
+    class Config:
+        arbitrary_types_allowed = True
+
+class CharacterResult(BaseModel):
+    embed: discord.Embed
+    options: List[discord.SelectOption]
+    file: io.BytesIO
+    characters: List[genshin.models.Character]
+    
+    class Config:
+        arbitrary_types_allowed = True
+
+class CharacterBuild(BaseModel):
+    embed: discord.Embed
+    weapon: Optional[str] = None
+    artifact: Optional[str] = None
+    is_thought: bool
+
+    class Config:
+        arbitrary_types_allowed = True
+
+class FightProp(BaseModel):
+    name: str
+    emoji: str
+    substat: bool
+    text_map_hash: int

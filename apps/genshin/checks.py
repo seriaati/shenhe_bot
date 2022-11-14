@@ -3,7 +3,7 @@ import aiosqlite
 from apps.genshin.utils import get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Interaction, app_commands, User
+from discord import Interaction, app_commands, User, Member
 from discord.errors import InteractionResponded
 from utility.utils import error_embed
 
@@ -20,7 +20,7 @@ def check_account():
 
 
 async def check_account_predicate(
-    i: Interaction, member: Optional[User] = None
+    i: Interaction, member: Optional[User | Member] = None
 ) -> bool:
     if "member" in i.namespace.__dict__:
         user = i.namespace["member"]
@@ -89,7 +89,7 @@ def check_wish_history():
     return app_commands.check(predicate)
 
 
-async def check_cookie_predicate(i: Interaction, member: Optional[User] = None) -> bool:
+async def check_cookie_predicate(i: Interaction, member: Optional[User | Member] = None) -> bool:
     check = await check_account_predicate(i, member)
     if not check:
         return False

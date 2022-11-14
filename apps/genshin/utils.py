@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 
 import aiohttp
 import aiosqlite
@@ -13,7 +13,7 @@ from diskcache import FanoutCache
 import yaml
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import ShenheUser, WishInfo
+from apps.genshin.custom_model import CharacterBuild, FightProp, ShenheUser, WishInfo
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -45,8 +45,8 @@ def calculate_artifact_score(substats: dict):
 
 
 def get_character_builds(
-    character_id: int, element_builds_dict: dict, locale: Locale, user_locale: str
-) -> Tuple[List[Union[Embed, str, str]], bool]:
+    character_id: str, element_builds_dict: dict, locale: Locale | str
+) -> List[CharacterBuild]:
     """Gets a character's builds
 
     Args:
@@ -56,27 +56,25 @@ def get_character_builds(
         user_locale (str): the user locale
 
     Returns:
-        Tuple[List[Embed], bool]: returns a list of lists of embeds, weapons, and artifacts of different builds + a boolean that indicates whether the character has artifact thoughts
+        List[CharacterBuild]
     """
-    locale = user_locale or locale
-    character_name = text_map.get_character_name(character_id, "zh-TW", None)
+    character_name = text_map.get_character_name(character_id, "zh-TW")
     translated_character_name = text_map.get_character_name(character_id, locale)
     count = 1
-    has_thoughts = False
     result = []
 
     for build in element_builds_dict[character_name]["builds"]:
         stat_str = ""
         for stat, value in build["stats"].items():
-            stat_str += f"{cond_text.get_text(locale, 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
+            stat_str += f"{cond_text.get_text(str(locale), 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
         move_text = cond_text.get_text(
-            locale, "build", f"{character_name}_{build['move']}"
+            str(locale), "build", f"{character_name}_{build['move']}"
         )
         weapon_id = text_map.get_id_from_name(build["weapon"])
         embed = default_embed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
             f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {text_map.get_weapon_name(weapon_id, locale)}\n"
-            f"{text_map.get(92, locale)} • {cond_text.get_text(locale, 'build', build['artifacts'])}\n"
+            f"{text_map.get(92, locale)} • {cond_text.get_text(str(locale), 'build', build['artifacts'])}\n"
             f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
             f"{text_map.get(94, locale)} • {build['talents']}\n"
             f"{move_text} • {str(build['dmg']).replace('任意', 'ANY')}\n\n",
@@ -87,25 +85,31 @@ def get_character_builds(
         embed.set_footer(
             text=f"{text_map.get(96, locale)}: https://bbs.nga.cn/read.php?tid=25843014"
         )
-        result.append([embed, build["weapon"], build["artifacts"]])
+        result.append(
+            CharacterBuild(
+                embed=embed,
+                weapon=build["weapon"],
+                artifact=build["artifacts"],
+                is_thought=False,
+            )
+        )
 
     if "thoughts" in element_builds_dict[character_name]:
-        has_thoughts = True
         count = 1
         embed = default_embed(text_map.get(97, locale))
         for _ in element_builds_dict[character_name]["thoughts"]:
             embed.add_field(
                 name=f"#{count}",
                 value=cond_text.get_text(
-                    locale, "build", f"{character_name}_thoughts_{count-1}"
+                    str(locale), "build", f"{character_name}_thoughts_{count-1}"
                 ),
                 inline=False,
             )
             count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
-        result.append([embed, text_map.get(97, locale), ""])
+        result.append(CharacterBuild(embed=embed, is_thought=True))
 
-    return result, has_thoughts
+    return result
 
 
 def get_character_emoji(id: str) -> str:
@@ -147,13 +151,17 @@ def get_artifact(id: int = "", name: str = ""):
     raise ValueError(f"Unknwon artifact {id}{name}")
 
 
-def get_fight_prop(id: str) -> Dict[str, str | int | bool]:
-    return fight_prop[id] or {
-        "name": "未知角色數據",
-        "emoji": "",
-        "substat": False,
-        "text_map_hash": 700,
-    }
+def get_fight_prop(id: str) -> FightProp:
+    fight_prop_dict = fight_prop.get(
+        id,
+        {
+            "name": "未知角色數據",
+            "emoji": "",
+            "substat": False,
+            "text_map_hash": 700,
+        },
+    )
+    return FightProp(**fight_prop_dict)
 
 
 def get_area_emoji(exploration_id: int):
