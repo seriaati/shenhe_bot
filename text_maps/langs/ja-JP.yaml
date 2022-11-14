@@ -61,11 +61,11 @@
 '60': 画像 URL
 '61': 画像を削除
 '62': カスタム画像を設定
-'63': View the bot's info
-'64': image-file
-'65': The image file to upload
-'66': The nickname for the image
-'67': The character to use the image
+'63': botの情報を表示
+'64': 画像ファイル
+'65': アップロードする画像ファイル
+'66': 画像のニックネーム
+'67': 画像を使用するキャラクター
 '68': Upload a custom image for /profile character cards
 '69': 旅人手帳
 '70': 原石日記
