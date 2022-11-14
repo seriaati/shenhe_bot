@@ -1,6 +1,6 @@
 aiohttp==3.8.3
 aiosqlite==0.17.0
-discord.py==2.0.1
+discord.py==2.1.0
 enkanetwork.py==1.2.10
 genshin @ git+https://github.com/thesadru/genshin.py
 hmtai==3.2.0
