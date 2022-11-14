@@ -66,7 +66,7 @@
 '65': アップロードする画像ファイル
 '66': 画像のニックネーム
 '67': 画像を使用するキャラクター
-'68': Upload a custom image for /profile character cards
+'68': /profile キャラクターカード用のカスタム画像をアップロード
 '69': 旅人手帳
 '70': 原石日記
 '71': 原石
@@ -85,7 +85,7 @@
 '83': 元素爆発使用回数
 '84': 元素スキル使用回数
 '85': 深境螺旋 一覧
-'86': image-name
+'86': 画像名
 '87': ''
 '88': ''
 '89': ''
@@ -153,7 +153,7 @@
 '144': タイムゾーン名
 '145': ここにタイムゾーン名を入力してください
 '146': '{a}層'
-'147': Uptime
+'147': 稼働時間
 '148': 深境螺旋の層を選んでください。
 '149': 權限がありません。
 '150': |-
@@ -209,8 +209,8 @@
 '191': 計算結果
 '192': 計算内容
 '193': Powered by Genshin Optimizer
-'194': Python version
-'195': Invalid file type
+'194': Python バージョン
+'195': 無効なファイル形式
 '196': ''
 '197': 必要な材料はありません
 '198': ''
@@ -284,11 +284,11 @@
 '274': 無効な画像URL
 '275': カスタム画像
 '276': |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 25 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
-  • Alternatively, upload an image using </custom-image-upload:123>
+  • </profile:1020580644419551336>でキャラクターカードにカスタム画像を設定することができます。
+  •  各キャラクターに25枚まで画像を設定することができます。
+  •  画像のURLを送信してください。使用するのに適したツールは[imgur](https://imgur.com/)です。
+  •  画像のトリミングには[これ](https://croppola.com/)を使用し、2.64:1の比率を選択してください。
+  •  または、</custom-image-upload:123>を使用して画像をアップロードしてください。
 '277': 現在の画像
 '278': このキャラクターに設定できる画像の上限に達しました (25)
 '279': このキャラクターにはまだカスタム画像が設定されていません
@@ -560,7 +560,7 @@
 '500': デイリーのチェックイン中にエラーが発生しました
 '501': 自身のランキングデータを更新
 '502': リーダーボードの位置が更新されました
-'503': Number of guilds
+'503': ギルド数
 '504': '製作者 : seria#5334 質問がある場合はDMしてください'
 '505': 樹脂の通知を送信中にエラーが発生しました
 '506': 洞天宝銭の通知を送信中にエラーが発生しました
@@ -633,13 +633,13 @@
   - </check:1006486283725590529>, </abyss:1006486283725590535>, </diary:1006486283725590534> などのコマンドは、あなたのCookieが必要です。
   - アカウントのセキュリティに関する詳しい説明は[こちら](https://shenhe.gitbook.io/shenhe)をご覧ください。
   - </accounts:1020188057628065866>を使用して、いつでもアカウントデータを削除することができます。
-'564': Latency
-'565': Credits
-'566': Libraries used
+'564': レイテンシ
+'565': クレジット
+'566': 使用されているライブラリ
 '567': |-
-  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .txt file exported from Shenhe.
-'568': Please provide an Image URL in either .png or .jpg format
+  paimon.moeの形式は **サポートされていません* 理由はこちらの [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) をご覧ください。
+  サポートされているのは、Shenheからエクスポートされた.txtファイルのみです。
+'568': 画像のURLは.pngまたは.jpg形式で指定してください
 '569': ''
 '570': |-
   あなたのCookieには複数のアカウントが含まれています。
@@ -688,7 +688,7 @@
 '598': キャラクターの追加/削除
 '599': すべてのキャラクターを削除する
 '600': ニックネームの変更
-'601': nickname
+'601': ニックネーム
 '602': ニックネームを変更したいアカウントを選択してください
 '603': 報酬を受け取る
 '604': HoYoLABのデイリーログインボーナス
