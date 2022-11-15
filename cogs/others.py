@@ -199,7 +199,7 @@ class OthersCog(commands.Cog, name="others"):
         await i.response.send_message(embed=embed, view=view)
 
     @app_commands.command(
-        name="custom-image-upload",
+        name="img-upload",
         description=_("Upload a custom image for /profile character cards", hash=68),
     )
     @app_commands.rename(
