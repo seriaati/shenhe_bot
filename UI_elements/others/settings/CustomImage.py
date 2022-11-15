@@ -336,7 +336,7 @@ async def get_user_custom_image_embed(
         await validate_image_url(custom_image.url, i.client.session)
     ):
         embed.set_image(url=None)
-        embed.set_footer(text=text_map.get(274, locale), icon_url=asset.red_icon)
+        embed.set_footer(text=text_map.get(274, locale))
     return embed
 
 
