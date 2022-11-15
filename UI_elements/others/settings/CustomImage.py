@@ -341,7 +341,7 @@ async def get_user_custom_image_embed(
 
 
 async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
-    if ".jpg" not in url and ".png" not in url and ".jpeg" not in url:
+    if "jpg" not in url and "png" not in url and "jpeg" not in url:
         return False
     try:
         async with session.get(url) as response:
