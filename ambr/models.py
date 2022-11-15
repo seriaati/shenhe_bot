@@ -119,7 +119,7 @@ class MaterialDetail(BaseModel):
     description: str
     type: str
     map_mark: bool = Field(alias="mapMark")
-    sources: List = Field(alias="source")
+    sources: Optional[List] = Field(alias="source", default=None)
     icon: str
     rarity: int = Field(alias="rank")
 

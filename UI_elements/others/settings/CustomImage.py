@@ -12,6 +12,7 @@ from typing import List, Optional
 import aiosqlite
 import config
 import asset
+import aiohttp
 
 
 class View(BaseView):
@@ -339,14 +340,17 @@ async def get_user_custom_image_embed(
     return embed
 
 
-async def validate_image_url(url: str, session) -> bool:
+async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
     if ".jpg" not in url and ".png" not in url and ".jpeg" not in url:
         return False
-    async with session.get(url) as response:
-        if response.status == 200:
-            return True
-        else:
-            return False
+    try:
+        async with session.get(url) as response:
+            if response.status == 200:
+                return True
+            else:
+                return False
+    except aiohttp.InvalidURL:
+        return False
 
 
 async def get_user_custom_image(

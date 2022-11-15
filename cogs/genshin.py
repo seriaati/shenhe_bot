@@ -4,7 +4,6 @@ import random
 from datetime import datetime
 from typing import Dict, List, Tuple
 
-import aiosqlite
 import pytz
 from discord import Embed, File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
@@ -19,8 +18,9 @@ from enkanetwork import (
     EnkaNetworkResponse,
     EnkaServerError,
     UIDNotFounded,
+    VaildateUIDError,
 )
-from enkanetwork.enum import DigitType, EquipmentsType, Language
+from enkanetwork.enum import Language
 
 import asset
 from ambr.client import AmbrTopAPI
@@ -38,7 +38,6 @@ from apps.genshin.custom_model import (
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.utils import (
     NoCharacterFound,
-    get_artifact,
     get_character_emoji,
     get_farm_data,
     get_fight_prop,
@@ -49,11 +48,8 @@ from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
-from data.game.equip_types import equip_types
-from data.game.fight_prop import fight_prop
 from UI_elements.genshin import (
     Abyss,
-    ArtifactLeaderboard,
     Build,
     CharacterWiki,
     Diary,
@@ -673,6 +669,14 @@ class GenshinCog(commands.Cog, name="genshin"):
                 else:
                     data = cache
                     eng_data = eng_cache
+            except VaildateUIDError:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, i.locale, user_locale),
+                        icon_url=member.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
         try:
             cache = await load_and_update_enka_cache(cache, data, uid)
             eng_cache = await load_and_update_enka_cache(
@@ -1190,9 +1194,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     day_str = ""
                     if len(source.days) != 0:
                         day_list = [
-                            get_weekday_name(
-                                get_weekday_int_with_name(day), locale
-                            )
+                            get_weekday_name(get_weekday_int_with_name(day), locale)
                             for day in source.days
                         ]
                         day_str = ", ".join(day_list)
@@ -1267,9 +1269,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def activity(self, i: Interaction, member: Optional[User | Member] = None):
         await i.response.defer()
         member = member or i.user
-        result = await self.genshin_app.get_activities(
-            member.id, i.user.id, i.locale
-        )
+        result = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
         if not result.success:
             return await i.followup.send(embed=result.result, ephemeral=True)
         await GeneralPaginator(i, result.result, self.bot.db).start(followup=True)
