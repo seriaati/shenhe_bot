@@ -120,15 +120,15 @@ class CharacterSelect(Select):
                         if character:
                             enka_characters = get_enka_characters()
                             character = character[0]
-                            talent_order = enka_characters[str(character.id)][
-                                "SkillOrder"
-                            ]
-                            init_levels.append(character.level)
-                            for talent_id in talent_order:
-                                talent = [
-                                    t for t in character.skills if t.id == talent_id
-                                ]
-                                init_levels.append(talent[0].level if talent else 1)
+                            enka_character = enka_characters.get(str(character.id))
+                            if enka_character is not None:
+                                talent_order = enka_character["SkillOrder"]
+                                init_levels.append(character.level)
+                                for talent_id in talent_order:
+                                    talent = [
+                                        t for t in character.skills if t.id == talent_id
+                                    ]
+                                    init_levels.append(talent[0].level if talent else 1)
 
         if not init_levels:
             for _ in range(4):
