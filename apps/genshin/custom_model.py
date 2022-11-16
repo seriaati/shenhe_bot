@@ -200,3 +200,9 @@ class FightProp(BaseModel):
     emoji: str
     substat: bool
     text_map_hash: int
+
+class EnkanetworkData(BaseModel):
+    data: EnkaNetworkResponse
+    eng_data: EnkaNetworkResponse
+    cache: EnkaNetworkResponse
+    eng_cache: EnkaNetworkResponse

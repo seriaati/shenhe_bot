@@ -1,21 +1,29 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import aiohttp
 import aiosqlite
 import discord
 import enkanetwork
 import genshin
-from discord import Embed, Locale, SelectOption
+import enkanetwork
+import asyncio
 from discord.ext import commands
 from discord.utils import format_dt
 from diskcache import FanoutCache
 import yaml
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import CharacterBuild, FightProp, ShenheUser, WishInfo
+from apps.genshin.custom_model import (
+    CharacterBuild,
+    EnkanetworkData,
+    FightProp,
+    ShenheBot,
+    ShenheUser,
+    WishInfo,
+)
 from apps.text_map.cond_text import cond_text
-from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
+from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from data.game.artifact_map import artifact_map
@@ -45,7 +53,7 @@ def calculate_artifact_score(substats: dict):
 
 
 def get_character_builds(
-    character_id: str, element_builds_dict: dict, locale: Locale | str
+    character_id: str, element_builds_dict: dict, locale: discord.Locale | str
 ) -> List[CharacterBuild]:
     """Gets a character's builds
 
@@ -71,6 +79,8 @@ def get_character_builds(
             str(locale), "build", f"{character_name}_{build['move']}"
         )
         weapon_id = text_map.get_id_from_name(build["weapon"])
+        if weapon_id is None:
+            raise ValueError(f"Unknown weapon {build['weapon']}")
         embed = default_embed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
             f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {text_map.get_weapon_name(weapon_id, locale)}\n"
@@ -124,23 +134,7 @@ def get_character_icon(id: str) -> str:
     return character_map.get(id, {}).get("icon", "")
 
 
-def get_weapon(id: int = "", name: str = ""):
-    if id != "":
-        weapon_info = weapon_map.get(str(id))
-    else:
-        for weapon_info in weapon_map.values():
-            if weapon_info["name"] == name:
-                return weapon_info
-    return weapon_info or {
-        "name": f"{id}{name}",
-        "emoji": "❓",
-        "rarity": 5,
-        "icon": "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png",
-        "eng": "Unknown",
-    }
-
-
-def get_artifact(id: int = "", name: str = ""):
+def get_artifact(id: Optional[int] = 0, name: str = ""):
     for artifact_id, artifact_info in artifact_map.items():
         if (
             artifact_id == str(id)
@@ -161,7 +155,7 @@ def get_fight_prop(id: str) -> FightProp:
             "text_map_hash": 700,
         },
     )
-    return FightProp(**fight_prop_dict)
+    return FightProp(**fight_prop_dict)  # type: ignore
 
 
 def get_area_emoji(exploration_id: int):
@@ -191,7 +185,7 @@ def get_city_emoji(city_id: int):
 
 
 def get_uid_region(uid: int) -> int:
-    uid = str(uid)
+    str_uid = str(uid)
     region_map = {
         "9": 547,
         "1": 548,
@@ -202,18 +196,18 @@ def get_uid_region(uid: int) -> int:
         "8": 552,
         "0": 554,
     }
-    return region_map.get(uid[0], 553)
+    return region_map.get(str_uid[0], 553)
 
 
 async def get_shenhe_user(
     user_id: int,
     db: aiosqlite.Connection,
-    bot: commands.Bot,
-    locale: Optional[Locale | str] = None,
+    bot: ShenheBot,
+    locale: Optional[discord.Locale | str] = None,
     cookie: Optional[Dict[str, str | int]] = None,
     custom_uid: Optional[int] = None,
     daily_checkin: int = 1,
-    author_locale: Optional[Locale | str] = None,
+    author_locale: Optional[discord.Locale | str] = None,
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if not cookie:
@@ -222,7 +216,8 @@ async def get_shenhe_user(
             "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
             (user_id,),
         )
-        user_data = await c.fetchall()
+        user_data = await c.fetchall()  # type: ignore
+        user_data: List[Tuple[int, str, str, int, int, int]]
         for _, tpl in enumerate(user_data):
             if tpl[5] == 1:
                 user_data = tpl
@@ -380,7 +375,7 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
                 ].label = f"{get_domain_title(domain, locale)} ({current_len})"
                 current_len += 1
         options.append(
-            SelectOption(
+            discord.SelectOption(
                 label=f"{get_domain_title(domain, locale)} {f'({current_len})' if current_len > 1 else ''}",
                 value=index,
                 emoji=get_city_emoji(domain.city.id),
@@ -390,7 +385,7 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
     return result, embeds, options
 
 
-def get_domain_title(domain: Domain, locale: Locale | str):
+def get_domain_title(domain: Domain, locale: discord.Locale | str):
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(91, locale)}"
     elif "Mastery" in text_map.get_domain_name(domain.id, "en-US"):
@@ -555,7 +550,7 @@ async def get_wish_info_embed(
     return embed
 
 
-def format_wish_str(wish_data: Dict, locale: Locale | str):
+def format_wish_str(wish_data: Dict, locale: discord.Locale | str):
     wish_time = datetime.strptime(wish_data["time"], "%Y/%m/%d %H:%M:%S")
     item_emoji = get_weapon_emoji(int(wish_data["item_id"])) or get_character_emoji(
         str(wish_data["item_id"])
@@ -564,7 +559,9 @@ def format_wish_str(wish_data: Dict, locale: Locale | str):
     return f"{format_dt(wish_time, 'd')} {item_emoji} **{text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)}** ({wish_data['item_rarity']} ✦) {pity_pull}"
 
 
-def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption]:
+def get_account_options(
+    accounts: List[Tuple], locale: str
+) -> List[discord.SelectOption]:
     options = []
     for account in accounts:
         emoji = (
@@ -576,7 +573,7 @@ def get_account_options(accounts: List[Tuple], locale: str) -> List[SelectOption
         if len(nickname) > 15:
             nickname = nickname[:15] + "..."
         options.append(
-            SelectOption(
+            discord.SelectOption(
                 label=f"{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), locale)}",
                 emoji=emoji,
                 value=account[0],
@@ -667,3 +664,81 @@ async def get_character_suggested_talent_levels(
         talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
         talents = talents.split("/")
         return [int(talent) for talent in talents]
+
+
+async def get_enka_data(
+    i: discord.Interaction,
+    locale: discord.Locale | str,
+    uid: int,
+    member: discord.Member | discord.User,
+    respond_message: bool = True,
+) -> Optional[EnkanetworkData]:
+    """Get enka data from enka.network, will return a discord follow up if there is an error
+
+    Args:
+        i (discord.Interaction): Interaction object
+        locale (discord.Locale | str): discord locale
+        uid (int): user's uid
+        member (discord.Member | discord.User): discord member object
+
+    Returns:
+        Tuple[enkanetwork.EnkaNetworkResponse, enkanetwork.EnkaNetworkResponse]: First element is the user's data in user's locale, second one is the user's data in en-US
+    """
+    with FanoutCache("data/cache/enka_data_cache") as enka_cache:
+        cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+    with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
+        eng_cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+    enka_locale = to_enka(locale)
+    async with enkanetwork.EnkaNetworkAPI(enka_locale) as enka:
+        try:
+            data = await enka.fetch_user(uid)
+            await enka.set_language(enkanetwork.Language.EN)
+            eng_data = await enka.fetch_user(uid)
+        except (
+            enkanetwork.UIDNotFounded,
+            asyncio.exceptions.TimeoutError,
+            enkanetwork.EnkaServerError,
+        ):
+            if cache is None:
+                if respond_message:
+                    return await i.followup.send(
+                        embed=error_embed(message=text_map.get(519, locale)).set_author(
+                            name=text_map.get(286, locale),
+                            icon_url=member.display_avatar.url,
+                        ),
+                        ephemeral=True,
+                    )
+                else:
+                    return None
+            else:
+                data = cache
+                eng_data = eng_cache
+        except enkanetwork.VaildateUIDError:
+            if respond_message:
+                return await i.followup.send(
+                    embed=error_embed().set_author(
+                        name=text_map.get(286, locale),
+                        icon_url=member.display_avatar.url,
+                    ),
+                    ephemeral=True,
+                )
+            else:
+                return None
+    try:
+        cache = await load_and_update_enka_cache(cache, data, uid)
+        eng_cache = await load_and_update_enka_cache(eng_cache, eng_data, uid, en=True)
+    except NoCharacterFound:
+        embed = (
+            default_embed(message=text_map.get(287, locale))
+            .set_author(
+                name=text_map.get(141, locale),
+                icon_url=member.display_avatar.url,
+            )
+            .set_image(url="https://i.imgur.com/frMsGHO.gif")
+        )
+        if respond_message:
+            return await i.followup.send(embed=embed, ephemeral=True)
+        else:
+            return None
+
+    return EnkanetworkData(data=data, eng_data=eng_data, cache=cache, eng_cache=eng_cache)

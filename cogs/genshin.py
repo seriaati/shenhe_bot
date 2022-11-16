@@ -5,71 +5,41 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 
 import pytz
-from discord import Embed, File, Interaction, Member, SelectOption, User, app_commands
+from discord import (Embed, File, Interaction, Member, SelectOption, User,
+                     app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import Select
 from discord.utils import format_dt
-from diskcache import FanoutCache
 from dotenv import load_dotenv
-from enkanetwork import (
-    EnkaNetworkAPI,
-    EnkaNetworkResponse,
-    EnkaServerError,
-    UIDNotFounded,
-    VaildateUIDError,
-)
-from enkanetwork.enum import Language
 
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
-from apps.genshin.custom_model import (
-    AbyssResult,
-    AreaResult,
-    CharacterResult,
-    DiaryResult,
-    RealtimeNoteResult,
-    ShenheBot,
-    StatsResult,
-)
+from apps.genshin.custom_model import (AbyssResult, AreaResult,
+                                       CharacterResult, DiaryResult,
+                                       RealtimeNoteResult, ShenheBot,
+                                       StatsResult)
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (
-    NoCharacterFound,
-    get_character_emoji,
-    get_farm_data,
-    get_fight_prop,
-    get_uid,
-    load_and_update_enka_cache,
-)
-from apps.text_map.convert_locale import to_ambr_top, to_enka, to_event_lang
+from apps.genshin.utils import (get_character_emoji, get_enka_data,
+                                get_farm_data, get_fight_prop, get_uid)
+from apps.text_map.convert_locale import to_ambr_top, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
-from UI_elements.genshin import (
-    Abyss,
-    Build,
-    CharacterWiki,
-    Diary,
-    EnkaProfile,
-    EventTypeChooser,
-    ShowAllCharacters,
-)
+from UI_elements.genshin import (Abyss, Build, CharacterWiki, Diary,
+                                 EnkaProfile, EventTypeChooser,
+                                 ShowAllCharacters)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
-from utility.utils import (
-    default_embed,
-    divide_chunks,
-    error_embed,
-    get_user_appearance_mode,
-    get_user_timezone,
-    get_weekday_int_with_name,
-)
+from utility.utils import (default_embed, divide_chunks, error_embed,
+                           get_user_appearance_mode, get_user_timezone,
+                           get_weekday_int_with_name)
 from yelan.draw import draw_big_material_card
 
 load_dotenv()
@@ -236,34 +206,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         uid = await get_uid(member.id, self.bot.db)
         if uid is None:
             raise UIDNotFound
-        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-            cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
-            async with EnkaNetworkAPI() as enka:
-                try:
-                    data = await enka.fetch_user(uid)
-                except (UIDNotFounded, asyncio.exceptions.TimeoutError):
-                    if cache is None:
-                        return await i.followup.send(
-                            embed=error_embed(
-                                message=text_map.get(519, i.locale, user_locale)
-                            ).set_author(
-                                name=text_map.get(286, i.locale, user_locale),
-                                icon_url=i.user.display_avatar.url,
-                            ),
-                            ephemeral=True,
-                        )
-                    else:
-                        data = cache
-            if cache is None:
-                enka_cache[uid] = data
-            if (
-                cache is not None
-                and cache.player.namecard.id != data.player.namecard.id
-            ):
-                cache.player.namecard.id = data.player.namecard.id
-                enka_cache[uid] = cache
-
-        namecard = data.player.namecard.banner
+        enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
+        if enka_data is None:
+            return
+        namecard = enka_data.data.player.namecard.banner
         result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
@@ -642,68 +588,24 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        enka_locale = to_enka(user_locale or i.locale)
         uid = custom_uid or await get_uid(member.id, self.bot.db)
         if uid is None:
             raise ValueError("UID not found")
-        with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-            cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
-        with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
-            eng_cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
-        async with EnkaNetworkAPI(enka_locale) as enka:
-            try:
-                data = await enka.fetch_user(uid)
-                await enka.set_language(Language.EN)
-                eng_data = await enka.fetch_user(uid)
-            except (UIDNotFounded, asyncio.exceptions.TimeoutError, EnkaServerError):
-                if cache is None:
-                    return await i.followup.send(
-                        embed=error_embed(
-                            message=text_map.get(519, i.locale, user_locale)
-                        ).set_author(
-                            name=text_map.get(286, i.locale, user_locale),
-                            icon_url=member.display_avatar.url,
-                        ),
-                        ephemeral=True,
-                    )
-                else:
-                    data = cache
-                    eng_data = eng_cache
-            except VaildateUIDError:
-                return await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, i.locale, user_locale),
-                        icon_url=member.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-        try:
-            cache = await load_and_update_enka_cache(cache, data, uid)
-            eng_cache = await load_and_update_enka_cache(
-                eng_cache, eng_data, uid, en=True
-            )
-        except NoCharacterFound:
-            embed = (
-                default_embed(message=text_map.get(287, i.locale, user_locale))
-                .set_author(
-                    name=text_map.get(141, i.locale, user_locale),
-                    icon_url=member.display_avatar.url,
-                )
-                .set_image(url="https://i.imgur.com/frMsGHO.gif")
-            )
-            return await i.followup.send(embed=embed, ephemeral=True)
+        enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
+        if enka_data is None:
+            return
         from_cache = []
-        for c in cache.characters:
+        for c in enka_data.cache.characters:
             found = False
-            for d in data.characters:
+            for d in enka_data.data.characters:
                 if c.id == d.id:
                     found = True
                     break
             if not found:
                 from_cache.append(c.id)
 
-        data = cache
-        eng_data = eng_cache
+        data = enka_data.cache
+        eng_data = enka_data.eng_cache
 
         embeds = {}
         overview = default_embed(
@@ -1190,22 +1092,23 @@ class GenshinCog(commands.Cog, name="genshin"):
                     inline=False,
                 )
                 source_str = ""
-                for source in material.sources:
-                    day_str = ""
-                    if len(source.days) != 0:
-                        day_list = [
-                            get_weekday_name(get_weekday_int_with_name(day), locale)
-                            for day in source.days
-                        ]
-                        day_str = ", ".join(day_list)
-                    day_str = "" if len(source.days) == 0 else f"({day_str})"
-                    source_str += f"• {source.name} {day_str}\n"
-                source_str = "❌" if source_str == "" else source_str
-                embed.add_field(
-                    name=text_map.get(530, i.locale, user_locale),
-                    value=source_str,
-                    inline=False,
-                )
+                if material.sources is not None:
+                    for source in material.sources:
+                        day_str = ""
+                        if len(source.days) != 0:
+                            day_list = [
+                                get_weekday_name(get_weekday_int_with_name(day), locale)
+                                for day in source.days
+                            ]
+                            day_str = ", ".join(day_list)
+                        day_str = "" if len(source.days) == 0 else f"({day_str})"
+                        source_str += f"• {source.name} {day_str}\n"
+                    source_str = "❌" if source_str == "" else source_str
+                    embed.add_field(
+                        name=text_map.get(530, i.locale, user_locale),
+                        value=source_str,
+                        inline=False,
+                    )
                 embed.set_thumbnail(url=material.icon)
                 await i.followup.send(embed=embed)
 
