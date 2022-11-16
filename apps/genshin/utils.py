@@ -83,7 +83,7 @@ def get_character_builds(
             raise ValueError(f"Unknown weapon {build['weapon']}")
         embed = default_embed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
-            f"{text_map.get(91, locale)} • {get_weapon(name=build['weapon'])['emoji']} {text_map.get_weapon_name(weapon_id, locale)}\n"
+            f"{text_map.get(91, locale)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, locale)}\n"
             f"{text_map.get(92, locale)} • {cond_text.get_text(str(locale), 'build', build['artifacts'])}\n"
             f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
             f"{text_map.get(94, locale)} • {build['talents']}\n"
