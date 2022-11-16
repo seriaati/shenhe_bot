@@ -1,8 +1,10 @@
+import genshin
 from typing import List
 
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
 from UI_elements.calc import AddToTodo
+from apps.genshin.checks import check_account_predicate, check_cookie_predicate
 import asset
 import config
 from ambr.client import AmbrTopAPI
@@ -11,6 +13,9 @@ from apps.genshin.custom_model import TodoList
 from apps.genshin.utils import (
     InvalidLevelInput,
     get_character_suggested_talent_levels,
+    get_enka_data,
+    get_shenhe_user,
+    get_uid,
     level_to_ascension_phase,
     get_character_emoji,
     validate_level_input,
@@ -20,6 +25,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from UI_base_models import BaseModal, BaseView
+from data.game.enka_character import get_enka_characters
 from utility.utils import default_embed, get_user_appearance_mode
 from yelan.draw import draw_big_material_card
 
@@ -67,14 +73,81 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        modal = InitLevelModal(
-            self.values[0], await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
+        embed = default_embed().set_author(
+            name=text_map.get(608, locale), icon_url=asset.loader
         )
-        await i.response.send_modal(modal)
+        await i.response.edit_message(embed=embed, view=None)
+        init_levels = []
+
+        # get genshin calculator levels or enka talent levels
+        check = await check_cookie_predicate(i, respond_message=False)
+        character_id = int(self.values[0].split("-")[0])
+        if check:  # the user has cookie
+            shenhe_user = await get_shenhe_user(i.user.id, i.client.db, i.client, locale)  # type: ignore
+            calculator_characters = await shenhe_user.client.get_calculator_characters(
+                sync=True
+            )
+            calculator_character = [
+                c for c in calculator_characters if c.id == character_id
+            ]
+            init_levels.append(
+                calculator_character[0].level if calculator_character else 1
+            )
+            try:
+                character = await shenhe_user.client.get_character_details(character_id)
+            except genshin.GenshinException:
+                pass
+            else:
+                for talent in character.talents:
+                    if not talent.upgradeable:
+                        continue
+                    init_levels.append(talent.level)
+        else:  # the user has no cookie
+            check = await check_account_predicate(i, respond_message=False)  # check uid
+            if check:
+                uid = await get_uid(i.user.id, i.client.db)  # type: ignore
+                if uid is not None:
+                    enka_data = await get_enka_data(
+                        i, locale, uid, i.user, respond_message=False
+                    )
+                    if enka_data is not None:
+                        character = [
+                            c
+                            for c in enka_data.cache.characters
+                            if c.id == character_id
+                        ]
+                        if character:
+                            enka_characters = get_enka_characters()
+                            character = character[0]
+                            talent_order = enka_characters[str(character.id)][
+                                "SkillOrder"
+                            ]
+                            init_levels.append(character.level)
+                            for talent_id in talent_order:
+                                talent = [
+                                    t for t in character.skills if t.id == talent_id
+                                ]
+                                init_levels.append(talent[0].level if talent else 1)
+
+        if not init_levels:
+            for _ in range(4):
+                init_levels.append(1)
+
+        modal = InitLevelModal(self.values[0], locale, init_levels)
+        self.view.clear_items()
+        self.view.add_item(SpawnInitModal(locale, modal))
+        await i.edit_original_response(embed=None, view=self.view)
 
 
 class SpawnTargetLevelModal(Button):
-    def __init__(self, locale: Locale | str, character_id: str, init_levels: List[int], suggested_levels: List[int]):
+    def __init__(
+        self,
+        locale: Locale | str,
+        character_id: str,
+        init_levels: List[int],
+        suggested_levels: List[int],
+    ):
         super().__init__(label=text_map.get(17, locale), style=ButtonStyle.blurple)
         self.locale = locale
         self.character_id = character_id
@@ -83,7 +156,9 @@ class SpawnTargetLevelModal(Button):
 
     async def callback(self, i: Interaction):
         await i.response.send_modal(
-            TargetLevelModal(self.character_id, self.locale, self.init_levels, self.suggested_levels)
+            TargetLevelModal(
+                self.character_id, self.locale, self.init_levels, self.suggested_levels
+            )
         )
 
 
@@ -120,7 +195,9 @@ class InitLevelModal(BaseModal):
         max_length=2,
     )
 
-    def __init__(self, character_id: str, locale: Locale | str) -> None:
+    def __init__(
+        self, character_id: str, locale: Locale | str, init_levels: List[int]
+    ) -> None:
         super().__init__(
             title=text_map.get(181, locale),
             timeout=config.mid_timeout,
@@ -130,6 +207,16 @@ class InitLevelModal(BaseModal):
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
+        for index, level in enumerate(init_levels):
+            if index == 0:
+                self.init.default = str(level)
+            elif index == 1:
+                self.a.default = str(level)
+            elif index == 2:
+                self.e.default = str(level)
+            elif index == 3:
+                self.q.default = str(level)
+
         self.character_id = character_id
         self.locale = locale
 
@@ -161,7 +248,7 @@ class InitLevelModal(BaseModal):
                     int(self.e.value),
                     int(self.q.value),
                 ],
-                suggested_levlels
+                suggested_levlels,
             )
         )
         await i.response.edit_message(
@@ -171,6 +258,15 @@ class InitLevelModal(BaseModal):
             ),
         )
         view.message = await i.original_response()
+
+
+class SpawnInitModal(Button):
+    def __init__(self, locale: Locale | str, modal: InitLevelModal):
+        super().__init__(label=text_map.get(17, locale), style=ButtonStyle.blurple)
+        self.modal = modal
+
+    async def callback(self, i: Interaction):
+        await i.response.send_modal(self.modal)
 
 
 class TargetLevelModal(BaseModal):
@@ -203,7 +299,11 @@ class TargetLevelModal(BaseModal):
     )
 
     def __init__(
-        self, character_id: str, locale: Locale | str, init_levels: List[int], suggested_levels: List[int]
+        self,
+        character_id: str,
+        locale: Locale | str,
+        init_levels: List[int],
+        suggested_levels: List[int],
     ) -> None:
         super().__init__(
             title=text_map.get(181, locale),
@@ -240,11 +340,11 @@ class TargetLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
-        
         await i.edit_original_response(
             embed=default_embed().set_author(
                 name=text_map.get(644, self.locale), icon_url=asset.loader
-            ),view=None
+            ),
+            view=None,
         )
 
         target = int(self.target.value)
@@ -349,7 +449,7 @@ class TargetLevelModal(BaseModal):
             f"{elemental_skill.name}: {init_e} ▸ {e}\n"
             f"{elemental_burst.name}: {init_q} ▸ {q}",
         )
-        embed.set_author(url=character.icon, name=character.name)
+        embed.set_author(icon_url=character.icon, name=character.name)
         embed.set_image(url="attachment://materials.jpeg")
         view = View()
         view.clear_items()

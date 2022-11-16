@@ -20,7 +20,7 @@ def check_account():
 
 
 async def check_account_predicate(
-    i: Interaction, member: Optional[User | Member] = None
+    i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True
 ) -> bool:
     if "member" in i.namespace.__dict__:
         user = i.namespace["member"]
@@ -34,13 +34,18 @@ async def check_account_predicate(
     await c.execute("SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,))
     uid = await c.fetchone()
     if uid is None:
-        await i.response.send_message(
-            embed=error_embed(message=text_map.get(572, locale)).set_author(
+        if respond_message:
+            embed = error_embed(message=text_map.get(572, locale)).set_author(
                 name=text_map.get(571 if user.id == i.user.id else 579, locale),
                 icon_url=user.display_avatar.url,
-            ),
-            ephemeral=True,
-        )
+            )
+            try:
+                await i.response.send_message(
+                    embed=embed,
+                    ephemeral=True,
+                )
+            except InteractionResponded:
+                await i.followup.send(embed=embed, ephemeral=True)
         return False
     else:
         return True
@@ -89,7 +94,7 @@ def check_wish_history():
     return app_commands.check(predicate)
 
 
-async def check_cookie_predicate(i: Interaction, member: Optional[User | Member] = None) -> bool:
+async def check_cookie_predicate(i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True) -> bool:
     check = await check_account_predicate(i, member)
     if not check:
         return False
@@ -116,25 +121,27 @@ async def check_cookie_predicate(i: Interaction, member: Optional[User | Member]
                     name=text_map.get(573 if user.id == i.user.id else 580, locale),
                     icon_url=user.display_avatar.url,
                 )
-                try:
-                    await i.response.send_message(
-                        embed=embed,
-                        ephemeral=True,
-                    )
-                except InteractionResponded:
-                    await i.followup.send(embed=embed, ephemeral=True)
+                if respond_message:
+                    try:
+                        await i.response.send_message(
+                            embed=embed,
+                            ephemeral=True,
+                        )
+                    except InteractionResponded:
+                        await i.followup.send(embed=embed, ephemeral=True)
             else:
                 embed = error_embed(message=text_map.get(575, locale)).set_author(
                     name=text_map.get(574 if user.id == i.user.id else 581, locale),
                     icon_url=user.display_avatar.url,
                 )
-                try:
-                    await i.response.send_message(
-                        embed=embed,
-                        ephemeral=True,
-                    )
-                except InteractionResponded:
-                    await i.followup.send(embed=embed, ephemeral=True)
+                if respond_message:
+                    try:
+                        await i.response.send_message(
+                            embed=embed,
+                            ephemeral=True,
+                        )
+                    except InteractionResponded:
+                        await i.followup.send(embed=embed, ephemeral=True)
             return False
         else:
             return True
