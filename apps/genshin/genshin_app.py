@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Optional
 
 import aiosqlite
 import enkanetwork
@@ -481,7 +481,7 @@ class GenshinApp:
             if surf.finished:
                 minutes, seconds = divmod(surf.time, 60)
                 time_str = (
-                    f"{minutes} {text_map.get(7, locale)} {seconds} {text_map.get(8, locale)}"
+                    f"{minutes} {text_map.get(7, locale)} {seconds} sec."
                     if minutes != 0
                     else f"{seconds}{text_map.get(12, locale)}"
                 )
