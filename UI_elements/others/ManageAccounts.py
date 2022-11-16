@@ -253,9 +253,9 @@ async def return_accounts(i: Interaction):
     current_account = False
     for account in accounts:
         emoji = (
-            "Cookie"
+            "<:cookie_add:1018776813922693120>"
             if account[1] is not None
-            else "UID"
+            else "<:number:1018838745614667817>"
         )
         nickname = f"{account[3]} | " if account[3] is not None else ""
         if len(nickname) > 15:
