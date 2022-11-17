@@ -312,6 +312,7 @@ class GenshinApp:
         abyss = await shenhe_user.client.get_genshin_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
+        characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
         author_locale = await get_user_locale(author_id, self.db)
         new_locale = author_locale or shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
@@ -325,6 +326,7 @@ class GenshinApp:
         result["abyss"] = abyss
         result["user"] = user
         result["discord_user"] = shenhe_user.discord_user
+        result["characters"] = list(characters)
         overview = default_embed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(

@@ -145,6 +145,7 @@ class AbyssResult(BaseModel):
     overview_embed: discord.Embed = Field(alias="overview")
     overview_file: io.BytesIO = Field(alias="overview_card")
     abyss_floors: List[genshin.models.Floor] = Field(alias="floors")
+    characters: List[genshin.models.Character]
 
     class Config:
         arbitrary_types_allowed = True

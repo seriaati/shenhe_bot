@@ -1,4 +1,4 @@
-import asyncio
+import enkanetwork
 import json
 import random
 from datetime import datetime
@@ -1247,7 +1247,19 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.set_image(url=banner.banner[event_lang])
             embeds.append(embed)
         await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
-
+        
+    @app_commands.command(name="artifacts", description=_("View all of your artifacts and their ratings", hash=382))
+    async def slash_artifact(self, i: Interaction):
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        check = await check_account_predicate(i, respond_message=False)
+        if check:
+            uid = await get_uid(i.user.id, self.bot.db)
+            if uid is not None:
+                enka_data = await get_enka_data(i, locale, uid, i.user)
+                if enka_data is not None:
+                    for character in enka_data.cache.characters:
+                        for artifact in filter(lambda x: x.type == enkanetwork.EquipmentsType.ARTIFACT, character.equipments):
+                            pass
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))

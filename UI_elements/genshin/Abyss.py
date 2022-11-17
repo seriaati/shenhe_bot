@@ -75,6 +75,7 @@ class FloorSelect(Select):
                     user_locale or i.locale,
                     dark_mode,
                     i.client.session,  # type: ignore
+                    self.abyss_result.characters
                 )
                 cache[key] = fp
             fp.seek(0)
@@ -107,6 +108,7 @@ class FloorSelect(Select):
                     dark_mode,
                     self.abyss_result.abyss_floors[int(self.values[0])],
                     i.client.session,  # type: ignore
+                    self.abyss_result.characters,
                 )
                 cache[key] = fp
             fp.seek(0)
