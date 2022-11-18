@@ -366,7 +366,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(2.2)
+            await asyncio.sleep(2.5)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
         end = process_time()
