@@ -129,17 +129,13 @@ class TextMap:
         dungeon_id: int,
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
-    ):
+    ) -> str:
         dungeonText = self.dailyDungeon.get(str(dungeon_id))
         if dungeonText is None:
-            log.warning(
-                f"[Exception][get_dungeon_name][charcter_id not found]: [dungeon_id]{dungeon_id}"
-            )
-            return dungeon_id
-        else:
-            locale = user_locale or locale
-            ambr_locale = to_ambr_top(str(locale))
-            return dungeonText[str(ambr_locale)]
+            return str(dungeon_id)
+        locale = user_locale or locale
+        ambr_locale = to_ambr_top(str(locale))
+        return dungeonText.get(str(ambr_locale), str(dungeon_id))
 
     def get_artifact_name(
         self,

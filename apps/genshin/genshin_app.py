@@ -186,7 +186,7 @@ class GenshinApp:
         self,
         user_id: int,
         author_id: int,
-        namecard: enkanetwork.model.assets.IconAsset,
+        namecard: enkanetwork.Namecard,
         avatar_url: Asset,
         locale: Locale,
     ) -> GenshinAppResult:

@@ -385,10 +385,10 @@ async def get_farm_data(i: discord.Interaction, weekday: int):
     return result, embeds, options
 
 
-def get_domain_title(domain: Domain, locale: discord.Locale | str):
+def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(91, locale)}"
-    elif "Mastery" in text_map.get_domain_name(domain.id, "en-US"):
+    else:
         return f"{domain.city.name} - {text_map.get(105, locale).title()}"
 
 
@@ -672,8 +672,8 @@ async def get_enka_data(
     uid: int,
     member: discord.Member | discord.User,
     respond_message: bool = True,
-) -> Optional[EnkanetworkData]:
-    """Get enka data from enka.network, will return a discord follow up if there is an error
+)-> Optional[EnkanetworkData]:
+    """Get and return enka data from enka.network, will return None if there is an error
 
     Args:
         i (discord.Interaction): Interaction object
