@@ -207,3 +207,21 @@ class EnkanetworkData(BaseModel):
     eng_data: EnkaNetworkResponse
     cache: EnkaNetworkResponse
     eng_cache: EnkaNetworkResponse
+
+class TopPadding(BaseModel):
+    with_title: int
+    without_title: int
+
+class DynamicBackgroundInput(BaseModel):
+    top_padding: TopPadding
+    left_padding: int
+    right_padding: int
+    bottom_padding: int
+    card_height: int
+    card_width: int
+    card_x_padding: int
+    card_y_padding: int
+    card_num: int
+    max_card_num: int
+    background_color: str
+    draw_title: bool = True

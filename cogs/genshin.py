@@ -1,12 +1,10 @@
-import enkanetwork
 import json
 import random
 from datetime import datetime
 from typing import Dict, List, Tuple
 
 import pytz
-from discord import (Embed, File, Interaction, Member, SelectOption, User,
-                     app_commands)
+from discord import Embed, File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -18,29 +16,50 @@ import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
 from apps.genshin.checks import *
-from apps.genshin.custom_model import (AbyssResult, AreaResult,
-                                       CharacterResult, DiaryResult,
-                                       RealtimeNoteResult, ShenheBot,
-                                       StatsResult)
+from apps.genshin.custom_model import (
+    AbyssResult,
+    AreaResult,
+    CharacterResult,
+    DiaryResult,
+    RealtimeNoteResult,
+    ShenheBot,
+    StatsResult,
+)
 from apps.genshin.genshin_app import GenshinApp
-from apps.genshin.utils import (get_character_emoji, get_enka_data,
-                                get_farm_data, get_fight_prop, get_uid)
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_enka_data,
+    get_farm_data,
+    get_fight_prop,
+    get_uid,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
-from UI_elements.genshin import (Abyss, Build, CharacterWiki, Diary,
-                                 EnkaProfile, EventTypeChooser,
-                                 ShowAllCharacters)
+from UI_elements.genshin import (
+    Abyss,
+    Build,
+    CharacterWiki,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_appearance_mode, get_user_timezone,
-                           get_weekday_int_with_name)
-from yelan.draw import draw_big_material_card
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_appearance_mode,
+    get_user_timezone,
+    get_weekday_int_with_name,
+)
+from yelan.draw import draw_big_material_card, draw_profile_overview_card
 
 load_dotenv()
 
@@ -159,7 +178,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ephemeral: bool = False,
     ):
         member = member or i.user
-        await i.response.defer()
+        await i.response.defer(ephemeral=ephemeral)
         result = await self.genshin_app.get_real_time_notes(
             member.id, i.user.id, i.locale
         )
@@ -209,7 +228,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
         if enka_data is None:
             return
-        namecard = enka_data.data.player.namecard.banner
+        namecard = enka_data.data.player.namecard
         result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
@@ -587,11 +606,11 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         uid = custom_uid or await get_uid(member.id, self.bot.db)
         if uid is None:
             raise ValueError("UID not found")
-        enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
+        enka_data = await get_enka_data(i, locale, uid, member)
         if enka_data is None:
             return
         from_cache = []
@@ -607,39 +626,41 @@ class GenshinCog(commands.Cog, name="genshin"):
         data = enka_data.cache
         eng_data = enka_data.eng_cache
 
-        embeds = {}
-        overview = default_embed(
-            message=f"*{data.player.signature}*\n\n{text_map.get(288, i.locale, user_locale)}: Lvl. {data.player.level}\n{text_map.get(289, i.locale, user_locale)}: W{data.player.world_level}\n{text_map.get(290, i.locale, user_locale)}: {data.player.achievement}\n{text_map.get(291, i.locale, user_locale)}: {data.player.abyss_floor}-{data.player.abyss_room}"
+        embed = default_embed()
+        embed.set_image(url="attachment://profile.jpeg")
+        await i.edit_original_response(
+            embed=default_embed().set_author(
+                name=text_map.get(644, locale),
+                icon_url=asset.loader,
+            ),
+            view=None,
+            attachments=[],
         )
-        overview.set_image(url=data.player.namecard.banner.url)
-        overview.set_author(
-            name=data.player.nickname, icon_url=data.player.icon.url.url
+        fp = await draw_profile_overview_card(
+            enka_data.data,
+            await get_user_appearance_mode(i.user.id, self.bot.db),
+            locale,
+            self.bot.session,
         )
-        embeds["0"] = overview
-        options = [
-            SelectOption(
-                label=text_map.get(43, i.locale, user_locale),
-                value="0",
-                emoji="<:SCORE:983948729293897779>",
-            )
-        ]
+        options = []
         for character in data.characters:
             options.append(
                 SelectOption(
                     label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
-                    description=text_map.get(543, i.locale, user_locale)
+                    description=text_map.get(543, locale)
                     if character.id in from_cache
                     else "",
                     value=str(character.id),
                     emoji=get_character_emoji(str(character.id)),
                 )
             )
-
-        view = EnkaProfile.View(
-            overview, options, data, eng_data, member, user_locale or i.locale
-        )
+        view = EnkaProfile.View(embed, fp, options, data, eng_data, member, locale)
+        fp.seek(0)
+        discord_file = File(fp, filename="profile.jpeg")
         view.author = i.user
-        await i.followup.send(embed=embeds["0"], view=view, ephemeral=ephemeral)
+        await i.edit_original_response(
+            embed=embed, view=view, attachments=[discord_file]
+        )
         view.message = await i.original_response()
 
     @check_cookie()
@@ -647,10 +668,10 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: Interaction, code: str):
         await i.response.defer()
-        result, success = await self.genshin_app.redeem_code(
+        result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
         )
-        await i.followup.send(embed=result, ephemeral=not success)
+        await i.followup.send(embed=result.result, ephemeral=not result.success)
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
@@ -1247,19 +1268,15 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.set_image(url=banner.banner[event_lang])
             embeds.append(embed)
         await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
-        
-    @app_commands.command(name="artifacts", description=_("View all of your artifacts and their ratings", hash=382))
+
+    @app_commands.command(
+        name="artifacts",
+        description=_("View all of your artifacts and their ratings", hash=382),
+    )
     async def slash_artifact(self, i: Interaction):
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
-        check = await check_account_predicate(i, respond_message=False)
-        if check:
-            uid = await get_uid(i.user.id, self.bot.db)
-            if uid is not None:
-                enka_data = await get_enka_data(i, locale, uid, i.user)
-                if enka_data is not None:
-                    for character in enka_data.cache.characters:
-                        for artifact in filter(lambda x: x.type == enkanetwork.EquipmentsType.ARTIFACT, character.equipments):
-                            pass
+        await i.response.defer()
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(GenshinCog(bot))

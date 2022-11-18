@@ -1,6 +1,8 @@
+import io
 from typing import Any, List
 
-from discord import ButtonStyle, Embed, Interaction, Locale, Member, SelectOption, User
+from discord import (ButtonStyle, Embed, File, Interaction, Locale, Member,
+                     SelectOption, User)
 from discord.ui import Button, Select
 from enkanetwork import EnkaNetworkResponse
 
@@ -11,22 +13,19 @@ from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings.CustomImage import (
-    change_user_custom_image,
-    get_user_custom_image,
-    get_user_custom_image_embed,
-    get_user_custom_image_options,
-)
-from utility.utils import (
-    default_embed,
-    divide_chunks,
-)
+    change_user_custom_image, get_user_custom_image,
+    get_user_custom_image_embed, get_user_custom_image_options)
+from utility.utils import (default_embed, divide_chunks,
+                           get_user_appearance_mode)
 from yelan.damage_calculator import return_damage
+from yelan.draw import draw_profile_overview_card
 
 
 class View(BaseView):
     def __init__(
         self,
         overview_embed: Embed,
+        overview_fp: io.BytesIO,
         character_options: List[SelectOption],
         data: EnkaNetworkResponse,
         eng_data: EnkaNetworkResponse,
@@ -35,6 +34,7 @@ class View(BaseView):
     ):
         super().__init__(timeout=config.mid_timeout)
         self.overview_embed = overview_embed
+        self.overview_fp = overview_fp
         self.character_options = character_options
         self.character_id = "0"
         self.data = data
@@ -42,9 +42,13 @@ class View(BaseView):
         self.member = member
         self.locale = locale
 
-        self.add_item(CalculateDamageButton(text_map.get(348, locale)))
-        self.add_item(SetCustomImage(locale))
+        self.add_item(overview := OverviewButton(text_map.get(43, locale)))
+        self.add_item(calculate := CalculateDamageButton(text_map.get(348, locale)))
+        self.add_item(custom := SetCustomImage(locale))
         self.add_item(InfoButton())
+        overview.disabled = True
+        calculate.disabled = True
+        custom.disabled = True
 
         options = list(divide_chunks(self.character_options, 25))
         count = 1
@@ -57,8 +61,6 @@ class View(BaseView):
                 )
             )
             count += character_num
-        self.children[0].disabled = True
-        self.children[1].disabled = True
 
 
 class InfoButton(Button):
@@ -70,6 +72,40 @@ class InfoButton(Button):
         await i.response.send_message(
             embed=default_embed(message=text_map.get(399, self.view.locale)),
             ephemeral=True,
+        )
+
+
+class OverviewButton(Button):
+    def __init__(self, label: str):
+        super().__init__(style=ButtonStyle.primary, label=label, custom_id="overview")
+
+    async def callback(self, i: Interaction):
+        self.view: View
+        overview = [
+            item
+            for item in self.view.children
+            if isinstance(item, Button) and item.custom_id == "overview"
+        ][0]
+        set_custom_image = [
+            item
+            for item in self.view.children
+            if isinstance(item, Button) and item.custom_id == "set_custom_image"
+        ][0]
+        calculate = [
+            item
+            for item in self.view.children
+            if isinstance(item, Button) and item.custom_id == "calculate"
+        ][0]
+        overview.disabled = True
+        set_custom_image.disabled = True
+        calculate.disabled = True
+        fp = self.view.overview_fp
+        fp.seek(0)
+        attachment = File(fp, filename="profile.jpeg")
+        await i.response.edit_message(
+            embed=self.view.overview_embed,
+            attachments=[attachment],
+            view=self.view,
         )
 
 
@@ -88,7 +124,11 @@ class CustomImageView(BaseView):
 
 class SetCustomImage(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(style=ButtonStyle.green, label=text_map.get(62, locale))
+        super().__init__(
+            style=ButtonStyle.green,
+            label=text_map.get(62, locale),
+            custom_id="set_custom_image",
+        )
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
@@ -171,7 +211,9 @@ class PageSelect(Select):
 
 class CalculateDamageButton(Button):
     def __init__(self, label: str):
-        super().__init__(style=ButtonStyle.blurple, label=label, disabled=True)
+        super().__init__(
+            style=ButtonStyle.blurple, label=label, disabled=True, custom_id="calculate"
+        )
 
     async def callback(self, i: Interaction) -> Any:
         self.view: EnkaView

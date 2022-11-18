@@ -77,8 +77,6 @@ class View(BaseView):
 
         teammate_options: List[SelectOption] = []
         for option in self.enka_view.character_options:
-            if option.value == "0":
-                continue
             if option.value == str(self.enka_view.character_id):
                 continue
             teammate_options.append(
@@ -143,12 +141,12 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         view=None,
         attachments=[],
     )
-    if enka_view.character_id == "0":
-        enka_view.children[0].disabled = True
-        enka_view.children[1].disabled = True
-        return await i.edit_original_response(
-            embed=enka_view.overview_embed, attachments=[], view=enka_view
-        )
+    overview = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "overview"][0]
+    set_custom_image = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "set_custom_image"][0]
+    calculate = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "calculate"][0]
+    overview.disabled = False
+    set_custom_image.disabled = False
+    calculate.disabled = False
     character = [
         c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
     ][0]
@@ -191,8 +189,6 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     )
     card.seek(0)
     file = File(card, "card.jpeg")
-    enka_view.children[0].disabled = False
-    enka_view.children[1].disabled = False
     await i.edit_original_response(embed=embed, attachments=[file], view=enka_view)
 
 
