@@ -4,25 +4,34 @@ import aiosqlite
 import enkanetwork
 import genshin
 import sentry_sdk
-from discord import (Asset, ClientUser, Embed, Locale, Member, SelectOption,
-                     User)
+from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
 from discord.utils import format_dt
 
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import (AbyssResult, AreaResult,
-                                       CharacterResult, DiaryResult,
-                                       GenshinAppResult, RealtimeNoteResult,
-                                       ShenheBot, ShenheUser, StatsResult)
+from apps.genshin.custom_model import (
+    AbyssResult,
+    AreaResult,
+    CharacterResult,
+    DiaryResult,
+    GenshinAppResult,
+    RealtimeNoteResult,
+    ShenheBot,
+    ShenheUser,
+    StatsResult,
+)
 from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import (get_element_name, get_month_name,
-                                 get_user_locale)
+from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import (default_embed, error_embed,
-                           get_user_appearance_mode, log)
-from yelan.draw import (draw_abyss_overview_card, draw_area_card,
-                        draw_big_character_card, draw_diary_card,
-                        draw_realtime_notes_card, draw_stats_card)
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
+from yelan.draw import (
+    draw_abyss_overview_card,
+    draw_area_card,
+    draw_big_character_card,
+    draw_diary_card,
+    draw_realtime_notes_card,
+    draw_stats_card,
+)
 
 
 class CookieInvalid(Exception):
@@ -398,35 +407,35 @@ class GenshinApp:
     @genshin_error_handler
     async def redeem_code(
         self, user_id: int, author_id: int, code: str, locale: Locale
-    ):
+    ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             await shenhe_user.client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
-            return (
-                error_embed().set_author(
+            return GenshinAppResult(
+                result=error_embed().set_author(
                     name=text_map.get(106, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
-                False,
+                success=False,
             )
         except genshin.errors.RedemptionInvalid:
-            return (
-                error_embed().set_author(
+            return GenshinAppResult(
+                result=error_embed().set_author(
                     name=text_map.get(107, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
-                False,
+                success=False,
             )
         else:
-            return (
-                default_embed(
+            return GenshinAppResult(
+                result=default_embed(
                     message=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
                 ).set_author(
                     name=text_map.get(109, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
-                True,
+                success=True,
             )
 
     @genshin_error_handler

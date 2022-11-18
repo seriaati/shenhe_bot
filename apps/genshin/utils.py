@@ -701,13 +701,14 @@ async def get_enka_data(
         ):
             if cache is None:
                 if respond_message:
-                    return await i.followup.send(
+                    await i.followup.send(
                         embed=error_embed(message=text_map.get(519, locale)).set_author(
                             name=text_map.get(286, locale),
                             icon_url=member.display_avatar.url,
                         ),
                         ephemeral=True,
                     )
+                    return None
                 else:
                     return None
             else:
@@ -715,13 +716,14 @@ async def get_enka_data(
                 eng_data = eng_cache
         except enkanetwork.VaildateUIDError:
             if respond_message:
-                return await i.followup.send(
+                await i.followup.send(
                     embed=error_embed().set_author(
                         name=text_map.get(286, locale),
                         icon_url=member.display_avatar.url,
                     ),
                     ephemeral=True,
                 )
+                return None
             else:
                 return None
     try:
@@ -737,7 +739,8 @@ async def get_enka_data(
             .set_image(url="https://i.imgur.com/frMsGHO.gif")
         )
         if respond_message:
-            return await i.followup.send(embed=embed, ephemeral=True)
+            await i.followup.send(embed=embed, ephemeral=True)
+            return None
         else:
             return None
 
