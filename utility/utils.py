@@ -149,7 +149,7 @@ def dynamic_font_size(
     return font_size
 
 
-def circular_crop(image: Image.Image) -> Image.Image:
+def circular_crop(image: Image.Image, background_color: Optional[str] = None) -> Image.Image:
     """Crop an image into a circle."""
     mask = Image.new("L", image.size, 0)
     empty = Image.new("RGBA", image.size, 0)
@@ -159,6 +159,12 @@ def circular_crop(image: Image.Image) -> Image.Image:
     bbox = (x / 2 - eX / 2, y / 2 - eY / 2, x / 2 + eX / 2, y / 2 + eY / 2)
     draw.ellipse(bbox, fill=255)
     image = Image.composite(image, empty, mask)
+    if background_color is not None:
+        background = Image.new("RGBA", image.size, 0)
+        draw = ImageDraw.Draw(background)
+        draw.ellipse(bbox, fill=background_color)
+        background.paste(image, (0, 0), image)
+        return background
     return image
 
 
