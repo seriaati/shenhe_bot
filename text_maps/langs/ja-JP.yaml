@@ -640,7 +640,7 @@
   paimon.moeの形式は **サポートされていません* 理由はこちらの [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) をご覧ください。
   サポートされているのは、Shenheからエクスポートされた.txtファイルのみです。
 '568': 画像のURLは.pngまたは.jpg形式で指定してください
-'569': ''
+'569': Account type
 '570': |-
   あなたのCookieには複数のアカウントが含まれています。
   追加したいアカウントを選択してください。
