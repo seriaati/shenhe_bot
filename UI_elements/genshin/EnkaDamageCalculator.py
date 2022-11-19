@@ -150,16 +150,16 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     character = [
         c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
     ][0]
-    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  # type: ignore
     try:
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(enka_view.character_id)
+            i.user.id, i.client.db, int(enka_view.character_id)  # type: ignore
         )
         url = None if custom_image is None else custom_image.url
         card = await draw_character_card(
             character,
             enka_view.locale,
-            i.client.session,
+            i.client.session,  # type: ignore
             dark_mode,
             url,
         )
@@ -185,7 +185,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     embed.set_image(url=f"attachment://card.jpeg")
     embed.set_author(
         name=enka_view.data.player.nickname,
-        icon_url=enka_view.data.player.icon.url.url,
+        icon_url=enka_view.data.player.avatar.icon.url,
     )
     card.seek(0)
     file = File(card, "card.jpeg")

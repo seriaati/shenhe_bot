@@ -4,7 +4,7 @@ from typing import Any, List
 from discord import (ButtonStyle, Embed, File, Interaction, Locale, Member,
                      SelectOption, User)
 from discord.ui import Button, Select
-from enkanetwork import EnkaNetworkResponse
+from enkanetwork.model.base import EnkaNetworkResponse
 
 import asset
 import config
@@ -15,10 +15,8 @@ from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings.CustomImage import (
     change_user_custom_image, get_user_custom_image,
     get_user_custom_image_embed, get_user_custom_image_options)
-from utility.utils import (default_embed, divide_chunks,
-                           get_user_appearance_mode)
+from utility.utils import default_embed, divide_chunks
 from yelan.damage_calculator import return_damage
-from yelan.draw import draw_profile_overview_card
 
 
 class View(BaseView):
@@ -53,7 +51,7 @@ class View(BaseView):
         options = list(divide_chunks(self.character_options, 25))
         count = 1
         for option in options:
-            character_num = len([o for o in option if o.value != 0])
+            character_num = len(option)
             self.add_item(
                 PageSelect(
                     option,

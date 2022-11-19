@@ -7,7 +7,7 @@ from pydantic import BaseModel, validator, Field
 import discord
 import genshin
 from discord.ext import commands
-from enkanetwork.model import EnkaNetworkResponse
+from enkanetwork.model.base import EnkaNetworkResponse
 import cachetools
 
 

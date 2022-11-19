@@ -118,21 +118,20 @@ class CharacterSelect(Select):
                             if c.id == character_id
                         ]
                         if character:
-                            enka_characters = get_enka_characters()
-                            character = character[0]
-                            enka_character = enka_characters.get(str(character.id))
-                            if enka_character is not None:
-                                talent_order = enka_character["SkillOrder"]
-                                init_levels.append(character.level)
-                                for talent_id in talent_order:
-                                    talent = [
-                                        t for t in character.skills if t.id == talent_id
-                                    ]
-                                    init_levels.append(talent[0].level if talent else 1)
+                            init_levels.append(character[0].level)
+                            for talent in character[0].skills:
+                                if talent.id in [
+                                    10013,
+                                    10413,
+                                ]:  # ayaka and mona passive sprint
+                                    continue
+                                init_levels.append(talent.level)
 
-        if not init_levels:
-            for _ in range(4):
-                init_levels.append(1)
+        for index in range(4):
+            try:
+                _ = init_levels[index]
+            except KeyError:
+                init_levels[index] = 1
 
         modal = InitLevelModal(self.values[0], locale, init_levels)
         self.view.clear_items()

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 
 import aiohttp
 import aiosqlite
@@ -8,7 +8,6 @@ import enkanetwork
 import genshin
 import enkanetwork
 import asyncio
-from discord.ext import commands
 from discord.utils import format_dt
 from diskcache import FanoutCache
 import yaml
@@ -283,11 +282,11 @@ class NoCharacterFound(Exception):
 
 
 async def load_and_update_enka_cache(
-    cache: enkanetwork.EnkaNetworkResponse,
-    data: enkanetwork.EnkaNetworkResponse,
+    cache: enkanetwork.model.base.EnkaNetworkResponse,
+    data: enkanetwork.model.base.EnkaNetworkResponse,
     uid: int,
     en: bool = False,
-) -> enkanetwork.EnkaNetworkResponse:
+) -> enkanetwork.model.base.EnkaNetworkResponse:
     if data.characters is None:
         raise NoCharacterFound
     if cache is None or cache.characters is None:
@@ -672,7 +671,7 @@ async def get_enka_data(
     uid: int,
     member: discord.Member | discord.User,
     respond_message: bool = True,
-)-> Optional[EnkanetworkData]:
+) -> Optional[EnkanetworkData]:
     """Get and return enka data from enka.network, will return None if there is an error
 
     Args:
@@ -685,9 +684,9 @@ async def get_enka_data(
         Tuple[enkanetwork.EnkaNetworkResponse, enkanetwork.EnkaNetworkResponse]: First element is the user's data in user's locale, second one is the user's data in en-US
     """
     with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-        cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+        cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
     with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
-        eng_cache: EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+        eng_cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
     enka_locale = to_enka(locale)
     async with enkanetwork.EnkaNetworkAPI(enka_locale) as enka:
         try:
@@ -708,9 +707,7 @@ async def get_enka_data(
                         ),
                         ephemeral=True,
                     )
-                    return None
-                else:
-                    return None
+                return None
             else:
                 data = cache
                 eng_data = eng_cache
@@ -743,5 +740,13 @@ async def get_enka_data(
             return None
         else:
             return None
-
-    return EnkanetworkData(data=data, eng_data=eng_data, cache=cache, eng_cache=eng_cache)
+    return EnkanetworkData(
+        data=data,
+        eng_data=eng_data,
+        cache=enkanetwork.model.base.EnkaNetworkResponse(
+            playerInfo=cache.player, avatarInfoList=cache.characters
+        ),
+        eng_cache=enkanetwork.model.base.EnkaNetworkResponse(
+            playerInfo=eng_cache.player, avatarInfoList=eng_cache.characters
+        ),
+    )
