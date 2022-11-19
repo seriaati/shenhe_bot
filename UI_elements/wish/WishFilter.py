@@ -55,6 +55,7 @@ async def filter_callback(self_var, i: Interaction, filter_list: List):
         query += f"wish_rarity = {filter} OR "
         if index == len(self_var.view.rarity_filters) - 1:
             query = query[:-4] + ") AND "
-
+    
+    self_var.view.current_page = 0
     self_var.view.embeds = await get_wish_history_embed(i, query)
     await self_var.view.update_children(i)
