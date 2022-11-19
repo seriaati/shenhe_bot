@@ -262,9 +262,9 @@ async def return_accounts(i: Interaction):
             nickname = nickname[:15] + "..."
         if account[2] == 1:
             current_account = True
-            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}**__\n"
+            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}**__\n"
         else:
-            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {emoji}\n"
+            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}\n"
     select_options = get_account_options(accounts, user_locale or i.locale)
     if not current_account:
         await c.execute(
