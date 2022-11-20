@@ -23,7 +23,7 @@ from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, get_user_timezone, log
 from yelan.draw import (
     draw_abyss_overview_card,
     draw_area_card,
@@ -140,6 +140,7 @@ class GenshinApp:
             shenhe_user.user_locale or str(locale),
             self.bot.session,
             await get_user_appearance_mode(author_id, self.db),
+            await get_user_timezone(author_id, self.db),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
