@@ -211,7 +211,7 @@
 '193': Powered by Genshin Optimizer
 '194': Python バージョン
 '195': 無効なファイル形式
-'196': ''
+'196': Genshin character summary
 '197': 必要な材料はありません
 '198': ''
 '199': ''
@@ -650,9 +650,9 @@
 '574': |-
   One of your other accounts is linked to a Cookie, but the current one is only linked to a UID
 '575': </accounts:1020580644478275615> を使用してアカウントを切り替えます
-'576': ''
-'577': ''
-'578': ''
+'576': "Owned characters: {current}/{total}"
+'577': "Maxed friendship level: {current}/{total}"
+'578': Friendship Lv.
 '579': このユーザーはアカウントを登録していません
 '580': このユーザーの現在のアカウントはCookieにリンクされていません
 '581': |-
