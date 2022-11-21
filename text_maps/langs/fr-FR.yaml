@@ -214,7 +214,7 @@
 '193': Powered by Genshin Optimizer
 '194': Python version
 '195': Invalid file type
-'196': ''
+'196': Genshin character summary
 '197': No materials needed
 '198': ''
 '199': ''
@@ -655,9 +655,9 @@
   One of your other accounts is linked to a Cookie,
   but the current one is only linked to a UID
 '575': Use </accounts:1020188057628065866> to switch between accounts
-'576': ''
-'577': ''
-'578': ''
+'576': "Owned characters: {current}/{total}"
+'577': "Maxed friendship level: {current}/{total}"
+'578': Friendship Lv.
 '579': This user doesn't have an account registered
 '580': This user's current account is not linked to a Cookie
 '581': |-
