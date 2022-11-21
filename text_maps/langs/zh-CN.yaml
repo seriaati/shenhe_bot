@@ -214,7 +214,7 @@
 '193': 由 Genshin Optimizer 提供服务
 '194': Python 版本
 '195': 无效的文件类型
-'196': ''
+'196': Genshin character summary
 '197': 不需要任何素材
 '198': ''
 '199': ''
@@ -653,9 +653,9 @@
 '574': |-
   你的其他帐号有连结到 Cookie，但是当前帐号只有连结到 UID
 '575': 使用 </accounts:1020188057628065866> 来切换帐号
-'576': ''
-'577': ''
-'578': ''
+'576': "Owned characters: {current}/{total}"
+'577': "Maxed friendship level: {current}/{total}"
+'578': Friendship Lv.
 '579': 这个用户没有注册任何帐号
 '580': 这个用户的当前帐号并没有连结 Cookie
 '581': |-
