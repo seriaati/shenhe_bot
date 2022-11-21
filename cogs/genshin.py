@@ -282,7 +282,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="characters",
         description=_(
-            "View all of your characters, useful for building abyss teams",
+            "View all owned characters (need /register)",
             hash=421,
         ),
     )
@@ -322,7 +322,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         file = File(fp, "characters.jpeg")
         view = ShowAllCharacters.View(
-            locale, character_result.characters, character_result.options
+            locale, character_result.characters, character_result.options, member
         )
         view.author = i.user
         await i.edit_original_response(

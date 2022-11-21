@@ -23,7 +23,13 @@ from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import default_embed, error_embed, get_user_appearance_mode, get_user_timezone, log
+from utility.utils import (
+    default_embed,
+    error_embed,
+    get_user_appearance_mode,
+    get_user_timezone,
+    log,
+)
 from yelan.draw import (
     draw_abyss_overview_card,
     draw_area_card,
@@ -212,7 +218,7 @@ class GenshinApp:
                 genshin_user.stats,
                 namecard,
                 avatar_url,
-                len(characters) + 2,
+                len(characters) + 1,
                 mode,
                 self.bot.session,
             )
@@ -367,29 +373,38 @@ class GenshinApp:
         if shenhe_user.uid is None:
             raise UIDNotFound
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
+        ambr = AmbrTopAPI(self.bot.session)
+        all_characters = await ambr.get_character(
+            include_beta=False, include_traveler=False
+        )
+        if not isinstance(all_characters, List):
+            raise TypeError("all_characters is not a list")
         author_locale = await get_user_locale(author_id, self.db)
         new_locale = author_locale or shenhe_user.user_locale or str(locale)
-        # organize characters according to elements
+        embed = default_embed(
+            message=f"{text_map.get(576, new_locale).format(current=len(characters), total=len(all_characters)+1)}\n"
+            f"{text_map.get(577, new_locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters)+1)}"
+        )
+        embed.set_author(
+            name=text_map.get(196, new_locale),
+            icon_url=shenhe_user.discord_user.display_avatar.url,
+        )
+        embed.set_image(url="attachment://characters.jpeg")
         result = {
-            "embed": default_embed().set_image(url="attachment://characters.jpeg"),
+            "embed": embed,
             "options": [SelectOption(label=text_map.get(701, new_locale), value="All")],
         }
-        elements = []
+        elements = {}
         for character in characters:
             if character.element not in elements:
-                elements.append(character.element)
+                elements[character.element] = []
+            elements[character.element].append(character)
 
-        for element in elements:
+        for element, chars in elements.items():
             result["options"].append(
                 SelectOption(
                     emoji=element_emojis.get(element),
-                    label=(
-                        text_map.get(19, new_locale)
-                        if element == "All"
-                        else text_map.get(52, new_locale).format(
-                            element=get_element_name(element, new_locale)
-                        )
-                    ),
+                    label=f"{text_map.get(52, new_locale).format(element=get_element_name(element, new_locale))} ({len(chars)})",
                     value=element,
                 )
             )
