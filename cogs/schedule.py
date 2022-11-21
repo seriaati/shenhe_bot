@@ -17,7 +17,7 @@ from discord.ext import commands, tasks
 from discord.utils import find, format_dt
 
 from ambr.client import AmbrTopAPI
-from ambr.models import Artifact, Character, Weapon
+from ambr.models import Artifact, Character, Domain, Weapon
 from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
 from apps.genshin.utils import get_shenhe_user, get_uid
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
@@ -52,6 +52,7 @@ def schedule_error_handler(func):
             sentry_sdk.capture_exception(e)
 
     return inner_function
+
 
 class Schedule(commands.Cog):
     def __init__(self, bot):
@@ -412,7 +413,7 @@ class Schedule(commands.Cog):
                 )
                 user_locale = await get_user_locale(user_id, self.bot.db)
                 item_list = ast.literal_eval(item_list)
-                notified: Dict[str, List[int]] = {}
+                notified = {}
                 for item_id in item_list:
                     for domain in domains:
                         if domain.weekday == now.weekday():
@@ -431,11 +432,14 @@ class Schedule(commands.Cog):
 
                                 if item in upgrade.items:
                                     if item_id not in notified:
-                                        notified[item_id] = []
-                                    if item.id not in notified[item_id]:
-                                        notified[item_id].append(item.id)
+                                        notified[item_id] = {
+                                            "materials": [],
+                                            "domain": domain,
+                                        }
+                                    if item.id not in notified[item_id]["materials"]:
+                                        notified[item_id]["materials"].append(item.id)
 
-                for item_id, materials in notified.items():
+                for item_id, item_info in notified.items():
                     item = None
                     if notification_type == "talent_notification":
                         item = await client.get_character(item_id)
@@ -446,7 +450,7 @@ class Schedule(commands.Cog):
 
                     dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
                     fp = await draw_talent_reminder_card(
-                        materials,
+                        item_info["materials"],
                         user_locale or "en-US",
                         self.bot.session,
                         dark_mode,
@@ -454,11 +458,15 @@ class Schedule(commands.Cog):
                     )
                     fp.seek(0)
                     file = File(fp, "reminder_card.jpeg")
+                    domain: Domain = item_info["domain"]
                     embed = default_embed(
-                        message=text_map.get(314, "en-US", user_locale)
+                        message=f"{text_map.get(609, 'en-US', user_locale)}: {domain.name} ({domain.city.name})\n"
+                        f"{text_map.get(314, 'en-US', user_locale)}:\n"
                     )
                     embed.set_author(
-                        name=f"{text_map.get(312, 'en-US', user_locale)}",
+                        name=text_map.get(312, "en-US", user_locale).format(
+                            name=item.name
+                        ),
                         icon_url=item.icon,
                     )
                     embed.set_image(url="attachment://reminder_card.jpeg")
@@ -683,6 +691,7 @@ class Schedule(commands.Cog):
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
         await i.followup.send("Tasks started", ephemeral=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Schedule(bot))
