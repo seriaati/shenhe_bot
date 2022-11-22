@@ -87,7 +87,7 @@
 '84': Most skills used
 '85': Spiral Abyss Overview
 '86': image-name
-'87': ''
+'87': Shenhe has claimed today's daily reward for you!
 '88': ''
 '89': ''
 '90': 'Build #'
@@ -331,7 +331,7 @@
 '309': Click on `privacy settings`
 '310': Turn the toggle ON
 '311': How to unblock DM from servers
-'312': Time to farm materials!
+'312': Time to farm materials for {name}!
 '313': Genshin Impact
 '314': Items you can farm
 '315': Basic information
@@ -703,7 +703,7 @@
 '606': Current status
 '607': View claimed rewards
 '608': Please wait while Shenhe is processing your character data...
-'609': ''
+'609': Domain
 '610': ''
 '611': It is recommended to do the check-in by yourself today
 '612': ''
