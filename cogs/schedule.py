@@ -371,6 +371,8 @@ class Schedule(commands.Cog):
                     await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
+            if user_count % 100 == 0: # Prevents hitting the rate limit
+                await asyncio.sleep(5)
             await asyncio.sleep(2.5)
         await self.bot.db.commit()
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
