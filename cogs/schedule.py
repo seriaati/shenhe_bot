@@ -4,7 +4,7 @@ import json
 import random
 from datetime import datetime
 from time import process_time
-from typing import Dict, List
+from typing import List
 
 import aiosqlite
 import genshin
@@ -24,13 +24,8 @@ from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
-from utility.utils import (
-    default_embed,
-    error_embed,
-    get_user_appearance_mode,
-    get_user_timezone,
-    log,
-)
+from utility.utils import (default_embed, error_embed,
+                           get_user_appearance_mode, get_user_timezone, log)
 from yelan.draw import draw_talent_reminder_card
 
 
@@ -330,7 +325,7 @@ class Schedule(commands.Cog):
             error_message = ""
             client = user.client
             try:
-                await client.claim_daily_reward()
+                reward = await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
                 error = False
                 count += 1
@@ -347,6 +342,16 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
             else:
+                embed = default_embed(message=f"{reward.name} x{reward.amount}")
+                embed.set_author(
+                    name=text_map.get(87, "en-US", user.user_locale),
+                    icon_url=user.discord_user.display_avatar.url,
+                )
+                embed.set_thumbnail(url=reward.icon)
+                try:
+                    await user.discord_user.send(embed=embed)
+                except Forbidden:
+                    pass
                 error = False
                 count += 1
             if error:
@@ -354,17 +359,16 @@ class Schedule(commands.Cog):
                     "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
                     (user.discord_user.id, user.uid),
                 )
+                embed = embed = error_embed(
+                    message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
+                )
+                embed.set_author(
+                    name=text_map.get(500, "en-US", user.user_locale),
+                    icon_url=user.discord_user.display_avatar.url,
+                )
+                embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
                 try:
-                    await user.discord_user.send(
-                        embed=error_embed(
-                            message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
-                        )
-                        .set_author(
-                            name=text_map.get(500, "en-US", user.user_locale),
-                            icon_url=user.discord_user.display_avatar.url,
-                        )
-                        .set_footer(text=text_map.get(611, "en-US", user.user_locale))
-                    )
+                    await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
             await asyncio.sleep(2.5)
