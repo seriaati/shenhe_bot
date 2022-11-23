@@ -87,8 +87,8 @@
 '85': 深境螺旋 一覧
 '86': 画像名
 '87': 申鶴はあなたの為にログインボーナスを貰っておきましたよ～
-'88': Spiral Abyss Leaderboard
-'89': rank
+'88': 深境螺旋ランキング
+'89': 順位
 '90': '装備'
 '91': 武器
 '92': 聖遺物
@@ -213,10 +213,10 @@
 '195': 無効なファイル形式
 '196': 原神キャラクター概要
 '197': 必要な材料はありません
-'198': player
-'199': single strike
+'198': プレイヤー
+'199': 最大ダメージ（一撃）
 '200': 武器レベル
-'201': floor
+'201': 層
 '202': ToDoリスト
 '203': 素材を追加
 '204': |-
@@ -259,8 +259,8 @@
 '240': 日曜日
 '250': 周回可能な素材
 '251': アチーブメント数ランキング
-'252': The Shenhe leaderboard
-'253': Compete with other Shenhe users and try to get the highest ranks in different categories!
+'252': 申鶴の順位
+'253': 他の申鶴ユーザーと競い合い、さまざまなカテゴリーで最高ランクを獲得しよう!
 '254': ''
 '255': ''
 '256': ''
@@ -507,9 +507,9 @@
 '450': 交換コードを引き換える (/register が必要)
 '451': コード
 '452': 原神で開催中のイベントを表示
-'453': Global
+'453': グローバル
 '454': 続きを読む
-'455': Server
+'455': サーバー
 '456': ''
 '457': ''
 '458': キャラクター
@@ -697,15 +697,15 @@
 '607': 獲得した報酬を確認する
 '608': 申鶴がキャラクターデータを処理中です...
 '609': 秘境
-'610': stars collected
+'610': 星
 '611': 今日は自分でチェックインすることをおすすめします
-'612': Used {num} times
-'613': Most used characters
-'614': "Your current rank is **#{rank}**"
-'615': "**{num}** people has participated in this leaderboard"
-'616': Select a leaderboard category
-'617': Character usage rate in abyss
-'618': The most used character is **{name}** with **{num}** uses ({percent}%)
+'612': '{num}回使用'
+'613': 最多出撃キャラクター
+'614': "あなたの現在のランクは **#{rank}**位です"
+'615': "**{num}** 人がこのランキングに参加しました"
+'616': ランキングのカテゴリを選択してください
+'617': 深境螺旋のキャラクター使用率
+'618': 最もよく使われるキャラクターは **{name}** であり、 **{num}**回({percent}%)使用されています。
 '619': To update or add your data in the leaderboard, use {command}
 '620': The leaderboard is currently empty
 '621': ''
