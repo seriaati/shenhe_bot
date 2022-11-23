@@ -349,6 +349,7 @@ class GenshinApp:
             name=f"{text_map.get(85, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
+        overview.set_footer(text=text_map.get(254, new_locale))
         dark_mode = await get_user_appearance_mode(author_id, self.db)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
