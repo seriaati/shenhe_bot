@@ -1,4 +1,5 @@
 import logging
+import math
 import re
 from itertools import islice
 from typing import Dict, List, Optional
@@ -9,7 +10,6 @@ from dateutil import parser
 from discord.utils import format_dt
 from sentry_sdk.integrations.logging import LoggingIntegration
 from PIL.ImageFont import FreeTypeFont
-from apps.genshin.custom_model import UserCustomImage
 
 logging.basicConfig(
     level=logging.INFO,
@@ -170,3 +170,10 @@ def circular_crop(image: Image.Image, background_color: Optional[str] = None) ->
 
 def format_number(text: str) -> str:
     return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
+
+def shorten_text(text: str, max_length: int, font: FreeTypeFont) -> str:
+    """Shorten text to a maximum length."""
+    if font.getlength(text) <= max_length:
+        return text
+    else:
+        return text[: -len(text) + math.floor(max_length / font.getlength("..."))] + "..."

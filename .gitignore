@@ -172,6 +172,7 @@ text_maps/weapon.json
 data/game/artifact_map.json
 data/game/character_map.json
 data/game/weapon_map.json
+data/abyss_leaderboard
+text_maps/item_name.json
 feeds/*
 !/**/.gitkeep
-text_maps/item_name.json

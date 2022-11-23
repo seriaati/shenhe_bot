@@ -3,6 +3,7 @@ import io
 import aiohttp
 import aiosqlite
 from typing import Any, Dict, List, Optional
+from ambr.models import Character
 from pydantic import BaseModel, validator, Field
 import discord
 import genshin
@@ -146,6 +147,7 @@ class AbyssResult(BaseModel):
     overview_file: io.BytesIO = Field(alias="overview_card")
     abyss_floors: List[genshin.models.Floor] = Field(alias="floors")
     characters: List[genshin.models.Character]
+    uid: int
 
     class Config:
         arbitrary_types_allowed = True
@@ -225,3 +227,28 @@ class DynamicBackgroundInput(BaseModel):
     max_card_num: int
     background_color: str
     draw_title: bool = True
+
+class AbyssLeaderboardUser(BaseModel):
+    user_name: str
+    rank: int
+    character: genshin.models.Character
+    single_strike: int
+    floor: str
+    stars_collected: int
+    current: bool = False
+
+class LeaderboardResult(BaseModel):
+    fp: io.BytesIO
+    user_rank: Optional[int]
+    
+    class Config:
+        arbitrary_types_allowed = True
+
+class CharacterUsageResult(BaseModel):
+    fp: io.BytesIO
+    first_character: Character
+    uses: int
+    percentage: float
+    
+    class Config:
+        arbitrary_types_allowed = True

@@ -363,6 +363,7 @@ class GenshinApp:
         result["overview"] = overview
         result["overview_card"] = fp
         result["floors"] = [floor for floor in abyss.floors if floor.floor >= 9]
+        result["uid"] = shenhe_user.uid
         return GenshinAppResult(result=AbyssResult(**result), success=True)
 
     @genshin_error_handler

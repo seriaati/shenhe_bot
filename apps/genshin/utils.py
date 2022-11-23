@@ -1,3 +1,5 @@
+import asyncio
+import uuid
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
@@ -6,30 +8,26 @@ import aiosqlite
 import discord
 import enkanetwork
 import genshin
-import enkanetwork
-import asyncio
+import yaml
 from discord.utils import format_dt
 from diskcache import FanoutCache
-import yaml
+
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (
-    CharacterBuild,
-    EnkanetworkData,
-    FightProp,
-    ShenheBot,
-    ShenheUser,
-    WishInfo,
-)
+from apps.genshin.custom_model import (AbyssLeaderboardUser, CharacterBuild,
+                                       EnkanetworkData, FightProp, ShenheBot,
+                                       ShenheUser, WishInfo)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
+from apps.text_map.utils import (get_user_locale, get_weekday_name,
+                                 translate_main_stat)
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from utility.utils import default_embed, divide_chunks, divide_dict, error_embed
+from utility.utils import (default_embed, divide_chunks, divide_dict,
+                           error_embed)
 
 
 def calculate_artifact_score(substats: dict):
