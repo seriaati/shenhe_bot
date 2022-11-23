@@ -130,7 +130,7 @@ class CharacterSelect(Select):
         for index in range(4):
             try:
                 _ = init_levels[index]
-            except KeyError:
+            except IndexError:
                 init_levels[index] = 1
 
         modal = InitLevelModal(self.values[0], locale, init_levels)
