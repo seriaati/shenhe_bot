@@ -671,7 +671,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @check_account()
     @app_commands.command(
-        name="leaderboard", description=_("View the leaderboard", hash=453)
+        name="leaderboard", description=_("The Shenhe leaderboard", hash=252)
     )
     async def leaderboard(self, i: Interaction):
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
