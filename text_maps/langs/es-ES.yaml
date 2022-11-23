@@ -88,8 +88,8 @@
 '85': Logros del Espiral del Abismo
 '86': image-name
 '87': Shenhe has claimed today's daily reward for you!
-'88': ''
-'89': ''
+'88': Spiral Abyss Leaderboard
+'89': rank
 '90': 'Build #'
 '91': Weapon
 '92': Artifacts
@@ -216,10 +216,10 @@
 '195': Invalid file type
 '196': Genshin character summary
 '197': No materials needed
-'198': ''
-'199': ''
+'198': player
+'199': single strike
 '200': Weapon Level
-'201': ''
+'201': floor
 '202': Todo list
 '203': Add item
 '204': |-
@@ -262,12 +262,12 @@
 '240': Sunday
 '250': farmable items
 '251': Achievement leaderboard
-'252': You
-'253': N/A
-'254': This leaderboard is currently empty
-'255': Choose the sub stat leaderboard you wish to view
-'256': Substat leaderboard
-'257': Luck leaderboard
+'252': The Shenhe leaderboard
+'253': Compete with other Shenhe users and try to get the highest ranks in different categories!
+'254': ''
+'255': ''
+'256': ''
+'257': ''
 '258': HP
 '259': HP%
 '260': Atk.
@@ -511,11 +511,11 @@
 '450': Redeem gift codes (need /register)
 '451': code
 '452': View ongoing events in genshin
-'453': View the leaderboard
+'453': Global
 '454': Read More
-'455': Artifact sub stat leaderboard
-'456': Wish luck leaderboard
-'457': Genshin wiki
+'455': Server
+'456': ''
+'457': ''
 '458': character
 '459': View past genshin event stats
 '460': Calculate materials needed for upgrading a character
@@ -562,8 +562,8 @@
 '498': View profile
 '499': View all characters
 '500': An error occured while trying to do daily check-in
-'501': Update self-leaderboard position
-'502': Leaderboard position updated
+'501': ''
+'502': ''
 '503': Number of guilds
 '504': 'Made by seria#5334, DM me if you have any questions'
 '505': An error has occursed while trying to send you a resin notification
@@ -573,7 +573,7 @@
 '509': query
 '510': Sumeru
 '511': Names of genshin characters, weapons, and other game elements will be translated automatically
-'512': Leaderboard position update failed
+'512': ''
 '513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
 '514': Realm currency reminder
 '515': Realm currency notif. settings
@@ -704,23 +704,23 @@
 '607': View claimed rewards
 '608': Please wait while Shenhe is processing your character data...
 '609': Domain
-'610': ''
+'610': stars collected
 '611': It is recommended to do the check-in by yourself today
-'612': ''
-'613': ''
-'614': ''
-'615': ''
-'616': ''
-'617': ''
-'618': ''
-'619': ''
-'620': ''
+'612': Used {num} times
+'613': Most used characters
+'614': "Your current rank is **#{rank}**"
+'615': "**{num}** people has participated in this leaderboard"
+'616': Select a leaderboard category
+'617': Character usage rate in abyss
+'618': The most used character is **{name}** with **{num}** uses ({percent}%)
+'619': To update or add your data in the leaderboard, use {command}
+'620': The leaderboard is currently empty
 '621': ''
 '622': ''
 '623': Interaction timed out
 '624': Please try again
 '625': Date published
-'626': Most used characters
+'626': ''
 '627': Toggle daily check-in
 '628': You have enabled the daily check-in feature
 '629': You have disabled the daily check-in feature
