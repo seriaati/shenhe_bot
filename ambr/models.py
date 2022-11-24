@@ -11,8 +11,10 @@ class City(BaseModel):
     id: int
     name: str
 
+
 class PartialMaterial(BaseModel):
     id: str
+
 
 class Event(BaseModel):
     id: int
@@ -31,6 +33,10 @@ class Weapon(BaseModel):
     icon: str
     beta: bool = False
     default_icon: bool = False
+
+    @validator("name", allow_reuse=True)
+    def parse_name(cls, v):
+        return v if v != "" else "Unknown"
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
@@ -156,6 +162,7 @@ class WeaponStat(BaseModel):
     prop_id: Optional[str] = Field(alias="propType", default=None)
     initial_value: int = Field(alias="initValue")
 
+
 class WeaponAscension(BaseModel):
     new_max_level: int = Field(alias="unlockMaxLevel")
     ascension_level: int = Field(alias="promoteLevel")
@@ -174,6 +181,7 @@ class WeaponAscension(BaseModel):
             result.append((PartialMaterial(id=key), value))
         return result
 
+
 class WeaponUpgradeDetail(BaseModel):
     stats: List[WeaponStat] = Field(alias="prop")
     ascensions: List[WeaponAscension] = Field(alias="promote")
@@ -184,7 +192,7 @@ class WeaponUpgradeDetail(BaseModel):
         for stat in v:
             result.append(WeaponStat(**stat))
         return result
-    
+
     @validator("ascensions", pre=True, allow_reuse=True)
     def get_ascensions(cls, v):
         result = []
@@ -243,6 +251,7 @@ class CharacterInfo(BaseModel):
     constellation: str
     native: str
     cv: Dict[str, str]
+
 
 class WeaponDetail(BaseModel):
     name: str
@@ -311,6 +320,7 @@ class CharacterUpgradeDetail(BaseModel):
         for ascension in v:
             result.append(CharacterAscension(**ascension))
         return result
+
 
 class NameCard(BaseModel):
     id: int | str
