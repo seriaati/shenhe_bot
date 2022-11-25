@@ -52,7 +52,7 @@ def parse_HTML(HTML_string: str):
     HTML_string = HTML_string.replace("</strong>", "**")
 
     # remove all HTML tags
-    CLEANR = re.compile("<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
+    CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});') 
     HTML_string = re.sub(CLEANR, "", HTML_string)
 
     # remove time tags from mihoyo
@@ -85,24 +85,7 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
         "saturday": 5,
         "sunday": 6,
     }
-    return weekday_name_dict.get(weekday_name)
-
-
-def split_text_and_number(text: str) -> List[str]:
-    for i, c in enumerate(text):
-        if (
-            c.isalpha() and text[i + 1].isdigit()
-        ):  # the alphabet is followed by a numer immediately
-            break
-    result = [text[: i + 1], text[i + 1 :]]
-    if result[1] == "":  # if the split fails
-        for i, c in enumerate(text):
-            if (
-                c.isdigit() and text[i - 1] == " "
-            ):  # the character before the number is a space
-                break
-    result = [text[: i + 1], text[i + 1 :]]
-    return result
+    return weekday_name_dict.get(weekday_name, 0)
 
 
 async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bool:
