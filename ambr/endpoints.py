@@ -8,6 +8,9 @@ ENDPOINTS = {
     'domain': 'dailyDungeon',
     'monster': 'monster',
     'namecard': 'namecard',
+    'furniture': 'furniture',
+    'book': 'book',
+    'food': 'food',
 }
 
 STATIC_ENDPOINTS = {

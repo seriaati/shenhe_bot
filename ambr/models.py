@@ -125,7 +125,7 @@ class MaterialDetail(BaseModel):
     description: str
     type: str
     map_mark: bool = Field(alias="mapMark")
-    sources: Optional[List] = Field(alias="source", default=None)
+    sources: Optional[List[MaterialSource]] = Field(alias="source", default=None)
     icon: str
     rarity: int = Field(alias="rank")
 
@@ -133,12 +133,15 @@ class MaterialDetail(BaseModel):
     def parse_description(cls, v):
         return v.replace("\\n", "\n")
 
-    @validator("sources", allow_reuse=True)
-    def get_sources(cls, v):
-        result = []
+    @validator("sources", allow_reuse=True, pre=True)
+    def parse_sources(cls, v):
+        if v is None or not v:
+            return None
+        sources = []
         for source in v:
-            result.append(MaterialSource(**source))
-        return result
+            source["name"] = parse_HTML(source["name"])
+            sources.append(MaterialSource(**source))
+        return sources
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
@@ -322,7 +325,7 @@ class CharacterUpgradeDetail(BaseModel):
         return result
 
 
-class NameCard(BaseModel):
+class CharacterNameCard(BaseModel):
     id: int | str
     name: str
     description: str
@@ -340,7 +343,7 @@ class NameCard(BaseModel):
 
 
 class CharacterOtherDetail(BaseModel):
-    name_card: NameCard = Field(alias="nameCard")
+    name_card: CharacterNameCard = Field(alias="nameCard")
 
 
 class CharacterTalentUpgrade(BaseModel):
@@ -476,32 +479,311 @@ class CharacterDetail(BaseModel):
         return result
 
 
-class MonsterType(Enum):
-    ELEMENTAL = "ELEMENTAL"
-    HILICHURL = "HLICHURL"
-    ABYSS = "ABYSS"
-    FATUI = "FATUI"
-    AUTOMATON = "AUTOMATRON"
-    HUMAN = "HUMAN"
-    BEAST = "BEAST"
-    BOSS = "BOSS"
-    BIRD = "AVIARY"
-    ANIMAL = "ANIMAL"
-    FISH = "FISH"
-    OTHER = "CRITTER"
-
-
 class Monster(BaseModel):
     id: int
     name: str
-    type: MonsterType
+    type: str
     icon: str
-
-    @validator("type", pre=True, allow_reuse=True)
-    def parse_type(cls, v):
-        return MonsterType(v)
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/monster/{v}.png?a"
         return icon_url
+
+
+class MonsterDrop(BaseModel):
+    id: str
+    rarity: int = Field(alias="rank")
+    icon: str
+    count: Optional[float] = None
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+    @validator("count", pre=True, allow_reuse=True)
+    def get_count(cls, v):
+        if v is None:
+            return None
+        return float(v)
+
+
+class MonsterData(BaseModel):
+    id: int
+    drops: Optional[List[MonsterDrop]] = Field(alias="reward", default=None)
+
+    @validator("drops", pre=True, allow_reuse=True)
+    def parse_drops(cls, v):
+        if v is None:
+            return None
+        result = []
+        for _, value in v.items():
+            value["id"] = _
+            result.append(MonsterDrop(**value))
+        return result
+
+
+class MonsterDetail(BaseModel):
+    id: int
+    name: str
+    type: str
+    description: str
+    icon: str
+    data: MonsterData = Field(alias="entries")
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/monster/{v}.png?a"
+        return icon_url
+
+    @validator("description", allow_reuse=True)
+    def parse_description(cls, v):
+        return parse_HTML(v)
+
+    @validator("data", pre=True, allow_reuse=True)
+    def parse_data(cls, v):
+        return MonsterData(**list(v.values())[0])
+
+
+class Food(BaseModel):
+    id: int
+    name: str
+    type: str
+    icon: str
+    rarity: int = Field(alias="rank")
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+
+class FoodEffect(BaseModel):
+    effect: str
+    
+    @validator("effect", allow_reuse=True)
+    def parse_effect(cls, v):
+        return parse_HTML(v)
+
+
+class FoodInputMaterial(BaseModel):
+    icon: str
+    id: str
+    count: int
+
+
+class FoodRecipe(BaseModel):
+    effect_icon: str = Field(alias="effectIcon")
+    effects: List[FoodEffect] = Field(alias="effect")
+    input: Optional[List[FoodInputMaterial]] = None
+
+    @validator("effect_icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+    @validator("effects", pre=True, allow_reuse=True)
+    def parse_effects(cls, v):
+        result = []
+        for _, value in v.items():
+            result.append(FoodEffect(effect=value))
+        return result
+
+    @validator("input", pre=True, allow_reuse=True)
+    def parse_input(cls, v):
+        if v is None:
+            return None
+        result = []
+        for _, value in v.items():
+            value["id"] = _
+            result.append(FoodInputMaterial(**value))
+        return result
+
+
+class FoodSource(BaseModel):
+    name: str
+    type: str
+
+
+class FoodDetail(BaseModel):
+    name: str
+    description: str
+    type: str
+    recipe: Optional[FoodRecipe] = None
+    icon: str
+    sources: Optional[List[FoodSource]]
+    rarity: int = Field(alias="rank")
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+    @validator("description", allow_reuse=True)
+    def parse_description(cls, v):
+        return parse_HTML(v)
+
+    @validator("recipe", pre=True, allow_reuse=True)
+    def parse_recipe(cls, v):
+        if v is None:
+            return None
+        return FoodRecipe(**v)
+
+    @validator("sources", pre=True, allow_reuse=True)
+    def parse_sources(cls, v):
+        if v is None:
+            return None
+        result = []
+        for _, value in v.items():
+            result.append(FoodSource(**value))
+        return result
+
+
+class Furniture(BaseModel):
+    id: int
+    name: str
+    cost: Optional[int] = None
+    comfort: int
+    rarity: int = Field(alias="rank")
+    icon: str
+    categories = List[str]
+    types: List[str]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/furniture/{v}.png?a"
+        return icon_url
+
+
+class FurnitureInputMaterial(BaseModel):
+    id: str
+    icon: str
+    count: int
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+
+class FurnitureRecipe(BaseModel):
+    exp: int
+    time: int
+    input: Optional[List[FurnitureInputMaterial]] = None
+
+    @validator("input", pre=True, allow_reuse=True)
+    def parse_input(cls, v):
+        if v is None:
+            return None
+        result = []
+        for _, value in v.items():
+            value["id"] = _
+            result.append(FurnitureInputMaterial(**value))
+        return result
+
+
+class FurnitureDetail(BaseModel):
+    id: int
+    name: str
+    cost: Optional[int] = None
+    comfort: int
+    rarity: int = Field(alias="rank")
+    categories: List[str]
+    types: List[str]
+    description: str
+    recipe: Optional[FurnitureRecipe] = None
+    icon: str
+
+    @validator("description", allow_reuse=True)
+    def parse_description(cls, v):
+        return parse_HTML(v)
+
+    @validator("recipe", pre=True, allow_reuse=True)
+    def parse_recipe(cls, v):
+        if v is None:
+            return None
+        return FurnitureRecipe(**v)
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/furniture/{v}.png?a"
+        return icon_url
+
+
+class NameCard(BaseModel):
+    id: int
+    name: str
+    icon: str
+    rarity: int = Field(alias="rank")
+    type: str
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}.png?a"
+        return icon_url
+
+
+class NameCardDetail(BaseModel):
+    id: int
+    name: str
+    rarity: int = Field(alias="rank")
+    type: str
+    description: str
+    icon: str
+    source: str
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}.png?a"
+        return icon_url
+
+    @validator("description", allow_reuse=True)
+    def parse_description(cls, v):
+        return parse_HTML(v)
+
+
+class Book(BaseModel):
+    id: int
+    name: str
+    icon: str
+    rarity: int = Field(alias="rank")
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+
+class BookVolume(BaseModel):
+    id: int
+    name: str
+    description: str
+    story_id: str = Field(alias="storyId")
+
+    @validator("description", allow_reuse=True)
+    def parse_description(cls, v):
+        return parse_HTML(v)
+
+
+class BookDetail(BaseModel):
+    id: int
+    name: str
+    rarity: int = Field(alias="rank")
+    icon: str
+    volumes: List[BookVolume] = Field(alias="volume")
+
+    @validator("icon", allow_reuse=True)
+    def get_icon_url(cls, v):
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        return icon_url
+
+    @validator("volumes", pre=True, allow_reuse=True)
+    def parse_volumes(cls, v):
+        result = []
+        for volume in v:
+            result.append(BookVolume(**volume))
+        return result

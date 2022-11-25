@@ -7,22 +7,12 @@ import aiohttp
 
 from ambr.constants import CITIES, EVENTS_URL, LANGS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
-from ambr.models import (
-    Artifact,
-    ArtifactDetail,
-    Character,
-    CharacterDetail,
-    CharacterUpgrade,
-    City,
-    Domain,
-    Event,
-    Material,
-    MaterialDetail,
-    Monster,
-    Weapon,
-    WeaponDetail,
-    WeaponUpgrade,
-)
+from ambr.models import (Artifact, ArtifactDetail, Book, BookDetail, Character,
+                         CharacterDetail, CharacterUpgrade, City, Domain,
+                         Event, Food, FoodDetail, Furniture, FurnitureDetail,
+                         Material, MaterialDetail, Monster, MonsterDetail,
+                         NameCard, NameCardDetail, Weapon, WeaponDetail,
+                         WeaponUpgrade)
 
 
 def get_decorator(func):
@@ -203,6 +193,71 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("character", id=id)
         result = CharacterDetail(**data["data"])
         return result
+    
+    async def get_monster_detail(self, id: int) -> Optional[MonsterDetail]:
+        """Get the detail of a monster.
+
+        Args:
+            id (int): id of the monster.
+
+        Returns:
+            Optional[MonsterDetail]: A MonsterDetail object.
+        """
+        data = await self.request_from_endpoint("monster", id=id)
+        result = MonsterDetail(**data["data"])
+        return result
+    
+    async def get_food_detail(self, id: int) -> Optional[FoodDetail]:
+        """Get the detail of a food.
+
+        Args:
+            id (int): id of the food.
+
+        Returns:
+            Optional[FoodDetail]: A FoodDetail object.
+        """
+        data = await self.request_from_endpoint("food", id=id)
+        result = FoodDetail(**data["data"])
+        return result
+    
+    async def get_furniture_detail(self, id: int) -> Optional[FurnitureDetail]:
+        """Get the detail of a furniture.
+
+        Args:
+            id (int): id of the furniture.
+
+        Returns:
+            Optional[FurnitureDetail]: A FurnitureDetail object.
+        """
+        data = await self.request_from_endpoint("furniture", id=id)
+        result = FurnitureDetail(**data["data"])
+        return result
+    
+    async def get_book_detail(self, id: int) -> Optional[BookDetail]:
+        """Get the detail of a book.
+
+        Args:
+            id (int): id of the book.
+
+        Returns:
+            Optional[BookDetail]: A BookDetail object.
+        """
+        data = await self.request_from_endpoint("book", id=id)
+        result = BookDetail(**data["data"])
+        return result
+    
+    async def get_name_card_detail(self, id: int) -> Optional[NameCardDetail]:
+        """Get the detail of a name card.
+
+        Args:
+            id (int): id of the name card.
+
+        Returns:
+            Optional[NameCardDetail]: A NameCardDetail object.
+        """
+        data = await self.request_from_endpoint("namecard", id=id)
+        result = NameCardDetail(**data["data"])
+        return result
 
     async def get_material_detail(self, id: int) -> Optional[MaterialDetail]:
         """Get a material detail by id.
@@ -264,6 +319,28 @@ class AmbrTopAPI:
                 result.append(Material(**material))
 
             return result
+        
+    @get_decorator
+    async def get_name_card(
+        self, id: Optional[int] = None
+    ) -> Optional[List[NameCard] | NameCard]:
+        """Get a list of all name cards or a specific name card by id.
+
+        Args:
+            id (Optional[int], optional): The id of the name card. Defaults to None.
+
+        Returns:
+            Optional[List[NameCard] | NameCard]: A list of all name cards or a specific name card.
+        """
+        result = []
+        data = self.get_cache("namecard")
+        if id is not None:
+            return NameCard(**data["data"]["items"][str(id)])
+        else:
+            for name_card in data["data"]["items"].values():
+                result.append(NameCard(**name_card))
+
+            return result
 
     @get_decorator
     async def get_artifact(
@@ -284,6 +361,68 @@ class AmbrTopAPI:
         else:
             for material in data["data"]["items"].values():
                 result.append(Artifact(**material))
+
+            return result
+        
+    @get_decorator
+    async def get_book(
+        self, id: Optional[int] = None
+    ) -> Optional[List[Book] | Book]:
+        """Get a list of all books or a specific book by id.
+
+        Args:
+            id (Optional[int], optional): id of the book. Defaults to None.
+
+        Returns:
+            Optional[List[Book] | Book]: A list of all books or a specific book.
+        """
+        result = []
+        data = self.get_cache("book")
+        if id is not None:
+            return Book(**data["data"]["items"][str(id)])
+        else:
+            for material in data["data"]["items"].values():
+                result.append(Book(**material))
+
+            return result
+        
+    @get_decorator
+    async def get_food(self, id: Optional[int] = None) -> Optional[List[Food] | Food]:
+        """Get a list of all foods or a specific food by id.
+
+        Args:
+            id (Optional[int], optional): id of the food. Defaults to None.
+
+        Returns:
+            Optional[List[Food] | Food]: A list of all foods or a specific food.
+        """
+        result = []
+        data = self.get_cache("food")
+        if id is not None:
+            return Food(**data["data"]["items"][str(id)])
+        else:
+            for material in data["data"]["items"].values():
+                result.append(Food(**material))
+
+            return result
+    
+    @get_decorator
+    async def get_funiture(self, id: Optional[int] = None) -> Optional[List[Furniture] | Furniture]:
+        """Get a list of all furniture or a specific furniture by id.
+
+        Args:
+            id (Optional[int], optional): id of the furniture. Defaults to None.
+
+        Returns:
+            Optional[List[Furniture] | Furniture]: A list of all furniture or a specific furniture.
+        """
+        result = []
+        data = self.get_cache("furniture")
+        if id is not None:
+            return Furniture(**data["data"]["items"][str(id)])
+        else:
+            for material in data["data"]["items"].values():
+                result.append(Furniture(**material))
 
             return result
 
@@ -490,3 +629,8 @@ class AmbrTopAPI:
             for event in list(data.values()):
                 result.append(Event(**event))
         return result
+
+    async def get_book_story(self, story_id: str) -> str:
+        async with self.session.get(f"https://api.ambr.top/v2/{self.lang}/readable/Book{story_id}") as resp:
+            story = await resp.json()
+        return story["data"]

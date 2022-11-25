@@ -174,5 +174,10 @@ data/game/character_map.json
 data/game/weapon_map.json
 data/abyss_leaderboard
 text_maps/item_name.json
+text_maps/book.json
+text_maps/food.json
+text_maps/furniture.json
+text_maps/monster.json
+text_maps/namecard.json
 feeds/*
 !/**/.gitkeep
