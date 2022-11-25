@@ -25,12 +25,17 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
 from apps.genshin.utils import (get_character_emoji, get_enka_data,
                                 get_farm_data, get_fight_prop, get_uid)
+from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
+                               parse_character_wiki, parse_food_wiki,
+                               parse_furniture_wiki, parse_material_wiki,
+                               parse_monster_wiki, parse_namecard_wiki,
+                               parse_weapon_wiki)
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale, get_weekday_name
 from data.game.elements import get_element_color, get_element_emoji
-from UI_elements.genshin import (Abyss, Build, CharacterWiki, Diary,
-                                 EnkaProfile, EventTypeChooser, Leaderboard,
+from UI_elements.genshin import (Abyss, Build, Diary, EnkaProfile,
+                                 EventTypeChooser, Leaderboard, Search,
                                  ShowAllCharacters)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
@@ -58,33 +63,30 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot: ShenheBot = bot
         self.genshin_app = GenshinApp(self.bot.db, self.bot)
         self.debug = self.bot.debug
-        try:
-            with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
-                avatar = json.load(f)
-        except FileNotFoundError:
-            avatar = {}
-        try:
-            with open(f"text_maps/weapon.json", "r", encoding="utf-8") as f:
-                weapon = json.load(f)
-        except FileNotFoundError:
-            weapon = {}
-        try:
-            with open(f"text_maps/material.json", "r", encoding="utf-8") as f:
-                material = json.load(f)
-        except FileNotFoundError:
-            material = {}
-        try:
-            with open(f"text_maps/reliquary.json", "r", encoding="utf-8") as f:
-                reliquary = json.load(f)
-        except FileNotFoundError:
-            reliquary = {}
+        maps_to_open = [
+            "avatar",
+            "weapon",
+            "material",
+            "reliquary",
+            "monster",
+            "food",
+            "furniture",
+            "namecard",
+            "book",
+        ]
+        self.text_map_files = []
+        for m in maps_to_open:
+            try:
+                with open(f"text_maps/{m}.json", "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except FileNotFoundError:
+                data = {}
+            self.text_map_files.append(data)
         try:
             with open(f"text_maps/item_name.json", "r", encoding="utf-8") as f:
-                item_name = json.load(f)
+                self.item_names = json.load(f)
         except FileNotFoundError:
-            item_name = {}
-        self.text_map_files: List[Dict] = [avatar, weapon, material, reliquary]
-        self.item_names = item_name
+            self.item_names = {}
 
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
@@ -692,14 +694,17 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search(self, i: Interaction, query: str):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
+        dark_mode = await get_user_appearance_mode(i.user.id, self.bot.db)
         locale = user_locale or i.locale
         try:
             ambr_top_locale = to_ambr_top(locale)
             client = AmbrTopAPI(self.bot.session, ambr_top_locale)
             if not query.isdigit():
-                query = self.item_names.get(query, None)
-                if query is None:
-                    raise ItemNotFound
+                query = (
+                    self.item_names.get(query)
+                    or self.item_names.get(query.title())
+                    or query
+                )
             item_type = None
             for index, file in enumerate(self.text_map_files):
                 if query in file:
@@ -709,253 +714,64 @@ class GenshinCog(commands.Cog, name="genshin"):
                 raise ItemNotFound
 
             if item_type == 0:  # character
-                embeds: List[Embed] = []
-                character_detail = await client.get_character_detail(query)
-                if character_detail is None:
+                character = await client.get_character_detail(query)
+                if character is None:
                     raise ItemNotFound
-
-                # basic info
-                embed = default_embed(title=character_detail.name)
-                embed.set_thumbnail(url=character_detail.icon)
-                embed.add_field(
-                    name=text_map.get(315, locale),
-                    value=f"{text_map.get(316, locale)}: {character_detail.birthday}\n"
-                    f"{text_map.get(317, locale)}: {character_detail.info.title}\n"
-                    f"{text_map.get(318, locale)}: {character_detail.info.constellation}\n"
-                    f"{text_map.get(467, locale).capitalize()}: {character_detail.rarity} {asset.white_star_emoji}\n"
-                    f"{text_map.get(703, locale)}: {get_element_emoji(character_detail.element)}\n",
-                    inline=False,
-                )
-                cv_str = ""
-                for key, value in character_detail.info.cv.items():
-                    cv_str += f"VA ({key}): {value}\n"
-                if cv_str != "":
-                    embed.add_field(name="CV", value=cv_str, inline=False)
-                embed.set_footer(text=character_detail.info.description)
-                embeds.append(embed)
-
-                # ascension
-                embed = default_embed(
-                    message=text_map.get(184, locale).format(
-                        command="</calc character:1020188057628065862>"
-                    )
-                )
-                embed.set_author(
-                    name=text_map.get(320, locale), icon_url=character_detail.icon
-                )
-                embed.set_image(url="attachment://ascension.jpeg")
-                all_materials = []
-                for material in character_detail.ascension_materials:
-                    full_material = await client.get_material(int(material.id))
-                    if not isinstance(full_material, Material):
-                        continue
-                    all_materials.append((full_material, ""))
-                fp = await draw_big_material_card(
-                    all_materials,
-                    text_map.get(320, locale),
-                    get_element_color(character_detail.element),
-                    self.bot.session,
-                    await get_user_appearance_mode(i.user.id, self.bot.db),
-                    locale,
-                )
-                embeds.append(embed)
-
-                # talents
-                count = 0
-                passive_count = 0
-                for talent in character_detail.talents:
-                    if talent.type is CharacterTalentType.PASSIVE:
-                        passive_count += 1
-                    else:
-                        count += 1
-                    embed = default_embed(title=talent.name, message=talent.description)
-                    embed.set_author(
-                        name=text_map.get(
-                            323 if talent.type is CharacterTalentType.PASSIVE else 94,
-                            locale,
-                        )
-                        + f" {passive_count if talent.type is CharacterTalentType.PASSIVE else count}",
-                        icon_url=character_detail.icon,
-                    )
-                    embed.set_thumbnail(url=talent.icon)
-                    embeds.append(embed)
-
-                # constellations
-                count = 0
-                for constellation in character_detail.constellations:
-                    count += 1
-                    embed = default_embed(
-                        title=constellation.name, message=constellation.description
-                    )
-                    embed.set_author(
-                        name=text_map.get(318, locale) + f" {count}",
-                        icon_url=character_detail.icon,
-                    )
-                    embed.set_thumbnail(url=constellation.icon)
-                    embeds.append(embed)
-
-                # namecard
-                embed = default_embed(
-                    character_detail.other.name_card.name,
-                    character_detail.other.name_card.description,
-                )
-                embed.set_image(url=character_detail.other.name_card.icon)
-                embed.set_author(
-                    name=text_map.get(319, locale), icon_url=character_detail.icon
-                )
-                embeds.append(embed)
-
-                # select options
-                options = []
-                for index, embed in enumerate(embeds):
-                    if index == 0:
-                        options.append(
-                            SelectOption(label=text_map.get(315, locale), value="0")
-                        )
-                    else:
-                        suffix = f" | {embed.title}" if embed.title != "" else ""
-                        options.append(
-                            SelectOption(
-                                label=f"{embed.author.name}{suffix}",
-                                value=str(index),
-                            )
-                        )
-                view = CharacterWiki.View(
-                    embeds, options, text_map.get(325, locale), fp
-                )
-                view.author = i.user
-                await i.edit_original_response(embed=embeds[0], view=view)
-                view.message = await i.original_response()
+                await parse_character_wiki(character, i, locale, client, dark_mode)
 
             elif item_type == 1:  # weapon
-                weapon_detail = await client.get_weapon_detail(int(query))
-                if weapon_detail is None:
+                weapon = await client.get_weapon_detail(int(query))
+                if weapon is None:
                     raise ItemNotFound
-                rarity_str = ""
-                for _ in range(weapon_detail.rarity):
-                    rarity_str += "<:white_star:982456919224615002>"
-                embed = default_embed(weapon_detail.name, f"{rarity_str}")
-                embed.set_footer(text=weapon_detail.description)
-                embed.add_field(
-                    name=text_map.get(529, i.locale, user_locale),
-                    value=weapon_detail.type,
-                    inline=False,
-                )
-                if weapon_detail.effect is not None:
-                    embed.add_field(
-                        name=f"{weapon_detail.effect.name} (R1)",
-                        value=weapon_detail.effect.descriptions[0],
-                    )
-                    if len(weapon_detail.effect.descriptions) > 4:
-                        embed.add_field(
-                            name=f"{weapon_detail.effect.name} (R5)",
-                            value=weapon_detail.effect.descriptions[4],
-                        )
-                embed.add_field(
-                    name=text_map.get(320, locale),
-                    value=text_map.get(188, locale).format(
-                        command="</calc weapon:1020188057628065862>"
-                    ),
-                    inline=False,
-                )
+                await parse_weapon_wiki(weapon, i, locale, client, dark_mode)
 
-                main_stat = weapon_detail.upgrade.stats[0]
-                sub_stat = weapon_detail.upgrade.stats[1]
-                stat_str = ""
-                if main_stat.prop_id is not None:
-                    main_stat_hash = get_fight_prop(id=main_stat.prop_id).text_map_hash
-                    stat_str += f"{text_map.get(463, i.locale, user_locale)}: {text_map.get(main_stat_hash, i.locale, user_locale)}\n"
-                if sub_stat.prop_id is not None:
-                    sub_stat_hash = get_fight_prop(id=sub_stat.prop_id).text_map_hash
-                    stat_str += f"{text_map.get(464, i.locale, user_locale)}: {text_map.get(sub_stat_hash, i.locale, user_locale)}"
-                if stat_str != "":
-                    embed.add_field(
-                        name=text_map.get(531, i.locale, user_locale),
-                        value=stat_str,
-                        inline=False,
-                    )
-                embed.set_thumbnail(url=weapon_detail.icon)
-
-                # ascension
-                embed.set_image(url="attachment://ascension.jpeg")
-                all_materials = []
-                for material in weapon_detail.ascension_materials:
-                    full_material = await client.get_material(int(material.id))
-                    if not isinstance(full_material, Material):
-                        continue
-                    all_materials.append((full_material, ""))
-                fp = await draw_big_material_card(
-                    all_materials,
-                    text_map.get(320, locale),
-                    "#e5e5e5",
-                    self.bot.session,
-                    await get_user_appearance_mode(i.user.id, self.bot.db),
-                    locale,
-                )
-                fp.seek(0)
-                await i.followup.send(embed=embed, file=File(fp, "ascension.jpeg"))
-
-            elif item_type == 2:
+            elif item_type == 2:  # material
                 material = await client.get_material_detail(int(query))
                 if material is None:
                     raise ItemNotFound
-                rarity_str = ""
-                for _ in range(material.rarity):
-                    rarity_str += "<:white_star:982456919224615002>"
-                embed = default_embed(
-                    material.name, f"{rarity_str}\n\n{material.description}"
-                )
-                embed.add_field(
-                    name=text_map.get(529, i.locale, user_locale),
-                    value=material.type,
-                    inline=False,
-                )
-                source_str = ""
-                if material.sources is not None:
-                    for source in material.sources:
-                        day_str = ""
-                        if len(source.days) != 0:
-                            day_list = [
-                                get_weekday_name(get_weekday_int_with_name(day), locale)
-                                for day in source.days
-                            ]
-                            day_str = ", ".join(day_list)
-                        day_str = "" if len(source.days) == 0 else f"({day_str})"
-                        source_str += f"• {source.name} {day_str}\n"
-                    source_str = "❌" if source_str == "" else source_str
-                    embed.add_field(
-                        name=text_map.get(530, i.locale, user_locale),
-                        value=source_str,
-                        inline=False,
-                    )
-                embed.set_thumbnail(url=material.icon)
-                await i.followup.send(embed=embed)
+                await parse_material_wiki(material, i, locale)
 
-            elif item_type == 3:
-                rarity_str = ""
+            elif item_type == 3:  # artifact
                 artifact = await client.get_artifact_detail(int(query))
                 if artifact is None:
                     raise ItemNotFound
-                for _ in range(artifact.rarities[-1]):
-                    rarity_str += "<:white_star:982456919224615002>"
-                embed = default_embed(artifact.name, rarity_str)
-                embed.add_field(
-                    name=text_map.get(640, i.locale, user_locale),
-                    value=artifact.effects.two_piece,
-                    inline=False,
-                )
-                embed.add_field(
-                    name=text_map.get(641, i.locale, user_locale),
-                    value=artifact.effects.four_piece,
-                    inline=False,
-                )
-                embed.set_thumbnail(url=artifact.icon)
-                await i.followup.send(embed=embed)
+                await parse_artifact_wiki(artifact, i, locale)
+
+            elif item_type == 4:  # monster
+                monster = await client.get_monster_detail(int(query))
+                if monster is None:
+                    raise ItemNotFound
+                await parse_monster_wiki(monster, i, locale, client, dark_mode)
+
+            elif item_type == 5:  # food
+                food = await client.get_food_detail(int(query))
+                if food is None:
+                    raise ItemNotFound
+                await parse_food_wiki(food, i, locale, client, dark_mode)
+
+            elif item_type == 6:  # furniture
+                furniture = await client.get_furniture_detail(int(query))
+                if furniture is None:
+                    raise ItemNotFound
+                await parse_furniture_wiki(furniture, i, locale, client, dark_mode)
+
+            elif item_type == 7:  # namecard
+                namecard = await client.get_name_card_detail(int(query))
+                if namecard is None:
+                    raise ItemNotFound
+                await parse_namecard_wiki(namecard, i, locale)
+
+            elif item_type == 8:  # book
+                book = await client.get_book_detail(int(query))
+                if book is None:
+                    raise ItemNotFound
+                await parse_book_wiki(book, i, locale, client)
+
         except ItemNotFound:
             await i.followup.send(
                 embed=error_embed().set_author(
                     name=text_map.get(542, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
+                    icon_url=asset.error_icon,
                 ),
                 ephemeral=True,
             )
@@ -966,17 +782,27 @@ class GenshinCog(commands.Cog, name="genshin"):
     ) -> List[Choice[str]]:
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         ambr_top_locale = to_ambr_top(user_locale or i.locale)
-        query_list = []
+        result = []
         for queries in self.text_map_files:
-            for _, query_names in queries.items():
-                query_list.append(query_names[ambr_top_locale])
-        query_list = list(dict.fromkeys(query_list))
-        result = [
-            app_commands.Choice(name=query, value=self.item_names[query])
-            for query in query_list
-            if current.lower() in query.lower() and query != ""
-        ]
-        random.shuffle(result)
+            for item_id, query_names in queries.items():
+                item_name = query_names[ambr_top_locale]
+                if current.lower() in item_name.lower() and item_name != "":
+                    result.append(
+                        Choice(name=item_name, value=item_id)
+                    )
+                elif " " in current:
+                    splited = current.split(" ")
+                    all_match = True
+                    for word in splited:
+                        if word.lower() not in item_name.lower():
+                            all_match = False
+                            break
+                    if all_match and item_name != "":
+                        result.append(
+                            Choice(name=item_name, value=item_id)
+                        )
+        if current == "":
+            random.shuffle(result)
         return result[:25]
 
     @check_account()

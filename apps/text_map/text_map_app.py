@@ -75,7 +75,7 @@ class TextMap:
             return int(result)
 
     def get_character_name(
-        self, character_id: str, locale: discord.Locale | str, user_locale: str = None
+        self, character_id: str, locale: discord.Locale | str, user_locale: Optional[str] = None
     ) -> Optional[str]:
         avatar_text = self.avatar.get(str(character_id))
         if avatar_text is None:
@@ -86,8 +86,8 @@ class TextMap:
             return avatar_text[str(ambr_locale)]
 
     def get_material_name(
-        self, material_id: int, locale: discord.Locale, user_locale: str = None
-    ):
+        self, material_id: int, locale: discord.Locale | str, user_locale: Optional[str] = None
+    ) -> str | int:
         material_text = self.material.get(str(material_id))
         if material_text is None:
             if str(material_id).isdigit():
