@@ -16,7 +16,7 @@ from UI_elements.others.settings.CustomImage import (
     change_user_custom_image, get_user_custom_image,
     get_user_custom_image_embed, get_user_custom_image_options)
 from utility.utils import default_embed, divide_chunks
-from yelan.damage_calculator import return_damage
+from yelan.damage_calculator import return_current_status, return_damage
 
 
 class View(BaseView):
@@ -217,5 +217,5 @@ class CalculateDamageButton(Button):
         self.view: EnkaView
         view = EnkaDamageCalculator.View(self.view, self.view.locale)
         view.author = i.user
-        await return_damage(i, view)
+        await return_current_status(i, view)
         view.message = await i.original_response()

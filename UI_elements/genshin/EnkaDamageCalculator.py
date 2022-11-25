@@ -1,22 +1,27 @@
 from typing import Any, List
 
 import aiohttp
+import PIL
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from UI_elements.others.settings.CustomImage import get_user_custom_image
-import PIL
+
 import asset
 import config
 from apps.genshin.custom_model import EnkaView
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
+from UI_elements.others.settings.CustomImage import get_user_custom_image
 from utility.utils import (
     default_embed,
     divide_chunks,
     error_embed,
     get_user_appearance_mode,
 )
-from yelan.damage_calculator import DamageCalculator, return_damage
+from yelan.damage_calculator import (
+    DamageCalculator,
+    return_current_status,
+    return_damage,
+)
 from yelan.data.GO_modes import hit_mode_texts
 from yelan.draw import draw_character_card
 
@@ -84,7 +89,6 @@ class View(BaseView):
             )
 
         # adding items
-        self.add_item(GoBack())
         for hit_mode, hash in hit_mode_texts.items():
             self.add_item(HitModeButton(hit_mode, text_map.get(hash, locale)))
         self.add_item(
@@ -110,22 +114,14 @@ class View(BaseView):
         ]
         self.add_item(InfusionAuraSelect(options, text_map.get(343, locale)))
         if teammate_options:
-            divided = list(divide_chunks(teammate_options, 25))
-            divided: List[List[SelectOption]]
-            count = 1
-            for teammate_options_chunk in divided:
-                self.add_item(
-                    TeamSelect(
-                        teammate_options_chunk,
-                        f"{text_map.get(344, locale)} ({count}~{count + len(teammate_options_chunk) - 1})",
-                    )
-                )
-                count += len(teammate_options_chunk)
+            self.add_item(TeamSelectButton(teammate_options, text_map.get(344, locale)))
+        self.add_item(GoBack())
+        self.add_item(RunCalc(text_map.get(502, locale)))
 
 
 class GoBack(Button):
     def __init__(self):
-        super().__init__(emoji="<:left:982588994778972171>")
+        super().__init__(emoji=asset.back_emoji, row=4)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -141,9 +137,21 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         view=None,
         attachments=[],
     )
-    overview = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "overview"][0]
-    set_custom_image = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "set_custom_image"][0]
-    calculate = [item for item in enka_view.children if isinstance(item, Button) and item.custom_id == "calculate"][0]
+    overview = [
+        item
+        for item in enka_view.children
+        if isinstance(item, Button) and item.custom_id == "overview"
+    ][0]
+    set_custom_image = [
+        item
+        for item in enka_view.children
+        if isinstance(item, Button) and item.custom_id == "set_custom_image"
+    ][0]
+    calculate = [
+        item
+        for item in enka_view.children
+        if isinstance(item, Button) and item.custom_id == "calculate"
+    ][0]
     overview.disabled = False
     set_custom_image.disabled = False
     calculate.disabled = False
@@ -200,31 +208,82 @@ class HitModeButton(Button):
     async def callback(self, i: Interaction) -> Any:
         self.view: View
         self.view.calculator.hit_mode = self.hit_mode
-        await return_damage(i, self.view)
+        await return_current_status(i, self.view)
 
 
 class ReactionModeSelect(Select):
     def __init__(self, options: list[SelectOption], placeholder: str):
-        super().__init__(placeholder=placeholder, options=options)
+        super().__init__(
+            placeholder=placeholder, options=options, custom_id="reaction_mode"
+        )
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
         self.view.calculator.reaction_mode = (
             "" if self.values[0] == "none" else self.values[0]
         )
-        await return_damage(i, self.view)
+        await return_current_status(i, self.view)
 
 
 class InfusionAuraSelect(Select):
     def __init__(self, options: List[SelectOption], placeholder: str):
-        super().__init__(placeholder=placeholder, options=options)
+        super().__init__(
+            placeholder=placeholder, options=options, custom_id="infusion_aura"
+        )
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
         self.view.calculator.infusion_aura = (
             "" if self.values[0] == "none" else self.values[0]
         )
-        await return_damage(i, self.view)
+        await return_current_status(i, self.view)
+
+
+class TeamSelectView(BaseView):
+    def __init__(self, prev_view: View):
+        super().__init__(timeout=config.mid_timeout)
+        self.prev_view = prev_view
+
+
+class GoBackToCalc(Button):
+    def __init__(self):
+        super().__init__(emoji=asset.back_emoji, row=4)
+
+    async def callback(self, i: Interaction):
+        self.view: TeamSelectView
+        view = self.view.prev_view
+        view.author = i.user
+        await i.response.edit_message(view=view)
+        await return_current_status(i, view, True)
+        view.message = await i.original_response()
+
+
+class TeamSelectButton(Button):
+    def __init__(self, options: List[SelectOption], placeholder: str):
+        super().__init__(
+            style=ButtonStyle.blurple, label=placeholder, custom_id="team_select"
+        )
+        self.options = options
+        self.placeholder = placeholder
+
+    async def callback(self, i: Interaction):
+        self.view: View
+        view = TeamSelectView(self.view)
+        view.add_item(GoBackToCalc())
+        divided = list(divide_chunks(self.options, 25))
+        divided: List[List[SelectOption]]
+        count = 1
+        for chunk in divided:
+            view.add_item(
+                TeamSelect(
+                    chunk,
+                    f"{self.placeholder} ({count}~{count + len(chunk) - 1})",
+                )
+            )
+            count += len(chunk)
+        view.author = i.user
+        await i.response.edit_message(view=view)
+        view.message = await i.original_response()
 
 
 class TeamSelect(Select):
@@ -236,6 +295,18 @@ class TeamSelect(Select):
         )
 
     async def callback(self, i: Interaction) -> Any:
+        self.view: TeamSelectView
+        print(self.view)
+        self.view.prev_view.calculator.team = self.values
+        await return_current_status(i, self.view.prev_view)
+
+
+class RunCalc(Button):
+    def __init__(self, label: str):
+        super().__init__(
+            style=ButtonStyle.green, label=label, row=4, custom_id="calculate"
+        )
+
+    async def callback(self, i: Interaction) -> Any:
         self.view: View
-        self.view.calculator.team = self.values
         await return_damage(i, self.view)
