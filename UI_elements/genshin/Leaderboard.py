@@ -86,15 +86,17 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         if leaderboard == "single_strike_damage":
             async with i.client.db.execute("SELECT * FROM abyss_leaderboard ORDER BY single_strike DESC") as c:  # type: ignore
                 data: List[Tuple] = await c.fetchall()
-            if not data:
-                raise EmptyLeaderboard
             if view.area == "server":
                 data = [item for item in data if item[6] in guild_member_ids]
+            if not data:
+                raise EmptyLeaderboard
             result = await draw_abyss_leaderboard(dark_mode, i.client.session, uid, data, locale)  # type: ignore
             result.fp.seek(0)
             embed = default_embed(
-                message=f"{text_map.get(614, locale).format(rank=result.user_rank)}\n"
-                f"{text_map.get(615, locale).format(num=len(data))}"
+                message=f"""
+                {text_map.get(457, locale) if result.user_rank is None else text_map.get(614, locale).format(rank=result.user_rank)}
+                {text_map.get(615, locale).format(num=len(data))}
+                """
             )
             embed.set_author(
                 name=text_map.get(88, locale), icon_url=i.user.display_avatar.url
@@ -109,10 +111,10 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         elif leaderboard == "character_usage_rate":
             async with i.client.db.execute("SELECT * FROM abyss_character_leaderboard") as c:  # type: ignore
                 data = await c.fetchall()
-            if not data:
-                raise EmptyLeaderboard
             if view.area == "server":
                 data = [item for item in data if item[2] in guild_member_ids]
+            if not data:
+                raise EmptyLeaderboard
             result = await draw_character_usage_card(data, i.client.session, dark_mode, locale)  # type: ignore
             result.fp.seek(0)
             embed = default_embed(

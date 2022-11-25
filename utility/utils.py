@@ -60,12 +60,6 @@ def parse_HTML(HTML_string: str):
     HTML_string = HTML_string.replace('t class="t_lc"', "")
     HTML_string = HTML_string.replace("/t", "")
 
-    # turn date time string into discord timestamps
-    matches = re.findall(r"\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}", HTML_string)
-    for match in matches:
-        datetime_obj = parser.parse(match)
-        HTML_string = HTML_string.replace(match, format_dt(datetime_obj))
-
     return HTML_string
 
 
