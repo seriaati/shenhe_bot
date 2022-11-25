@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional
 
 import discord
@@ -19,6 +20,9 @@ async def global_error_handler(
         embed.set_author(name=text_map.get(623, i.locale, user_locale))
     else:
         log.warning(f"[{i.user.id}]{type(e)}: {e}")
+        # print traceback
+        if i.client.debug:
+            log.warning(traceback.format_exc())
         sentry_sdk.capture_exception(e)
         embed = error_embed(message=text_map.get(513, i.locale, user_locale))
         if embed.description is not None:
