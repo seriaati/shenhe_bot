@@ -1,31 +1,28 @@
-import genshin
 from typing import List
 
+import genshin
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
-from UI_elements.calc import AddToTodo
-from apps.genshin.checks import check_account_predicate, check_cookie_predicate
+
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
+from ambr.models import (Character, CharacterDetail, CharacterTalentType,
+                         Material)
+from apps.genshin.checks import check_account_predicate, check_cookie_predicate
 from apps.genshin.custom_model import TodoList
-from apps.genshin.utils import (
-    InvalidLevelInput,
-    get_character_suggested_talent_levels,
-    get_enka_data,
-    get_shenhe_user,
-    get_uid,
-    level_to_ascension_phase,
-    get_character_emoji,
-    validate_level_input,
-)
+from apps.genshin.utils import (InvalidLevelInput, get_character_emoji,
+                                get_character_suggested_talent_levels,
+                                get_enka_data, get_shenhe_user, get_uid,
+                                level_to_ascension_phase, validate_level_input)
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.elements import get_element_color, get_element_emoji, get_element_list
-from UI_base_models import BaseModal, BaseView
+from data.game.elements import (get_element_color, get_element_emoji,
+                                get_element_list)
 from data.game.enka_character import get_enka_characters
+from UI_base_models import BaseModal, BaseView
+from UI_elements.calc import AddToTodo
 from utility.utils import default_embed, get_user_appearance_mode
 from yelan.draw import draw_big_material_card
 
@@ -127,11 +124,8 @@ class CharacterSelect(Select):
                                     continue
                                 init_levels.append(talent.level)
 
-        for index in range(4):
-            try:
-                _ = init_levels[index]
-            except IndexError:
-                init_levels[index] = 1
+        for _ in range(4-len(init_levels)):
+            init_levels.append(1)
 
         modal = InitLevelModal(self.values[0], locale, init_levels)
         self.view.clear_items()
