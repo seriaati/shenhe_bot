@@ -265,9 +265,9 @@
 '252': The Shenhe leaderboard
 '253': Compete with other Shenhe users and try to get the highest ranks in different categories!
 '254': Use /leaderboard to view the leaderboard
-'255': ''
-'256': ''
-'257': ''
+'255': Comfort
+'256': Creation time
+'257': Trust
 '258': HP
 '259': HP%
 '260': Atk.
@@ -514,7 +514,7 @@
 '453': Global
 '454': Read More
 '455': Server
-'456': ''
+'456': Load
 '457': ''
 '458': character
 '459': View past genshin event stats
@@ -562,7 +562,7 @@
 '498': View profile
 '499': View all characters
 '500': An error occured while trying to do daily check-in
-'501': ''
+'501': Select a chapter of the book
 '502': ''
 '503': Number of guilds
 '504': 'Made by seria#5334, DM me if you have any questions'
@@ -715,12 +715,12 @@
 '618': The most used character is **{name}** with **{num}** uses ({percent}%)
 '619': To update or add your data in the leaderboard, use {command}
 '620': The leaderboard is currently empty
-'621': ''
-'622': ''
+'621': Food effect
+'622': Drops
 '623': Interaction timed out
 '624': Please try again
 '625': Date published
-'626': ''
+'626': Ingredients
 '627': Toggle daily check-in
 '628': You have enabled the daily check-in feature
 '629': You have disabled the daily check-in feature
