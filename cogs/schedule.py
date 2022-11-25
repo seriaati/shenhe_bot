@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 from discord.utils import find, format_dt
 
 from ambr.client import AmbrTopAPI
+from ambr.endpoints import ENDPOINTS
 from ambr.models import Artifact, Character, Domain, Weapon
 from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
 from apps.genshin.utils import get_shenhe_user, get_uid
@@ -53,11 +54,13 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
         self.debug = self.bot.debug
-        self.run_tasks.start()
+        if not self.debug:
+            self.run_tasks.start()
         self.change_status.start()
 
     def cog_unload(self):
-        self.run_tasks.cancel()
+        if not self.debug:
+            self.run_tasks.cancel()
         self.change_status.cancel()
 
     loop_interval = 1
@@ -371,7 +374,7 @@ class Schedule(commands.Cog):
                     await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
-            if user_count % 100 == 0: # Prevents hitting the rate limit
+            if user_count % 100 == 0:  # Prevents hitting the rate limit
                 await asyncio.sleep(60)
             await asyncio.sleep(2.5)
         await self.bot.db.commit()
@@ -609,7 +612,17 @@ class Schedule(commands.Cog):
         """Updates genshin text map"""
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
-        things_to_update = ["avatar", "weapon", "material", "reliquary"]
+        things_to_update = [
+            "avatar",
+            "weapon",
+            "material",
+            "reliquary",
+            "food",
+            "book",
+            "furniture",
+            "monster",
+            "namecard",
+        ]
         for thing in things_to_update:
             dict = {}
             for lang in list(to_ambr_top_dict.values()):
@@ -639,6 +652,7 @@ class Schedule(commands.Cog):
                 dict["10000005"] = dict["10000007"]
             with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
                 json.dump(dict, f, indent=4, ensure_ascii=False)
+
         # daily dungeon text map
         dict = {}
         for lang in list(to_ambr_top_dict.values()):
@@ -653,6 +667,7 @@ class Schedule(commands.Cog):
                     dict[str(domain_info["id"])][lang] = domain_info["name"]
         with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(dict, f, indent=4, ensure_ascii=False)
+
         # item name text map
         huge_text_map = {}
         for thing in things_to_update:
