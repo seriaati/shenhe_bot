@@ -5,14 +5,33 @@ from typing import Dict, List, Optional
 
 import aiohttp
 
-from ambr.constants import CITIES, EVENTS_URL, LANGS
+from ambr.constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
-from ambr.models import (Artifact, ArtifactDetail, Book, BookDetail, Character,
-                         CharacterDetail, CharacterUpgrade, City, Domain,
-                         Event, Food, FoodDetail, Furniture, FurnitureDetail,
-                         Material, MaterialDetail, Monster, MonsterDetail,
-                         NameCard, NameCardDetail, Weapon, WeaponDetail,
-                         WeaponUpgrade)
+from ambr.models import (
+    Artifact,
+    ArtifactDetail,
+    Book,
+    BookDetail,
+    Character,
+    CharacterDetail,
+    CharacterUpgrade,
+    City,
+    Domain,
+    Event,
+    Food,
+    FoodDetail,
+    Furniture,
+    FurnitureDetail,
+    Material,
+    MaterialDetail,
+    Monster,
+    MonsterDetail,
+    NameCard,
+    NameCardDetail,
+    Weapon,
+    WeaponDetail,
+    WeaponUpgrade,
+)
 
 
 def get_decorator(func):
@@ -21,6 +40,7 @@ def get_decorator(func):
             return await func(*args, **kwargs)
         except KeyError:
             return None
+
     return wrapper
 
 
@@ -193,7 +213,7 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("character", id=id)
         result = CharacterDetail(**data["data"])
         return result
-    
+
     async def get_monster_detail(self, id: int) -> Optional[MonsterDetail]:
         """Get the detail of a monster.
 
@@ -206,7 +226,7 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("monster", id=id)
         result = MonsterDetail(**data["data"])
         return result
-    
+
     async def get_food_detail(self, id: int) -> Optional[FoodDetail]:
         """Get the detail of a food.
 
@@ -219,7 +239,7 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("food", id=id)
         result = FoodDetail(**data["data"])
         return result
-    
+
     async def get_furniture_detail(self, id: int) -> Optional[FurnitureDetail]:
         """Get the detail of a furniture.
 
@@ -232,7 +252,7 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("furniture", id=id)
         result = FurnitureDetail(**data["data"])
         return result
-    
+
     async def get_book_detail(self, id: int) -> Optional[BookDetail]:
         """Get the detail of a book.
 
@@ -245,7 +265,7 @@ class AmbrTopAPI:
         data = await self.request_from_endpoint("book", id=id)
         result = BookDetail(**data["data"])
         return result
-    
+
     async def get_name_card_detail(self, id: int) -> Optional[NameCardDetail]:
         """Get the detail of a name card.
 
@@ -319,7 +339,7 @@ class AmbrTopAPI:
                 result.append(Material(**material))
 
             return result
-        
+
     @get_decorator
     async def get_name_card(
         self, id: Optional[int] = None
@@ -363,11 +383,9 @@ class AmbrTopAPI:
                 result.append(Artifact(**material))
 
             return result
-        
+
     @get_decorator
-    async def get_book(
-        self, id: Optional[int] = None
-    ) -> Optional[List[Book] | Book]:
+    async def get_book(self, id: Optional[int] = None) -> Optional[List[Book] | Book]:
         """Get a list of all books or a specific book by id.
 
         Args:
@@ -385,7 +403,7 @@ class AmbrTopAPI:
                 result.append(Book(**material))
 
             return result
-        
+
     @get_decorator
     async def get_food(self, id: Optional[int] = None) -> Optional[List[Food] | Food]:
         """Get a list of all foods or a specific food by id.
@@ -405,9 +423,11 @@ class AmbrTopAPI:
                 result.append(Food(**material))
 
             return result
-    
+
     @get_decorator
-    async def get_funiture(self, id: Optional[int] = None) -> Optional[List[Furniture] | Furniture]:
+    async def get_funiture(
+        self, id: Optional[int] = None
+    ) -> Optional[List[Furniture] | Furniture]:
         """Get a list of all furniture or a specific furniture by id.
 
         Args:
@@ -479,9 +499,11 @@ class AmbrTopAPI:
             for weapon in data["data"]["items"].values():
                 result.append(Weapon(**weapon))
         return result
-    
+
     @get_decorator
-    async def get_monster(self, id: Optional[int] = None) -> Optional[List[Monster] | Monster]:
+    async def get_monster(
+        self, id: Optional[int] = None
+    ) -> Optional[List[Monster] | Monster]:
         """Get a list of all monsters or a specific monster by id.
 
         Args:
@@ -583,7 +605,7 @@ class AmbrTopAPI:
         result = []
         data = self.get_cache("domain")
         for weekday, domain_dict in data["data"].items():
-            weekday_int = time.strptime(weekday, "%A").tm_wday
+            weekday_int = WEEKDAYS.get(weekday, 0)
             for _, domain_info in domain_dict.items():
                 city_id = domain_info["city"]
                 city_lang_dict = CITIES.get(
@@ -631,6 +653,8 @@ class AmbrTopAPI:
         return result
 
     async def get_book_story(self, story_id: str) -> str:
-        async with self.session.get(f"https://api.ambr.top/v2/{self.lang}/readable/Book{story_id}") as resp:
+        async with self.session.get(
+            f"https://api.ambr.top/v2/{self.lang}/readable/Book{story_id}"
+        ) as resp:
             story = await resp.json()
         return story["data"]

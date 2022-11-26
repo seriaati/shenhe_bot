@@ -77,4 +77,14 @@ LANGS= {
     'th': "th"
 }
 
+WEEKDAYS = {
+    "monday": 0,
+    "tuesday": 1,
+    "wednesday": 2,
+    "thursday": 3,
+    "friday": 4,
+    "saturday": 5,
+    "sunday": 6,
+}
+
 EVENTS_URL = "https://api.ambr.top/assets/data/event.json"
