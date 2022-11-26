@@ -69,7 +69,7 @@ class Shenhe(commands.Bot):
             command_prefix=commands.when_mentioned,
             intents=intents,
             application_id=application_id,
-            chunk_guilds_at_startup=True,
+            chunk_guilds_at_startup=False,
         )
 
     async def setup_hook(self) -> None:
