@@ -415,7 +415,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_image(url="https://i.imgur.com/w6Q7WwJ.gif")
         await i.response.send_message(embed=embed, ephemeral=True)
 
-    @check_account()
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
