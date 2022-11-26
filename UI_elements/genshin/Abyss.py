@@ -48,8 +48,8 @@ class FloorSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  # type: ignore
-        user_locale = await get_user_locale(i.user.id, i.client.db)  # type: ignore
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  
+        user_locale = await get_user_locale(i.user.id, i.client.db)  
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)
@@ -65,7 +65,7 @@ class FloorSelect(Select):
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             )
             await i.edit_original_response(embed=embed, attachments=[])
-            cache = i.client.abyss_one_page_cache  # type: ignore
+            cache = i.client.abyss_one_page_cache  
             key = self.abyss_result.genshin_user.info.nickname
             fp = cache.get(key)
             if fp is None:
@@ -74,7 +74,7 @@ class FloorSelect(Select):
                     self.abyss_result.abyss,
                     user_locale or i.locale,
                     dark_mode,
-                    i.client.session,  # type: ignore
+                    i.client.session,  
                     self.abyss_result.characters
                 )
                 cache[key] = fp
@@ -100,14 +100,14 @@ class FloorSelect(Select):
                 name=self.abyss_result.embed_title,
                 icon_url=self.abyss_result.discord_user.display_avatar.url,
             )
-            cache = i.client.abyss_floor_card_cache  # type: ignore
+            cache = i.client.abyss_floor_card_cache  
             key = str(self.abyss_result.abyss_floors[int(self.values[0])])
             fp = cache.get(key)
             if fp is None:
                 fp = await draw_abyss_floor_card(
                     dark_mode,
                     self.abyss_result.abyss_floors[int(self.values[0])],
-                    i.client.session,  # type: ignore
+                    i.client.session,  
                     self.abyss_result.characters,
                 )
                 cache[key] = fp

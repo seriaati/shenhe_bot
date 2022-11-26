@@ -44,8 +44,8 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))  # type: ignore
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))  
         characters = await ambr.get_character()
         if not isinstance(characters, List):
             raise TypeError("characters is not a list")
@@ -70,7 +70,7 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  # type: ignore
+        locale = await get_user_locale(i.user.id, i.client.db) or i.locale  
         embed = default_embed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
         )
@@ -81,7 +81,7 @@ class CharacterSelect(Select):
         check = await check_cookie_predicate(i, respond_message=False)
         character_id = int(self.values[0].split("-")[0])
         if check:  # the user has cookie
-            shenhe_user = await get_shenhe_user(i.user.id, i.client.db, i.client, locale)  # type: ignore
+            shenhe_user = await get_shenhe_user(i.user.id, i.client.db, i.client, locale)  
             calculator_characters = await shenhe_user.client.get_calculator_characters(
                 sync=True
             )
@@ -103,7 +103,7 @@ class CharacterSelect(Select):
         else:  # the user has no cookie
             check = await check_account_predicate(i, respond_message=False)  # check uid
             if check:
-                uid = await get_uid(i.user.id, i.client.db)  # type: ignore
+                uid = await get_uid(i.user.id, i.client.db)  
                 if uid is not None:
                     enka_data = await get_enka_data(
                         i, locale, uid, i.user, respond_message=False
@@ -227,7 +227,7 @@ class InitLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
-        suggested_levlels = await get_character_suggested_talent_levels(self.character_id, i.client.session)  # type: ignore
+        suggested_levlels = await get_character_suggested_talent_levels(self.character_id, i.client.session)  
         view = View()
         view.author = i.user
         view.clear_items()
@@ -349,7 +349,7 @@ class TargetLevelModal(BaseModal):
         init_e = self.init_levels[2]
         init_q = self.init_levels[3]
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  # type: ignore
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  
         character = await ambr.get_character_detail(self.character_id)
         if not isinstance(character, CharacterDetail):
             raise TypeError("character is not a Character")
@@ -429,8 +429,8 @@ class TargetLevelModal(BaseModal):
             all_materials,
             f"{character.name}: {text_map.get(191, self.locale)}",
             get_element_color(character.element),
-            i.client.session,  # type: ignore
-            await get_user_appearance_mode(i.user.id, i.client.db),  # type: ignore
+            i.client.session,  
+            await get_user_appearance_mode(i.user.id, i.client.db),  
             self.locale,
         )
         fp.seek(0)

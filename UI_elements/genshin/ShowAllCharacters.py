@@ -43,14 +43,14 @@ class ElementSelect(Select):
         )
         fp = await draw_big_character_card(
             self.view.characters,
-            i.client.session,  # type: ignore
-            await get_user_appearance_mode(i.user.id, i.client.db),  # type: ignore
+            i.client.session,  
+            await get_user_appearance_mode(i.user.id, i.client.db),  
             self.view.locale,
             self.values[0],
         )
         fp.seek(0)
         file = File(fp, filename="characters.jpeg")
-        ambr = AmbrTopAPI(i.client.session)  # type: ignore
+        ambr = AmbrTopAPI(i.client.session)  
         ambr_characters = await ambr.get_character(include_beta=False)
         if not isinstance(ambr_characters, List):
             raise TypeError("ambr_characters is not a list")

@@ -158,16 +158,16 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     character = [
         c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
     ][0]
-    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  # type: ignore
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  
     try:
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(enka_view.character_id)  # type: ignore
+            i.user.id, i.client.db, int(enka_view.character_id)  
         )
         url = None if custom_image is None else custom_image.url
         card = await draw_character_card(
             character,
             enka_view.locale,
-            i.client.session,  # type: ignore
+            i.client.session,  
             dark_mode,
             url,
         )

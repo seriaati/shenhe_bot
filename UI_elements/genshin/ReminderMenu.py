@@ -1,15 +1,8 @@
 import ast
 import asyncio
 
-from discord import (
-    ButtonStyle,
-    Embed,
-    Forbidden,
-    Interaction,
-    InteractionResponded,
-    Locale,
-    NotFound,
-)
+from discord import (ButtonStyle, Embed, Forbidden, Interaction,
+                     InteractionResponded, Locale, NotFound)
 from discord.ui import Button, TextInput
 
 import asset
@@ -30,6 +23,7 @@ class View(BaseView):
         self.locale = locale
         self.add_item(ResinNotification(locale))
         self.add_item(PotNotification(locale))
+        self.add_item(PTNotification(text_map.get(704, locale)))
         self.add_item(TalentNotification(locale))
         self.add_item(WeaponNotification(locale))
         self.add_item(PrivacySettings(locale))
@@ -83,7 +77,7 @@ class AddWeapon(Button):
         self.locale = locale
 
     async def callback(self, i: Interaction):
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  # type: ignore
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
         view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user
@@ -96,11 +90,11 @@ class RemoveAllWeapon(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.db.execute(  # type: ignore
+        await i.client.db.execute(
             "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
             (i.user.id,),
         )
-        await i.client.db.commit()  # type: ignore
+        await i.client.db.commit()
         await return_weapon_notification(i, self.view)
 
 
@@ -122,11 +116,11 @@ class RemoveAllCharacter(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.db.execute(  # type: ignore
+        await i.client.db.execute(
             "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
             (i.user.id,),
         )
-        await i.client.db.commit()  # type: ignore
+        await i.client.db.commit()
         await return_talent_notification(i, self.view)
 
 
@@ -173,10 +167,11 @@ class TestItOut(Button):
 
 class PTNotification(Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.pt_emoji, label=label, row=1)
+        super().__init__(emoji=asset.pt_emoji, label=label)
 
     async def callback(self, i: Interaction):
         self.view: View
+        await return_pt_notification(i, self.view)
 
 
 class NotificationON(Button):
@@ -190,10 +185,11 @@ class NotificationON(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()  # type: ignore
+        c = await i.client.db.cursor()
         if (
             self.table_name == "talent_notification"
             or self.table_name == "weapon_notification"
+            or self.table_name == "pt_notification"
         ):
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ?",
@@ -202,9 +198,9 @@ class NotificationON(Button):
         else:
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id, i.client.db)),  # type: ignore
+                (i.user.id, await get_uid(i.user.id, i.client.db)),
             )
-        await i.client.db.commit()  # type: ignore
+        await i.client.db.commit()
         await c.close()
         if self.table_name == "resin_notification":
             await return_resin_notification(i, self.view)
@@ -227,10 +223,11 @@ class NotificationOFF(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()  # type: ignore
+        c = await i.client.db.cursor()
         if (
             self.table_name == "talent_notification"
             or self.table_name == "weapon_notification"
+            or self.table_name == "pt_notification"
         ):
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ?",
@@ -239,9 +236,9 @@ class NotificationOFF(Button):
         else:
             await c.execute(
                 f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id, i.client.db)),  # type: ignore
+                (i.user.id, await get_uid(i.user.id, i.client.db)),
             )
-        await i.client.db.commit()  # type: ignore
+        await i.client.db.commit()
         await c.close()
         if self.table_name == "resin_notification":
             await return_resin_notification(i, self.view)
@@ -255,51 +252,62 @@ class NotificationOFF(Button):
 
 class ChangeSettings(Button):
     def __init__(self, locale: Locale | str, table_name: str):
-        super().__init__(emoji="⚙️", label=text_map.get(594, locale))
+        super().__init__(emoji=asset.settings_emoji, label=text_map.get(594, locale))
         self.locale = locale
         self.table_name = table_name
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()  # type: ignore
-        uid = await get_uid(i.user.id, i.client.db)  # type: ignore
+        c = await i.client.db.cursor()
+        uid = await get_uid(i.user.id, i.client.db)
         try:
             if self.table_name == "resin_notification":
                 modal = ResinModal(self.locale)
                 await i.response.send_modal(modal)
                 await modal.wait()
                 threshold = modal.resin_threshold.value
-                max = modal.max_notif.value
-                if not threshold or not max:
+                max_notif = modal.max_notif.value
+                if not threshold or not max_notif:
                     pass
                 else:
-                    if not threshold.isdigit() or not max.isdigit():
+                    if not threshold.isdigit() or not max_notif.isdigit():
                         raise ValueError
                     await c.execute(
                         "UPDATE resin_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                        (threshold, max, i.user.id, uid),
+                        (threshold, max_notif, i.user.id, uid),
                     )
-                    await i.client.db.commit()  # type: ignore
                 await return_resin_notification(i, self.view)
             elif self.table_name == "pot_notification":
                 modal = PotModal(self.locale)
                 await i.response.send_modal(modal)
                 await modal.wait()
                 threshold = modal.threshold.value
-                max = modal.max_notif.value
-                if not threshold or not max:
+                max_notif = modal.max_notif.value
+                if not threshold or not max_notif:
                     pass
                 else:
-                    if not threshold.isdigit() or not max.isdigit():
+                    if not threshold.isdigit() or not max_notif.isdigit():
                         raise ValueError
                     await c.execute(
                         "UPDATE pot_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                        (modal.threshold.value, modal.max_notif.value, i.user.id, uid),
+                        (threshold, max_notif, i.user.id, uid),
                     )
-                await i.client.db.commit()  # type: ignore
                 await return_pot_notification(i, self.view)
-            elif self.table_name == "talent_notification":
-                await return_talent_notification(i, self.view)
+            elif self.table_name == "pt_notification":
+                modal = PTModal(self.locale)
+                await i.response.send_modal(modal)
+                await modal.wait()
+                max_notif = modal.max_notif.value
+                if not max_notif:
+                    pass
+                else:
+                    if not max_notif.isdigit():
+                        raise ValueError
+                    await c.execute(
+                        "UPDATE pt_notification SET max = ? WHERE user_id = ? AND uid = ?",
+                        (max_notif, i.user.id, uid),
+                    )
+                await return_pt_notification(i, self.view)
         except ValueError:
             children = [item for item in self.view.children if isinstance(item, Button)]
             for child in children:
@@ -313,6 +321,7 @@ class ChangeSettings(Button):
             )
             await asyncio.sleep(2)
             await return_notification_menu(i, self.locale)
+        await i.client.db.commit()
 
 
 class GOBack(Button):
@@ -331,9 +340,8 @@ class ResinModal(BaseModal):
     max_notif = TextInput(label="最大提醒值", placeholder="例如: 5", max_length=3)
 
     def __init__(self, locale: Locale | str):
-        super().__init__(title=text_map.get(151, locale))
+        super().__init__(title=text_map.get(515, locale))
         self.resin_threshold.label = text_map.get(152, locale)
-        self.resin_threshold.placeholder = text_map.get(153, locale)
         self.max_notif.label = text_map.get(103, locale)
         self.max_notif.placeholder = text_map.get(155, locale)
 
@@ -350,6 +358,20 @@ class PotModal(BaseModal):
         super().__init__(title=text_map.get(515, locale))
         self.threshold.label = text_map.get(516, locale)
         self.max_notif.label = text_map.get(103, locale)
+        self.max_notif.placeholder = text_map.get(155, locale)
+
+    async def on_submit(self, interaction: Interaction) -> None:
+        await interaction.response.defer()
+        self.stop()
+
+
+class PTModal(BaseModal):
+    max_notif = TextInput(label="最大提醒值", max_length=3)
+
+    def __init__(self, locale: Locale | str):
+        super().__init__(title=text_map.get(515, locale))
+        self.max_notif.label = text_map.get(103, locale)
+        self.max_notif.placeholder = text_map.get(155, locale)
 
     async def on_submit(self, interaction: Interaction) -> None:
         await interaction.response.defer()
@@ -358,9 +380,9 @@ class PotModal(BaseModal):
 
 # Functions
 async def return_resin_notification(i: Interaction, view: View):
-    async with i.client.db.execute(  # type: ignore
+    async with i.client.db.execute(
         "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),  # type: ignore
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
     ) as c:
         (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -390,10 +412,40 @@ async def return_resin_notification(i: Interaction, view: View):
         await i.edit_original_response(embed=embed, view=view)
 
 
+async def return_pt_notification(i: Interaction, view: View):
+    async with i.client.db.execute(
+        "SELECT max, toggle FROM pt_notification WHERE user_id = ? AND uid = ?",
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
+    ) as c:
+        max_notif, toggle = (await c.fetchone())
+    value = f"""
+        {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
+        {text_map.get(103, view.locale)}: {max_notif}
+    """
+    embed = default_embed(message=text_map.get(512, view.locale))
+    embed.add_field(name=text_map.get(591, view.locale), value=value)
+    embed.set_author(
+        name=text_map.get(704, view.locale), icon_url=i.user.display_avatar.url
+    )
+    view.clear_items()
+    view.add_item(ChangeSettings(view.locale, "pt_notification"))
+    view.add_item(GOBack())
+    view.add_item(
+        NotificationON(view.locale, "pt_notification", True if toggle == 1 else False)
+    )
+    view.add_item(
+        NotificationOFF(view.locale, "pt_notification", True if toggle == 0 else False)
+    )
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
 async def return_pot_notification(i: Interaction, view: View):
-    async with i.client.db.execute(  # type: ignore
+    async with i.client.db.execute(
         "SELECT toggle, threshold, max FROM pot_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),  # type: ignore
+        (i.user.id, await get_uid(i.user.id, i.client.db)),
     ) as c:
         (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -420,7 +472,7 @@ async def return_pot_notification(i: Interaction, view: View):
 
 
 async def return_talent_notification(i: Interaction, view: View):
-    async with i.client.db.execute(  # type: ignore
+    async with i.client.db.execute(
         "SELECT toggle, character_list FROM talent_notification WHERE user_id = ?",
         (i.user.id,),
     ) as c:
@@ -466,7 +518,7 @@ async def return_talent_notification(i: Interaction, view: View):
 
 
 async def return_weapon_notification(i: Interaction, view: View):
-    async with i.client.db.execute(  # type: ignore
+    async with i.client.db.execute(
         "SELECT toggle, weapon_list FROM weapon_notification WHERE user_id = ?",
         (i.user.id,),
     ) as c:
@@ -514,8 +566,8 @@ async def return_weapon_notification(i: Interaction, view: View):
 async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
-    c: aiosqlite.Cursor = await i.client.db.cursor()  # type: ignore
-    uid = await get_uid(i.user.id, i.client.db)  # type: ignore
+    c = await i.client.db.cursor()
+    uid = await get_uid(i.user.id, i.client.db)
     await c.execute(
         "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
         (i.user.id, uid),
@@ -536,7 +588,7 @@ async def return_notification_menu(
         "INSERT INTO pt_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
         (i.user.id, uid),
     )
-    await i.client.db.commit()  # type: ignore
+    await i.client.db.commit()
     await c.close()
     embed = default_embed(message=text_map.get(592, locale))
     embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)

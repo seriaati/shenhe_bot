@@ -45,7 +45,7 @@ class TurnOff(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
-        async with i.client.db.execute(  # type: ignore
+        async with i.client.db.execute(  
             "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
         ) as cursor:
             toggle = (await cursor.fetchone())[0]
@@ -54,7 +54,7 @@ class TurnOff(Button):
                 "UPDATE user_accounts SET daily_checkin = ? WHERE user_id = ?",
                 (toggle, i.user.id,),
             )
-            await i.client.db.commit()  # type: ignore
+            await i.client.db.commit()  
         for item in self.view.children:
             item.disabled = True
         await i.edit_original_response(
@@ -73,7 +73,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         await i.response.defer()
     except InteractionResponded:
         pass
-    user_locale = await get_user_locale(i.user.id, i.client.db)  # type: ignore
+    user_locale = await get_user_locale(i.user.id, i.client.db)  
     locale = user_locale or i.locale
     day_in_month = calendar.monthrange(datetime.now().year, datetime.now().month)[1]
     shenhe_user = await genshin_app.get_user_cookie(i.user.id, i.user.id, i.locale)
@@ -86,7 +86,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             icon_url=i.user.display_avatar.url,
         )
         return await i.followup.send(embed=embed)
-    async with i.client.db.execute(  # type: ignore
+    async with i.client.db.execute(  
         "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
     ) as cursor:
         toggle = (await cursor.fetchone())[0]

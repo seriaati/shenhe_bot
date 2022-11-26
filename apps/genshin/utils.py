@@ -14,20 +14,24 @@ from diskcache import FanoutCache
 
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (AbyssLeaderboardUser, CharacterBuild,
-                                       EnkanetworkData, FightProp, ShenheBot,
-                                       ShenheUser, WishInfo)
+from apps.genshin.custom_model import (
+    AbyssLeaderboardUser,
+    CharacterBuild,
+    EnkanetworkData,
+    FightProp,
+    ShenheBot,
+    ShenheUser,
+    WishInfo,
+)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import (get_user_locale, get_weekday_name,
-                                 translate_main_stat)
+from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from utility.utils import (default_embed, divide_chunks, divide_dict,
-                           error_embed)
+from utility.utils import default_embed, divide_chunks, divide_dict, error_embed
 
 
 def calculate_artifact_score(substats: dict):
@@ -152,7 +156,7 @@ def get_fight_prop(id: str) -> FightProp:
             "text_map_hash": 700,
         },
     )
-    return FightProp(**fight_prop_dict)  # type: ignore
+    return FightProp(**fight_prop_dict)
 
 
 def get_area_emoji(exploration_id: int):
@@ -213,8 +217,7 @@ async def get_shenhe_user(
             "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
             (user_id,),
         )
-        user_data = await c.fetchall()  # type: ignore
-        user_data: List[Tuple[int, str, str, int, int, int]]
+        user_data: List[Tuple[int, str, str, int, int, int]] = await c.fetchall()
         for _, tpl in enumerate(user_data):
             if tpl[5] == 1:
                 user_data = tpl
@@ -682,9 +685,9 @@ async def get_enka_data(
         Tuple[enkanetwork.EnkaNetworkResponse, enkanetwork.EnkaNetworkResponse]: First element is the user's data in user's locale, second one is the user's data in en-US
     """
     with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-        cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+        cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)
     with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
-        eng_cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)  # type: ignore
+        eng_cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)
     enka_locale = to_enka(locale)
     async with enkanetwork.EnkaNetworkAPI(enka_locale) as enka:
         try:

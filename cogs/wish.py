@@ -160,7 +160,7 @@ class WishCog(commands.GroupCog, name="wish"):
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
             (i.user.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
-            data: List[Tuple[str, int, str]] = await cursor.fetchall()  # type: ignore
+            data: List[Tuple[str, int, str]] = await cursor.fetchall()  
 
         dist_c = None
 
