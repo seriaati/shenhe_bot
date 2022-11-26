@@ -69,12 +69,11 @@ class Shenhe(commands.Bot):
             command_prefix=commands.when_mentioned,
             intents=intents,
             application_id=application_id,
-            chunk_guilds_at_startup=False,
+            chunk_guilds_at_startup=True,
         )
 
     async def setup_hook(self) -> None:
         # cache
-        self.enka_card_cache = TTLCache(maxsize=512, ttl=120)
         self.stats_card_cache = TTLCache(maxsize=512, ttl=120)
         self.area_card_cache = TTLCache(maxsize=512, ttl=120)
         self.abyss_overview_card_cache = TTLCache(maxsize=512, ttl=120)
@@ -293,7 +292,7 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
 
 
 if not debug:
-    import uvloop  # type: ignore
+    import uvloop  
 
     uvloop.install()
 bot.run(token=token)
