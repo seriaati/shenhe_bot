@@ -6,6 +6,7 @@ from discord import ButtonStyle, Interaction, Locale, SelectOption
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
 
+import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region
 from apps.text_map.convert_locale import to_hutao_login_lang
@@ -35,19 +36,19 @@ class AddAccount(Button):
         )
 
     async def callback(self, i: Interaction):
+        self.view: View
         await add_account_callback(self.view, i)
 
 
 async def add_account_callback(view: View, i: Interaction):
-    view: View
     locale = view.locale
     await i.response.defer()
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(GenerateLink(locale))
-    embed = default_embed(message=text_map.get(563, locale)).set_author(
-        name=text_map.get(556, locale), icon_url=i.user.display_avatar.url
-    )
+    embed = default_embed(message=text_map.get(563, locale))
+    embed.set_author(name=text_map.get(556, locale), icon_url=i.user.display_avatar.url)
+    embed.set_image(url="https://i.imgur.com/r31nQMN.png")
     await i.edit_original_response(embed=embed, view=view)
 
 
@@ -63,7 +64,7 @@ class GenerateLink(Button):
         self.view: View
         locale = self.view.locale
         embed = default_embed().set_author(
-            name=text_map.get(402, locale), icon_url="https://i.imgur.com/V76M9Wa.gif"
+            name=text_map.get(402, locale), icon_url=asset.loader
         )
         self.disabled = True
         await i.response.edit_message(embed=embed, view=self.view)
