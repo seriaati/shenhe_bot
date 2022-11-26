@@ -34,11 +34,11 @@ class DamageResult(BaseModel):
 
 class NotificationUser(BaseModel):
     user_id: int
-    threshold: int
-    current: int
-    max: int
+    threshold: int = 0
+    current: int = 0
+    max: int = 3
     uid: Optional[int]
-    last_notif_time: Optional[str]
+    last_notif_time: Optional[str] = None
     shenhe_user: Optional[ShenheUser] = None
 
 
@@ -78,7 +78,6 @@ class ShenheBot(commands.Bot):
     maintenance_time: Optional[str] = ""
     launch_time: datetime
     stats_card_cache: cachetools.TTLCache
-    enka_card_cache: cachetools.TTLCache
     area_card_cache: cachetools.TTLCache
     abyss_overview_card_cache: cachetools.TTLCache
     abyss_floor_card_cache: cachetools.TTLCache
