@@ -52,7 +52,7 @@ class TextMap:
     def get(
         self,
         textMapHash: int,
-        locale: discord.Locale | str,
+        locale: discord.Locale | str = "en-US",
         user_locale: Optional[str] = None,
     ) -> str:
         locale = user_locale or locale
