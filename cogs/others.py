@@ -1,16 +1,18 @@
 import json
+import os
 import sys
 from datetime import datetime
-from ambr.client import AmbrTopAPI
-from ambr.models import Character
-import config
-import pytz
-from discord import Interaction, app_commands, Attachment
+
+from aioimgur import ImgurClient
+from discord import Attachment, Interaction, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import View, Button
-from UI_base_models import BaseView
+from discord.ui import Button, View
+from dotenv import load_dotenv
+
+from ambr.client import AmbrTopAPI
+from ambr.models import Character
 from apps.genshin.custom_model import ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
@@ -18,9 +20,6 @@ from apps.text_map.utils import get_user_locale
 from UI_elements.others import ManageAccounts, SettingsMenu
 from UI_elements.others.settings import CustomImage
 from utility.utils import default_embed
-from aioimgur import ImgurClient
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
@@ -56,22 +55,6 @@ class OthersCog(commands.Cog, name="others"):
     async def accounts_command(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
-
-    @app_commands.command(
-        name="timezone", description=_("View the timezone list", hash=134)
-    )
-    @app_commands.rename(timezone=_("timezone", hash=186))
-    async def view_timezone_list(self, i: Interaction, timezone: str):
-        await i.response.send_message(content=timezone, ephemeral=True)
-
-    @view_timezone_list.autocomplete("timezone")
-    async def timezone_autocomplete(self, i: Interaction, current: str):
-        choices = []
-        timezone_list = pytz.all_timezones
-        for timezone in timezone_list:
-            if current.lower() in timezone.lower():
-                choices.append(Choice(name=timezone, value=timezone))
-        return choices[:25]
 
     @app_commands.command(
         name="credits",

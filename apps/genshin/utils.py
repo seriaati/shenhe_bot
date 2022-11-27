@@ -14,24 +14,20 @@ from diskcache import FanoutCache
 
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (
-    AbyssLeaderboardUser,
-    CharacterBuild,
-    EnkanetworkData,
-    FightProp,
-    ShenheBot,
-    ShenheUser,
-    WishInfo,
-)
+from apps.genshin.custom_model import (AbyssLeaderboardUser, CharacterBuild,
+                                       EnkanetworkData, FightProp, ShenheBot,
+                                       ShenheUser, WishInfo)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
+from apps.text_map.utils import (get_user_locale, get_weekday_name,
+                                 translate_main_stat)
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from utility.utils import default_embed, divide_chunks, divide_dict, error_embed
+from utility.utils import (default_embed, divide_chunks, divide_dict,
+                           error_embed)
 
 
 def calculate_artifact_score(substats: dict):
@@ -185,7 +181,7 @@ def get_city_emoji(city_id: int):
     return emoji_dict.get(city_id)
 
 
-def get_uid_region(uid: int) -> int:
+def get_uid_region_name(uid: int) -> int:
     str_uid = str(uid)
     region_map = {
         "9": 547,
@@ -199,6 +195,19 @@ def get_uid_region(uid: int) -> int:
     }
     return region_map.get(str_uid[0], 553)
 
+def get_uid_region_tz(uid: int) -> str:
+    str_uid = str(uid)
+    region_map = {
+        "9": "Asia/Shanghai",
+        "1": "Asia/Shanghai",
+        "2": "Asia/Shanghai",
+        "5": "Asia/Shanghai",
+        "6": "United States/Washington",
+        "7": "France/Paris",
+        "8": "Asia/Shanghai",
+        "0": "Asia/Shanghai",
+    }
+    return region_map.get(str_uid[0], "Asia/Shanghai")
 
 async def get_shenhe_user(
     user_id: int,
@@ -574,7 +583,7 @@ def get_account_options(
             nickname = nickname[:15] + "..."
         options.append(
             discord.SelectOption(
-                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region(account[0]), locale)}",
+                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region_name(account[0]), locale)}",
                 emoji=emoji,
                 value=account[0],
             )

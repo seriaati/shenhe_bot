@@ -1,21 +1,16 @@
-from datetime import datetime
 from typing import Any
 
 import aiosqlite
+from discord import Interaction, Locale, SelectOption
+from discord.ui import Button, Select
+
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseModal, BaseView
-from discord import Interaction, Locale, SelectOption, ButtonStyle
-from discord.ui import Button, Select, TextInput
-from utility.utils import (
-    default_embed,
-    get_user_timezone,
-    error_embed,
-)
 from data.others.language_options import lang_options
-import pytz
+from UI_base_models import BaseView
 from UI_elements.others.settings import CustomImage
+from utility.utils import default_embed
 
 
 class View(BaseView):
@@ -24,7 +19,6 @@ class View(BaseView):
         self.add_item(Appearance(text_map.get(535, locale)))
         self.add_item(Langauge(text_map.get(128, locale)))
         self.add_item(DeveloperMessage(text_map.get(541, locale)))
-        self.add_item(Timezone(text_map.get(186, locale)))
         self.add_item(CustomProfileImage(locale))
 
 
@@ -224,143 +218,6 @@ class GOBack(Button):
         )
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
-
-
-class Timezone(Button):
-    def __init__(self, label: str):
-        super().__init__(emoji="🕛", label=label)
-
-    async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        self.view: View
-        self.view.clear_items()
-        self.view.add_item(CommonTimezoneSelect())
-        self.view.add_item(
-            SubmitTimezoneButton(
-                text_map.get(295, i.locale, user_locale), user_locale or i.locale
-            )
-        )
-        self.view.add_item(GOBack())
-        user_timezone = await get_user_timezone(i.user.id, i.client.db)
-        utc_offset = "UTC" + datetime.now(pytz.timezone(user_timezone)).strftime("%z")
-        embed = default_embed()
-        embed.set_author(
-            name=f"{text_map.get(293, i.locale, user_locale)}: {user_timezone} ({utc_offset})",
-            icon_url=i.user.display_avatar.url,
-        )
-        embed.description = text_map.get(294, i.locale, user_locale)
-        await i.response.edit_message(embed=embed, view=self.view)
-
-
-class CommonTimezoneSelect(Select):
-    def __init__(self):
-        options = [
-            SelectOption(
-                emoji="🇹🇼",
-                label="Asia/Taipei",
-                value="Asia/Taipei",
-            ),
-            SelectOption(
-                emoji="🇺🇸",
-                label="America/New York",
-                value="America/New_York",
-            ),
-            SelectOption(
-                emoji="🇬🇧",
-                label="Europe/London",
-                value="Europe/London",
-            ),
-            SelectOption(emoji="🇯🇵", label="Asia/Tokyo", value="Asia/Tokyo"),
-            SelectOption(
-                emoji="🇦🇺",
-                label="Australia/Sydney",
-                value="Australia/Sydney",
-            ),
-            SelectOption(
-                emoji="🇨🇳",
-                label="Asia/Shanghai",
-                value="Asia/Shanghai",
-            ),
-            SelectOption(
-                emoji="🇪🇺",
-                label="Europe/Brussels",
-                value="Europe/Brussels",
-            ),
-            SelectOption(
-                emoji="🇮🇳",
-                label="Asia/Kolkata",
-                value="Asia/Kolkata",
-            ),
-            SelectOption(emoji="🇰🇷", label="Asia/Seoul", value="Asia/Seoul"),
-            SelectOption(
-                emoji="🇷🇺",
-                label="Europe/Moscow",
-                value="Europe/Moscow",
-            ),
-            SelectOption(
-                emoji="🇸🇬",
-                label="Asia/Singapore",
-                value="Asia/Singapore",
-            ),
-            SelectOption(
-                emoji="🇺🇦",
-                label="Europe/Kiev",
-                value="Europe/Kiev",
-            ),
-        ]
-        super().__init__(options=options)
-
-    async def callback(self, i: Interaction):
-        await i.client.db.execute(
-            "INSERT INTO user_settings (user_id, timezone) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET timezone = ?",
-            (i.user.id, self.values[0], self.values[0]),
-        )
-        await i.client.db.commit()
-        await Timezone.callback(self, i)
-
-
-class SubmitTimezoneButton(Button):
-    def __init__(self, label: str, locale: Locale | str):
-        super().__init__(
-            emoji="<:submit_cookie:1019068169882718258>",
-            label=label,
-            style=ButtonStyle.blurple,
-        )
-        self.locale = locale
-
-    async def callback(self, i: Interaction):
-        await i.response.send_modal(SubmitTimezone(self.locale, self))
-
-
-class SubmitTimezone(BaseModal):
-    timezone = TextInput(
-        label="Timezone", placeholder="Timezone", min_length=1, max_length=100
-    )
-
-    def __init__(self, locale: Locale | str, submit_button: Button):
-        self.timezone.label = text_map.get(144, locale)
-        self.timezone.placeholder = text_map.get(145, locale)
-        super().__init__(title=text_map.get(154, locale), timeout=config.mid_timeout)
-        self.locale = locale
-        self.submit_button = submit_button
-
-    async def on_submit(self, i: Interaction) -> None:
-        if self.timezone.value not in pytz.all_timezones:
-            await i.response.send_message(
-                embed=error_embed(message=text_map.get(296, self.locale)).set_author(
-                    name=text_map.get(160, self.locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        else:
-            await i.client.db.execute(
-                "INSERT INTO user_settings (user_id, timezone) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET timezone = ? WHERE user_id = ?",
-                (i.user.id, self.timezone.value, self.timezone.value, i.user.id),
-            )
-            await i.client.db.commit()
-            await Timezone.callback(self.submit_button, i)
-
 
 class CustomProfileImage(Button):
     def __init__(self, locale: str | Locale):
