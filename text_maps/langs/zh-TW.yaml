@@ -101,9 +101,9 @@
 '98': 樹脂提醒已關閉
 '99': '開'
 '100': '關'
-'101': Toggle
-'102': Resin Threshold
-'103': Max notification number
+'101': 開關
+'102': 樹脂閥值
+'103': 最大提醒值
 '104': 設置成功
 '105': 角色
 '106': 你已經兌換過這個兌換碼了!
@@ -322,7 +322,7 @@
 '299': 好感度
 '300': 聖遺物最高分為 99, 只有 +20 才會評分
 '301': 屬性
-'302': Threshold
+'302': 閾值
 '303': 目前樹脂
 '304': 目前最大提醒值
 '305': 輸入 /remind 來更改設定
@@ -404,8 +404,8 @@
 '363': 你所提供的連結是無效的
 '364': 影片教學
 '365': 選擇你的平台
-'366': Your P.T. is ready to use!
-'367': Use /timezone to set your timezone
+'366': 你的質變儀已經可以使用了！
+'367': 使用 /timezone 指令來設定你的時區
 '368': 使用 </wish import:1000187021635104890> 來匯入你的祈願紀錄
 '369': 祈願記錄
 '370': 你抽到的最後一個五星角色是一個常駐角色
@@ -566,7 +566,7 @@
 '502': 運行計算器
 '503': 伺服器數量
 '504': '由 seria#5334 製作, 有疑問可以私訊'
-'505': An error has occured while trying to send you a notification
+'505': 申鶴在試圖通知你時出錯了
 '506': ''
 '507': 你想要抽到幾個 5 星 Up 武器?
 '508': 搜尋任何與原神有關的角色、武器、物品
@@ -574,11 +574,11 @@
 '510': 須彌
 '511': 原神遊戲元素（武器、角色等）的字串將會自動翻譯
 '512': |-
-  • Notify you when your parametric transformer is ready
-  • 1 notification per day
+  • 在你的質變儀可使用時通知你
+  • 每天1個通知
 '513': '非常抱歉，這個錯誤已經自動回報至 [seria#5334](http://discord.com/users/410036441129943050)，請耐心等待修復'
 '514': 洞天寶錢提醒（需註冊）
-'515': Notification settings
+'515': 通知設定
 '516': 洞天寶錢閥值
 '517': 洞天寶錢提醒關閉
 '518': 洞天寶錢要溢出了！
@@ -634,9 +634,9 @@
 '561': 帳戶已刪除
 '562': 選擇一個自訂圖片
 '563': |-
-  • There are two account types: UID and Cookie
-  • Some commands require Cookie, to add them, choose one of the options in the red box when adding an account
-  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+  • 有兩種帳戶類型：UID 和 Cookie
+  • 某些指令需要 Cookie，要新增它們，請在新增帳戶時選擇紅色框中的選項之一
+  • 關於帳戶安全的詳細解釋可以在[這裡](https://shenhe.gitbook.io/shenhe)找到
 '564': 延遲
 '565': 製作人員
 '566': 使用的程式庫
@@ -664,18 +664,18 @@
 '583': 選擇一個星期中的一天
 '584': 寶錢提醒
 '585': 測試私訊
-'586': Notify you when your resin exceeds a certain amount
+'586': 在你的樹脂超過一定數量時通知你
 '587': ''
 '588': ''
 '589': ''
 '590': |-
-  • Notify you when a character's talent domain is farmable
-  • Selecting a character that already has notification enabled will disable it
+  • 在角色的天賦素材可以刷取時通知你
+  • 選擇已啟用通知的角色將關閉它的通知
 '591': 當前設置
 '592': |-
-  • Set reminders to do the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered, except talent and weapon notification
-  • Click on the buttons below for more information on each feature
+  • 這個功能能幫助你準時做完原神給你的功課
+  • 不同帳戶之間的提醒設定是獨立的，除了天賦及武器提醒
+  • 點選下方不同的按鈕來查看更多資訊
 '593': 提醒
 '594': 更改設置
 '595': 申鶴需要私訊你才能發送提醒，如果你不小心關掉的話，請按照下面的步驟重新打開
@@ -714,17 +714,17 @@
 '628': 已開啟自動簽到功能
 '629': 已關閉自動簽到功能
 '630': 申鶴已將你的自動簽到功能關閉，如欲重新開啟，請使用 </claim:1020580644365021250> 指令
-'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
+'631': 申鶴已將你的{feature}提醒功能關閉，如欲重新開啟，請使用 </remind:1020580644365021255> 指令
 '632': 武器素材提醒
 '633': |-
-  • Notify you when a weapon's domain is farmable
-  • Selecting a weapon that already has notification enabled will disable its notification
+  • 在武器的突破素材可以刷取時通知你
+  • 選擇已啟用通知的角色將關閉它的通知
 '634': 新增/移除 武器
 '635': 移除所有武器
 '636': 當前已設定的武器
 '637': 目前尚未設置任何武器
 '638': 已新增過此武器, 再次選擇將會移除該武器
-'639': Notif you when your realm currency exceeds a certain amount
+'639': 在你的洞天寶錢超過一定數量時通知你
 '640': 二件套效果
 '641': 四件套效果
 '642': 支援伺服器
@@ -797,4 +797,4 @@
 '701': 所有
 '702': 你提供的連結已過期，請生成一個新連結
 '703': 元素
-'704': PT notification
+'704': 質變儀通知
