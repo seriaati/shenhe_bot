@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 import aiosqlite
 import enkanetwork
 import genshin
+import pytz
 import sentry_sdk
 from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
 from discord.utils import format_dt
@@ -19,17 +21,11 @@ from apps.genshin.custom_model import (
     ShenheUser,
     StatsResult,
 )
-from apps.genshin.utils import get_shenhe_user, get_uid
+from apps.genshin.utils import get_character_emoji, get_shenhe_user, get_uid, get_uid_tz
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import (
-    default_embed,
-    error_embed,
-    get_user_appearance_mode,
-    get_user_timezone,
-    log,
-)
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
 from yelan.draw import (
     draw_abyss_overview_card,
     draw_area_card,
@@ -146,7 +142,6 @@ class GenshinApp:
             shenhe_user.user_locale or str(locale),
             self.bot.session,
             await get_user_appearance_mode(author_id, self.db),
-            await get_user_timezone(author_id, self.db),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
@@ -181,10 +176,23 @@ class GenshinApp:
                     notes.transformer_recovery_time, "R"
                 )
         result = default_embed(
-            message=f"<:resin:1004648472995168326> {text_map.get(15, locale, user_locale)}: {resin_recover_time}\n"
-            f"<:realm:1004648474266062880> {text_map.get(15, locale, user_locale)}: {realm_recover_time}\n"
-            f"<:transformer:1004648470981902427> {text_map.get(8, locale, user_locale)}: {transformer_recover_time}"
+            message=f"""
+                <:resin:1004648472995168326> {text_map.get(15, locale, user_locale)}: {resin_recover_time}
+                <:realm:1004648474266062880> {text_map.get(15, locale, user_locale)}: {realm_recover_time}
+                <:transformer:1004648470981902427> {text_map.get(8, locale, user_locale)}: {transformer_recover_time}
+            """
         )
+        if notes.expeditions:
+            expedition_str = ""
+            for expedition in notes.expeditions:
+                if expedition.remaining_time.total_seconds() > 0:
+                    expedition_str += f'{get_character_emoji(str(expedition.character.id))} **{expedition.character.name}** | {format_dt(expedition.completion_time, "R")}\n'
+            if expedition_str:
+                result.add_field(
+                    name=text_map.get(20, locale, user_locale),
+                    value=expedition_str,
+                    inline=False,
+                )
         result.set_image(url="attachment://realtime_notes.jpeg")
         return result
 
@@ -253,12 +261,14 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_diary(
-        self, user_id: int, author_id: int, month: int, locale: Locale
+        self, user_id: int, author_id: int, locale: Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
-        diary = await shenhe_user.client.get_diary(month=month)
+        user_timezone = get_uid_tz(shenhe_user.uid)
+        now = datetime.now() + timedelta(hours=user_timezone)
+        diary = await shenhe_user.client.get_diary(month=now.month)
         if shenhe_user.uid is None:
             raise UIDNotFound
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
@@ -268,12 +278,12 @@ class GenshinApp:
             diary,
             user,
             shenhe_user.user_locale or locale,
-            month,
+            now.month,
             await get_user_appearance_mode(author_id, self.db),
         )
         embed.set_image(url="attachment://diary.jpeg")
         embed.set_author(
-            name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(month, locale, shenhe_user.user_locale)}",
+            name=f"{text_map.get(69, locale, shenhe_user.user_locale)} • {get_month_name(now.month, locale, shenhe_user.user_locale)}",
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         result["embed"] = embed

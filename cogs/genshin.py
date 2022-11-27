@@ -1,11 +1,10 @@
 import json
 import random
-from datetime import datetime
-from typing import Dict, List, Tuple
+from datetime import datetime, timedelta
+from typing import List, Tuple
 
 import pytz
-from discord import (Embed, File, Interaction, Member, SelectOption, User,
-                     app_commands)
+from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -15,37 +14,61 @@ from dotenv import load_dotenv
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, CharacterTalentType, Event, Material, Weapon
+from ambr.models import Character, Event, Material, Weapon
 from apps.genshin.checks import *
-from apps.genshin.custom_model import (AbyssResult, AreaResult,
-                                       CharacterResult, DiaryResult,
-                                       RealtimeNoteResult, ShenheBot,
-                                       StatsResult)
+from apps.genshin.custom_model import (
+    AbyssResult,
+    AreaResult,
+    CharacterResult,
+    DiaryResult,
+    RealtimeNoteResult,
+    ShenheBot,
+    StatsResult,
+)
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
-from apps.genshin.utils import (get_character_emoji, get_enka_data,
-                                get_farm_data, get_fight_prop, get_uid)
-from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
-                               parse_character_wiki, parse_food_wiki,
-                               parse_furniture_wiki, parse_material_wiki,
-                               parse_monster_wiki, parse_namecard_wiki,
-                               parse_weapon_wiki)
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_enka_data,
+    get_farm_data,
+    get_uid,
+    get_uid_tz,
+)
+from apps.genshin.wiki import (
+    parse_artifact_wiki,
+    parse_book_wiki,
+    parse_character_wiki,
+    parse_food_wiki,
+    parse_furniture_wiki,
+    parse_material_wiki,
+    parse_monster_wiki,
+    parse_namecard_wiki,
+    parse_weapon_wiki,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale, get_weekday_name
-from data.game.elements import get_element_color, get_element_emoji
-from UI_elements.genshin import (Abyss, Build, Diary, EnkaProfile,
-                                 EventTypeChooser, Leaderboard, Search,
-                                 ShowAllCharacters)
+from apps.text_map.utils import get_user_locale
+from UI_elements.genshin import (
+    Abyss,
+    Build,
+    Diary,
+    EnkaProfile,
+    EventTypeChooser,
+    Leaderboard,
+    ShowAllCharacters,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_appearance_mode, get_user_timezone,
-                           get_weekday_int_with_name)
-from yelan.draw import draw_big_material_card, draw_profile_overview_card
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_appearance_mode,
+)
+from yelan.draw import draw_profile_overview_card
 
 load_dotenv()
 
@@ -333,16 +356,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             return
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        user_timezone = await get_user_timezone(i.user.id, self.bot.db)
-        month = datetime.now(pytz.timezone(user_timezone)).month
-        result = await self.genshin_app.get_diary(member.id, i.user.id, month, i.locale)
+        result = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
         if not result.success:
             await i.followup.send(embed=result.result)
         else:
             diary_result: DiaryResult = result.result
-            view = Diary.View(
-                i.user, member, self.genshin_app, user_locale or i.locale, month
-            )
+            view = Diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
             fp = diary_result.file
             fp.seek(0)
             await i.followup.send(
@@ -426,10 +445,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def farm(self, i: Interaction):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        weekday = datetime.now(
-            pytz.timezone(await get_user_timezone(i.user.id, self.bot.db))
-        ).weekday()
-        result, embeds, options = await get_farm_data(i, weekday)
+        uid = await get_uid(i.user.id, self.bot.db)
+        now = datetime.now() + timedelta(hours=get_uid_tz(uid))
+        result, embeds, options = await get_farm_data(i, now.weekday())
 
         class DomainSelect(Select):
             def __init__(self, placeholder: str, options: List[SelectOption], row: int):
@@ -786,9 +804,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             for item_id, query_names in queries.items():
                 item_name = query_names[ambr_top_locale]
                 if current.lower() in item_name.lower() and item_name != "":
-                    result.append(
-                        Choice(name=item_name, value=item_id)
-                    )
+                    result.append(Choice(name=item_name, value=item_id))
                 elif " " in current:
                     splited = current.split(" ")
                     all_match = True
@@ -797,9 +813,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             all_match = False
                             break
                     if all_match and item_name != "":
-                        result.append(
-                            Choice(name=item_name, value=item_id)
-                        )
+                        result.append(Choice(name=item_name, value=item_id))
         if current == "":
             random.shuffle(result)
         return result[:25]

@@ -1,17 +1,14 @@
-from datetime import datetime
-
-import pytz
-from discord import File, Interaction, Locale, User, Member
+from discord import File, Interaction, Locale, Member, User
 from discord.ui import Button, Select
-from apps.genshin.custom_model import DiaryResult
 
 import asset
 import config
+from apps.genshin.custom_model import DiaryResult
 from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_month_name, get_user_locale
+from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed, get_user_timezone
+from utility.utils import default_embed
 
 
 class View(BaseView):
@@ -21,14 +18,13 @@ class View(BaseView):
         member: User | Member,
         genshin_app: GenshinApp,
         locale: Locale | str,
-        current_month: int,
     ):
         super().__init__(timeout=config.mid_timeout)
         self.author = author
         self.member = member
         self.genshin_app = genshin_app
         self.locale = locale
-        self.add_item(MonthSelect(text_map.get(424, locale), locale, current_month))
+        self.add_item(MonthSelect(text_map.get(424, locale), locale))
         self.add_item(Primo(text_map.get(70, locale)))
         self.add_item(Mora(text_map.get(72, locale)))
         self.add_item(InfoButton())
@@ -47,11 +43,11 @@ class InfoButton(Button):
 
 
 class MonthSelect(Select):
-    def __init__(self, placeholder: str, locale: Locale | str, current_month: int):
+    def __init__(self, placeholder: str, locale: Locale | str):
         super().__init__(placeholder=placeholder)
-        self.add_option(label=get_month_name(current_month, locale), value="0")
-        self.add_option(label=get_month_name(current_month - 1, locale), value="-1")
-        self.add_option(label=get_month_name(current_month - 2, locale), value="-2")
+        self.add_option(label=text_map.get(454, locale), value="0")
+        self.add_option(label=text_map.get(506, locale), value="-1")
+        self.add_option(label=text_map.get(427, locale), value="-2")
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -63,11 +59,8 @@ class MonthSelect(Select):
         )
         await i.response.edit_message(embed=embed, attachments=[])
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        user_timezone = await get_user_timezone(i.user.id, i.client.db)
-        month = datetime.now(pytz.timezone(user_timezone)).month + int(self.values[0])
-        month = month + 12 if month < 1 else month
         result = await self.view.genshin_app.get_diary(
-            self.view.member.id, i.user.id, month, i.locale
+            self.view.member.id, i.user.id, i.locale
         )
         if not result.success:
             await i.followup.send(embed=result.result)
@@ -80,7 +73,6 @@ class MonthSelect(Select):
                 self.view.member,
                 self.view.genshin_app,
                 user_locale or i.locale,
-                datetime.now(pytz.timezone(user_timezone)).month,
             )
             view.message = await i.edit_original_response(
                 embed=diary_result.embed,

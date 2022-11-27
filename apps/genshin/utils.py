@@ -195,19 +195,15 @@ def get_uid_region_name(uid: int) -> int:
     }
     return region_map.get(str_uid[0], 553)
 
-def get_uid_region_tz(uid: int) -> str:
+
+def get_uid_tz(uid: Optional[int]) -> int:
     str_uid = str(uid)
     region_map = {
-        "9": "Asia/Shanghai",
-        "1": "Asia/Shanghai",
-        "2": "Asia/Shanghai",
-        "5": "Asia/Shanghai",
-        "6": "United States/Washington",
-        "7": "France/Paris",
-        "8": "Asia/Shanghai",
-        "0": "Asia/Shanghai",
+        "6": -13, # North America
+        "7": -7, # Europe
     }
-    return region_map.get(str_uid[0], "Asia/Shanghai")
+    return region_map.get(str_uid[0], 0)
+
 
 async def get_shenhe_user(
     user_id: int,
@@ -667,12 +663,12 @@ async def get_character_suggested_talent_levels(
         return [1, 1, 1]
     with open(f"data/builds/{character.element.lower()}.yaml") as f:
         builds = yaml.safe_load(f)
-        character_build = builds.get(chinese_character_name)
-        if character_build is None:
-            return [1, 1, 1]
-        talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
-        talents = talents.split("/")
-        return [int(talent) for talent in talents]
+    character_build = builds.get(chinese_character_name)
+    if character_build is None:
+        return [1, 1, 1]
+    talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
+    talents = talents.split("/")
+    return [int(talent) for talent in talents]
 
 
 async def get_enka_data(

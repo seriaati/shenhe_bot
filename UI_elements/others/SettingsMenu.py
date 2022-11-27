@@ -219,6 +219,7 @@ class GOBack(Button):
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
 
+
 class CustomProfileImage(Button):
     def __init__(self, locale: str | Locale):
         super().__init__(emoji="🖼️", label=text_map.get(275, locale))
