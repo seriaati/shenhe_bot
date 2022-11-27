@@ -2,13 +2,12 @@ import ast
 import asyncio
 import json
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import process_time
 from typing import List, Optional
 
 import aiosqlite
 import genshin
-import pytz
 import sentry_sdk
 from discord import File, Game, Interaction, app_commands
 from discord.app_commands import locale_str as _
@@ -20,13 +19,13 @@ import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Domain, Weapon
 from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
-from apps.genshin.utils import get_shenhe_user
+from apps.genshin.utils import get_shenhe_user, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
 from utility.utils import (default_embed, error_embed,
-                           get_user_appearance_mode, get_user_timezone, log)
+                           get_user_appearance_mode, log)
 from yelan.draw import draw_talent_reminder_card
 
 
@@ -78,15 +77,26 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_game_data())
             await asyncio.create_task(self.backup_database())
 
+        if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
+            hour_dict = {
+                4: 0, # Asia
+                15: -13, # North America
+                21: -7, # Europe
+            }
+            await asyncio.create_task(
+                self.weapon_talent_base_notifiction(
+                    "talent_notification", hour_dict[now.hour]
+                )
+            )
+            await asyncio.create_task(
+                self.weapon_talent_base_notifiction(
+                    "weapon_notification", hour_dict[now.hour]
+                )
+            )
+
         if now.minute < self.loop_interval:  # every hour
             await asyncio.create_task(self.base_notification("resin_notification"))
             await asyncio.create_task(self.base_notification("pot_notification"))
-            await asyncio.create_task(
-                self.weapon_talent_base_notifiction("talent_notification")
-            )
-            await asyncio.create_task(
-                self.weapon_talent_base_notifiction("weapon_notification")
-            )
 
     @tasks.loop(minutes=20)
     async def change_status(self):
@@ -461,8 +471,10 @@ class Schedule(commands.Cog):
         )
 
     @schedule_error_handler
-    async def weapon_talent_base_notifiction(self, notification_type: str):
-        log.info(f"[Schedule][{notification_type}] Start")
+    async def weapon_talent_base_notifiction(
+        self, notification_type: str, time_offset: int
+    ):
+        log.info(f"[Schedule][{notification_type}][{time_offset}] Start")
         list_name = (
             "weapon_list"
             if notification_type == "weapon_notification"
@@ -476,19 +488,15 @@ class Schedule(commands.Cog):
             async for row in c:
                 user_id = row[0]
                 item_list = row[1]
-                last_notif = row[2]
-                timezone = await get_user_timezone(user_id, self.bot.db)
-                now = datetime.now(pytz.timezone(timezone))
-                if last_notif is not None:
-                    last_notif = datetime.strptime(last_notif, "%Y/%m/%d %H:%M:%S")
-                    if last_notif.day == now.day:
-                        continue
+                now = datetime.now() + timedelta(hours=time_offset)
                 locale = await get_user_locale(user_id, self.bot.db) or "en-US"
                 client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                 domains = await client.get_domain()
-                user = self.bot.get_user(user_id) or await self.bot.fetch_user(
-                    user_id
-                )
+                user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+                uid = await get_uid(user_id, self.bot.db)
+                uid_tz = get_uid_tz(uid)
+                if uid_tz != time_offset:
+                    continue
                 item_list = ast.literal_eval(item_list)
                 notified = {}
                 today_domains = [d for d in domains if d.weekday == now.weekday()]
@@ -500,9 +508,7 @@ class Schedule(commands.Cog):
                                     str(item_id)
                                 )
                             else:
-                                upgrade = await client.get_weapon_upgrade(
-                                    int(item_id)
-                                )
+                                upgrade = await client.get_weapon_upgrade(int(item_id))
 
                             if upgrade is None or isinstance(upgrade, List):
                                 continue
@@ -545,7 +551,7 @@ class Schedule(commands.Cog):
                         name=text_map.get(312, locale).format(name=item.name),
                         icon_url=item.icon,
                     )
-                    embed.set_footer(text=text_map.get(367, locale))
+                    embed.set_footer(text=text_map.get(134, locale))
                     embed.set_image(url="attachment://reminder_card.jpeg")
                     try:
                         await user.send(embed=embed, files=[file])
