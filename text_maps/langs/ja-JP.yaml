@@ -626,9 +626,9 @@
 '561': アカウントが削除されました。
 '562': カスタム画像を選択
 '563': |-
-  • There are two account types: UID and Cookie
-  • Some commands require Cookie, to add them, choose one of the options in the red box when adding an account
-  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+  • アカウントはUIDとCookieの２種類あります。
+  • Cookieを必要とするコマンドもありますので、アカウントを追加する際に赤枠のオプションを選択してください。
+  • アカウントのセキュリティに関する詳しい説明は[こちら](https://shenhe.gitbook.io/shenhe)を参照してください。
 '564': レイテンシ
 '565': クレジット
 '566': 使用されているライブラリ
@@ -657,18 +657,18 @@
 '583': 曜日を選択
 '584': 洞天宝銭の通知
 '585': DM をテスト
-'586': Notify you when your resin exceeds a certain amount
+'586': 天然樹脂が一定量を超えたときに通知します
 '587': ''
 '588': ''
 '589': ''
 '590': |-
-  • Notify you when a character's talent domain is farmable
-  • Selecting a character that already has notification enabled will disable it
+  • キャラクターの天賦秘境が周回可能である場合に通知する
+  • 既に通知が有効になっているキャラクターを選択すると無効になります
 '591': 現在の設定
 '592': |-
-  • Set reminders to do the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered, except talent and weapon notification
-  • Click on the buttons below for more information on each feature
+  • 原神のデイリータスクを通知する機能
+  • この機能は天賦秘境と武器秘境通知を除き、各アカウントごとに個別に設定できます
+  • 以下の各ボタンをクリックすると、詳細が表示されます
 '593': 通知
 '594': 設定を変更
 '595': 通知を送るには、申鶴がDMを送れるようにする必要があります。何らかの理由で無効にしている場合は、以下の手順で有効にしてください。
@@ -697,27 +697,27 @@
 '618': 最もよく使われるキャラクターは **{name}** であり、 **{num}**回({percent}%)使用されています。
 '619': ランキングのデータを更新または追加するには、 {command} を使用します
 '620': このランキングは現在空です
-'621': Food effect
-'622': Drops
+'621': 飯バフ
+'622': ドロップ
 '623': インタラクションがタイムアウトしました
 '624': もう一度お試しください
 '625': リリース日
-'626': Ingredients
+'626': 材料
 '627': デイリーログインボーナスの切り替え
 '628': デイリーログインボーナスのチェックイン機能を有効にしました
 '629': デイリーログインボーナスのチェックイン機能を無効にしました
 '630': 申鶴のデイリーログインボーナスの自動チェックイン機能を無効にしました。再度有効にするには、 </claim:1020580644365021250> を実行してください。
-'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
+'631': 申鶴は自動的にこの{機能}を無効にしました。もう一度有効にするには、 </remind:1020580644365021255> を使用してください。
 '632': 武器突破素材通知
 '633': |-
-  • Notify you when a weapon's domain is farmable
-  • Selecting a weapon that already has notification enabled will disable its notification
+  • 武器の素材秘境が周回可能である場合に通知する
+  • 既に通知が有効になっているキャラクターを選択すると無効になります
 '634': 武器の追加/削除
 '635': すべての武器突破素材通知を停止する
 '636': 現在の武器突破素材通知
 '637': 設定済みの武器突破素材通知はありません。
 '638': 武器を選択すると、その武器突破素材通知がOFFになります。
-'639': Notif you when your realm currency exceeds a certain amount
+'639': 洞天宝銭が一定量を超えたときに通知します
 '640': 2セット効果
 '641': 4セット効果
 '642': サポートサーバー
@@ -791,4 +791,4 @@
 '701': すべて
 '702': リンクが期限切れです。新しいリンクを生成してください。
 '703': 元素
-'704': PT notification
+'704': 参量物質変化器の通知
