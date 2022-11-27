@@ -134,7 +134,7 @@
 '131': Inazuma
 '132': Submit your cookie
 '133': Please paste the text you copied here
-'134': ''
+'134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
 '135': There was an error
 '136': Choose your account
 '137': Account registration tutorial
@@ -400,7 +400,7 @@
 '364': Video Tutorial
 '365': Choose your platform
 '366': Your P.T. is ready to use!
-'367': Use /settings to change your server region
+'367': ''
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
 '370': The last 5-star character you pulled was a standard character
@@ -563,7 +563,7 @@
 '503': Number of guilds
 '504': 'Made by seria#5334, DM me if you have any questions'
 '505': An error has occured while trying to send you a notification
-'506': ''
+'506': Last month
 '507': How many 5-star banner weapons do you wish to pull?
 '508': Search anything genshin related
 '509': query
