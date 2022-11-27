@@ -101,9 +101,9 @@
 '98': Resin reminder has been turned off
 '99': 'ON'
 '100': 'OFF'
-'101': Current Toggle
-'102': Resing Threshold
-'103': Max. notification number
+'101': Toggle
+'102': Resin Threshold
+'103': Max notification number
 '104': Settings saved
 '105': Character
 '106': This gift code has already been redeemed!
@@ -167,9 +167,9 @@
   3. Click `Genshin` on the top right corner
   4. Click the gear icon
   5. Toggle all the switches
-'151': Resin notification settings
+'151': ''
 '152': Resin threshold
-'153': Shenhe will DM you after resin exceeds this number
+'153': ''
 '154': Setting custom timezone
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
@@ -321,7 +321,7 @@
 '299': Friendship Level
 '300': The highest artifact score is 99, only +20 artifacts will have scores
 '301': Stats
-'302': Current threshold
+'302': Threshold
 '303': Current resin
 '304': Current max. notification number
 '305': Use /remind to change the settings
@@ -333,7 +333,7 @@
 '311': How to unblock DM from servers
 '312': Time to farm materials for {name}!
 '313': Genshin Impact
-'314': Items you can farm
+'314': ''
 '315': Basic information
 '316': Birthday
 '317': Affiliation
@@ -403,8 +403,8 @@
 '363': The link you have provided is invalid
 '364': Video Tutorial
 '365': Choose your platform
-'366': ""
-'367': ""
+'366': Your P.T. is ready to use!
+'367': Use /timezone to set your timezone
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
 '370': The last 5-star character you pulled was a standard character
@@ -566,17 +566,19 @@
 '502': Run calculator
 '503': Number of guilds
 '504': 'Made by seria#5334, DM me if you have any questions'
-'505': An error has occursed while trying to send you a resin notification
-'506': An error has occursed while trying to send you a realm currency notification
+'505': An error has occured while trying to send you a notification
+'506': ''
 '507': How many 5-star banner weapons do you wish to pull?
 '508': Search anything genshin related
 '509': query
 '510': Sumeru
 '511': Names of genshin characters, weapons, and other game elements will be translated automatically
-'512': ''
+'512': |-
+  • Notify you when your parametric transformer is ready
+  • 1 notification per day
 '513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
 '514': Realm currency reminder
-'515': Realm currency notif. settings
+'515': Notification settings
 '516': Realm currency threshold
 '517': Realm currency reminder disabled
 '518': Realm currency is almost full!
@@ -632,11 +634,9 @@
 '561': Accounts removed
 '562': Choose a custom image
 '563': |-
-  • Click on the button below to generate a login link
-  • Some commands, like </profile:1006486283805265953>, </area:1006486283725590531>, and </stats:1006486283725590530> only require your UID
-  • Other commands, like </check:1006486283725590529>, </abyss:1006486283725590535>, and </diary:1006486283725590534> require your Cookie
+  • There are two account types: UID and Cookie
+  • Some commands require Cookie, to add them, choose one of the options in the red box when adding an account
   • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
-  • You can always remove your account data by using </accounts:1020188057628065866>
 '564': Latency
 '565': Credits
 '566': Libraries used
@@ -667,25 +667,17 @@
 '583': Select a weekday
 '584': Realm currency notification
 '585': Test DM
-'586': This feature allows you to receive notification when your resin exceeds a certain amount
-'587': |-
-  • Threshold: The amount of resin you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
-'588': This feature allows you to receive notification when your realm currency exceeds a certain amount
-'589': |-
-  • Threshold: The amount of realm currency you want to be notified at
-  • Maximum notification number: After reminding you this number of times, Shenhe will stop DMing you
-  • A an account linked with Cookie is required to enable this feature
+'586': Notify you when your resin exceeds a certain amount
+'587': ''
+'588': ''
+'589': ''
 '590': |-
-  • This feature allows you to receive notification when a character's talent domain is farmable
-  • Simply select the characters you want to be notified about
+  • Notify you when a character's talent domain is farmable
   • Selecting a character that already has notification enabled will disable it
 '591': Current settings
 '592': |-
-  • This feature allows you to set reminders to assist you in doing the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered
-  • The only exception is the talent notification, which is shared across all accounts
+  • Set reminders to do the homework provided by Genshin on-time
+  • Reminder settings are separate for each account you have registered, except talent and weapon notification
   • Click on the buttons below for more information on each feature
 '593': Reminders
 '594': Change settings
@@ -725,18 +717,17 @@
 '628': You have enabled the daily check-in feature
 '629': You have disabled the daily check-in feature
 '630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
-'631': Shenhe has automatically disabled this notification feature for you, to enable it again, please use </remind:1020580644365021255>
+'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
 '632': Weapon notification
 '633': |-
-  • This feature allows you to receive notification when a weapon's domain is farmable
-  • Simply select the weapons you want to be notified about
+  • Notify you when a weapon's domain is farmable
   • Selecting a weapon that already has notification enabled will disable its notification
 '634': Add/Remove weapons
 '635': Remove all weapons
 '636': Current weapons
 '637': There are currently no notifications set for any weapons
 '638': Choosing this weapon will turn OFF its notifications
-'639': This feature allows you to receive notification when your realm currency exceeds a certain amount
+'639': Notif you when your realm currency exceeds a certain amount
 '640': Two-piece effect
 '641': Four-piece effect
 '642': Support server
@@ -810,3 +801,4 @@
 '701': All
 '702': The link you have provided has expired, please generate a new one
 '703': Element
+'704': PT notification
