@@ -4,18 +4,34 @@ import discord
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import (ArtifactDetail, BookDetail, CharacterDetail,
-                         CharacterTalentType, FoodDetail, FurnitureDetail,
-                         Material, MaterialDetail, MonsterDetail,
-                         NameCardDetail, WeaponDetail)
-from apps.genshin.utils import get_fight_prop
+from ambr.models import (
+    ArtifactDetail,
+    BookDetail,
+    Character,
+    CharacterDetail,
+    CharacterTalentType,
+    CharacterUpgrade,
+    FoodDetail,
+    FurnitureDetail,
+    Material,
+    MaterialDetail,
+    MonsterDetail,
+    NameCardDetail,
+    Weapon,
+    WeaponDetail,
+    WeaponUpgrade,
+)
+from apps.genshin.utils import get_character_emoji, get_fight_prop
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_weekday_name
-from data.game.elements import get_element_color, get_element_emoji
+from data.game.elements import get_element_emoji
 from UI_elements.genshin import Search
-from utility.utils import (default_embed, get_user_appearance_mode,
-                           get_weekday_int_with_name)
-from yelan.draw import draw_big_material_card
+from utility.utils import (
+    default_embed,
+    get_user_appearance_mode,
+    get_weekday_int_with_name,
+)
+from yelan.draw import draw_big_character_card, draw_big_material_card
 
 
 async def parse_character_wiki(
@@ -121,7 +137,15 @@ async def parse_character_wiki(
                     value=str(index),
                 )
             )
-    view = Search.View(embeds, options, text_map.get(325, locale), all_materials, locale, dark_mode, character.element)
+    view = Search.View(
+        embeds,
+        options,
+        text_map.get(325, locale),
+        all_materials,
+        locale,
+        dark_mode,
+        character.element,
+    )
     view.author = i.user
     await i.edit_original_response(embed=embeds[0], view=view)
     view.message = await i.original_response()
@@ -209,6 +233,8 @@ async def parse_material_wiki(
     material: MaterialDetail,
     i: discord.Interaction,
     locale: discord.Locale | str,
+    client: AmbrTopAPI,
+    dark_mode: bool,
 ):
     rarity_str = ""
     for _ in range(material.rarity):
@@ -221,7 +247,9 @@ async def parse_material_wiki(
     )
     if material.sources is not None and material.sources:
         source_str = ""
-        for source in material.sources:
+        for index, source in enumerate(material.sources):
+            if index == 10:
+                break
             day_str = ""
             if len(source.days) != 0:
                 day_list = [
@@ -236,8 +264,43 @@ async def parse_material_wiki(
             value=source_str,
             inline=False,
         )
+    files = []
+    upgrades = [
+        await client.get_character_upgrade(),
+        await client.get_weapon_upgrade(),
+    ]
+    matches: List[CharacterUpgrade | WeaponUpgrade] = []
+    for upgrade in upgrades:
+        for u in upgrade:
+            material_ids = [m.name for m in u.items]
+            if material.name in material_ids:
+                matches.append(u)
+    if matches:
+        objects = []
+        for match in matches:
+            if isinstance(match, CharacterUpgrade):
+                character = await client.get_character(match.character_id)
+                if not isinstance(character, Character):
+                    continue
+                objects.append((character, ""))
+            else:
+                weapon = await client.get_weapon(match.weapon_id)
+                if not isinstance(weapon, Weapon):
+                    continue
+                objects.append((weapon, ""))
+        fp = await draw_big_material_card(
+            objects,
+            text_map.get(587, locale),
+            asset.dark_theme_background if dark_mode else asset.light_theme_background,
+            i.client.session,
+            dark_mode,
+            locale,
+        )
+        fp.seek(0)
+        embed.set_image(url="attachment://characters.jpeg")
+        files = [discord.File(fp, "characters.jpeg")]
     embed.set_thumbnail(url=material.icon)
-    await i.followup.send(embed=embed)
+    await i.followup.send(embed=embed, files=files)
 
 
 async def parse_artifact_wiki(
@@ -342,7 +405,14 @@ async def parse_food_wiki(
         )
     await i.followup.send(embed=embed, files=files)
 
-async def parse_furniture_wiki(furniture: FurnitureDetail, i: discord.Interaction, locale: discord.Locale | str, client: AmbrTopAPI, dark_mode: bool):
+
+async def parse_furniture_wiki(
+    furniture: FurnitureDetail,
+    i: discord.Interaction,
+    locale: discord.Locale | str,
+    client: AmbrTopAPI,
+    dark_mode: bool,
+):
     embed = default_embed(furniture.name)
     embed.description = f"""
         {furniture.description}
@@ -351,9 +421,7 @@ async def parse_furniture_wiki(furniture: FurnitureDetail, i: discord.Interactio
         {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost}
     """
     embed.set_thumbnail(url=furniture.icon)
-    embed.set_author(
-        name=f"{furniture.categories[0]} - {furniture.types[0]}"
-    )
+    embed.set_author(name=f"{furniture.categories[0]} - {furniture.types[0]}")
     files = []
     if furniture.recipe is not None and furniture.recipe.input is not None:
         materials = []
@@ -365,9 +433,7 @@ async def parse_furniture_wiki(furniture: FurnitureDetail, i: discord.Interactio
         fp = await draw_big_material_card(
             materials,
             text_map.get(626, locale),
-            asset.dark_theme_background
-            if dark_mode
-            else asset.light_theme_background,
+            asset.dark_theme_background if dark_mode else asset.light_theme_background,
             i.client.session,
             dark_mode,
             locale,
@@ -378,7 +444,10 @@ async def parse_furniture_wiki(furniture: FurnitureDetail, i: discord.Interactio
         files.append(discord_file)
     await i.followup.send(embed=embed, files=files)
 
-async def parse_namecard_wiki(namecard: NameCardDetail, i: discord.Interaction, locale: discord.Locale | str):
+
+async def parse_namecard_wiki(
+    namecard: NameCardDetail, i: discord.Interaction, locale: discord.Locale | str
+):
     rarity_str = ""
     for _ in range(namecard.rarity):
         rarity_str += asset.white_star_emoji
@@ -388,7 +457,13 @@ async def parse_namecard_wiki(namecard: NameCardDetail, i: discord.Interaction, 
     embed.add_field(name=text_map.get(530, locale), value=namecard.source)
     await i.followup.send(embed=embed)
 
-async def parse_book_wiki(book: BookDetail, i: discord.Interaction, locale: discord.Locale | str, client: AmbrTopAPI):
+
+async def parse_book_wiki(
+    book: BookDetail,
+    i: discord.Interaction,
+    locale: discord.Locale | str,
+    client: AmbrTopAPI,
+):
     rarity_str = ""
     for _ in range(book.rarity):
         rarity_str += asset.white_star_emoji
@@ -400,13 +475,13 @@ async def parse_book_wiki(book: BookDetail, i: discord.Interaction, locale: disc
         story = await client.get_book_story(volume.story_id)
         embed = default_embed(volume.name, story)
         embed.set_footer(text=volume.description)
-        options.append(
-            discord.SelectOption(label=volume.name, value=str(volume.id))
-        )
+        options.append(discord.SelectOption(label=volume.name, value=str(volume.id)))
         book_embeds[str(volume.id)] = embed
     book_embeds["book_info"] = book_embed
     view = Search.BookVolView(
-        book_embeds, options, text_map.get(501, locale),
+        book_embeds,
+        options,
+        text_map.get(501, locale),
     )
     view.author = i.user
     await i.followup.send(embed=book_embed, view=view)

@@ -746,7 +746,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 material = await client.get_material_detail(int(query))
                 if material is None:
                     raise ItemNotFound
-                await parse_material_wiki(material, i, locale)
+                await parse_material_wiki(material, i, locale, client, dark_mode)
 
             elif item_type == 3:  # artifact
                 artifact = await client.get_artifact_detail(int(query))
