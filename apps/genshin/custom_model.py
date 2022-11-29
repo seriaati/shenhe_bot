@@ -10,6 +10,7 @@ import genshin
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 import cachetools
+from pyppeteer.browser import Browser
 
 
 class ShenheUser(BaseModel):
@@ -73,6 +74,7 @@ class ShenheBot(commands.Bot):
     db: aiosqlite.Connection
     main_db: aiosqlite.Connection
     backup_db: aiosqlite.Connection
+    browsers: Dict[str, Browser]
     debug: bool
     maintenance: bool = False
     maintenance_time: Optional[str] = ""

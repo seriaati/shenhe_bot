@@ -7,7 +7,7 @@ class CondText:
     def __init__(self):
         self.data = {}
         files = ['artifact', 'build', 'character','weapon']
-        langs = ['en-US', 'zh-TW', 'ja-JP']
+        langs = ['en-US', 'zh-TW']
         for lang in langs:
             for file in files:
                 with open(f"shenhe_external/{lang}/{file}.yaml") as f:

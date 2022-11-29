@@ -230,7 +230,7 @@ class CalculateDamageButton(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: EnkaView
-        view = EnkaDamageCalculator.View(self.view, self.view.locale)
+        view = EnkaDamageCalculator.View(self.view, self.view.locale, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
         view.message = await i.original_response()

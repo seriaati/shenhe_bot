@@ -11,17 +11,10 @@ from apps.genshin.custom_model import EnkaView
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
-from utility.utils import (
-    default_embed,
-    divide_chunks,
-    error_embed,
-    get_user_appearance_mode,
-)
-from yelan.damage_calculator import (
-    DamageCalculator,
-    return_current_status,
-    return_damage,
-)
+from utility.utils import (default_embed, divide_chunks, error_embed,
+                           get_user_appearance_mode)
+from yelan.damage_calculator import (DamageCalculator, return_current_status,
+                                     return_damage)
 from yelan.data.GO_modes import hit_mode_texts
 from yelan.draw import draw_character_card
 

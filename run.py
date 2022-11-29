@@ -1,6 +1,7 @@
 # shenhe-bot by seria
 
 import asyncio
+from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 import getpass
 import os
@@ -8,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 import aiohttp
 import aiosqlite
+from apps.genshin.browser import launch_browsers
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
@@ -89,6 +91,7 @@ class Shenhe(commands.Bot):
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
+        self.pool = ProcessPoolExecutor()
         self.gateway = HuTaoLoginAPI(
             client_id=os.getenv("HUTAO_CLIENT_ID", ""),
             client_secret=os.getenv("HUTAO_CLIENT_SECRET", ""),
@@ -133,6 +136,7 @@ class Shenhe(commands.Bot):
         log.info(f"[System]on_ready: Logged in as {self.user}")
         log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
         self.gateway.start()
+        self.browsers = await launch_browsers()
 
     async def gateway_connect(self, data: Ready):
         log.info(f"[System][Hutao Login Gateway] Connected")
@@ -212,6 +216,8 @@ class Shenhe(commands.Bot):
         await self.main_db.close()
         await self.backup_db.close()
         await self.session.close()
+        for browser in self.browsers.values():
+            await browser.close()
 
 
 sentry_sdk.init(
