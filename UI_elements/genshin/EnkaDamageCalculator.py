@@ -1,12 +1,14 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 import aiohttp
 import PIL
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
+from pyppeteer import browser
 
 import asset
 import config
+from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import EnkaView
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
@@ -20,7 +22,7 @@ from yelan.draw import draw_character_card
 
 
 class View(BaseView):
-    def __init__(self, enka_view: EnkaView, locale: Locale | str):
+    def __init__(self, enka_view: EnkaView, locale: Locale | str, browsers: Dict[str, browser.Browser]):
         super().__init__(timeout=config.long_timeout)
 
         # defining damage calculation variables
@@ -38,6 +40,7 @@ class View(BaseView):
             locale,
             "critHit",
             enka_view.member,
+            get_browser(browsers, str(locale)),
         )
 
         # producing select options
