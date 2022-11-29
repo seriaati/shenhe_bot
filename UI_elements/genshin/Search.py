@@ -43,9 +43,6 @@ class QuickNavigation(Select):
             fp = await draw_big_material_card(
                 self.view.all_materials,
                 text_map.get(320, self.view.locale),
-                asset.dark_theme_background
-                if self.view.dark_mode
-                else get_element_color(self.view.character_element),
                 i.client.session,
                 self.view.dark_mode,
                 self.view.locale,

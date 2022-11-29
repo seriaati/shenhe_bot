@@ -176,7 +176,6 @@ class LevelModal(BaseModal):
         fp = await draw_big_material_card(
             all_materials,
             f"{weapon.name}: {text_map.get(191, self.locale)}",
-            "#C5EDFF",
             i.client.session,
             await get_user_appearance_mode(i.user.id, i.client.db),
             self.locale,

@@ -4,15 +4,18 @@ from typing import List, Tuple
 import aiohttp
 import aiosqlite
 from discord import Embed, Interaction, Locale, User
+from discord.errors import InteractionResponded
+
+import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Material
 from apps.text_map.convert_locale import to_ambr_top
-from utility.paginator import GeneralPaginator
-from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
-from discord.errors import InteractionResponded
-from yelan.draw import draw_big_material_card, draw_todo_card
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from utility.paginator import GeneralPaginator
+from utility.utils import (default_embed, divide_chunks,
+                           get_user_appearance_mode)
+from yelan.draw import draw_big_material_card
 
 
 async def get_todo_embed(
@@ -49,14 +52,14 @@ async def get_todo_embed(
 
     todo_cards = []
     all_materials = list(divide_chunks(all_materials, 7))
+    dark_mode = await get_user_appearance_mode(user.id, db)
     for all_mat in all_materials:
         todo_cards.append(
             await draw_big_material_card(
                 all_mat,
                 "",
-                "#C5EDFF",
                 session,
-                await get_user_appearance_mode(user.id, db),
+                dark_mode,
                 locale,
                 False,
             )

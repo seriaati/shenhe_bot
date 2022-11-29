@@ -211,11 +211,9 @@ async def parse_weapon_wiki(
     fp = await draw_big_material_card(
         all_materials,
         text_map.get(320, locale),
-        asset.dark_theme_background if dark_mode else asset.light_theme_background,
         i.client.session,
         await get_user_appearance_mode(i.user.id, i.client.db),
         locale,
-        custom_max_card_num=4,
     )
     fp.seek(0)
 
@@ -291,7 +289,6 @@ async def parse_material_wiki(
         fp = await draw_big_material_card(
             objects,
             text_map.get(587, locale),
-            asset.dark_theme_background if dark_mode else asset.light_theme_background,
             i.client.session,
             dark_mode,
             locale,
@@ -347,7 +344,6 @@ async def parse_monster_wiki(
         fp = await draw_big_material_card(
             materials,
             text_map.get(622, locale),
-            asset.dark_theme_background if dark_mode else asset.light_theme_background,
             i.client.session,
             dark_mode,
             locale,
@@ -387,9 +383,6 @@ async def parse_food_wiki(
             fp = await draw_big_material_card(
                 materials,
                 text_map.get(626, locale),
-                asset.dark_theme_background
-                if dark_mode
-                else asset.light_theme_background,
                 i.client.session,
                 dark_mode,
                 locale,
@@ -433,7 +426,6 @@ async def parse_furniture_wiki(
         fp = await draw_big_material_card(
             materials,
             text_map.get(626, locale),
-            asset.dark_theme_background if dark_mode else asset.light_theme_background,
             i.client.session,
             dark_mode,
             locale,

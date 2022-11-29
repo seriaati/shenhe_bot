@@ -223,7 +223,7 @@ class DynamicBackgroundInput(BaseModel):
     card_x_padding: int
     card_y_padding: int
     card_num: int
-    max_card_num: int
+    max_card_num: Optional[int] = None
     background_color: str
     draw_title: bool = True
 
