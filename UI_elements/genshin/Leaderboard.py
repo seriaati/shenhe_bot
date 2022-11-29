@@ -50,7 +50,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
     view.type = leaderboard
     uid = view.uid
     locale = view.locale
-    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
     embed = default_embed().set_author(
         name=text_map.get(644, locale), icon_url=asset.loader
     )
@@ -84,18 +84,22 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         guild_member_ids = []
     try:
         if leaderboard == "single_strike_damage":
-            async with i.client.db.execute("SELECT * FROM abyss_leaderboard ORDER BY single_strike DESC") as c:  
+            async with i.client.db.execute(
+                "SELECT * FROM abyss_leaderboard ORDER BY single_strike DESC"
+            ) as c:
                 data: List[Tuple] = await c.fetchall()
             if view.area == "server":
                 data = [item for item in data if item[6] in guild_member_ids]
             if not data:
                 raise EmptyLeaderboard
-            result = await draw_abyss_leaderboard(dark_mode, i.client.session, uid, data, locale)  
+            result = await draw_abyss_leaderboard(
+                dark_mode, i.client.session, uid, data, locale
+            )
             result.fp.seek(0)
             embed = default_embed(
                 message=f"""
-                {text_map.get(457, locale) if result.user_rank is None else text_map.get(614, locale).format(rank=result.user_rank)}
-                {text_map.get(615, locale).format(num=len(data))}
+                    {text_map.get(457, locale) if result.user_rank is None else text_map.get(614, locale).format(rank=result.user_rank)}
+                    {text_map.get(615, locale).format(num=len(data))}
                 """
             )
             embed.set_author(
@@ -109,13 +113,17 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 view=view,
             )
         elif leaderboard == "character_usage_rate":
-            async with i.client.db.execute("SELECT * FROM abyss_character_leaderboard") as c:  
+            async with i.client.db.execute(
+                "SELECT * FROM abyss_character_leaderboard"
+            ) as c:
                 data = await c.fetchall()
             if view.area == "server":
                 data = [item for item in data if item[2] in guild_member_ids]
             if not data:
                 raise EmptyLeaderboard
-            result = await draw_character_usage_card(data, i.client.session, dark_mode, locale)  
+            result = await draw_character_usage_card(
+                data, i.client.session, dark_mode, locale
+            )
             result.fp.seek(0)
             embed = default_embed(
                 message=f"{text_map.get(618, locale).format(name=get_character_emoji(result.first_character.id)+' '+result.first_character.name, num=result.uses, percent=round(result.percentage, 1))}\n"
