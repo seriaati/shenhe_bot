@@ -97,6 +97,7 @@ class Schedule(commands.Cog):
         if now.minute < self.loop_interval:  # every hour
             await asyncio.create_task(self.base_notification("resin_notification"))
             await asyncio.create_task(self.base_notification("pot_notification"))
+            await asyncio.create_task(self.base_notification("pt_notification"))
 
     @tasks.loop(minutes=20)
     async def change_status(self):
