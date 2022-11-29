@@ -10,7 +10,7 @@ from apps.text_map.convert_locale import to_go_dict
 async def launch_browsers() -> Dict[str, Browser]:
     result = {}
     for key, value in to_go_dict.items():
-        browser = await launch()
+        browser = await launch({"headless": True, "args": ["--no-sandbox"]})
         page = await browser.newPage()
         await page.setViewport({"width": 1440, "height": 900})
         await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
