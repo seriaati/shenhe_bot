@@ -152,8 +152,8 @@
 '141': Account data not found!
 '142': Select an element
 '143': You are not the issuer of this command
-'144': ''
-'145': ''
+'144': Profile overview
+'145': Character showcase
 '146': Floor {a}
 '147': Uptime
 '148': Choose abyss floor
@@ -665,8 +665,8 @@
 '585': Test DM
 '586': Notify you when your resin exceeds a certain amount
 '587': Can be used to ugprade
-'588': ''
-'589': ''
+'588': View on Enka.network
+'589': Refreshes {in_x_seconds}
 '590': |-
   • Notify you when a character's talent domain is farmable
   • Selecting a character that already has notification enabled will disable it

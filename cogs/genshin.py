@@ -580,7 +580,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         await i.response.send_message(embed=embed, ephemeral=ephemeral)
 
-    @check_account()
     @app_commands.command(
         name="profile",
         description=_(
@@ -618,7 +617,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         uid = custom_uid or await get_uid(member.id, self.bot.db)
         if uid is None:
-            raise ValueError("UID not found")
+            check = await check_account_predicate(i, member)
+            if not check:
+                return
         enka_data = await get_enka_data(i, locale, uid, member)
         if enka_data is None:
             return
@@ -635,8 +636,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         data = enka_data.cache
         eng_data = enka_data.eng_cache
 
-        embed = default_embed()
-        embed.set_image(url="attachment://profile.jpeg")
         await i.edit_original_response(
             embed=default_embed().set_author(
                 name=text_map.get(644, locale),
@@ -645,7 +644,18 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=None,
             attachments=[],
         )
-        fp = await draw_profile_overview_card(
+
+        embed = default_embed(
+            text_map.get(144, locale),
+            f"""
+            {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.network/u/{uid})
+            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(datetime.now()+timedelta(seconds=enka_data.data.ttl), "R"))}
+            """,
+        )
+        embed.set_image(url="attachment://profile.jpeg")
+        embed_two = default_embed(text_map.get(145, locale))
+        embed_two.set_image(url="attachment://character.jpeg")
+        fp, fp_two = await draw_profile_overview_card(
             enka_data.data,
             await get_user_appearance_mode(i.user.id, self.bot.db),
             locale,
@@ -663,12 +673,18 @@ class GenshinCog(commands.Cog, name="genshin"):
                     emoji=get_character_emoji(str(character.id)),
                 )
             )
-        view = EnkaProfile.View(embed, fp, options, data, eng_data, member, locale)
+        view = EnkaProfile.View(
+            [embed, embed_two], [fp, fp_two], options, data, eng_data, member, locale
+        )
         fp.seek(0)
+        fp_two.seek(0)
         discord_file = File(fp, filename="profile.jpeg")
+        discord_file_two = File(fp_two, filename="character.jpeg")
         view.author = i.user
         await i.edit_original_response(
-            embed=embed, view=view, attachments=[discord_file]
+            embeds=[embed, embed_two],
+            view=view,
+            attachments=[discord_file, discord_file_two],
         )
         view.message = await i.original_response()
 

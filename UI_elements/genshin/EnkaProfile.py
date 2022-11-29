@@ -1,8 +1,16 @@
 import io
 from typing import Any, List
 
-from discord import (ButtonStyle, Embed, File, Interaction, Locale, Member,
-                     SelectOption, User)
+from discord import (
+    ButtonStyle,
+    Embed,
+    File,
+    Interaction,
+    Locale,
+    Member,
+    SelectOption,
+    User,
+)
 from discord.ui import Button, Select
 from enkanetwork.model.base import EnkaNetworkResponse
 
@@ -13,8 +21,11 @@ from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings.CustomImage import (
-    change_user_custom_image, get_user_custom_image,
-    get_user_custom_image_embed, get_user_custom_image_options)
+    change_user_custom_image,
+    get_user_custom_image,
+    get_user_custom_image_embed,
+    get_user_custom_image_options,
+)
 from utility.utils import default_embed, divide_chunks
 from yelan.damage_calculator import return_current_status, return_damage
 
@@ -22,8 +33,8 @@ from yelan.damage_calculator import return_current_status, return_damage
 class View(BaseView):
     def __init__(
         self,
-        overview_embed: Embed,
-        overview_fp: io.BytesIO,
+        overview_embed: List[Embed],
+        overview_fp: List[io.BytesIO],
         character_options: List[SelectOption],
         data: EnkaNetworkResponse,
         eng_data: EnkaNetworkResponse,
@@ -97,12 +108,16 @@ class OverviewButton(Button):
         overview.disabled = True
         set_custom_image.disabled = True
         calculate.disabled = True
-        fp = self.view.overview_fp
+        [fp, fp_two] = self.view.overview_fp
         fp.seek(0)
-        attachment = File(fp, filename="profile.jpeg")
+        fp_two.seek(0)
+        attachments = [
+            File(fp, filename="profile.jpeg"),
+            File(fp_two, filename="character.jpeg"),
+        ]
         await i.response.edit_message(
-            embed=self.view.overview_embed,
-            attachments=[attachment],
+            embeds=self.view.overview_embed,
+            attachments=attachments,
             view=self.view,
         )
 
