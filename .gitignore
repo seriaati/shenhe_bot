@@ -181,4 +181,5 @@ text_maps/monster.json
 text_maps/namecard.json
 feeds/*
 .vscode
+apps/draw/cache/*
 !/**/.gitkeep

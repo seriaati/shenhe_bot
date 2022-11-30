@@ -2,13 +2,16 @@ import math
 import os
 import re
 import time
-from typing import Any, List, Literal, Optional
+from typing import Any, List, Literal, Optional, Tuple
 
 import aiofiles
 import aiohttp
 import discord
+import diskcache
+import genshin
 from PIL import Image, ImageDraw, ImageFont
 
+from apps.genshin.custom_model import DynamicBackgroundInput
 from data.draw.fonts import FONTS
 from utility.utils import log
 
@@ -32,10 +35,13 @@ def extract_urls(objects: List[Any]) -> List[str]:
 async def download_images(urls: List[str], session: aiohttp.ClientSession) -> None:
     """Download images from urls."""
     for url in urls:
+        file_name = extract_file_name(url)
+        if os.path.exists("apps/draw/cache/" + file_name):
+            continue
         async with session.get(url) as resp:
             if resp.status == 200:
                 async with aiofiles.open(
-                    "apps/draw/cache/" + extract_file_name(url), "wb"
+                    "apps/draw/cache/" + file_name, "wb"
                 ) as f:
                     await f.write(await resp.read())
 
@@ -73,7 +79,7 @@ def dynamic_font_size(
     max_font_size: int,
     max_width: int,
     font: ImageFont.FreeTypeFont,
-) -> int:
+) -> ImageFont.FreeTypeFont:
     """Dynamically adjust font size to fit text into a box."""
     font = font.font_variant(size=initial_font_size)
     font_size = initial_font_size
@@ -82,7 +88,7 @@ def dynamic_font_size(
             break
         font_size += 1
         font = font.font_variant(size=font_size)
-    return font_size
+    return font.font_variant(size=font_size)
 
 
 def circular_crop(
@@ -150,3 +156,38 @@ def get_font(
     """Get a font"""
     font_name = get_font_name(locale, variation)
     return ImageFont.truetype(font_name, size)
+
+def get_l_character_data(uuid: str) -> genshin.models.Character:
+    with diskcache.FanoutCache("data/abyss_leaderboard") as cache:
+        character_data = cache.get(uuid)
+        if character_data is None:
+            raise ValueError("Character data not found")
+        return character_data
+    
+def draw_dynamic_background(
+    input: DynamicBackgroundInput,
+) -> Tuple[Image.Image, int]:
+    max_card_num = None
+    for index in range(2, input.card_num):
+        if input.card_num % index == 0:
+            max_card_num = index
+    max_card_num = input.max_card_num or max_card_num or 7
+    num = input.card_num
+    cols = num // max_card_num + 1 if num % max_card_num != 0 else num // max_card_num
+    width = input.left_padding
+    height = (
+        input.top_padding.with_title
+        if input.draw_title
+        else input.top_padding.without_title
+    )  # top padding
+    width += input.right_padding
+    height += input.bottom_padding
+    width += input.card_width * cols  # width of the cards
+    width += input.card_x_padding * (cols - 1)  # padding between cards
+    if num < max_card_num:
+        max_card_num = num
+    height += input.card_height * max_card_num  # height of the cards
+    height += input.card_y_padding * (max_card_num - 1)  # padding between cards
+    im = Image.new("RGB", (width, height), input.background_color)
+
+    return im, max_card_num

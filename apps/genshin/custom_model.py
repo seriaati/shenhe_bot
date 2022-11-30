@@ -1,16 +1,20 @@
-from datetime import datetime
+import asyncio
+import concurrent.futures
 import io
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 import aiosqlite
-from typing import Any, Dict, List, Optional
-from ambr.models import Character
-from pydantic import BaseModel, validator, Field
+import cachetools
 import discord
 import genshin
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
-import cachetools
+from pydantic import BaseModel, Field, validator
 from pyppeteer.browser import Browser
+
+from ambr.models import Character
 
 
 class ShenheUser(BaseModel):
@@ -135,9 +139,11 @@ class UserCustomImage(BaseModel):
     def parse_current(cls, v):
         return True if v == 1 else False
 
+
 class GenshinAppResult(BaseModel):
     success: bool
     result: Any
+
 
 class AbyssResult(BaseModel):
     embed_title: str = Field(alias="title")
@@ -153,19 +159,22 @@ class AbyssResult(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class RealtimeNoteResult(BaseModel):
     embed: discord.Embed
     file: io.BytesIO
 
     class Config:
         arbitrary_types_allowed = True
-        
+
+
 class StatsResult(BaseModel):
     embed: discord.Embed
     file: io.BytesIO
 
     class Config:
         arbitrary_types_allowed = True
+
 
 class AreaResult(BaseModel):
     embed: discord.Embed
@@ -174,6 +183,7 @@ class AreaResult(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class DiaryResult(BaseModel):
     embed: discord.Embed
     file: io.BytesIO
@@ -181,14 +191,16 @@ class DiaryResult(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class CharacterResult(BaseModel):
     embed: discord.Embed
     options: List[discord.SelectOption]
     file: io.BytesIO
     characters: List[genshin.models.Character]
-    
+
     class Config:
         arbitrary_types_allowed = True
+
 
 class CharacterBuild(BaseModel):
     embed: discord.Embed
@@ -199,11 +211,13 @@ class CharacterBuild(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class FightProp(BaseModel):
     name: str
     emoji: str
     substat: bool
     text_map_hash: int
+
 
 class EnkanetworkData(BaseModel):
     data: EnkaNetworkResponse
@@ -211,9 +225,11 @@ class EnkanetworkData(BaseModel):
     cache: EnkaNetworkResponse
     eng_cache: EnkaNetworkResponse
 
+
 class TopPadding(BaseModel):
     with_title: int
     without_title: int
+
 
 class DynamicBackgroundInput(BaseModel):
     top_padding: TopPadding
@@ -229,6 +245,7 @@ class DynamicBackgroundInput(BaseModel):
     background_color: str
     draw_title: bool = True
 
+
 class AbyssLeaderboardUser(BaseModel):
     user_name: str
     rank: int
@@ -238,18 +255,30 @@ class AbyssLeaderboardUser(BaseModel):
     stars_collected: int
     current: bool = False
 
+
 class LeaderboardResult(BaseModel):
     fp: io.BytesIO
     user_rank: Optional[int]
-    
+
     class Config:
         arbitrary_types_allowed = True
+
 
 class CharacterUsageResult(BaseModel):
     fp: io.BytesIO
     first_character: Character
     uses: int
     percentage: float
-    
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class DrawInput(BaseModel):
+    loop: asyncio.AbstractEventLoop
+    session: aiohttp.ClientSession
+    locale: discord.Locale | str = "en-US"
+    dark_mode: bool = False
+
     class Config:
         arbitrary_types_allowed = True
