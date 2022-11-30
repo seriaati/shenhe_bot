@@ -46,6 +46,16 @@ class NotificationUser(BaseModel):
     last_notif_time: Optional[str] = None
     shenhe_user: Optional[ShenheUser] = None
 
+class RecentWish(BaseModel):
+    name: str
+    pull_num: int
+    icon: Optional[str] = None
+
+class WishItem(BaseModel):
+    name: str
+    banner: int
+    rarity: int
+    time: str
 
 class WishData(BaseModel):
     title: str
@@ -53,8 +63,7 @@ class WishData(BaseModel):
     pity: int
     four_star: int
     five_star: int
-    recents: List[Dict[str, str | int]]
-
+    recents: List[RecentWish]
 
 class Wish(BaseModel):
     time: str
@@ -282,3 +291,7 @@ class DrawInput(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+class UsageCharacter(BaseModel):
+    character: Character
+    usage_num: int

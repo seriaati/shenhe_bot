@@ -10,11 +10,13 @@ from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
 from discord.utils import format_dt
 
 from ambr.client import AmbrTopAPI
+from apps.draw import main_funcs
 from apps.genshin.custom_model import (
     AbyssResult,
     AreaResult,
     CharacterResult,
     DiaryResult,
+    DrawInput,
     GenshinAppResult,
     RealtimeNoteResult,
     ShenheBot,
@@ -137,11 +139,14 @@ class GenshinApp:
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
-        fp = await draw_realtime_notes_card(
+        fp = await main_funcs.draw_realtime_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=shenhe_user.user_locale or str(locale),
+                dark_mode=await get_user_appearance_mode(author_id, self.db),
+            ),
             notes,
-            shenhe_user.user_locale or str(locale),
-            self.bot.session,
-            await get_user_appearance_mode(author_id, self.db),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(

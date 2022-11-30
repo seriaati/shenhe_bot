@@ -1,4 +1,5 @@
 import io
+from typing import List
 
 import discord
 import enkanetwork
@@ -64,4 +65,48 @@ def card(
     stat_card = stat_card.convert("RGB")
     fp = io.BytesIO()
     stat_card.save(fp, "JPEG", optimize=True, quality=40)
+    return fp
+
+
+def area(explorations: List[genshin.models.Exploration], dark_mode: bool):
+    mode_txt = "dark" if dark_mode else "light"
+    card = Image.open(f"yelan/templates/area/[{mode_txt}] Area Card Template.png")
+    card_draw = ImageDraw.Draw(card)
+    fill = asset.white if dark_mode else asset.primary_text
+    font = get_font("en-US", 90)
+    pos = 481, 175
+    for index in range(8):
+        exploration = [e for e in explorations if e.id == index + 1]
+        if not exploration:
+            pos = pos[0], pos[1] + 350
+            continue
+        else:
+            exploration = exploration[0]
+        percentage = exploration.explored
+        file_name = f"light_{exploration.id}"
+        try:
+            im = Image.open(f"yelan/templates/area/{file_name}.png")
+        except FileNotFoundError:
+            continue
+        mask = Image.new("L", im.size, 0)
+        empty = Image.new("RGBA", im.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rounded_rectangle(
+            (0, 0, int(percentage / 100 * im.width), im.height),
+            fill=asset.white,
+            radius=20,
+        )
+        card_draw.text(
+            (pos[0] + 180 + int(percentage / 100 * im.width), pos[1] + im.height // 2),
+            f"{percentage}%",
+            fill=fill,
+            font=font,
+            anchor="mm",
+        )
+        im = Image.composite(im, empty, mask)
+        card.paste(im, pos, im)
+        pos = pos[0], pos[1] + 350
+    fp = io.BytesIO()
+    card = card.convert("RGB")
+    card.save(fp, "JPEG", optimize=True)
     return fp

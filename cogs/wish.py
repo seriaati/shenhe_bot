@@ -15,9 +15,19 @@ from discord import (
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
+from ambr.client import AmbrTopAPI
+from ambr.models import Character, Weapon
 from apps.genshin.checks import check_account, check_wish_history
-from apps.genshin.custom_model import ShenheBot, Wish, WishData, WishInfo
+from apps.genshin.custom_model import (
+    RecentWish,
+    ShenheBot,
+    Wish,
+    WishData,
+    WishInfo,
+    WishItem,
+)
 from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
+from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
@@ -160,7 +170,7 @@ class WishCog(commands.GroupCog, name="wish"):
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
             (i.user.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
-            data: List[Tuple[str, int, str]] = await cursor.fetchall()  
+            data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
         dist_c = None
 
@@ -185,7 +195,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 ephemeral=True,
             )
         else:
-            player_luck = str(round(100 * sum((dist_c)[: len(data)+1]), 2))
+            player_luck = str(round(100 * sum((dist_c)[: len(data) + 1]), 2))
 
         embed = default_embed(
             message=f"• {text_map.get(373, i.locale, user_locale).format(luck=player_luck)}\n"
@@ -360,26 +370,33 @@ class WishCog(commands.GroupCog, name="wish"):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, self.bot.db)
+        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
 
+        wishes: List[WishItem] = []
         async with self.bot.db.execute(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
             (member.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
-            data = await cursor.fetchall()
+            async for row in cursor:
+                name = row[0]
+                banner = row[1]
+                rarity = row[2]
+                time = row[3]
+                wishes.append(
+                    WishItem(name=name, banner=banner, rarity=rarity, time=time)
+                )
 
-        items: List[Dict[str, int | str]] = []
-        options = []
-        for _, tpl in enumerate(data):
-            name = tpl[0]
-            banner = tpl[1]
-            wish_rarity = tpl[2]
-            items.append({"name": name, "banner": banner, "rarity": wish_rarity})
-
-        novice_banner = [i for i in items if i["banner"] == 100]
-        character_banner = [i for i in items if i["banner"] == 301]
-        character_banner_alt = [i for i in items if i["banner"] == 400]
-        weapon_banner = [i for i in items if i["banner"] == 302]
-        permanent_banner = [i for i in items if i["banner"] == 200]
+        novice_banner = [wish_item for wish_item in wishes if wish_item.banner == 100]
+        character_banner = [
+            wish_item for wish_item in wishes if wish_item.banner == 301
+        ]
+        character_banner_alt = [
+            wish_item for wish_item in wishes if wish_item.banner == 400
+        ]
+        weapon_banner = [wish_item for wish_item in wishes if wish_item.banner == 302]
+        permanent_banner = [
+            wish_item for wish_item in wishes if wish_item.banner == 200
+        ]
         banners = {
             100: novice_banner,
             301: character_banner,
@@ -387,25 +404,37 @@ class WishCog(commands.GroupCog, name="wish"):
             302: weapon_banner,
             200: permanent_banner,
         }
-        all_wish_data = {}
-        for banner_id, banner in banners.items():
-            if not banner:
+        all_wish_data: Dict[str, WishData] = {}
+        options = []
+        for banner_id, banner_wishes in banners.items():
+            if not banner_wishes:
                 continue
-            five_star = [i for i in banner if i["rarity"] == 5]
-            four_star = [i for i in banner if i["rarity"] == 4]
+            five_star = [wish for wish in banner_wishes if wish.rarity == 5]
+            four_star = [wish for wish in banner_wishes if wish.rarity == 4]
             pity = 0
-            for item in items:
+            for wish in banner_wishes:
                 pity += 1
-                if item["rarity"] == 5:
+                if wish.rarity == 5:
                     break
-            reversed_banner = banner
+            reversed_banner = banner_wishes
             reversed_banner.reverse()
             pull = 0
-            recents = []
-            for item in reversed_banner:
+            recents: List[RecentWish] = []
+            for wish in reversed_banner:
                 pull += 1
-                if item["rarity"] == 5:
-                    recents.append({"name": item["name"], "pull": pull})
+                if wish.rarity == 5:
+                    item_id = text_map.get_id_from_name(wish.name)
+                    item = None
+                    if item_id is not None:
+                        item = await ambr.get_character(str(item_id))
+                        if not isinstance(item, Character):
+                            item = await ambr.get_weapon(item_id)
+                    if isinstance(item, Character | Weapon):
+                        recents.append(
+                            RecentWish(name=wish.name, pull_num=pull, icon=item.icon)
+                        )
+                    else:
+                        recents.append(RecentWish(name=wish.name, pull_num=pull))
                     pull = 0
             recents.reverse()
             title = ""
@@ -434,6 +463,10 @@ class WishCog(commands.GroupCog, name="wish"):
                 )
             )
             all_wish_data[str(banner_id)] = wish_data
+        
+        temp = all_wish_data["301"].pity
+        all_wish_data["301"].pity += all_wish_data["400"].pity
+        all_wish_data["400"].pity += temp
 
         fp = await draw_wish_overview_card(
             self.bot.session,

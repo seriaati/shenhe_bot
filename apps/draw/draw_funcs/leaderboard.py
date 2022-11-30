@@ -1,10 +1,12 @@
 from PIL import Image, ImageDraw
+from ambr.models import Character
 from apps.draw.utility import circular_crop, get_cache, get_font, shorten_text
 from apps.text_map.convert_locale import convert_langdetect
-
+import discord
 import asset
 from apps.genshin.custom_model import AbyssLeaderboardUser
 import langdetect
+from apps.text_map.text_map_app import text_map
 
 def l_user_card(
     dark_mode: bool,
@@ -79,5 +81,48 @@ def l_user_card(
     draw.text(
         (1317, 84), str(user_data.stars_collected), font=font, fill=fill, anchor="mm"
     )
+
+    return im
+
+def c_usage_card(
+    character: Character,
+    usage_num: int,
+    percentage: float,
+    dark_mode: bool,
+    locale: str | discord.Locale,
+) -> Image.Image:
+    # card
+    im = Image.open(
+        f"yelan/templates/character/[{'light' if not dark_mode else 'dark'}] card.png"
+    )
+    draw = ImageDraw.Draw(im)
+
+    # character icon
+    icon = get_cache(character.icon)
+    icon = circular_crop(icon)
+    icon = icon.resize((95, 95))
+    im.paste(icon, (17, 23), icon)
+
+    # character name
+    font = get_font(locale, 40, "Medium")
+    fill = asset.primary_text if not dark_mode else asset.white
+    text = shorten_text(character.name, 321, font)
+    draw.text((127, 23), text, font=font, fill=fill)
+
+    # number of usage
+    font = get_font(locale, 25)
+    fill = asset.secondary_text if not dark_mode else asset.white
+    draw.text(
+        (127, 77),
+        text_map.get(612, locale).format(num=usage_num),
+        font=font,
+        fill=fill,
+    )
+
+    # percentage
+    font = get_font(locale, 36, "Medium")
+    fill = asset.primary_text if not dark_mode else asset.white
+    text = f"{percentage:.1f}%"
+    draw.text((620 - font.getlength(text), 46), text, font=font, fill=fill)
 
     return im
