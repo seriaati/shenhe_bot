@@ -1,5 +1,6 @@
+from apps.genshin.custom_model import DrawInput
 import config
-from yelan.draw import draw_domain_card
+from apps.draw import main_funcs
 
 __all__ = ["DomainPaginator"]
 
@@ -38,11 +39,14 @@ class _view(BaseView):
         self.previous.disabled = self.current_page <= 0
 
         user_locale = await get_user_locale(interaction.user.id, self.db)
-        card = await draw_domain_card(
+        card = await main_funcs.draw_farm_domain_card(
+            DrawInput(
+                loop=interaction.client.loop,
+                session=interaction.client.session,
+                locale=user_locale or interaction.locale,
+            ),
             self.files[self.current_page]["domain"],
-            user_locale or interaction.locale,
             self.files[self.current_page]["items"],
-            interaction.client.session
         )
 
         kwargs = {"embed": self.embeds[self.current_page]}
@@ -136,11 +140,14 @@ class DomainPaginator:
                 view.add_item(child)
 
         user_locale = await get_user_locale(self.interaction.user.id, self.db)
-        card = await draw_domain_card(
-            self.files[0]["domain"],
-            user_locale or self.interaction.locale,
-            self.files[0]["items"],
-            self.interaction.client.session
+        card = await main_funcs.draw_farm_domain_card(
+            DrawInput(
+                loop=self.interaction.client.loop,
+                session=self.interaction.client.session,
+                locale=user_locale or self.interaction.locale,
+            ),
+            self.files[view.current_page]["domain"],
+            self.files[view.current_page]["items"],
         )
 
         kwargs = {"embed": self.embeds[view.current_page]}

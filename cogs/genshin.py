@@ -3,7 +3,7 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Tuple
 
-import pytz
+from apps.draw import main_funcs
 from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
@@ -21,6 +21,7 @@ from apps.genshin.custom_model import (
     AreaResult,
     CharacterResult,
     DiaryResult,
+    DrawInput,
     RealtimeNoteResult,
     ShenheBot,
     StatsResult,
@@ -68,7 +69,6 @@ from utility.utils import (
     error_embed,
     get_user_appearance_mode,
 )
-from yelan.draw import draw_profile_overview_card
 
 load_dotenv()
 
@@ -655,11 +655,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_image(url="attachment://profile.jpeg")
         embed_two = default_embed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
-        fp, fp_two = await draw_profile_overview_card(
+        dark_mode = await get_user_appearance_mode(i.user.id, self.bot.db)
+        fp, fp_two = await main_funcs.draw_profile_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=locale,
+                dark_mode=dark_mode,
+            ),
             enka_data.data,
-            await get_user_appearance_mode(i.user.id, self.bot.db),
-            locale,
-            self.bot.session,
         )
         options = []
         for character in data.characters:

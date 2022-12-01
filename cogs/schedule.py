@@ -5,7 +5,7 @@ import random
 from datetime import datetime, timedelta
 from time import process_time
 from typing import List, Optional
-
+from apps.draw import main_funcs
 import aiosqlite
 import genshin
 import sentry_sdk
@@ -17,16 +17,14 @@ from discord.utils import find, format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Artifact, Character, Domain, Weapon
-from apps.genshin.custom_model import NotificationUser, ShenheBot, ShenheUser
+from ambr.models import Artifact, Character, Domain, Material, Weapon
+from apps.genshin.custom_model import DrawInput, NotificationUser, ShenheBot, ShenheUser
 from apps.genshin.utils import get_shenhe_user, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
-from utility.utils import (default_embed, error_embed,
-                           get_user_appearance_mode, log)
-from yelan.draw import draw_talent_reminder_card
+from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
 
 
 def schedule_error_handler(func):
@@ -79,9 +77,9 @@ class Schedule(commands.Cog):
 
         if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
             hour_dict = {
-                4: 0, # Asia
-                15: -13, # North America
-                21: -7, # Europe
+                4: 0,  # Asia
+                15: -13,  # North America
+                21: -7,  # Europe
             }
             await asyncio.create_task(
                 self.weapon_talent_base_notifiction(
@@ -532,13 +530,23 @@ class Schedule(commands.Cog):
                     if not isinstance(item, (Character, Weapon)):
                         continue
 
+                    materials = []
+                    for material_id in item_info["materials"]:
+                        material = await client.get_material(material_id)
+                        if not isinstance(material, Material):
+                            continue
+                        materials.append(material)
+
                     dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
-                    fp = await draw_talent_reminder_card(
-                        item_info["materials"],
-                        locale,
-                        self.bot.session,
-                        dark_mode,
-                        notification_type,
+                    fp = await main_funcs.draw_material_card(
+                        DrawInput(
+                            loop=self.bot.loop,
+                            session=self.bot.session,
+                            locale=locale,
+                            dark_mode=dark_mode,
+                        ),
+                        materials,
+                        "",
                     )
                     fp.seek(0)
                     file = File(fp, "reminder_card.jpeg")

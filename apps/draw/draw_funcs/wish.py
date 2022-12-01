@@ -34,7 +34,7 @@ def overview(
 
     # user name
     langdetect.DetectorFactory.seed = 0
-    font = get_font(langdetect.detect(convert_langdetect(user_name)), 22, "Light")
+    font = get_font(convert_langdetect(langdetect.detect(user_name)), 22, "Light")
     draw.text((93, 37), user_name, font=font, fill=fill)
 
     # banner name
@@ -123,11 +123,11 @@ def overview(
         # number of pulls
         font = get_font(locale, 16, "Regular")
         if 1 <= int(item.pull_num) <= 50:
-            fill = "#5FA846" if not dark_mode else "#7CBB6D"
+            fill = "#5FA846" if not dark_mode else "#afff9c"
         elif 51 <= int(item.pull_num) <= 70:
-            fill = "#49B0BE"
+            fill = "#4f87ff" if not dark_mode else "#8cb0ff"
         else:
-            fill = "#CF5656" if not dark_mode else "#E97070"
+            fill = "#CF5656" if not dark_mode else "#ff8c8c"
         draw.text(
             (offset[0] + 69, offset[1] + 28),
             f"{item.pull_num} {text_map.get(396, locale)}",

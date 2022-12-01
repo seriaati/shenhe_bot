@@ -8,6 +8,7 @@ from PIL import Image, ImageChops, ImageDraw
 
 import asset
 from apps.draw.utility import (
+    circular_crop,
     draw_dynamic_background,
     dynamic_font_size,
     get_cache,
@@ -17,7 +18,6 @@ from apps.draw.utility import (
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 from apps.text_map.convert_locale import convert_langdetect
 from apps.text_map.text_map_app import text_map
-from utility.utils import circular_crop
 
 
 def character_card(
@@ -161,8 +161,7 @@ def character_card(
     ):
 
         # draw artifact icons
-        bytes_obj = get_cache(artifact.detail.icon.url)
-        icon = Image.open(bytes_obj)
+        icon = get_cache(artifact.detail.icon.url)
         icon.thumbnail((180, 180))
         card.paste(icon, (x_pos, y_pos), icon)
 
@@ -271,7 +270,7 @@ def overview_and_characters(
             else asset.light_theme_background,
         )
     )
-    user_card = user_profile_card(data.player, dark_mode, locale)
+    user_card = user_profile_card(data.player, dark_mode)
     profile_card.paste(user_card, (45, 48), user_card)
     character_bg, _ = draw_dynamic_background(
         DynamicBackgroundInput(
@@ -334,13 +333,13 @@ def user_profile_card(
     # nickname
     draw = ImageDraw.Draw(im)
     langdetect.DetectorFactory.seed = 0
-    font = get_font(langdetect.detect(convert_langdetect(player.nickname)), 36, "Bold")
+    font = get_font(convert_langdetect(langdetect.detect(player.nickname)), 36, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
     draw.text((241, 351), player.nickname, font=font, fill=fill)
 
     # signature
     fill = asset.primary_text if not dark_mode else asset.white
-    font = get_font(langdetect.detect(convert_langdetect(player.signature)), 28)
+    font = get_font(convert_langdetect(langdetect.detect(player.signature)), 28)
     text = player.signature
     # if the signature is too long, split it into multiple lines
     text_list = []

@@ -11,7 +11,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from utility.utils import default_embed, get_user_appearance_mode
-from yelan.draw import draw_abyss_floor_card
+from apps.draw import main_funcs
 
 
 class View(BaseView):
@@ -104,10 +104,13 @@ class FloorSelect(Select):
             key = str(self.abyss_result.abyss_floors[int(self.values[0])])
             fp = cache.get(key)
             if fp is None:
-                fp = await draw_abyss_floor_card(
-                    dark_mode,
+                fp = await main_funcs.draw_abyss_floor_card(
+                    DrawInput(
+                        loop=i.client.loop,
+                        session=i.client.session,
+                        dark_mode=dark_mode,
+                    ),
                     self.abyss_result.abyss_floors[int(self.values[0])],
-                    i.client.session,
                     self.abyss_result.characters,
                 )
                 cache[key] = fp

@@ -52,7 +52,7 @@ def l_user_card(
 
     # write user name
     langdetect.DetectorFactory.seed = 0
-    font = get_font(langdetect.detect(convert_langdetect(user_data.user_name)), 48, "Bold")
+    font = get_font(convert_langdetect(langdetect.detect(user_data.user_name)), 48, "Bold")
     text = shorten_text(user_data.user_name, 221, font)
     draw.text((350, 27), text, font=font, fill=fill)
 

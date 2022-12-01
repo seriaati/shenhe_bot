@@ -1,4 +1,9 @@
-from typing import List, Tuple
+import ast
+from typing import Dict, List, Tuple
+from ambr.client import AmbrTopAPI
+from ambr.models import Character
+from apps.genshin.custom_model import DrawInput, UsageCharacter
+from apps.text_map.convert_locale import to_ambr_top
 
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
@@ -9,7 +14,7 @@ from apps.genshin.utils import get_character_emoji
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from utility.utils import default_embed, error_embed, get_user_appearance_mode
-from yelan.draw import draw_abyss_leaderboard, draw_character_usage_card
+from apps.draw import main_funcs
 
 
 class EmptyLeaderboard(Exception):
@@ -92,8 +97,15 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 data = [item for item in data if item[6] in guild_member_ids]
             if not data:
                 raise EmptyLeaderboard
-            result = await draw_abyss_leaderboard(
-                dark_mode, i.client.session, uid, data, locale
+            result = await main_funcs.draw_single_strike_leaderboard(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=locale,
+                    dark_mode=dark_mode,
+                ),
+                uid,
+                data,
             )
             result.fp.seek(0)
             embed = default_embed(
@@ -121,8 +133,31 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 data = [item for item in data if item[2] in guild_member_ids]
             if not data:
                 raise EmptyLeaderboard
-            result = await draw_character_usage_card(
-                data, i.client.session, dark_mode, locale
+            uc_list: List[UsageCharacter] = []
+            temp_dict: Dict[int, int] = {}
+            for d in data:
+                characters = ast.literal_eval(d[1])
+                for c in characters:
+                    if c in temp_dict:
+                        temp_dict[c] += 1
+                    else:
+                        temp_dict[c] = 1
+            client = AmbrTopAPI(i.client.session, to_ambr_top(locale))
+            for key, value in temp_dict.items():
+                if key in asset.traveler_ids:
+                    key = f"{key}-anemo"
+                character = await client.get_character(str(key))
+                if not isinstance(character, Character):
+                    continue
+                uc_list.append(UsageCharacter(character=character, usage_num=value))
+            result = await main_funcs.abyss_character_usage_card(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=locale,
+                    dark_mode=dark_mode,
+                ),
+                uc_list,
             )
             result.fp.seek(0)
             embed = default_embed(

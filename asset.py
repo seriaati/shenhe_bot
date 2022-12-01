@@ -22,3 +22,4 @@ load_emoji = "<:load_icon:1045528773992386650>"
 settings_emoji = "<:settings_icon:1045929535725637753>"
 pt_icon = "https://i.imgur.com/qizFfcM.png"
 time_emoji = "<:time:1046984074641809408>"
+traveler_ids = [10000005, 10000007]

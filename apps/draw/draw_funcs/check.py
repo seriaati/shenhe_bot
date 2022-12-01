@@ -5,9 +5,8 @@ import genshin
 from PIL import Image, ImageDraw
 
 import asset
-from apps.draw.utility import get_cache, get_font
+from apps.draw.utility import circular_crop, get_cache, get_font
 from apps.text_map.text_map_app import text_map
-from utility.utils import circular_crop
 
 
 def card(

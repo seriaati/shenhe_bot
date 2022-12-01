@@ -72,7 +72,7 @@ def card(
     return fp
 
 
-async def s_card(
+def s_card(
     character: genshin.models.Character,
     dark_mode: bool,
     locale: str | discord.Locale,

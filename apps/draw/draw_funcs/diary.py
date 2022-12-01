@@ -1,8 +1,8 @@
 import io
+from typing import Optional
 
 import discord
 import genshin
-import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 
 import asset
@@ -18,6 +18,7 @@ def card(
     locale: discord.Locale | str,
     month: int,
     dark_mode: bool,
+    plot_io: Optional[io.BytesIO],
 ) -> io.BytesIO:
     im = Image.open(
         f"yelan/templates/diary/[{'light' if not dark_mode else 'dark'}] Diary.png"
@@ -69,41 +70,11 @@ def card(
     x = [cat.name for cat in diary.data.categories]
     y = [val.amount for val in diary.data.categories]
 
-    colors = (
-        [
-            "#617d9d",
-            "#bf6d6a",
-            "#bfa36d",
-            "#887db4",
-            "#8ead85",
-            "#488f8e",
-            "#b3adaa",
-        ]
-        if dark_mode
-        else [
-            "#617d9d",
-            "#ff8985",
-            "#ffd789",
-            "#b0a0ef",
-            "#B8E4AC",
-            "#54BAB9",
-            "#EDE4E0",
-        ]
-    )
-
-    _, ax = plt.subplots()
-    ax.pie(
-        y,
-        colors=colors,
-    )
-
-    plot = io.BytesIO()
-    plt.savefig(plot, bbox_inches=None, transparent=True, format="png")
-
-    plot = Image.open(plot)
-    ratio = 550 / plot.width
-    plot = plot.resize((550, int(plot.height * ratio)))
-    im.paste(plot, (80, 391), plot)
+    if plot_io is not None:
+        plot = Image.open(plot_io)
+        ratio = 550 / plot.width
+        plot = plot.resize((550, int(plot.height * ratio)))
+        im.paste(plot, (80, 391), plot)
 
     font = get_font(locale, 24)
     fill = asset.primary_text if not dark_mode else asset.white

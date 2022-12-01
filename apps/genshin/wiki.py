@@ -1,7 +1,8 @@
 from typing import Dict, List
+from apps.genshin.custom_model import DrawInput
 
 import discord
-
+from apps.draw import main_funcs
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import (
@@ -21,7 +22,7 @@ from ambr.models import (
     WeaponDetail,
     WeaponUpgrade,
 )
-from apps.genshin.utils import get_character_emoji, get_fight_prop
+from apps.genshin.utils import get_fight_prop
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_weekday_name
 from data.game.elements import get_element_emoji
@@ -31,7 +32,6 @@ from utility.utils import (
     get_user_appearance_mode,
     get_weekday_int_with_name,
 )
-from yelan.draw import draw_big_character_card, draw_big_material_card
 
 
 async def parse_character_wiki(
@@ -208,12 +208,15 @@ async def parse_weapon_wiki(
         if not isinstance(full_material, Material):
             continue
         all_materials.append((full_material, ""))
-    fp = await draw_big_material_card(
+    fp = await main_funcs.draw_material_card(
+        DrawInput(
+            loop=i.client.loop,
+            session=i.client.session,
+            locale=locale,
+            dark_mode=dark_mode,
+        ),
         all_materials,
         text_map.get(320, locale),
-        i.client.session,
-        await get_user_appearance_mode(i.user.id, i.client.db),
-        locale,
     )
     fp.seek(0)
 
@@ -286,12 +289,15 @@ async def parse_material_wiki(
                 if not isinstance(weapon, Weapon):
                     continue
                 objects.append((weapon, ""))
-        fp = await draw_big_material_card(
+        fp = await main_funcs.draw_material_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=locale,
+                dark_mode=dark_mode,
+            ),
             objects,
             text_map.get(587, locale),
-            i.client.session,
-            dark_mode,
-            locale,
         )
         fp.seek(0)
         embed.set_image(url="attachment://characters.jpeg")
@@ -341,12 +347,15 @@ async def parse_monster_wiki(
             if not isinstance(mat, Material):
                 continue
             materials.append((mat, ingredient.count or ""))
-        fp = await draw_big_material_card(
+        fp = await main_funcs.draw_material_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=locale,
+                dark_mode=dark_mode,
+            ),
             materials,
             text_map.get(622, locale),
-            i.client.session,
-            dark_mode,
-            locale,
         )
         fp.seek(0)
         discord_file = discord.File(fp, "furniture_recipe.jpeg")
@@ -380,12 +389,15 @@ async def parse_food_wiki(
                 if not isinstance(mat, Material):
                     continue
                 materials.append((mat, ingredient.count))
-            fp = await draw_big_material_card(
+            fp = await main_funcs.draw_material_card(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=locale,
+                    dark_mode=dark_mode,
+                ),
                 materials,
                 text_map.get(626, locale),
-                i.client.session,
-                dark_mode,
-                locale,
             )
             fp.seek(0)
             discord_file = discord.File(fp, "furniture_recipe.jpeg")
@@ -423,12 +435,15 @@ async def parse_furniture_wiki(
             if not isinstance(mat, Material):
                 continue
             materials.append((mat, ingredient.count))
-        fp = await draw_big_material_card(
+        fp = await main_funcs.draw_material_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=locale,
+                dark_mode=dark_mode,
+            ),
             materials,
             text_map.get(626, locale),
-            i.client.session,
-            dark_mode,
-            locale,
         )
         fp.seek(0)
         discord_file = discord.File(fp, "furniture_recipe.jpeg")

@@ -5,13 +5,33 @@ from typing import Dict, List, Optional, Tuple
 import discord
 import enkanetwork
 import genshin
-
+import matplotlib.pyplot as plt
 from ambr.models import Character, Domain, Material, Weapon
-from apps.draw.draw_funcs import (abyss, check, diary, farm, profile, remind,
-                                  stats, wish, todo, characters)
-from apps.draw.utility import (calculate_time, download_images, extract_urls,
-                               get_l_character_data)
-from apps.genshin.custom_model import CharacterUsageResult, DrawInput, LeaderboardResult, UsageCharacter, WishData
+from apps.draw.draw_funcs import (
+    abyss,
+    characters,
+    check,
+    diary,
+    farm,
+    profile,
+    remind,
+    stats,
+    todo,
+    wish,
+)
+from apps.draw.utility import (
+    calculate_time,
+    download_images,
+    extract_urls,
+    get_l_character_data,
+)
+from apps.genshin.custom_model import (
+    CharacterUsageResult,
+    DrawInput,
+    LeaderboardResult,
+    UsageCharacter,
+    WishData,
+)
 
 
 @calculate_time
@@ -56,6 +76,7 @@ async def draw_farm_domain_card(
     items: Dict[int, Character | Weapon],
 ) -> io.BytesIO:
     urls = extract_urls(list(items.values()))
+    urls.extend(extract_urls(domain.rewards))
     await download_images(urls, input.session)
     func = functools.partial(farm.draw_domain_card, domain, input.locale, items)
     return await input.loop.run_in_executor(None, func)
@@ -201,6 +222,7 @@ async def draw_abyss_floor_card(
     func = functools.partial(abyss.floor, input.dark_mode, floor, characters)
     return await input.loop.run_in_executor(None, func)
 
+
 @calculate_time
 async def draw_diary_card(
     input: DrawInput,
@@ -208,10 +230,44 @@ async def draw_diary_card(
     user_data: genshin.models.PartialGenshinUserStats,
     month: int,
 ) -> io.BytesIO:
+    colors = (
+        [
+            "#617d9d",
+            "#bf6d6a",
+            "#bfa36d",
+            "#887db4",
+            "#8ead85",
+            "#488f8e",
+            "#b3adaa",
+        ]
+        if input.dark_mode
+        else [
+            "#617d9d",
+            "#ff8985",
+            "#ffd789",
+            "#b0a0ef",
+            "#B8E4AC",
+            "#54BAB9",
+            "#EDE4E0",
+        ]
+    )
+
+    y = [val.amount for val in diary_data.data.categories]
+    plot = None
+    if sum(y) != 0:
+        _, ax = plt.subplots()
+        ax.pie(
+            y,
+            colors=colors,
+        )
+        plot = io.BytesIO()
+        plt.savefig(plot, bbox_inches=None, transparent=True, format="png")
+
     func = functools.partial(
-        diary.card, diary_data, user_data, input.locale, month, input.dark_mode
+        diary.card, diary_data, user_data, input.locale, month, input.dark_mode, plot
     )
     return await input.loop.run_in_executor(None, func)
+
 
 @calculate_time
 async def draw_material_card(
@@ -223,8 +279,17 @@ async def draw_material_card(
 ) -> io.BytesIO:
     urls = extract_urls([m[0] for m in materials])
     await download_images(urls, input.session)
-    func = functools.partial(todo.material_card, materials, title, input.dark_mode, input.locale, draw_title, background_color)
+    func = functools.partial(
+        todo.material_card,
+        materials,
+        title,
+        input.dark_mode,
+        input.locale,
+        draw_title,
+        background_color,
+    )
     return await input.loop.run_in_executor(None, func)
+
 
 @calculate_time
 async def abyss_character_usage_card(
@@ -233,11 +298,14 @@ async def abyss_character_usage_card(
 ) -> CharacterUsageResult:
     urls = extract_urls([c.character for c in uc_list])
     await download_images(urls, input.session)
-    func = functools.partial(abyss.character_usage, uc_list, input.dark_mode)
+    func = functools.partial(
+        abyss.character_usage, uc_list, input.dark_mode, input.locale
+    )
     return await input.loop.run_in_executor(None, func)
 
+
 @calculate_time
-async def character_card(
+async def character_summary_card(
     input: DrawInput,
     character_list: List[genshin.models.Character],
     element: str,
@@ -245,5 +313,12 @@ async def character_card(
 ) -> io.BytesIO:
     urls = extract_urls(character_list)
     await download_images(urls, input.session)
-    func = functools.partial(characters.card, character_list, input.dark_mode, input.locale, element, custom_title)
+    func = functools.partial(
+        characters.card,
+        character_list,
+        input.dark_mode,
+        input.locale,
+        element,
+        custom_title,
+    )
     return await input.loop.run_in_executor(None, func)

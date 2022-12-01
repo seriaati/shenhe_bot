@@ -66,6 +66,9 @@ def divide_dict(d: Dict, size: int):
     for i in range(0, len(d), size):
         yield {k: d[k] for k in islice(it, size)}
 
+def format_number(text: str) -> str:
+    """Format numbers into bolded texts."""
+    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
     weekday_name_dict = {

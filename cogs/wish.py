@@ -1,6 +1,6 @@
 import ast
 from typing import Dict, List, Optional, Tuple
-
+from apps.draw import main_funcs
 import GGanalysis.games.genshin_impact as GI
 import sentry_sdk
 from discord import (
@@ -19,6 +19,7 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
 from apps.genshin.checks import check_account, check_wish_history
 from apps.genshin.custom_model import (
+    DrawInput,
     RecentWish,
     ShenheBot,
     Wish,
@@ -35,7 +36,6 @@ from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from UI_elements.wish.SetAuthKey import wish_import_command
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed, get_user_appearance_mode
-from yelan.draw import draw_wish_overview_card
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -431,7 +431,7 @@ class WishCog(commands.GroupCog, name="wish"):
                             item = await ambr.get_weapon(item_id)
                     if isinstance(item, Character | Weapon):
                         recents.append(
-                            RecentWish(name=wish.name, pull_num=pull, icon=item.icon)
+                            RecentWish(name=item.name, pull_num=pull, icon=item.icon)
                         )
                     else:
                         recents.append(RecentWish(name=wish.name, pull_num=pull))
@@ -450,7 +450,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 title = text_map.get(655, i.locale, user_locale)
             wish_data = WishData(
                 title=title,
-                total_wishes=len(banner),
+                total_wishes=len(banner_wishes),
                 four_star=len(four_star),
                 five_star=len(five_star),
                 pity=pity,
@@ -463,18 +463,21 @@ class WishCog(commands.GroupCog, name="wish"):
                 )
             )
             all_wish_data[str(banner_id)] = wish_data
-        
+
         temp = all_wish_data["301"].pity
         all_wish_data["301"].pity += all_wish_data["400"].pity
         all_wish_data["400"].pity += temp
 
-        fp = await draw_wish_overview_card(
-            self.bot.session,
-            user_locale or i.locale,
+        fp = await main_funcs.draw_wish_overview_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=user_locale or i.locale,
+                dark_mode=await get_user_appearance_mode(i.user.id, self.bot.db),
+            ),
             all_wish_data["301"],
             member.display_avatar.url,
-            member.name,
-            await get_user_appearance_mode(i.user.id, self.bot.db),
+            member.display_name,
         )
         fp.seek(0)
         view = ChooseBanner.View(

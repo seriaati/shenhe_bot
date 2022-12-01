@@ -18,7 +18,7 @@ from utility.utils import log
 
 def extract_file_name(url: str):
     """Extract file name from url."""
-    return url.split("/")[-1]
+    return url.split("/")[-1].split("?")[0]
 
 
 def extract_urls(objects: List[Any]) -> List[str]:
@@ -112,11 +112,6 @@ def circular_crop(
     return image
 
 
-def format_number(text: str) -> str:
-    """Format numbers into bolded texts."""
-    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
-
-
 def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont) -> str:
     """Shorten text to a maximum length."""
     if font.getlength(text) <= max_length:
@@ -172,6 +167,8 @@ def draw_dynamic_background(
         if input.card_num % index == 0:
             max_card_num = index
     max_card_num = input.max_card_num or max_card_num or 7
+    if max_card_num > 7:
+        max_card_num = 7
     num = input.card_num
     cols = num // max_card_num + 1 if num % max_card_num != 0 else num // max_card_num
     width = input.left_padding
