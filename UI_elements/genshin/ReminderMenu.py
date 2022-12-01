@@ -210,6 +210,8 @@ class NotificationON(Button):
             await return_talent_notification(i, self.view)
         elif self.table_name == "weapon_notification":
             await return_weapon_notification(i, self.view)
+        elif self.table_name == "pt_notification":
+            await return_pt_notification(i, self.view)
 
 
 class NotificationOFF(Button):
@@ -248,6 +250,8 @@ class NotificationOFF(Button):
             await return_talent_notification(i, self.view)
         elif self.table_name == "weapon_notification":
             await return_weapon_notification(i, self.view)
+        elif self.table_name == "pt_notification":
+            await return_pt_notification(i, self.view)
 
 
 class ChangeSettings(Button):
