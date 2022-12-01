@@ -1,8 +1,15 @@
 import ast
 import asyncio
 
-from discord import (ButtonStyle, Embed, Forbidden, Interaction,
-                     InteractionResponded, Locale, NotFound)
+from discord import (
+    ButtonStyle,
+    Embed,
+    Forbidden,
+    Interaction,
+    InteractionResponded,
+    Locale,
+    NotFound,
+)
 from discord.ui import Button, TextInput
 
 import asset
@@ -421,7 +428,7 @@ async def return_pt_notification(i: Interaction, view: View):
         "SELECT max, toggle FROM pt_notification WHERE user_id = ? AND uid = ?",
         (i.user.id, await get_uid(i.user.id, i.client.db)),
     ) as c:
-        max_notif, toggle = (await c.fetchone())
+        max_notif, toggle = await c.fetchone()
     value = f"""
         {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
         {text_map.get(103, view.locale)}: {max_notif}
