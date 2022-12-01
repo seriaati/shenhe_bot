@@ -16,7 +16,7 @@ class Todo(commands.Cog, name="todo"):
     async def todo_list(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         result, disabled = await get_todo_embed(
-            self.bot.db, i.user, i.locale, self.bot.session
+            self.bot.db, i.user, i.locale, self.bot.session, self.bot.loop
         )
         view = TodoList.View(self.bot.db, disabled, i.user, i.locale, user_locale)
         await return_todo(result, i, view, self.bot.db)

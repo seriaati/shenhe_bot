@@ -1,20 +1,22 @@
 from datetime import datetime, timedelta
+import traceback
 from typing import List, Optional
 
 import aiosqlite
 import enkanetwork
 import genshin
-import pytz
 import sentry_sdk
 from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
 from discord.utils import format_dt
-
+from dateutil.relativedelta import relativedelta
 from ambr.client import AmbrTopAPI
+from apps.draw import main_funcs
 from apps.genshin.custom_model import (
     AbyssResult,
     AreaResult,
     CharacterResult,
     DiaryResult,
+    DrawInput,
     GenshinAppResult,
     RealtimeNoteResult,
     ShenheBot,
@@ -26,14 +28,6 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
 from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
-from yelan.draw import (
-    draw_abyss_overview_card,
-    draw_area_card,
-    draw_big_character_card,
-    draw_diary_card,
-    draw_realtime_notes_card,
-    draw_stats_card,
-)
 
 
 class CookieInvalid(Exception):
@@ -89,6 +83,8 @@ def genshin_error_handler(func):
                 return GenshinAppResult(result=embed, success=False)
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
+            # print traceback
+            traceback.print_exc()
             sentry_sdk.capture_exception(e)
             embed = error_embed(message=text_map.get(513, locale, author_locale))
             if embed.description is not None:
@@ -137,11 +133,14 @@ class GenshinApp:
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
-        fp = await draw_realtime_notes_card(
+        fp = await main_funcs.draw_realtime_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=shenhe_user.user_locale or str(locale),
+                dark_mode=await get_user_appearance_mode(author_id, self.db),
+            ),
             notes,
-            shenhe_user.user_locale or str(locale),
-            self.bot.session,
-            await get_user_appearance_mode(author_id, self.db),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
@@ -202,7 +201,7 @@ class GenshinApp:
         user_id: int,
         author_id: int,
         namecard: enkanetwork.Namecard,
-        avatar_url: Asset,
+        avatar_asset: Asset,
         locale: Locale,
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
@@ -222,13 +221,12 @@ class GenshinApp:
                 raise TypeError("Characters is not a list")
 
             mode = await get_user_appearance_mode(author_id, self.db)
-            fp = await draw_stats_card(
-                genshin_user.stats,
+            fp = await main_funcs.draw_stats_card(
+                DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
                 namecard,
-                avatar_url,
-                len(characters) + 1,
-                mode,
-                self.bot.session,
+                genshin_user.stats,
+                avatar_asset,
+                len(characters),
             )
             self.bot.stats_card_cache[uid] = fp
         return GenshinAppResult(success=True, result=StatsResult(embed=embed, file=fp))
@@ -252,7 +250,10 @@ class GenshinApp:
         fp = self.bot.area_card_cache.get(uid)
         if fp is None:
             mode = await get_user_appearance_mode(author_id, self.db)
-            fp = await draw_area_card(explorations, mode)
+            fp = await main_funcs.draw_area_card(
+                DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
+                list(explorations),
+            )
         result = {
             "embed": embed,
             "file": fp,
@@ -261,25 +262,35 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_diary(
-        self, user_id: int, author_id: int, locale: Locale
+        self,
+        user_id: int,
+        author_id: int,
+        locale: Locale,
+        month: Optional[int] = None,
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
         user_timezone = get_uid_tz(shenhe_user.uid)
         now = datetime.now() + timedelta(hours=user_timezone)
+        if month is not None:
+            now = now + relativedelta(months=month)
         diary = await shenhe_user.client.get_diary(month=now.month)
         if shenhe_user.uid is None:
             raise UIDNotFound
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         result = {}
         embed = default_embed()
-        fp = await draw_diary_card(
+        fp = await main_funcs.draw_diary_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=shenhe_user.user_locale or locale,
+                dark_mode=await get_user_appearance_mode(author_id, self.db),
+            ),
             diary,
             user,
-            shenhe_user.user_locale or locale,
             now.month,
-            await get_user_appearance_mode(author_id, self.db),
         )
         embed.set_image(url="attachment://diary.jpeg")
         embed.set_author(
@@ -364,8 +375,15 @@ class GenshinApp:
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
         if fp is None:
-            fp = await draw_abyss_overview_card(
-                new_locale, dark_mode, abyss, user, self.bot.session, self.bot.loop
+            fp = await main_funcs.draw_abyss_overview_card(
+                DrawInput(
+                    loop=self.bot.loop,
+                    session=self.bot.session,
+                    locale=new_locale,
+                    dark_mode=dark_mode,
+                ),
+                abyss,
+                user,
             )
             cache[shenhe_user.uid] = fp
         result[
@@ -420,11 +438,14 @@ class GenshinApp:
                     value=element,
                 )
             )
-        fp = await draw_big_character_card(
+        fp = await main_funcs.character_summary_card(
+            DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=new_locale,
+                dark_mode=await get_user_appearance_mode(author_id, self.db),
+            ),
             list(characters),
-            self.bot.session,
-            await get_user_appearance_mode(author_id, self.db),
-            new_locale,
             "All",
         )
         result["file"] = fp

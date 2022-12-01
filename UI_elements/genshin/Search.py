@@ -1,15 +1,14 @@
 from typing import Dict, List
+from apps.genshin.custom_model import DrawInput
 
 from discord import Embed, File, Interaction, Locale, SelectOption
 from discord.ui import Select
 
-import asset
 import config
 from apps.text_map.text_map_app import text_map
-from data.game.elements import get_element_color
 from UI_base_models import BaseView
 from utility.utils import divide_chunks
-from yelan.draw import draw_big_material_card
+from apps.draw import main_funcs
 
 
 class View(BaseView):
@@ -40,12 +39,15 @@ class QuickNavigation(Select):
         self.view: View
         await i.response.defer()
         if self.values[0] == "1":
-            fp = await draw_big_material_card(
+            fp = main_funcs.draw_material_card(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=self.view.locale,
+                    dark_mode=self.view.dark_mode,
+                ),
                 self.view.all_materials,
                 text_map.get(320, self.view.locale),
-                i.client.session,
-                self.view.dark_mode,
-                self.view.locale,
             )
             fp.seek(0)
             file = File(fp, filename="ascension.jpeg")

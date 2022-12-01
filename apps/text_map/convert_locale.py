@@ -137,5 +137,5 @@ def to_event_lang(locale: Locale | str):
 def to_hutao_login_lang(locale: Locale | str):
     return to_hutao_login_dict.get(str(locale), "en")
 
-def lang_detect_to_locale(lang: str):
+def convert_langdetect(lang: str):
     return LANG_DETECT_TO_LOCALE.get(lang, "en-US")

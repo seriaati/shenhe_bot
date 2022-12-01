@@ -1,5 +1,4 @@
 import asyncio
-import uuid
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
@@ -14,9 +13,9 @@ from diskcache import FanoutCache
 
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (AbyssLeaderboardUser, CharacterBuild,
-                                       EnkanetworkData, FightProp, ShenheBot,
-                                       ShenheUser, WishInfo)
+from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
+                                       FightProp, ShenheBot, ShenheUser,
+                                       WishInfo)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -47,7 +46,6 @@ def calculate_artifact_score(substats: dict):
     for sub, val in substats.items():
         result += val / tier_four_val.get(sub) * 11
     return result
-
 
 def get_character_builds(
     character_id: str, element_builds_dict: dict, locale: discord.Locale | str

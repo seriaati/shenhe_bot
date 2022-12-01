@@ -8,17 +8,25 @@ from pyppeteer import browser
 
 import asset
 import config
+from apps.genshin.custom_model import DrawInput, EnkaView
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import EnkaView
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
-from utility.utils import (default_embed, divide_chunks, error_embed,
-                           get_user_appearance_mode)
-from yelan.damage_calculator import (DamageCalculator, return_current_status,
-                                     return_damage)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    error_embed,
+    get_user_appearance_mode,
+)
+from yelan.damage_calculator import (
+    DamageCalculator,
+    return_current_status,
+    return_damage,
+)
 from yelan.data.GO_modes import hit_mode_texts
-from yelan.draw import draw_character_card
+from apps.draw import main_funcs
 
 
 class View(BaseView):
@@ -154,17 +162,20 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     character = [
         c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
     ][0]
-    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)  
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
     try:
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(enka_view.character_id)  
+            i.user.id, i.client.db, int(enka_view.character_id)
         )
         url = None if custom_image is None else custom_image.url
-        card = await draw_character_card(
+        card = await main_funcs.draw_character_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=enka_view.locale,
+                dark_mode=dark_mode,
+            ),
             character,
-            enka_view.locale,
-            i.client.session,  
-            dark_mode,
             url,
         )
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):

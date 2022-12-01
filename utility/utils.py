@@ -6,8 +6,6 @@ from typing import Dict, List, Optional
 from PIL import Image, ImageDraw
 import aiosqlite
 import discord
-from dateutil import parser
-from discord.utils import format_dt
 from sentry_sdk.integrations.logging import LoggingIntegration
 from PIL.ImageFont import FreeTypeFont
 
@@ -68,6 +66,9 @@ def divide_dict(d: Dict, size: int):
     for i in range(0, len(d), size):
         yield {k: d[k] for k in islice(it, size)}
 
+def format_number(text: str) -> str:
+    """Format numbers into bolded texts."""
+    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
     weekday_name_dict = {
@@ -89,58 +90,3 @@ async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bo
     if mode is not None and mode[0] == 1:
         return True
     return False
-
-
-def human_format(num: int):
-    magnitude = 0
-    while abs(num) >= 1000:
-        magnitude += 1
-        num /= 1000.0
-    return "%.2f%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
-
-
-def dynamic_font_size(
-    text: str,
-    initial_font_size: int,
-    max_font_size: int,
-    max_width: int,
-    font: FreeTypeFont,
-) -> int:
-    font = font.font_variant(size=initial_font_size)
-    font_size = initial_font_size
-    while font.getlength(text) < max_width:
-        if font_size == max_font_size:
-            break
-        font_size += 1
-        font = font.font_variant(size=font_size)
-    return font_size
-
-
-def circular_crop(image: Image.Image, background_color: Optional[str] = None) -> Image.Image:
-    """Crop an image into a circle."""
-    mask = Image.new("L", image.size, 0)
-    empty = Image.new("RGBA", image.size, 0)
-    draw = ImageDraw.Draw(mask)
-    x, y = image.size
-    eX, eY = image.size
-    bbox = (x / 2 - eX / 2, y / 2 - eY / 2, x / 2 + eX / 2, y / 2 + eY / 2)
-    draw.ellipse(bbox, fill=255)
-    image = Image.composite(image, empty, mask)
-    if background_color is not None:
-        background = Image.new("RGBA", image.size, 0)
-        draw = ImageDraw.Draw(background)
-        draw.ellipse(bbox, fill=background_color)
-        background.paste(image, (0, 0), image)
-        return background
-    return image
-
-
-def format_number(text: str) -> str:
-    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
-
-def shorten_text(text: str, max_length: int, font: FreeTypeFont) -> str:
-    """Shorten text to a maximum length."""
-    if font.getlength(text) <= max_length:
-        return text
-    else:
-        return text[: -len(text) + math.floor(max_length / font.getlength("..."))] + "..."

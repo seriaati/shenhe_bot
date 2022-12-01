@@ -45,7 +45,7 @@ class InfoButton(Button):
 class MonthSelect(Select):
     def __init__(self, placeholder: str, locale: Locale | str):
         super().__init__(placeholder=placeholder)
-        self.add_option(label=text_map.get(454, locale), value="0")
+        self.add_option(label=text_map.get(425, locale), value="0")
         self.add_option(label=text_map.get(506, locale), value="-1")
         self.add_option(label=text_map.get(427, locale), value="-2")
 
@@ -60,7 +60,7 @@ class MonthSelect(Select):
         await i.response.edit_message(embed=embed, attachments=[])
         user_locale = await get_user_locale(i.user.id, i.client.db)
         result = await self.view.genshin_app.get_diary(
-            self.view.member.id, i.user.id, i.locale
+            self.view.member.id, i.user.id, i.locale, int(self.values[0])
         )
         if not result.success:
             await i.followup.send(embed=result.result)

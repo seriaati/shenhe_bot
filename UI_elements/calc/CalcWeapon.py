@@ -7,7 +7,7 @@ import asset
 import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Material, Weapon, WeaponDetail
-from apps.genshin.custom_model import TodoList
+from apps.genshin.custom_model import DrawInput, TodoList
 from apps.genshin.utils import get_weapon_emoji, level_to_ascension_phase
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
@@ -20,7 +20,7 @@ from utility.utils import (
     error_embed,
     get_user_appearance_mode,
 )
-from yelan.draw import draw_big_material_card
+from apps.draw import main_funcs
 
 
 class View(BaseView):
@@ -60,14 +60,18 @@ class WeaponTypeButton(Button):
         self.view.clear_items()
         count = 1
         for option in options:
-            self.view.add_item(WeaponSelect(self.view.locale, option, f" ({count}~{count+len(option)-1})"))
+            self.view.add_item(
+                WeaponSelect(
+                    self.view.locale, option, f" ({count}~{count+len(option)-1})"
+                )
+            )
             count += len(option)
         await i.response.edit_message(view=self.view)
 
 
 class WeaponSelect(Select):
     def __init__(self, locale: Locale | str, options: List[SelectOption], range: str):
-        super().__init__(placeholder=text_map.get(180, locale)+range, options=options)
+        super().__init__(placeholder=text_map.get(180, locale) + range, options=options)
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
@@ -173,12 +177,15 @@ class LevelModal(BaseModal):
         weapon = await ambr.get_weapon(int(self.weapon_id))
         if not isinstance(weapon, Weapon):
             raise TypeError("weapon is not a Weapon")
-        fp = await draw_big_material_card(
+        fp = await main_funcs.draw_material_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=self.locale,
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
+            ),
             all_materials,
             f"{weapon.name}: {text_map.get(191, self.locale)}",
-            i.client.session,
-            await get_user_appearance_mode(i.user.id, i.client.db),
-            self.locale,
         )
         fp.seek(0)
         embed = default_embed()

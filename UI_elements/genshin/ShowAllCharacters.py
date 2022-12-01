@@ -1,16 +1,16 @@
 from typing import Any, List
+from apps.genshin.custom_model import DrawInput
 
 import genshin
 from discord import File, Interaction, Locale, SelectOption, Member, User
 from discord.ui import Select
 from ambr.client import AmbrTopAPI
-
+from apps.draw import main_funcs
 import asset
 import config
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from utility.utils import default_embed, get_user_appearance_mode
-from yelan.draw import draw_big_character_card
 
 
 class View(BaseView):
@@ -41,16 +41,19 @@ class ElementSelect(Select):
             ),
             attachments=[],
         )
-        fp = await draw_big_character_card(
+        fp = await main_funcs.character_summary_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=self.view.locale,
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
+            ),
             self.view.characters,
-            i.client.session,  
-            await get_user_appearance_mode(i.user.id, i.client.db),  
-            self.view.locale,
             self.values[0],
         )
         fp.seek(0)
         file = File(fp, filename="characters.jpeg")
-        ambr = AmbrTopAPI(i.client.session)  
+        ambr = AmbrTopAPI(i.client.session)
         ambr_characters = await ambr.get_character(include_beta=False)
         if not isinstance(ambr_characters, List):
             raise TypeError("ambr_characters is not a list")

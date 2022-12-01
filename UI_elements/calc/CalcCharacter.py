@@ -3,27 +3,30 @@ from typing import List
 import genshin
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
-
+from apps.draw import main_funcs
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from ambr.models import (Character, CharacterDetail, CharacterTalentType,
-                         Material)
+from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
 from apps.genshin.checks import check_account_predicate, check_cookie_predicate
-from apps.genshin.custom_model import TodoList
-from apps.genshin.utils import (InvalidLevelInput, get_character_emoji,
-                                get_character_suggested_talent_levels,
-                                get_enka_data, get_shenhe_user, get_uid,
-                                level_to_ascension_phase, validate_level_input)
+from apps.genshin.custom_model import DrawInput, TodoList
+from apps.genshin.utils import (
+    InvalidLevelInput,
+    get_character_emoji,
+    get_character_suggested_talent_levels,
+    get_enka_data,
+    get_shenhe_user,
+    get_uid,
+    level_to_ascension_phase,
+    validate_level_input,
+)
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from data.game.elements import (get_element_color, get_element_emoji,
-                                get_element_list)
+from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from UI_base_models import BaseModal, BaseView
 from UI_elements.calc import AddToTodo
 from utility.utils import default_embed, get_user_appearance_mode
-from yelan.draw import draw_big_material_card
 
 
 class View(BaseView):
@@ -308,15 +311,16 @@ class TargetLevelModal(BaseModal):
         level_type = text_map.get(182, locale)
         self.target.label = text_map.get(169, locale).format(level_type=level_type)
         self.target.placeholder = text_map.get(170, locale).format(a=90)
+        self.target.default = str(init_levels[0])
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.a.placeholder = text_map.get(170, locale).format(a=9)
-        self.a.default = str(suggested_levels[0])
+        self.a.default = str(init_levels[0]) if init_levels[0] > suggested_levels[0] else str(suggested_levels[0])
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
         self.e.placeholder = text_map.get(170, locale).format(a=4)
-        self.e.default = str(suggested_levels[1])
+        self.e.default = str(init_levels[1]) if init_levels[1] > suggested_levels[1] else str(suggested_levels[1])
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
         self.q.placeholder = text_map.get(170, locale).format(a=10)
-        self.q.default = str(suggested_levels[2])
+        self.q.default = str(init_levels[2]) if init_levels[2] > suggested_levels[2] else str(suggested_levels[2])
         self.character_id = character_id
         self.init_levels = init_levels
         self.locale = locale
@@ -428,12 +432,15 @@ class TargetLevelModal(BaseModal):
         character = await ambr.get_character(self.character_id)
         if not isinstance(character, Character):
             raise TypeError("character is not a Character")
-        fp = await draw_big_material_card(
+        fp = await main_funcs.draw_material_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=self.locale,
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
+            ),
             all_materials,
             f"{character.name}: {text_map.get(191, self.locale)}",
-            i.client.session,
-            await get_user_appearance_mode(i.user.id, i.client.db),
-            self.locale,
             background_color=get_element_color(character.element),
         )
         fp.seek(0)
