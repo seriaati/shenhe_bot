@@ -311,15 +311,16 @@ class TargetLevelModal(BaseModal):
         level_type = text_map.get(182, locale)
         self.target.label = text_map.get(169, locale).format(level_type=level_type)
         self.target.placeholder = text_map.get(170, locale).format(a=90)
+        self.target.default = str(init_levels[0])
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.a.placeholder = text_map.get(170, locale).format(a=9)
-        self.a.default = str(suggested_levels[0])
+        self.a.default = str(init_levels[0]) if init_levels[0] > suggested_levels[0] else str(suggested_levels[0])
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
         self.e.placeholder = text_map.get(170, locale).format(a=4)
-        self.e.default = str(suggested_levels[1])
+        self.e.default = str(init_levels[1]) if init_levels[1] > suggested_levels[1] else str(suggested_levels[1])
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
         self.q.placeholder = text_map.get(170, locale).format(a=10)
-        self.q.default = str(suggested_levels[2])
+        self.q.default = str(init_levels[2]) if init_levels[2] > suggested_levels[2] else str(suggested_levels[2])
         self.character_id = character_id
         self.init_levels = init_levels
         self.locale = locale
