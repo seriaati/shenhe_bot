@@ -4,13 +4,13 @@ import json
 import random
 from datetime import datetime, timedelta
 from time import process_time
-from typing import List, Optional
+import traceback
+from typing import List, Literal, Optional
 from apps.draw import main_funcs
 import aiosqlite
 import genshin
 import sentry_sdk
 from discord import File, Game, Interaction, app_commands
-from discord.app_commands import locale_str as _
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
 from discord.utils import find, format_dt
@@ -24,7 +24,7 @@ from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
-from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
+from utility.utils import default_embed, error_embed, get_dt_now, get_user_appearance_mode, log
 
 
 def schedule_error_handler(func):
@@ -42,6 +42,7 @@ def schedule_error_handler(func):
                 )
             )
             log.warning(f"[Schedule] Error in {func.__name__}: {e}")
+            traceback.print_exc()
             sentry_sdk.capture_exception(e)
 
     return inner_function
@@ -65,7 +66,7 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=loop_interval)
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
-        now = datetime.now()
+        now = get_dt_now()
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
 
@@ -201,7 +202,7 @@ class Schedule(commands.Cog):
     async def base_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Start")
         c: aiosqlite.Cursor = await self.bot.db.cursor()
-        now = datetime.now()
+        now = get_dt_now()
         notification_users = await self.get_notification_users(notification_type)
         shenhe_users = await self.get_schedule_users(
             [u.user_id for u in notification_users]
@@ -374,7 +375,7 @@ class Schedule(commands.Cog):
                 await self.bot.db.execute(
                     "UPDATE pt_notification SET current = current + 1, last_notif = ? WHERE user_id = ? AND uid = ?",
                     (
-                        datetime.strftime(datetime.now(), "%Y/%m/%d %H:%M:%S"),
+                        datetime.strftime(get_dt_now(), "%Y/%m/%d %H:%M:%S"),
                         user.user_id,
                         user.shenhe_user.uid,
                     ),
@@ -471,9 +472,9 @@ class Schedule(commands.Cog):
 
     @schedule_error_handler
     async def weapon_talent_base_notifiction(
-        self, notification_type: str, time_offset: int
+        self, notification_type: str, time_offset: Literal[0, -13, -7]
     ):
-        log.info(f"[Schedule][{notification_type}][{time_offset}] Start")
+        log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
         list_name = (
             "weapon_list"
             if notification_type == "weapon_notification"
@@ -482,12 +483,11 @@ class Schedule(commands.Cog):
         async with self.bot.db.execute(
             f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
         ) as c:
-            users = await c.fetchall()
             count = 0
             async for row in c:
                 user_id = row[0]
                 item_list = row[1]
-                now = datetime.now() + timedelta(hours=time_offset)
+                now = get_dt_now() + timedelta(hours=time_offset)
                 locale = await get_user_locale(user_id, self.bot.db) or "en-US"
                 client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                 domains = await client.get_domain()
@@ -535,7 +535,7 @@ class Schedule(commands.Cog):
                         material = await client.get_material(material_id)
                         if not isinstance(material, Material):
                             continue
-                        materials.append(material)
+                        materials.append((material, ""))
 
                     dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
                     fp = await main_funcs.draw_material_card(
@@ -547,6 +547,7 @@ class Schedule(commands.Cog):
                         ),
                         materials,
                         "",
+                        draw_title=False
                     )
                     fp.seek(0)
                     file = File(fp, "reminder_card.jpeg")
@@ -578,7 +579,7 @@ class Schedule(commands.Cog):
                 await asyncio.sleep(2.3)
         await self.bot.db.commit()
         log.info(
-            f"[Schedule][{notification_type}] Ended (Notified {count}/{len(users)} users)"
+            f"[Schedule][{notification_type}] Ended (Notified {count} users)"
         )
 
     @schedule_error_handler

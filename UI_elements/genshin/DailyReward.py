@@ -9,7 +9,7 @@ from discord import Locale, ButtonStyle, Interaction
 from discord.errors import InteractionResponded
 from discord.ui import Button
 from apps.text_map.text_map_app import text_map
-from utility.utils import default_embed, divide_chunks, error_embed
+from utility.utils import default_embed, divide_chunks, error_embed, get_dt_now
 import genshin
 
 
@@ -75,7 +75,8 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         pass
     user_locale = await get_user_locale(i.user.id, i.client.db)  
     locale = user_locale or i.locale
-    day_in_month = calendar.monthrange(datetime.now().year, datetime.now().month)[1]
+    now = get_dt_now()
+    day_in_month = calendar.monthrange(now.year, now.month)[1]
     shenhe_user = await genshin_app.get_user_cookie(i.user.id, i.user.id, i.locale)
     try:
         _, claimed_rewards = await shenhe_user.client.get_reward_info()

@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Literal, Optional, Tuple
 
 import aiohttp
 import aiosqlite
@@ -194,7 +194,7 @@ def get_uid_region_name(uid: int) -> int:
     return region_map.get(str_uid[0], 553)
 
 
-def get_uid_tz(uid: Optional[int]) -> int:
+def get_uid_tz(uid: Optional[int]) -> Literal[0, -13, -7]:
     str_uid = str(uid)
     region_map = {
         "6": -13, # North America

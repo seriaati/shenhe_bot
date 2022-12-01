@@ -27,7 +27,7 @@ from apps.genshin.utils import get_character_emoji, get_shenhe_user, get_uid, ge
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import default_embed, error_embed, get_user_appearance_mode, log
+from utility.utils import default_embed, error_embed, get_dt_now, get_user_appearance_mode, log
 
 
 class CookieInvalid(Exception):
@@ -272,7 +272,7 @@ class GenshinApp:
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
         user_timezone = get_uid_tz(shenhe_user.uid)
-        now = datetime.now() + timedelta(hours=user_timezone)
+        now = get_dt_now() + timedelta(hours=user_timezone)
         if month is not None:
             now = now + relativedelta(months=month)
         diary = await shenhe_user.client.get_diary(month=now.month)

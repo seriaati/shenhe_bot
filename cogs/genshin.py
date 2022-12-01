@@ -67,6 +67,7 @@ from utility.utils import (
     default_embed,
     divide_chunks,
     error_embed,
+    get_dt_now,
     get_user_appearance_mode,
 )
 
@@ -446,7 +447,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
         uid = await get_uid(i.user.id, self.bot.db)
-        now = datetime.now() + timedelta(hours=get_uid_tz(uid))
+        now = get_dt_now() + timedelta(hours=get_uid_tz(uid))
         result, embeds, options = await get_farm_data(i, now.weekday())
 
         class DomainSelect(Select):
@@ -649,7 +650,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             text_map.get(144, locale),
             f"""
             {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.network/u/{uid})
-            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(datetime.now()+timedelta(seconds=enka_data.data.ttl), "R"))}
+            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(get_dt_now()+timedelta(seconds=enka_data.data.ttl), "R"))}
             """,
         )
         embed.set_image(url="attachment://profile.jpeg")

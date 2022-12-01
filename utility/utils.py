@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import math
 import re
@@ -90,3 +91,7 @@ async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bo
     if mode is not None and mode[0] == 1:
         return True
     return False
+
+def get_dt_now() -> datetime:
+    """Get current datetime in UTC+8 timezone."""
+    return datetime.now()
