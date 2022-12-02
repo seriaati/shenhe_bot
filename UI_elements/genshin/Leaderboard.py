@@ -40,10 +40,9 @@ class LeaderboardSelect(Select):
         options = [
             SelectOption(label=text_map.get(80, locale), value="single_strike_damage"),
             SelectOption(label=text_map.get(617, locale), value="character_usage_rate"),
+            SelectOption(label=text_map.get(160, locale), value="full_clear"),
         ]
-        super().__init__(
-            placeholder=placeholder, min_values=1, max_values=1, options=options
-        )
+        super().__init__(placeholder=placeholder, options=options)
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -53,6 +52,7 @@ class LeaderboardSelect(Select):
 
 async def select_callback(view: View, i: Interaction, leaderboard: str):
     view.type = leaderboard
+    
     uid = view.uid
     locale = view.locale
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
@@ -60,6 +60,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         name=text_map.get(644, locale), icon_url=asset.loader
     )
     await i.response.edit_message(embed=embed, attachments=[], view=None)
+    
     glob = [
         item
         for item in view.children
@@ -78,6 +79,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
     elif view.area == "server":
         server.style = ButtonStyle.primary
         glob.style = ButtonStyle.secondary
+    
     if view.area == "server":
         if i.guild is not None:
             if not i.guild.chunked:
@@ -87,6 +89,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             guild_member_ids = [i.user.id]
     else:
         guild_member_ids = []
+        
     try:
         if leaderboard == "single_strike_damage":
             async with i.client.db.execute(
@@ -172,6 +175,42 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             await i.edit_original_response(
                 embed=embed,
                 attachments=[File(result.fp, filename="character_usage.jpeg")],
+                view=view,
+            )
+        elif leaderboard == "full_clear":
+            async with i.client.db.execute(
+                "SELECT * FROM abyss_leaderboard ORDER BY full_clear DESC"
+            ) as c:
+                data: List[Tuple] = await c.fetchall()
+            if view.area == "server":
+                data = [item for item in data if item[6] in guild_member_ids]
+            if not data:
+                raise EmptyLeaderboard
+            result = await main_funcs.draw_single_strike_leaderboard(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=locale,
+                    dark_mode=dark_mode,
+                ),
+                uid,
+                data,
+            )
+            result.fp.seek(0)
+            embed = default_embed(
+                message=f"""
+                    {text_map.get(457, locale) if result.user_rank is None else text_map.get(614, locale).format(rank=result.user_rank)}
+                    {text_map.get(615, locale).format(num=len(data))}
+                """
+            )
+            embed.set_author(
+                name=text_map.get(89, locale), icon_url=i.user.display_avatar.url
+            )
+            embed.set_footer(text=text_map.get(619, locale).format(command="/abyss"))
+            embed.set_image(url="attachment://leaderboard.jpeg")
+            await i.edit_original_response(
+                embed=embed,
+                attachments=[File(result.fp, filename="leaderboard.jpeg")],
                 view=view,
             )
     except EmptyLeaderboard:
