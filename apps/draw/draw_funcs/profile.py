@@ -338,24 +338,25 @@ def user_profile_card(
     draw.text((241, 351), player.nickname, font=font, fill=fill)
 
     # signature
-    fill = asset.primary_text if not dark_mode else asset.white
-    font = get_font(convert_langdetect(langdetect.detect(player.signature)), 28)
     text = player.signature
-    # if the signature is too long, split it into multiple lines
-    text_list = []
-    if font.getlength(text) > 616:
-        new_text = ""
-        for character in text:
-            if font.getlength(new_text + character) > 616:
-                text_list.append(new_text)
-                new_text = character
-            else:
-                new_text += character
-        text_list.append(new_text)
-    else:
-        text_list = [text]
-    text = "\n".join(text_list)
-    draw.text((42, 436), text=text, font=font, fill=fill)
+    if text:
+        fill = asset.primary_text if not dark_mode else asset.white
+        font = get_font(convert_langdetect(langdetect.detect(text)), 28)
+        # if the signature is too long, split it into multiple lines
+        text_list = []
+        if font.getlength(text) > 616:
+            new_text = ""
+            for character in text:
+                if font.getlength(new_text + character) > 616:
+                    text_list.append(new_text)
+                    new_text = character
+                else:
+                    new_text += character
+            text_list.append(new_text)
+        else:
+            text_list = [text]
+        text = "\n".join(text_list)
+        draw.text((42, 436), text=text, font=font, fill=fill)
 
     # other user info
     fill = asset.secondary_text if not dark_mode else asset.white
