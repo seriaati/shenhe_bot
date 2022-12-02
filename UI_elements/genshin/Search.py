@@ -39,7 +39,7 @@ class QuickNavigation(Select):
         self.view: View
         await i.response.defer()
         if self.values[0] == "1":
-            fp = main_funcs.draw_material_card(
+            fp = await main_funcs.draw_material_card(
                 DrawInput(
                     loop=i.client.loop,
                     session=i.client.session,

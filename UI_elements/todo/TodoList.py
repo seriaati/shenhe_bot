@@ -34,6 +34,7 @@ class AddItem(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
+        await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.view.db)
         c: aiosqlite.Cursor = await self.view.db.cursor()
         await c.execute("SELECT COUNT(item) FROM todo WHERE user_id = ?", (i.user.id,))
@@ -76,7 +77,7 @@ class AddItem(Button):
         )
         await self.view.db.commit()
         result, empty = await get_todo_embed(
-            self.view.db, i.user, i.locale, i.client.session
+            self.view.db, i.user, i.locale, i.client.session, i.client.loop
         )
         view = View(self.view.db, empty, i.user, i.locale, user_locale)
         await return_todo(result, i, view, i.client.db)
@@ -114,13 +115,16 @@ class ClearItems(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
+        await i.response.defer()
         c: aiosqlite.Cursor = await self.view.db.cursor()
         user_locale = await get_user_locale(i.user.id, self.view.db)
         await c.execute("DELETE FROM todo WHERE user_id = ?", (i.user.id,))
         await self.view.db.commit()
         view = View(self.view.db, True, i.user, i.locale, user_locale)
         result = (
-            await get_todo_embed(self.view.db, i.user, i.locale, i.client.session)
+            await get_todo_embed(
+                self.view.db, i.user, i.locale, i.client.session, i.client.loop
+            )
         )[0]
         await return_todo(result, i, view, i.client.db)
 
@@ -174,6 +178,7 @@ class RemoveItemSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
+        await i.response.defer()
         c: aiosqlite.Cursor = await self.view.db.cursor()
         user_locale = await get_user_locale(i.user.id, self.view.db)
         modal = RemoveItemModal(i.locale, user_locale)
@@ -218,7 +223,7 @@ class RemoveItemSelect(Select):
             )
         await self.view.db.commit()
         result, disabled = await get_todo_embed(
-            self.view.db, i.user, i.locale, i.client.session
+            self.view.db, i.user, i.locale, i.client.session, i.client.loop
         )
         view = View(self.view.db, disabled, i.user, i.locale, user_locale)
         await return_todo(result, i, view, i.client.db)

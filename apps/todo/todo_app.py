@@ -46,7 +46,8 @@ async def get_todo_embed(
             material = Material(
                 id=0,
                 name=item_id,
-                icon="https://cdn-icons-png.flaticon.com/512/5893/5893002.png",
+                icon="",
+                type="custom",
             )
         else:
             material = await ambr.get_material(int(item_id))
