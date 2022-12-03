@@ -1,5 +1,6 @@
 import io
 from typing import List, Optional
+from apps.text_map.utils import get_element_name
 
 import discord
 import genshin
@@ -27,7 +28,7 @@ def card(
         element_name = text_map.get(701, locale)
     else:
         characters = [c for c in all_characters if c.element == element]
-        element_name = get_element_emoji(element)
+        element_name = get_element_name(element, locale)
 
     # create the background based on the number of characters
     im, max_card_num = draw_dynamic_background(
