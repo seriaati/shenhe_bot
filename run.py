@@ -248,14 +248,6 @@ async def on_interaction(i: Interaction):
     if i.command is None:
         return
 
-    c = await bot.db.cursor()
-    await c.execute(
-        "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
-        (i.user.id,),
-    )
-    await bot.db.commit()
-    await c.close()
-
     if isinstance(i.command, app_commands.Command):
         namespace_str = "" if not i.namespace.__dict__ else ": "
         for key, value in i.namespace.__dict__.items():

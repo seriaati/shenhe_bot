@@ -10,7 +10,6 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 from apps.genshin.custom_model import ShenheBot
-from UI_elements.admin import Annouce
 from utility.utils import error_embed
 
 
@@ -58,8 +57,7 @@ class AdminCog(commands.Cog, name="admin"):
                     continue
                 if module.__name__.startswith(
                     (
-                        "asset"
-                        "ambr.",
+                        "asset" "ambr.",
                         "cogs.",
                         "apps.",
                         "data.",
@@ -94,11 +92,6 @@ class AdminCog(commands.Cog, name="admin"):
         await i.response.defer()
         await self.bot.tree.sync()
         await i.followup.send("sync done")
-
-    @is_seria()
-    @app_commands.command(name="annouce", description=_("Owner usage only", hash=496))
-    async def annouce(self, i: Interaction):
-        await i.response.send_modal(Annouce.Modal())
 
 
 async def setup(bot: commands.Bot) -> None:
