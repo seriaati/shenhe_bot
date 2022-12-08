@@ -88,7 +88,7 @@
 '85': Logros del Espiral del Abismo
 '86': image-name
 '87': Shenhe has claimed today's daily reward for you!
-'88': Spiral Abyss Leaderboard
+'88': Spiral Abyss Leaderboard ({phase}{num})
 '89': rank
 '90': 'Build #'
 '91': Weapon
@@ -167,16 +167,16 @@
   3. Click `Genshin` on the top right corner
   4. Click the gear icon
   5. Toggle all the switches
-'151': ''
+'151': Last last phase
 '152': Resin threshold
-'153': ''
-'154': ''
+'153': Select an abyss phase
+'154': All time
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
 '157': Choose a character
 '158': There are currently no notifications set for any characters
 '159': Current characters
-'160': ''
+'160': Least runs taken to full clear abyss
 '161': Choosing this character will turn OFF its notifications
 '162': Build
 '163': Choose a build
@@ -204,7 +204,7 @@
 '183': Character level
 '184': Use the {command} command to calculate the number of materials needed to level up this character
 '185': Weapon {level_type}
-'186': ''
+'186': "wins/runs"
 '187': Please enter numbers only
 '188': Use the {command} command to calculate the number of materials needed to level up this weapon
 '189': No card for this character yet, check back later!
@@ -308,7 +308,7 @@
 '290': Achievement
 '291': Spiral abyss
 '292': Max HP
-'293': ''
+'293': win %
 '294': ''
 '295': ''
 '296': ''
@@ -484,13 +484,13 @@
 '427': The month before last month
 '428': View abyss data (need /register)
 '429': type
-'430': season
+'430': phase
 '431': The type of data you wish to view
-'432': Which abyss season?
+'432': Which abyss phase?
 '433': Detailed
 '434': View the list of current beta items in Genshin
-'435': This season
-'436': Last season
+'435': This phase
+'436': Last phase
 '437': Beta Items
 '438': Set notification features
 '439': function
@@ -702,7 +702,7 @@
 '617': Character usage rate in abyss
 '618': The most used character is **{name}** with **{num}** uses ({percent}%)
 '619': To update or add your data in the leaderboard, use {command}
-'620': The leaderboard is currently empty
+'620': This leaderboard is currently empty
 '621': Food effect
 '622': Drops
 '623': Interaction timed out
