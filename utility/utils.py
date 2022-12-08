@@ -1,14 +1,12 @@
-from datetime import datetime
 import logging
-import math
 import re
+from datetime import datetime
 from itertools import islice
-from typing import Dict, List, Optional
-from PIL import Image, ImageDraw
+from typing import Dict, List
+
 import aiosqlite
 import discord
 from sentry_sdk.integrations.logging import LoggingIntegration
-from PIL.ImageFont import FreeTypeFont
 
 logging.basicConfig(
     level=logging.INFO,
@@ -95,3 +93,4 @@ async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bo
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8 timezone."""
     return datetime.now()
+

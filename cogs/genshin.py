@@ -397,9 +397,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, self.bot.db)
-        previous = True if previous == 1 else False
         result = await self.genshin_app.get_abyss(
-            member.id, i.user.id, previous, i.locale
+            member.id, i.user.id, True if previous == 1 else False, i.locale
         )
         if not result.success:
             return await i.followup.send(embed=result.result)
@@ -415,15 +414,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed=abyss_result.overview_embed, view=view, files=[image]
             )
             view.message = await i.original_response()
-            if previous == 0:
-                await update_user_abyss_leaderboard(
-                    self.bot.db,
-                    abyss_result.abyss,
-                    abyss_result.characters,
-                    abyss_result.uid,
-                    abyss_result.genshin_user.info.nickname,
-                    i.user.id,
-                )
+            await update_user_abyss_leaderboard(
+                self.bot.db,
+                abyss_result.abyss,
+                abyss_result.genshin_user,
+                abyss_result.characters,
+                abyss_result.uid,
+                abyss_result.genshin_user.info.nickname,
+                i.user.id,
+                previous,
+            )
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: Interaction):

@@ -1,8 +1,7 @@
 import asyncio
-import concurrent.futures
 import io
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
 import aiosqlite
@@ -46,16 +45,19 @@ class NotificationUser(BaseModel):
     last_notif_time: Optional[str] = None
     shenhe_user: Optional[ShenheUser] = None
 
+
 class RecentWish(BaseModel):
     name: str
     pull_num: int
     icon: Optional[str] = None
+
 
 class WishItem(BaseModel):
     name: str
     banner: int
     rarity: int
     time: str
+
 
 class WishData(BaseModel):
     title: str
@@ -64,6 +66,7 @@ class WishData(BaseModel):
     four_star: int
     five_star: int
     recents: List[RecentWish]
+
 
 class Wish(BaseModel):
     time: str
@@ -255,22 +258,15 @@ class DynamicBackgroundInput(BaseModel):
     draw_title: bool = True
 
 
-class AbyssLeaderboardUser(BaseModel):
+class SingleStrikeLeaderboardUser(BaseModel):
     user_name: str
     rank: int
     character: genshin.models.Character
     single_strike: int
     floor: str
     stars_collected: int
-    current: bool = False
-
-
-class LeaderboardResult(BaseModel):
-    fp: io.BytesIO
-    user_rank: Optional[int]
-
-    class Config:
-        arbitrary_types_allowed = True
+    uid: int
+    rank: int
 
 
 class CharacterUsageResult(BaseModel):
@@ -292,6 +288,26 @@ class DrawInput(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class UsageCharacter(BaseModel):
     character: Character
     usage_num: int
+
+
+class RunLeaderboardUser(BaseModel):
+    icon_url: str
+    user_name: str
+    level: int
+    wins_slash_runs: str
+    win_percentage: str
+    stars_collected: int
+    uid: int
+    rank: int
+
+
+class LeaderboardResult(BaseModel):
+    fp: io.BytesIO
+    current_user: Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
+
+    class Config:
+        arbitrary_types_allowed = True

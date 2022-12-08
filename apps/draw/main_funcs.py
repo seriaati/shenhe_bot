@@ -29,6 +29,8 @@ from apps.genshin.custom_model import (
     CharacterUsageResult,
     DrawInput,
     LeaderboardResult,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardUser,
     UsageCharacter,
     WishData,
 )
@@ -58,13 +60,27 @@ async def draw_abyss_one_page(
 async def draw_single_strike_leaderboard(
     input: DrawInput,
     current_uid: int,
-    data: List[Tuple],
-) -> LeaderboardResult:
-    characters = [get_l_character_data(d[1]) for d in data]
+    users: List[SingleStrikeLeaderboardUser],
+) -> io.BytesIO:
+    characters = [u.character for u in users]
     urls = extract_urls(characters)
     await download_images(urls, input.session)
     func = functools.partial(
-        abyss.strike_leaderboard, input.dark_mode, current_uid, data, input.locale
+        abyss.strike_leaderboard, input.locale, input.dark_mode, users, current_uid
+    )
+    return await input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_run_leaderboard(
+    input: DrawInput,
+    current_uid: int,
+    users: List[RunLeaderboardUser],
+) -> io.BytesIO:
+    urls = [u.icon_url for u in users]
+    await download_images(urls, input.session)
+    func = functools.partial(
+        abyss.run_leaderboard, input.locale, input.dark_mode, users, current_uid
     )
     return await input.loop.run_in_executor(None, func)
 

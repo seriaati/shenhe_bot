@@ -15,7 +15,8 @@ from apps.draw.utility import (
     get_l_character_data,
 )
 from apps.genshin.custom_model import (
-    AbyssLeaderboardUser,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardUser,
     CharacterUsageResult,
     DynamicBackgroundInput,
     LeaderboardResult,
@@ -202,105 +203,35 @@ def one_page(
 
 
 def strike_leaderboard(
-    dark_mode: bool,
-    current_uid: int,
-    data: List[Tuple],
     locale: discord.Locale | str,
-) -> LeaderboardResult:
-    user_data_list: List[AbyssLeaderboardUser] = []
-    found_current_user = False
-    for index, d in enumerate(data):
-        if index == 10:
-            break
-        character_data = get_l_character_data(d[1])
-        if d[0] == current_uid:
-            found_current_user = True
-            current_rank = index + 1
-        user_data = AbyssLeaderboardUser(
-            user_name=d[5],
-            rank=index + 1,
-            character=character_data,
-            single_strike=d[2],
-            floor=d[3],
-            stars_collected=d[4],
-            current=True if d[0] == current_uid else False,
-        )
-        user_data_list.append(user_data)
-
-    type = 1 if found_current_user else 2
-    if type == 2:
-        extra_user_data: List[AbyssLeaderboardUser] = []
-        for index, tpl in enumerate(data):
-            if tpl[0] == current_uid:
-                for i in range(-1, 2):
-                    try:
-                        d = data[index + i]
-                    except IndexError:
-                        pass
-                    else:
-                        character_data = get_l_character_data(d[1])
-                        extra_user_data.append(
-                            AbyssLeaderboardUser(
-                                user_name=d[5],
-                                rank=index + i + 1,
-                                character=character_data,
-                                single_strike=d[2],
-                                floor=d[3],
-                                stars_collected=d[4],
-                                current=True if i == 0 else False,
-                            )
-                        )
-                break
-        if not extra_user_data:
-            type = 3
-
-    im = Image.open(
-        f"yelan/templates/leaderboard/[{'dark' if dark_mode else 'light'}] leaderboard_{2 if type == 2 else 1}.png"
+    dark_mode: bool,
+    users: List[SingleStrikeLeaderboardUser],
+    current_uid: int,
+) -> io.BytesIO:
+    """Draw the "Strongest Single Strike" leaderboard."""
+    im = leaderboard.board(
+        dark_mode, users, current_uid, 80, [89, 198, 199, 201, 610], locale
     )
-    draw = ImageDraw.Draw(im)
-
-    # write title
-    fill = asset.primary_text if not dark_mode else asset.white
-    font = get_font(locale, 75, "Bold")
-    draw.text((63, 36), text_map.get(88, locale), fill=fill, font=font)
-
-    # draw table titles
-    fill = asset.secondary_text if not dark_mode else asset.white
-    font = get_font(locale, 36, "Bold")
-    draw.text((125, 220), text_map.get(89, locale), fill=fill, font=font, anchor="mm")
-    draw.text((435, 220), text_map.get(198, locale), fill=fill, font=font, anchor="mm")
-    draw.text((860, 220), text_map.get(199, locale), fill=fill, font=font, anchor="mm")
-    draw.text((1123, 220), text_map.get(201, locale), fill=fill, font=font, anchor="mm")
-    draw.text((1380, 220), text_map.get(610, locale), fill=fill, font=font, anchor="mm")
-
-    offset = (63, 299)
-    for index, user_data in enumerate(user_data_list):
-        if type == 2 and index == 7:
-            break
-        user_card = leaderboard.l_user_card(
-            dark_mode, 2 if user_data.current else 1, user_data
-        )
-        im.paste(user_card, offset, user_card)
-        offset = (offset[0], offset[1] + 220)
-    if type == 2:
-        offset = (63, 1958)
-        for index, user_data in enumerate(extra_user_data):
-            user_card = leaderboard.l_user_card(
-                dark_mode, 2 if user_data.current else 1, user_data
-            )
-            im.paste(user_card, offset, user_card)
-            offset = (offset[0], offset[1] + 220)
-
     fp = io.BytesIO()
     im = im.convert("RGB")
     im.save(fp, format="JPEG", quality=95, optimize=True)
-    if type == 3:
-        user_rank = None
-    elif type == 2:
-        user_rank = extra_user_data[1].rank
-    else:  # type == 1
-        user_rank = current_rank
-    return LeaderboardResult(fp=fp, user_rank=user_rank)
+    return fp
+
+
+def run_leaderboard(
+    locale: discord.Locale | str,
+    dark_mode: bool,
+    users: List[RunLeaderboardUser],
+    current_uid: int,
+) -> io.BytesIO:
+    """Draw the "Runs Taken to Full Clear" leaderboard."""
+    im = leaderboard.board(
+        dark_mode, users, current_uid, 160, [89, 198, 186, 293, 610], locale
+    )
+    fp = io.BytesIO()
+    im = im.convert("RGB")
+    im.save(fp, format="JPEG", quality=95, optimize=True)
+    return fp
 
 
 def overview(

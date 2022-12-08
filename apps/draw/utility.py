@@ -1,19 +1,20 @@
 import math
 import os
-import re
 import time
-from typing import Any, List, Literal, Optional, Tuple
-
+import asset
+from typing import Any, Dict, List, Literal, Optional, Tuple
+from apps.text_map.text_map_app import text_map
 import aiofiles
 import aiohttp
 import discord
 import diskcache
 import genshin
 from PIL import Image, ImageDraw, ImageFont
-
+from fontTools.ttLib import TTFont
+from fontTools.unicode import Unicode
 from apps.genshin.custom_model import DynamicBackgroundInput
 from data.draw.fonts import FONTS
-from utility.utils import log
+from utility.utils import default_embed, log
 
 
 def extract_file_name(url: str):
@@ -40,9 +41,7 @@ async def download_images(urls: List[str], session: aiohttp.ClientSession) -> No
             continue
         async with session.get(url) as resp:
             if resp.status == 200:
-                async with aiofiles.open(
-                    "apps/draw/cache/" + file_name, "wb"
-                ) as f:
+                async with aiofiles.open("apps/draw/cache/" + file_name, "wb") as f:
                     await f.write(await resp.read())
 
 
@@ -117,9 +116,7 @@ def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont) -> st
     if font.getlength(text) <= max_length:
         return text
     else:
-        return (
-            text[: -len(text) + math.floor(max_length / font.getlength("..."))] + "..."
-        )
+        return text[: int(max_length // font.getlength("..."))] + "..."
 
 
 def get_font_name(
@@ -152,13 +149,15 @@ def get_font(
     font_name = get_font_name(locale, variation)
     return ImageFont.truetype(font_name, size)
 
+
 def get_l_character_data(uuid: str) -> genshin.models.Character:
     with diskcache.FanoutCache("data/abyss_leaderboard") as cache:
         character_data = cache.get(uuid)
         if character_data is None:
-            raise ValueError("Character data not found")
+            raise ValueError("Single strike leaderboard character data not found", uuid)
         return character_data
-    
+
+
 def draw_dynamic_background(
     input: DynamicBackgroundInput,
 ) -> Tuple[Image.Image, int]:
@@ -188,3 +187,71 @@ def draw_dynamic_background(
     im = Image.new("RGB", (width, height), input.background_color)
 
     return im, max_card_num
+
+
+async def image_gen_transition(
+    i: discord.Interaction, view: discord.ui.View, locale: discord.Locale | str
+):
+    """Disable all items in a view, show a loader text"""
+    embed = default_embed().set_author(
+        name=text_map.get(644, locale), icon_url=asset.loader
+    )
+    # disable all items in the view
+    for item in view.children:
+        # if item is a button or a select
+        if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+            item.disabled = True
+    try:
+        await i.response.edit_message(embed=embed, view=view, attachments=[])
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view, attachments=[])
+
+
+def global_write(
+    draw: ImageDraw.ImageDraw,
+    pos: Tuple[int, int],
+    text: str,
+    size: int,
+    fill: str,
+    variation: str = "Regular",
+    anchor: Optional[str] = None,
+):
+    """Write a piece of text with the proper fonts"""
+    # load fonts
+    fonts: Dict[str, TTFont] = {}
+    for val in FONTS.values():
+        path = f"resources/fonts/{val['name']}-{variation}.{val['extension']}"
+        fonts[path] = TTFont(path)
+
+    # prior font is the font that was used for the previous glyph
+    prior_font = None
+    for glyph in text:
+        # try to use the prior font
+        if prior_font is not None and has_glyph(prior_font["font_obj"], glyph):
+            f = ImageFont.truetype(prior_font["font_path"], size=size)
+            draw.text(pos, glyph, fill=fill, anchor=anchor, font=f)
+            pos = (pos[0] + f.getlength(glyph), pos[1])
+            continue
+
+        # prior font doesn't have the glyph, find a font that does
+        found = False
+        for font_path, ttfont_obj in fonts.items():
+            f = ImageFont.truetype(font_path, size=size)
+            if has_glyph(ttfont_obj, glyph):
+                found = True
+                prior_font = {"font_path": font_path, "font_obj": ttfont_obj}
+                draw.text(pos, glyph, fill=fill, anchor=anchor, font=f)
+                break
+
+        # sadly none of our fonts have the glyph, write the sad square
+        f = ImageFont.truetype(list(fonts.keys())[0], size=size)
+        if not found:
+            draw.text(pos, glyph, fill=fill, anchor=anchor, font=f)
+        pos = (pos[0] + f.getlength(glyph), pos[1])
+
+
+def has_glyph(font: TTFont, glyph: str):
+    for table in font["cmap"].tables:
+        if ord(glyph) in table.cmap.keys():
+            return True
+    return False

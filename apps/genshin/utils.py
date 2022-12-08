@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Literal, Optional, Tuple
 
 import aiohttp
@@ -26,7 +26,7 @@ from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from utility.utils import (default_embed, divide_chunks, divide_dict,
-                           error_embed)
+                           error_embed, get_dt_now)
 
 
 def calculate_artifact_score(substats: dict):
@@ -754,3 +754,26 @@ async def get_enka_data(
             playerInfo=eng_cache.player, avatarInfoList=eng_cache.characters
         ),
     )
+
+def get_current_abyss_season():
+    start_season = 59
+    start_seasson_dt = datetime(2022, 12, 1, 4, 0, 0)
+    
+    # calculate time difference
+    now = get_dt_now()
+    diff = now - start_seasson_dt
+    
+    # calculate season
+    # 1 season = 16 days
+    season = start_season + (diff.days // 15)
+    
+    return season
+
+def get_abyss_season_date_range(season: int) -> str:
+    """Get the date range of a given season"""
+    
+    season_num = 59
+    season_start = datetime(2022, 12, 1, 4, 0, 0) + timedelta(days=15 * (season_num - season))
+    season_end = season_start + timedelta(days=15)
+    
+    return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
