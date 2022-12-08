@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 
 import discord
 import enkanetwork
-import langdetect
 from PIL import Image, ImageChops, ImageDraw
 
 import asset
@@ -13,10 +12,10 @@ from apps.draw.utility import (
     dynamic_font_size,
     get_cache,
     get_font,
+    global_write,
     shorten_text,
 )
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
-from apps.text_map.convert_locale import convert_langdetect
 from apps.text_map.text_map_app import text_map
 
 
@@ -332,18 +331,22 @@ def user_profile_card(
 
     # nickname
     draw = ImageDraw.Draw(im)
-    langdetect.DetectorFactory.seed = 0
-    font = get_font(convert_langdetect(langdetect.detect(player.nickname)), 36, "Bold")
-    fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((241, 351), player.nickname, font=font, fill=fill)
+    global_write(
+        draw,
+        (241, 351),
+        player.nickname,
+        fill=asset.primary_text if not dark_mode else asset.white,
+        size=36,
+        variation="Bold",
+    )
 
     # signature
     text = player.signature
     if text:
         fill = asset.primary_text if not dark_mode else asset.white
-        font = get_font(convert_langdetect(langdetect.detect(text)), 28)
         # if the signature is too long, split it into multiple lines
         text_list = []
+        font = get_font("en-US", 28)
         if font.getlength(text) > 616:
             new_text = ""
             for character in text:
@@ -356,7 +359,13 @@ def user_profile_card(
         else:
             text_list = [text]
         text = "\n".join(text_list)
-        draw.text((42, 436), text=text, font=font, fill=fill)
+        global_write(
+            draw,
+            (42, 436),
+            text,
+            fill=fill,
+            size=28,
+        )
 
     # other user info
     fill = asset.secondary_text if not dark_mode else asset.white

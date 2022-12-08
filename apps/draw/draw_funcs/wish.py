@@ -1,14 +1,17 @@
 import io
 
 import discord
-import langdetect
 from PIL import Image, ImageDraw
 
 import asset
-from apps.draw.utility import (circular_crop, dynamic_font_size, get_cache,
-                               get_font)
+from apps.draw.utility import (
+    circular_crop,
+    dynamic_font_size,
+    get_cache,
+    get_font,
+    global_write,
+)
 from apps.genshin.custom_model import WishData
-from apps.text_map.convert_locale import convert_langdetect
 from apps.text_map.text_map_app import text_map
 
 
@@ -33,9 +36,7 @@ def overview(
     im.paste(profile_pic, (30, 30), profile_pic)
 
     # user name
-    langdetect.DetectorFactory.seed = 0
-    font = get_font(convert_langdetect(langdetect.detect(user_name)), 22, "Light")
-    draw.text((93, 37), user_name, font=font, fill=fill)
+    global_write(draw, (93, 37), user_name, 22, fill, "Light")
 
     # banner name
     font = get_font(locale, 40, "Bold")
@@ -85,7 +86,9 @@ def overview(
         left_point = offset[0] + 137 - bigger
         adder = 262 if col in [2, 4] else 30
         mid_point = (adder + left_point) // 2
-        font = dynamic_font_size(str(stat), 30, 50, left_point - 30 - 20, get_font(locale, 50, "Medium"))
+        font = dynamic_font_size(
+            str(stat), 30, 50, left_point - 30 - 20, get_font(locale, 50, "Medium")
+        )
         draw.text((mid_point, offset[1]), str(stat), font=font, fill=fill, anchor="mm")
         offset = (offset[0] + 232, offset[1])
 

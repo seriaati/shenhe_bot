@@ -94,21 +94,6 @@ to_hutao_login_dict = {
     "en-US": "en",
 }
 
-LANG_DETECT_TO_LOCALE = {
-    "zh-cn": "zh-CN",
-    "zh-tw": "zh-TW",
-    "vi": "vi",
-    "en": "en-US",
-    "fr": "fr",
-    "ja": "ja",
-    "ko": "ko",
-    "pt": "pt-BR",
-    "ru": "ru",
-    "th": "th",
-    "de": "de",
-    "es": "es-ES",
-}
-
 
 def to_enka(locale: Locale | str):
     return to_enka_dict.get(str(locale)) or "en"
@@ -136,6 +121,3 @@ def to_event_lang(locale: Locale | str):
 
 def to_hutao_login_lang(locale: Locale | str):
     return to_hutao_login_dict.get(str(locale), "en")
-
-def convert_langdetect(lang: str):
-    return LANG_DETECT_TO_LOCALE.get(lang, "en-US")

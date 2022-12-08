@@ -241,13 +241,14 @@ def global_write(
                 found = True
                 prior_font = {"font_path": font_path, "font_obj": ttfont_obj}
                 draw.text(pos, glyph, fill=fill, anchor=anchor, font=f)
+                pos = (pos[0] + f.getlength(glyph), pos[1])
                 break
 
         # sadly none of our fonts have the glyph, write the sad square
         f = ImageFont.truetype(list(fonts.keys())[0], size=size)
         if not found:
             draw.text(pos, glyph, fill=fill, anchor=anchor, font=f)
-        pos = (pos[0] + f.getlength(glyph), pos[1])
+            pos = (pos[0] + f.getlength(glyph), pos[1])
 
 
 def has_glyph(font: TTFont, glyph: str):
