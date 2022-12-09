@@ -1,7 +1,6 @@
 # shenhe-bot by seria
 
 import asyncio
-from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 import getpass
 import os
@@ -13,14 +12,13 @@ from apps.genshin.browser import launch_browsers
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
-from discord import Intents, Interaction, Locale, Message, app_commands
+from discord import Intents, Interaction, Locale, Message, app_commands, WebhookMessage, app_commands, HTTPException
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 from typing import Dict
 
-from discord import WebhookMessage, app_commands
 from discord.ext import commands
 
 from logingateway import HuTaoLoginAPI
@@ -115,7 +113,8 @@ class Shenhe(commands.Bot):
             if cookie in cookie_list:
                 continue
             cookie_list.append(cookie)
-        self.genshin_client = genshin.Client(cookie_list)
+        self.genshin_client = genshin.Client({})
+        self.genshin_client.set_cookies(cookie_list)
 
         # load jishaku
         await self.load_extension("jishaku")
@@ -179,14 +178,17 @@ class Shenhe(commands.Bot):
             ),
         )
         await self.db.commit()
-
-        await ctx["message"].edit(
-            embed=default_embed().set_author(
-                name=text_map.get(39, ctx["locale"]),
-                icon_url=ctx["author"].display_avatar.url,
-            ),
-            view=None,
-        )
+        
+        try:
+            await ctx["message"].edit(
+                embed=default_embed().set_author(
+                    name=text_map.get(39, ctx["locale"]),
+                    icon_url=ctx["author"].display_avatar.url,
+                ),
+                view=None,
+            )
+        except HTTPException:
+            pass
 
         await asyncio.sleep(1)
         await return_accounts(ctx["interaction"])
