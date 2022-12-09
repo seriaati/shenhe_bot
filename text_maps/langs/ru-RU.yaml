@@ -194,8 +194,8 @@
 '173': Elemental skill (E) {level_type}
 '174': Elemental burst (Q) {level_type}
 '175': Add to todo list
-'176': Please remove some materials from your todo list using the `remove materials` button
-'177': You have reached the limit of materials you can have on your todo list (125)
+'176': Page {num}
+'177': ''
 '178': Use </todo:1006486283855605804> to view your todo list
 '179': Success
 '180': Choose a weapon
@@ -223,8 +223,7 @@
 '202': Todo list
 '203': Add item
 '204': |-
-  Amazing! There is currently nothing to do! ˋ( ° ▽、° )
-  Use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items
+  Your dodo list is empty, use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items.
 '205': Remove item
 '206': Clear items
 '207': Choose the item you wish to remove
