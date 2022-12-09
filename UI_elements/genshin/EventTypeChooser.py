@@ -9,7 +9,7 @@ from apps.text_map.utils import get_user_locale
 import config
 from dateutil import parser
 from discord.utils import format_dt
-from utility.paginator import GeneralPaginator
+from utility.paginator import GeneralPaginator, _view
 from utility.utils import default_embed, parse_HTML
 import hoyolab_rss_feeds.hoyolab
 
@@ -27,6 +27,7 @@ class Hoyolab(Button):
         super().__init__(label="Hoyolab", emoji="<:hoyolab_icon:1025044103135776809>")
 
     async def callback(self, i: Interaction):
+        self.view: View
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.db)
         locale = user_locale or i.locale
@@ -69,7 +70,6 @@ class Hoyolab(Button):
         await GeneralPaginator(
             i,
             embeds[list(embeds.keys())[0]],
-            i.client.db,
             [
                 Select(select_options, embeds, i.locale, user_locale),
                 GOBack(self.view.locale),
@@ -84,6 +84,7 @@ class Genshin(Button):
         )
 
     async def callback(self, i: Interaction):
+        self.view: View
         await i.response.defer()
         user_locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
         genshin_py_locale = to_genshin_py(user_locale)
@@ -130,7 +131,6 @@ class Genshin(Button):
         await GeneralPaginator(
             i,
             embeds[first_id],
-            i.client.db,
             [Select(options, embeds, i.locale, user_locale), GOBack(self.view.locale)],
         ).start(edit=True)
 
@@ -149,6 +149,7 @@ class Select(Select):
         self.embeds = embeds
 
     async def callback(self, i: Interaction) -> Any:
+        self.view: _view
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await i.response.edit_message(embed=self.view.embeds[0], view=self.view)

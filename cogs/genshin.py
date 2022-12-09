@@ -854,7 +854,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
         if not result.success:
             return await i.followup.send(embed=result.result, ephemeral=True)
-        await GeneralPaginator(i, result.result, self.bot.db).start(followup=True)
+        await GeneralPaginator(i, result.result).start(followup=True)
 
     @app_commands.command(
         name="beta",
@@ -925,7 +925,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             embed.set_image(url=banner.banner[event_lang])
             embeds.append(embed)
-        await GeneralPaginator(i, embeds, self.bot.db).start(followup=True)
+        await GeneralPaginator(i, embeds).start(followup=True)
 
     @app_commands.command(
         name="artifacts",

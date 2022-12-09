@@ -464,9 +464,10 @@ class WishCog(commands.GroupCog, name="wish"):
             )
             all_wish_data[str(banner_id)] = wish_data
 
-        temp = all_wish_data["301"].pity
-        all_wish_data["301"].pity += all_wish_data["400"].pity
-        all_wish_data["400"].pity += temp
+        if "400" in all_wish_data:
+            temp = all_wish_data["301"].pity
+            all_wish_data["301"].pity += all_wish_data["400"].pity
+            all_wish_data["400"].pity += temp
 
         fp = await main_funcs.draw_wish_overview_card(
             DrawInput(
