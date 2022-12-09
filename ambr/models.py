@@ -88,7 +88,7 @@ class Material(BaseModel):
     @validator("icon", pre=True, allow_reuse=True)
     def get_icon_url(cls, v, values):
         if "type" in values and values["type"] == "custom":
-            icon_url = "https://i.imgur.com/GDLac2a.png?a"
+            icon_url = "https://i.imgur.com/EMfc6o4.png"
         else:
             icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url

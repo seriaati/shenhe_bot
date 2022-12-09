@@ -311,3 +311,7 @@ class LeaderboardResult(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+class TodoItem(BaseModel):
+    name: str
+    count: int
