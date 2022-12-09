@@ -239,6 +239,8 @@ class Schedule(commands.Cog):
                     f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
                     (user.user_id, user.shenhe_user.uid),
                 )
+            except genshin.errors.InternalDatabaseError:
+                pass
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
