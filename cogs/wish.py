@@ -145,7 +145,6 @@ class WishCog(commands.GroupCog, name="wish"):
         await GeneralPaginator(
             i,
             embeds,
-            self.bot.db,
             [
                 select_banner,
                 WishFilter.SelectRarity(
