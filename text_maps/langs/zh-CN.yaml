@@ -194,8 +194,8 @@
 '173': 元素戰技 (E) {level_type}
 '174': 元素爆发 (Q) {level_type}
 '175': 新增到代办清单
-'176': 请输入 `/todo` 并使用「删除素材」按钮
-'177': 代办清单可存素材数量已达最大值 (125)
+'176': Page {num}
+'177': ''
 '178': 使用 </todo:1006486283855605804> 来查看你的代办清单
 '179': 新增成功
 '180': 选择武器
@@ -223,9 +223,7 @@
 '202': 代办清单
 '203': 新增素材
 '204': |-
-  太好了, 没有需要搜集的素材 ˋ( ° ▽、° )
-  使用 </calc character:1000187020892700793> 或 </calc weapon:1000187020892700793> 指令来计算升级所需素材，
-  或是使用下方的按钮来新增素材
+  Your dodo list is empty, use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items.
 '205': 删除素材
 '206': 清空代办清单
 '207': 选择要删除的素材
