@@ -194,7 +194,7 @@
 '173': 元素戰技 (E) {level_type}
 '174': 元素爆發 (Q) {level_type}
 '175': 新增到代辦清單
-'176': Page {num}
+'176': 第 {num} 頁
 '177': ''
 '178': 使用 </todo:1006486283855605804> 來查看你的代辦清單
 '179': 新增成功
@@ -223,7 +223,7 @@
 '202': 代辦清單
 '203': 新增素材
 '204': |-
-  Your todo list is empty, use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items.
+  你的代辦事項列表是空的，使用</calc character:1000187020892700793>或</calc weapon:1000187020892700793>來計算角色和武器的材料，或者使用下面的綠色按鈕來新增自訂項目。
 '205': 刪除素材
 '206': 清空代辦清單
 '207': 選擇要刪除的素材
