@@ -30,7 +30,12 @@ from apps.draw import main_funcs
 
 
 class View(BaseView):
-    def __init__(self, enka_view: EnkaView, locale: Locale | str, browsers: Dict[str, browser.Browser]):
+    def __init__(
+        self,
+        enka_view: EnkaView,
+        locale: Locale | str,
+        browsers: Dict[str, browser.Browser],
+    ):
         super().__init__(timeout=config.long_timeout)
 
         # defining damage calculation variables
@@ -268,7 +273,10 @@ class GoBackToCalc(Button):
 class TeamSelectButton(Button):
     def __init__(self, options: List[SelectOption], placeholder: str):
         super().__init__(
-            style=ButtonStyle.blurple, label=placeholder, custom_id="team_select"
+            style=ButtonStyle.blurple,
+            label=placeholder,
+            custom_id="team_select",
+            emoji=asset.team_emoji,
         )
         self.options = options
         self.placeholder = placeholder
@@ -311,7 +319,11 @@ class TeamSelect(Select):
 class RunCalc(Button):
     def __init__(self, label: str):
         super().__init__(
-            style=ButtonStyle.green, label=label, row=4, custom_id="calculate"
+            style=ButtonStyle.green,
+            label=label,
+            row=4,
+            custom_id="calculate",
+            emoji=asset.play_emoji,
         )
 
     async def callback(self, i: Interaction) -> Any:

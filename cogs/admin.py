@@ -57,7 +57,8 @@ class AdminCog(commands.Cog, name="admin"):
                     continue
                 if module.__name__.startswith(
                     (
-                        "asset" "ambr.",
+                        "asset",
+                        "ambr.",
                         "cogs.",
                         "apps.",
                         "data.",
