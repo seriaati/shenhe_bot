@@ -163,46 +163,34 @@ class WishCog(commands.GroupCog, name="wish"):
     ):
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
 
-        # chacter banner data
+        # charcter banner data
         async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
             (i.user.id, await get_uid(member.id, self.bot.db)),
         ) as cursor:
-            data: List[Tuple[str, int, str]] = await cursor.fetchall()
-
-        dist_c = None
-
-        if data is not None:
             up_num = 0
             std = get_standard_characters()
-            for _, tpl in enumerate(data):
-                name = tpl[0]
-                rarity = tpl[1]
+            data_length = 0
+            async for row in cursor:
+                name = row[0]
+                rarity = row[1]
                 if rarity == 5:
                     if name not in std:
                         up_num += 1
-
+                data_length += 1
             dist_c = GI.up_5star_character(item_num=up_num)
-
-        if dist_c is None:
-            return await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(660, i.locale, user_locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-        else:
-            player_luck = str(round(100 * sum((dist_c)[: len(data) + 1]), 2))
+            player_luck = round(100 * sum((dist_c)[: data_length + 1]), 2)
 
         embed = default_embed(
-            message=f"• {text_map.get(373, i.locale, user_locale).format(luck=player_luck)}\n"
-            f"• {text_map.get(379, i.locale, user_locale).format(a=len(data), b=up_num)}\n"
+            message=f"""
+                • {text_map.get(373, locale).format(luck=round(100-player_luck, 2))}
+                • {text_map.get(379, locale).format(a=data_length, b=up_num)}
+            """
         )
         embed.set_author(
-            name=text_map.get(372, i.locale, user_locale),
+            name=text_map.get(372, locale),
             icon_url=member.display_avatar.url,
         )
         await i.followup.send(embed=embed)
