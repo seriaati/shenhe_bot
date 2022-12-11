@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from typing import List, Tuple
 
 from apps.draw import main_funcs
+from apps.genshin.abyss import get_abyss_enemies
 from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import Select
+from discord.ui import Select, Button
 from discord.utils import format_dt
 from dotenv import load_dotenv
 
@@ -30,6 +31,7 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
 from apps.genshin.utils import (
     get_character_emoji,
+    get_current_abyss_season,
     get_enka_data,
     get_farm_data,
     get_uid,
@@ -51,6 +53,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_elements.genshin import (
     Abyss,
+    AbyssEnemy,
     Build,
     Diary,
     EnkaProfile,
@@ -64,6 +67,7 @@ from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
 from utility.utils import (
+    add_bullet_points,
     default_embed,
     divide_chunks,
     error_embed,
@@ -928,12 +932,57 @@ class GenshinCog(commands.Cog, name="genshin"):
         await GeneralPaginator(i, embeds).start(followup=True)
 
     @app_commands.command(
-        name="artifacts",
-        description=_("View all of your artifacts and their ratings", hash=382),
+        name="abyss-enemies",
+        description=_("View the list of enemies in the current abyss phases", hash=294),
     )
-    async def slash_artifact(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+    async def abyss_enemies(self, i: Interaction):
         await i.response.defer()
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        floors = await get_abyss_enemies(self.bot.session, str(locale))
+        embeds = {}
+        enemies = {}
+        for floor in floors:
+            for chamber in floor.chambers:
+                embed = default_embed(
+                    f"{text_map.get(146, locale).format(a=floor.num)} - {text_map.get(177, locale).format(a=chamber.num)}"
+                )
+                embed.add_field(
+                    name=text_map.get(706, locale),
+                    value=add_bullet_points(floor.ley_line_disorders),
+                    inline=False,
+                )
+                embed.add_field(
+                    name=text_map.get(295, locale),
+                    value=chamber.enemy_level,
+                    inline=False,
+                )
+                embed.add_field(
+                    name=text_map.get(296, locale),
+                    value=chamber.challenge_target,
+                    inline=False,
+                )
+                embed.set_image(url="attachment://enemies.jpeg")
+                embeds[embed.title] = embed
+                enemies[embed.title] = chamber.enemies
+        embed = default_embed()
+        embed.set_image(
+            url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-Abyss.jpg"
+        )
+        embed.set_author(
+            name=f"{text_map.get(705, locale)} ({text_map.get(430, locale)} {get_current_abyss_season()})",
+            icon_url=i.user.display_avatar.url,
+        )
+        view = AbyssEnemy.View(locale, enemies, embeds)
+        view.add_item(
+            Button(
+                url="https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors",
+                label=text_map.get(96, locale),
+                emoji=asset.fandom_emoji,
+            )
+        )
+        view.author = i.user
+        await i.followup.send(embed=embed, view=view)
+        view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:

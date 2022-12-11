@@ -94,3 +94,6 @@ def get_dt_now() -> datetime:
     """Get current datetime in UTC+8 timezone."""
     return datetime.now()
 
+def add_bullet_points(texts: List[str]) -> str:
+    """Add bullet points to a list of texts."""
+    return "\n".join([f"• {text}" for text in texts])

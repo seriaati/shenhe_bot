@@ -315,3 +315,18 @@ class LeaderboardResult(BaseModel):
 class TodoItem(BaseModel):
     name: str
     count: int
+
+class AbyssEnemy(BaseModel):
+    name: str
+    num: int
+
+class AbyssChamber(BaseModel):
+    num: int
+    enemy_level: int
+    challenge_target: str
+    enemies: List[AbyssEnemy]
+
+class AbyssFloor(BaseModel):
+    num: int
+    ley_line_disorders: List[str]
+    chambers: List[AbyssChamber]

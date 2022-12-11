@@ -26,3 +26,4 @@ traveler_ids = [10000005, 10000007]
 add_emoji = "<:add:1050554111919136928>"
 remove_emoji = "<:remove:1050554061142892554>"
 clear_emoji = "<:clear:1050725869913657405>"
+fandom_emoji = "<:fandom:1051560628025839636>"

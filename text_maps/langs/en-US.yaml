@@ -195,7 +195,7 @@
 '174': Elemental burst (Q) {level_type}
 '175': Add to todo list
 '176': Page {num}
-'177': ''
+'177': Chamber {a}
 '178': Use </todo:1006486283855605804> to view your todo list
 '179': Success
 '180': Choose a weapon
@@ -308,9 +308,9 @@
 '291': Spiral abyss
 '292': Max HP
 '293': win %
-'294': ''
-'295': ''
-'296': ''
+'294': View the list of enemies in the current abyss phase
+'295': Enemy level
+'296': Challenge target
 '297': Meet the awesome people that helped me!
 '298': Translators
 '299': Friendship Level
@@ -328,7 +328,7 @@
 '311': How to unblock DM from servers
 '312': Time to farm materials for {name}!
 '313': Genshin Impact
-'314': ''
+'314': Select an abyss chamber
 '315': Basic information
 '316': Birthday
 '317': Affiliation
@@ -399,7 +399,7 @@
 '364': Video Tutorial
 '365': Choose your platform
 '366': Your P.T. is ready to use!
-'367': ''
+'367': Enemies
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
 '370': The last 5-star character you pulled was a standard character
@@ -797,3 +797,5 @@
 '702': The link you have provided has expired, please generate a new one
 '703': Element
 '704': PT notification
+'705': Spiral abyss enemies
+'706': Ley line disorder of this floor
