@@ -36,6 +36,7 @@ from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from UI_elements.wish.SetAuthKey import wish_import_command
 from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed, get_user_appearance_mode
+from utility.wish_paginator import WishPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -142,7 +143,7 @@ class WishCog(commands.GroupCog, name="wish"):
         select_banner = WishFilter.SelectBanner(
             text_map.get(662, i.locale, user_locale), options
         )
-        await GeneralPaginator(
+        await WishPaginator(
             i,
             embeds,
             [

@@ -15,6 +15,8 @@ class _view(BaseView):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
         self.current_page = 0
+        self.rarity_filters = []
+        self.banner_filters = []
 
     async def update_children(self, i: Interaction):
         self.first.disabled = self.current_page == 0
@@ -69,7 +71,7 @@ class _view(BaseView):
         await self.update_children(i)
 
 
-class GeneralPaginator:
+class WishPaginator:
     def __init__(
         self,
         i: Interaction,

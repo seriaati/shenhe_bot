@@ -162,18 +162,16 @@ class GOBack(Button):
         )
 
     async def callback(self, i: Interaction):
-        await return_events(i, edit=True)
+        await return_events(i)
 
 
-async def return_events(i: Interaction, edit: bool = False):
+async def return_events(i: Interaction):
+    await i.response.defer()
     user_locale = await get_user_locale(i.user.id, i.client.db)
     view = View(user_locale or i.locale)
     embed = default_embed().set_author(
         name=text_map.get(361, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
     )
-    if edit:
-        await i.response.edit_message(embed=embed, view=view)
-    else:
-        await i.response.send_message(embed=embed, view=view)
+    await i.edit_original_response(embed=embed, view=view)
     view.message = await i.original_response()

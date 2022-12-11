@@ -6,6 +6,7 @@ from discord.ui import Select
 from apps.genshin.utils import get_wish_history_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from utility.wish_paginator import _view
 
 
 class SelectBanner(Select):
@@ -13,6 +14,7 @@ class SelectBanner(Select):
         super().__init__(placeholder=placeholder, options=options, row=3)
 
     async def callback(self, i: Interaction):
+        self.view: _view
         await filter_callback(self, i, self.view.banner_filters)
 
 
@@ -25,10 +27,11 @@ class SelectRarity(Select):
         self.select_banner = select_banner
 
     async def callback(self, i: Interaction):
+        self.view: _view
         await filter_callback(self, i, self.view.rarity_filters)
 
 
-async def filter_callback(self_var, i: Interaction, filter_list: List):
+async def filter_callback(self_var: SelectBanner | SelectRarity, i: Interaction, filter_list: List):
     user_locale = await get_user_locale(i.user.id, i.client.db)
     if self_var.values[0] not in filter_list:
         filter_list.append(self_var.values[0])

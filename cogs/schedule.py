@@ -342,7 +342,7 @@ class Schedule(commands.Cog):
                     )
                 except Forbidden:
                     pass
-            await asyncio.sleep(2.3)
+            await asyncio.sleep(2.5)
         await self.bot.db.commit()
         log.info(
             f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
