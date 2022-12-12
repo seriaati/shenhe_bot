@@ -395,8 +395,8 @@
       move: Q蒸發
       dmg: 35345
     - weapon: 風鷹劍
-      artifacts: 少女4件套
-      main_stats: 充生暴
+      artifacts: 宗室4件套
+      main_stats: 充生治
       talents: 2/11/13
       stats:
         攻擊力: 1522
@@ -404,10 +404,10 @@
         生命值: 26673
         充能效率: 198.50%
       move: Q治療
-      dmg: 8521
+      dmg: 6775
     - weapon: 天空之刃
-      artifacts: 少女4件套
-      main_stats: 充生暴
+      artifacts: 宗室4件套
+      main_stats: 充生治
       talents: 2/11/13
       stats:
         攻擊力: 1270
@@ -415,7 +415,7 @@
         生命值: 26673
         充能效率: 253.60%
       move: Q治療
-      dmg: 8521
+      dmg: 6775
   thoughts:
     - 班尼特因為自己大招可以提供高額攻擊加成，所以即使是走傷害流，對攻擊力面板也沒有要求。 事實上更加常見的配裝是充生治，因為充生治里治療加成時固定，能考詞條改變的只有生命，思路比較簡單。
     - |-

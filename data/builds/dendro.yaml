@@ -3,15 +3,15 @@
   element: 草
   builds:
     - weapon: 獵人之徑
-      artifacts: 深林4件套
+      artifacts: 樂團4件套
       main_stats: 精草暴
       talents: 10/8/9
       stats:
-        攻擊力: 1113
+        攻擊力: 1121
         暴率/暴傷: 80/169
-        元素精通: 267
+        元素精通: 347
       move: 激化藏蘊矢
-      dmg: 16322
+      dmg: 16317
     - weapon: 獵人之徑
       artifacts: 飾金4件套
       main_stats: 精草暴
@@ -19,29 +19,29 @@
       stats:
         攻擊力: 1225
         暴率/暴傷: 80/169
-        元素精通: 447
+        元素精通: 347
       move: 激化藏蘊矢
-      dmg: 16061
-    - weapon: 阿莫斯之弓
-      artifacts: 深林4件套
+      dmg: 15633
+    - weapon: 天空之翼
+      artifacts: 樂團4件套
       main_stats: 精草暴
       talents: 10/8/9
       stats:
-        攻擊力: 1610
-        暴率/暴傷: 60/120
-        元素精通: 267
+        攻擊力: 1253
+        暴率/暴傷: 76/152
+        元素精通: 347
       move: 激化藏蘊矢
-      dmg: 15270
+      dmg: 13118
     - weapon: 蒼翠獵弓
-      artifacts: 深林4件套
+      artifacts: 樂團4件套
       main_stats: 精草暴
       talents: 10/8/9
       stats:
-        攻擊力: 1081
+        攻擊力: 1089
         暴率/暴傷: 74/148
-        元素精通: 267
+        元素精通: 347
       move: 激化藏蘊矢
-      dmg: 12714
+      dmg: 12586
   thoughts:
     - |-
       提納里在使用獵人之徑時，精通收益永遠高於攻擊，而其它武器都有攻擊反大於精通的閾值，這個閾值在500-700左右，通常達不到，可以認為提納里就是精通更好。
@@ -171,6 +171,17 @@
         充能效率: 130%
       move: 激化滅淨三業
       dmg: 26998
+    - weapon: 千夜浮夢
+      artifacts: 深林4件套
+      main_stats: 精精暴
+      talents: 6/10/9
+      stats:
+        攻擊力: 1089
+        暴率/暴傷: 46.9/127.3
+        元素精通: 774
+        充能效率: 130%
+      move: 激化滅淨三業
+      dmg: 26239
     - weapon: 流浪的晚星
       artifacts: 深林4件套
       main_stats: 精精精

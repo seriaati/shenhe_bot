@@ -267,15 +267,15 @@
         暴率/暴傷: 60/120
       move: E 滿蓄力
       dmg: 59601
-    - weapon: 四風原典
+    - weapon: 流浪樂章
       artifacts: 翠綠4件套
       main_stats: 攻風暴
       talents: 8/13/11
       stats:
-        攻擊力: 1782
-        暴率/暴傷: 76/153
+        攻擊力: 1609
+        暴率/暴傷: 74/148
       move: E 滿蓄力
-      dmg: 55809
+      dmg: 69107
     - weapon: 匣裡日月
       artifacts: 翠綠4件套
       main_stats: 攻風暴
@@ -290,3 +290,54 @@
     - |-
       聖遺物思路推薦： 攻擊沙、風傷杯、暴擊（暴傷）頭
       副詞條優先順序： 雙暴（自適應）>百分比攻擊>元素充能效率
+流浪者:
+  builds:
+    - weapon: 圖萊杜拉的回憶
+      artifacts: 沙樓4件套
+      main_stats: 攻風暴
+      talents: 10/9/8
+      stats:
+        攻擊力: 2081
+        暴率/暴傷: 80/163
+      move: 開 E 普攻一段
+      dmg: 12642
+    - weapon: 四風原典
+      artifacts: 沙樓4件套
+      main_stats: 攻風暴
+      talents: 10/9/8
+      stats:
+        攻擊力: 1964
+        暴率/暴傷: 80/185
+      move: 開 E 普攻一段
+      dmg: 12106
+    - weapon: 流浪樂章
+      artifacts: 沙樓4件套
+      main_stats: 攻風暴
+      talents: 10/9/8
+      stats:
+        攻擊力: 1964
+        暴率/暴傷: 80/174
+      move: 開 E 普攻一段
+      dmg: 13449
+琺露珊:
+  builds:
+    - weapon: 終末嗟嘆之詩
+      artifacts: 翠綠4件套
+      main_stats: 充風暴
+      talents: 6/12/13
+      stats:
+        攻擊力: 1549
+        暴率/暴傷: 60/120
+        充能效率: 226.90%
+      move: Q 釋放傷害
+      dmg: 35593
+    - weapon: 西風獵弓
+      artifacts: 翠綠4件套
+      main_stats: 充風暴
+      talents: 6/12/13
+      stats:
+        攻擊力: 1312
+        暴率/暴傷: 60/120
+        充能效率: 233.10%
+      move: Q 釋放傷害
+      dmg: 30144
