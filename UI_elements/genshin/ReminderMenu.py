@@ -178,6 +178,9 @@ class PTNotification(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
+        check = await check_cookie_predicate(i)
+        if not check:
+            return
         await return_pt_notification(i, self.view)
 
 
@@ -353,6 +356,7 @@ class ResinModal(BaseModal):
     def __init__(self, locale: Locale | str):
         super().__init__(title=text_map.get(515, locale))
         self.resin_threshold.label = text_map.get(152, locale)
+        self.resin_threshold.placeholder = text_map.get(170, locale).format(a=140)
         self.max_notif.label = text_map.get(103, locale)
         self.max_notif.placeholder = text_map.get(155, locale)
 
