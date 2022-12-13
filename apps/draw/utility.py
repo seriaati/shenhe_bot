@@ -11,7 +11,6 @@ import diskcache
 import genshin
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
-from fontTools.unicode import Unicode
 from apps.genshin.custom_model import DynamicBackgroundInput
 from data.draw.fonts import FONTS
 from utility.utils import default_embed, log
