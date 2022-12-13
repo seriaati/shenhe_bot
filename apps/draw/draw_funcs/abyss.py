@@ -354,9 +354,10 @@ def floor(
     star_x_offset = {1: 1267, 2: 1243, 3: 1218}
     star_offset = (0, 231)
     for chamber in floor.chambers:
-        star_offset = (star_x_offset[chamber.stars], star_offset[1])
-        star = Image.open(stars.get(chamber.stars, stars[1]))
-        im.paste(star, star_offset, star)
+        if chamber.stars != 0:
+            star_offset = (star_x_offset.get(chamber.stars, 154), star_offset[1])
+            star = Image.open(stars.get(chamber.stars, stars[1]))
+            im.paste(star, star_offset, star)
         draw.text(
             floor_offset,
             f"{floor.floor}-{chamber.chamber}",

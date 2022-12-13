@@ -106,6 +106,8 @@ async def draw_character_card(
 ) -> Optional[io.BytesIO]:
     urls: List[str] = []
     for e in character.equipments:
+        if e.detail.icon is None:
+            continue
         urls.append(e.detail.icon.url)
     if custom_image_url is not None:
         urls.append(custom_image_url)
@@ -128,6 +130,8 @@ async def draw_stats_card(
     pfp: discord.Asset,
     character_num: int,
 ) -> io.BytesIO:
+    if namecard.banner is None:
+        raise ValueError("No namecard banner found")
     urls = [namecard.banner.url, pfp.url]
     await download_images(urls, input.session)
     func = functools.partial(
@@ -155,12 +159,20 @@ async def draw_profile_card(
     input: DrawInput,
     data: enkanetwork.model.base.EnkaNetworkResponse,
 ) -> Tuple[io.BytesIO, io.BytesIO]:
-    urls = [c.image.icon.url for c in data.characters]
-    urls.append(data.player.namecard.banner.url)
-    urls.append(data.player.avatar.icon.url)
+    if data.characters is None:
+        raise ValueError("No characters found")
+    if data.player is None:
+        raise ValueError("No player found")
+    
+    urls = [c.image.icon.url for c in data.characters if c.image is not None]
+    if data.player.namecard.banner is not None:
+        urls.append(data.player.namecard.banner.url)
+    if data.player.avatar is not None and data.player.avatar.icon is not None:
+        urls.append(data.player.avatar.icon.url)
     for c in data.characters:
         for t in c.skills:
-            urls.append(t.icon.url)
+            if t.icon is not None:
+                urls.append(t.icon.url)
     await download_images(urls, input.session)
     func = functools.partial(
         profile.overview_and_characters, data, input.dark_mode, input.locale

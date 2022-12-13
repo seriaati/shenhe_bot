@@ -1,7 +1,7 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Dict, List, Literal, Optional, Tuple
-
+from utility.utils import log
 import aiohttp
 import aiosqlite
 import discord
@@ -10,7 +10,7 @@ import genshin
 import yaml
 from discord.utils import format_dt
 from diskcache import FanoutCache
-
+import sentry_sdk
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
@@ -215,18 +215,21 @@ async def get_shenhe_user(
 ) -> ShenheUser:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if not cookie:
-        c: aiosqlite.Cursor = await db.cursor()
-        await c.execute(
+        async with db.execute(
             "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
             (user_id,),
-        )
-        user_data: List[Tuple[int, str, str, int, int, int]] = await c.fetchall()
-        for _, tpl in enumerate(user_data):
-            if tpl[5] == 1:
-                user_data = tpl
-                break
-            else:
-                user_data = tpl
+        ) as c:
+            user_data = None
+            async for row in c:
+                if row[5] == 1:
+                    user_data = row
+                    break
+                else:
+                    user_data = row
+        
+        if user_data is None:
+            sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no Shenhe Account")
+            raise ValueError(f"User {user_id} has no Shenhe Account")
 
         if user_data[0] is not None:
             client = genshin.Client()
@@ -243,8 +246,13 @@ async def get_shenhe_user(
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-
+        
+    uid = None
     uid = custom_uid or uid
+    if uid is None:
+        sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no UID")
+        raise ValueError(f"User {user_id} has no UID")
+    
     user_locale = await get_user_locale(user_id, db)
     locale = author_locale or user_locale or locale
     client.lang = to_genshin_py(str(locale)) or "en-us"
@@ -265,11 +273,12 @@ async def get_shenhe_user(
     return user_obj
 
 
-async def get_uid(user_id: int, db: aiosqlite.Connection) -> int:
+async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
     async with db.execute(
         "SELECT uid, current FROM user_accounts WHERE user_id = ?",
         (user_id,),
     ) as c:
+        uid = None
         async for row in c:
             uid = row[0]
             if row[1] == 1:
