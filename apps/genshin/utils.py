@@ -265,20 +265,16 @@ async def get_shenhe_user(
     return user_obj
 
 
-async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
-    c = await db.cursor()
-    await c.execute(
+async def get_uid(user_id: int, db: aiosqlite.Connection) -> int:
+    async with db.execute(
         "SELECT uid, current FROM user_accounts WHERE user_id = ?",
         (user_id,),
-    )
-    uid = await c.fetchall()
-    for _, tpl in enumerate(uid):
-        uid = tpl[0]
-        if tpl[1] == 1:
-            break
-    if not uid:
-        return None
-    return uid
+    ) as c:
+        async for row in c:
+            uid = row[0]
+            if row[1] == 1:
+                break
+        return uid
 
 
 class NoCharacterFound(Exception):

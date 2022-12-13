@@ -2,12 +2,12 @@ import ast
 import asyncio
 import json
 import random
-from datetime import datetime, timedelta
-from time import process_time
+from datetime import timedelta
 import traceback
 from typing import List, Literal, Optional
 from apps.draw import main_funcs
 import aiosqlite
+from data.game.pot import get_pot_accumulation_rate
 import genshin
 import sentry_sdk
 from discord import File, Game, Interaction, app_commands
@@ -24,7 +24,13 @@ from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from cogs.admin import is_seria
-from utility.utils import default_embed, error_embed, get_dt_now, get_user_appearance_mode, log
+from utility.utils import (
+    default_embed,
+    error_embed,
+    get_dt_now,
+    get_user_appearance_mode,
+    log,
+)
 
 
 def schedule_error_handler(func):
@@ -67,6 +73,10 @@ class Schedule(commands.Cog):
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
         now = get_dt_now()
+        tasks = ["resin_notification", "pot_notification", "pt_notification"]
+        for task in tasks:
+            await asyncio.create_task(self.check_notification(task))
+
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
 
@@ -93,11 +103,6 @@ class Schedule(commands.Cog):
                 )
             )
 
-        if now.minute < self.loop_interval:  # every hour
-            await asyncio.create_task(self.base_notification("resin_notification"))
-            await asyncio.create_task(self.base_notification("pot_notification"))
-            await asyncio.create_task(self.base_notification("pt_notification"))
-
     @tasks.loop(minutes=20)
     async def change_status(self):
         status_list = [
@@ -110,6 +115,242 @@ class Schedule(commands.Cog):
             )
         )
 
+    async def check_notification(self, notification_type: str):
+        n_users = await self.get_notification_users(notification_type)
+        now = get_dt_now()
+        sent_num = 0
+        c = await self.bot.db.cursor()
+        for n_user in n_users:
+            if n_user.last_check is not None and now < n_user.last_check:
+                continue
+            if n_user.last_notif is not None and now - n_user.last_notif < timedelta(
+                hours=2
+            ):  # notify every 2 hours
+                continue
+
+            s_user = await get_shenhe_user(n_user.user_id, self.bot.db, self.bot)
+            locale = s_user.user_locale or "en-US"
+
+            error = False
+            error_message = ""
+            try:
+                notes = await s_user.client.get_notes(s_user.uid)
+            except genshin.errors.InvalidCookies:
+                error = True
+                error_message = text_map.get(36, locale)
+                log.warning(
+                    f"[Schedule][{notification_type}] Invalid Cookies for {n_user.user_id}"
+                )
+                await self.disable_notification(
+                    n_user.user_id, n_user.uid, notification_type
+                )
+            except (genshin.errors.InternalDatabaseError, OSError):
+                pass
+            except Exception as e:
+                error = True
+                error_message = f"```{e}```"
+                log.warning(f"[Schedule][{notification_type}] Error: {e}")
+                await self.disable_notification(
+                    n_user.user_id, n_user.uid, notification_type
+                )
+            else:
+                # calulate the time to reach the threshold
+                reach_time = now
+                if notification_type == "resin_notification":
+                    diff = timedelta(minutes=8) - (
+                        (now + timedelta(minutes=8 * (160 - notes.current_resin)))
+                        - notes.resin_recovery_time.replace(tzinfo=None)
+                    )
+                    reach_time = (
+                        now
+                        + diff
+                        + timedelta(
+                            minutes=8 * (n_user.threshold - notes.current_resin - 1)
+                        )
+                    )
+                    if notes.current_resin < n_user.threshold:
+                        await self.reset_current(
+                            n_user.user_id, n_user.uid, "resin_notification"
+                        )
+
+                elif notification_type == "pot_notification":
+                    stats = await s_user.client.get_partial_genshin_user(s_user.uid)
+                    if stats.teapot is None:
+                        continue
+                    rate = get_pot_accumulation_rate(stats.teapot.comfort)
+                    ac_rate = 1 / rate
+                    theoretical = now + timedelta(
+                        hours=ac_rate
+                        * (notes.max_realm_currency - notes.current_realm_currency)
+                    )
+                    real = notes.realm_currency_recovery_time.replace(tzinfo=None)
+                    diff = theoretical - real
+                    reach_time = (
+                        now
+                        + diff
+                        + timedelta(
+                            hours=ac_rate
+                            * (n_user.threshold - notes.current_realm_currency - rate)
+                        )
+                    )
+                    if notes.current_realm_currency < n_user.threshold:
+                        await self.reset_current(
+                            n_user.user_id, n_user.uid, "pot_notification"
+                        )
+
+                elif notification_type == "pt_notification":
+                    if notes.remaining_transformer_recovery_time is not None:
+                        reach_time = now + timedelta(
+                            seconds=notes.remaining_transformer_recovery_time.total_seconds()
+                        )
+                        if (
+                            notes.remaining_transformer_recovery_time.total_seconds()
+                            > 0
+                        ):
+                            await self.reset_current(
+                                n_user.user_id, n_user.uid, "pt_notification"
+                            )
+
+                # update last check time
+                await c.execute(
+                    f"UPDATE {notification_type} SET last_check = ? WHERE user_id = ? AND uid = ?",
+                    (reach_time, n_user.user_id, s_user.uid),
+                )
+
+                # send error message
+                if error:
+                    discord_user = self.bot.get_user(
+                        n_user.user_id
+                    ) or await self.bot.fetch_user(n_user.user_id)
+                    if notification_type == "pot_notification":
+                        map_hash = 584
+                    elif notification_type == "pt_notification":
+                        map_hash = 704
+                    else:  # resin_notification
+                        map_hash = 582
+                    embed = error_embed(
+                        message=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
+                    )
+                    embed.set_author(
+                        name=text_map.get(505, locale),
+                        icon_url=discord_user.display_avatar.url,
+                    )
+                    embed.set_footer(text=text_map.get(16, locale))
+                    try:
+                        await discord_user.send(embed=embed)
+                    except Forbidden:
+                        pass
+
+                # send notification
+                if reach_time <= now and not error:
+                    success = False
+                    if notification_type == "resin_notification":
+                        success = await self.notify_resin(n_user, notes, locale)
+                    elif notification_type == "pot_notification":
+                        success = await self.notify_pot(n_user, notes, locale)
+                    elif notification_type == "pt_notification":
+                        success = await self.notify_pt(n_user, locale)
+                    if success:
+                        sent_num += 1
+                        # update notification count
+                        await c.execute(
+                            f"UPDATE {notification_type} SET current = current + 1 WHERE user_id = ? AND uid = ?",
+                            (n_user.user_id, s_user.uid),
+                        )
+                        # update last notification time
+                        await c.execute(
+                            f"UPDATE {notification_type} SET {'last_notif' if notification_type == 'pt_notification' else 'last_notif_time'} = ? WHERE user_id = ? AND uid = ?",
+                            (now, n_user.user_id, s_user.uid),
+                        )
+            await asyncio.sleep(2.5)
+
+        await self.bot.db.commit()
+
+    async def notify_resin(
+        self, user: NotificationUser, notes: genshin.models.Notes, locale: str
+    ) -> bool:
+        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
+            user.user_id
+        )
+        embed = default_embed(
+            message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
+            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else format_dt(notes.resin_recovery_time, 'R')}\n"
+            f"UID: {user.uid}\n",
+        )
+        embed.set_author(
+            name=text_map.get(306, locale),
+            icon_url=discord_user.display_avatar.url,
+        )
+        embed.set_footer(text=text_map.get(305, locale))
+        try:
+            await discord_user.send(embed=embed)
+        except Forbidden:
+            await self.disable_notification(
+                user.user_id, user.uid, "resin_notification"
+            )
+            return False
+        else:
+            return True
+
+    async def notify_pot(
+        self, user: NotificationUser, notes: genshin.models.Notes, locale: str
+    ) -> bool:
+        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
+            user.user_id
+        )
+        embed = default_embed(
+            message=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
+            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else format_dt(notes.realm_currency_recovery_time, 'R')}\n"
+            f"UID: {user.uid}\n",
+        )
+        embed.set_author(
+            name=text_map.get(518, locale),
+            icon_url=discord_user.display_avatar.url,
+        )
+        embed.set_footer(text=text_map.get(305, locale))
+        try:
+            await discord_user.send(embed=embed)
+        except Forbidden:
+            await self.disable_notification(user.user_id, user.uid, "pot_notification")
+            return False
+        else:
+            return True
+
+    async def notify_pt(self, user: NotificationUser, locale: str):
+        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
+            user.user_id
+        )
+        embed = default_embed(message=f"UID: {user.uid}")
+        embed.set_author(
+            name=text_map.get(366, locale),
+            icon_url=discord_user.display_avatar.url,
+        )
+        embed.set_thumbnail(url=asset.pt_icon)
+        embed.set_footer(text=text_map.get(305, locale))
+        try:
+            await discord_user.send(embed=embed)
+        except Forbidden:
+            await self.disable_notification(user.user_id, user.uid, "pt_notification")
+            return False
+        else:
+            return True
+
+    async def disable_notification(
+        self, user_id: int, uid: int, notification_type: str
+    ):
+        await self.bot.db.execute(
+            f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
+            (user_id, uid),
+        )
+        await self.bot.db.commit()
+
+    async def reset_current(self, user_id: int, uid: int, notification_type: str):
+        await self.bot.db.execute(
+            f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
+            (user_id, uid),
+        )
+        await self.bot.db.commit()
+
     async def get_schedule_users(
         self, user_ids: Optional[List[int]] = None
     ) -> List[ShenheUser]:
@@ -119,7 +360,8 @@ class Schedule(commands.Cog):
             List[ShenheUser]: List of shenhe users
         """
         result = []
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
+        c = await self.bot.db.cursor()
+
         if user_ids is not None:
             seq = ",".join(["?"] * len(user_ids))
             await c.execute(
@@ -130,6 +372,7 @@ class Schedule(commands.Cog):
             await c.execute(
                 "SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL",
             )
+
         users = await c.fetchall()
         for _, tpl in enumerate(users):
             ltuid = tpl[0]
@@ -146,6 +389,8 @@ class Schedule(commands.Cog):
                 daily_checkin=True if daily_checkin == 1 else False,
             )
             result.append(shenhe_user)
+
+        await c.close()
         return result
 
     async def get_notification_users(self, table_name: str) -> List[NotificationUser]:
@@ -160,231 +405,35 @@ class Schedule(commands.Cog):
         result = []
         if table_name == "pt_notification":
             async with self.bot.db.execute(
-                f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = 1"
+                f"SELECT user_id, uid, max, last_notif, last_check FROM {table_name} WHERE toggle = 1"
             ) as c:
                 async for row in c:
-                    user_id = row[0]
-                    uid = row[1]
-                    max = row[2]
-                    last_notif = row[3]
                     result.append(
                         NotificationUser(
-                            user_id=user_id,
-                            uid=uid,
-                            max=max,
-                            last_notif_time=last_notif,
+                            user_id=row[0],
+                            uid=row[1],
+                            max=row[2],
+                            last_notif=row[3],
+                            last_check=row[4],
                         )
                     )
         else:  # resin_notification, pot_notification
             async with self.bot.db.execute(
-                f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
+                f"SELECT user_id, threshold, current, max, last_notif_time, uid, last_check FROM {table_name} WHERE toggle = 1"
             ) as c:
                 async for row in c:
-                    user_id = row[0]
-                    threshold = row[1]
-                    current = row[2]
-                    max = row[3]
-                    last_notif_time = row[4]
-                    uid = row[5]
                     result.append(
                         NotificationUser(
-                            user_id=user_id,
-                            threshold=threshold,
-                            current=current,
-                            max=max,
-                            last_notif_time=last_notif_time,
-                            uid=uid,
+                            user_id=row[0],
+                            threshold=row[1],
+                            current=row[2],
+                            max=row[3],
+                            last_notif=row[4],
+                            uid=row[5],
+                            last_check=row[6],
                         )
                     )
         return result
-
-    @schedule_error_handler
-    async def base_notification(self, notification_type: str):
-        log.info(f"[Schedule][{notification_type}] Start")
-        c: aiosqlite.Cursor = await self.bot.db.cursor()
-        now = get_dt_now()
-        notification_users = await self.get_notification_users(notification_type)
-        shenhe_users = await self.get_schedule_users(
-            [u.user_id for u in notification_users]
-        )
-        count = 0
-        for notif_user in notification_users:
-            for shenhe_user in shenhe_users:
-                if shenhe_user.uid == notif_user.uid:
-                    notif_user.shenhe_user = shenhe_user
-                    break
-        for user in notification_users:
-            if user.shenhe_user is None:
-                continue
-            if user.last_notif_time is not None:
-                last_notif_time = datetime.strptime(
-                    user.last_notif_time, "%Y/%m/%d %H:%M:%S"
-                )
-                time_diff = now - last_notif_time
-                if time_diff.total_seconds() < 7200:
-                    continue
-            error = False
-            error_message = ""
-            client = user.shenhe_user.client
-            locale = user.shenhe_user.user_locale or "en-US"
-            try:
-                notes = await client.get_notes(user.shenhe_user.uid)
-            except genshin.errors.InvalidCookies:
-                error = True
-                error_message = text_map.get(36, locale)
-                log.warning(
-                    f"[Schedule][{notification_type}] Invalid Cookies for {user.user_id}"
-                )
-                await c.execute(
-                    f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                    (user.user_id, user.shenhe_user.uid),
-                )
-            except (genshin.errors.InternalDatabaseError, OSError):
-                pass
-            except Exception as e:
-                error = True
-                error_message = f"```{e}```"
-                log.warning(f"[Schedule][{notification_type}] Error: {e}")
-                await c.execute(
-                    f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                    (user.user_id, user.shenhe_user.uid),
-                )
-            else:
-                if notification_type == "pt_notification":
-                    pt_time = notes.remaining_transformer_recovery_time
-                    if pt_time is None:
-                        continue
-                    success = await self.pt_notification(
-                        pt_time.total_seconds(), user, locale
-                    )
-                    if success:
-                        count += 1
-                else:
-                    if notification_type == "pot_notification":
-                        item_current_amount = notes.current_realm_currency
-                        item_max_amount = notes.max_realm_currency
-                    else:  # resin_notification
-                        item_current_amount = notes.current_resin
-                        item_max_amount = notes.max_resin
-                    if item_current_amount >= user.threshold:
-                        if user.current >= user.max:
-                            continue
-                        if item_current_amount == item_max_amount:
-                            recover_time = text_map.get(1, locale)
-                        else:
-                            if notification_type == "pot_notification":
-                                recover_time = format_dt(
-                                    notes.realm_currency_recovery_time, "R"
-                                )
-                            else:  # resin_notification
-                                recover_time = format_dt(notes.resin_recovery_time, "R")
-                        if notification_type == "pot_notification":
-                            embed = default_embed(
-                                message=f"{text_map.get(2, locale)}: {item_current_amount}/{notes.max_realm_currency}\n"
-                                f"{text_map.get(15, locale)}: {recover_time}\n"
-                                f"UID: {user.shenhe_user.uid}\n",
-                            )
-                            embed.set_author(
-                                name=text_map.get(518, locale),
-                                icon_url=user.shenhe_user.discord_user.display_avatar.url,
-                            )
-                        else:  # resin_notification
-                            embed = default_embed(
-                                message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-                                f"{text_map.get(15, locale)}: {recover_time}\n"
-                                f"UID: {user.shenhe_user.uid}\n",
-                            )
-                            embed.set_author(
-                                name=text_map.get(306, locale),
-                                icon_url=user.shenhe_user.discord_user.display_avatar.url,
-                            )
-                        embed.set_footer(text=text_map.get(305, locale))
-                        try:
-                            await user.shenhe_user.discord_user.send(embed=embed)
-                        except Forbidden:
-                            await c.execute(
-                                f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                                (user.user_id, user.shenhe_user.uid),
-                            )
-                        else:
-                            await c.execute(
-                                f"UPDATE {notification_type} SET current = ?, last_notif_time = ? WHERE user_id = ? AND uid = ?",
-                                (
-                                    user.current + 1,
-                                    datetime.strftime(now, "%Y/%m/%d %H:%M:%S"),
-                                    user.user_id,
-                                    user.shenhe_user.uid,
-                                ),
-                            )
-                            count += 1
-                    else:
-                        await c.execute(
-                            f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
-                            (user.user_id, user.shenhe_user.uid),
-                        )
-            if error:
-                if notification_type == "pot_notification":
-                    map_hash = 584
-                elif notification_type == "pt_notification":
-                    map_hash = 704
-                else:  # resin_notification
-                    map_hash = 582
-                try:
-                    await user.shenhe_user.discord_user.send(
-                        embed=error_embed(
-                            message=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
-                        )
-                        .set_author(
-                            name=text_map.get(505, locale),
-                            icon_url=user.shenhe_user.discord_user.display_avatar.url,
-                        )
-                        .set_footer(text=text_map.get(16, locale))
-                    )
-                except Forbidden:
-                    pass
-            await asyncio.sleep(2.5)
-        await self.bot.db.commit()
-        log.info(
-            f"[Schedule][{notification_type}] Ended (Notified {count}/{len(notification_users)} users)"
-        )
-
-    @schedule_error_handler
-    async def pt_notification(
-        self, time: float, user: NotificationUser, locale: str
-    ) -> bool:
-        if user.shenhe_user is None:
-            return False
-        if time <= 0.0:
-            embed = default_embed(
-                message=f"UID: {user.shenhe_user.uid}",
-            )
-            embed.set_author(
-                name=text_map.get(366, locale),
-                icon_url=user.shenhe_user.discord_user.display_avatar.url,
-            )
-            embed.set_thumbnail(url=asset.pt_icon)
-            embed.set_footer(text=text_map.get(305, locale))
-            try:
-                await user.shenhe_user.discord_user.send(embed=embed)
-            except Forbidden:
-                await self.bot.db.execute(
-                    f"UPDATE pt_notification SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                    (user.user_id, user.shenhe_user.uid),
-                )
-                await self.bot.db.commit()
-                return False
-            else:
-                await self.bot.db.execute(
-                    "UPDATE pt_notification SET current = current + 1, last_notif = ? WHERE user_id = ? AND uid = ?",
-                    (
-                        datetime.strftime(get_dt_now(), "%Y/%m/%d %H:%M:%S"),
-                        user.user_id,
-                        user.shenhe_user.uid,
-                    ),
-                )
-                await self.bot.db.commit()
-                return True
-        return False
 
     @schedule_error_handler
     async def backup_database(self):
@@ -399,10 +448,10 @@ class Schedule(commands.Cog):
     async def claim_reward(self):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
-        start = process_time()
         users = await self.get_schedule_users()
         count = 0
         user_count = 0
+
         for user in users:
             if not user.daily_checkin:
                 continue
@@ -440,6 +489,7 @@ class Schedule(commands.Cog):
                     pass
                 error = False
                 count += 1
+
             if error:
                 await self.bot.db.execute(
                     "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
@@ -457,19 +507,22 @@ class Schedule(commands.Cog):
                     await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
-            if user_count % 100 == 0:  # Prevents hitting the rate limit
-                await asyncio.sleep(60)
+
+            if user_count % 100 == 0:  # Sleep for 30 seconds every 100 users
+                await asyncio.sleep(30)
             await asyncio.sleep(2.5)
         await self.bot.db.commit()
+
         log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
-        end = process_time()
+
+        # send a notification to Seria
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
             410036441129943050
         )
         await seria.send(
             embed=default_embed(
                 "Automatic daily check-in report", f"Claimed {count}/{user_count}"
-            ).add_field(name="Time taken", value=f"{end - start:.2f}s")
+            )
         )
 
     @schedule_error_handler
@@ -549,7 +602,7 @@ class Schedule(commands.Cog):
                         ),
                         materials,
                         "",
-                        draw_title=False
+                        draw_title=False,
                     )
                     fp.seek(0)
                     file = File(fp, "reminder_card.jpeg")
@@ -578,11 +631,9 @@ class Schedule(commands.Cog):
                             (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
                         )
                         count += 1
-                await asyncio.sleep(2.3)
+                await asyncio.sleep(2.5)
         await self.bot.db.commit()
-        log.info(
-            f"[Schedule][{notification_type}] Ended (Notified {count} users)"
-        )
+        log.info(f"[Schedule][{notification_type}] Ended (Notified {count} users)")
 
     @schedule_error_handler
     async def update_game_data(self):
@@ -797,7 +848,7 @@ class Schedule(commands.Cog):
         await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
-        await i.followup.send("Tasks started", ephemeral=True)
+        await i.followup.send("Tasks created", ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -2,7 +2,7 @@ import asyncio
 import io
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-
+from dateutil import parser
 import aiohttp
 import aiosqlite
 import cachetools
@@ -18,7 +18,7 @@ from ambr.models import Character
 
 class ShenheUser(BaseModel):
     client: genshin.Client
-    uid: int | None
+    uid: int
     discord_user: discord.User | discord.Member | discord.ClientUser
     user_locale: str | None
     china: bool
@@ -41,9 +41,17 @@ class NotificationUser(BaseModel):
     threshold: int = 0
     current: int = 0
     max: int = 3
-    uid: Optional[int]
-    last_notif_time: Optional[str] = None
-    shenhe_user: Optional[ShenheUser] = None
+    uid: int
+    last_check: Optional[datetime] = None
+    last_notif: Optional[datetime] = None
+
+    @validator("last_check", pre=True, always=True)
+    def parse_last_check(cls, v):
+        return parser.parse(v) if v else None
+    
+    @validator("last_notif", pre=True, always=True)
+    def parse_last_notif(cls, v):
+        return parser.parse(v) if v else None
 
 
 class RecentWish(BaseModel):
@@ -312,19 +320,23 @@ class LeaderboardResult(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class TodoItem(BaseModel):
     name: str
     count: int
 
+
 class AbyssEnemy(BaseModel):
     name: str
     num: int
+
 
 class AbyssChamber(BaseModel):
     num: int
     enemy_level: int
     challenge_target: str
     enemies: List[AbyssEnemy]
+
 
 class AbyssFloor(BaseModel):
     num: int
