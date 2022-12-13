@@ -42,12 +42,7 @@ class NotificationUser(BaseModel):
     current: int = 0
     max: int = 3
     uid: int
-    last_check: Optional[datetime] = None
     last_notif: Optional[datetime] = None
-
-    @validator("last_check", pre=True, always=True, allow_reuse=True)
-    def parse_last_check(cls, v):
-        return parser.parse(v) if v else None
     
     @validator("last_notif", pre=True, always=True, allow_reuse=True)
     def parse_last_notif(cls, v):

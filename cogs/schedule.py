@@ -73,9 +73,11 @@ class Schedule(commands.Cog):
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
         now = get_dt_now()
-        tasks = ["resin_notification", "pot_notification", "pt_notification"]
-        for task in tasks:
-            await asyncio.create_task(self.check_notification(task))
+        
+        if now.minute < self.loop_interval: # every hour
+            tasks = ["resin_notification", "pot_notification", "pt_notification"]
+            for task in tasks:
+                await asyncio.create_task(self.check_notification(task))
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
@@ -116,18 +118,13 @@ class Schedule(commands.Cog):
         )
 
     async def check_notification(self, notification_type: str):
+        log.info(f"[Schedule][{notification_type}] Checking...")
+        
         n_users = await self.get_notification_users(notification_type)
         now = get_dt_now()
         sent_num = 0
         c = await self.bot.db.cursor()
         for n_user in n_users:
-            if n_user.last_check is not None and now < n_user.last_check:
-                continue
-            if n_user.last_notif is not None and now - n_user.last_notif < timedelta(
-                hours=2
-            ):  # notify every 2 hours
-                continue
-
             s_user = await get_shenhe_user(n_user.user_id, self.bot.db, self.bot)
             locale = s_user.user_locale or "en-US"
 
@@ -154,70 +151,12 @@ class Schedule(commands.Cog):
                     n_user.user_id, n_user.uid, notification_type
                 )
             else:
-                # calulate the time to reach the threshold
-                reach_time = now
-                if notification_type == "resin_notification":
-                    diff = timedelta(minutes=8) - (
-                        (now + timedelta(minutes=8 * (160 - notes.current_resin)))
-                        - notes.resin_recovery_time.replace(tzinfo=None)
-                    )
-                    reach_time = (
-                        now
-                        + diff
-                        + timedelta(
-                            minutes=8 * (n_user.threshold - notes.current_resin - 1)
-                        )
-                    )
-                    if notes.current_resin < n_user.threshold:
-                        await self.reset_current(
-                            n_user.user_id, n_user.uid, "resin_notification"
-                        )
-
-                elif notification_type == "pot_notification":
-                    stats = await s_user.client.get_partial_genshin_user(s_user.uid)
-                    if stats.teapot is None:
-                        continue
-                    rate = get_pot_accumulation_rate(stats.teapot.comfort)
-                    ac_rate = 1 / rate
-                    theoretical = now + timedelta(
-                        hours=ac_rate
-                        * (notes.max_realm_currency - notes.current_realm_currency)
-                    )
-                    real = notes.realm_currency_recovery_time.replace(tzinfo=None)
-                    diff = theoretical - real
-                    reach_time = (
-                        now
-                        + diff
-                        + timedelta(
-                            hours=ac_rate
-                            * (n_user.threshold - notes.current_realm_currency - rate)
-                        )
-                    )
-                    if notes.current_realm_currency < n_user.threshold:
-                        await self.reset_current(
-                            n_user.user_id, n_user.uid, "pot_notification"
-                        )
-
-                elif notification_type == "pt_notification":
-                    if notes.remaining_transformer_recovery_time is not None:
-                        reach_time = now + timedelta(
-                            seconds=notes.remaining_transformer_recovery_time.total_seconds()
-                        )
-                        if (
-                            notes.remaining_transformer_recovery_time.total_seconds()
-                            > 0
-                        ):
-                            await self.reset_current(
-                                n_user.user_id, n_user.uid, "pt_notification"
-                            )
-
-                # update last check time
-                await c.execute(
-                    f"UPDATE {notification_type} SET last_check = ? WHERE user_id = ? AND uid = ?",
-                    (reach_time, n_user.user_id, s_user.uid),
-                )
-
-                # send error message
+                # reset current
+                if notification_type == "resin_notification" and notes.current_resin < n_user.threshold:
+                    await self.reset_current(n_user.user_id, n_user.uid, notification_type)
+                elif notification_type == "pot_notification" and notes.current_realm_currency < n_user.threshold:
+                    await self.reset_current(n_user.user_id, n_user.uid, notification_type)
+                
                 if error:
                     discord_user = self.bot.get_user(
                         n_user.user_id
@@ -228,6 +167,7 @@ class Schedule(commands.Cog):
                         map_hash = 704
                     else:  # resin_notification
                         map_hash = 582
+                        
                     embed = error_embed(
                         message=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
                     )
@@ -240,16 +180,21 @@ class Schedule(commands.Cog):
                         await discord_user.send(embed=embed)
                     except Forbidden:
                         pass
-
-                # send notification
-                if reach_time <= now and not error:
+                else:
+                    if n_user.current == n_user.max:
+                        continue
+                    if n_user.last_notif is not None and now - n_user.last_notif < timedelta(hours=2):
+                        continue
+                    
+                    # send notification
                     success = False
-                    if notification_type == "resin_notification":
+                    if notification_type == "resin_notification" and notes.current_resin >= n_user.threshold:
                         success = await self.notify_resin(n_user, notes, locale)
-                    elif notification_type == "pot_notification":
+                    elif notification_type == "pot_notification" and notes.current_realm_currency >= n_user.threshold:
                         success = await self.notify_pot(n_user, notes, locale)
-                    elif notification_type == "pt_notification":
+                    elif notification_type == "pt_notification" and notes.remaining_transformer_recovery_time.total_seconds() == 0:
                         success = await self.notify_pt(n_user, locale)
+                        
                     if success:
                         sent_num += 1
                         # update notification count
@@ -264,7 +209,9 @@ class Schedule(commands.Cog):
                         )
             await asyncio.sleep(2.5)
 
+        await c.close()
         await self.bot.db.commit()
+        log.info(f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users")
 
     async def notify_resin(
         self, user: NotificationUser, notes: genshin.models.Notes, locale: str
@@ -405,7 +352,7 @@ class Schedule(commands.Cog):
         result = []
         if table_name == "pt_notification":
             async with self.bot.db.execute(
-                f"SELECT user_id, uid, max, last_notif, last_check FROM {table_name} WHERE toggle = 1"
+                f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = 1"
             ) as c:
                 async for row in c:
                     result.append(
@@ -414,12 +361,11 @@ class Schedule(commands.Cog):
                             uid=row[1],
                             max=row[2],
                             last_notif=row[3],
-                            last_check=row[4],
                         )
                     )
         else:  # resin_notification, pot_notification
             async with self.bot.db.execute(
-                f"SELECT user_id, threshold, current, max, last_notif_time, uid, last_check FROM {table_name} WHERE toggle = 1"
+                f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
             ) as c:
                 async for row in c:
                     result.append(
@@ -430,7 +376,6 @@ class Schedule(commands.Cog):
                             max=row[3],
                             last_notif=row[4],
                             uid=row[5],
-                            last_check=row[6],
                         )
                     )
         return result
