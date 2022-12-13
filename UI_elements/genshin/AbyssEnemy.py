@@ -5,6 +5,7 @@ from ambr.models import Material, Monster
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import AbyssHalf, DrawInput
 from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.utils import get_element_name
 import config
 from discord.ui import Select
 from discord import Locale, Interaction, SelectOption, File, Embed
@@ -49,14 +50,24 @@ class ChamberSelect(Select):
         for index, half in enumerate(halfs):
             materials = []
             for enemy in half.enemies:
+                geovishap = False
                 enemy_id = text_map.get_id_from_name(enemy.name)
+                if 'Geovishap' in enemy.name:
+                    geovishap = True
+                    enemy_id = 26040101
+                if enemy_id is None:
+                    continue
                 monster = await ambr.get_monster(enemy_id)
                 if isinstance(monster, Monster):
+                    monster_name = monster.name
+                    if geovishap:
+                        element = enemy.name.split('Geovishap ')[1].replace('(', '').replace(')', '')
+                        monster_name = f"{monster.name} ({get_element_name(element, self.view.locale)})"
                     materials.append(
                         (
                             Material(
                                 id=monster.id,
-                                name=monster.name,
+                                name=monster_name,
                                 icon=monster.icon,
                                 type="custom",
                             ),
@@ -87,6 +98,9 @@ class ChamberSelect(Select):
             
         for item in self.view.children:
             item.disabled = False
+        
+        if len(embeds)==2:
+            embeds[0].set_footer(text=text_map.get(707, self.view.locale))
             
         await i.edit_original_response(
             attachments=attachments, embeds=embeds, view=self.view

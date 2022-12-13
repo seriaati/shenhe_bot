@@ -33,6 +33,9 @@ class ElementButton(Button):
         self.view: View
         await element_button_callback(i, self.element, self.view)
 
+class ShowThoughts(Button):
+    def __init__(self):
+        super().__init__(emoji="💭")
 
 class CharacterSelect(Select):
     def __init__(
