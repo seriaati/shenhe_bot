@@ -45,11 +45,11 @@ class NotificationUser(BaseModel):
     last_check: Optional[datetime] = None
     last_notif: Optional[datetime] = None
 
-    @validator("last_check", pre=True, always=True)
+    @validator("last_check", pre=True, always=True, allow_reuse=True)
     def parse_last_check(cls, v):
         return parser.parse(v) if v else None
     
-    @validator("last_notif", pre=True, always=True)
+    @validator("last_notif", pre=True, always=True, allow_reuse=True)
     def parse_last_notif(cls, v):
         return parser.parse(v) if v else None
 
@@ -330,12 +330,15 @@ class AbyssEnemy(BaseModel):
     name: str
     num: int
 
+class AbyssHalf(BaseModel):
+    num: int
+    enemies: List[AbyssEnemy]
 
 class AbyssChamber(BaseModel):
     num: int
     enemy_level: int
     challenge_target: str
-    enemies: List[AbyssEnemy]
+    halfs: List[AbyssHalf]
 
 
 class AbyssFloor(BaseModel):

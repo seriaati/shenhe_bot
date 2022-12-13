@@ -1,18 +1,13 @@
 from typing import List
-from apps.genshin.custom_model import AbyssChamber, AbyssEnemy, AbyssFloor
+from apps.genshin.custom_model import AbyssChamber, AbyssEnemy, AbyssFloor, AbyssHalf
 from bs4 import BeautifulSoup
 import aiohttp
 
 
-async def get_abyss_enemies(
-    session: aiohttp.ClientSession, lang: str
-) -> List[AbyssFloor]:
+async def get_abyss_enemies(session: aiohttp.ClientSession) -> List[AbyssFloor]:
     result = []
-    urls = {
-        "en-US": "https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors",
-    }
     async with session.get(
-        urls.get(lang, "https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors"),
+        "https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors"
     ) as resp:
         html = await resp.text()
     soup = BeautifulSoup(html, "html.parser")
@@ -36,21 +31,25 @@ async def get_abyss_enemies(
                 challenge_target=table.findAll("tr")[
                     2 + chamber_offset * (chamber_num - 1)
                 ].td.text,
-                enemies=[],
+                halfs=[],
             )
-            enemy_table = table.findAll("tr")[3 + chamber_offset * (chamber_num - 1)].td
+            tables = []
+            tables.append(table.findAll("tr")[3 + chamber_offset * (chamber_num - 1)].td)
             if chamber_offset == 5:
-                enemy_table = enemy_table.wrap(
+                tables.append(
                     table.findAll("tr")[4 + chamber_offset * (chamber_num - 1)].td
                 )
-            for div in enemy_table.findAll(
-                "div", {"class": "card_with_caption hidden"}
-            ):
-                card_caption = div.find("div", {"class": "card_caption"})
-                name = card_caption.text
-                card_text = div.find("div", {"class": "card_text"})
-                num = card_text.text
-                chamber.enemies.append(AbyssEnemy(name=name, num=num))
+            for index, enemy_table in enumerate(tables):
+                half = AbyssHalf(num=index+1, enemies=[])
+                for div in enemy_table.findAll(
+                    "div", {"class": "card_with_caption hidden"}
+                ):
+                    card_caption = div.find("div", {"class": "card_caption"})
+                    name = card_caption.text
+                    card_text = div.find("div", {"class": "card_text"})
+                    num = card_text.text
+                    half.enemies.append(AbyssEnemy(name=name, num=num))
+                chamber.halfs.append(half)
             chambers.append(chamber)
         result.append(
             AbyssFloor(
