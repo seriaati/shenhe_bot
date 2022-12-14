@@ -22,7 +22,7 @@ from typing import Dict
 from discord.ext import commands
 
 from logingateway import HuTaoLoginAPI
-from logingateway.model import Player, Ready, LoginMethod
+from logingateway.model import Player, Ready, LoginMethod, ServerId
 from UI_elements.others.ManageAccounts import return_accounts
 
 from apps.text_map.text_map_app import text_map
@@ -96,6 +96,7 @@ class Shenhe(commands.Bot):
         self.tokenStore: Dict[str, WebhookMessage] = {}
         self.gateway.ready(self.gateway_connect)
         self.gateway.player(self.gateway_player)
+        self.gateway.player_update(self.gateway_player_update)
 
         c = await self.db.cursor()
         cookie_list = []
@@ -140,6 +141,30 @@ class Shenhe(commands.Bot):
     async def gateway_connect(self, data: Ready):
         log.info(f"[System][Hutao Login Gateway] Connected")
 
+    async def gateway_player_update(self, data: Player):
+        log.info(f"[System][Hutao Login Gateway] Update player {data}")
+        
+        # Set variable data
+        user_id = data.discord.user_id
+        genshin = data.genshin
+
+        # Update cookie_token
+        _data = [
+            genshin.ltuid,
+            genshin.cookie_token
+        ]
+
+        # Set default value 
+        update_value = "ltuid = ?, cookie_token = ?"
+        # Check if ltoken is not empty string
+        if data.genshin.ltoken != "":
+            update_value += ", ltoken = ?"
+            _data.append(genshin.ltoken)
+        
+        # Append discord ID
+        _data.append(user_id)
+        await self.db.execute(f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data))
+
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:
             return
@@ -147,7 +172,7 @@ class Shenhe(commands.Bot):
         ctx = self.tokenStore[data.token]
         log.info(f"[System][Hutao Login Gateway] {data}")
         uid = data.genshin.uid
-        user_id = data.genshin.userid
+        user_id = data.discord.user_id
         if data.genshin.login_type == LoginMethod.UID:
             cookie = {
                 "ltuid": None,
@@ -160,7 +185,8 @@ class Shenhe(commands.Bot):
                 "ltoken": data.genshin.ltoken,
                 "cookie_token": data.genshin.cookie_token,
             }
-        china = 1 if str(uid)[0] in [1, 2, 5] else 0
+            
+        china = 1 if data.genshin.server == ServerId.CHINA else 0
         await self.db.execute(
             "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
             (
