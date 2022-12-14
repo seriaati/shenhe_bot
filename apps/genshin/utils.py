@@ -240,32 +240,32 @@ async def get_shenhe_user(
             )
         else:
             client = bot.genshin_client
-        uid = user_data[3]
+        client.uid = user_data[3]
         await c.close()
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-        
-    uid = None
-    uid = custom_uid or uid
-    if uid is None:
-        sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no UID")
-        raise ValueError(f"User {user_id} has no UID")
     
     user_locale = await get_user_locale(user_id, db)
-    locale = author_locale or user_locale or locale
-    client.lang = to_genshin_py(str(locale)) or "en-us"
+    final_locale = author_locale or user_locale or locale
+    
+    client.lang = to_genshin_py(str(final_locale)) or "en-us"
     client.default_game = genshin.Game.GENSHIN
-    client.uid = uid
-    china = True if str(uid)[0] in ["1", "2", "5"] else False
+    client.uid = custom_uid or client.uid
+    
+    china = True if str(client.uid)[0] in ["1", "2", "5"] else False
     if china:
         client.lang = "zh-cn"
+        
+    if client.uid is None:
+        sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no UID")
+        raise ValueError(f"User {user_id} has no UID")
 
     user_obj = ShenheUser(
         client=client,
-        uid=uid,
+        uid=client.uid,
         discord_user=discord_user,
-        user_locale=str(locale),
+        user_locale=str(final_locale),
         china=china,
         daily_checkin=True if daily_checkin == 1 else False,
     )
