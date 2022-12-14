@@ -31,7 +31,7 @@
 '30': วันเสาร์
 '31': วันอาทิตย์
 '32': Select a language
-'33': ''
+'33': Weapon
 '34': ภาษาในปัจจุบัน
 '35': </register:1006486283725590528> for more information
 '36': รูปแบบคุกกี้ไม่ถูกต้อง
@@ -643,7 +643,7 @@
 '570': |-
   Your Cookie contains multiple accounts
   please choose the one you want to add
-'571': ''
+'571': You don't have an account registered
 '572': Use </accounts:1020188057628065866> to add one
 '573': Your current account is not linked to a Cookie
 '574': |-
