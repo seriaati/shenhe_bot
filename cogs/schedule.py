@@ -7,7 +7,6 @@ import traceback
 from typing import List, Literal, Optional
 from apps.draw import main_funcs
 import aiosqlite
-from data.game.pot import get_pot_accumulation_rate
 from exceptions import ShenheAccountNotFound
 import genshin
 import sentry_sdk
@@ -19,7 +18,12 @@ from discord.utils import find, format_dt
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Domain, Material, Weapon
-from apps.genshin.custom_model import DrawInput, NotificationUser, ShenheBot, ShenheAccount
+from apps.genshin.custom_model import (
+    DrawInput,
+    NotificationUser,
+    ShenheBot,
+    ShenheAccount,
+)
 from apps.genshin.utils import get_shenhe_account, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
@@ -74,8 +78,8 @@ class Schedule(commands.Cog):
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
         now = get_dt_now()
-        
-        if now.minute < self.loop_interval: # every hour
+
+        if now.minute < self.loop_interval:  # every hour
             tasks = ["resin_notification", "pot_notification", "pt_notification"]
             for task in tasks:
                 await asyncio.create_task(self.check_notification(task))
@@ -120,7 +124,7 @@ class Schedule(commands.Cog):
 
     async def check_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Checking...")
-        
+
         n_users = await self.get_notification_users(notification_type)
         now = get_dt_now()
         sent_num = 0
@@ -140,7 +144,7 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = text_map.get(36, locale)
                 log.warning(
-                    f"[Schedule][{notification_type}] Invalid Cookies for {n_user.user_id}"
+                    f"[Schedule][{notification_type}][{n_user.user_id}] Invalid Cookies for {n_user.user_id}"
                 )
                 await self.disable_notification(
                     n_user.user_id, n_user.uid, notification_type
@@ -150,17 +154,29 @@ class Schedule(commands.Cog):
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
-                log.warning(f"[Schedule][{notification_type}] Error: {e}")
+                log.warning(
+                    f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
+                )
                 await self.disable_notification(
                     n_user.user_id, n_user.uid, notification_type
                 )
             else:
                 # reset current
-                if notification_type == "resin_notification" and notes.current_resin < n_user.threshold:
-                    await self.reset_current(n_user.user_id, n_user.uid, notification_type)
-                elif notification_type == "pot_notification" and notes.current_realm_currency < n_user.threshold:
-                    await self.reset_current(n_user.user_id, n_user.uid, notification_type)
-                
+                if (
+                    notification_type == "resin_notification"
+                    and notes.current_resin < n_user.threshold
+                ):
+                    await self.reset_current(
+                        n_user.user_id, n_user.uid, notification_type
+                    )
+                elif (
+                    notification_type == "pot_notification"
+                    and notes.current_realm_currency < n_user.threshold
+                ):
+                    await self.reset_current(
+                        n_user.user_id, n_user.uid, notification_type
+                    )
+
                 if error:
                     discord_user = self.bot.get_user(
                         n_user.user_id
@@ -171,7 +187,7 @@ class Schedule(commands.Cog):
                         map_hash = 704
                     else:  # resin_notification
                         map_hash = 582
-                        
+
                     embed = error_embed(
                         message=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
                     )
@@ -187,18 +203,32 @@ class Schedule(commands.Cog):
                 else:
                     if n_user.current == n_user.max:
                         continue
-                    if n_user.last_notif is not None and now - n_user.last_notif < timedelta(hours=2):
+                    if (
+                        n_user.last_notif is not None
+                        and now - n_user.last_notif < timedelta(hours=2)
+                    ):
                         continue
-                    
+
                     # send notification
                     success = False
-                    if notification_type == "resin_notification" and notes.current_resin >= n_user.threshold:
+                    if (
+                        notification_type == "resin_notification"
+                        and notes.current_resin >= n_user.threshold
+                    ):
                         success = await self.notify_resin(n_user, notes, locale)
-                    elif notification_type == "pot_notification" and notes.current_realm_currency >= n_user.threshold:
+                    elif (
+                        notification_type == "pot_notification"
+                        and notes.current_realm_currency >= n_user.threshold
+                    ):
                         success = await self.notify_pot(n_user, notes, locale)
-                    elif notification_type == "pt_notification" and notes.remaining_transformer_recovery_time.total_seconds() == 0:
+                    elif (
+                        notification_type == "pt_notification"
+                        and notes.remaining_transformer_recovery_time is not None
+                        and notes.remaining_transformer_recovery_time.total_seconds()
+                        == 0
+                    ):
                         success = await self.notify_pt(n_user, locale)
-                        
+
                     if success:
                         sent_num += 1
                         # update notification count
@@ -215,7 +245,9 @@ class Schedule(commands.Cog):
 
         await c.close()
         await self.bot.db.commit()
-        log.info(f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users")
+        log.info(
+            f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users"
+        )
 
     async def notify_resin(
         self, user: NotificationUser, notes: genshin.models.Notes, locale: str
