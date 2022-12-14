@@ -34,9 +34,13 @@ class ElementButton(Button):
         await element_button_callback(i, self.element, self.view)
 
 class ShowThoughts(Button):
-    def __init__(self):
-        super().__init__(emoji="💭")
-
+    def __init__(self, embed: Embed):
+        super().__init__(emoji="💭", row=1)
+        self.embed = embed
+        
+    async def callback(self, i: Interaction):
+        await i.response.edit_message(embed=self.embed)
+        
 class CharacterSelect(Select):
     def __init__(
         self, options: List[SelectOption], placeholder: str, builds: Dict, element: str
@@ -49,29 +53,33 @@ class CharacterSelect(Select):
         self.view: View
         locale = await get_user_locale(i.user.id, i.client.db) or i.locale
         builds = get_character_builds(self.values[0], self.builds, locale)
+        print(self.values[0])
         embeds = []
         options = []
         for index, build in enumerate(builds):
+            if build.weapon is None:
+                continue
+            
             embeds.append(build.embed)
-            if build.is_thought:
-                options.append(
-                    SelectOption(label=text_map.get(97, locale), value=str(index))
-                )
-            elif build.weapon is not None and build.artifact is not None:
-                weapon_id = text_map.get_id_from_name(build.weapon)
-                if weapon_id is None:
-                    raise ValueError(f"Could not find weapon {build.weapon}")
-                options.append(
-                    SelectOption(
-                        label=f"{text_map.get(162, locale)} {index+1}",
-                        description=f"{text_map.get_weapon_name(weapon_id, locale)} | {cond_text.get_text(str(locale), 'build', build.artifact)}",
-                        value=str(index),
+            weapon_id = text_map.get_id_from_name(build.weapon)
+            if weapon_id is None:
+                continue
+            
+            options.append(
+                SelectOption(
+                    label=f"{text_map.get(162, locale)} {index+1}",
+                    description=f"{text_map.get_weapon_name(weapon_id, locale)} | {cond_text.get_text(str(locale), 'build', build.artifact)}",
+                    value=str(index),
                     )
                 )
         placeholder = text_map.get(163, locale)
         self.view.clear_items()
         self.view.add_item(BuildSelect(options, placeholder, embeds))
         self.view.add_item(GoBack("character", self.element))
+        self.view.add_item(Button(label=text_map.get(96, locale), url="https://bbs.nga.cn/read.php?tid=25843014", row=1))
+        thoughts_embed = [b.embed for b in builds if b.is_thought]
+        if thoughts_embed:
+            self.view.add_item(ShowThoughts(thoughts_embed[0]))
         await i.response.edit_message(embed=embeds[0], view=self.view)
 
 
@@ -79,7 +87,7 @@ class BuildSelect(Select):
     def __init__(
         self, options: List[SelectOption], placeholder: str, build_embeds: List[Embed]
     ):
-        super().__init__(options=options, placeholder=placeholder)
+        super().__init__(options=options, placeholder=placeholder, row=0)
         self.build_embeds = build_embeds
 
     async def callback(self, i: Interaction):
@@ -88,7 +96,7 @@ class BuildSelect(Select):
 
 class GoBack(Button):
     def __init__(self, place_to_go_back: str, element: Optional[str] = None):
-        super().__init__(emoji="<:left:982588994778972171>")
+        super().__init__(emoji="<:left:982588994778972171>", row=2)
         self.place_to_go_back = place_to_go_back
         self.element = element
 

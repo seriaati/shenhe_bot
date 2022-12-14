@@ -86,9 +86,6 @@ def get_character_builds(
         embed.add_field(name=text_map.get(95, locale), value=stat_str)
         count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
-        embed.set_footer(
-            text=f"{text_map.get(96, locale)}: https://bbs.nga.cn/read.php?tid=25843014"
-        )
         result.append(
             CharacterBuild(
                 embed=embed,
