@@ -22,7 +22,7 @@ from typing import Dict
 from discord.ext import commands
 
 from logingateway import HuTaoLoginAPI
-from logingateway.model import Player, Ready, LoginMethod
+from logingateway.model import Player, Ready, LoginMethod, ServerId
 from UI_elements.others.ManageAccounts import return_accounts
 
 from apps.text_map.text_map_app import text_map
@@ -96,6 +96,7 @@ class Shenhe(commands.Bot):
         self.tokenStore: Dict[str, WebhookMessage] = {}
         self.gateway.ready(self.gateway_connect)
         self.gateway.player(self.gateway_player)
+        self.gateway.player_update(self.gateway_player_update)
 
         c = await self.db.cursor()
         cookie_list = []
@@ -140,6 +141,16 @@ class Shenhe(commands.Bot):
     async def gateway_connect(self, data: Ready):
         log.info(f"[System][Hutao Login Gateway] Connected")
 
+    async def gateway_player_update(self, data: Player):
+        log.info(f"[System][Hutao Login Gateway] Update player {data}")
+        user_id = data.genshin.userid
+        cookie_token = data.genshin.cookie_token
+        # Update cookie_token
+        await self.db.execute("UPDATE user_accounts SET cookie_token = ? WHERE user_id = ?", (
+            user_id,
+            cookie_token
+        ))
+
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:
             return
@@ -160,7 +171,8 @@ class Shenhe(commands.Bot):
                 "ltoken": data.genshin.ltoken,
                 "cookie_token": data.genshin.cookie_token,
             }
-        china = 1 if str(uid)[0] in [1, 2, 5] else 0
+            
+        china = 1 if data.genshin.server == ServerId.CHINA else 0
         await self.db.execute(
             "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
             (
