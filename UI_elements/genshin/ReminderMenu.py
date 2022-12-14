@@ -396,9 +396,17 @@ class PTModal(BaseModal):
 
 # Functions
 async def return_resin_notification(i: Interaction, view: View):
+    uid = await get_uid(i.user.id, i.client.db)
+    
+    await i.client.db.execute(
+        "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
+        (i.user.id, uid),
+    )
+    await i.client.db.commit()
+    
     async with i.client.db.execute(
         "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),
+        (i.user.id, uid),
     ) as c:
         (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -429,9 +437,17 @@ async def return_resin_notification(i: Interaction, view: View):
 
 
 async def return_pt_notification(i: Interaction, view: View):
+    uid = await get_uid(i.user.id, i.client.db)
+    
+    await i.client.db.execute(
+        "INSERT INTO pt_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
+        (i.user.id, uid),
+    )
+    await i.client.db.commit()
+    
     async with i.client.db.execute(
         "SELECT max, toggle FROM pt_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),
+        (i.user.id, uid),
     ) as c:
         max_notif, toggle = await c.fetchone()
     value = f"""
@@ -459,9 +475,17 @@ async def return_pt_notification(i: Interaction, view: View):
 
 
 async def return_pot_notification(i: Interaction, view: View):
+    uid = await get_uid(i.user.id, i.client.db)
+    
+    await i.client.db.execute(
+        "INSERT INTO pot_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
+        (i.user.id, uid),
+    )
+    await i.client.db.commit()
+    
     async with i.client.db.execute(
         "SELECT toggle, threshold, max FROM pot_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, await get_uid(i.user.id, i.client.db)),
+        (i.user.id, uid),
     ) as c:
         (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -583,15 +607,6 @@ async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
     c = await i.client.db.cursor()
-    uid = await get_uid(i.user.id, i.client.db)
-    await c.execute(
-        "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
-    )
-    await c.execute(
-        "INSERT INTO pot_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
-    )
     await c.execute(
         "INSERT INTO talent_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
         (i.user.id,),
@@ -600,12 +615,9 @@ async def return_notification_menu(
         "INSERT INTO weapon_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
         (i.user.id,),
     )
-    await c.execute(
-        "INSERT INTO pt_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
-    )
     await i.client.db.commit()
     await c.close()
+    
     embed = default_embed(message=text_map.get(592, locale))
     embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
     view = View(locale)
