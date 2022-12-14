@@ -143,13 +143,27 @@ class Shenhe(commands.Bot):
 
     async def gateway_player_update(self, data: Player):
         log.info(f"[System][Hutao Login Gateway] Update player {data}")
-        user_id = data.genshin.userid
-        cookie_token = data.genshin.cookie_token
+        
+        # Set variable data
+        user_id = data.discord.user_id
+        genshin = data.genshin
+
         # Update cookie_token
-        await self.db.execute("UPDATE user_accounts SET cookie_token = ? WHERE user_id = ?", (
-            user_id,
-            cookie_token
-        ))
+        _data = [
+            genshin.ltuid,
+            genshin.cookie_token
+        ]
+
+        # Set default value 
+        update_value = "ltuid = ?, cookie_token = ?"
+        # Check if ltoken is not empty string
+        if data.genshin.ltoken != "":
+            update_value += ", ltoken = ?"
+            _data.append(genshin.ltoken)
+        
+        # Append discord ID
+        _data.append(user_id)
+        await self.db.execute(f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", _data)
 
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:
@@ -158,7 +172,7 @@ class Shenhe(commands.Bot):
         ctx = self.tokenStore[data.token]
         log.info(f"[System][Hutao Login Gateway] {data}")
         uid = data.genshin.uid
-        user_id = data.genshin.userid
+        user_id = data.discord.user_id
         if data.genshin.login_type == LoginMethod.UID:
             cookie = {
                 "ltuid": None,
