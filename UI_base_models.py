@@ -2,6 +2,7 @@ import traceback
 from typing import Optional
 
 import discord
+from exceptions import NoPlayerFound, ShenheAccountNotFound, UIDNotFound
 import sentry_sdk
 
 from apps.text_map.text_map_app import text_map
@@ -14,28 +15,38 @@ async def global_error_handler(
 ):
     if isinstance(e, discord.app_commands.errors.CheckFailure):
         return
-    user_locale = await get_user_locale(i.user.id, i.client.db)
+    
+    locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+    
     if hasattr(e, "code") and e.code in [10062, 10008, 10015]:
-        embed = error_embed(message=text_map.get(624, i.locale, user_locale))
-        embed.set_author(name=text_map.get(623, i.locale, user_locale))
+        embed = error_embed(message=text_map.get(624, locale))
+        embed.set_author(name=text_map.get(623, locale))
+    elif isinstance(e, UIDNotFound):
+        embed = error_embed().set_author(name=text_map.get(672, locale))
+    elif isinstance(e, ShenheAccountNotFound):
+        embed = error_embed(message=text_map.get(35, locale))
+        embed.set_author(name=text_map.get(545, locale))
+    elif isinstance(e, NoPlayerFound):
+        embed = error_embed().set_author(name=text_map.get(367, locale))
     else:
-        log.warning(f"[{i.user.id}]{type(e)}: {e}")
+        log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
+        sentry_sdk.capture_exception(e)
+        
         # print traceback
         if i.client.debug:
             log.warning(traceback.format_exc())
-        sentry_sdk.capture_exception(e)
-        embed = error_embed(message=text_map.get(513, i.locale, user_locale))
-        if embed.description is not None:
-            embed.description += f"\n\n```{e}```"
+        
+        embed = error_embed(message=text_map.get(513, locale))
+        embed.description += f"\n\n```{e}```"
         embed.set_author(
-            name=text_map.get(135, i.locale, user_locale),
+            name=text_map.get(135, locale),
             icon_url=i.user.display_avatar.url,
         )
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
     view = discord.ui.View()
     view.add_item(
         discord.ui.Button(
-            label=text_map.get(642, i.locale, user_locale),
+            label=text_map.get(642, locale),
             url="https://discord.gg/ryfamUykRw",
             emoji="<:discord_icon:1032123254103621632>",
         )
