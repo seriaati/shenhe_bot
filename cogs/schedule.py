@@ -8,6 +8,7 @@ from typing import List, Literal, Optional
 from apps.draw import main_funcs
 import aiosqlite
 from data.game.pot import get_pot_accumulation_rate
+from exceptions import ShenheAccountNotFound
 import genshin
 import sentry_sdk
 from discord import File, Game, Interaction, app_commands
@@ -18,8 +19,8 @@ from discord.utils import find, format_dt
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Domain, Material, Weapon
-from apps.genshin.custom_model import DrawInput, NotificationUser, ShenheBot, ShenheUser
-from apps.genshin.utils import get_shenhe_user, get_uid, get_uid_tz
+from apps.genshin.custom_model import DrawInput, NotificationUser, ShenheBot, ShenheAccount
+from apps.genshin.utils import get_shenhe_account, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -125,7 +126,10 @@ class Schedule(commands.Cog):
         sent_num = 0
         c = await self.bot.db.cursor()
         for n_user in n_users:
-            s_user = await get_shenhe_user(n_user.user_id, self.bot.db, self.bot)
+            try:
+                s_user = await get_shenhe_account(n_user.user_id, self.bot.db, self.bot)
+            except ShenheAccountNotFound:
+                continue
             locale = s_user.user_locale or "en-US"
 
             error = False
@@ -300,11 +304,11 @@ class Schedule(commands.Cog):
 
     async def get_schedule_users(
         self, user_ids: Optional[List[int]] = None
-    ) -> List[ShenheUser]:
+    ) -> List[ShenheAccount]:
         """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
 
         Returns:
-            List[ShenheUser]: List of shenhe users
+            List[ShenheAccount]: List of shenhe users
         """
         result = []
         c = await self.bot.db.cursor()
@@ -327,7 +331,7 @@ class Schedule(commands.Cog):
             user_id = tpl[2]
             uid = tpl[3]
             daily_checkin = tpl[4]
-            shenhe_user = await get_shenhe_user(
+            shenhe_user = await get_shenhe_account(
                 user_id,
                 self.bot.db,
                 self.bot,
