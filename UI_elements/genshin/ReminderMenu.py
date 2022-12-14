@@ -372,6 +372,7 @@ class PotModal(BaseModal):
     def __init__(self, locale: Locale | str):
         super().__init__(title=text_map.get(515, locale))
         self.threshold.label = text_map.get(516, locale)
+        self.threshold.placeholder = text_map.get(170, locale).format(a=2000)
         self.max_notif.label = text_map.get(103, locale)
         self.max_notif.placeholder = text_map.get(155, locale)
 

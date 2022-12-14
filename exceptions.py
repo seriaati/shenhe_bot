@@ -9,3 +9,6 @@ class ItemNotFound(Exception):
 
 class NoPlayerFound(Exception):
     pass
+
+class NoCharacterFound(Exception):
+    pass

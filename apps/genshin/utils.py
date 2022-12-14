@@ -5,12 +5,11 @@ import aiohttp
 import aiosqlite
 import discord
 import enkanetwork
-from exceptions import ShenheAccountNotFound, UIDNotFound
+from exceptions import NoCharacterFound, ShenheAccountNotFound, UIDNotFound
 import genshin
 import yaml
 from discord.utils import format_dt
 from diskcache import FanoutCache
-import sentry_sdk
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
@@ -220,12 +219,10 @@ async def get_shenhe_account(
         ) as c:
             user_data = None
             async for row in c:
+                user_data = row
                 if row[5] == 1:
-                    user_data = row
                     break
-                else:
-                    user_data = row
-        
+                
         if user_data is None:
             raise ShenheAccountNotFound
 
@@ -244,6 +241,7 @@ async def get_shenhe_account(
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
+        client.uid  = await get_uid(user_id, db)
     
     user_locale = await get_user_locale(user_id, db)
     final_locale = author_locale or user_locale or locale
@@ -281,10 +279,6 @@ async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
             if row[1] == 1:
                 break
         return uid
-
-
-class NoCharacterFound(Exception):
-    pass
 
 
 async def load_and_update_enka_cache(

@@ -115,7 +115,7 @@ class CharacterSelect(Select):
                     if enka_data is not None:
                         character = [
                             c
-                            for c in enka_data.cache.characters
+                            for c in enka_data.cache.characters # type: ignore
                             if c.id == character_id
                         ]
                         if character:
