@@ -1,7 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, List, Literal, Optional, Tuple
-from utility.utils import log
 import aiohttp
 import aiosqlite
 import discord
@@ -644,10 +643,10 @@ async def validate_level_input(
             ephemeral=True,
         )
         raise InvalidLevelInput
-    if int_a < 1 or int_a > 10 or int_e < 1 or int_e > 10 or int_q < 1 or int_q > 10:
+    if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
         await i.followup.send(
             embed=error_embed(
-                message=text_map.get(172, locale).format(a=1, b=10)
+                message=text_map.get(172, locale).format(a=1, b=15)
             ).set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             ),
