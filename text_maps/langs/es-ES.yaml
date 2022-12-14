@@ -31,12 +31,12 @@
 '30': Sáb.
 '31': Dom.
 '32': Selecciona un idioma
-'33': Idioma cambiado
+'33': ''
 '34': Idioma actual
 '35': </register:1006486283725590528> para más información
 '36': Cookie inválida
-'37': Registro de cuenta cancelado
-'38': No se han obtenido cuentas válidas de la cookie
+'37': ''
+'38': ''
 '39': Cuenta añadida
 '40': '¡Ya has reclamado la recompensa de inicio de sesión de hoy!'
 '41': Obtenido
@@ -147,8 +147,8 @@
   6. Submit your cookie here
 
   Too complicated? The image below might help!
-'139': Expired or invalid Cookie, please log out and login again!
-'140': Please use the </register:1006486283725590528> command
+'139': ''
+'140': ''
 '141': Account data not found!
 '142': Select an element
 '143': You are not the issuer of this command
@@ -399,7 +399,7 @@
 '364': Video Tutorial
 '365': Choose your platform
 '366': Your P.T. is ready to use!
-'367': ''
+'367': This UID has no player data in it
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
 '370': The last 5-star character you pulled was a standard character
@@ -643,7 +643,7 @@
 '570': |-
   Your Cookie contains multiple accounts
   please choose the one you want to add
-'571': You don't have an account registered
+'571': ''
 '572': Use </accounts:1020188057628065866> to add one
 '573': Your current account is not linked to a Cookie
 '574': |-
