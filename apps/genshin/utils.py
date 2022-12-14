@@ -5,6 +5,7 @@ import aiohttp
 import aiosqlite
 import discord
 import enkanetwork
+from exceptions import ShenheAccountNotFound, UIDNotFound
 import genshin
 import yaml
 from discord.utils import format_dt
@@ -13,7 +14,7 @@ import sentry_sdk
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
 from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
-                                       FightProp, ShenheBot, ShenheUser,
+                                       FightProp, ShenheBot, ShenheAccount,
                                        WishInfo)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
@@ -201,8 +202,7 @@ def get_uid_tz(uid: Optional[int]) -> Literal[0, -13, -7]:
     }
     return region_map.get(str_uid[0], 0)
 
-
-async def get_shenhe_user(
+async def get_shenhe_account(
     user_id: int,
     db: aiosqlite.Connection,
     bot: ShenheBot,
@@ -211,7 +211,7 @@ async def get_shenhe_user(
     custom_uid: Optional[int] = None,
     daily_checkin: int = 1,
     author_locale: Optional[discord.Locale | str] = None,
-) -> ShenheUser:
+) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if not cookie:
         async with db.execute(
@@ -227,8 +227,7 @@ async def get_shenhe_user(
                     user_data = row
         
         if user_data is None:
-            sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no Shenhe Account")
-            raise ValueError(f"User {user_id} has no Shenhe Account")
+            raise ShenheAccountNotFound
 
         if user_data[0] is not None:
             client = genshin.Client()
@@ -258,10 +257,9 @@ async def get_shenhe_user(
         client.lang = "zh-cn"
         
     if client.uid is None:
-        sentry_sdk.capture_message(f"[Get Shenhe User]User {user_id} has no UID")
-        raise ValueError(f"User {user_id} has no UID")
+        raise UIDNotFound
 
-    user_obj = ShenheUser(
+    user_obj = ShenheAccount(
         client=client,
         uid=client.uid,
         discord_user=discord_user,

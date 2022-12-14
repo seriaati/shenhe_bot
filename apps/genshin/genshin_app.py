@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import aiosqlite
 import enkanetwork
+from exceptions import UIDNotFound
 import genshin
 import sentry_sdk
 from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
@@ -20,22 +21,14 @@ from apps.genshin.custom_model import (
     GenshinAppResult,
     RealtimeNoteResult,
     ShenheBot,
-    ShenheUser,
+    ShenheAccount,
     StatsResult,
 )
-from apps.genshin.utils import get_character_emoji, get_shenhe_user, get_uid, get_uid_tz
+from apps.genshin.utils import get_character_emoji, get_shenhe_account, get_uid, get_uid_tz
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
 from utility.utils import default_embed, error_embed, get_dt_now, get_user_appearance_mode, log
-
-
-class CookieInvalid(Exception):
-    pass
-
-
-class UIDNotFound(Exception):
-    pass
 
 
 def genshin_error_handler(func):
@@ -587,9 +580,9 @@ class GenshinApp:
 
     async def get_user_cookie(
         self, user_id: int, author_id: int, locale: Optional[Locale] = None
-    ) -> ShenheUser:
+    ) -> ShenheAccount:
         author_locale = await get_user_locale(author_id, self.db)
-        shenhe_user = await get_shenhe_user(
+        shenhe_user = await get_shenhe_account(
             user_id, self.db, self.bot, locale, author_locale=author_locale
         )
         return shenhe_user

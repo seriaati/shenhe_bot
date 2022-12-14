@@ -16,7 +16,7 @@ from pyppeteer.browser import Browser
 from ambr.models import Character
 
 
-class ShenheUser(BaseModel):
+class ShenheAccount(BaseModel):
     client: genshin.Client
     uid: int
     discord_user: discord.User | discord.Member | discord.ClientUser

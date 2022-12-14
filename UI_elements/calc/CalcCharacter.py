@@ -15,7 +15,7 @@ from apps.genshin.utils import (
     get_character_emoji,
     get_character_suggested_talent_levels,
     get_enka_data,
-    get_shenhe_user,
+    get_shenhe_account,
     get_uid,
     level_to_ascension_phase,
     validate_level_input,
@@ -83,7 +83,7 @@ class CharacterSelect(Select):
         check = await check_cookie_predicate(i, respond_message=False)
         character_id = int(self.values[0].split("-")[0])
         if check:  # the user has cookie
-            shenhe_user = await get_shenhe_user(
+            shenhe_user = await get_shenhe_account(
                 i.user.id, i.client.db, i.client, locale
             )
             calculator_characters = await shenhe_user.client.get_calculator_characters(
