@@ -64,6 +64,7 @@ from UI_elements.genshin import (
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
+from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
 from utility.utils import (
@@ -76,15 +77,6 @@ from utility.utils import (
 )
 
 load_dotenv()
-
-
-class UIDNotFound(Exception):
-    pass
-
-
-class ItemNotFound(Exception):
-    pass
-
 
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
@@ -239,6 +231,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
         if enka_data is None:
             return
+        if enka_data.data.player is None:
+            raise NoPlayerFound
         namecard = enka_data.data.player.namecard
         result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
