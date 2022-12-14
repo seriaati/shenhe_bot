@@ -1,4 +1,5 @@
 from typing import List
+from data.game.upgrade_exp import get_exp_table
 
 import genshin
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
@@ -369,17 +370,13 @@ class TargetLevelModal(BaseModal):
         todo_list = TodoList()
 
         # ascension items
-        start = level_to_ascension_phase(init)
-        end = level_to_ascension_phase(target)
-        ascension_items = character.upgrade.ascensions[start:end]
-        for asc in ascension_items:
-            cost_items = asc.cost_items
-            if cost_items is not None:
-                for item in cost_items:
-                    todo_list.add_item({int(item[0].id): item[1]})
-            mora_cost = asc.mora_cost
-            if mora_cost is not None:
-                todo_list.add_item({202: mora_cost})
+        for asc in character.upgrade.ascensions:
+            if asc.new_max_level <= target:
+                if asc.cost_items is not None:
+                    for item in asc.cost_items:
+                        todo_list.add_item({int(item[0].id): item[1]})
+                if asc.mora_cost is not None:
+                    todo_list.add_item({202: asc.mora_cost})
 
         # talent upgrade items
         normal_attack = character.talents[0]
@@ -399,21 +396,44 @@ class TargetLevelModal(BaseModal):
         for index, talent in enumerate(talents):
             if talent is not None:
                 if index == 0:
-                    start = init_a
-                    end = a
+                    t_target = a
                 elif index == 1:
-                    start = init_e
-                    end = e
+                    t_target = e
                 else:  # index == 2
-                    start = init_q
-                    end = q
-                talent = talent[start : end - 1]
+                    t_target = q
                 for t in talent:
-                    if t.cost_items is not None:
-                        for item in t.cost_items:
-                            todo_list.add_item({int(item[0].id): item[1]})
-                    if t.mora_cost is not None:
-                        todo_list.add_item({202: t.mora_cost})
+                    if t.level <= t_target:
+                        if t.cost_items is not None:
+                            for item in t.cost_items:
+                                todo_list.add_item({int(item[0].id): item[1]})
+                        if t.mora_cost is not None:
+                            todo_list.add_item({202: t.mora_cost})
+                            
+        # level up items
+        exp_table = get_exp_table()
+        init_cumulative = 0
+        target_cumulative = 0
+        for key, value in exp_table.items():
+            if key < init:
+                init_cumulative += value['next_level']
+            if key < target:
+                target_cumulative += value['next_level']
+        total_exp = target_cumulative - init_cumulative
+        
+        # hero
+        hero_num = total_exp//20000
+        todo_list.add_item({104003: hero_num})
+        todo_list.add_item({202: hero_num*4000})
+        
+        # adventurer
+        adv_num = (total_exp-20000*hero_num)//5000
+        todo_list.add_item({104002: adv_num})
+        todo_list.add_item({202: adv_num*1000})
+        
+        # wanderer
+        wand_num = (total_exp-20000*hero_num-5000*adv_num)//1000
+        todo_list.add_item({104001: wand_num})
+        todo_list.add_item({202: wand_num*200})
 
         items = todo_list.return_list()
         items = dict(sorted(items.items(), key=lambda x: x[0], reverse=True))

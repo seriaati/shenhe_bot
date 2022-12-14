@@ -112,6 +112,8 @@ class TodoList:
     def add_item(self, item: Dict[int, int]):
         key = list(item.keys())[0]
         value = list(item.values())[0]
+        if value <= 0:
+            return
         if key in self.dict:
             self.dict[key] += value
         else:
