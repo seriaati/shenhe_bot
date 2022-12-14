@@ -163,7 +163,7 @@ class Shenhe(commands.Bot):
         
         # Append discord ID
         _data.append(user_id)
-        await self.db.execute(f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", _data)
+        await self.db.execute(f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data))
 
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:
