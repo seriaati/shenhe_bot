@@ -27,14 +27,14 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="reload")
     async def reload(self, ctx: commands.Context):
-        message = await ctx.send("reloading...")
+        message = await ctx.send("pulling from Git...")
         if not self.bot.debug:
             g = git.cmd.Git(Path(__file__).parent.parent)
             pull = functools.partial(g.pull)
             await self.bot.loop.run_in_executor(None, pull)
-            await message.edit(content="Git pulled")
         modules = list(sys.modules.values())
         for _ in range(2):
+            await message.edit(content="reloading modules...")
             for module in modules:
                 if module is None:
                     continue
@@ -60,7 +60,7 @@ class AdminCog(commands.Cog, name="admin"):
                             ephemeral=True,
                         )
 
-            await message.edit(content=f"reloaded modules ({_+1}/2)")
+        await message.edit(content="reloading cogs...")
         for filepath in Path("./cogs").glob("**/*.py"):
             cog_name = Path(filepath).stem
             try:
@@ -69,7 +69,7 @@ class AdminCog(commands.Cog, name="admin"):
                 return await message.edit(
                     embed=error_embed(cog_name, f"```{e}```"),
                 )
-        await message.edit(content="cogs reloaded")
+        await message.edit(content="bot reloaded")
 
     @commands.is_owner()
     @commands.command(name="sync")
