@@ -6,6 +6,7 @@ import discord
 import enkanetwork
 import genshin
 import matplotlib.pyplot as plt
+
 from ambr.models import Character, Domain, Material, Weapon
 from apps.draw.draw_funcs import (
     abyss,
@@ -13,22 +14,17 @@ from apps.draw.draw_funcs import (
     check,
     diary,
     farm,
+    lineup,
     profile,
     remind,
     stats,
     todo,
     wish,
 )
-from apps.draw.utility import (
-    calculate_time,
-    download_images,
-    extract_urls,
-    get_l_character_data,
-)
+from apps.draw.utility import calculate_time, download_images, extract_urls
 from apps.genshin.custom_model import (
     CharacterUsageResult,
     DrawInput,
-    LeaderboardResult,
     RunLeaderboardUser,
     SingleStrikeLeaderboardUser,
     UsageCharacter,
@@ -163,7 +159,7 @@ async def draw_profile_card(
         raise ValueError("No characters found")
     if data.player is None:
         raise ValueError("No player found")
-    
+
     urls = [c.image.icon.url for c in data.characters if c.image is not None]
     if data.player.namecard.banner is not None:
         urls.append(data.player.namecard.banner.url)
@@ -348,5 +344,23 @@ async def character_summary_card(
         input.locale,
         element,
         custom_title,
+    )
+    return await input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_lineup_card(
+    input: DrawInput, lineup_preview: genshin.models.LineupPreview, character_id: int
+) -> io.BytesIO:
+    # download images
+    urls = []
+    for characters in lineup_preview.characters:
+        for character in characters:
+            urls.append(character.pc_icon)
+            urls.append(character.weapon.icon)
+            urls += [a.icon for a in character.artifacts]
+    await download_images(urls, input.session)
+    func = functools.partial(
+        lineup.card, input.dark_mode, input.locale, lineup_preview, character_id
     )
     return await input.loop.run_in_executor(None, func)
