@@ -140,7 +140,7 @@ class TeamButton(Button):
             )
             lineup_dict[scenario.name] = (
                 line_up:=await client.get_lineups(
-                    characters=[self.character_id], limit=1, scenario=scenario
+                    characters=[self.character_id], limit=1, scenario=scenario, page_size=1
                 )
             )[0]
             if index == 0:
