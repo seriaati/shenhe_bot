@@ -42,7 +42,7 @@ def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
     for index, stat in enumerate(main_stat):
         result += art_main_stat_map.get(stat, stat)
         if index != len(main_stat) - 1:
-            result += "-"
+            result += " | "
     return result
 
 
