@@ -28,7 +28,6 @@ from apps.genshin.utils import get_shenhe_account, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from cogs.admin import is_seria
 from utility.utils import (
     default_embed,
     error_embed,
@@ -820,16 +819,14 @@ class Schedule(commands.Cog):
     async def before_check(self):
         await self.bot.wait_until_ready()
 
-    @is_seria()
-    @app_commands.command(
-        name="update-data", description="Update game data and text map"
-    )
-    async def update_data(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
+    @commands.is_owner()
+    @commands.command(name="update-data")
+    async def update_data(self, ctx: commands.Context):
+        message = await ctx.send("Updating data...")
         await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
-        await i.followup.send("Tasks created", ephemeral=True)
+        await message.edit(content="Data updated")
 
 
 async def setup(bot: commands.Bot) -> None:
