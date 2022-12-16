@@ -815,10 +815,10 @@ class Schedule(commands.Cog):
 
         base_path = Path("data/cards/")
 
-        with open(base_path / "cards_20221205_en-us.json", "w") as f:
+        with open(base_path / "cards_en-us.json", "w") as f:
             json.dump(english_cards, f, indent=2, ensure_ascii=False)
 
-        with open(base_path / "cards_20221205_i18n.json", "w") as f:
+        with open(base_path / "cards_i18n.json", "w") as f:
             json.dump(i18n_data, f, indent=2, ensure_ascii=False)
 
         log.info("[Schedule][Update Card Data] Ended")

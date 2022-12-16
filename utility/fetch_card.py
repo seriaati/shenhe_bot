@@ -73,21 +73,3 @@ def process_i18n(data):
                 i18n[lang][i] = j
 
     return data["en-us"], i18n
-
-
-if __name__ == "__main__":
-    print("Fetching cards...")
-    cards = fetch_cards()
-
-    print("Processing cards...")
-    english_cards, i18n_data = process_i18n(cards)
-
-    base_path = Path("gisim/cards/resources/")
-
-    with open(base_path / "cards_en-us.json", "w") as f:
-        json.dump(english_cards, f, indent=2, ensure_ascii=False)
-
-    with open(base_path / "cards_i18n.json", "w") as f:
-        json.dump(i18n_data, f, indent=2, ensure_ascii=False)
-
-    print("Done.")
