@@ -36,7 +36,7 @@
 '35': 詳細は</register:1006486283725590528>で確認してください
 '36': Cookieが無効です
 '37': 聖遺物セット
-'38': ''
+'38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': アカウントが追加されました
 '40': 既にログインボーナスを受け取っています！
 '41': 受け取りました。
@@ -795,3 +795,11 @@
 '706': この層の地脈異常
 '707': 前半
 '708': 後半
+'709': Lineup Simulator
+'710': ''
+'711': Select a lineup to view its details
+'712': Include characters
+'713': Applicable scenario
+'714': Select characters
+'715': Search
+'716': Clear character
