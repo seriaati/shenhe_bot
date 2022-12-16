@@ -10,7 +10,8 @@ import aiosqlite
 from exceptions import ShenheAccountNotFound
 import genshin
 import sentry_sdk
-from discord import File, Game, Interaction, app_commands
+from pathlib import Path
+from discord import File, Game
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
 from discord.utils import find, format_dt
@@ -28,6 +29,7 @@ from apps.genshin.utils import get_shenhe_account, get_uid, get_uid_tz
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from utility.fetch_card import fetch_cards, process_i18n
 from utility.utils import (
     default_embed,
     error_embed,
@@ -90,6 +92,7 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_ambr_cache())
             await asyncio.create_task(self.update_text_map())
             await asyncio.create_task(self.update_game_data())
+            await asyncio.create_task(self.update_card_data())
             await asyncio.create_task(self.backup_database())
 
         if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
@@ -803,6 +806,24 @@ class Schedule(commands.Cog):
         log.info("[Schedule][Update Text Map] Ended")
 
     @schedule_error_handler
+    async def update_card_data(self):
+        log.info("[Schedule][Update Card Data] Start")
+        cards = await fetch_cards(self.bot.session)
+
+        log.info("[Schedule][Update Card Data] Processing data")
+        english_cards, i18n_data = process_i18n(cards)
+
+        base_path = Path("data/cards/")
+
+        with open(base_path / "cards_20221205_en-us.json", "w") as f:
+            json.dump(english_cards, f, indent=2, ensure_ascii=False)
+
+        with open(base_path / "cards_20221205_i18n.json", "w") as f:
+            json.dump(i18n_data, f, indent=2, ensure_ascii=False)
+
+        log.info("[Schedule][Update Card Data] Ended")
+
+    @schedule_error_handler
     async def update_ambr_cache(self):
         """Updates data from ambr.top"""
         log.info("[Schedule][Update Ambr Cache] Start")
@@ -826,7 +847,15 @@ class Schedule(commands.Cog):
         await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
+        await asyncio.create_task(self.update_card_data())
         await message.edit(content="Data updated")
+
+    @commands.is_owner()
+    @commands.command(name="backup")
+    async def backup_db(self, ctx: commands.Context):
+        message = await ctx.send("Backing up database...")
+        await asyncio.create_task(self.backup_database())
+        await message.edit(content="Database backed up")
 
 
 async def setup(bot: commands.Bot) -> None:

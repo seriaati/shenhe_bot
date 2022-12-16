@@ -57,6 +57,9 @@ def get_element_name(
         "Hydro": text_map.get(217, locale, user_locale),
         "Dendro": text_map.get(218, locale, user_locale),
         "Electro": text_map.get(219, locale, user_locale),
+        "Omni": text_map.get(720, locale, user_locale),
+        "Black": text_map.get(721, locale, user_locale),
+        "Energy": text_map.get(722, locale, user_locale),
     }
     return (
         element_dict.get(element_name)

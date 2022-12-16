@@ -2,6 +2,7 @@ import json
 import random
 from datetime import datetime, timedelta
 from typing import List, Tuple
+from data.cards.dice_element import get_dice_element
 
 from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
@@ -50,7 +51,7 @@ from apps.genshin.wiki import (
 )
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
+from apps.text_map.utils import get_element_name, get_user_locale
 from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
 from UI_elements.genshin import (
     Abyss,
@@ -75,6 +76,7 @@ from utility.utils import (
     error_embed,
     get_dt_now,
     get_user_appearance_mode,
+    parse_HTML,
 )
 
 load_dotenv()
@@ -109,6 +111,18 @@ class GenshinCog(commands.Cog, name="genshin"):
                 self.item_names = json.load(f)
         except FileNotFoundError:
             self.item_names = {}
+
+        try:
+            with open("data/cards/cards_en-us.json") as f:
+                self.card_en_us = json.load(f)
+        except FileNotFoundError:
+            self.card_en_us = {}
+
+        try:
+            with open("data/cards/cards_i18n.json") as f:
+                self.card_i18n = json.load(f)
+        except FileNotFoundError:
+            self.card_i18n = {}
 
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
@@ -1014,6 +1028,107 @@ class GenshinCog(commands.Cog, name="genshin"):
             view.author = i.user
             await Lineup.search_lineup(i, view)
             view.message = await i.original_response()
+
+    @app_commands.command(
+        name="tcg", description=_("Search a card in the Genshin TCG", hash=717)
+    )
+    @app_commands.rename(card_id=_("card", hash=718))
+    async def slash_tcg(self, i: Interaction, card_id: str):
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        g_locale = to_genshin_py(locale)
+
+        the_card = None
+        card_type = None
+
+        for card in self.card_en_us["role_card_infos"]:
+            if card["id"] == int(card_id):
+                the_card = card
+                card_type = "role"
+                break
+
+        if not the_card:
+            for card in self.card_en_us["action_card_infos"]:
+                if card["id"] == int(card_id):
+                    the_card = card
+                    card_type = "action"
+                    break
+
+        if not the_card:
+            return await i.response.send_message(
+                embed=error_embed().set_author(
+                    name=text_map.get(719, locale), icon_url=i.user.display_avatar.url
+                ),
+                ephemeral=True,
+            )
+
+        card = the_card
+
+        if card_type == "role":
+            embed = default_embed(self.tcg_trans(card["name"], g_locale))
+            embed.set_footer(
+                text=f"{text_map.get(33, locale)}: {self.tcg_trans(card['weapon'], g_locale)}"
+            )
+            for skill in card["role_skill_infos"]:
+                cost_str = f"**{text_map.get(710, locale)}: **"
+                cost_str += " / ".join(
+                    [
+                        f"{get_element_name(get_dice_element(cost['cost_icon']), locale)} ({cost['cost_num']})"
+                        for cost in skill["skill_costs"]
+                        if cost["cost_num"]
+                    ]
+                )
+                embed.add_field(
+                    name=self.tcg_trans(skill["name"], g_locale),
+                    value=parse_HTML(self.tcg_trans(skill["skill_text"], g_locale))
+                    + "\n"
+                    + cost_str,
+                    inline=False,
+                )
+        else:
+            embed = default_embed(
+                self.tcg_trans(card["name"], g_locale),
+                parse_HTML(self.tcg_trans(card["content"], g_locale)),
+            )
+            if card["cost_num1"]:
+                cost_str = f"{get_element_name(get_dice_element(card['cost_type1_icon']), locale)} ({card['cost_num1']})"
+                if card["cost_num2"]:
+                    cost_str += f" / {get_element_name(get_dice_element(card['cost_type2_icon']), locale)} ({card['cost_num2']})"
+                embed.add_field(name=text_map.get(710, locale), value=cost_str)
+        embed.set_thumbnail(url=card["resource"])
+
+        await i.response.send_message(embed=embed)
+
+    @slash_tcg.autocomplete("card_id")
+    async def query_autocomplete(
+        self, i: Interaction, current: str
+    ) -> List[Choice[str]]:
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        g_locale = to_genshin_py(locale)
+
+        choices = []
+
+        cards = (
+            self.card_en_us["role_card_infos"] + self.card_en_us["action_card_infos"]
+        )
+
+        for card in cards:
+            if g_locale == "en-us":
+                card_name = card["name"]
+            else:
+                card_name = self.card_i18n[g_locale][card["name"]]
+            if current.lower() in card_name.lower():
+                choices.append(Choice(name=card_name, value=str(card["id"])))
+
+        if not current:
+            choices = random.choices(choices, k=25)
+
+        return choices[:25]
+
+    def tcg_trans(self, text: str, locale: str):
+        if locale == "en-us":
+            return text
+        else:
+            return self.card_i18n[locale][text]
 
 
 async def setup(bot: commands.Bot) -> None:

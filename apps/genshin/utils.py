@@ -27,7 +27,6 @@ from data.game.weapon_map import weapon_map
 from utility.utils import (default_embed, divide_chunks, divide_dict,
                            error_embed, get_dt_now)
 
-
 def calculate_artifact_score(substats: dict):
     tier_four_val = {
         "FIGHT_PROP_HP": 1196,
