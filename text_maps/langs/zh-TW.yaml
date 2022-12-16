@@ -36,7 +36,7 @@
 '35': </register:1006486283725590528> 來獲取更多資訊
 '36': 無效的 cookie
 '37': 聖遺物套裝
-'38': ''
+'38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': 已新增帳戶
 '40': 你已經領取過今天的獎勵了！
 '41': 獲得
@@ -796,3 +796,11 @@
 '706': 這一層的地脈異常
 '707': 上半
 '708': 下半
+'709': Lineup Simulator
+'710': ''
+'711': Select a lineup to view its details
+'712': Include characters
+'713': Applicable scenario
+'714': Select characters
+'715': Search
+'716': Clear character
