@@ -3,19 +3,19 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Tuple
 
-from apps.draw import main_funcs
-from apps.genshin.abyss import get_abyss_enemies
 from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import Select, Button
+from discord.ui import Button, Select
 from discord.utils import format_dt
 from dotenv import load_dotenv
 
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Event, Material, Weapon
+from apps.draw import main_funcs
+from apps.genshin.abyss import get_abyss_enemies
 from apps.genshin.checks import *
 from apps.genshin.custom_model import (
     AbyssResult,
@@ -48,9 +48,10 @@ from apps.genshin.wiki import (
     parse_namecard_wiki,
     parse_weapon_wiki,
 )
-from apps.text_map.convert_locale import to_ambr_top, to_event_lang
+from apps.text_map.convert_locale import to_ambr_top, to_event_lang, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
 from UI_elements.genshin import (
     Abyss,
     AbyssEnemy,
@@ -59,12 +60,12 @@ from UI_elements.genshin import (
     EnkaProfile,
     EventTypeChooser,
     Leaderboard,
+    Lineup,
     ShowAllCharacters,
 )
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
-from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
 from utility.utils import (
@@ -77,6 +78,7 @@ from utility.utils import (
 )
 
 load_dotenv()
+
 
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
@@ -977,6 +979,41 @@ class GenshinCog(commands.Cog, name="genshin"):
         view.author = i.user
         await i.followup.send(embed=embed, view=view)
         view.message = await i.original_response()
+
+    @app_commands.command(
+        name="lineup",
+        description=_(
+            "Search Genshin lineups with Hoyolab's lineup simulator", hash=38
+        ),
+    )
+    async def slash_lineup(self, i: Interaction):
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+
+        client = self.bot.genshin_client
+        client.lang = to_genshin_py(locale)
+        scenarios = await client.get_lineup_scenarios()
+
+        scenarios_to_search = [
+            scenarios.abyss.spire,
+            scenarios.abyss.corridor,
+            scenarios.world.battles,
+            scenarios.world.domain_challenges,
+            scenarios.world.trounce_domains,
+        ]
+        options = []
+        scenario_dict = {}
+        for scenario in scenarios_to_search:
+            options.append(SelectOption(label=scenario.name, value=str(scenario.id)))
+            scenario_dict[str(scenario.id)] = scenario
+
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
+        characters = await ambr.get_character(include_beta=False)
+
+        if isinstance(characters, List):
+            view = Lineup.View(locale, options, scenario_dict, characters)
+            view.author = i.user
+            await Lineup.search_lineup(i, view)
+            view.message = await i.original_response()
 
 
 async def setup(bot: commands.Bot) -> None:
