@@ -311,7 +311,6 @@ class TeamSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: TeamSelectView
-        print(self.view)
         self.view.prev_view.calculator.team = self.values
         await return_current_status(i, self.view.prev_view)
 

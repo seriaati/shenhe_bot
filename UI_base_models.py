@@ -99,9 +99,7 @@ class BaseView(discord.ui.View):
             try:
                 await self.message.edit(view=self)
             except discord.HTTPException:
-                log.warning(
-                    f"[Edit View] HTTPException: [children]{self.children} [view]{self}"
-                )
+                pass
             except Exception as e:
                 sentry_sdk.capture_exception(e)
                 log.warning(f"[Edit View] Failed{e}")
