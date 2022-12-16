@@ -179,7 +179,7 @@ text_maps/food.json
 text_maps/furniture.json
 text_maps/monster.json
 text_maps/namecard.json
-data/cards/*
+data/cards/*.json
 feeds/*
 .vscode
 apps/draw/cache/*
