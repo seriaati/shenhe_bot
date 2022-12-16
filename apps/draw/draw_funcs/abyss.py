@@ -1,5 +1,5 @@
 import io
-from typing import Dict, List, Tuple
+from typing import List
 
 import discord
 import genshin
@@ -12,14 +12,12 @@ from apps.draw.utility import (
     dynamic_font_size,
     get_cache,
     get_font,
-    get_l_character_data,
 )
 from apps.genshin.custom_model import (
     RunLeaderboardUser,
     SingleStrikeLeaderboardUser,
     CharacterUsageResult,
     DynamicBackgroundInput,
-    LeaderboardResult,
     TopPadding,
     UsageCharacter,
 )
@@ -183,16 +181,17 @@ def one_page(
             for chamber in floor.chambers:
                 text = f"{floor.floor}-{chamber.chamber}"
                 draw.text(offset, text=text, font=font, fill=fill, anchor="mm")
-                star = Image.open(stars[chamber.stars])
-                star = star.resize((star.width // 2, star.height // 2))
-                im.paste(
-                    star,
-                    (
-                        offset[0] + star_offset[chamber.stars][0],
-                        offset[1] + star_offset[chamber.stars][1],
-                    ),
-                    star,
-                )
+                if chamber.stars != 0:
+                    star = Image.open(stars[chamber.stars])
+                    star = star.resize((star.width // 2, star.height // 2))
+                    im.paste(
+                        star,
+                        (
+                            offset[0] + star_offset[chamber.stars][0],
+                            offset[1] + star_offset[chamber.stars][1],
+                        ),
+                        star,
+                    )
                 offset = (offset[0], offset[1] + 244)
             offset = (offset[0] + 1503, offset[1] - 732)
 
