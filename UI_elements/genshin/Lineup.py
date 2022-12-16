@@ -83,7 +83,7 @@ class ElementButton(Button):
                 )
 
         self.view.add_item(
-            CharacterSelector("Select characters", options, self.view.characters)
+            CharacterSelector(text_map.get(714, self.view.locale), options, self.view.characters)
         )
         await i.edit_original_response(view=self.view)
 
