@@ -35,7 +35,8 @@ async def update_user_abyss_leaderboard(
                 abyss_leaderboard
             WHERE
                 uid = ? AND season = ?
-        """
+        """,
+        (uid, current_season),
     ) as c:
         row = await c.fetchone()
         if row is not None and row[2] == 36:
