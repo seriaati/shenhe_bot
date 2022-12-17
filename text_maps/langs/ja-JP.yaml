@@ -36,7 +36,7 @@
 '35': 詳細は</register:1006486283725590528>で確認してください
 '36': Cookieが無効です
 '37': 聖遺物セット
-'38': Search Genshin lineups with Hoyolab's lineup simulator
+'38': HoYoLABのチーム編成シミュレータでチーム編成を検索
 '39': アカウントが追加されました
 '40': 既にログインボーナスを受け取っています！
 '41': 受け取りました。
@@ -795,17 +795,17 @@
 '706': この層の地脈異常
 '707': 前半
 '708': 後半
-'709': Lineup Simulator
-'710': Dice cost
-'711': Select a lineup to view its details
-'712': Include characters
-'713': Applicable scenario
-'714': Select characters
-'715': Search
-'716': Clear character
-'717': Search a card in the Genshin TCG
-'718': card
-'719': Card not found
-'720': Omni
-'721': Black
-'722': Energy
+'709': チーム編成シミュレーター
+'710': 元素サイコロコスト
+'711': 詳細を表示するチーム編成を選択
+'712': キャラクターを含める
+'713': 応用シーン
+'714': キャラクターを選択
+'715': 検索
+'716': キャラクターをクリア
+'717': 七聖召喚のカードを検索
+'718': カード
+'719': カードが見つかりませんでした
+'720': 万能元素
+'721': 無色
+'722': エネルギー
