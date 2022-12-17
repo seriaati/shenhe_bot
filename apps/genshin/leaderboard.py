@@ -24,6 +24,24 @@ async def update_user_abyss_leaderboard(
         raise ValueError("Genshin character data not found")
     random_uuid = str(uuid.uuid4())
     current_season = get_current_abyss_season() - previous
+
+    runs = None
+    wins = None
+    async with db.execute(
+        """
+            SELECT
+                runs, wins, stars_collected
+            FROM
+                abyss_leaderboard
+            WHERE
+                uid = ? AND season = ?
+        """
+    ) as c:
+        row = await c.fetchone()
+        if row is not None and row[2] == 36:
+            runs = row[0]
+            wins = row[1]
+
     async with db.execute(
         """
             INSERT INTO abyss_leaderboard
@@ -46,8 +64,8 @@ async def update_user_abyss_leaderboard(
             user_name,
             user_id,
             current_season,
-            abyss_data.total_battles,
-            abyss_data.total_wins,
+            runs or abyss_data.total_battles,
+            wins or abyss_data.total_wins,
             abyss_data.ranks.most_played[0].icon,
             user_data.info.level,
             random_uuid,
@@ -56,8 +74,8 @@ async def update_user_abyss_leaderboard(
             abyss_data.total_stars,
             user_name,
             user_id,
-            abyss_data.total_battles,
-            abyss_data.total_wins,
+            runs or abyss_data.total_battles,
+            wins or abyss_data.total_wins,
             abyss_data.ranks.most_played[0].icon,
             user_data.info.level,
             uid,
