@@ -139,7 +139,7 @@ def run_user_card(
     im.paste(character_icon, (216, 27), character_icon)
 
     # write user name
-    text = shorten_text(user_data.user_name, 600, font)
+    text = shorten_text(user_data.user_name, 580, font)
     global_write(draw, (350, 27), text, 48, fill, "Bold")
 
     # write player info
@@ -191,7 +191,7 @@ def ss_user_card(
     im.paste(character_icon, (216, 27), character_icon)
 
     # write user name
-    text = shorten_text(user_data.user_name, 600, font)
+    text = shorten_text(user_data.user_name, 580, font)
     global_write(draw, (350, 27), text, 48, fill, "Bold")
 
     # write character info
