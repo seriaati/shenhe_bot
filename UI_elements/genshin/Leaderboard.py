@@ -158,6 +158,9 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 async for row in c:
                     if view.area == "server" and row[6] not in guild_member_ids:
                         continue
+                    if row[0] in [u.uid for u in users]:
+                        continue
+                    
                     users.append(
                         user := SingleStrikeLeaderboardUser(
                             user_name=row[5],
@@ -265,6 +268,9 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 async for row in c:
                     if view.area == "server" and row[5] not in guild_member_ids:
                         continue
+                    if row[0] in [u.uid for u in users]:
+                        continue
+                    
                     users.append(
                         user := RunLeaderboardUser(
                             icon_url=row[4],

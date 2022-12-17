@@ -42,7 +42,7 @@ def board(
     # draw the user cards
     offset = (63, 299)
     for u in users:
-        if u.rank == 7 and l_type == 2:
+        if u.rank == 8 and l_type == 2:
             break
         current = True if u == current_user else False
         if isinstance(u, SingleStrikeLeaderboardUser):
