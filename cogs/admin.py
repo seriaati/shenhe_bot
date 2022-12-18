@@ -41,6 +41,7 @@ class AdminCog(commands.Cog, name="admin"):
                 if module.__name__.startswith(
                     (
                         "asset",
+                        "UI_base_models",
                         "exceptions",
                         "ambr.",
                         "cogs.",
