@@ -232,6 +232,7 @@ async def get_shenhe_account(
             )
         else:
             client = bot.genshin_client
+            
         client.uid = user_data[3]
         await c.close()
     else:
