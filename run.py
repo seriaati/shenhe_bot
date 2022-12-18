@@ -120,6 +120,9 @@ class Shenhe(commands.Bot):
                 ltuid = row[1]
                 ltoken = row[2]
                 
+                if ltuid in [149077324]:
+                    continue
+                
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
                 if cookie in cookie_list:
                     continue
@@ -138,7 +141,6 @@ class Shenhe(commands.Bot):
                     self.genshin_client.set_cookies(cookie_list)
                 except Exception as e:
                     log.warning(f"[Genshin Client Error]: {e}")
-                    traceback.print_exc()
                     sentry_sdk.capture_exception(e)
 
         # load jishaku
