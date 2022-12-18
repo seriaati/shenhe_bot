@@ -120,7 +120,7 @@ class Shenhe(commands.Bot):
                 ltuid = row[1]
                 ltoken = row[2]
                 
-                if ltuid in [149077324]:
+                if ltuid in [149077324, 38422476]:
                     continue
                 
                 cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
