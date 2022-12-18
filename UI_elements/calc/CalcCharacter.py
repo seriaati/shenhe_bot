@@ -116,7 +116,7 @@ class CharacterSelect(Select):
                     if enka_data is not None:
                         character = [
                             c
-                            for c in enka_data.cache.characters # type: ignore
+                            for c in enka_data.cache.characters  # type: ignore
                             if c.id == character_id
                         ]
                         if character:
@@ -310,23 +310,35 @@ class TargetLevelModal(BaseModal):
             timeout=config.mid_timeout,
         )
         level_type = text_map.get(182, locale)
-        
+
         self.target.label = text_map.get(169, locale).format(level_type=level_type)
         self.target.placeholder = text_map.get(170, locale).format(a=90)
         self.target.default = str(init_levels[0])
-        
+
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.a.placeholder = text_map.get(170, locale).format(a=9)
-        self.a.default = str(init_levels[1]) if init_levels[1] > suggested_levels[0] else str(suggested_levels[0])
-        
+        self.a.default = (
+            str(init_levels[1])
+            if init_levels[1] > suggested_levels[0]
+            else str(suggested_levels[0])
+        )
+
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
         self.e.placeholder = text_map.get(170, locale).format(a=4)
-        self.e.default = str(init_levels[2]) if init_levels[2] > suggested_levels[1] else str(suggested_levels[1])
-        
+        self.e.default = (
+            str(init_levels[2])
+            if init_levels[2] > suggested_levels[1]
+            else str(suggested_levels[1])
+        )
+
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
         self.q.placeholder = text_map.get(170, locale).format(a=10)
-        self.q.default = str(init_levels[3]) if init_levels[3] > suggested_levels[2] else str(suggested_levels[2])
-        
+        self.q.default = (
+            str(init_levels[3])
+            if init_levels[3] > suggested_levels[2]
+            else str(suggested_levels[2])
+        )
+
         self.character_id = character_id
         self.init_levels = init_levels
         self.locale = locale
@@ -371,7 +383,7 @@ class TargetLevelModal(BaseModal):
 
         # ascension items
         for asc in character.upgrade.ascensions:
-            if asc.new_max_level <= target:
+            if init < asc.new_max_level <= target:
                 if asc.cost_items is not None:
                     for item in asc.cost_items:
                         todo_list.add_item({int(item[0].id): item[1]})
@@ -396,44 +408,47 @@ class TargetLevelModal(BaseModal):
         for index, talent in enumerate(talents):
             if talent is not None:
                 if index == 0:
+                    t_init = init_a
                     t_target = a
                 elif index == 1:
+                    t_init = init_e
                     t_target = e
                 else:  # index == 2
+                    t_init = init_q
                     t_target = q
                 for t in talent:
-                    if t.level <= t_target:
+                    if t_init < t.level <= t_target:
                         if t.cost_items is not None:
                             for item in t.cost_items:
                                 todo_list.add_item({int(item[0].id): item[1]})
                         if t.mora_cost is not None:
                             todo_list.add_item({202: t.mora_cost})
-                            
+
         # level up items
         exp_table = get_exp_table()
         init_cumulative = 0
         target_cumulative = 0
         for key, value in exp_table.items():
             if key < init:
-                init_cumulative += value['next_level']
+                init_cumulative += value["next_level"]
             if key < target:
-                target_cumulative += value['next_level']
+                target_cumulative += value["next_level"]
         total_exp = target_cumulative - init_cumulative
-        
+
         # hero
-        hero_num = total_exp//20000
+        hero_num = total_exp // 20000
         todo_list.add_item({104003: hero_num})
-        todo_list.add_item({202: hero_num*4000})
-        
+        todo_list.add_item({202: hero_num * 4000})
+
         # adventurer
-        adv_num = (total_exp-20000*hero_num)//5000
+        adv_num = (total_exp - 20000 * hero_num) // 5000
         todo_list.add_item({104002: adv_num})
-        todo_list.add_item({202: adv_num*1000})
-        
+        todo_list.add_item({202: adv_num * 1000})
+
         # wanderer
-        wand_num = (total_exp-20000*hero_num-5000*adv_num)//1000
+        wand_num = (total_exp - 20000 * hero_num - 5000 * adv_num) // 1000
         todo_list.add_item({104001: wand_num})
-        todo_list.add_item({202: wand_num*200})
+        todo_list.add_item({202: wand_num * 200})
 
         items = todo_list.return_list()
         items = dict(sorted(items.items(), key=lambda x: x[0], reverse=True))
@@ -465,8 +480,9 @@ class TargetLevelModal(BaseModal):
                 dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
             ),
             all_materials,
-            f"{character.name}: {text_map.get(191, self.locale)}",
+            "",
             background_color=get_element_color(character.element),
+            draw_title=False,
         )
         fp.seek(0)
         embed = default_embed()
