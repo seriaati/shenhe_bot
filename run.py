@@ -120,18 +120,18 @@ class Shenhe(commands.Bot):
             ltuid = tpl[1]
             ltoken = tpl[2]
             
-            if ltuid in [835511366, 149077324]:
-                continue
-            
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
             if cookie in cookie_list:
                 continue
             
             # if ltuid or ltoken are already in cookie_list, skip
+            found = False
             for cookie in cookie_list:
                 if cookie["ltuid"] == ltuid or cookie["ltoken"] == ltoken:
+                    found = True
                     break
-            else:
+                
+            if not found:
                 cookie_list.append(cookie)
 
         self.genshin_client = genshin.Client({})
