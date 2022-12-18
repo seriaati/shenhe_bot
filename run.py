@@ -108,8 +108,8 @@ class Shenhe(commands.Bot):
         self.gateway.player(self.gateway_player)
         self.gateway.player_update(self.gateway_player_update)
 
-        c = await self.db.cursor()
         cookie_list = []
+        self.genshin_client = genshin.Client({})
         async with self.db.execute(
             "SELECT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
         ) as c:
@@ -133,15 +133,13 @@ class Shenhe(commands.Bot):
                     
                 if not found:
                     cookie_list.append(cookie)
-
-        try:
-            self.genshin_client = genshin.Client({})
-            self.genshin_client.set_cookies(cookie_list)
-        except Exception as e:
-            log.warning(f"[Genshin Client Error]: {e}")
-            traceback.print_exc()
-            sentry_sdk.capture_exception(e)
-            self.genshin_client = None
+                
+                try:
+                    self.genshin_client.set_cookies(cookie_list)
+                except Exception as e:
+                    log.warning(f"[Genshin Client Error]: {e}")
+                    traceback.print_exc()
+                    sentry_sdk.capture_exception(e)
 
         # load jishaku
         await self.load_extension("jishaku")
