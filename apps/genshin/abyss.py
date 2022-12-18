@@ -1,16 +1,17 @@
-from typing import List
+from typing import List, Tuple
 from apps.genshin.custom_model import AbyssChamber, AbyssEnemy, AbyssFloor, AbyssHalf
 from bs4 import BeautifulSoup
 import aiohttp
 
 
-async def get_abyss_enemies(session: aiohttp.ClientSession) -> List[AbyssFloor]:
+async def get_abyss_enemies(session: aiohttp.ClientSession) -> Tuple[List[AbyssFloor], str]:
     result = []
     async with session.get(
         "https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors"
     ) as resp:
         html = await resp.text()
     soup = BeautifulSoup(html, "html.parser")
+    
     for floor_num in range(1, 13):
         f = soup.find(id=f"Floor_{floor_num}")
         if f is None:
@@ -56,4 +57,10 @@ async def get_abyss_enemies(session: aiohttp.ClientSession) -> List[AbyssFloor]:
                 num=floor_num, ley_line_disorders=ley_line_disorders, chambers=chambers
             )
         )
-    return result
+    
+    table = soup.find("table", {"class": "wikitable tdl1"})
+    version = ""
+    if table is not None:
+        version = table.tbody.findAll("tr")[1].findAll("td")[1].text.replace("\n", "")
+        
+    return result, version

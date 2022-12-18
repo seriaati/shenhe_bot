@@ -948,7 +948,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def abyss_enemies(self, i: Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
-        floors = await get_abyss_enemies(self.bot.session)
+        floors, version = await get_abyss_enemies(self.bot.session)
         embeds = {}
         enemies = {}
         for floor in floors:
@@ -979,7 +979,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-Abyss.jpg"
         )
         embed.set_author(
-            name=f"{text_map.get(705, locale)} ({text_map.get(430, locale)} {get_current_abyss_season()})",
+            name=f"{text_map.get(705, locale)} (v{version})",
             icon_url=i.user.display_avatar.url,
         )
         view = AbyssEnemy.View(locale, enemies, embeds)
