@@ -16,6 +16,7 @@ def card(
     # rarity colors
     if dark_mode:
         rarity_colors = {
+            1: "#343434",
             2: "#2d2e38",
             3: "#2c332e",
             4: "#333138",
@@ -23,6 +24,7 @@ def card(
         }
     else:
         rarity_colors = {
+            1: "#d7d7d7",
             2: "#8BA8F3",
             3: "#909BFF",
             4: "#CAB7FF",
