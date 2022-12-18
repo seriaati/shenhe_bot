@@ -12,7 +12,16 @@ from apps.genshin.browser import launch_browsers
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
-from discord import Intents, Interaction, Locale, Message, app_commands, WebhookMessage, app_commands, HTTPException
+from discord import (
+    Intents,
+    Interaction,
+    Locale,
+    Message,
+    app_commands,
+    WebhookMessage,
+    app_commands,
+    HTTPException,
+)
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from discord.ext.commands import Context
@@ -110,17 +119,16 @@ class Shenhe(commands.Bot):
                 continue
             ltuid = tpl[1]
             ltoken = tpl[2]
+            
+            if ltuid == 835511366:
+                continue
+            
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
             if cookie in cookie_list:
                 continue
-            
-            # if ltuid or ltoken is already in cookie_list, skip
-            for cookie in cookie_list:
-                if cookie["ltuid"] == ltuid or cookie["ltoken"] == ltoken:
-                    break
-            else:
-                cookie_list.append(cookie)
-            
+
+            cookie_list.append(cookie)
+
         self.genshin_client = genshin.Client({})
         self.genshin_client.set_cookies(cookie_list)
 
@@ -150,27 +158,26 @@ class Shenhe(commands.Bot):
 
     async def gateway_player_update(self, data: Player):
         log.info(f"[System][Hutao Login Gateway] Update player {data}")
-        
+
         # Set variable data
         user_id = data.discord.user_id
         genshin = data.genshin
 
         # Update cookie_token
-        _data = [
-            genshin.ltuid,
-            genshin.cookie_token
-        ]
+        _data = [genshin.ltuid, genshin.cookie_token]
 
-        # Set default value 
+        # Set default value
         update_value = "ltuid = ?, cookie_token = ?"
         # Check if ltoken is not empty string
         if data.genshin.ltoken != "":
             update_value += ", ltoken = ?"
             _data.append(genshin.ltoken)
-        
+
         # Append discord ID
         _data.append(user_id)
-        await self.db.execute(f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data))
+        await self.db.execute(
+            f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
+        )
         await self.db.commit()
 
     async def gateway_player(self, data: Player):
@@ -193,7 +200,7 @@ class Shenhe(commands.Bot):
                 "ltoken": data.genshin.ltoken,
                 "cookie_token": data.genshin.cookie_token,
             }
-            
+
         china = 1 if data.genshin.server == ServerId.CHINA else 0
         await self.db.execute(
             "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
@@ -212,7 +219,7 @@ class Shenhe(commands.Bot):
             ),
         )
         await self.db.commit()
-        
+
         try:
             await ctx["message"].edit(
                 embed=default_embed().set_author(
@@ -253,8 +260,9 @@ class Shenhe(commands.Bot):
         await self.backup_db.close()
         await self.session.close()
         if not self.debug:
-            for browser in self.browsers.values():
-                await browser.close()
+            if hasattr(self, "browsers"):
+                for browser in self.browsers.values():
+                    await browser.close()
 
 
 sentry_sdk.init(
@@ -327,7 +335,7 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
 
 
 if not debug:
-    import uvloop  
+    import uvloop
 
     uvloop.install()
 bot.run(token=token)
