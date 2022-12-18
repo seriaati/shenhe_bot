@@ -126,8 +126,13 @@ class Shenhe(commands.Bot):
             cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
             if cookie in cookie_list:
                 continue
-
-            cookie_list.append(cookie)
+            
+            # if ltuid or ltoken are already in cookie_list, skip
+            for cookie in cookie_list:
+                if cookie["ltuid"] == ltuid or cookie["ltoken"] == ltoken:
+                    break
+            else:
+                cookie_list.append(cookie)
 
         self.genshin_client = genshin.Client({})
         self.genshin_client.set_cookies(cookie_list)
