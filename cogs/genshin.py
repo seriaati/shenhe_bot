@@ -1094,7 +1094,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 if card["cost_num2"]:
                     cost_str += f" / {get_element_name(get_dice_element(card['cost_type2_icon']), locale)} ({card['cost_num2']})"
                 embed.add_field(name=text_map.get(710, locale), value=cost_str)
-        embed.set_image(url=card["resource"])
+        embed.set_image(url=card["resource"].replace("-sea", ""))
 
         await i.response.send_message(embed=embed)
 
