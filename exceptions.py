@@ -12,3 +12,6 @@ class NoPlayerFound(Exception):
 
 class NoCharacterFound(Exception):
     pass
+
+class CardNotFound(Exception):
+    pass

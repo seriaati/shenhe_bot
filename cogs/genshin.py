@@ -52,7 +52,7 @@ from apps.genshin.wiki import (
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
+from exceptions import CardNotFound, ItemNotFound, NoPlayerFound, UIDNotFound
 from UI_elements.genshin import (
     Abyss,
     AbyssEnemy,
@@ -1048,21 +1048,28 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         the_card = None
         card_type = None
+        
+        try:
+            if not card_id.isdigit():
+                raise CardNotFound
 
-        for card in self.card_en_us["role_card_infos"]:
-            if card["id"] == int(card_id):
-                the_card = card
-                card_type = "role"
-                break
-
-        if not the_card:
-            for card in self.card_en_us["action_card_infos"]:
+            for card in self.card_en_us["role_card_infos"]:
                 if card["id"] == int(card_id):
                     the_card = card
-                    card_type = "action"
+                    card_type = "role"
                     break
 
-        if the_card is None:
+            if not the_card:
+                for card in self.card_en_us["action_card_infos"]:
+                    if card["id"] == int(card_id):
+                        the_card = card
+                        card_type = "action"
+                        break
+            
+            if the_card is None:
+                raise CardNotFound
+
+        except CardNotFound:
             return await i.response.send_message(
                 embed=error_embed().set_author(
                     name=text_map.get(719, locale), icon_url=i.user.display_avatar.url

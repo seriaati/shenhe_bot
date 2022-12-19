@@ -78,7 +78,8 @@ class GenerateLink(Button):
             language=to_hutao_login_lang(locale),
         )
         
-        embed = default_embed().set_author(
+        embed = default_embed(message=text_map.get(728, locale))
+        embed.set_author(
             name=text_map.get(400, locale), icon_url=i.user.display_avatar.url
         )
         
