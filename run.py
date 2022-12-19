@@ -5,8 +5,6 @@ from datetime import datetime
 import getpass
 import os
 from pathlib import Path
-from pprint import pprint
-import traceback
 from typing import List, Optional
 import aiohttp
 import aiosqlite

@@ -19,6 +19,8 @@ async def global_error_handler(
     locale = await get_user_locale(i.user.id, i.client.db) or i.locale
     embed = error_embed()
     
+    unknown = False
+    
     if hasattr(e, "code") and e.code in [10062, 10008, 10015]:
         embed.description=text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
@@ -30,7 +32,12 @@ async def global_error_handler(
             embed.set_author(name=text_map.get(545, locale))
         elif isinstance(e, NoPlayerFound):
             embed.set_author(name=text_map.get(367, locale))
-    else: # unknown error
+        else:
+            unknown = True
+    else:
+        unknown = True
+        
+    if unknown: # unknown error
         log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
         sentry_sdk.capture_exception(e)
         

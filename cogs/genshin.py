@@ -1052,7 +1052,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     card_type = "action"
                     break
 
-        if not the_card:
+        if the_card is None:
             return await i.response.send_message(
                 embed=error_embed().set_author(
                     name=text_map.get(719, locale), icon_url=i.user.display_avatar.url
@@ -1071,7 +1071,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 cost_str = f"**{text_map.get(710, locale)}: **"
                 cost_str += " / ".join(
                     [
-                        f"{get_dice_emoji(card['cost_icon'])} ({cost['cost_num']})"
+                        f"{get_dice_emoji(cost['cost_icon'])} ({cost['cost_num']})"
                         for cost in skill["skill_costs"]
                         if cost["cost_num"]
                     ]
