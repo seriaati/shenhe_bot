@@ -28,5 +28,5 @@ class FeedbackModal(BaseModal):
         await seria.send(
             embed=default_embed(message=self.feedback.value).set_author(
                 name=i.user.display_name, icon_url=i.user.display_avatar.url
-            )
+            ).set_footer(text=i.user.id)
         )
