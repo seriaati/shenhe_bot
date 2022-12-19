@@ -36,8 +36,8 @@ class View(BaseView):
         self.ambr_characters = ambr_characters
         self.lineup_selector: Optional[LineupSelector] = None
 
-        self.add_item(CharacterSelectButton(text_map.get(714, locale)))
         self.add_item(SearchLineup(text_map.get(715, locale)))
+        self.add_item(CharacterSelectButton(text_map.get(714, locale)))
         self.add_item(
             ScenarioSelector(text_map.get(140, locale), options, scenario_dict)
         )
@@ -104,8 +104,9 @@ class CharacterSelector(Select):
     async def callback(self, i: Interaction):
         self.view: View
         self.view.clear_items()
-        self.view.characters = [int(o.split("-")[0]) for o in self.values]
+        self.view.characters += [int(o.split("-")[0]) for o in self.values]
 
+        self.view.add_item(SearchLineup(text_map.get(715, self.view.locale)))
         if len(self.view.characters) == 4:
             self.view.add_item(
                 ClearCharacter(
@@ -116,7 +117,6 @@ class CharacterSelector(Select):
             self.view.add_item(
                 CharacterSelectButton(text_map.get(714, self.view.locale))
             )
-        self.view.add_item(SearchLineup(text_map.get(715, self.view.locale)))
         self.view.add_item(
             ScenarioSelector(
                 text_map.get(140, self.view.locale),
@@ -146,10 +146,9 @@ class ClearCharacter(Button):
     async def callback(self, i: Interaction):
         self.view: View
         self.view.characters = []
-        self.view.clear_items()
-
-        for item in self.items:
-            self.view.add_item(item)
+        
+        self.view.remove_item(self)
+        self.view.add_item(CharacterSelectButton(text_map.get(714, self.view.locale)))
 
         if i.message is not None:
             embed = update_search_status(self.view, i.message.embeds[0])
