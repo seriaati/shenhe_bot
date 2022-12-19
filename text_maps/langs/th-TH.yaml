@@ -185,7 +185,7 @@
   This user hasn't registered their account yet
   </register:1006486283725590528> to register
 '166': User not found
-'167': '''s UID'
+'167': "{name}'s UID"
 '168': current level
 '169': Character {level_type}
 '170': 'For Example: {a}'
@@ -539,7 +539,7 @@
 '483': Predict the chance of pulling a 5-star banner weapon
 '484': View wish overview
 '485': Change the language shenhe responds to you with
-'486': View all commands
+'486': View a list of all commands
 '487': Genshin
 '488': Genshin wish
 '489': Requires wish history import using /wish import
@@ -757,7 +757,7 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
-'672': Please add an account with UID before using this command
+'672': UID not found (link it with </register:1044926380242120744> !)
 '673': You currently have **{a}** wishes stored in Shenhe's database
 '674': Please link a UID before importing new wishes
 '675': Newest wish
@@ -818,3 +818,5 @@
 '723': Send feedback to the bot developer
 '724': Feedback
 '725': Feedback sent, thank you! 🥰
+'726': Copy UID
+'727': Server region
