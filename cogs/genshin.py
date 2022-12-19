@@ -2,7 +2,7 @@ import json
 import random
 from datetime import datetime, timedelta
 from typing import List, Tuple
-from data.cards.dice_element import get_dice_element
+from data.cards.dice_element import get_dice_emoji
 
 from discord import File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
@@ -32,7 +32,6 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
 from apps.genshin.utils import (
     get_character_emoji,
-    get_current_abyss_season,
     get_enka_data,
     get_farm_data,
     get_uid,
@@ -51,7 +50,7 @@ from apps.genshin.wiki import (
 )
 from apps.text_map.convert_locale import to_ambr_top, to_event_lang, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_element_name, get_user_locale
+from apps.text_map.utils import get_user_locale
 from exceptions import ItemNotFound, NoPlayerFound, UIDNotFound
 from UI_elements.genshin import (
     Abyss,
@@ -1072,7 +1071,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 cost_str = f"**{text_map.get(710, locale)}: **"
                 cost_str += " / ".join(
                     [
-                        f"{get_element_name(get_dice_element(cost['cost_icon']), locale)} ({cost['cost_num']})"
+                        f"{get_dice_emoji(card['cost_icon'])} ({cost['cost_num']})"
                         for cost in skill["skill_costs"]
                         if cost["cost_num"]
                     ]
@@ -1090,9 +1089,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 parse_HTML(self.tcg_trans(card["content"], g_locale)),
             )
             if card["cost_num1"]:
-                cost_str = f"{get_element_name(get_dice_element(card['cost_type1_icon']), locale)} ({card['cost_num1']})"
+                cost_str = (
+                    f"{get_dice_emoji(card['cost_type1_icon'])} ({card['cost_num1']})"
+                )
                 if card["cost_num2"]:
-                    cost_str += f" / {get_element_name(get_dice_element(card['cost_type2_icon']), locale)} ({card['cost_num2']})"
+                    cost_str += f" / {get_dice_emoji(card['cost_type2_icon'])} ({card['cost_num2']})"
                 embed.add_field(name=text_map.get(710, locale), value=cost_str)
         embed.set_image(url=card["resource"].replace("-sea", ""))
 

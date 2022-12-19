@@ -11,5 +11,23 @@ dice_element = {
     "16": "Dendro",
 }
 
+dice_emoji = {
+    "1": "<:UI_Gcg_DiceL_Energy:1054218252668108820>",
+    "3": "<:UI_Gcg_DiceL_Any_Glow:1054218258737278976>",
+    "10": "<:UI_Gcg_DiceL_Diff_Glow:1054218252668108828>",
+    "11": "<:UI_Gcg_DiceL_Ice_Glow:1054218246619930644>",
+    "12": "<:UI_Gcg_DiceL_Water_Glow:1054218252668108800>",
+    "13": "<:UI_Gcg_DiceL_Fire_Glow:1054218252668108804>",
+    "14": "<:UI_Gcg_DiceL_Electric_Glow:1054218252668108808>",
+    "17": "<:UI_Gcg_DiceL_Wind_Glow:1054218252668108812>",
+    "15": "<:UI_Gcg_DiceL_Rock_Glow:1054218252668108816>",
+    "16": "<:UI_Gcg_DiceL_Grass_Glow:1054218252668108824>",
+}
+
+
 def get_dice_element(element: str) -> str:
     return dice_element.get(element, "Unknown")
+
+
+def get_dice_emoji(element: str) -> str:
+    return dice_emoji.get(element, "<:UI_Gcg_DiceL_Any_Glow:1054218258737278976>")
