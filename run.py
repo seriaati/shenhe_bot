@@ -5,8 +5,9 @@ from datetime import datetime
 import getpass
 import os
 from pathlib import Path
+from pprint import pprint
 import traceback
-from typing import Optional
+from typing import List, Optional
 import aiohttp
 import aiosqlite
 from apps.genshin.browser import launch_browsers
@@ -108,37 +109,33 @@ class Shenhe(commands.Bot):
         self.gateway.player(self.gateway_player)
         self.gateway.player_update(self.gateway_player_update)
 
-        cookie_list = []
+        cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})
         async with self.db.execute(
-            "SELECT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
+            "SELECT DISTINCT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
         ) as c:
             async for row in c:
                 uid = row[0]
                 if str(uid) in ["1", "2", "5"]:
                     continue
+                
                 ltuid = row[1]
                 ltoken = row[2]
+                cookie = {"ltuid": ltuid, "ltoken": ltoken}
                 
-                cookie = {"ltuid": int(ltuid), "ltoken": ltoken}
-                if cookie in cookie_list:
-                    continue
-                
-                # if ltuid or ltoken are already in cookie_list, skip
-                found = False
-                for cookie in cookie_list:
-                    if cookie["ltuid"] == ltuid or cookie["ltoken"] == ltoken:
-                        found = True
+                for c in cookie_list:
+                    if c["ltuid"] == ltuid:
                         break
-                    
-                if not found:
+                else:
                     cookie_list.append(cookie)
-                
-                try:
-                    self.genshin_client.set_cookies(cookie_list)
-                except Exception as e:
-                    log.warning(f"[Genshin Client Error]: {e}")
-                    sentry_sdk.capture_exception(e)
+
+        try:
+            self.genshin_client.set_cookies(cookie_list)
+        except Exception as e:
+            log.warning(f"[Genshin Client Error]: {e}")
+            sentry_sdk.capture_exception(e)
+        else:
+            log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
 
         # load jishaku
         await self.load_extension("jishaku")
