@@ -5,7 +5,7 @@ from datetime import datetime
 import getpass
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 import aiohttp
 import aiosqlite
 from apps.genshin.browser import launch_browsers
@@ -102,7 +102,7 @@ class Shenhe(commands.Bot):
             client_id=os.getenv("HUTAO_CLIENT_ID", ""),
             client_secret=os.getenv("HUTAO_CLIENT_SECRET", ""),
         )
-        self.tokenStore: Dict[str, WebhookMessage] = {}
+        self.tokenStore: Dict[str, Dict[str, Any]] = {}
         self.gateway.ready(self.gateway_connect)
         self.gateway.player(self.gateway_player)
         self.gateway.player_update(self.gateway_player_update)

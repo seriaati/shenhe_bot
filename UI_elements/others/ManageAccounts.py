@@ -5,7 +5,7 @@ import aiosqlite
 from discord import ButtonStyle, Interaction, Locale, SelectOption
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
-
+from logingateway import HuTaoLoginAPI
 import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region_hash
@@ -63,25 +63,32 @@ class GenerateLink(Button):
     async def callback(self, i: Interaction):
         self.view: View
         locale = self.view.locale
+        
         embed = default_embed().set_author(
             name=text_map.get(402, locale), icon_url=asset.loader
         )
         self.disabled = True
         await i.response.edit_message(embed=embed, view=self.view)
-        url, token = i.client.gateway.generate_login_url(
+        
+        gateway: HuTaoLoginAPI = i.client.gateway
+        url, token = gateway.generate_login_url(
             user_id=str(i.user.id),
             guild_id=str(i.guild_id),
             channel_id=str(i.channel_id),
             language=to_hutao_login_lang(locale),
         )
+        
         embed = default_embed().set_author(
             name=text_map.get(400, locale), icon_url=i.user.display_avatar.url
         )
+        
         await asyncio.sleep(1)
         self.view.clear_items()
         self.view.add_item(GOBack(layer=2, blurple=True))
         self.view.add_item(Button(label=text_map.get(670, locale), url=url))
+        
         message = await i.edit_original_response(embed=embed, view=self.view)
+        
         i.client.tokenStore[token] = {
             "message": message,
             "locale": self.view.locale,
