@@ -17,7 +17,7 @@ from apps.genshin.custom_model import ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_elements.others import ManageAccounts, SettingsMenu
+from UI_elements.others import ManageAccounts, SettingsMenu, Feedback
 from UI_elements.others.settings import CustomImage
 from utility.utils import default_embed
 
@@ -230,6 +230,16 @@ class OthersCog(commands.Cog, name="others"):
                     )
                 )
         return options[:25]
+
+    @app_commands.command(
+        name="feedback", description=_("Send feedback to the bot developer", hash=723)
+    )
+    async def feedback(self, i: Interaction):
+        await i.response.send_modal(
+            Feedback.FeedbackModal(
+                await get_user_locale(i.user.id, self.bot.db) or i.locale
+            )
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
