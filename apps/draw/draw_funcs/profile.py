@@ -214,11 +214,12 @@ def character_card(
 
     if custom_image_url is not None:
         custom_image = crop_custom_character_image(custom_image_url)
-        element = Image.open(
-            f"yelan/templates/element/[{'dark' if dark_mode else 'light'}] {character.element.name}.png"
-        )
-        card.paste(custom_image, (58, 61), custom_image)
-        card.paste(element, (1652, 595), element)
+        if custom_image is not None:
+            element = Image.open(
+                f"yelan/templates/element/[{'dark' if dark_mode else 'light'}] {character.element.name}.png"
+            )
+            card.paste(custom_image, (58, 61), custom_image)
+            card.paste(element, (1652, 595), element)
 
     card = card.convert("RGB")
     fp = io.BytesIO()
@@ -226,8 +227,11 @@ def character_card(
     return fp
 
 
-def crop_custom_character_image(image_url: str) -> Image.Image:
-    im = get_cache(image_url)
+def crop_custom_character_image(image_url: str) -> Optional[Image.Image]:
+    try:
+        im = get_cache(image_url)
+    except FileNotFoundError:
+        return None
 
     # resize the image
     target_width = 1663
