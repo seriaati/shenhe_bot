@@ -35,6 +35,7 @@ from apps.genshin.utils import (
     get_enka_data,
     get_farm_data,
     get_uid,
+    get_uid_region_hash,
     get_uid_tz,
 )
 from apps.genshin.wiki import (
@@ -61,6 +62,7 @@ from UI_elements.genshin import (
     EventTypeChooser,
     Leaderboard,
     Lineup,
+    UIDCommand,
     ShowAllCharacters,
 )
 from UI_elements.genshin.DailyReward import return_claim_reward
@@ -561,7 +563,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search_uid_command(
         self, i: Interaction, player: User, ephemeral: bool = True
     ):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         uid = await get_uid(player.id, self.bot.db)
         try:
             if uid is None:
@@ -579,20 +581,28 @@ class GenshinCog(commands.Cog, name="genshin"):
                     raise UIDNotFound
         except UIDNotFound:
             return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(165, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(166, i.locale, user_locale),
+                embed=error_embed(message=text_map.get(165, locale)).set_author(
+                    name=text_map.get(166, locale),
                     icon_url=player.avatar,
                 ),
                 ephemeral=True,
             )
-        embed = default_embed(str(uid))
-        embed.set_author(
-            name=f"{player.display_name}{text_map.get(167, i.locale, user_locale)}",
-            icon_url=player.avatar,
+            
+        embed = default_embed()
+        embed.add_field(
+            name=f"{text_map.get(167, locale).format(name=player.display_name)}",
+            value=str(uid),
+            inline=False,
         )
-        await i.response.send_message(embed=embed, ephemeral=ephemeral)
+        embed.add_field(
+            name=text_map.get(727, locale),
+            value=text_map.get(get_uid_region_hash(uid), locale),
+            inline=False,
+        )
+        embed.set_thumbnail(url=player.display_avatar.url)
+
+        view = UIDCommand.View(locale, uid)
+        await i.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
 
     @app_commands.command(
         name="profile",
