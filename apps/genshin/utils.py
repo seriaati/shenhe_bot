@@ -174,7 +174,7 @@ def get_city_emoji(city_id: int):
     return emoji_dict.get(city_id)
 
 
-def get_uid_region_name(uid: int) -> int:
+def get_uid_region_hash(uid: int) -> int:
     str_uid = str(uid)
     region_map = {
         "9": 547,
@@ -247,12 +247,12 @@ async def get_shenhe_account(
     client.default_game = genshin.Game.GENSHIN
     client.uid = custom_uid or client.uid
     
+    if client.uid is None:
+        raise UIDNotFound
+    
     china = True if str(client.uid)[0] in ["1", "2", "5"] else False
     if china:
         client.lang = "zh-cn"
-        
-    if client.uid is None:
-        raise UIDNotFound
 
     user_obj = ShenheAccount(
         client=client,
@@ -570,7 +570,7 @@ def get_account_options(
             nickname = nickname[:15] + "..."
         options.append(
             discord.SelectOption(
-                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region_name(account[0]), locale)}",
+                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), locale)}",
                 emoji=emoji,
                 value=account[0],
             )

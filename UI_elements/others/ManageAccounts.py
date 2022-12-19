@@ -8,7 +8,7 @@ from discord.ui import Button, Select, TextInput
 
 import asset
 import config
-from apps.genshin.utils import get_account_options, get_uid_region_name
+from apps.genshin.utils import get_account_options, get_uid_region_hash
 from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -263,9 +263,9 @@ async def return_accounts(i: Interaction):
             nickname = nickname[:15] + "..."
         if account[2] == 1:
             current_account = True
-            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region_name(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}**__\n"
+            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}**__\n"
         else:
-            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region_name(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}\n"
+            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}\n"
     select_options = get_account_options(accounts, user_locale or i.locale)
     if not current_account:
         await c.execute(
