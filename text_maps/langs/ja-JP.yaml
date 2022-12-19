@@ -182,7 +182,7 @@
 '165': |-
   This user hasn't registered their account yet </register:1006486283725590528> to register
 '166': 参量物質変化器がありません。
-'167': "{name}'s UID"
+'167': "{name}のUID"
 '168': 現在のレベル
 '169': キャラクター{level_type}
 '170': '例: {a}'
@@ -535,7 +535,7 @@
 '483': 星５PU武器を引く確率を予想
 '484': 祈願の概要を見る
 '485': 申鶴 (このbot) があなたに反応する際の言語を変更します
-'486': View a list of all commands
+'486': コマンド一覧を表示します。
 '487': 原神
 '488': 原神の祈願
 '489': /wish import を使用して履歴をインポートする必要があります
@@ -751,7 +751,7 @@
 '669': モラ
 '670': ログインページへ移動
 '671': 祈願履歴
-'672': UID not found (link it with </register:1044926380242120744> !)
+'672': UID が見つかりません ( </register:1044926380242120744> でリンクしてください!)
 '673': あなたは現在**{a}**個の祈願が申鶴のデータベースに保存されています
 '674': 新しい祈願履歴をインポートする前にUIDをリンクしてください
 '675': 最新の祈願
@@ -809,9 +809,9 @@
 '720': ''
 '721': ''
 '722': ''
-'723': Send feedback to the bot developer
-'724': Feedback
-'725': Feedback sent, thank you! 🥰
-'726': Copy UID
-'727': Server region
-'728': 'If your account is not added after you''ve logged in on the website (green checkmark is shown), please DM seria#5334 or use /feedback to tell me'
+'723': ボット開発者にフィードバックを送信する
+'724': フィードバック
+'725': フィードバックが送信されました。ご協力ありがとうございます🥰
+'726': UID をコピー
+'727': サーバーの地域
+'728': 'ウェブサイトにログインした後にアカウントが追加されない場合（緑色のチェックマークが表示されます） seria#5334 にDMするか/feedback を使用して教えてください'
