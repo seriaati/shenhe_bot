@@ -7,7 +7,7 @@ import traceback
 from typing import List, Literal, Optional
 from apps.draw import main_funcs
 import aiosqlite
-from exceptions import ShenheAccountNotFound
+from exceptions import ShenheAccountNotFound, UIDNotFound
 import genshin
 import sentry_sdk
 from pathlib import Path
@@ -134,8 +134,9 @@ class Schedule(commands.Cog):
         for n_user in n_users:
             try:
                 s_user = await get_shenhe_account(n_user.user_id, self.bot.db, self.bot)
-            except ShenheAccountNotFound:
+            except (ShenheAccountNotFound, UIDNotFound):
                 continue
+            
             locale = s_user.user_locale or "en-US"
 
             error = False
