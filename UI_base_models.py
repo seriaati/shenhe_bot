@@ -1,5 +1,5 @@
 import traceback
-from typing import Optional
+from typing import Optional, Union
 
 import discord
 from exceptions import NoPlayerFound, ShenheAccountNotFound, UIDNotFound
@@ -16,42 +16,11 @@ async def global_error_handler(
     if isinstance(e, discord.app_commands.errors.CheckFailure):
         return
     
+    log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
+
     locale = await get_user_locale(i.user.id, i.client.db) or i.locale
-    embed = error_embed()
-    
-    unknown = False
-    
-    if hasattr(e, "code") and e.code in [10062, 10008, 10015]:
-        embed.description=text_map.get(624, locale)
-        embed.set_author(name=text_map.get(623, locale))
-    elif isinstance(e, discord.app_commands.errors.CommandInvokeError):
-        if isinstance(e.original, UIDNotFound):
-            embed.set_author(name=text_map.get(672, locale))
-        elif isinstance(e, ShenheAccountNotFound):
-            embed.description=text_map.get(35, locale)
-            embed.set_author(name=text_map.get(545, locale))
-        elif isinstance(e, NoPlayerFound):
-            embed.set_author(name=text_map.get(367, locale))
-        else:
-            unknown = True
-    else:
-        unknown = True
-        
-    if unknown: # unknown error
-        log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
-        sentry_sdk.capture_exception(e)
-        
-        # print traceback
-        if i.client.debug:
-            log.warning(traceback.format_exc())
-        
-        embed.description =text_map.get(513, locale)
-        embed.description += f"\n\n```{e}```"
-        embed.set_author(name=text_map.get(135, locale))
-        embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
-    
-    embed.set_author(name=embed.author.name, icon_url=i.user.display_avatar.url)
-    
+    embed = get_error_handle_embed(i.user, e, locale)
+
     view = discord.ui.View()
     view.add_item(
         discord.ui.Button(
@@ -75,6 +44,44 @@ async def global_error_handler(
         )
     except discord.errors.NotFound:
         pass
+
+
+def get_error_handle_embed(
+    user: Union[discord.User, discord.Member],
+    e: Exception,
+    locale: Union[discord.Locale, str],
+):
+    embed = error_embed()
+
+    unknown = False
+
+    if hasattr(e, "code") and e.code in [10062, 10008, 10015]:
+        embed.description = text_map.get(624, locale)
+        embed.set_author(name=text_map.get(623, locale))
+    elif isinstance(e, discord.app_commands.errors.CommandInvokeError):
+        if isinstance(e.original, UIDNotFound):
+            embed.set_author(name=text_map.get(672, locale))
+        elif isinstance(e, ShenheAccountNotFound):
+            embed.description = text_map.get(35, locale)
+            embed.set_author(name=text_map.get(545, locale))
+        elif isinstance(e, NoPlayerFound):
+            embed.set_author(name=text_map.get(367, locale))
+        else:
+            unknown = True
+    else:
+        unknown = True
+
+    if unknown:
+        traceback.print_exc()
+        sentry_sdk.capture_exception(e)
+        
+        embed.description = text_map.get(513, locale)
+        embed.description += f"\n\n```{e}```"
+        embed.set_author(name=text_map.get(135, locale))
+        embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
+
+    embed.set_author(name=embed.author.name, icon_url=user.display_avatar.url)
+    return embed
 
 
 class BaseView(discord.ui.View):

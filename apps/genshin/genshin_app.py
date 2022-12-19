@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import traceback
 from typing import List, Optional
+from UI_base_models import get_error_handle_embed
 
 import aiosqlite
 import enkanetwork
@@ -76,16 +77,7 @@ def genshin_error_handler(func):
                 return GenshinAppResult(result=embed, success=False)
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
-            # print traceback
-            traceback.print_exc()
-            sentry_sdk.capture_exception(e)
-            embed = error_embed(message=text_map.get(513, locale, author_locale))
-            if embed.description is not None:
-                embed.description += f"\n\n```{e}```"
-            embed.set_author(
-                name=text_map.get(135, locale), icon_url=user.display_avatar.url
-            )
-            embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
+            embed = get_error_handle_embed(user, e, locale)
             return GenshinAppResult(result=embed, success=False)
 
     return inner_function
