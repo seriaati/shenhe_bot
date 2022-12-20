@@ -433,30 +433,35 @@ class Schedule(commands.Cog):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
         users = await self.get_schedule_users()
-        count = 0
+        
+        success_count = 0
         user_count = 0
 
         for user in users:
             if not user.daily_checkin:
                 continue
+            
             user_count += 1
-            error = True
+            error = False
             error_message = ""
+            
             client = user.client
             try:
                 reward = await client.claim_daily_reward()
             except genshin.errors.AlreadyClaimed:
-                error = False
-                count += 1
+                success_count += 1
             except genshin.errors.InvalidCookies:
+                error = True
                 error_message = text_map.get(36, "en-US", user.user_locale)
                 log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-                count += 1
+                success_count += 1
             except genshin.errors.GenshinException as e:
+                error = True
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Genshin Exception: {e}")
                 sentry_sdk.capture_exception(e)
             except Exception as e:
+                error = True
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
@@ -467,12 +472,14 @@ class Schedule(commands.Cog):
                     icon_url=user.discord_user.display_avatar.url,
                 )
                 embed.set_thumbnail(url=reward.icon)
+                
                 try:
                     await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
+                
                 error = False
-                count += 1
+                success_count += 1
 
             if error:
                 await self.bot.db.execute(
@@ -494,10 +501,12 @@ class Schedule(commands.Cog):
 
             if user_count % 100 == 0:  # Sleep for 30 seconds every 100 users
                 await asyncio.sleep(30)
+                
             await asyncio.sleep(2.5)
+            
         await self.bot.db.commit()
 
-        log.info(f"[Schedule][Claim Reward] Ended ({count}/{user_count} users)")
+        log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
 
         # send a notification to Seria
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
@@ -505,7 +514,7 @@ class Schedule(commands.Cog):
         )
         await seria.send(
             embed=default_embed(
-                "Automatic daily check-in report", f"Claimed {count}/{user_count}"
+                "Automatic daily check-in report", f"Claimed {success_count}/{user_count}"
             )
         )
 
