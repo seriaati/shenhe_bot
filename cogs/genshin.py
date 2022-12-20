@@ -1118,7 +1118,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.send_message(embed=embed)
 
     @slash_tcg.autocomplete("card_id")
-    async def query_autocomplete(
+    async def card_autocomplete(
         self, i: Interaction, current: str
     ) -> List[Choice[str]]:
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
