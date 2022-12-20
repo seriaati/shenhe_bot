@@ -603,6 +603,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         view = UIDCommand.View(locale, uid)
         await i.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
+        view.message = await i.original_response()
 
     @app_commands.command(
         name="profile",
