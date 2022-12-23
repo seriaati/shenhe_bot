@@ -77,6 +77,12 @@ class AdminCog(commands.Cog, name="admin"):
     async def roles(self, ctx: commands.Context):
         await self.bot.tree.sync()
         await ctx.send("commands synced")
+        
+    @commands.is_owner()
+    @commands.command(name="dm")
+    async def direct_message(self, ctx: commands.Context, user: commands.UserConverter, *, message: str):
+        await user.send(message)
+        await ctx.send("message sent")
 
 
 async def setup(bot: commands.Bot) -> None:
