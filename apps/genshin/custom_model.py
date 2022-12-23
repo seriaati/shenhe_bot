@@ -1,6 +1,7 @@
 import asyncio
 import io
 from datetime import datetime
+from optparse import Option
 from typing import Any, Dict, List, Optional, Union
 from dateutil import parser
 import aiohttp
@@ -342,3 +343,10 @@ class AbyssFloor(BaseModel):
     num: int
     ley_line_disorders: List[str]
     chambers: List[AbyssChamber]
+
+class InitLevels(BaseModel):
+    level: Optional[int] = None
+    a_level: Optional[int] = None
+    e_level: Optional[int] = None
+    q_level: Optional[int] = None
+    ascension_phase: Optional[int] = None

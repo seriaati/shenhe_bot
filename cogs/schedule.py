@@ -478,7 +478,6 @@ class Schedule(commands.Cog):
                 except Forbidden:
                     pass
                 
-                error = False
                 success_count += 1
 
             if error:

@@ -10,7 +10,7 @@ import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
 from apps.genshin.checks import check_account_predicate, check_cookie_predicate
-from apps.genshin.custom_model import DrawInput, TodoList
+from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
 from apps.genshin.utils import (
     InvalidLevelInput,
     get_character_emoji,
@@ -78,7 +78,9 @@ class CharacterSelect(Select):
             name=text_map.get(608, locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
-        init_levels = []
+
+        # character level, a/q/e level, ascention level
+        init_levels = InitLevels()
 
         # get genshin calculator levels or enka talent levels
         check = await check_cookie_predicate(i, respond_message=False)
@@ -93,19 +95,22 @@ class CharacterSelect(Select):
             calculator_character = [
                 c for c in calculator_characters if c.id == character_id
             ]
-            init_levels.append(
-                calculator_character[0].level if calculator_character else 1
-            )
+            if calculator_character:
+                init_levels.level = calculator_character[0].level
             try:
                 character = await shenhe_user.client.get_character_details(character_id)
             except genshin.GenshinException:
                 pass
             else:
+                talent_levels: List[int] = []
                 for talent in character.talents:
                     if not talent.upgradeable:
                         continue
-                    init_levels.append(talent.level)
-        else:  # the user has no cookie
+                    talent_levels.append(talent.level)
+                init_levels.a_level = talent_levels[0]
+                init_levels.e_level = talent_levels[1]
+                init_levels.q_level = talent_levels[2]
+        elif not check or init_levels.ascension_phase is None:
             check = await check_account_predicate(i, respond_message=False)  # check uid
             if check:
                 uid = await get_uid(i.user.id, i.client.db)
@@ -113,24 +118,38 @@ class CharacterSelect(Select):
                     enka_data = await get_enka_data(
                         i, locale, uid, i.user, respond_message=False
                     )
-                    if enka_data is not None:
+                    if enka_data is not None and enka_data.cache.characters is not None:
                         character = [
                             c
-                            for c in enka_data.cache.characters  # type: ignore
+                            for c in enka_data.cache.characters
                             if c.id == character_id
                         ]
                         if character:
-                            init_levels.append(character[0].level)
+                            init_levels.level = character[0].level
                             for talent in character[0].skills:
+                                talent_levels = []
                                 if talent.id in [
                                     10013,
                                     10413,
                                 ]:  # ayaka and mona passive sprint
                                     continue
-                                init_levels.append(talent.level)
+                                talent_levels.append(talent.level)
+                                init_levels.a_level = talent_levels[0]
+                                init_levels.e_level = talent_levels[1]
+                                init_levels.q_level = talent_levels[2]
+                            init_levels.ascension_phase = character[0].ascension
 
-        for _ in range(4 - len(init_levels)):
-            init_levels.append(1)
+        # change None levels in init_levels to 1
+        for key, value in init_levels.dict().items():
+            if value is None:
+                if key == "ascension_phase":
+                    setattr(
+                        init_levels,
+                        key,
+                        level_to_ascension_phase(init_levels.level or 1),
+                    )
+                else:
+                    setattr(init_levels, key, 1)
 
         modal = InitLevelModal(self.values[0], locale, init_levels)
         self.view.clear_items()
@@ -163,15 +182,19 @@ class SpawnTargetLevelModal(Button):
 class InitLevelModal(BaseModal):
     init = TextInput(
         label="level_init",
-        placeholder="like: 90",
         default="1",
         min_length=1,
         max_length=2,
     )
 
+    ascension_phase = TextInput(
+        label="ascension_phase",
+        min_length=1,
+        max_length=1,
+    )
+
     a = TextInput(
         label="attack_init",
-        placeholder="like: 9",
         default="1",
         min_length=1,
         max_length=2,
@@ -179,7 +202,6 @@ class InitLevelModal(BaseModal):
 
     e = TextInput(
         label="skill_init",
-        placeholder="like: 4",
         default="1",
         min_length=1,
         max_length=2,
@@ -187,25 +209,37 @@ class InitLevelModal(BaseModal):
 
     q = TextInput(
         label="burst_init",
-        placeholder="like: 10",
         default="1",
         min_length=1,
         max_length=2,
     )
 
     def __init__(
-        self, character_id: str, locale: Locale | str, init_levels: List[int]
+        self, character_id: str, locale: Locale | str, init_levels: InitLevels
     ) -> None:
         super().__init__(
             title=text_map.get(181, locale),
             timeout=config.mid_timeout,
         )
         level_type = text_map.get(168, locale)
+
         self.init.label = text_map.get(169, locale).format(level_type=level_type)
+        self.init.placeholder = text_map.get(170, locale).format(a=1)
+
+        self.ascension_phase.label = text_map.get(720, locale)
+        self.ascension_phase.placeholder = text_map.get(170, locale).format(a=4)
+
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
+        self.a.placeholder = text_map.get(170, locale).format(a=9)
+
         self.e.label = text_map.get(173, locale).format(level_type=level_type)
+        self.e.placeholder = text_map.get(170, locale).format(a=8)
+
         self.q.label = text_map.get(174, locale).format(level_type=level_type)
-        for index, level in enumerate(init_levels):
+        self.q.placeholder = text_map.get(170, locale).format(a=10)
+
+        # fill in defaults
+        for index, level in enumerate(init_levels.dict().values()):
             if index == 0:
                 self.init.default = str(level)
             elif index == 1:
@@ -214,6 +248,8 @@ class InitLevelModal(BaseModal):
                 self.e.default = str(level)
             elif index == 3:
                 self.q.default = str(level)
+            elif index == 4:
+                self.ascension_phase.default = str(level)
 
         self.character_id = character_id
         self.locale = locale
@@ -226,6 +262,7 @@ class InitLevelModal(BaseModal):
                 self.a.value,
                 self.e.value,
                 self.q.value,
+                self.ascension_phase.value,
                 i,
                 self.locale,
             )
@@ -247,16 +284,16 @@ class InitLevelModal(BaseModal):
                     int(self.a.value),
                     int(self.e.value),
                     int(self.q.value),
+                    int(self.ascension_phase.value),
                 ],
                 suggested_levlels,
             )
         )
-        await i.response.edit_message(
-            view=view,
-            embed=default_embed().set_author(
-                name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
-            ),
+        embed = default_embed()
+        embed.set_author(
+            name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
         )
+        await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
 
 
@@ -272,28 +309,30 @@ class SpawnInitModal(Button):
 class TargetLevelModal(BaseModal):
     target = TextInput(
         label="level_target",
-        placeholder="like: 90",
         min_length=1,
         max_length=2,
     )
 
+    ascension_target = TextInput(
+        label="ascension_target",
+        min_length=1,
+        max_length=1,
+    )
+
     a = TextInput(
         label="attack_target",
-        placeholder="like: 9",
         min_length=1,
         max_length=2,
     )
 
     e = TextInput(
         label="skill_target",
-        placeholder="like: 4",
         min_length=1,
         max_length=2,
     )
 
     q = TextInput(
         label="burst_target",
-        placeholder="like: 10",
         min_length=1,
         max_length=2,
     )
@@ -314,6 +353,10 @@ class TargetLevelModal(BaseModal):
         self.target.label = text_map.get(169, locale).format(level_type=level_type)
         self.target.placeholder = text_map.get(170, locale).format(a=90)
         self.target.default = str(init_levels[0])
+
+        self.ascension_target.label = text_map.get(721, locale)
+        self.ascension_target.placeholder = text_map.get(170, locale).format(a=4)
+        self.ascension_target.default = str(init_levels[4])
 
         self.a.label = text_map.get(171, locale).format(level_type=level_type)
         self.a.placeholder = text_map.get(170, locale).format(a=9)
@@ -352,6 +395,7 @@ class TargetLevelModal(BaseModal):
                 self.a.value,
                 self.e.value,
                 self.q.value,
+                self.ascension_target.value,
                 i,
                 self.locale,
             )
@@ -366,13 +410,16 @@ class TargetLevelModal(BaseModal):
         )
 
         target = int(self.target.value)
+        ascension = int(self.ascension_target.value)
         a = int(self.a.value)
         e = int(self.e.value)
         q = int(self.q.value)
+
         init = self.init_levels[0]
         init_a = self.init_levels[1]
         init_e = self.init_levels[2]
         init_q = self.init_levels[3]
+        init_ascension = self.init_levels[4]
 
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
         character = await ambr.get_character_detail(self.character_id)
@@ -383,7 +430,7 @@ class TargetLevelModal(BaseModal):
 
         # ascension items
         for asc in character.upgrade.ascensions:
-            if init < asc.new_max_level <= target:
+            if init_ascension < asc.ascension_level <= ascension:
                 if asc.cost_items is not None:
                     for item in asc.cost_items:
                         todo_list.add_item({int(item[0].id): item[1]})
@@ -489,6 +536,7 @@ class TargetLevelModal(BaseModal):
         embed.add_field(
             name=text_map.get(192, self.locale),
             value=f"{text_map.get(183, self.locale)}: {init} ▸ {target}\n"
+            f"{text_map.get(722, self.locale)}: {init_ascension} ▸ {ascension}\n"
             f"{normal_attack.name}: {init_a} ▸ {a}\n"
             f"{elemental_skill.name}: {init_e} ▸ {e}\n"
             f"{elemental_burst.name}: {init_q} ▸ {q}",

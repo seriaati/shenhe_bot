@@ -1,7 +1,6 @@
 import asyncio
 from apps.genshin.genshin_app import GenshinApp
 import calendar
-from datetime import datetime
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 import config
@@ -39,7 +38,7 @@ class ClaimReward(Button):
 
 class TurnOff(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(label=text_map.get(627, locale))
+        super().__init__(label=text_map.get(627, locale), style=ButtonStyle.green)
         self.locale = locale
 
     async def callback(self, i: Interaction):

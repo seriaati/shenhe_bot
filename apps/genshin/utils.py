@@ -596,7 +596,6 @@ def level_to_ascension_phase(level: int) -> int:
     else:
         raise ValueError("Level is too high")
 
-
 class InvalidLevelInput(Exception):
     pass
 
@@ -606,6 +605,7 @@ async def validate_level_input(
     a: str,
     e: str,
     q: str,
+    ascension: str,
     i: discord.Interaction,
     locale: discord.Locale | str,
 ):
@@ -614,6 +614,7 @@ async def validate_level_input(
         int_a = int(a)
         int_e = int(e)
         int_q = int(q)
+        int_ascension = int(ascension)
     except ValueError:
         await i.followup.send(
             embed=error_embed(message=text_map.get(187, locale)).set_author(
@@ -636,6 +637,16 @@ async def validate_level_input(
         await i.followup.send(
             embed=error_embed(
                 message=text_map.get(172, locale).format(a=1, b=15)
+            ).set_author(
+                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+            ),
+            ephemeral=True,
+        )
+        raise InvalidLevelInput
+    if int_ascension < 0 or int_ascension > 6:
+        await i.followup.send(
+            embed=error_embed(
+                message=text_map.get(172, locale).format(a=0, b=6)
             ).set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             ),
