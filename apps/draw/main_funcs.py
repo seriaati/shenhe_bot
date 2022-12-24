@@ -137,20 +137,6 @@ async def draw_stats_card(
 
 
 @calculate_time
-async def draw_reminder_card(
-    input: DrawInput,
-    materials: List[Material],
-    type: str,
-) -> io.BytesIO:
-    urls = extract_urls(materials)
-    await download_images(urls, input.session)
-    func = functools.partial(
-        remind.card, materials, input.locale, input.dark_mode, type
-    )
-    return await input.loop.run_in_executor(None, func)
-
-
-@calculate_time
 async def draw_profile_card(
     input: DrawInput,
     data: enkanetwork.model.base.EnkaNetworkResponse,

@@ -102,7 +102,7 @@ class ChangeNickname(Button):
     def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
         disabled = True if not select_options else False
         super().__init__(
-            emoji="<:edit:1020096204924784700>",
+            emoji=asset.edit_emoji,
             label=text_map.get(600, locale),
             disabled=disabled,
         )

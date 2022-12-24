@@ -230,6 +230,8 @@ class Schedule(commands.Cog):
                         and notes.remaining_transformer_recovery_time.total_seconds()
                         == 0
                     ):
+                        if n_user.last_notif is not None and n_user.last_notif.day == now.day:
+                            continue
                         success = await self.notify_pt(n_user, locale)
 
                     if success:
@@ -267,6 +269,7 @@ class Schedule(commands.Cog):
             name=text_map.get(306, locale),
             icon_url=discord_user.display_avatar.url,
         )
+        embed.set_thumbnail(url=asset.resin_icon)
         embed.set_footer(text=text_map.get(305, locale))
         try:
             await discord_user.send(embed=embed)
@@ -293,6 +296,7 @@ class Schedule(commands.Cog):
             name=text_map.get(518, locale),
             icon_url=discord_user.display_avatar.url,
         )
+        embed.set_thumbnail(url=asset.realm_currency_icon)
         embed.set_footer(text=text_map.get(305, locale))
         try:
             await discord_user.send(embed=embed)

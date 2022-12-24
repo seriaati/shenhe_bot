@@ -6,8 +6,14 @@ from PIL import Image, ImageDraw
 
 import asset
 from ambr.models import Material
-from apps.draw.utility import (circular_crop, draw_dynamic_background,
-                               dynamic_font_size, get_cache, get_font)
+from apps.draw.utility import (
+    circular_crop,
+    draw_dynamic_background,
+    dynamic_font_size,
+    get_cache,
+    get_font,
+    human_format,
+)
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 
 
@@ -40,10 +46,21 @@ def material_card(
     draw = ImageDraw.Draw(im)
 
     for index, material in enumerate(material_list):
+        if material[0].id == 202:
+            if isinstance(material[1], str) and material[1].isdigit():
+                material = (material[0], human_format(int(material[1])))
+            elif isinstance(material[1], int):
+                material = (material[0], human_format(material[1]))
+            elif "/" in material[1]:
+                splited = material[1].split("/")
+                material = (
+                    material[0],
+                    f"{human_format(int(splited[0]))}/{human_format(int(splited[1]))}",
+                )
+
         # draw the card
-        card = small_card(
-            material[0], material[1], dark_mode, locale
-        )
+        card = small_card(material[0], material[1], dark_mode, locale)
+        
         # paste the card
         x = 95 + (644 + 60) * (index // max_card_num)
         padding = 190 if draw_title else 90
