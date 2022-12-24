@@ -1,4 +1,5 @@
 import asyncio
+from enum import Enum
 import io
 from datetime import datetime
 from optparse import Option
@@ -321,7 +322,8 @@ class LeaderboardResult(BaseModel):
 
 class TodoItem(BaseModel):
     name: str
-    count: int
+    current: int
+    max: int
 
 
 class AbyssEnemy(BaseModel):
@@ -350,3 +352,7 @@ class InitLevels(BaseModel):
     e_level: Optional[int] = None
     q_level: Optional[int] = None
     ascension_phase: Optional[int] = None
+
+class TodoAction(str, Enum):
+    REMOVE = "remove"
+    EDIT = "edit"

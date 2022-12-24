@@ -21,7 +21,7 @@ class AddToTodo(Button):
     async def callback(self, i: Interaction) -> Any:
         for item_id, item_count in self.materials.items():
             await i.client.db.execute(
-                "INSERT INTO todo (user_id, item, count) VALUES (?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET item = ?, count = count + ? WHERE user_id = ?",
+                "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, 0, ?) ON CONFLICT (user_id, item) DO UPDATE SET item = ?, max = max + ? WHERE user_id = ?",
                 (i.user.id, item_id, item_count, item_id, item_count, i.user.id),
             )
         await i.client.db.commit()
