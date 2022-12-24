@@ -196,7 +196,7 @@
 '175': Add to todo list
 '176': Page {num}
 '177': Chamber {a}
-'178': Use </todo:1006486283855605804> to view your todo list
+'178': Use </todo:1020188057628065863> to view your todo list
 '179': Success
 '180': Choose a weapon
 '181': Input calculation data
@@ -223,14 +223,14 @@
 '202': Todo list
 '203': Add item
 '204': |-
-  Your todo list is empty, use </calc character:1000187020892700793> or </calc weapon:1000187020892700793> to calculate materials for characters and weapons, or use the green button below to add custom items.
+  Your todo list is empty, use </calc character:1020188057628065862> or </calc weapon:1020188057628065862> to calculate materials for characters and weapons, or use the green button below to add custom items.
 '205': Remove item
 '206': Clear items
-'207': Choose the item you wish to remove
+'207': Select an item
 '208': Item name
 '209': 'For example: mora'
-'210': Item amount
-'211': (Leaving this field blank will remove the item entirely)
+'210': Amount of {item}
+'211': ''
 '212': You can't remove more items than you have in your dodo list
 '213': Cryo
 '214': Geo
@@ -821,3 +821,5 @@
 '726': Copy UID
 '727': Server region
 '728': 'If your account is not added after you''ve logged in on the website (green checkmark is shown), please DM seria#5334 or use /feedback to tell me'
+'729': Edit item's current amount
+'730': ''
