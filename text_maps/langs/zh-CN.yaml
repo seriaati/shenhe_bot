@@ -126,11 +126,11 @@
 '123': 自定义 UID 搜索
 '124': 返回预设
 '125': |-
-  • By default, shenhe responds to you with the same language your discord uses
-  • Changing language will override the default language
-  • If any text is not translated yet, shenhe will respond to you with English
-  • Names of genshin characters, weapons, and other game elements will be translated automatically
-  • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  • 在预设情况下，申鹤会用你的 Discord 语言来回覆你
+  • 在这里改变语言将会覆盖过预设的语言
+  • 如果任何一个字串还尚未被翻译，申鹤将会使用英文
+  • 原神的游戏元素，像是角色、武器名称等将会自动翻译
+  • 有兴趣将申鹤翻译为你会说的语言吗？欢迎查看申鹤的 [crowdin](https://crowdin.com/project/shenhe-bot) 页面
 '126': ''
 '127': ''
 '128': 语言
