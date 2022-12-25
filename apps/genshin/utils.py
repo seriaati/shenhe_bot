@@ -234,7 +234,6 @@ async def get_shenhe_account(
             client = bot.genshin_client
             
         client.uid = user_data[3]
-        await c.close()
     else:
         client = genshin.Client()
         client.set_cookies(cookie)

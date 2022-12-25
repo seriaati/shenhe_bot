@@ -89,14 +89,10 @@ class Langauge(Button):
     async def callback(self, i: Interaction):
         self.view: View
         user_locale = await get_user_locale(i.user.id, i.client.db)
-        embed = default_embed(
-            message=f"• {text_map.get(125, i.locale, user_locale)}\n"
-            f"• {text_map.get(126, i.locale, user_locale)}\n"
-            f"• {text_map.get(127, i.locale, user_locale)}\n"
-            f"• {text_map.get(511, i.locale, user_locale)}\n"
-            "• [crowdin](https://crowdin.com/project/shenhe-bot)"
-        )
-        lang_name = lang_options.get(user_locale or str(i.locale))["name"]
+        embed = default_embed(message=text_map.get(125, i.locale, user_locale))
+        lang_name = lang_options.get(user_locale or str(i.locale), {"name": "Unknown"})[
+            "name"
+        ]
         lang_name = lang_name.split("|")[0]
         embed.set_author(
             name=f"{text_map.get(34, i.locale, user_locale)}: {lang_name}",
@@ -137,6 +133,7 @@ class LangSelect(Select):
             )
         await i.client.db.commit()
         await Langauge.callback(self, i)
+
 
 class GOBack(Button):
     def __init__(self):
