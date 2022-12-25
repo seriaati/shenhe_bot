@@ -125,9 +125,14 @@
 '122': 元素技能釋放
 '123': 自定義 UID 搜索
 '124': 返回預設
-'125': 申鶴會以你在Discord使用的語言來回复你。
-'126': 更改語言會覆蓋預設語言。
-'127': 如果該語言還沒翻譯好, 會使用英文回覆
+'125': |-
+  • By default, shenhe responds to you with the same language your discord uses
+  • Changing language will override the default language
+  • If any text is not translated yet, shenhe will respond to you with English
+  • Names of genshin characters, weapons, and other game elements will be translated automatically
+  • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+'126': ''
+'127': ''
 '128': 語言
 '129': 蒙德
 '130': 璃月
@@ -566,7 +571,7 @@
 '508': 搜尋任何與原神有關的角色、武器、物品
 '509': 關鍵詞
 '510': 須彌
-'511': 原神遊戲元素（武器、角色等）的字串將會自動翻譯
+'511': ''
 '512': |-
   • 在你的質變儀可使用時通知你
   • 每天1個通知
