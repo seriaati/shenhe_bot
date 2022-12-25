@@ -23,13 +23,13 @@
 '22': Data not public
 '23': Error
 '24': Realtime notes
-'25': Mon.
-'26': Tue.
-'27': Wed.
-'28': Thu.
-'29': Fri.
-'30': Sat.
-'31': Sun.
+'25': Thứ 2.
+'26': Thứ Ba.
+'27': Thứ Tư.
+'28': Thứ Năm.
+'29': Thứ Sáu.
+'30': Thứ Bảy.
+'31': Chủ Nhật.
 '32': Select a language
 '33': Weapon
 '34': Current language
@@ -41,14 +41,14 @@
 '40': You have already claimed today's login reward!
 '41': Obtained
 '42': Claim successful
-'43': Overview
+'43': Tổng quan
 '44': Days Active
 '45': Type a nickname for the custom image
-'46': Achievements
+'46': Thành tựu
 '47': Spiral Abyss
 '48': Oculi
-'49': Anemoculi
-'50': Geoculi
+'49': Phong Thần Đồng
+'50': Nham Thần Đồng
 '51': Electroculi
 '52': "{element} characters"
 '53': Common Chests
