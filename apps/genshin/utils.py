@@ -208,7 +208,7 @@ async def get_shenhe_account(
     author_locale: Optional[discord.Locale | str] = None,
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-    if not cookie:
+    if cookie is None:
         async with db.execute(
             "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
             (user_id,),
@@ -234,6 +234,7 @@ async def get_shenhe_account(
             client = bot.genshin_client
             
         client.uid = user_data[3]
+        print(client.uid)
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
@@ -243,8 +244,9 @@ async def get_shenhe_account(
     final_locale = author_locale or user_locale or locale
     
     client.lang = to_genshin_py(str(final_locale)) or "en-us"
+    temp_uid = custom_uid or client.uid
     client.default_game = genshin.Game.GENSHIN
-    client.uid = custom_uid or client.uid
+    client.uid = temp_uid
     
     if client.uid is None:
         raise UIDNotFound
