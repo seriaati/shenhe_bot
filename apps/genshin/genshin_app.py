@@ -170,7 +170,7 @@ class GenshinApp:
             expedition_str = ""
             for expedition in notes.expeditions:
                 if expedition.remaining_time.total_seconds() > 0:
-                    expedition_str += f'{get_character_emoji(str(expedition.character.id))} **{expedition.character.name}** | {format_dt(expedition.completion_time, "R")}\n'
+                    expedition_str += f'{get_character_emoji(str(expedition.character.id))} {expedition.character.name} | {format_dt(expedition.completion_time, "R")}\n'
             if expedition_str:
                 result.add_field(
                     name=text_map.get(20, locale, user_locale),

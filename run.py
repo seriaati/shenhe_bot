@@ -184,9 +184,6 @@ class Shenhe(commands.Bot):
         await self.db.commit()
 
     async def gateway_player(self, data: Player):
-        if not data.token in self.tokenStore:
-            return
-
         ctx = self.tokenStore[data.token]
         log.info(f"[System][Hutao Login Gateway] {data}")
         uid = data.genshin.uid
