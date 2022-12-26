@@ -7,9 +7,10 @@ from typing import Optional
 import git
 from discord.app_commands import locale_str as _
 from discord.ext import commands
+from discord.errors import Forbidden
 
 from apps.genshin.custom_model import ShenheBot
-from utility.utils import error_embed
+from utility.utils import default_embed, error_embed
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -81,8 +82,14 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="dm")
     async def direct_message(self, ctx: commands.Context, user: commands.UserConverter, *, message: str):
-        await user.send(message)
-        await ctx.send("message sent")
+        embed = default_embed(message=message)
+        embed.set_author(name=ctx.author.name+"#"+ctx.author.discriminator, icon_url=ctx.author.display_avatar.url)
+        try:
+            await user.send(embed=embed)
+        except Forbidden:
+            await ctx.send("user has DMs disabled")
+        else:
+            await ctx.send("message sent")
 
 
 async def setup(bot: commands.Bot) -> None:
