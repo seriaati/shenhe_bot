@@ -427,7 +427,7 @@ class CharacterDetail(BaseModel):
     birthday: str
     info: CharacterInfo = Field(alias="fetter")
     upgrade: CharacterUpgradeDetail
-    other: CharacterOtherDetail
+    other: Optional[CharacterOtherDetail] = None
     talents: List[CharacterTalent] = Field(alias="talent")
     constellations: List[CharacterConstellation] = Field(alias="constellation")
     ascension_materials: List[PartialMaterial] = Field(alias="ascension")

@@ -29,7 +29,6 @@ from data.game.elements import get_element_emoji
 from UI_elements.genshin import Search
 from utility.utils import (
     default_embed,
-    get_user_appearance_mode,
     get_weekday_int_with_name,
 )
 
@@ -114,13 +113,14 @@ async def parse_character_wiki(
         embeds.append(embed)
 
     # namecard
-    embed = default_embed(
-        character.other.name_card.name,
-        character.other.name_card.description,
-    )
-    embed.set_image(url=character.other.name_card.icon)
-    embed.set_author(name=text_map.get(319, locale), icon_url=character.icon)
-    embeds.append(embed)
+    if character.other is not None:
+        embed = default_embed(
+            character.other.name_card.name,
+            character.other.name_card.description,
+        )
+        embed.set_image(url=character.other.name_card.icon)
+        embed.set_author(name=text_map.get(319, locale), icon_url=character.icon)
+        embeds.append(embed)
 
     # select options
     options = []
