@@ -92,5 +92,5 @@ class AdminCog(commands.Cog, name="admin"):
             await ctx.send("message sent")
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(AdminCog(bot))

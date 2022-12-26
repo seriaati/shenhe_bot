@@ -480,5 +480,5 @@ class WishCog(commands.GroupCog, name="wish"):
         view.message = await i.original_response()
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(WishCog(bot))

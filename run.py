@@ -66,7 +66,7 @@ class Translator(app_commands.Translator):
             return None
 
 
-class Shenhe(commands.Bot):
+class Shenhe(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
             command_prefix=commands.when_mentioned,

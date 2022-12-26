@@ -80,7 +80,7 @@ class Dropdown(Select):
 
 
 class DropdownView(BaseView):
-    def __init__(self, bot: commands.Bot, locale: Locale, user_locale: str | None):
+    def __init__(self, bot: commands.AutoShardedBot, locale: Locale, user_locale: str | None):
         super().__init__(timeout=config.mid_timeout)
         self.add_item(Dropdown(bot, locale, user_locale))
 
@@ -99,5 +99,5 @@ class HelpCog(commands.Cog):
         view.message = await i.original_response()
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(HelpCog(bot))

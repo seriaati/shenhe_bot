@@ -15,5 +15,5 @@ class Todo(commands.Cog, name="todo"):
         await TodoList.return_todo(i)
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(Todo(bot))

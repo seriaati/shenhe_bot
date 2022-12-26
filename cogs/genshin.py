@@ -1150,5 +1150,5 @@ class GenshinCog(commands.Cog, name="genshin"):
             return self.card_i18n[locale][text]
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(GenshinCog(bot))

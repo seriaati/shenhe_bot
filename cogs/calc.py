@@ -36,5 +36,5 @@ class CalcCog(commands.GroupCog, name="calc"):
         view.message = await i.original_response()
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(CalcCog(bot))

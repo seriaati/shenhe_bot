@@ -38,5 +38,5 @@ class WaifuCog(commands.Cog):
         )
 
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(WaifuCog(bot))

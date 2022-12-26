@@ -89,7 +89,7 @@ class WishInfo(BaseModel):
     novice_banner_num: int
 
 
-class ShenheBot(commands.Bot):
+class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
     db: aiosqlite.Connection
