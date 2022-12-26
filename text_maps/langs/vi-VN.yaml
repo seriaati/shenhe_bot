@@ -1,73 +1,73 @@
 ---
-'1': Full
-'2': Realm currency
-'3': Choose an import method
-'4': Resin
+'1': Đầy
+'2': Tiền Động Tiên
+'3': Chọn phương thức nhập
+'4': Nhựa
 '5': Resin discounts
-'6': Daily comission
-'7': min
+'6': Ủy thác hằng ngày
+'7': phút
 '8': P.T. remaining time
-'9': Available to use
-'10': There was an error in Genshin's API
+'9': Có thể sử dụng
+'10': Có lỗi xảy ra với Genshin's API
 '11': P.T. not found
-'12': sec
-'13': Today
-'14': The month of diary you are trying to view is unavailable
-'15': Recovery time
-'16': It is recommended to use the /check command
-'17': Click on me to continue
+'12': giây
+'13': Hôm nay
+'14': Không có sẵn dữ liệu về tháng bạn đã chọn trong nhật ký
+'15': Thời gian phục hồi
+'16': Lệnh /check được khuyên dùng
+'17': Hãy nhấn chọn tôi để tiếp tục
 '18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
-'19': All characters
-'20': Expeditions
-'21': </stuck:1006486283725590536> for more information
-'22': Data not public
-'23': Error
-'24': Realtime notes
-'25': Mon.
-'26': Tue.
-'27': Wed.
-'28': Thu.
-'29': Fri.
-'30': Sat.
-'31': Sun.
-'32': Select a language
-'33': Weapon
-'34': Current language
-'35': </register:1006486283725590528> for more information
-'36': Cookie invalid
-'37': Artifact Set
+'19': Tất cả nhân vật
+'20': Thám hiểm
+'21': </stuck:1006486283725590536> để biết thêm thông tin
+'22': Dữ liệu không được công khai
+'23': Lỗi
+'24': Ghi chép thời gian thực
+'25': Thứ 2.
+'26': Thứ Ba.
+'27': Thứ Tư.
+'28': Thứ Năm.
+'29': Thứ Sáu.
+'30': Thứ Bảy.
+'31': Chủ Nhật.
+'32': Hãy chọn ngôn ngữ
+'33': Vũ khí
+'34': Ngôn ngữ hiện tại
+'35': </register:1006486283725590528> để biết thêm thông tin
+'36': Cookie không chính xác
+'37': Bộ Thánh Di Vật
 '38': Search Genshin lineups with Hoyolab's lineup simulator
-'39': Account added
-'40': You have already claimed today's login reward!
-'41': Obtained
-'42': Claim successful
-'43': Overview
-'44': Days Active
+'39': Đã thêm tài khoản
+'40': Bạn đã nhận thưởng đăng nhập của ngày hôm nay rồi!
+'41': Đã nhận
+'42': Nhận thành công
+'43': Tổng quan
+'44': Số ngày hoạt động
 '45': Type a nickname for the custom image
-'46': Achievements
-'47': Spiral Abyss
-'48': Oculi
-'49': Anemoculi
-'50': Geoculi
-'51': Electroculi
-'52': "{element} characters"
+'46': Thành tựu
+'47': La Hoàn Thâm Cảnh
+'48': Thần Đồng
+'49': Phong Thần Đồng
+'50': Nham Thần Đồng
+'51': Lôi Thần Đồng
+'52': "Nhân vật hệ {element}"
 '53': Common Chests
 '54': Exquisite Chests
 '55': Luxurious Chests
 '56': Genshin stats
 '57': Precious Chests
-'58': World Exploration
+'58': Thám hiểm thế giới
 '59': Set custom image for {character_name}
-'60': Image URL
-'61': Remove image
+'60': URL hình ảnh
+'61': Gỡ bỏ hình ảnh
 '62': Set custom image
-'63': View the bot's info
+'63': Xem thông tin của bot
 '64': image-file
 '65': The image file to upload
-'66': The nickname for the image
+'66': Biệt danh của hình ảnh
 '67': The character to use the image
 '68': Upload a custom image for /profile character cards
-'69': Traveler's Diary
+'69': Nhật ký của Nhà Lữ Hành
 '70': Primo Log
 '71': primos
 '72': Mora Log
@@ -91,8 +91,8 @@
 '88': Spiral Abyss Leaderboard ({phase}{num})
 '89': rank
 '90': 'Build #'
-'91': Weapon
-'92': Artifacts
+'91': Vũ khí
+'92': Thánh Di Vật
 '93': Main Stats
 '94': Talents
 '95': Character Stats
@@ -102,9 +102,9 @@
 '99': 'ON'
 '100': 'OFF'
 '101': Toggle
-'102': Current realm currency
+'102': Tiền Động Tiên hiện tại
 '103': Max notification number
-'104': Settings saved
+'104': Đã lưu cài đặt
 '105': Character
 '106': This gift code has already been redeemed!
 '107': Gift code invalid
@@ -115,16 +115,16 @@
 '112': Waverider Waypoints Unlocked
 '113': Waypoints Unlocked
 '114': Treasure Chests Obtained
-'115': Unfinished
+'115': Chưa hoàn thành
 '116': Surfpiercer
 '117': Summer Memories
 '118': Realm Exploration
-'119': Time completed
-'120': Successfully challenged
+'119': Thời gian hoàn thành
+'120': Hoàn thành thử thách
 '121': times
 '122': Unleashed elemental skill
 '123': Custom UID searched
-'124': Back to default
+'124': Trở về mặc định
 '125': |-
   • By default, shenhe responds to you with the same language your discord uses
   • Changing language will override the default language
@@ -133,16 +133,16 @@
   • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
 '126': ''
 '127': ''
-'128': Language
+'128': Ngôn ngữ
 '129': Mondstat
 '130': Liyue
 '131': Inazuma
 '132': Submit your cookie
 '133': Please paste the text you copied here
 '134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
-'135': There was an error
-'136': Choose your account
-'137': Account registration tutorial
+'135': Có lỗi xảy ra
+'136': Chọn tài khoản của bạn
+'137': Hướng dẫn đăng ký tài khoản
 '138': |-
   1. Copy the code below
   2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
@@ -152,17 +152,17 @@
   6. Submit your cookie here
 
   Too complicated? The image below might help!
-'139': Character Lineup
+'139': Đội hình Nhân vật
 '140': Select a lineup scenario
-'141': Account data not found!
-'142': Select an element
+'141': Không tìm thấy dữ liệu tài khoản!
+'142': Hãy chọn một nguyên tố
 '143': You are not the issuer of this command
-'144': Profile overview
+'144': Tóm tắt hồ sơ
 '145': Character showcase
-'146': Floor {a}
+'146': Tầng {a}
 '147': Uptime
-'148': Choose abyss floor
-'149': Data not public?
+'148': Hãy chọn tầng La Hoàn Thâm Cảnh
+'149': Dữ liệu không được công khai?
 '150': |-
   Please go to https://www.hoyolab.com/home and login
   Follow the steps in the image below
@@ -178,8 +178,8 @@
 '154': All time
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
-'157': Choose a character
-'158': There are currently no notifications set for any characters
+'157': Hãy chọn một nhân vật
+'158': Hiện tại không có thông báo được cài đặt cho nhân vật nào
 '159': Current characters
 '160': Least runs taken to full clear abyss
 '161': Choosing this character will turn OFF its notifications
@@ -218,21 +218,21 @@
 '192': Calculation content
 '193': Powered by Genshin Optimizer
 '194': Python version
-'195': Invalid file type
-'196': Genshin character summary
+'195': Loại file không hợp lệ
+'196': Tổng quan nhân vật Genshin
 '197': No materials needed
-'198': player
+'198': người chơi
 '199': single strike
 '200': Weapon Level
-'201': floor
+'201': tầng
 '202': Todo list
-'203': Add item
+'203': Thêm vật phẩm
 '204': |-
   Your todo list is empty, use </calc character:1020188057628065862> or </calc weapon:1020188057628065862> to calculate materials for characters and weapons, or use the green button below to add custom items.
-'205': Remove item
+'205': Xóa vật phẩm
 '206': Clear items
-'207': Select an item
-'208': Item name
+'207': Chọn vật phẩm
+'208': Tên vật phẩm
 '209': 'For example: mora'
 '210': Amount of {item}
 '211': ''
