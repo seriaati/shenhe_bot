@@ -2,7 +2,6 @@ import asyncio
 from enum import Enum
 import io
 from datetime import datetime
-from optparse import Option
 from typing import Any, Dict, List, Optional, Union
 from dateutil import parser
 import aiohttp
@@ -14,6 +13,7 @@ from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from pydantic import BaseModel, Field, validator
 from pyppeteer.browser import Browser
+from logingateway import HuTaoLoginAPI
 
 from ambr.models import Character
 
@@ -105,6 +105,8 @@ class ShenheBot(commands.Bot):
     abyss_overview_card_cache: cachetools.TTLCache
     abyss_floor_card_cache: cachetools.TTLCache
     abyss_one_page_cache: cachetools.TTLCache
+    tokenStore: Dict[str, Any]
+    gateway: HuTaoLoginAPI
 
 
 class TodoList:

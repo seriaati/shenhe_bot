@@ -1,11 +1,10 @@
 # shenhe-bot by seria
 
-import asyncio
 from datetime import datetime
 import getpass
 import os
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import List, Optional
 import aiohttp
 import aiosqlite
 from apps.genshin.browser import launch_browsers
@@ -18,9 +17,7 @@ from discord import (
     Locale,
     Message,
     app_commands,
-    WebhookMessage,
     app_commands,
-    HTTPException,
 )
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
@@ -30,13 +27,10 @@ from typing import Dict
 
 from discord.ext import commands
 
-from logingateway import HuTaoLoginAPI
-from logingateway.model import Player, Ready, LoginMethod, ServerId
-from UI_elements.others.ManageAccounts import return_accounts
 
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
-from utility.utils import default_embed, error_embed, log, sentry_logging
+from utility.utils import error_embed, log, sentry_logging
 
 load_dotenv()
 user_name = getpass.getuser()
@@ -98,14 +92,6 @@ class Shenhe(commands.Bot):
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
-        self.gateway = HuTaoLoginAPI(
-            client_id=os.getenv("HUTAO_CLIENT_ID", ""),
-            client_secret=os.getenv("HUTAO_CLIENT_SECRET", ""),
-        )
-        self.tokenStore: Dict[str, Dict[str, Any]] = {}
-        self.gateway.ready(self.gateway_connect)
-        self.gateway.player(self.gateway_player)
-        self.gateway.player_update(self.gateway_player_update)
 
         cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})
@@ -152,89 +138,12 @@ class Shenhe(commands.Bot):
         await tree.set_translator(Translator())
         log.info(f"[System]on_ready: Logged in as {self.user}")
         log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
-        self.gateway.start()
         if not self.debug:
             self.browsers = await launch_browsers()
 
-    async def gateway_connect(self, data: Ready):
-        log.info(f"[System][Hutao Login Gateway] Connected")
-
-    async def gateway_player_update(self, data: Player):
-        log.info(f"[System][Hutao Login Gateway] Update player {data}")
-
-        # Set variable data
-        user_id = data.discord.user_id
-        genshin = data.genshin
-
-        # Update cookie_token
-        _data = [genshin.ltuid, genshin.cookie_token]
-
-        # Set default value
-        update_value = "ltuid = ?, cookie_token = ?"
-        # Check if ltoken is not empty string
-        if data.genshin.ltoken != "":
-            update_value += ", ltoken = ?"
-            _data.append(genshin.ltoken)
-
-        # Append discord ID
-        _data.append(user_id)
-        await self.db.execute(
-            f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
-        )
-        await self.db.commit()
-
-    async def gateway_player(self, data: Player):
-        ctx = self.tokenStore[data.token]
-        log.info(f"[System][Hutao Login Gateway] {data}")
-        uid = data.genshin.uid
-        user_id = data.discord.user_id
-        if data.genshin.login_type == LoginMethod.UID:
-            cookie = {
-                "ltuid": None,
-                "ltoken": None,
-                "cookie_token": None,
-            }
-        else:
-            cookie = {
-                "ltuid": data.genshin.ltuid,
-                "ltoken": data.genshin.ltoken,
-                "cookie_token": data.genshin.cookie_token,
-            }
-
-        china = 1 if data.genshin.server == ServerId.CHINA else 0
-        await self.db.execute(
-            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
-            (
-                uid,
-                user_id,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                china,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                uid,
-                user_id,
-            ),
-        )
-        await self.db.commit()
-
-        try:
-            await ctx["message"].edit(
-                embed=default_embed().set_author(
-                    name=text_map.get(39, ctx["locale"]),
-                    icon_url=ctx["author"].display_avatar.url,
-                ),
-                view=None,
-            )
-        except HTTPException:
-            pass
-
-        await asyncio.sleep(1)
-        await return_accounts(ctx["interaction"])
-
     async def on_message(self, message: Message):
+        if self.user is None:
+            return
         if message.author.id == self.user.id:
             return
         await self.process_commands(message)
@@ -335,7 +244,7 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
 
 
 if not debug:
-    import uvloop
+    import uvloop # type: ignore
 
     uvloop.install()
 bot.run(token=token)
