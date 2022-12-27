@@ -15,3 +15,9 @@ class NoCharacterFound(Exception):
 
 class CardNotFound(Exception):
     pass
+
+class InvalidWeaponCalcInput(Exception):
+    pass
+
+class InvalidAscensionInput(Exception):
+    pass

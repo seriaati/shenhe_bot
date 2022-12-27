@@ -12,20 +12,30 @@ from discord.utils import format_dt
 from diskcache import FanoutCache
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
-                                       FightProp, ShenheBot, ShenheAccount,
-                                       WishInfo)
+from apps.genshin.custom_model import (
+    CharacterBuild,
+    EnkanetworkData,
+    FightProp,
+    ShenheBot,
+    ShenheAccount,
+    WishInfo,
+)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import (get_user_locale, get_weekday_name,
-                                 translate_main_stat)
+from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from utility.utils import (default_embed, divide_chunks, divide_dict,
-                           error_embed, get_dt_now)
+from utility.utils import (
+    default_embed,
+    divide_chunks,
+    divide_dict,
+    error_embed,
+    get_dt_now,
+)
+
 
 def calculate_artifact_score(substats: dict):
     tier_four_val = {
@@ -44,6 +54,7 @@ def calculate_artifact_score(substats: dict):
     for sub, val in substats.items():
         result += val / tier_four_val.get(sub) * 11
     return result
+
 
 def get_character_builds(
     character_id: str, element_builds_dict: dict, locale: discord.Locale | str
@@ -192,10 +203,11 @@ def get_uid_region_hash(uid: int) -> int:
 def get_uid_tz(uid: Optional[int]) -> Literal[0, -13, -7]:
     str_uid = str(uid)
     region_map = {
-        "6": -13, # North America
-        "7": -7, # Europe
+        "6": -13,  # North America
+        "7": -7,  # Europe
     }
     return region_map.get(str_uid[0], 0)
+
 
 async def get_shenhe_account(
     user_id: int,
@@ -218,7 +230,7 @@ async def get_shenhe_account(
                 user_data = row
                 if row[5] == 1:
                     break
-                
+
         if user_data is None:
             raise ShenheAccountNotFound
 
@@ -232,24 +244,24 @@ async def get_shenhe_account(
             )
         else:
             client = bot.genshin_client
-            
+
         client.uid = user_data[3]
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-        client.uid  = await get_uid(user_id, db)
-    
+        client.uid = await get_uid(user_id, db)
+
     user_locale = await get_user_locale(user_id, db)
     final_locale = author_locale or user_locale or locale
-    
+
     client.lang = to_genshin_py(str(final_locale)) or "en-us"
     temp_uid = custom_uid or client.uid
     client.default_game = genshin.Game.GENSHIN
     client.uid = temp_uid
-    
+
     if client.uid is None:
         raise UIDNotFound
-    
+
     china = True if str(client.uid)[0] in ["1", "2", "5"] else False
     if china:
         client.lang = "zh-cn"
@@ -596,12 +608,13 @@ def level_to_ascension_phase(level: int) -> int:
     else:
         raise ValueError("Level is too high")
 
+
 class InvalidLevelInput(Exception):
     pass
 
 
 async def validate_level_input(
-    target: str,
+    level: str,
     a: str,
     e: str,
     q: str,
@@ -609,47 +622,43 @@ async def validate_level_input(
     i: discord.Interaction,
     locale: discord.Locale | str,
 ):
+    embed = default_embed().set_author(
+        name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+    )
     try:
-        int_target = int(target)
+        int_level = int(level)
         int_a = int(a)
         int_e = int(e)
         int_q = int(q)
         int_ascension = int(ascension)
     except ValueError:
+        embed.description = text_map.get(187, locale)
         await i.followup.send(
-            embed=error_embed(message=text_map.get(187, locale)).set_author(
-                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
         raise InvalidLevelInput
-    if int_target < 1 or int_target > 90:
+
+    if int_level < 1 or int_level > 90:
+        embed.description = text_map.get(172, locale).format(a=1, b=90)
         await i.followup.send(
-            embed=error_embed(
-                message=text_map.get(172, locale).format(a=1, b=90)
-            ).set_author(
-                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
         raise InvalidLevelInput
+    
     if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
+        embed.description = text_map.get(172, locale).format(a=1, b=15)
         await i.followup.send(
-            embed=error_embed(
-                message=text_map.get(172, locale).format(a=1, b=15)
-            ).set_author(
-                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
         raise InvalidLevelInput
-    if int_ascension < 0 or int_ascension > 6:
+    
+    if int_ascension > level_to_ascension_phase(int_level):
+        embed.description = text_map.get(730, locale)
         await i.followup.send(
-            embed=error_embed(
-                message=text_map.get(172, locale).format(a=0, b=6)
-            ).set_author(
-                name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=embed,
             ephemeral=True,
         )
         raise InvalidLevelInput
@@ -759,25 +768,29 @@ async def get_enka_data(
         ),
     )
 
+
 def get_current_abyss_season():
     start_season = 59
     start_seasson_dt = datetime(2022, 12, 1, 4, 0, 0)
-    
+
     # calculate time difference
     now = get_dt_now()
     diff = now - start_seasson_dt
-    
+
     # calculate season
     # 1 season = 16 days
     season = start_season + (diff.days // 15)
-    
+
     return season
+
 
 def get_abyss_season_date_range(season: int) -> str:
     """Get the date range of a given season"""
-    
+
     season_num = 59
-    season_start = datetime(2022, 12, 1, 4, 0, 0) + timedelta(days=15 * (season_num - season))
+    season_start = datetime(2022, 12, 1, 4, 0, 0) + timedelta(
+        days=15 * (season_num - season)
+    )
     season_end = season_start + timedelta(days=15)
-    
+
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"

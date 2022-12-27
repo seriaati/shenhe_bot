@@ -1,4 +1,5 @@
 from typing import List
+from apps.draw.utility import image_gen_transition
 from data.game.upgrade_exp import get_exp_table
 
 import genshin
@@ -402,12 +403,18 @@ class TargetLevelModal(BaseModal):
         except InvalidLevelInput:
             return
 
-        await i.edit_original_response(
-            embed=default_embed().set_author(
-                name=text_map.get(644, self.locale), icon_url=asset.loader
-            ),
-            view=None,
-        )
+        view = None
+        if i.message is not None:
+            view = View.from_message(i.message)
+        if view is None:
+            await i.edit_original_response(
+                embed=default_embed().set_author(
+                    name=text_map.get(644, self.locale), icon_url=asset.loader
+                ),
+                view=None,
+            )
+        else:
+            await image_gen_transition(i, view, self.locale)
 
         target = int(self.target.value)
         ascension = int(self.ascension_target.value)
