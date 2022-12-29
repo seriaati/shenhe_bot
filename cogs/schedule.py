@@ -84,6 +84,7 @@ class Schedule(commands.Cog):
             tasks = ["resin_notification", "pot_notification", "pt_notification"]
             for task in tasks:
                 await asyncio.create_task(self.check_notification(task))
+            await asyncio.create_task(self.restart_gateway())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
@@ -123,6 +124,11 @@ class Schedule(commands.Cog):
                 name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"
             )
         )
+        
+    async def restart_gateway(self):
+        log.info("[Schedule] Restarting gateway...")
+        await self.bot.reload_extension("cogs.login")
+        log.info("[Schedule] Gateway restarted.")
 
     async def check_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Checking...")
