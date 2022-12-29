@@ -122,8 +122,8 @@ class LevelModal(BaseModal):
         try:
             current = int(self.current.value)
             target = int(self.target.value)
-            current_ascention = int(self.current_ascension.value)
-            target_ascention = int(self.target_ascension.value)
+            current_ascension = int(self.current_ascension.value)
+            target_ascension = int(self.target_ascension.value)
         except ValueError:
             return await i.followup.send(
                 embed=error_embed(message=text_map.get(187, locale)).set_author(
@@ -153,13 +153,21 @@ class LevelModal(BaseModal):
             else:
                 if current > 90 or target > 90:
                     raise InvalidWeaponCalcInput
-
-            if current_ascention > level_to_ascension_phase(current):
+            
+            t_ascension = level_to_ascension_phase(current)
+            if current_ascension != t_ascension or current_ascension != t_ascension-1:
                 raise InvalidAscensionInput
-            if target_ascention > level_to_ascension_phase(target):
+            
+            t_ascension = level_to_ascension_phase(target)
+            if target_ascension != t_ascension or target_ascension != t_ascension-1:
+                raise InvalidAscensionInput
+            
+            if current_ascension > target_ascension:
                 raise InvalidAscensionInput
 
             if current < 1:
+                raise InvalidWeaponCalcInput
+            if current > target:
                 raise InvalidWeaponCalcInput
 
         except InvalidWeaponCalcInput:
@@ -196,7 +204,7 @@ class LevelModal(BaseModal):
         # ascension materials
         weapon_ascensions = weapon.upgrade.ascensions
         for asc in weapon_ascensions:
-            if current_ascention < asc.ascension_level <= target_ascention:
+            if current_ascension < asc.ascension_level <= target_ascension:
                 if asc.cost_items is not None:
                     for item in asc.cost_items:
                         todo_list.add_item({int(item[0].id): item[1]})
@@ -269,7 +277,7 @@ class LevelModal(BaseModal):
             name=text_map.get(192, self.locale),
             value=f"""
                 {text_map.get(200, self.locale)}: {current} ▸ {target}
-                {text_map.get(722, self.locale)}: {current_ascention} ▸ {target_ascention}
+                {text_map.get(722, self.locale)}: {current_ascension} ▸ {target_ascension}
             """,
         )
         embed.set_author(icon_url=weapon.icon, name=weapon.name)

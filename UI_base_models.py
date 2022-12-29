@@ -15,8 +15,9 @@ async def global_error_handler(
 ):
     if isinstance(e, discord.app_commands.errors.CheckFailure):
         return
-    
+
     log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
+    traceback.print_exc()
 
     locale = await get_user_locale(i.user.id, i.client.db) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
@@ -59,6 +60,13 @@ def get_error_handle_embed(
         embed.description = text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
     elif isinstance(e, discord.app_commands.errors.CommandInvokeError):
+        if isinstance(e.original, discord.errors.NotFound) and e.original.code in [
+            10062,
+            10008,
+            10015,
+        ]:
+            embed.description = text_map.get(624, locale)
+            embed.set_author(name=text_map.get(623, locale))
         if isinstance(e.original, UIDNotFound):
             embed.set_author(name=text_map.get(672, locale))
         elif isinstance(e, ShenheAccountNotFound):
@@ -74,13 +82,13 @@ def get_error_handle_embed(
     if unknown:
         traceback.print_exc()
         sentry_sdk.capture_exception(e)
-        
+
         embed.description = text_map.get(513, locale)
         embed.description += f"\n\n```{e}```"
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
-    embed.set_author(name=embed.author.name, icon_url=user.display_avatar.url)
+    embed.set_author(name=embed.author.name or "Error", icon_url=user.display_avatar.url)
     return embed
 
 

@@ -655,7 +655,8 @@ async def validate_level_input(
         )
         raise InvalidLevelInput
     
-    if int_ascension > level_to_ascension_phase(int_level):
+    theoretical_ascension = level_to_ascension_phase(int_level)
+    if int_ascension != theoretical_ascension and int_ascension != theoretical_ascension - 1:
         embed.description = text_map.get(730, locale)
         await i.followup.send(
             embed=embed,

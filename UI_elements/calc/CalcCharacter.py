@@ -256,6 +256,7 @@ class InitLevelModal(BaseModal):
         self.locale = locale
 
     async def on_submit(self, i: Interaction):
+        await i.response.defer()
         # validate input
         try:
             await validate_level_input(

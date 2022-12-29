@@ -455,6 +455,8 @@ class CharacterDetail(BaseModel):
 
     @validator("other", pre=True, allow_reuse=True)
     def parse_other(cls, v):
+        if v is None:
+            return None
         return CharacterOtherDetail(**v)
 
     @validator("talents", pre=True, allow_reuse=True)

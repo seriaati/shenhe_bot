@@ -392,8 +392,10 @@ class WishCog(commands.GroupCog, name="wish"):
             302: weapon_banner,
             200: permanent_banner,
         }
+
         all_wish_data: Dict[str, WishData] = {}
         options = []
+
         for banner_id, banner_wishes in banners.items():
             if not banner_wishes:
                 continue
@@ -407,6 +409,7 @@ class WishCog(commands.GroupCog, name="wish"):
             reversed_banner = banner_wishes
             reversed_banner.reverse()
             pull = 0
+
             recents: List[RecentWish] = []
             for wish in reversed_banner:
                 pull += 1
@@ -425,6 +428,7 @@ class WishCog(commands.GroupCog, name="wish"):
                         recents.append(RecentWish(name=wish.name, pull_num=pull))
                     pull = 0
             recents.reverse()
+
             title = ""
             if banner_id == 100:
                 title = text_map.get(647, i.locale, user_locale)
@@ -436,6 +440,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 title = text_map.get(646, i.locale, user_locale)
             elif banner_id == 200:
                 title = text_map.get(655, i.locale, user_locale)
+
             wish_data = WishData(
                 title=title,
                 total_wishes=len(banner_wishes),
@@ -452,6 +457,14 @@ class WishCog(commands.GroupCog, name="wish"):
             )
             all_wish_data[str(banner_id)] = wish_data
 
+        if not all_wish_data:
+            return await i.followup.send(
+                embed=error_embed().set_author(
+                    name=text_map.get(731, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                )
+            )
+
         if "400" in all_wish_data:
             temp = all_wish_data["301"].pity
             all_wish_data["301"].pity += all_wish_data["400"].pity
@@ -464,7 +477,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 locale=user_locale or i.locale,
                 dark_mode=await get_user_appearance_mode(i.user.id, self.bot.db),
             ),
-            all_wish_data["301"],
+            list(all_wish_data.values())[0],
             member.display_avatar.url,
             member.display_name,
         )
