@@ -9,6 +9,7 @@ from ambr.models import Material
 from apps.draw import main_funcs
 from apps.genshin.custom_model import DrawInput, TodoItem
 from UI_base_models import BaseView
+from apps.text_map.text_map_app import text_map
 
 
 class _view(BaseView):
@@ -33,6 +34,9 @@ class _view(BaseView):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
         self.last.disabled = self.current_page + 1 == len(self.embeds)
+        
+        text = text_map.get(176, self.locale)
+        self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
         fp = await main_funcs.draw_material_card(
             DrawInput(
@@ -73,6 +77,15 @@ class _view(BaseView):
         self.current_page -= 1
 
         await self.update_children(i)
+    
+    @button(
+        label="page 1/1",
+        custom_id="paginator_page",
+        row=1,
+        disabled=True,
+    )
+    async def page(self, i: Interaction, button: Button):
+        pass
 
     @button(
         emoji="<:right:982588993122238524>",
@@ -132,6 +145,7 @@ class TodoPaginator:
         view.last.disabled = view.next.disabled = (
             True if len(self.embeds) == 1 else False
         )
+        view.page.label = text_map.get(176, self.locale).format(num=f"1/{len(self.embeds)}")
 
         if len(self.custom_children) > 0:
             for child in self.custom_children:

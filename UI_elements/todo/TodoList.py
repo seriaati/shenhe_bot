@@ -276,9 +276,6 @@ async def return_todo(i: Interaction):
             False,
         )
         embed.set_image(url="attachment://todo.jpeg")
-        embed.set_footer(
-            text=text_map.get(176, locale).format(num=f"1/{round(len(todo_items)/14)}")
-        )
         embeds = [embed]
 
         for _ in range(14, len(todo_items), 14):
@@ -288,11 +285,6 @@ async def return_todo(i: Interaction):
                     name=text_map.get(202, locale), icon_url=i.user.display_avatar.url
                 )
                 .set_image(url="attachment://todo.jpeg")
-                .set_footer(
-                    text=text_map.get(176, locale).format(
-                        num=f"{_//14+1}/{round(len(todo_items)/14)}"
-                    )
-                )
             )
 
         await TodoPaginator(
