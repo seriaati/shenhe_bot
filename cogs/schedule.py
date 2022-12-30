@@ -5,6 +5,7 @@ import random
 from datetime import timedelta
 import traceback
 from typing import List, Literal, Optional
+from uuid import uuid4
 from apps.draw import main_funcs
 import aiosqlite
 from exceptions import ShenheAccountNotFound, UIDNotFound
@@ -15,7 +16,7 @@ from discord import File, Game
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
 from discord.utils import find, format_dt
-
+import io
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Domain, Material, Weapon
@@ -25,7 +26,12 @@ from apps.genshin.custom_model import (
     ShenheBot,
     ShenheAccount,
 )
-from apps.genshin.utils import get_shenhe_account, get_uid, get_uid_tz
+from apps.genshin.utils import (
+    get_current_abyss_season,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -88,6 +94,8 @@ class Schedule(commands.Cog):
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
+            if now.day in [3, 18]:
+                await asyncio.create_task(self.generate_abyss_json())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
             await asyncio.create_task(self.update_ambr_cache())
@@ -124,11 +132,89 @@ class Schedule(commands.Cog):
                 name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"
             )
         )
-        
+
     async def restart_gateway(self):
         log.info("[Schedule] Restarting gateway...")
         await self.bot.reload_extension("cogs.login")
         log.info("[Schedule] Gateway restarted.")
+
+    async def generate_abyss_json(self):
+        log.info("[Schedule] Generating abyss.json...")
+
+        result = {}
+        result["schedule_id"] = get_current_abyss_season()
+        result["size"] = 0
+        result["data"] = []
+
+        # accounts = await self.get_schedule_users()
+        accounts = [await get_shenhe_account(912623031170519110, self.bot.db, self.bot)]
+
+        for account in accounts:
+            client = account.client
+            client.lang = "en-us"
+
+            try:
+                abyss = await client.get_genshin_spiral_abyss(account.uid)
+                characters = await client.get_genshin_characters(account.uid)
+            except:
+                pass
+            else:
+                if abyss.total_stars != 36:
+                    continue
+
+                result["size"] += 1
+
+                data_id = str(uuid4())
+                abyss_dict = {
+                    "id": data_id,
+                    "floors": [],
+                }
+                user_dict = {
+                    "_id": data_id,
+                    "uid": account.uid,
+                    "avatars": [],
+                }
+
+                floors = [f for f in abyss.floors if f.floor >= 11]
+                for floor in floors:
+                    floor_dict = {}
+                    floor_dict["floor"] = floor.floor
+                    floor_dict["chambers"] = []
+
+                    for chamber in floor.chambers:
+                        chamber_list = []
+                        for battle in chamber.battles:
+                            chamber_list.append([c.id for c in battle.characters])
+                        floor_dict["chambers"].append(chamber_list)
+                    abyss_dict["floors"].append(floor_dict)
+
+                for character in characters:
+                    character_dict = {
+                        "id": character.id,
+                        "name": character.name,
+                        "element": character.element,
+                        "level": character.level,
+                        "cons": character.constellation,
+                        "weapon": character.weapon.name,
+                        "artifacts": [a.set.name for a in character.artifacts],
+                    }
+                    user_dict["avatars"].append(character_dict)
+
+                abyss_dict["user"] = user_dict
+                result["data"].append(abyss_dict)
+                break
+        
+        log.info("[Schedule] Generated abyss.json")
+
+        lvlurarti = self.bot.get_user(630235350526328844) or await self.bot.fetch_user(
+            630235350526328844
+        )
+        fp = io.BytesIO()
+        fp.write(json.dumps(result, indent=4).encode())
+        fp.seek(0)
+        await lvlurarti.send(file=File(fp, "abyss.json"))
+        
+        log.info("[Schedule] Sent abyss.json")
 
     async def check_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Checking...")
@@ -142,7 +228,7 @@ class Schedule(commands.Cog):
                 s_user = await get_shenhe_account(n_user.user_id, self.bot.db, self.bot)
             except (ShenheAccountNotFound, UIDNotFound):
                 continue
-            
+
             locale = s_user.user_locale or "en-US"
 
             error = False
@@ -236,7 +322,10 @@ class Schedule(commands.Cog):
                         and notes.remaining_transformer_recovery_time.total_seconds()
                         == 0
                     ):
-                        if n_user.last_notif is not None and n_user.last_notif.day == now.day:
+                        if (
+                            n_user.last_notif is not None
+                            and n_user.last_notif.day == now.day
+                        ):
                             continue
                         success = await self.notify_pt(n_user, locale)
 
@@ -443,18 +532,18 @@ class Schedule(commands.Cog):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
         users = await self.get_schedule_users()
-        
+
         success_count = 0
         user_count = 0
 
         for user in users:
             if not user.daily_checkin:
                 continue
-            
+
             user_count += 1
             error = False
             error_message = ""
-            
+
             client = user.client
             try:
                 reward = await client.claim_daily_reward()
@@ -482,12 +571,12 @@ class Schedule(commands.Cog):
                     icon_url=user.discord_user.display_avatar.url,
                 )
                 embed.set_thumbnail(url=reward.icon)
-                
+
                 try:
                     await user.discord_user.send(embed=embed)
                 except Forbidden:
                     pass
-                
+
                 success_count += 1
 
             if error:
@@ -510,9 +599,9 @@ class Schedule(commands.Cog):
 
             if user_count % 100 == 0:  # Sleep for 30 seconds every 100 users
                 await asyncio.sleep(30)
-                
+
             await asyncio.sleep(2.5)
-            
+
         await self.bot.db.commit()
 
         log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
@@ -523,7 +612,8 @@ class Schedule(commands.Cog):
         )
         await seria.send(
             embed=default_embed(
-                "Automatic daily check-in report", f"Claimed {success_count}/{user_count}"
+                "Automatic daily check-in report",
+                f"Claimed {success_count}/{user_count}",
             )
         )
 
