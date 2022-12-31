@@ -30,12 +30,15 @@ class View(BaseView):
     def __init__(self, locale: Locale | str, weapon_types: Dict[str, str]):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
-        
+
         count = 1
         for weapon_type_id, weapon_type in weapon_types.items():
             self.add_item(
                 WeaponTypeButton(
-                    get_weapon_type_emoji(weapon_type_id), weapon_type, weapon_type_id, count//3
+                    get_weapon_type_emoji(weapon_type_id),
+                    weapon_type,
+                    weapon_type_id,
+                    count // 3,
                 )
             )
             count += 1
@@ -89,10 +92,10 @@ class LevelModal(BaseModal):
     current_ascension = TextInput(
         label="current_ascension", default="0", min_length=1, max_length=1
     )
-    target = TextInput(
-        label="target_level", placeholder="like: 90", min_length=1, max_length=2
+    target = TextInput(label="target_level", default="90", min_length=1, max_length=2)
+    target_ascension = TextInput(
+        label="target_ascension", min_length=1, max_length=1, default="6"
     )
-    target_ascension = TextInput(label="target_ascension", min_length=1, max_length=1)
 
     def __init__(self, weapon_id: str, locale: Locale | str) -> None:
         super().__init__(
@@ -103,11 +106,16 @@ class LevelModal(BaseModal):
         self.current.label = text_map.get(185, locale).format(
             level_type=text_map.get(168, locale)
         )
+        self.current.placeholder = text_map.get(170, locale).format(a=1)
+
         self.current_ascension.label = text_map.get(720, locale)
+        self.current_ascension.placeholder = text_map.get(170, locale).format(a=0)
+
         self.target.label = text_map.get(185, locale).format(
             level_type=text_map.get(182, locale)
         )
         self.target.placeholder = text_map.get(170, locale).format(a=90)
+
         self.target_ascension.label = text_map.get(721, locale)
         self.target_ascension.placeholder = text_map.get(170, locale).format(a=6)
 
@@ -153,15 +161,18 @@ class LevelModal(BaseModal):
             else:
                 if current > 90 or target > 90:
                     raise InvalidWeaponCalcInput
-            
+
             t_ascension = level_to_ascension_phase(current)
-            if current_ascension != t_ascension or current_ascension != t_ascension-1:
+            if (
+                current_ascension != t_ascension
+                and current_ascension != t_ascension - 1
+            ):
                 raise InvalidAscensionInput
-            
+
             t_ascension = level_to_ascension_phase(target)
-            if target_ascension != t_ascension or target_ascension != t_ascension-1:
+            if target_ascension != t_ascension and target_ascension != t_ascension - 1:
                 raise InvalidAscensionInput
-            
+
             if current_ascension > target_ascension:
                 raise InvalidAscensionInput
 

@@ -609,62 +609,6 @@ def level_to_ascension_phase(level: int) -> int:
         raise ValueError("Level is too high")
 
 
-class InvalidLevelInput(Exception):
-    pass
-
-
-async def validate_level_input(
-    level: str,
-    a: str,
-    e: str,
-    q: str,
-    ascension: str,
-    i: discord.Interaction,
-    locale: discord.Locale | str,
-):
-    embed = default_embed().set_author(
-        name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
-    )
-    try:
-        int_level = int(level)
-        int_a = int(a)
-        int_e = int(e)
-        int_q = int(q)
-        int_ascension = int(ascension)
-    except ValueError:
-        embed.description = text_map.get(187, locale)
-        await i.followup.send(
-            embed=embed,
-            ephemeral=True,
-        )
-        raise InvalidLevelInput
-
-    if int_level < 1 or int_level > 90:
-        embed.description = text_map.get(172, locale).format(a=1, b=90)
-        await i.followup.send(
-            embed=embed,
-            ephemeral=True,
-        )
-        raise InvalidLevelInput
-    
-    if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
-        embed.description = text_map.get(172, locale).format(a=1, b=15)
-        await i.followup.send(
-            embed=embed,
-            ephemeral=True,
-        )
-        raise InvalidLevelInput
-    
-    theoretical_ascension = level_to_ascension_phase(int_level)
-    if int_ascension != theoretical_ascension and int_ascension != theoretical_ascension - 1:
-        embed.description = text_map.get(730, locale)
-        await i.followup.send(
-            embed=embed,
-            ephemeral=True,
-        )
-        raise InvalidLevelInput
-
-
 async def get_character_suggested_talent_levels(
     character_id: str, session: aiohttp.ClientSession
 ) -> List[int]:

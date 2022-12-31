@@ -1,6 +1,7 @@
 from typing import List
 from apps.draw.utility import image_gen_transition
 from data.game.upgrade_exp import get_exp_table
+from exceptions import InvalidWeaponCalcInput
 
 import genshin
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
@@ -13,14 +14,12 @@ from ambr.models import Character, CharacterDetail, CharacterTalentType, Materia
 from apps.genshin.checks import check_account_predicate, check_cookie_predicate
 from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
 from apps.genshin.utils import (
-    InvalidLevelInput,
     get_character_emoji,
     get_character_suggested_talent_levels,
     get_enka_data,
     get_shenhe_account,
     get_uid,
     level_to_ascension_phase,
-    validate_level_input,
 )
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
@@ -268,7 +267,7 @@ class InitLevelModal(BaseModal):
                 i,
                 self.locale,
             )
-        except InvalidLevelInput:
+        except InvalidWeaponCalcInput:
             return
 
         suggested_levlels = await get_character_suggested_talent_levels(
@@ -401,7 +400,7 @@ class TargetLevelModal(BaseModal):
                 i,
                 self.locale,
             )
-        except InvalidLevelInput:
+        except InvalidWeaponCalcInput:
             return
 
         view = None
@@ -559,3 +558,54 @@ class TargetLevelModal(BaseModal):
             embed=embed, attachments=[File(fp, "materials.jpeg")], view=view
         )
         view.message = await i.original_response()
+
+async def validate_level_input(
+    level: str,
+    a: str,
+    e: str,
+    q: str,
+    ascension: str,
+    i: Interaction,
+    locale: Locale | str,
+):
+    embed = default_embed().set_author(
+        name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+    )
+    try:
+        int_level = int(level)
+        int_a = int(a)
+        int_e = int(e)
+        int_q = int(q)
+        int_ascension = int(ascension)
+    except ValueError:
+        embed.description = text_map.get(187, locale)
+        await i.followup.send(
+            embed=embed,
+            ephemeral=True,
+        )
+        raise InvalidWeaponCalcInput
+
+    if int_level < 1 or int_level > 90:
+        embed.description = text_map.get(172, locale).format(a=1, b=90)
+        await i.followup.send(
+            embed=embed,
+            ephemeral=True,
+        )
+        raise InvalidWeaponCalcInput
+    
+    if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
+        embed.description = text_map.get(172, locale).format(a=1, b=15)
+        await i.followup.send(
+            embed=embed,
+            ephemeral=True,
+        )
+        raise InvalidWeaponCalcInput
+    
+    theoretical_ascension = level_to_ascension_phase(int_level)
+    if int_ascension != theoretical_ascension and int_ascension != theoretical_ascension - 1:
+        embed.description = text_map.get(730, locale)
+        await i.followup.send(
+            embed=embed,
+            ephemeral=True,
+        )
+        raise InvalidWeaponCalcInput
