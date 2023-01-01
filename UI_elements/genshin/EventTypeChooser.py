@@ -13,7 +13,6 @@ from utility.paginator import GeneralPaginator, _view
 from utility.utils import default_embed, parse_HTML
 import hoyolab_rss_feeds.hoyolab
 
-
 class View(BaseView):
     def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.short_timeout)
@@ -71,7 +70,7 @@ class Hoyolab(Button):
             i,
             embeds[list(embeds.keys())[0]],
             [
-                Select(select_options, embeds, i.locale, user_locale),
+                EventTypeSelect(select_options, embeds, self.view.locale),
                 GOBack(self.view.locale),
             ],
         ).start(edit=True)
@@ -86,8 +85,7 @@ class Genshin(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
-        user_locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
-        genshin_py_locale = to_genshin_py(user_locale)
+        genshin_py_locale = to_genshin_py(self.view.locale)
         event_overview_API = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
         event_details_API = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
         async with i.client.session.get(event_overview_API) as r:
@@ -115,15 +113,15 @@ class Genshin(Button):
                 embed.set_author(name=e["type_label"], icon_url=e["tag_icon"])
                 embed.set_image(url=e["banner"])
                 embed.add_field(
-                    name=text_map.get(406, i.locale, user_locale),
+                    name=text_map.get(406, self.view.locale),
                     value=format_dt(parser.parse(e["start_time"]), "R"),
                 )
                 embed.add_field(
-                    name=text_map.get(407, i.locale, user_locale),
+                    name=text_map.get(407, self.view.locale),
                     value=format_dt(parser.parse(e["end_time"]), "R"),
                 )
                 embed.add_field(
-                    name=text_map.get(408, i.locale, user_locale),
+                    name=text_map.get(408, self.view.locale),
                     value=parse_HTML(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
@@ -131,20 +129,22 @@ class Genshin(Button):
         await GeneralPaginator(
             i,
             embeds[first_id],
-            [Select(options, embeds, i.locale, user_locale), GOBack(self.view.locale)],
+            [
+                EventTypeSelect(options, embeds, self.view.locale),
+                GOBack(self.view.locale),
+            ],
         ).start(edit=True)
 
 
-class Select(Select):
+class EventTypeSelect(Select):
     def __init__(
         self,
         options: List[SelectOption],
-        embeds: Dict[int, List[Embed]],
-        locale: Locale,
-        user_locale: str | None,
+        embeds: Dict[str, List[Embed]],
+        locale: Locale | str
     ) -> None:
         super().__init__(
-            options=options, placeholder=text_map.get(409, locale, user_locale)
+            options=options, placeholder=text_map.get(409, locale)
         )
         self.embeds = embeds
 
@@ -152,7 +152,7 @@ class Select(Select):
         self.view: _view
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
-        await i.response.edit_message(embed=self.view.embeds[0], view=self.view)
+        await self.view.update_children(i)
 
 
 class GOBack(Button):
