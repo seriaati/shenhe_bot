@@ -125,11 +125,12 @@
 '123': カスタム UID が検索されました
 '124': デフォルトに戻る
 '125': |-
-  • By default, shenhe responds to you with the same language your discord uses
-  • Changing language will override the default language
-  • If any text is not translated yet, shenhe will respond to you with English
-  • Names of genshin characters, weapons, and other game elements will be translated automatically
-  • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  • デフォルトでは申鶴はあなたがDiscordで使用している言語で応答します。
+  • 言語設定を変更するとデフォルトの言語を上書きします。
+  • 未翻訳のテキストは英語で表示されます。
+  • 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
+  • 申鶴の翻訳に興味がありますか？[crowdin] (https://crowdin.com/project/shenhe-bot)をチェックしてください！
+
 '126': ''
 '127': ''
 '128': 言語設定
@@ -198,7 +199,7 @@
 '175': ToDoリストに追加
 '176': ページ {num}
 '177': 第 {a} 間
-'178': Use </todo:1020188057628065863> to view your todo list
+'178': </todo:1020188057628065863> を使用してTODOリストを表示します
 '179': 成功
 '180': 武器を選択
 '181': 計算データを入力
@@ -225,13 +226,13 @@
 '202': ToDoリスト
 '203': 素材を追加
 '204': |-
-  Your todo list is empty, use </calc character:1020188057628065862> or </calc weapon:1020188057628065862> to calculate materials for characters and weapons, or use the green button below to add custom items.
+  あなたのToDoリストは空です。</calc character:1020188057628065862>か</calc weapon:1020188057628065862>を使用して、武器素材やキャラクター素材を計算するか、下の緑のボタンを押してアイテムを追加してください。
 '205': 素材を削除
 '206': アイテムをクリア
-'207': Select an item
+'207': アイテムを選択
 '208': アイテム名
 '209': '例: モラ'
-'210': Amount of {item}
+'210': '{item}の数量'
 '211': ''
 '212': ToDo リストよりも多くのアイテムを削除することはできません。
 '213': 氷元素
@@ -812,7 +813,7 @@
 '718': カード
 '719': カードが見つかりませんでした
 '720': 現在の突破段階(0~6)
-'721': target ascension phase (0~6)
+'721': 目標突破段階(0~6)
 '722': 突破段階
 '723': ボット開発者にフィードバックを送信する
 '724': フィードバック
@@ -820,6 +821,6 @@
 '726': UID をコピー
 '727': サーバーの地域
 '728': 'ウェブサイトにログインした後にアカウントが追加されない場合（緑色のチェックマークが表示されます） seria#5334 にDMするか/feedback を使用して教えてください'
-'729': Edit item's current amount
-'730': Invalid ascension phase number
-'731': No wish data found
+'729': 素材の量を変更
+'730': 無効な突破段階
+'731': 祈願データが見つかりません
