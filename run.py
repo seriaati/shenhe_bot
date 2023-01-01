@@ -34,14 +34,18 @@ from utility.utils import error_embed, log, sentry_logging
 
 load_dotenv()
 
-if platform.system() == "Windows":
-    token = os.getenv("YAE_TOKEN")
-    debug = True
-    application_id = os.getenv("YAE_APP_ID")
-else:
-    token = os.getenv("SHENHE_BOT_TOKEN")
-    debug = False
-    application_id = os.getenv("SHENHE_BOT_APP_ID")
+# if platform.system() == "Windows":
+#     token = os.getenv("YAE_TOKEN")
+#     debug = True
+#     application_id = os.getenv("YAE_APP_ID")
+# else:
+#     token = os.getenv("SHENHE_BOT_TOKEN")
+#     debug = False
+#     application_id = os.getenv("SHENHE_BOT_APP_ID")
+
+token = os.getenv("YAE_TOKEN")
+debug = True
+application_id = os.getenv("YAE_APP_ID")
 
 
 prefix = ["?"]
