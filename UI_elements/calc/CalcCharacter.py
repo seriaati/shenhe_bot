@@ -294,7 +294,7 @@ class InitLevelModal(BaseModal):
         embed.set_author(
             name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
         )
-        await i.response.edit_message(embed=embed, view=view)
+        await i.edit_original_response(embed=embed, view=view)
         view.message = await i.original_response()
 
 
