@@ -1,8 +1,8 @@
 # shenhe-bot by seria
 
 from datetime import datetime
-import getpass
 import os
+import platform
 from pathlib import Path
 from typing import List, Optional
 import aiohttp
@@ -33,9 +33,8 @@ from UI_base_models import global_error_handler
 from utility.utils import error_embed, log, sentry_logging
 
 load_dotenv()
-user_name = getpass.getuser()
 
-if user_name == "seria":
+if platform.system() == "Windows":
     token = os.getenv("YAE_TOKEN")
     debug = True
     application_id = os.getenv("YAE_APP_ID")
