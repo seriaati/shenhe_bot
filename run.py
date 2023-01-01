@@ -44,7 +44,7 @@ load_dotenv()
 #     application_id = os.getenv("SHENHE_BOT_APP_ID")
 
 token = os.getenv("YAE_TOKEN")
-debug = True
+debug = False
 application_id = os.getenv("YAE_APP_ID")
 
 
