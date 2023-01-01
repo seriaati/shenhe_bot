@@ -139,7 +139,10 @@ class Shenhe(commands.AutoShardedBot):
         log.info(f"[System]on_ready: Logged in as {self.user}")
         log.info(f"[System]on_ready: Total {len(self.guilds)} servers connected")
         if not self.debug:
-            self.browsers = await launch_browsers()
+            try:
+                self.browsers = await launch_browsers()
+            except:
+                log.warning("[System]on_ready: Launch browsers failed")
 
     async def on_message(self, message: Message):
         if self.user is None:
