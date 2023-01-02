@@ -214,7 +214,7 @@ class DiaryResult(BaseModel):
 
 
 class CharacterResult(BaseModel):
-    embed: discord.Embed
+    embeds: Dict[str, discord.Embed]
     options: List[discord.SelectOption]
     file: io.BytesIO
     characters: List[genshin.models.Character]

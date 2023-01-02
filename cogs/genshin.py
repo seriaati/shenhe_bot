@@ -344,11 +344,11 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         file = File(fp, "characters.jpeg")
         view = ShowAllCharacters.View(
-            locale, character_result.characters, character_result.options, member
+            locale, character_result.characters, character_result.options, member, character_result.embeds
         )
         view.author = i.user
         await i.edit_original_response(
-            embed=character_result.embed,
+            embed=character_result.embeds["All"],
             attachments=[file],
             view=view,
         )

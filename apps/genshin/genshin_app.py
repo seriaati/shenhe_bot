@@ -25,11 +25,22 @@ from apps.genshin.custom_model import (
     ShenheAccount,
     StatsResult,
 )
-from apps.genshin.utils import get_character_emoji, get_shenhe_account, get_uid, get_uid_tz
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
-from utility.utils import default_embed, error_embed, get_dt_now, get_user_appearance_mode, log
+from utility.utils import (
+    default_embed,
+    error_embed,
+    get_dt_now,
+    get_user_appearance_mode,
+    log,
+)
 
 
 def genshin_error_handler(func):
@@ -387,28 +398,36 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
             raise UIDNotFound
+        
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
         ambr = AmbrTopAPI(self.bot.session)
-        all_characters = await ambr.get_character(
-            include_beta=False, include_traveler=False
-        )
+        all_characters = await ambr.get_character(include_beta=False)
         if not isinstance(all_characters, List):
             raise TypeError("all_characters is not a list")
+        
         author_locale = await get_user_locale(author_id, self.db)
         new_locale = author_locale or shenhe_user.user_locale or str(locale)
+        
         embed = default_embed(
-            message=f"{text_map.get(576, new_locale).format(current=len(characters), total=len(all_characters)+1)}\n"
-            f"{text_map.get(577, new_locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters)+1)}"
+            message=f"{text_map.get(576, new_locale).format(current=len(characters), total=len(all_characters)-1)}\n"
+            f"{text_map.get(577, new_locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters)-1)}"
         )
         embed.set_author(
             name=text_map.get(196, new_locale),
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         embed.set_image(url="attachment://characters.jpeg")
+        
         result = {
-            "embed": embed,
-            "options": [SelectOption(label=text_map.get(701, new_locale), value="All")],
+            "embeds": {"All": embed},
+            "options": [
+                SelectOption(
+                    label=f"{text_map.get(701, new_locale)} ({len(characters)})",
+                    value="All",
+                )
+            ],
         }
+
         elements = {}
         for character in characters:
             if character.element not in elements:
@@ -416,6 +435,18 @@ class GenshinApp:
             elements[character.element].append(character)
 
         for element, chars in elements.items():
+            total = len([c for c in all_characters if '10000007' not in c.id and c.element == element])
+            embed = default_embed(
+                message=f"{text_map.get(576, new_locale).format(current=len(chars), total=total)}\n"
+                f"{text_map.get(577, new_locale).format(current=len([c for c in chars if c.friendship == 10]), total=total)}"
+            )
+            embed.set_author(
+                name=text_map.get(196, new_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
+            )
+            embed.set_image(url="attachment://characters.jpeg")
+            result['embeds'][element] = embed
+
             result["options"].append(
                 SelectOption(
                     emoji=element_emojis.get(element),
@@ -423,6 +454,7 @@ class GenshinApp:
                     value=element,
                 )
             )
+
         fp = await main_funcs.character_summary_card(
             DrawInput(
                 loop=self.bot.loop,

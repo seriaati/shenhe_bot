@@ -1,8 +1,8 @@
-from typing import Any, List
+from typing import Any, Dict, List
 from apps.genshin.custom_model import DrawInput
 
 import genshin
-from discord import File, Interaction, Locale, SelectOption, Member, User
+from discord import File, Interaction, Locale, SelectOption, Member, User, Embed
 from discord.ui import Select
 from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
@@ -20,12 +20,14 @@ class View(BaseView):
         characters: List[genshin.models.Character],
         options: List[SelectOption],
         member: Member | User,
+        embeds: Dict[str, Embed],
     ):
         super().__init__(timeout=config.mid_timeout)
         self.add_item(ElementSelect(options, text_map.get(142, locale)))
         self.locale = locale
         self.characters = characters
         self.member = member
+        self.embeds = embeds
 
 
 class ElementSelect(Select):
@@ -34,7 +36,7 @@ class ElementSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        locale = self.view.locale
+        
         await i.response.edit_message(
             embed=default_embed().set_author(
                 name=text_map.get(644, self.view.locale), icon_url=asset.loader
@@ -53,19 +55,5 @@ class ElementSelect(Select):
         )
         fp.seek(0)
         file = File(fp, filename="characters.jpeg")
-        ambr = AmbrTopAPI(i.client.session)
-        ambr_characters = await ambr.get_character(include_beta=False)
-        if not isinstance(ambr_characters, List):
-            raise TypeError("ambr_characters is not a list")
-        characters = [c for c in self.view.characters if c.element == self.values[0]]
-        all_characters = [c for c in ambr_characters if c.element == self.values[0]]
-        embed = default_embed(
-            message=f"{text_map.get(576, locale).format(current=len(characters), total=len(all_characters))}\n"
-            f"{text_map.get(577, locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters))}"
-        )
-        embed.set_author(
-            name=text_map.get(196, locale),
-            icon_url=self.view.member.display_avatar.url,
-        )
-        embed.set_image(url="attachment://characters.jpeg")
-        await i.edit_original_response(embed=embed, attachments=[file])
+    
+        await i.edit_original_response(embed=self.view.embeds[self.values[0]], attachments=[file])
