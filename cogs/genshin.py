@@ -1,10 +1,11 @@
 import json
 import random
 from datetime import datetime, timedelta
-from typing import List, Tuple
+from typing import Dict, List, Tuple
+from apps.genshin_data.abyss_blessing import get_abyss_blessing
 from data.cards.dice_element import get_dice_emoji
 
-from discord import File, Interaction, Member, SelectOption, User, app_commands
+from discord import Embed, Embed, Embed, Embed, Embed, Embed, Embed, File, Interaction, Member, SelectOption, User, app_commands
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -19,6 +20,7 @@ from apps.draw import main_funcs
 from apps.genshin.abyss import get_abyss_enemies
 from apps.genshin.checks import *
 from apps.genshin.custom_model import (
+    AbyssHalf,
     AbyssResult,
     AreaResult,
     CharacterResult,
@@ -707,7 +709,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         fp.seek(0)
         fp_two.seek(0)
-        discord_file = File(fp, filename="profile.jpeg")
+        discord_file = File(
+    Embed,
+    Embed,fp, filename="profile.jpeg")
         discord_file_two = File(fp_two, filename="character.jpeg")
         view.author = i.user
         await i.edit_original_response(
@@ -959,8 +963,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         floors, version = await get_abyss_enemies(self.bot.session)
-        embeds = {}
-        enemies = {}
+        
+        embeds: Dict[str, Embed] = {}
+        enemies: Dict[str, List[AbyssHalf]] = {}
         for floor in floors:
             for chamber in floor.chambers:
                 embed = default_embed(
@@ -982,8 +987,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                     inline=False,
                 )
                 embed.set_image(url="attachment://enemies.jpeg")
-                embeds[embed.title] = embed
-                enemies[embed.title] = chamber.halfs
+                embeds[f"{floor.num}-{chamber.num}"] = embed
+                enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
+                
         embed = default_embed()
         embed.set_image(
             url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-Abyss.jpg"
@@ -992,12 +998,21 @@ class GenshinCog(commands.Cog, name="genshin"):
             name=f"{text_map.get(705, locale)} (v{version})",
             icon_url=i.user.display_avatar.url,
         )
-        view = AbyssEnemy.View(locale, enemies, embeds)
+        
+        buff_name, buff_desc = get_abyss_blessing(self.bot.gd_text_map, locale)
+        buff_embed = default_embed(text_map.get(733, locale))
+        buff_embed.add_field(
+            name=buff_name,
+            value=buff_desc,
+        )
+        
+        view = AbyssEnemy.View(locale, enemies, embeds, buff_embed)
         view.add_item(
             Button(
                 url="https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors",
                 label=text_map.get(96, locale),
                 emoji=asset.fandom_emoji,
+                row=4
             )
         )
         view.author = i.user

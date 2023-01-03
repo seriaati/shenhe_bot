@@ -8,6 +8,7 @@ from typing import List, Optional
 import aiohttp
 import aiosqlite
 from apps.genshin.browser import launch_browsers
+from apps.genshin_data.load_text_maps import load_text_maps
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
@@ -84,6 +85,7 @@ class Shenhe(commands.AutoShardedBot):
         self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
         self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
+        self.gd_text_map = load_text_maps()
 
         cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})

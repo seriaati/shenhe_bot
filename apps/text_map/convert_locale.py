@@ -14,6 +14,8 @@ to_enka_dict = {
     "pt-BR": "pt",
     "ru": "ru",
     "vi": "vi",
+    "it": "it",
+    "tr": "tr",
 }
 
 to_ambr_top_dict = {
@@ -29,6 +31,8 @@ to_ambr_top_dict = {
     "pt-BR": "pt",
     "ru": "ru",
     "vi": "vi",
+    "it": "it",
+    "tr": "tr",
 }
 
 to_genshin_py_dict = {
@@ -44,6 +48,8 @@ to_genshin_py_dict = {
     "pt-BR": "pt-pt",
     "ru": "ru-ru",
     "vi": "vi-vn",
+    "it": "it-it",
+    "tr": "tr-tr",
 }
 
 to_go_dict = {
@@ -54,12 +60,14 @@ to_go_dict = {
     "es-ES": 5,
     "fr": 6,
     "in": 7,
-    "ja": 8,
-    "ko": 9,
-    "pt-BR": 10,
-    "ru": 11,
-    "th": 12,
-    "vi": 13,
+    "it": 8,
+    "ja": 9,
+    "ko": 10,
+    "pt-BR": 11,
+    "ru": 12,
+    "th": 13,
+    "tr": 14,
+    "vi": 15,
 }
 
 paths = {

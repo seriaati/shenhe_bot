@@ -95,6 +95,7 @@ class ShenheBot(commands.AutoShardedBot):
     db: aiosqlite.Connection
     main_db: aiosqlite.Connection
     backup_db: aiosqlite.Connection
+    gd_text_map: Dict[str, Dict[str, str]]
     browsers: Dict[str, Browser]
     debug: bool
     maintenance: bool = False
@@ -106,7 +107,6 @@ class ShenheBot(commands.AutoShardedBot):
     abyss_floor_card_cache: cachetools.TTLCache
     abyss_one_page_cache: cachetools.TTLCache
     tokenStore: Dict[str, Any]
-    gateway: HuTaoLoginAPI
 
 
 class TodoList:
