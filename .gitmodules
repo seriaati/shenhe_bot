@@ -7,3 +7,6 @@
 [submodule "shenhe_external"]
 	path = shenhe_external
 	url = https://github.com/seriaati/shenhe_external
+[submodule "GenshinData"]
+	path = GenshinData
+	url = https://github.com/Dimbreath/GenshinData
