@@ -76,7 +76,7 @@ LANGS= {
     'id': "id",
     'th': "th",
     "it": "it",
-    "tr": "tr,
+    "tr": "tr",
 }
 
 WEEKDAYS = {
