@@ -3,7 +3,7 @@
 '2': Tiền Động Tiên
 '3': Chọn phương thức nhập
 '4': Nhựa
-'5': Resin discounts
+'5': Giảm tiêu hao nhựa
 '6': Ủy thác hằng ngày
 '7': phút
 '8': P.T. remaining time
@@ -51,11 +51,11 @@
 '50': Nham Thần Đồng
 '51': Lôi Thần Đồng
 '52': "Nhân vật hệ {element}"
-'53': Common Chests
-'54': Exquisite Chests
-'55': Luxurious Chests
+'53': Rương thường
+'54': Rương cao cấp
+'55': Rương hiếm
 '56': Genshin stats
-'57': Precious Chests
+'57': Rương siêu cấp
 '58': Thám hiểm thế giới
 '59': Set custom image for {character_name}
 '60': URL hình ảnh
@@ -69,7 +69,7 @@
 '68': Upload a custom image for /profile character cards
 '69': Nhật ký của Nhà Lữ Hành
 '70': Primo Log
-'71': primos
+'71': nguyên thạch
 '72': Mora Log
 '73': mora
 '74': |-
@@ -94,8 +94,8 @@
 '91': Vũ khí
 '92': Thánh Di Vật
 '93': Main Stats
-'94': Talents
-'95': Character Stats
+'94': Thiên phú
+'95': Thông tin nhân vật
 '96': Source
 '97': Artifact Thoughts
 '98': Resin reminder has been turned off
@@ -105,7 +105,7 @@
 '102': Tiền Động Tiên hiện tại
 '103': Max notification number
 '104': Đã lưu cài đặt
-'105': Character
+'105': Nhân vật
 '106': This gift code has already been redeemed!
 '107': Gift code invalid
 '108': Gift code
@@ -318,7 +318,7 @@
 '296': Challenge target
 '297': Meet the awesome people that helped me!
 '298': Translators
-'299': Friendship Level
+'299': Yêu thích
 '300': The highest artifact score is 99, only +20 artifacts will have scores
 '301': Stats
 '302': Threshold
