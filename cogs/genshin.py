@@ -709,9 +709,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         fp.seek(0)
         fp_two.seek(0)
-        discord_file = File(
-    Embed,
-    Embed,fp, filename="profile.jpeg")
+        discord_file = File(fp, filename="profile.jpeg")
         discord_file_two = File(fp_two, filename="character.jpeg")
         view.author = i.user
         await i.edit_original_response(
