@@ -68,7 +68,7 @@ class BuffButton(Button):
         self.embed = embed
     
     async def callback(self, i: Interaction):
-        await i.response.edit_message(embed=self.embed)
+        await i.response.edit_message(embed=self.embed, attachments=[])
 
 async def select_callback(i: Interaction, view: View, value: str):
     await image_gen_transition(i, view, view.locale)
