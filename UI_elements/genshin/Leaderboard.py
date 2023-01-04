@@ -180,6 +180,8 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                         if row[0] == uid:
                             current_user = user
                         rank += 1
+            await i.client.db.commit()
+            
             if not users:
                 raise EmptyLeaderboard
             fp = await main_funcs.draw_single_strike_leaderboard(
