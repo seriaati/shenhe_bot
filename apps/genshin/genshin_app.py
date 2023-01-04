@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-import traceback
+from datetime import timedelta
 from typing import List, Optional
 from UI_base_models import get_error_handle_embed
 
@@ -129,18 +128,15 @@ class GenshinApp:
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
-        fp = await main_funcs.draw_realtime_card(
-            DrawInput(
+        draw_input = DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=shenhe_user.user_locale or str(locale),
                 dark_mode=await get_user_appearance_mode(author_id, self.db),
-            ),
-            notes,
-        )
+            )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
-            success=True, result=RealtimeNoteResult(embed=embed, file=fp)
+            success=True, result=RealtimeNoteResult(embed=embed, draw_input=draw_input, notes=notes)
         )
 
     async def parse_resin_embed(

@@ -142,8 +142,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         embed=default_embed().set_author(
             name=text_map.get(644, enka_view.locale),
             icon_url=asset.loader,
-        ),
-        view=None,
+        ).set_image(url="https://i.imgur.com/AsxZdAu.gif"),
         attachments=[],
     )
     overview = [

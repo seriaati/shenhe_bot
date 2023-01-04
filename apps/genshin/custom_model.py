@@ -50,6 +50,14 @@ class NotificationUser(BaseModel):
     def parse_last_notif(cls, v):
         return parser.parse(v).replace(tzinfo=None) if v else None
 
+class DrawInput(BaseModel):
+    loop: asyncio.AbstractEventLoop
+    session: aiohttp.ClientSession
+    locale: discord.Locale | str = "en-US"
+    dark_mode: bool = False
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class RecentWish(BaseModel):
     name: str
@@ -183,7 +191,8 @@ class AbyssResult(BaseModel):
 
 class RealtimeNoteResult(BaseModel):
     embed: discord.Embed
-    file: io.BytesIO
+    draw_input: DrawInput
+    notes: genshin.models.Notes
 
     class Config:
         arbitrary_types_allowed = True
@@ -283,16 +292,6 @@ class CharacterUsageResult(BaseModel):
     first_character: Character
     uses: int
     percentage: float
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class DrawInput(BaseModel):
-    loop: asyncio.AbstractEventLoop
-    session: aiohttp.ClientSession
-    locale: discord.Locale | str = "en-US"
-    dark_mode: bool = False
 
     class Config:
         arbitrary_types_allowed = True

@@ -38,7 +38,8 @@ from apps.text_map.convert_locale import (to_ambr_top, to_event_lang,
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
-from exceptions import CardNotFound, ItemNotFound, NoPlayerFound, UIDNotFound
+from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound,
+                        NoPlayerFound, UIDNotFound)
 from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, EnkaProfile,
                                  EventTypeChooser, Leaderboard, Lineup,
                                  ShowAllCharacters, UIDCommand)
@@ -169,18 +170,27 @@ class GenshinCog(commands.Cog, name="genshin"):
         ephemeral: bool = False,
     ):
         member = member or i.user
-        await i.response.defer(ephemeral=ephemeral)
         result = await self.genshin_app.get_real_time_notes(
             member.id, i.user.id, i.locale
         )
         if not result.success:
-            await i.followup.send(embed=result.result, ephemeral=True)
+            await i.response.send_message(embed=result.result, ephemeral=True)
         else:
             note_result: RealtimeNoteResult = result.result
-            fp = note_result.file
+            await i.response.send_message(
+                embed=note_result.embed.set_image(
+                    url="https://i.imgur.com/cBykL8X.gif"
+                ),
+                ephemeral=ephemeral,
+            )
+            fp = await main_funcs.draw_realtime_card(
+                note_result.draw_input,
+                note_result.notes,
+            )
             fp.seek(0)
-            await i.followup.send(
-                embed=note_result.embed, file=File(fp, filename="realtime_notes.jpeg")
+            await i.edit_original_response(
+                embed=note_result.embed.set_image(url="attachment://realtime_notes.jpeg"),
+                attachments=[File(fp, filename="realtime_notes.jpeg")],
             )
 
     @check_account()
@@ -623,6 +633,11 @@ class GenshinCog(commands.Cog, name="genshin"):
         enka_data = await get_enka_data(i, locale, uid, member)
         if enka_data is None:
             return
+        if enka_data.cache.characters is None:
+            raise NoCharacterFound
+        elif enka_data.data.characters is None:
+            raise NoCharacterFound
+
         from_cache = []
         for c in enka_data.cache.characters:
             found = False
@@ -636,13 +651,42 @@ class GenshinCog(commands.Cog, name="genshin"):
         data = enka_data.cache
         eng_data = enka_data.eng_cache
 
-        await i.edit_original_response(
-            embed=default_embed().set_author(
+        embeds = [
+            default_embed()
+            .set_author(
                 name=text_map.get(644, locale),
                 icon_url=asset.loader,
-            ),
-            view=None,
+            )
+            .set_image(url="https://i.imgur.com/3U1bJ0Z.gif"),
+            default_embed()
+            .set_author(
+                name=text_map.get(644, locale),
+                icon_url=asset.loader,
+            )
+            .set_image(url="https://i.imgur.com/25pdyUG.gif"),
+        ]
+
+        options = []
+        if data.characters is not None:
+            for character in data.characters:
+                options.append(
+                    SelectOption(
+                        label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
+                        description=text_map.get(543, locale)
+                        if character.id in from_cache
+                        else "",
+                        value=str(character.id),
+                        emoji=get_character_emoji(str(character.id)),
+                    )
+                )
+        view = EnkaProfile.View([], [], options, data, eng_data, member, locale)
+        for child in view.children:
+            child.disabled = True
+
+        await i.edit_original_response(
+            embeds=embeds,
             attachments=[],
+            view=view,
         )
 
         embed = default_embed(
@@ -665,26 +709,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             ),
             enka_data.data,
         )
-        options = []
-        for character in data.characters:
-            options.append(
-                SelectOption(
-                    label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
-                    description=text_map.get(543, locale)
-                    if character.id in from_cache
-                    else "",
-                    value=str(character.id),
-                    emoji=get_character_emoji(str(character.id)),
-                )
-            )
-        view = EnkaProfile.View(
-            [embed, embed_two], [fp, fp_two], options, data, eng_data, member, locale
-        )
         fp.seek(0)
         fp_two.seek(0)
         discord_file = File(fp, filename="profile.jpeg")
         discord_file_two = File(fp_two, filename="character.jpeg")
         view.author = i.user
+        view = EnkaProfile.View(
+            [embed, embed_two], [fp, fp_two], options, data, eng_data, member, locale
+        )
         await i.edit_original_response(
             embeds=[embed, embed_two],
             view=view,
