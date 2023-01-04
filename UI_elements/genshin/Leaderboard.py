@@ -161,20 +161,25 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                     if row[0] in [u.uid for u in users]:
                         continue
                     
-                    users.append(
-                        user := SingleStrikeLeaderboardUser(
-                            user_name=row[5],
-                            rank=rank,
-                            character=get_l_character_data(row[1]),
-                            single_strike=row[2],
-                            floor=row[3],
-                            stars_collected=row[4],
-                            uid=row[0],
+                    try:
+                        character = get_l_character_data(row[1])
+                    except ValueError:
+                        await c.execute("DELETE FROM abyss_leaderboard WHERE dat_uuid = ?", (row[0],))
+                    else:
+                        users.append(
+                            user := SingleStrikeLeaderboardUser(
+                                user_name=row[5],
+                                rank=rank,
+                                character=character,
+                                single_strike=row[2],
+                                floor=row[3],
+                                stars_collected=row[4],
+                                uid=row[0],
+                            )
                         )
-                    )
-                    if row[0] == uid:
-                        current_user = user
-                    rank += 1
+                        if row[0] == uid:
+                            current_user = user
+                        rank += 1
             if not users:
                 raise EmptyLeaderboard
             fp = await main_funcs.draw_single_strike_leaderboard(
