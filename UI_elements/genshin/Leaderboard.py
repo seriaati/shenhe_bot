@@ -164,7 +164,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                     try:
                         character = get_l_character_data(row[1])
                     except ValueError:
-                        await c.execute("DELETE FROM abyss_leaderboard WHERE dat_uuid = ?", (row[0],))
+                        await c.execute("DELETE FROM abyss_leaderboard WHERE data_uuid = ?", (row[0],))
                     else:
                         users.append(
                             user := SingleStrikeLeaderboardUser(
