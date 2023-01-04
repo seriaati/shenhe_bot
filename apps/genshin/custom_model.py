@@ -48,7 +48,7 @@ class NotificationUser(BaseModel):
     
     @validator("last_notif", pre=True, always=True, allow_reuse=True)
     def parse_last_notif(cls, v):
-        return parser.parse(v) if v else None
+        return parser.parse(v).replace(tzinfo=None) if v else None
 
 
 class RecentWish(BaseModel):

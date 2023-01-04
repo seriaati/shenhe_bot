@@ -8,7 +8,7 @@ from typing import List, Optional
 import aiohttp
 import aiosqlite
 from apps.genshin.browser import launch_browsers
-from apps.genshin_data.load_text_maps import load_text_maps
+from apps.genshin_data.text_maps import load_text_maps
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
@@ -224,7 +224,7 @@ async def check_maintenance(i: Interaction, /) -> bool:
                 embed=error_embed(
                     "申鶴正在維護中\nShenhe is under maintenance",
                     f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",
-                ).set_thumbnail(url=i.client.user.avatar.url),
+                ).set_thumbnail(url=i.client.user.avatar.url), # type: ignore
                 ephemeral=True,
             )
             return False

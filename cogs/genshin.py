@@ -2,10 +2,9 @@ import json
 import random
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
-from apps.genshin_data.abyss_blessing import get_abyss_blessing
-from data.cards.dice_element import get_dice_emoji
 
-from discord import Embed, Embed, Embed, Embed, Embed, Embed, Embed, File, Interaction, Member, SelectOption, User, app_commands
+from discord import (Embed, File, Interaction, Member, SelectOption, User,
+                     app_commands)
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -19,68 +18,38 @@ from ambr.models import Character, Event, Material, Weapon
 from apps.draw import main_funcs
 from apps.genshin.abyss import get_abyss_enemies
 from apps.genshin.checks import *
-from apps.genshin.custom_model import (
-    AbyssHalf,
-    AbyssResult,
-    AreaResult,
-    CharacterResult,
-    DiaryResult,
-    DrawInput,
-    RealtimeNoteResult,
-    ShenheBot,
-    StatsResult,
-)
+from apps.genshin.custom_model import (AbyssHalf, AbyssResult, AreaResult,
+                                       CharacterResult, DiaryResult, DrawInput,
+                                       RealtimeNoteResult, ShenheBot,
+                                       StatsResult)
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
-from apps.genshin.utils import (
-    get_character_emoji,
-    get_enka_data,
-    get_farm_data,
-    get_uid,
-    get_uid_region_hash,
-    get_uid_tz,
-)
-from apps.genshin.wiki import (
-    parse_artifact_wiki,
-    parse_book_wiki,
-    parse_character_wiki,
-    parse_food_wiki,
-    parse_furniture_wiki,
-    parse_material_wiki,
-    parse_monster_wiki,
-    parse_namecard_wiki,
-    parse_weapon_wiki,
-)
-from apps.text_map.convert_locale import to_ambr_top, to_event_lang, to_genshin_py
+from apps.genshin.utils import (get_character_emoji, get_enka_data,
+                                get_farm_data, get_uid, get_uid_region_hash,
+                                get_uid_tz)
+from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
+                               parse_character_wiki, parse_food_wiki,
+                               parse_furniture_wiki, parse_material_wiki,
+                               parse_monster_wiki, parse_namecard_wiki,
+                               parse_weapon_wiki)
+from apps.genshin_data.abyss import get_abyss_blessing, get_ley_line_disorders
+from apps.text_map.convert_locale import (to_ambr_top, to_event_lang,
+                                          to_genshin_py)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from data.cards.dice_element import get_dice_emoji
 from exceptions import CardNotFound, ItemNotFound, NoPlayerFound, UIDNotFound
-from UI_elements.genshin import (
-    Abyss,
-    AbyssEnemy,
-    Build,
-    Diary,
-    EnkaProfile,
-    EventTypeChooser,
-    Leaderboard,
-    Lineup,
-    UIDCommand,
-    ShowAllCharacters,
-)
+from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, EnkaProfile,
+                                 EventTypeChooser, Leaderboard, Lineup,
+                                 ShowAllCharacters, UIDCommand)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.domain_paginator import DomainPaginator
 from utility.paginator import GeneralPaginator, _view
-from utility.utils import (
-    add_bullet_points,
-    default_embed,
-    divide_chunks,
-    error_embed,
-    get_dt_now,
-    get_user_appearance_mode,
-    parse_HTML,
-)
+from utility.utils import (add_bullet_points, default_embed, divide_chunks,
+                           error_embed, get_dt_now, get_user_appearance_mode,
+                           parse_HTML)
 
 load_dotenv()
 
@@ -346,7 +315,11 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         file = File(fp, "characters.jpeg")
         view = ShowAllCharacters.View(
-            locale, character_result.characters, character_result.options, member, character_result.embeds
+            locale,
+            character_result.characters,
+            character_result.options,
+            member,
+            character_result.embeds,
         )
         view.author = i.user
         await i.edit_original_response(
@@ -589,7 +562,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 ),
                 ephemeral=True,
             )
-            
+
         embed = default_embed()
         embed.add_field(
             name=f"{text_map.get(167, locale).format(name=player.display_name)}",
@@ -961,7 +934,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
         floors, version = await get_abyss_enemies(self.bot.session)
-        
+
+        ley_line_disorders = get_ley_line_disorders(self.bot.gd_text_map, locale)
+
         embeds: Dict[str, Embed] = {}
         enemies: Dict[str, List[AbyssHalf]] = {}
         for floor in floors:
@@ -971,7 +946,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=text_map.get(706, locale),
-                    value=add_bullet_points(floor.ley_line_disorders),
+                    value=add_bullet_points(
+                        ley_line_disorders.get(floor.num, floor.ley_line_disorders)
+                    ),
                     inline=False,
                 )
                 embed.add_field(
@@ -987,7 +964,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed.set_image(url="attachment://enemies.jpeg")
                 embeds[f"{floor.num}-{chamber.num}"] = embed
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
-                
+
         embed = default_embed()
         embed.set_image(
             url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-Abyss.jpg"
@@ -996,21 +973,21 @@ class GenshinCog(commands.Cog, name="genshin"):
             name=f"{text_map.get(705, locale)} (v{version})",
             icon_url=i.user.display_avatar.url,
         )
-        
+
         buff_name, buff_desc = get_abyss_blessing(self.bot.gd_text_map, locale)
         buff_embed = default_embed(text_map.get(733, locale))
         buff_embed.add_field(
             name=buff_name,
             value=buff_desc,
         )
-        
+
         view = AbyssEnemy.View(locale, enemies, embeds, buff_embed)
         view.add_item(
             Button(
                 url="https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors",
                 label=text_map.get(96, locale),
                 emoji=asset.fandom_emoji,
-                row=4
+                row=4,
             )
         )
         view.author = i.user
@@ -1062,7 +1039,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         the_card = None
         card_type = None
-        
+
         try:
             if not card_id.isdigit():
                 raise CardNotFound
@@ -1079,7 +1056,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         the_card = card
                         card_type = "action"
                         break
-            
+
             if the_card is None:
                 raise CardNotFound
 
