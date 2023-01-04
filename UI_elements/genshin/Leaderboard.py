@@ -87,7 +87,7 @@ class AbyssSeasonSelect(Select):
 
 async def select_callback(view: View, i: Interaction, leaderboard: str):
     view.type = leaderboard
-    query_str = "IS NOT NULL" if view.season == 0 else f" = {view.season}"
+    query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
     locale = view.locale
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
@@ -151,7 +151,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         if leaderboard == "single_strike_damage":
             users = []
             async with i.client.db.execute(
-                f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id FROM abyss_leaderboard WHERE season {query_str} ORDER BY single_strike DESC"
+                f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
             ) as c:
                 rank = 1
                 current_user = None
