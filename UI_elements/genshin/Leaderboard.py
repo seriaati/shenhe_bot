@@ -219,7 +219,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             )
         elif leaderboard == "character_usage_rate":
             async with i.client.db.execute(
-                f"SELECT * FROM abyss_character_leaderboard WHERE season {query_str}"
+                f"SELECT * FROM abyss_character_leaderboard {query_str}"
             ) as c:
                 data = await c.fetchall()
             if view.area == "server":
@@ -272,7 +272,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         elif leaderboard == "full_clear":
             users = []
             async with i.client.db.execute(
-                f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard WHERE season {query_str} AND stars_collected = 36 ORDER BY runs ASC"
+                f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} AND stars_collected = 36 ORDER BY runs ASC"
             ) as c:
                 rank = 1
                 current_user = None

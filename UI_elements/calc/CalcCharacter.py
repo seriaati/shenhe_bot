@@ -126,17 +126,17 @@ class CharacterSelect(Select):
                         ]
                         if character:
                             init_levels.level = character[0].level
+                            talent_levels = []
                             for talent in character[0].skills:
-                                talent_levels = []
                                 if talent.id in [
                                     10013,
                                     10413,
                                 ]:  # ayaka and mona passive sprint
                                     continue
                                 talent_levels.append(talent.level)
-                                init_levels.a_level = talent_levels[0]
-                                init_levels.e_level = talent_levels[1]
-                                init_levels.q_level = talent_levels[2]
+                            init_levels.a_level = talent_levels[0]
+                            init_levels.e_level = talent_levels[1]
+                            init_levels.q_level = talent_levels[2]
                             init_levels.ascension_phase = character[0].ascension
 
         # change None levels in init_levels to 1

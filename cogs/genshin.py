@@ -1156,7 +1156,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             if g_locale == "en-us":
                 card_name = card["name"]
             else:
-                card_name = self.card_i18n[g_locale][card["name"]]
+                card_name = self.card_i18n.get(g_locale, {}).get(card["name"], card["name"])
             if current.lower() in card_name.lower():
                 choices.append(Choice(name=card_name, value=str(card["id"])))
 

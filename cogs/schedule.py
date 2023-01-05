@@ -3,7 +3,6 @@ import asyncio
 import json
 import random
 from datetime import timedelta
-import traceback
 from typing import List, Literal, Optional
 from uuid import uuid4
 from apps.draw import main_funcs
@@ -59,8 +58,7 @@ def schedule_error_handler(func):
                     f"[Schedule] Error in {func.__name__}", f"```\n{e}\n```"
                 )
             )
-            log.warning(f"[Schedule] Error in {func.__name__}: {e}")
-            traceback.print_exc()
+            log.warning(f"[Schedule] Error in {func.__name__}: {e}", exc_info=e)
             sentry_sdk.capture_exception(e)
 
     return inner_function
@@ -90,7 +88,6 @@ class Schedule(commands.Cog):
             tasks = ["resin_notification", "pot_notification", "pt_notification"]
             for task in tasks:
                 await asyncio.create_task(self.check_notification(task))
-            await asyncio.create_task(self.restart_gateway())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())

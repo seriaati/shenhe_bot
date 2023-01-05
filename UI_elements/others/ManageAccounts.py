@@ -63,13 +63,13 @@ class GenerateLink(Button):
     async def callback(self, i: Interaction):
         self.view: View
         locale = self.view.locale
-        
+
         embed = default_embed().set_author(
             name=text_map.get(402, locale), icon_url=asset.loader
         )
         self.disabled = True
         await i.response.edit_message(embed=embed, view=self.view)
-        
+
         gateway: HuTaoLoginAPI = i.client.gateway
         url, token = gateway.generate_login_url(
             user_id=str(i.user.id),
@@ -77,25 +77,37 @@ class GenerateLink(Button):
             channel_id=str(i.channel_id),
             language=to_hutao_login_lang(locale),
         )
-        
+
         embed = default_embed(message=text_map.get(728, locale))
         embed.set_author(
             name=text_map.get(400, locale), icon_url=i.user.display_avatar.url
         )
-        
+
         await asyncio.sleep(1)
         self.view.clear_items()
         self.view.add_item(GOBack(layer=2, blurple=True))
+        self.view.add_item(ReloadGateway())
         self.view.add_item(Button(label=text_map.get(670, locale), url=url))
-        
+
         message = await i.edit_original_response(embed=embed, view=self.view)
-        
+
         i.client.tokenStore[token] = {
             "message": message,
             "locale": self.view.locale,
             "interaction": i,
             "author": i.user,
         }
+
+
+class ReloadGateway(Button):
+    def __init__(self):
+        super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
+
+    async def callback(self, i: Interaction):
+        await i.response.defer()
+        await i.client.reload_extension("cogs.login")
+        self.disabled = True
+        await i.edit_original_response(view=self.view)
 
 
 class ChangeNickname(Button):

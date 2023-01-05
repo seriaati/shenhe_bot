@@ -1,4 +1,3 @@
-import traceback
 from typing import Optional, Union
 
 import discord
@@ -16,8 +15,7 @@ async def global_error_handler(
     if isinstance(e, discord.app_commands.errors.CheckFailure):
         return
 
-    log.warning(f"[Error][{i.user.id}]{type(e)}: {e}")
-    traceback.print_exc()
+    log.warning(f"[Error][{i.user.id}]{type(e)}: {e}", exc_info=e)
 
     locale = await get_user_locale(i.user.id, i.client.db) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
@@ -80,7 +78,6 @@ def get_error_handle_embed(
         unknown = True
 
     if unknown:
-        traceback.print_exc()
         sentry_sdk.capture_exception(e)
 
         embed.description = text_map.get(513, locale)
