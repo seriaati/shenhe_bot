@@ -9,10 +9,11 @@ import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Character
 from apps.draw import main_funcs
-from apps.draw.utility import get_l_character_data, image_gen_transition
+from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import (
     DrawInput,
     RunLeaderboardUser,
+    SingleStrikeLeaderboardCharacter,
     SingleStrikeLeaderboardUser,
     UsageCharacter,
 )
@@ -150,38 +151,41 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
     try:
         if leaderboard == "single_strike_damage":
             users = []
+            uids = []
+            
             async with i.client.db.execute(
-                f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
+                f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id, const, refine, c_level, c_icon FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
             ) as c:
                 rank = 1
                 current_user = None
                 async for row in c:
                     if view.area == "server" and row[6] not in guild_member_ids:
                         continue
-                    if row[0] in [u.uid for u in users]:
+                    if row[0] in uids:
                         continue
-                    
-                    try:
-                        character = get_l_character_data(row[1])
-                    except ValueError:
-                        await c.execute("DELETE FROM abyss_leaderboard WHERE data_uuid = ?", (row[0],))
-                    else:
-                        users.append(
-                            user := SingleStrikeLeaderboardUser(
-                                user_name=row[5],
-                                rank=rank,
-                                character=character,
-                                single_strike=row[2],
-                                floor=row[3],
-                                stars_collected=row[4],
-                                uid=row[0],
-                            )
+
+                    users.append(
+                        user := SingleStrikeLeaderboardUser(
+                            user_name=row[5],
+                            rank=rank,
+                            character=SingleStrikeLeaderboardCharacter(
+                                constellation=row[7],
+                                refinement=row[8],
+                                level=row[9],
+                                icon=row[10],
+                            ),
+                            single_strike=row[2],
+                            floor=row[3],
+                            stars_collected=row[4],
+                            uid=row[0],
                         )
-                        if row[0] == uid:
-                            current_user = user
-                        rank += 1
-            await i.client.db.commit()
-            
+                    )
+                    uids.append(row[0])
+                    
+                    if row[0] == uid:
+                        current_user = user
+                    rank += 1
+                    
             if not users:
                 raise EmptyLeaderboard
             fp = await main_funcs.draw_single_strike_leaderboard(
@@ -277,7 +281,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                         continue
                     if row[0] in [u.uid for u in users]:
                         continue
-                    
+
                     users.append(
                         user := RunLeaderboardUser(
                             icon_url=row[4],

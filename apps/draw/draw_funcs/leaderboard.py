@@ -203,7 +203,7 @@ def ss_user_card(
     character = user_data.character
     draw.text(
         (350, 92),
-        f"C{character.constellation}R{character.weapon.refinement} Lv.{character.level}",
+        f"C{character.constellation}R{character.refinement} Lv.{character.level}",
         font=font,
         fill=fill,
     )

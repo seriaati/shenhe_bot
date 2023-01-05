@@ -153,14 +153,6 @@ def get_font(
     return ImageFont.truetype(font_name, size)
 
 
-def get_l_character_data(uuid: str) -> genshin.models.Character:
-    with diskcache.FanoutCache("data/abyss_leaderboard") as cache:
-        character_data = cache.get(uuid)
-        if character_data is None:
-            raise ValueError("Single strike leaderboard character data not found", uuid)
-        return character_data
-
-
 def draw_dynamic_background(
     input: DynamicBackgroundInput,
 ) -> Tuple[Image.Image, int]:

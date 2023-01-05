@@ -1,8 +1,6 @@
-import uuid
 from typing import List
 
 import aiosqlite
-import diskcache
 import genshin
 
 from apps.genshin.utils import get_current_abyss_season
@@ -22,7 +20,6 @@ async def update_user_abyss_leaderboard(
     g_c = next((c for c in characters if c.id == character.id), None)
     if g_c is None:
         raise ValueError("Genshin character data not found")
-    random_uuid = str(uuid.uuid4())
     current_season = get_current_abyss_season() - previous
 
     runs = None
@@ -46,18 +43,17 @@ async def update_user_abyss_leaderboard(
     async with db.execute(
         """
             INSERT INTO abyss_leaderboard
-                (data_uuid, single_strike, floor, stars_collected, uid, user_name, user_id, season, runs, wins, icon_url, level)
+                (single_strike, floor, stars_collected, uid, user_name, user_id, season, runs, wins, icon_url, level, const, refine, c_level, c_icon)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT
                 (uid, season)
             DO UPDATE SET
-                data_uuid = ?, single_strike = ?, floor = ?, stars_collected = ?, user_name = ?, user_id = ?, runs = ?, wins = ?, icon_url = ?, level = ?
+                single_strike = ?, floor = ?, stars_collected = ?, user_name = ?, user_id = ?, runs = ?, wins = ?, icon_url = ?, level = ?, const = ?, refine = ?, c_level = ?, c_icon = ?
             WHERE 
                 uid = ? AND season = ?
         """,
         (
-            random_uuid,
             character.value,
             abyss_data.max_floor,
             abyss_data.total_stars,
@@ -69,7 +65,10 @@ async def update_user_abyss_leaderboard(
             wins or abyss_data.total_wins,
             abyss_data.ranks.most_played[0].icon,
             user_data.info.level,
-            random_uuid,
+            g_c.constellation,
+            g_c.weapon.refinement,
+            g_c.level,
+            g_c.icon,
             character.value,
             abyss_data.max_floor,
             abyss_data.total_stars,
@@ -79,13 +78,14 @@ async def update_user_abyss_leaderboard(
             wins or abyss_data.total_wins,
             abyss_data.ranks.most_played[0].icon,
             user_data.info.level,
+            g_c.constellation,
+            g_c.weapon.refinement,
+            g_c.level,
+            g_c.icon,
             uid,
             current_season,
         ),
     ) as cursor:
-        with diskcache.FanoutCache("data/abyss_leaderboard") as cache:
-            cache.set(random_uuid, g_c)
-
         # character usage rate
         # only take floor 12 data
         floor = [f for f in abyss_data.floors if f.floor == 12]
@@ -120,13 +120,4 @@ async def update_user_abyss_leaderboard(
                     current_season,
                 ),
             )
-
-        # cross compare cache and db
-        await cursor.execute("SELECT data_uuid FROM abyss_leaderboard")
-        db_uuids = [r[0] for r in await cursor.fetchall()]
-        with diskcache.FanoutCache("data/abyss_leaderboard") as cache:
-            cache_uuids = list(cache._caches.keys())
-            for c_uuid in cache_uuids:
-                if c_uuid not in db_uuids:
-                    cache.delete(c_uuid)
     await db.commit()

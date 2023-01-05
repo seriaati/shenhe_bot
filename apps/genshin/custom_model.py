@@ -275,11 +275,16 @@ class DynamicBackgroundInput(BaseModel):
     background_color: str
     draw_title: bool = True
 
+class SingleStrikeLeaderboardCharacter(BaseModel):
+    constellation: int
+    refinement: int
+    level: int
+    icon: str
 
 class SingleStrikeLeaderboardUser(BaseModel):
     user_name: str
     rank: int
-    character: genshin.models.Character
+    character: SingleStrikeLeaderboardCharacter
     single_strike: int
     floor: str
     stars_collected: int
