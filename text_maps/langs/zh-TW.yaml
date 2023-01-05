@@ -33,8 +33,8 @@
 '32': 選擇一種語言
 '33': 武器
 '34': 目前語言
-'35': </register:1044926380242120744> for more information
-'36': Your Cookie is invalid, please register again using </register:1044926380242120744>
+'35': </register:1044926380242120744> 來獲取更多資訊
+'36': 你的 Cookie 無效，請使用 </register:1044926380242120744> 再次註冊
 '37': 聖遺物套裝
 '38': 運用 Hoyolab 的陣容模擬器來搜尋原神的角色陣容
 '39': 已新增帳戶
@@ -141,7 +141,7 @@
 '133': ''
 '134': 錯誤的通知時間？使用 /accounts 新增你的 UID 來讓申鶴知道你的伺服器地區
 '135': 未知錯誤
-'136': Select an account
+'136': 選擇一個帳戶
 '137': ''
 '138': ''
 '139': 角色陣容
@@ -179,8 +179,8 @@
 '163': 選擇配置
 '164': 種配置
 '165': |-
-  This user hasn't registered their account yet
-  </register:1044926380242120744> to register
+  這個使用者還沒有註冊過帳號
+  </register:1044926380242120744> 來註冊帳號
 '166': 未知用戶
 '167': "{name} 的 UID"
 '168': 當前等級
@@ -813,9 +813,7 @@
 '726': 複製 UID
 '727': 伺服器區域
 '728': |-
-  If your account is not added after logging in on the website (a ✅ is shown),
-  please press the reload button below, then add your account on the website again.
-  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
+  如果你在網站新增帳戶後沒有在申鶴看到你的帳戶（網站有顯示 ✅ 圖樣），請點選下方的重整按鈕，接著在網站再新增一次帳戶。
 '729': 編輯物品的當前數量
 '730': 無效的突破階段
 '731': 未找到祈願資料
