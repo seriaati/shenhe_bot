@@ -33,8 +33,8 @@
 '32': 选择一种语言
 '33': 武器
 '34': 目前语言
-'35': </register:1006486283725590528> 来获取更多资讯
-'36': 无效的 cookie
+'35': </register:1044926380242120744> for more information
+'36': Your Cookie is invalid, please register again using </register:1044926380242120744>
 '37': 圣遗物套装
 '38': 运用 Hoyolab 的阵容模拟器来搜寻原神的角色阵容
 '39': 已新增帐户
@@ -137,21 +137,13 @@
 '129': 蒙德
 '130': 璃月
 '131': 稻妻
-'132': 提交 Cookie
-'133': 请贴上刚刚复制的文字
+'132': ''
+'133': ''
 '134': 错误的通知时间？使用 /accounts 新增你的 UID 来让申鹤知道你的伺服器区域
 '135': 未知错误
-'136': 选择要注册的帐号
-'137': Cookie 设置流程
-'138': |-
-  1.先复制下面的程式码。
-  2.电脑或手机使用 Chrome 开启 Hoyolab 并登入帐号 https://www.hoyolab.com
-  3.长摁地址栏，选取所有文字。
-  4.在网址列先输入 `java`, 然后贴上代码, 确保网址开头变成 `javascript:`
-  5.按下确认，网页展示会变成你的Cookie, 全选然后复制
-  6.在这里提交你的cookie
-
-  无法理解吗? 按照下面的图示操作吧!
+'136': Select an account
+'137': ''
+'138': ''
 '139': 角色阵容
 '140': 选择一个阵容适用场景
 '141': 找不到帐号资料!
@@ -187,8 +179,8 @@
 '163': 选择配置
 '164': 种配置
 '165': |-
-  这个用户还没有注册过帐号
-  </register:1006486283725590528> 来注册帐号
+  This user hasn't registered their account yet
+  </register:1044926380242120744> to register
 '166': 未知用户
 '167': "{name} 的 UID"
 '168': 当前等级
@@ -585,12 +577,12 @@
 '520': 草神瞳
 '521': 移除帐号资料
 '522': 帐号资料移除成功
-'523': 停止接收来自开发者的讯息
-'524': 不想看见这个？使用 /settings
+'523': ''
+'524': ''
 '525': 蔓激化
 '526': 超激化
 '527': 水元素近战附魔
-'528': '''528'':你的帐号由于由于 Cookie 无效已被移除， 请使用 </register:1006486283725590528> 重新注册'
+'528': ''
 '529': 物品类型
 '530': 获取途径
 '531': 武器效果
@@ -820,7 +812,10 @@
 '725': 反馈已发送，谢谢! 🥰
 '726': 复制 UID
 '727': 服务器区域
-'728': '如果你在网站登入后没有在申鹤看到你的帐户被新增（有显示绿色打勾图样），请私讯 seria#5334 或是使用 /feedback 来告诉我'
+'728': |-
+  If your account is not added after logging in on the website (a ✅ is shown),
+  please press the reload button below, then add your account on the website again.
+  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
 '729': 编辑物品的当前数量
 '730': 无效的突破阶段
 '731': 未找到祈愿资料
