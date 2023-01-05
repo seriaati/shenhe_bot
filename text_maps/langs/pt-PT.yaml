@@ -33,8 +33,8 @@
 '32': Select a language
 '33': Weapon
 '34': Current language
-'35': </register:1006486283725590528> for more information
-'36': Cookie invalid
+'35': </register:1044926380242120744> for more information
+'36': Your Cookie is invalid, please register again using </register:1044926380242120744>
 '37': Artifact Set
 '38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': Account added
@@ -137,21 +137,13 @@
 '129': Mondstat
 '130': Liyue
 '131': Inazuma
-'132': Submit your cookie
-'133': Please paste the text you copied here
+'132': ''
+'133': ''
 '134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
 '135': There was an error
-'136': Choose your account
-'137': Account registration tutorial
-'138': |-
-  1. Copy the code below
-  2. Open Chrome on your device and login to your account on https://www.hoyolab.com/home
-  3. Click the address bar and select all the text there
-  4. Enter the word `java`, then paste the code you copied, ensure that the address bar starts with `javascript:`
-  5. Press ENTER, and a blank page will show up displaying your cookie, select all and copy
-  6. Submit your cookie here
-
-  Too complicated? The image below might help!
+'136': Select an account
+'137': ''
+'138': ''
 '139': Character Lineup
 '140': Select a lineup scenario
 '141': Account data not found!
@@ -188,7 +180,7 @@
 '164': builds
 '165': |-
   This user hasn't registered their account yet
-  </register:1006486283725590528> to register
+  </register:1044926380242120744> to register
 '166': User not found
 '167': "{name}'s UID"
 '168': current level
@@ -586,12 +578,12 @@
 '520': Dendroculus
 '521': Remove account data
 '522': Account data removed
-'523': Stop receiving messages from the developer
-'524': Don't want to see this? Use /settings
+'523': ''
+'524': ''
 '525': Spread
 '526': Aggravate
 '527': Hydro infusion
-'528': Your account has been removed because its Cookie is invalid, please register again using </register:1006486283725590528>
+'528': ''
 '529': Item type
 '530': Sources
 '531': Weapon effect
@@ -825,7 +817,10 @@
 '725': Feedback sent, thank you! 🥰
 '726': Copy UID
 '727': Server region
-'728': 'If your account is not added after you''ve logged in on the website (green checkmark is shown), please DM seria#5334 or use /feedback to tell me'
+'728': |-
+  If your account is not added after logging in on the website (a ✅ is shown),
+  please press the reload button below, then add your account on the website again.
+  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
 '729': Edit item's current amount
 '730': Invalid ascension phase number
 '731': No wish data found
