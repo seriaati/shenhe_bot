@@ -33,8 +33,8 @@
 '32': 选择一种语言
 '33': 武器
 '34': 目前语言
-'35': </register:1044926380242120744> for more information
-'36': Your Cookie is invalid, please register again using </register:1044926380242120744>
+'35': </register:1044926380242120744> 来获取更多资讯
+'36': 你的 Cookie 无效，请使用 </register:1044926380242120744> 再次注册
 '37': 圣遗物套装
 '38': 运用 Hoyolab 的阵容模拟器来搜寻原神的角色阵容
 '39': 已新增帐户
@@ -141,7 +141,7 @@
 '133': ''
 '134': 错误的通知时间？使用 /accounts 新增你的 UID 来让申鹤知道你的伺服器区域
 '135': 未知错误
-'136': Select an account
+'136': 选择一个帐户
 '137': ''
 '138': ''
 '139': 角色阵容
@@ -179,8 +179,8 @@
 '163': 选择配置
 '164': 种配置
 '165': |-
-  This user hasn't registered their account yet
-  </register:1044926380242120744> to register
+  这个用户还没有注册过帐号
+  </register:1044926380242120744> 来注册帐号
 '166': 未知用户
 '167': "{name} 的 UID"
 '168': 当前等级
@@ -813,9 +813,7 @@
 '726': 复制 UID
 '727': 服务器区域
 '728': |-
-  If your account is not added after logging in on the website (a ✅ is shown),
-  please press the reload button below, then add your account on the website again.
-  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
+  如果你在网站新增帐户后没有在申鹤看到你的帐户（网站有显示 ✅ 图样），请点击下方的重整按钮，接着在网站再新增一次帐户。
 '729': 编辑物品的当前数量
 '730': 无效的突破阶段
 '731': 未找到祈愿资料
