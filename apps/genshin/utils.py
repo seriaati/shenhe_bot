@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 import aiohttp
 import aiosqlite
 import discord
@@ -303,8 +303,9 @@ async def load_and_update_enka_cache(
     c_dict = {}
     d_dict = {}
     new_dict = {}
-    for c in cache.characters:
-        c_dict[c.id] = c
+    if cache.characters is not None:
+        for c in cache.characters:
+            c_dict[c.id] = c
     for d in data.characters:
         d_dict[d.id] = d
     new_dict = c_dict | d_dict
@@ -618,7 +619,7 @@ async def get_character_suggested_talent_levels(
     if not isinstance(character, Character):
         return [1, 1, 1]
     with open(f"data/builds/{character.element.lower()}.yaml") as f:
-        builds = yaml.safe_load(f)
+        builds: Dict[str, Any] = yaml.safe_load(f)
     character_build = builds.get(chinese_character_name)
     if character_build is None:
         return [1, 1, 1]

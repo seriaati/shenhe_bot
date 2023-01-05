@@ -4,6 +4,7 @@ import aiohttp
 import PIL
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
+from exceptions import NoCharacterFound
 from pyppeteer import browser
 
 import asset
@@ -41,6 +42,8 @@ class View(BaseView):
         # defining damage calculation variables
         self.enka_view = enka_view
         character_name = ""
+        if enka_view.data.characters is None:
+            raise NoCharacterFound
         for character in enka_view.data.characters:
             if str(character.id) == enka_view.character_id:
                 character_name = character.name
@@ -139,10 +142,12 @@ class GoBack(Button):
 
 async def go_back_callback(i: Interaction, enka_view: EnkaView):
     await i.response.edit_message(
-        embed=default_embed().set_author(
+        embed=default_embed()
+        .set_author(
             name=text_map.get(644, enka_view.locale),
             icon_url=asset.loader,
-        ).set_image(url="https://i.imgur.com/AsxZdAu.gif"),
+        )
+        .set_image(url="https://i.imgur.com/AsxZdAu.gif"),
         attachments=[],
     )
     overview = [
@@ -163,6 +168,9 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     overview.disabled = False
     set_custom_image.disabled = False
     calculate.disabled = False
+
+    if enka_view.data.characters is None:
+        raise NoCharacterFound
     character = [
         c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
     ][0]
@@ -202,10 +210,14 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
 
     embed = default_embed()
     embed.set_image(url=f"attachment://card.jpeg")
-    embed.set_author(
-        name=enka_view.data.player.nickname,
-        icon_url=enka_view.data.player.avatar.icon.url,
-    )
+    if enka_view.data.player is not None:
+        embed.set_author(
+            name=enka_view.data.player.nickname,
+            icon_url=enka_view.data.player.avatar.icon.url
+            if enka_view.data.player.avatar is not None
+            and enka_view.data.player.avatar.icon is not None
+            else i.user.display_avatar.url,
+        )
     card.seek(0)
     file = File(card, "card.jpeg")
     await i.edit_original_response(embed=embed, attachments=[file], view=enka_view)
