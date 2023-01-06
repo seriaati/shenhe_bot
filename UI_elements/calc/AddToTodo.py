@@ -1,4 +1,5 @@
 from typing import Any, Dict
+import aiosqlite
 
 from apps.text_map.text_map_app import text_map
 from discord import ButtonStyle, Interaction, Locale
@@ -20,11 +21,13 @@ class AddToTodo(Button):
 
     async def callback(self, i: Interaction) -> Any:
         for item_id, item_count in self.materials.items():
-            await i.client.db.execute(
-                "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, 0, ?) ON CONFLICT (user_id, item) DO UPDATE SET item = ?, max = max + ? WHERE user_id = ?",
-                (i.user.id, item_id, item_count, item_id, item_count, i.user.id),
-            )
-        await i.client.db.commit()
+            async with aiosqlite.connect("shenhe.db") as db:
+                await db.execute(
+                    "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, 0, ?) ON CONFLICT (user_id, item) DO UPDATE SET item = ?, max = max + ? WHERE user_id = ?",
+                    (i.user.id, item_id, item_count, item_id, item_count, i.user.id),
+                )
+            await db.commit()
+            
         await i.response.send_message(
             embed=default_embed(message=text_map.get(178, self.locale)).set_author(
                 name=text_map.get(179, self.locale), icon_url=i.user.display_avatar.url

@@ -1,16 +1,8 @@
 import io
 from typing import Any, List
 
-from discord import (
-    ButtonStyle,
-    Embed,
-    File,
-    Interaction,
-    Locale,
-    Member,
-    SelectOption,
-    User,
-)
+from discord import (ButtonStyle, Embed, File, Interaction, Locale, Member,
+                     SelectOption, User)
 from discord.ui import Button, Select
 from enkanetwork.model.base import EnkaNetworkResponse
 
@@ -21,11 +13,8 @@ from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings.CustomImage import (
-    change_user_custom_image,
-    get_user_custom_image,
-    get_user_custom_image_embed,
-    get_user_custom_image_options,
-)
+    change_user_custom_image, get_user_custom_image,
+    get_user_custom_image_embed, get_user_custom_image_options)
 from utility.utils import default_embed, divide_chunks
 from yelan.damage_calculator import return_current_status, return_damage
 
@@ -147,7 +136,7 @@ class SetCustomImage(Button):
         self.view: View
         options = await get_user_custom_image_options(i, int(self.view.character_id))
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(self.view.character_id)
+            i.user.id, int(self.view.character_id)
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
@@ -175,7 +164,7 @@ class Reload(Button):
     async def callback(self, i: Interaction):
         self.view: View
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(self.view.character_id)
+            i.user.id, int(self.view.character_id)
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
@@ -204,7 +193,7 @@ class SelectImage(Select):
         self.view: CustomImageView
         await change_user_custom_image(i, self.values[0], int(self.view.character_id))
         custom_image = await get_user_custom_image(
-            i.user.id, i.client.db, int(self.view.character_id)
+            i.user.id, int(self.view.character_id)
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False

@@ -38,7 +38,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("View and change your user settings in Shenhe", hash=534),
     )
     async def settings(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         view = SettingsMenu.View(user_locale or i.locale)
         view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))
@@ -61,7 +61,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("Meet the awesome people that helped me!", hash=297),
     )
     async def view_credits(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         embed = default_embed(text_map.get(475, locale) + " 🎉")
         kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
             425140480334888980
@@ -120,7 +120,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         embed = default_embed(self.bot.user.name)
         delta_uptime = datetime.utcnow() - self.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
@@ -207,7 +207,7 @@ class OthersCog(commands.Cog, name="others"):
         await CustomImage.add_user_custom_image(
             i, something["link"], converted_character_id, image_name
         )
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         view = CustomImage.View(locale)
         view.author = i.user
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
@@ -220,7 +220,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @custom_image_upload.autocomplete(name="character_id")
     async def custom_image_upload_autocomplete(self, i: Interaction, current: str):
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
             if current.lower() in character_names[to_ambr_top(locale)].lower():
@@ -237,7 +237,7 @@ class OthersCog(commands.Cog, name="others"):
     async def feedback(self, i: Interaction):
         await i.response.send_modal(
             Feedback.FeedbackModal(
-                await get_user_locale(i.user.id, self.bot.db) or i.locale
+                await get_user_locale(i.user.id) or i.locale
             )
         )
 

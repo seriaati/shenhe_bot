@@ -1,27 +1,18 @@
 import io
 from typing import List, Tuple
 
+import aiosqlite
 import genshin
 import sentry_sdk
-from discord import (
-    ButtonStyle,
-    Embed,
-    File,
-    Interaction,
-    Locale,
-    SelectOption,
-    TextStyle,
-)
+from discord import (ButtonStyle, Embed, File, Interaction, Locale,
+                     SelectOption, TextStyle)
 from discord.ui import Button, Select, TextInput
-from apps.genshin.custom_model import Wish, WishInfo
 
 import asset
 import config
-from apps.genshin.utils import (
-    get_account_options,
-    get_uid,
-    get_wish_info_embed,
-)
+from apps.genshin.custom_model import Wish, WishInfo
+from apps.genshin.utils import (get_account_options, get_uid,
+                                get_wish_info_embed)
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -44,9 +35,7 @@ async def wish_import_command(i: Interaction, responded: bool = False):
     if not responded:
         await i.response.defer()
     embed, linked, empty = await get_wish_import_embed(i)
-    view = View(
-        await get_user_locale(i.user.id, i.client.db) or i.locale, linked, empty
-    )
+    view = View(await get_user_locale(i.user.id) or i.locale, linked, empty)
     view.message = await i.edit_original_response(embed=embed, view=view)
     view.author = i.user
 
@@ -125,6 +114,8 @@ class ImportWishHistory(Button):
 
 class ImportGenshinImpact(Button):
     def __init__(self, locale: Locale | str):
+        self.locale = locale
+        
         super().__init__(
             label=text_map.get(313, locale),
             emoji=asset.genshin_emoji,
@@ -133,9 +124,9 @@ class ImportGenshinImpact(Button):
 
     async def callback(self, i: Interaction):
         embed = default_embed().set_author(
-            name=text_map.get(365, self.view.locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(365, self.locale), icon_url=i.user.display_avatar.url
         )
-        view = ChoosePlatform.View(self.view.locale)
+        view = ChoosePlatform.View(self.locale)
         view.add_item(GOBack())
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
@@ -144,6 +135,8 @@ class ImportGenshinImpact(Button):
 
 class ImportShenhe(Button):
     def __init__(self, locale: Locale | str):
+        self.locale = locale
+        
         super().__init__(
             label=text_map.get(684, locale),
             emoji=asset.shenhe_emoji,
@@ -151,8 +144,8 @@ class ImportShenhe(Button):
         )
 
     async def callback(self, i: Interaction):
-        embed = default_embed(message=(text_map.get(687, self.view.locale))).set_author(
-            name=(text_map.get(686, self.view.locale)),
+        embed = default_embed(message=(text_map.get(687, self.locale))).set_author(
+            name=(text_map.get(686, self.locale)),
             icon_url=i.user.display_avatar.url,
         )
         await i.response.send_message(embed=embed, ephemeral=True)
@@ -173,7 +166,7 @@ class ExportWishHistory(Button):
         s = io.StringIO()
         async with i.client.db.execute(
             "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id, i.client.db)),
+            (i.user.id, await get_uid(i.user.id)),
         ) as c:
             wishes = await c.fetchall()
         s.write(str(wishes))
@@ -210,7 +203,7 @@ class Confirm(Button):
         )
 
     async def callback(self, i: Interaction):
-        uid = await get_uid(i.user.id, i.client.db)
+        uid = await get_uid(i.user.id)
         await i.client.db.execute(
             "DELETE FROM wish_history WHERE uid = ? AND user_id = ?", (uid, i.user.id)
         )
@@ -245,7 +238,7 @@ class ConfirmWishImport(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        uid = await get_uid(i.user.id, i.client.db)
+        uid = await get_uid(i.user.id)
         embed = default_embed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
@@ -346,7 +339,7 @@ class Modal(BaseModal):
         self.url.placeholder = text_map.get(354, locale)
 
     async def on_submit(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         client: genshin.Client = i.client.genshin_client
         client.lang = to_genshin_py(locale)
         authkey = genshin.utility.extract_authkey(self.url.value)
@@ -436,27 +429,28 @@ class Modal(BaseModal):
 
 async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
     linked = True
-    locale = await get_user_locale(i.user.id, i.client.db) or i.locale
-    uid = await get_uid(i.user.id, i.client.db)
-    async with i.client.db.execute(
-        "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid IS NULL ORDER BY wish_id DESC",
-        (i.user.id,),
-    ) as c:  # 檢查是否有未綁定 UID 的歷史紀錄
-        wish_data = await c.fetchall()
-        if not wish_data:  # 沒有未綁定 UID 的歷史紀錄
-            await c.execute(
-                "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-                (i.user.id, uid),
-            )  # 檢查是否有綁定 UID 的歷史紀錄
+    locale = await get_user_locale(i.user.id) or i.locale
+    uid = await get_uid(i.user.id)
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid IS NULL ORDER BY wish_id DESC",
+            (i.user.id,),
+        ) as c:  # 檢查是否有未綁定 UID 的歷史紀錄
             wish_data = await c.fetchall()
-            if not wish_data:  # 使用者完全沒有任何歷史紀錄
-                embed = default_embed(message=f"UID: {uid}").set_author(
-                    name=text_map.get(683, locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-                return embed, linked, True
-        else:  # 有未綁定 UID 的歷史紀錄
-            linked = False
+            if not wish_data:  # 沒有未綁定 UID 的歷史紀錄
+                await c.execute(
+                    "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
+                    (i.user.id, uid),
+                )  # 檢查是否有綁定 UID 的歷史紀錄
+                wish_data = await c.fetchall()
+                if not wish_data:  # 使用者完全沒有任何歷史紀錄
+                    embed = default_embed(message=f"UID: {uid}").set_author(
+                        name=text_map.get(683, locale),
+                        icon_url=i.user.display_avatar.url,
+                    )
+                    return embed, linked, True
+            else:  # 有未綁定 UID 的歷史紀錄
+                linked = False
     newest_wish = wish_data[0]
     oldest_wish = wish_data[-1]
     character_banner = 0
@@ -479,13 +473,15 @@ async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
             time=newest_wish[0],
             rarity=newest_wish[1],
             name=text_map.get_weapon_name(int(newest_wish[2]), locale)
-            or text_map.get_character_name(str(newest_wish[2]), locale) or "",
+            or text_map.get_character_name(str(newest_wish[2]), locale)
+            or "",
         ),
         oldest_wish=Wish(
             time=oldest_wish[0],
             rarity=oldest_wish[1],
             name=text_map.get_weapon_name(int(oldest_wish[2]), locale)
-            or text_map.get_character_name(str(oldest_wish[2]), locale) or "",
+            or text_map.get_character_name(str(oldest_wish[2]), locale)
+            or "",
         ),
         character_banner_num=character_banner,
         weapon_banner_num=weapon_banner,

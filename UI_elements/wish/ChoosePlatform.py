@@ -144,7 +144,7 @@ class GOBack(Button):
 
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id)
         view = View(self.view.locale)
         embed = default_embed()
         embed.set_author(

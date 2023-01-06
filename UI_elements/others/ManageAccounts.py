@@ -247,7 +247,7 @@ class GOBack(Button):
 
 
 async def return_accounts(i: Interaction):
-    user_locale = await get_user_locale(i.user.id, i.client.db)
+    user_locale = await get_user_locale(i.user.id)
     c: aiosqlite.Cursor = await i.client.db.cursor()
     await c.execute(
         "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",

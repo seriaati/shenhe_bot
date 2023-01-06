@@ -1,4 +1,5 @@
 import ast
+import aiosqlite
 from typing import Dict, List, Optional, Tuple
 from apps.draw import main_funcs
 import GGanalysis.games.genshin_impact as GI
@@ -59,7 +60,7 @@ class WishCog(commands.GroupCog, name="wish"):
         ),
     )
     async def wish_file_import(self, i: Interaction, file: Attachment):
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         try:
             wish_history = ast.literal_eval((await file.read()).decode("utf-8"))
             character_banner = 0
@@ -127,7 +128,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_history(self, i: Interaction, member: Optional[User] = None):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         embeds = await get_wish_history_embed(i, "", member)
         options = [
             SelectOption(
@@ -163,12 +164,12 @@ class WishCog(commands.GroupCog, name="wish"):
     ):
         await i.response.defer()
         member = member or i.user
-        locale = await get_user_locale(i.user.id, self.bot.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
 
         # charcter banner data
         async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(member.id, self.bot.db)),
+            (i.user.id, await get_uid(member.id)),
         ) as cursor:
             up_num = 0
             std = get_standard_characters()
@@ -207,7 +208,7 @@ class WishCog(commands.GroupCog, name="wish"):
         item_num=_("How many 5-star banner characters do you wish to pull?", hash=482)
     )
     async def wish_char(self, i: Interaction, item_num: int):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         if item_num > 10:
             return await i.response.send_message(
                 embed=error_embed(message="number <= 10").set_author(
@@ -220,7 +221,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id, self.bot.db)),
+            (i.user.id, await get_uid(i.user.id)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -269,7 +270,7 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     async def wish_weapon(self, i: Interaction, item_num: int, fate_point: int):
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         if fate_point not in [0, 1, 2]:
             return await i.followup.send(
                 embed=error_embed(
@@ -291,7 +292,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         async with self.bot.db.execute(
             "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id, self.bot.db)),
+            (i.user.id, await get_uid(i.user.id)),
         ) as cursor:
             data: List[Tuple[str, int, str]] = await cursor.fetchall()
 
@@ -357,22 +358,23 @@ class WishCog(commands.GroupCog, name="wish"):
     ):
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
 
         wishes: List[WishItem] = []
-        async with self.bot.db.execute(
-            "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (member.id, await get_uid(member.id, self.bot.db)),
-        ) as cursor:
-            async for row in cursor:
-                name = row[0]
-                banner = row[1]
-                rarity = row[2]
-                time = row[3]
-                wishes.append(
-                    WishItem(name=name, banner=banner, rarity=rarity, time=time)
-                )
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
+                (member.id, await get_uid(member.id)),
+            ) as cursor:
+                async for row in cursor:
+                    name = row[0]
+                    banner = row[1]
+                    rarity = row[2]
+                    time = row[3]
+                    wishes.append(
+                        WishItem(name=name, banner=banner, rarity=rarity, time=time)
+                    )
 
         novice_banner = [wish_item for wish_item in wishes if wish_item.banner == 100]
         character_banner = [

@@ -27,7 +27,7 @@ class Appearance(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id)
         c: aiosqlite.Cursor = await i.client.db.cursor()
         await c.execute(
             "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
@@ -88,7 +88,7 @@ class Langauge(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id)
         embed = default_embed(message=text_map.get(125, i.locale, user_locale))
         lang_name = lang_options.get(user_locale or str(i.locale), {"name": "Unknown"})[
             "name"
@@ -140,7 +140,7 @@ class GOBack(Button):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id)
         view = View(user_locale or i.locale)
         view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))

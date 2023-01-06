@@ -38,7 +38,7 @@ class _view(BaseView):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
 
-        user_locale = await get_user_locale(interaction.user.id, self.db)
+        user_locale = await get_user_locale(interaction.user.id)
         card = await main_funcs.draw_farm_domain_card(
             DrawInput(
                 loop=interaction.client.loop,
@@ -139,7 +139,7 @@ class DomainPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
-        user_locale = await get_user_locale(self.interaction.user.id, self.db)
+        user_locale = await get_user_locale(self.interaction.user.id)
         card = await main_funcs.draw_farm_domain_card(
             DrawInput(
                 loop=self.interaction.client.loop,

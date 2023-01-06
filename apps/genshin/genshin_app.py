@@ -51,8 +51,8 @@ def genshin_error_handler(func):
         user = genshin_app.bot.get_user(user_id) or await genshin_app.bot.fetch_user(
             user_id
         )
-        uid = await get_uid(user_id, genshin_app.bot.db)
-        author_locale = await get_user_locale(author_id, genshin_app.bot.db)
+        uid = await get_uid(user_id)
+        author_locale = await get_user_locale(author_id)
         locale = author_locale or locale
         try:
             return await func(*args, **kwargs)
@@ -342,7 +342,7 @@ class GenshinApp:
             shenhe_user.uid, previous=previous
         )
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
-        author_locale = await get_user_locale(author_id, self.db)
+        author_locale = await get_user_locale(author_id)
         new_locale = author_locale or shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
             embed = error_embed(message=text_map.get(74, new_locale))
@@ -401,7 +401,7 @@ class GenshinApp:
         if not isinstance(all_characters, List):
             raise TypeError("all_characters is not a list")
         
-        author_locale = await get_user_locale(author_id, self.db)
+        author_locale = await get_user_locale(author_id)
         new_locale = author_locale or shenhe_user.user_locale or str(locale)
         
         embed = default_embed(
@@ -595,14 +595,14 @@ class GenshinApp:
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
-        uid = await get_uid(user_id, self.db)
+        uid = await get_uid(user_id)
         return uid
 
     async def get_user_cookie(
         self, user_id: int, author_id: int, locale: Optional[Locale] = None
     ) -> ShenheAccount:
-        author_locale = await get_user_locale(author_id, self.db)
+        author_locale = await get_user_locale(author_id)
         shenhe_user = await get_shenhe_account(
-            user_id, self.db, self.bot, locale, author_locale=author_locale
+            user_id, self.bot, locale, author_locale=author_locale
         )
         return shenhe_user

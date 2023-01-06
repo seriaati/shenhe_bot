@@ -200,7 +200,7 @@ def get_uid_region_hash(uid: int) -> int:
     return region_map.get(str_uid[0], 553)
 
 
-def get_uid_tz(uid: Optional[int]) -> Literal[0, -13, -7]:
+def get_uid_tz(uid: Optional[int]) -> int:
     str_uid = str(uid)
     region_map = {
         "6": -13,  # North America
@@ -211,7 +211,6 @@ def get_uid_tz(uid: Optional[int]) -> Literal[0, -13, -7]:
 
 async def get_shenhe_account(
     user_id: int,
-    db: aiosqlite.Connection,
     bot: ShenheBot,
     locale: Optional[discord.Locale | str] = None,
     cookie: Optional[Dict[str, str | int]] = None,
@@ -221,37 +220,38 @@ async def get_shenhe_account(
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if cookie is None:
-        async with db.execute(
-            "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
-            (user_id,),
-        ) as c:
-            user_data = None
-            async for row in c:
-                user_data = row
-                if row[5] == 1:
-                    break
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
+                (user_id,),
+            ) as c:
+                user_data = None
+                async for row in c:
+                    user_data = row
+                    if row[5] == 1:
+                        break
 
-        if user_data is None:
-            raise ShenheAccountNotFound
+            if user_data is None:
+                raise ShenheAccountNotFound
 
-        if user_data[0] is not None:
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=user_data[0],
-                ltoken=user_data[1],
-                account_id=user_data[0],
-                cookie_token=user_data[2],
-            )
-        else:
-            client = bot.genshin_client
+            if user_data[0] is not None:
+                client = genshin.Client()
+                client.set_cookies(
+                    ltuid=user_data[0],
+                    ltoken=user_data[1],
+                    account_id=user_data[0],
+                    cookie_token=user_data[2],
+                )
+            else:
+                client = bot.genshin_client
 
-        client.uid = user_data[3]
+            client.uid = user_data[3]
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-        client.uid = await get_uid(user_id, db)
+        client.uid = await get_uid(user_id)
 
-    user_locale = await get_user_locale(user_id, db)
+    user_locale = await get_user_locale(user_id)
     final_locale = author_locale or user_locale or locale
 
     client.lang = to_genshin_py(str(final_locale)) or "en-us"
@@ -277,17 +277,18 @@ async def get_shenhe_account(
     return user_obj
 
 
-async def get_uid(user_id: int, db: aiosqlite.Connection) -> Optional[int]:
-    async with db.execute(
-        "SELECT uid, current FROM user_accounts WHERE user_id = ?",
-        (user_id,),
-    ) as c:
-        uid = None
-        async for row in c:
-            uid = row[0]
-            if row[1] == 1:
-                break
-        return uid
+async def get_uid(user_id: int) -> Optional[int]:
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT uid, current FROM user_accounts WHERE user_id = ?",
+            (user_id,),
+        ) as c:
+            uid = None
+            async for row in c:
+                uid = row[0]
+                if row[1] == 1:
+                    break
+            return uid
 
 
 async def load_and_update_enka_cache(
@@ -326,7 +327,7 @@ async def load_and_update_enka_cache(
 
 async def get_farm_data(i: discord.Interaction, weekday: int):
     result = []
-    user_locale = await get_user_locale(i.user.id, i.client.db)
+    user_locale = await get_user_locale(i.user.id)
     locale = user_locale or i.locale
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
     domains = await ambr.get_domain()
@@ -445,12 +446,13 @@ async def get_wish_history_embed(
     member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
     member = member or i.user
-    user_locale = await get_user_locale(i.user.id, i.client.db)
-    async with i.client.db.execute(
-        f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
-        (member.id, await get_uid(member.id, i.client.db)),
-    ) as cursor:
-        wish_history = await cursor.fetchall()
+    user_locale = await get_user_locale(i.user.id)
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
+            (member.id, await get_uid(member.id)),
+        ) as c:
+            wish_history = await c.fetchall()
 
     if not wish_history:
         embed = error_embed(message=text_map.get(75, i.locale, user_locale)).set_author(
@@ -509,7 +511,7 @@ async def get_wish_info_embed(
         name="UID",
         value=text_map.get(674, locale)
         if not linked
-        else (await get_uid(i.user.id, i.client.db)),
+        else (await get_uid(i.user.id)),
         inline=False,
     )
     newest_wish = wish_info.newest_wish

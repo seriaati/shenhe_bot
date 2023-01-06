@@ -354,13 +354,15 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
 
 
 async def get_user_custom_image(
-    user_id: int, db: aiosqlite.Connection, character_id: int
+    user_id: int, character_id: int
 ) -> Optional[UserCustomImage]:
-    async with db.execute(
-        "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ? AND current = 1",
-        (user_id, character_id),
-    ) as cursor:
-        image = await cursor.fetchone()
+    async with aiosqlite.connect("data.db") as db:
+        async with db.execute(
+            "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ? AND current = 1",
+            (user_id, character_id),
+        ) as cursor:
+            image = await cursor.fetchone()
+            
     if image is None:
         return None
     else:

@@ -32,7 +32,7 @@ class SelectRarity(Select):
 
 
 async def filter_callback(self_var: SelectBanner | SelectRarity, i: Interaction, filter_list: List):
-    user_locale = await get_user_locale(i.user.id, i.client.db)
+    user_locale = await get_user_locale(i.user.id)
     if self_var.values[0] not in filter_list:
         filter_list.append(self_var.values[0])
     else:

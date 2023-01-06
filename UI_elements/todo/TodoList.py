@@ -44,7 +44,7 @@ class AddItem(Button):
         )
 
     async def callback(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        locale = await get_user_locale(i.user.id) or i.locale
         await i.response.send_modal(AddItemModal(locale))
 
 
@@ -219,7 +219,7 @@ class InputItemAmountModal(BaseModal):
 async def return_todo(i: Interaction):
     await i.response.defer()
 
-    locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+    locale = await get_user_locale(i.user.id) or i.locale
     todo_items: List[TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
 
@@ -240,7 +240,7 @@ async def return_todo(i: Interaction):
         embed.description = text_map.get(204, locale)
         await i.edit_original_response(embed=embed, view=view, attachments=[])
     else:
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+        dark_mode = await get_user_appearance_mode(i.user.id)
         client = AmbrTopAPI(i.client.session, to_ambr_top(locale))
 
         for item in todo_items:

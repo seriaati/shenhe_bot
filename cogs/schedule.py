@@ -144,7 +144,7 @@ class Schedule(commands.Cog):
         result["data"] = []
 
         # accounts = await self.get_schedule_users()
-        accounts = [await get_shenhe_account(912623031170519110, self.bot.db, self.bot)]
+        accounts = [await get_shenhe_account(912623031170519110, self.bot)]
 
         for account in accounts:
             client = account.client
@@ -222,7 +222,7 @@ class Schedule(commands.Cog):
         c = await self.bot.db.cursor()
         for n_user in n_users:
             try:
-                s_user = await get_shenhe_account(n_user.user_id, self.bot.db, self.bot)
+                s_user = await get_shenhe_account(n_user.user_id, self.bot)
             except (ShenheAccountNotFound, UIDNotFound):
                 continue
 
@@ -464,7 +464,6 @@ class Schedule(commands.Cog):
             daily_checkin = tpl[4]
             shenhe_user = await get_shenhe_account(
                 user_id,
-                self.bot.db,
                 self.bot,
                 cookie={"ltuid": ltuid, "ltoken": ltoken},
                 custom_uid=uid,
@@ -632,11 +631,11 @@ class Schedule(commands.Cog):
                 user_id = row[0]
                 item_list = row[1]
                 now = get_dt_now() + timedelta(hours=time_offset)
-                locale = await get_user_locale(user_id, self.bot.db) or "en-US"
+                locale = await get_user_locale(user_id) or "en-US"
                 client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                 domains = await client.get_domain()
                 user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-                uid = await get_uid(user_id, self.bot.db)
+                uid = await get_uid(user_id)
                 uid_tz = get_uid_tz(uid)
                 if uid_tz != time_offset:
                     continue
