@@ -1,34 +1,24 @@
 # shenhe-bot by seria
 
-from datetime import datetime
 import os
 import platform
+from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
+
 import aiohttp
 import aiosqlite
-from apps.genshin.browser import launch_browsers
-from apps.genshin_data.text_maps import load_text_maps
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
-from discord import (
-    Intents,
-    Interaction,
-    Locale,
-    Message,
-    app_commands,
-    app_commands,
-)
+from discord import Game, Intents, Interaction, Locale, Message, app_commands
 from discord.app_commands import TranslationContext, locale_str
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-from typing import Dict
 
-from discord.ext import commands
-
-
+from apps.genshin.browser import launch_browsers
+from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
 from utility.utils import error_embed, log, sentry_logging
@@ -43,6 +33,7 @@ else:
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     application_id = os.getenv("SHENHE_BOT_APP_ID")
+
 
 class Translator(app_commands.Translator):
     async def translate(
@@ -63,8 +54,10 @@ class Translator(app_commands.Translator):
         except KeyError:
             return None
 
+
 intents = Intents.default()
 intents.members = True
+
 
 class Shenhe(commands.AutoShardedBot):
     def __init__(self):
@@ -73,6 +66,7 @@ class Shenhe(commands.AutoShardedBot):
             intents=intents,
             application_id=application_id,
             chunk_guilds_at_startup=False,
+            activity=Game(name="/help | shenhe.bot.nu"),
         )
 
     async def setup_hook(self) -> None:
@@ -221,12 +215,14 @@ async def check_maintenance(i: Interaction, /) -> bool:
     if i.user.id == 410036441129943050:
         return True
     else:
-        if i.client.maintenance:
+        if i.client.maintenance: # type: ignore
             await i.response.send_message(
                 embed=error_embed(
                     "申鶴正在維護中\nShenhe is under maintenance",
-                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",
-                ).set_thumbnail(url=i.client.user.avatar.url), # type: ignore
+                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}", # type: ignore
+                ).set_thumbnail(
+                    url=i.client.user.avatar.url # type: ignore
+                ),
                 ephemeral=True,
             )
             return False
@@ -243,7 +239,8 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
 
 
 if not debug:
-    import uvloop # type: ignore
+    import uvloop  # type: ignore
 
     uvloop.install()
+
 bot.run(token=token)

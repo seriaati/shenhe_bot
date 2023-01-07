@@ -70,12 +70,10 @@ class Schedule(commands.Cog):
         self.debug = self.bot.debug
         if not self.debug:
             self.run_tasks.start()
-        self.change_status.start()
 
     def cog_unload(self):
         if not self.debug:
             self.run_tasks.cancel()
-        self.change_status.cancel()
 
     loop_interval = 1
 
@@ -117,18 +115,6 @@ class Schedule(commands.Cog):
                     "weapon_notification", hour_dict[now.hour]
                 )
             )
-
-    @tasks.loop(minutes=20)
-    async def change_status(self):
-        status_list = [
-            "/help",
-            "shenhe.bot.nu",
-        ]
-        await self.bot.change_presence(
-            activity=Game(
-                name=f"{random.choice(status_list)} | {len(self.bot.guilds)} guilds"
-            )
-        )
 
     async def restart_gateway(self):
         log.info("[Schedule] Restarting gateway...")
@@ -948,10 +934,6 @@ class Schedule(commands.Cog):
 
     @run_tasks.before_loop
     async def before_run_tasks(self):
-        await self.bot.wait_until_ready()
-
-    @change_status.before_loop
-    async def before_check(self):
         await self.bot.wait_until_ready()
 
     @commands.is_owner()
