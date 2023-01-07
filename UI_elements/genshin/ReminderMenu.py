@@ -1,16 +1,10 @@
 import ast
 import asyncio
-import aiosqlite
+from typing import Optional
 
-from discord import (
-    ButtonStyle,
-    Embed,
-    Forbidden,
-    Interaction,
-    InteractionResponded,
-    Locale,
-    NotFound,
-)
+import aiosqlite
+from discord import (ButtonStyle, Embed, Forbidden, Interaction,
+                     InteractionResponded, Locale, NotFound)
 from discord.ui import Button, TextInput
 
 import asset
@@ -20,9 +14,10 @@ from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
+from exceptions import DBError
 from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import default_embed, divide_chunks, error_embed
+from utility.utils import default_embed, divide_chunks, error_embed, log
 
 
 class View(BaseView):
@@ -214,6 +209,7 @@ class NotificationOFF(Button):
         self.view: View
         await on_off_function(self.view, self.table_name, i, 0)
 
+
 async def on_off_function(view: View, table_name: str, i: Interaction, toggle: int):
     async with aiosqlite.connect("shenhe.db") as db:
         if table_name in ["talent_notification", "weapon_notification"]:
@@ -228,7 +224,7 @@ async def on_off_function(view: View, table_name: str, i: Interaction, toggle: i
             )
 
         await db.commit()
-        
+
     if table_name == "resin_notification":
         await return_resin_notification(i, view)
     elif table_name == "pot_notification":
@@ -239,6 +235,7 @@ async def on_off_function(view: View, table_name: str, i: Interaction, toggle: i
         await return_weapon_notification(i, view)
     elif table_name == "pt_notification":
         await return_pt_notification(i, view)
+
 
 class ChangeSettings(Button):
     def __init__(self, locale: Locale | str, table_name: str):
@@ -299,7 +296,9 @@ class ChangeSettings(Button):
                         )
                     await return_pt_notification(i, self.view)
             except ValueError:
-                children = [item for item in self.view.children if isinstance(item, Button)]
+                children = [
+                    item for item in self.view.children if isinstance(item, Button)
+                ]
                 for child in children:
                     child.disabled = True
                 await i.edit_original_response(
@@ -388,7 +387,7 @@ async def return_resin_notification(i: Interaction, view: View):
                 toggle, threshold, max = rows
             else:
                 raise ValueError("No rows found")
-            
+
         await db.commit()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
@@ -419,18 +418,9 @@ async def return_resin_notification(i: Interaction, view: View):
 
 async def return_pt_notification(i: Interaction, view: View):
     uid = await get_uid(i.user.id)
-
-    await i.client.db.execute(
-        "INSERT INTO pt_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
+    toggle, max_notif = await get_notification_status(
+        i.user.id, uid, "pt_notification", "toggle, max"
     )
-    await i.client.db.commit()
-
-    async with i.client.db.execute(
-        "SELECT max, toggle FROM pt_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, uid),
-    ) as c:
-        max_notif, toggle = await c.fetchone()
     value = f"""
         {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
         {text_map.get(103, view.locale)}: {max_notif}
@@ -457,18 +447,10 @@ async def return_pt_notification(i: Interaction, view: View):
 
 async def return_pot_notification(i: Interaction, view: View):
     uid = await get_uid(i.user.id)
-
-    await i.client.db.execute(
-        "INSERT INTO pot_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
+    toggle, threshold, max = await get_notification_status(
+        i.user.id, uid, "pot_notification", "toggle, threshold, max"
     )
-    await i.client.db.commit()
 
-    async with i.client.db.execute(
-        "SELECT toggle, threshold, max FROM pot_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, uid),
-    ) as c:
-        (toggle, threshold, max) = await c.fetchone()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
@@ -493,12 +475,11 @@ async def return_pot_notification(i: Interaction, view: View):
 
 
 async def return_talent_notification(i: Interaction, view: View):
-    async with i.client.db.execute(
-        "SELECT toggle, character_list FROM talent_notification WHERE user_id = ?",
-        (i.user.id,),
-    ) as c:
-        toggle, character_list = await c.fetchone()
+    toggle, character_list = await get_notification_status(
+        i.user.id, None, "talent_notification", "toggle, character_list"
+    )
     character_list = ast.literal_eval(character_list)
+
     embed = default_embed(message=text_map.get(590, view.locale))
     embed.set_author(
         name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
@@ -539,12 +520,11 @@ async def return_talent_notification(i: Interaction, view: View):
 
 
 async def return_weapon_notification(i: Interaction, view: View):
-    async with i.client.db.execute(
-        "SELECT toggle, weapon_list FROM weapon_notification WHERE user_id = ?",
-        (i.user.id,),
-    ) as c:
-        toggle, weapon_list = await c.fetchone()
+    toggle, weapon_list = await get_notification_status(
+        i.user.id, None, "weapon_notification", "toggle, weapon_list"
+    )
     weapon_list = ast.literal_eval(weapon_list)
+
     embed = default_embed(message=text_map.get(633, view.locale))
     embed.set_author(
         name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
@@ -587,20 +567,9 @@ async def return_weapon_notification(i: Interaction, view: View):
 async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
-    c = await i.client.db.cursor()
-    await c.execute(
-        "INSERT INTO talent_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
-        (i.user.id,),
-    )
-    await c.execute(
-        "INSERT INTO weapon_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
-        (i.user.id,),
-    )
-    await i.client.db.commit()
-    await c.close()
-
     embed = default_embed(message=text_map.get(592, locale))
     embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
+
     view = View(locale)
     if send:
         await i.response.send_message(embed=embed, view=view)
@@ -614,3 +583,31 @@ async def return_notification_menu(
         view.message = await i.original_response()
     except NotFound:
         pass
+
+
+async def get_notification_status(
+    user_id: int, uid: Optional[int], table_name: str, items: str
+):
+    _data = (user_id, uid) if uid else (user_id,)
+    insert_query = "(user_id, uid)" if uid else "(user_id)"
+    select_query = "user_id = ? AND uid = ?" if uid else "user_id = ?"
+    values_query = "(?, ?)" if uid else "(?)"
+
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            f"INSERT INTO {table_name} {insert_query} VALUES {values_query} ON CONFLICT DO NOTHING",
+            _data,
+        ) as c:
+            await c.execute(
+                f"SELECT {items} FROM {table_name} WHERE {select_query}",
+                _data,
+            )
+            rows = await c.fetchone()
+            if rows is None:
+                log.warning(f"User {user_id} with uid {uid} not found in {table_name}")
+                raise DBError(
+                    f"User {user_id} with uid {uid} not found in {table_name}"
+                )
+        await db.commit()
+
+    return rows

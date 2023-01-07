@@ -1,18 +1,26 @@
 import json
 from typing import Any, Dict, List, Tuple, Union
-from apps.genshin_data.utility import get_text
-from discord import Locale
+
+import aiofiles
 from dateutil import parser
+from discord import Locale
+
+from apps.genshin.custom_model import AbyssChamber, AbyssFloor, AbyssHalf
+from apps.genshin_data.utility import get_text
 from utility.utils import get_dt_now, parse_HTML, time_in_range
 
 
-def get_abyss_blessing(
+async def get_abyss_blessing(
     text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
 ) -> Tuple[str, str]:
-    with open("GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json") as f:
-        tower: List[Dict[str, Any]] = json.load(f)
-    with open("GenshinData/ExcelBinOutput/DungeonLevelEntityConfigData.json") as f:
-        dungeon: List[Dict[str, Any]] = json.load(f)
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
+    ) as f:
+        tower: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/DungeonLevelEntityConfigData.json"
+    ) as f:
+        dungeon: List[Dict[str, Any]] = json.loads(await f.read())
 
     current_tower = get_current_tower(tower)
 
@@ -22,20 +30,28 @@ def get_abyss_blessing(
     buff_desc = "Unknown"
     dungeon_configs = find_dungeon_configs(dungeon, buff_id)
     if dungeon_configs:
-        buff_desc = parse_HTML(get_text(text_map, locale, dungeon_configs[0]["descTextMapHash"]))
+        buff_desc = parse_HTML(
+            get_text(text_map, locale, dungeon_configs[0]["descTextMapHash"])
+        )
 
     return buff_name, buff_desc
 
 
-def get_ley_line_disorders(
+async def get_ley_line_disorders(
     text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
 ) -> Dict[int, List[str]]:
-    with open("GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json") as f:
-        tower: List[Dict[str, Any]] = json.load(f)
-    with open("GenshinData/ExcelBinOutput/TowerFloorExcelConfigData.json") as f:
-        floor: List[Dict[str, Any]] = json.load(f)
-    with open("GenshinData/ExcelBinOutput/DungeonLevelEntityConfigData.json") as f:
-        dungeon: List[Dict[str, Any]] = json.load(f)
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
+    ) as f:
+        tower: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerFloorExcelConfigData.json"
+    ) as f:
+        floor: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/DungeonLevelEntityConfigData.json"
+    ) as f:
+        dungeon: List[Dict[str, Any]] = json.loads(await f.read())
 
     current_tower = get_current_tower(tower)
 
@@ -58,6 +74,63 @@ def get_ley_line_disorders(
                 if disorder_desc != "Unknown":
                     result[num].append(disorder_desc)
         num += 1
+
+    return result
+
+
+async def get_abyss_enemies(
+    text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
+) -> List[AbyssFloor]:
+    result: List[AbyssFloor] = []
+
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
+    ) as f:
+        tower_schedule: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerFloorExcelConfigData.json"
+    ) as f:
+        tower_floor: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/TowerLevelExcelConfigData.json"
+    ) as f:
+        tower_level: List[Dict[str, Any]] = json.loads(await f.read())
+    async with aiofiles.open(
+        "GenshinData/ExcelBinOutput/MonsterDescribeExcelConfigData.json"
+    ) as f:
+        monster_describe: List[Dict[str, Any]] = json.loads(await f.read())
+
+    current_tower = get_current_tower(tower_schedule)
+
+    corridor = current_tower["entranceFloorId"]
+    spire = current_tower["schedules"][0]["floorList"]
+
+    for floor_id in corridor + spire:
+        floor = find_tower_floor(tower_floor, floor_id)
+        result.append(a_floor := AbyssFloor(num=floor["floorIndex"], chambers=[]))
+        tower_levels = find_tower_levels(tower_level, floor["levelGroupId"])
+        for t_level in tower_levels:
+            a_floor.chambers.append(
+                a_chamber := AbyssChamber(
+                    num=t_level["levelIndex"],
+                    enemy_level=t_level["monsterLevel"],
+                    halfs=[],
+                )
+            )
+            halfs: List[List[int]] = [
+                t_level["firstMonsterList"],
+                t_level["secondMonsterList"],
+            ]
+            for index, half in enumerate(halfs):
+                a_chamber.halfs.append(a_half := AbyssHalf(num=index + 1, enemies=[]))
+                for monster_id in half:
+                    monster = find_monster_describe(monster_describe, monster_id)
+                    if monster:
+                        a_half.enemies.append(
+                            get_text(text_map, locale, monster["nameTextMapHash"])
+                        )
+
+        result.append(a_floor)
 
     return result
 
@@ -92,3 +165,22 @@ def find_dungeon_configs(
         if d["id"] == config_id:
             result.append(d)
     return result
+
+
+def find_tower_levels(
+    tower_level: List[Dict[str, Any]], level_grou_id: int
+) -> List[Dict[str, Any]]:
+    result: List[Dict[str, Any]] = []
+    for t in tower_level:
+        if t["levelGroupId"] == level_grou_id:
+            result.append(t)
+    return result
+
+
+def find_monster_describe(
+    monster_describe: List[Dict[str, Any]], monster_id: int
+) -> Dict[str, Any]:
+    for m in monster_describe:
+        if m["id"] == monster_id:
+            return m
+    return {}

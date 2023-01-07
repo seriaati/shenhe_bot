@@ -20,11 +20,9 @@ class View(BaseView):
         author: User | Member,
         result: AbyssResult,
         locale: Locale | str,
-        db: aiosqlite.Connection,
     ):
-        super().__init__(timeout=config.mid_timeout)
         self.author = author
-        self.db = db
+        super().__init__(timeout=config.mid_timeout)
 
         self.add_item(FloorSelect(result, locale))
 

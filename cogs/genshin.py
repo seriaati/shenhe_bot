@@ -8,7 +8,7 @@ from discord import (Embed, File, Interaction, Member, SelectOption, User,
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import Button, Select
+from discord.ui import Button
 from discord.utils import format_dt
 from dotenv import load_dotenv
 
@@ -16,7 +16,6 @@ import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Event, Material, Weapon
 from apps.draw import main_funcs
-from apps.genshin.abyss import get_abyss_enemies
 from apps.genshin.checks import *
 from apps.genshin.custom_model import (AbyssHalf, AbyssResult, AreaResult,
                                        CharacterResult, DiaryResult, DrawInput,
@@ -32,7 +31,7 @@ from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
                                parse_furniture_wiki, parse_material_wiki,
                                parse_monster_wiki, parse_namecard_wiki,
                                parse_weapon_wiki)
-from apps.genshin_data.abyss import get_abyss_blessing, get_ley_line_disorders
+from apps.genshin_data.abyss import get_abyss_blessing, get_abyss_enemies, get_ley_line_disorders
 from apps.text_map.convert_locale import (to_ambr_top, to_event_lang,
                                           to_genshin_py)
 from apps.text_map.text_map_app import text_map
@@ -40,14 +39,13 @@ from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
 from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound,
                         NoPlayerFound, UIDNotFound)
-from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, EnkaProfile,
-                                 EventTypeChooser, Leaderboard, Lineup,
-                                 ShowAllCharacters, UIDCommand)
+from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, Domain,
+                                 EnkaProfile, EventTypeChooser, Leaderboard,
+                                 Lineup, ShowAllCharacters, UIDCommand)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
-from utility.domain_paginator import DomainPaginator
-from utility.paginator import GeneralPaginator, _view
+from utility.paginator import GeneralPaginator
 from utility.utils import (add_bullet_points, default_embed, divide_chunks,
                            error_embed, get_dt_now, get_user_appearance_mode,
                            parse_HTML)
@@ -58,7 +56,7 @@ load_dotenv()
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
-        self.genshin_app = GenshinApp(self.bot.db, self.bot)
+        self.genshin_app = GenshinApp(self.bot)
         self.debug = self.bot.debug
         maps_to_open = [
             "avatar",
@@ -86,13 +84,13 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.item_names = {}
 
         try:
-            with open("data/cards/cards_en-us.json") as f:
+            with open("data/cards/cards_en-us.json", "r") as f:
                 self.card_en_us = json.load(f)
         except FileNotFoundError:
             self.card_en_us = {}
 
         try:
-            with open("data/cards/cards_i18n.json") as f:
+            with open("data/cards/cards_i18n.json", "r") as f:
                 self.card_i18n = json.load(f)
         except FileNotFoundError:
             self.card_i18n = {}
@@ -189,7 +187,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             fp.seek(0)
             await i.edit_original_response(
-                embed=note_result.embed.set_image(url="attachment://realtime_notes.jpeg"),
+                embed=note_result.embed.set_image(
+                    url="attachment://realtime_notes.jpeg"
+                ),
                 attachments=[File(fp, filename="realtime_notes.jpeg")],
             )
 
@@ -404,9 +404,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result.result)
         else:
             abyss_result: AbyssResult = result.result
-            view = Abyss.View(
-                i.user, abyss_result, user_locale or i.locale, self.bot.db
-            )
+            view = Abyss.View(i.user, abyss_result, user_locale or i.locale)
             fp = abyss_result.overview_file
             fp.seek(0)
             image = File(fp, "overview_card.jpeg")
@@ -415,7 +413,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             view.message = await i.original_response()
             await update_user_abyss_leaderboard(
-                self.bot.db,
                 abyss_result.abyss,
                 abyss_result.genshin_user,
                 abyss_result.characters,
@@ -445,57 +442,10 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def farm(self, i: Interaction):
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id)
+        locale = await get_user_locale(i.user.id) or i.locale
         uid = await get_uid(i.user.id)
         now = get_dt_now() + timedelta(hours=get_uid_tz(uid))
         result, embeds, options = await get_farm_data(i, now.weekday())
-
-        class DomainSelect(Select):
-            def __init__(self, placeholder: str, options: List[SelectOption], row: int):
-                super().__init__(options=options, placeholder=placeholder, row=row)
-
-            async def callback(self, i: Interaction):
-                self.view: _view
-                self.view.current_page = int(self.values[0])
-                await self.view.update_children(i)
-
-        class WeekDaySelect(Select):
-            def __init__(self, placeholder: str):
-                options = []
-                for index in range(0, 7):
-                    weekday_text = text_map.get(234 + index, i.locale, user_locale)
-                    options.append(SelectOption(label=weekday_text, value=str(index)))
-                super().__init__(options=options, placeholder=placeholder, row=4)
-
-            async def callback(self, i: Interaction):
-                self.view: _view
-                result, embeds, options = await get_farm_data(i, int(self.values[0]))
-                self.view.files = result
-                self.view.embeds = embeds
-                first = 1
-                row = 2
-                options = list(divide_chunks(options, 25))
-                children = []
-                for option in options:
-                    children.append(
-                        DomainSelect(
-                            f"{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})",
-                            option,
-                            row,
-                        )
-                    )
-                    first += 25
-                    row += 1
-                children.append(self)
-                for child in self.view.children:
-                    if isinstance(child, DomainSelect) or isinstance(
-                        child, WeekDaySelect
-                    ):
-                        self.view.remove_item(child)
-                for child in children:
-                    self.view.add_item(child)
-                self.view.current_page = 0
-                await self.view.update_children(i)
 
         children = []
         options = list(divide_chunks(options, 25))
@@ -503,22 +453,21 @@ class GenshinCog(commands.Cog, name="genshin"):
         row = 2
         for option in options:
             children.append(
-                DomainSelect(
-                    f"{text_map.get(325, i.locale, user_locale)} ({first}~{first+len(option)})",
+                Domain.DomainSelect(
+                    f"{text_map.get(325, locale)} ({first}~{first+len(option)})",
                     option,
                     row,
                 )
             )
             first += 25
             row += 1
-        children.append(WeekDaySelect(text_map.get(583, i.locale, user_locale)))
-        await DomainPaginator(
+        children.append(Domain.WeekDaySelect(text_map.get(583, locale), locale))
+        await GeneralPaginator(
             i,
             embeds,
-            self.bot.db,
-            files=result,
+            domains=result,
             custom_children=children,
-        ).start()
+        ).start(followup=True)
 
     @app_commands.command(
         name="build",
@@ -553,15 +502,16 @@ class GenshinCog(commands.Cog, name="genshin"):
         try:
             if uid is None:
                 if i.guild is not None and i.guild.id == 916838066117824553:
-                    async with self.bot.main_db.execute(
-                        f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
-                        (player.id,),
-                    ) as c:
-                        uid = await c.fetchone()
-                    if uid is None:
-                        raise UIDNotFound
-                    else:
-                        uid = uid[0]
+                    async with aiosqlite.connect("../shenhe_main/main.db") as db:
+                        async with db.execute(
+                            f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
+                            (player.id,),
+                        ) as c:
+                            uid = await c.fetchone()
+                        if uid is None:
+                            raise UIDNotFound
+                        else:
+                            uid = uid[0]
                 else:
                     raise UIDNotFound
         except UIDNotFound:
@@ -699,7 +649,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_image(url="attachment://profile.jpeg")
         embed_two = default_embed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
-        dark_mode = await get_user_appearance_mode(i.user.id, self.bot.db)
+        dark_mode = await get_user_appearance_mode(i.user.id)
         fp, fp_two = await main_funcs.draw_profile_card(
             DrawInput(
                 loop=self.bot.loop,
@@ -763,7 +713,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search(self, i: Interaction, query: str):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id)
-        dark_mode = await get_user_appearance_mode(i.user.id, self.bot.db)
+        dark_mode = await get_user_appearance_mode(i.user.id)
         locale = user_locale or i.locale
         try:
             ambr_top_locale = to_ambr_top(locale)
@@ -965,9 +915,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def abyss_enemies(self, i: Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id) or i.locale
-        floors, version = await get_abyss_enemies(self.bot.session)
+        floors = await get_abyss_enemies(self.bot.gd_text_map, locale)
 
-        ley_line_disorders = get_ley_line_disorders(self.bot.gd_text_map, locale)
+        ley_line_disorders = await get_ley_line_disorders(self.bot.gd_text_map, locale)
 
         embeds: Dict[str, Embed] = {}
         enemies: Dict[str, List[AbyssHalf]] = {}
@@ -979,18 +929,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed.add_field(
                     name=text_map.get(706, locale),
                     value=add_bullet_points(
-                        ley_line_disorders.get(floor.num, floor.ley_line_disorders)
+                        ley_line_disorders.get(floor.num, [])
                     ),
                     inline=False,
                 )
                 embed.add_field(
                     name=text_map.get(295, locale),
                     value=chamber.enemy_level,
-                    inline=False,
-                )
-                embed.add_field(
-                    name=text_map.get(296, locale),
-                    value=chamber.challenge_target,
                     inline=False,
                 )
                 embed.set_image(url="attachment://enemies.jpeg")
@@ -1002,11 +947,11 @@ class GenshinCog(commands.Cog, name="genshin"):
             url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-Abyss.jpg"
         )
         embed.set_author(
-            name=f"{text_map.get(705, locale)} (v{version})",
+            name=f"{text_map.get(705, locale)}",
             icon_url=i.user.display_avatar.url,
         )
 
-        buff_name, buff_desc = get_abyss_blessing(self.bot.gd_text_map, locale)
+        buff_name, buff_desc = await get_abyss_blessing(self.bot.gd_text_map, locale)
         buff_embed = default_embed(text_map.get(733, locale))
         buff_embed.add_field(
             name=buff_name,
@@ -1156,7 +1101,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             if g_locale == "en-us":
                 card_name = card["name"]
             else:
-                card_name = self.card_i18n.get(g_locale, {}).get(card["name"], card["name"])
+                card_name = self.card_i18n.get(g_locale, {}).get(
+                    card["name"], card["name"]
+                )
             if current.lower() in card_name.lower():
                 choices.append(Choice(name=card_name, value=str(card["id"])))
 

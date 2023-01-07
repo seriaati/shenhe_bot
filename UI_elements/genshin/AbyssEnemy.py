@@ -72,47 +72,33 @@ class BuffButton(Button):
 
 async def select_callback(i: Interaction, view: View, value: str):
     await image_gen_transition(i, view, view.locale)
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))
+    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale)) # type: ignore
     halfs = view.halfs[value]
     embeds = []
     attachments = []
     for index, half in enumerate(halfs):
         materials = []
         for enemy in half.enemies:
-            geovishap = False
-            enemy_id = text_map.get_id_from_name(enemy.name)
-            if "Geovishap" in enemy.name:
-                geovishap = True
-                enemy_id = 26040101
+            enemy_id = text_map.get_id_from_name(enemy)
             if enemy_id is None:
                 continue
             monster = await ambr.get_monster(enemy_id)
             if isinstance(monster, Monster):
-                monster_name = monster.name
-                if geovishap:
-                    element = (
-                        enemy.name.split("Geovishap ")[1]
-                        .replace("(", "")
-                        .replace(")", "")
-                    )
-                    monster_name = (
-                        f"{monster.name} ({get_element_name(element, view.locale)})"
-                    )
                 materials.append(
                     (
                         Material(
                             id=monster.id,
-                            name=monster_name,
+                            name=monster.name,
                             icon=monster.icon,
                             type="custom",
                         ),
-                        enemy.num,
+                        "",
                     )
                 )
         fp = await main_funcs.draw_material_card(
             DrawInput(
                 loop=i.client.loop,
-                session=i.client.session,
+                session=i.client.session, # type: ignore
                 locale=view.locale,
                 dark_mode=await get_user_appearance_mode(i.user.id),
             ),

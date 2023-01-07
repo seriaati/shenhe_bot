@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
+import aiosqlite
 from ambr.client import AmbrTopAPI
 from ambr.models import Material
 from apps.text_map.convert_locale import to_ambr_top
@@ -80,8 +81,9 @@ class ClearItems(Button):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
     async def callback(self, i: Interaction):
-        await i.client.db.execute("DELETE FROM todo WHERE user_id = ?", (i.user.id,))
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute("DELETE FROM todo WHERE user_id = ?", (i.user.id,))
+            await db.commit()
         await return_todo(i)
 
 
@@ -114,22 +116,23 @@ class ItemSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: _view
-        
-        async with i.client.db.execute(
-            "SELECT max FROM todo WHERE item = ?", (self.values[0],)
-        ) as cursor:
-            current_amount = await cursor.fetchone()
-            if current_amount is not None:
-                current_amount = current_amount[0]
-                await i.response.send_modal(
-                    InputItemAmountModal(
-                        self.locale,
-                        self.values[0],
-                        self.action,
-                        current_amount,
-                        self.item_dict,
+
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT max FROM todo WHERE item = ?", (self.values[0],)
+            ) as c:
+                current_amount = await c.fetchone()
+                if current_amount is not None:
+                    current_amount = current_amount[0]
+                    await i.response.send_modal(
+                        InputItemAmountModal(
+                            self.locale,
+                            self.values[0],
+                            self.action,
+                            current_amount,
+                            self.item_dict,
+                        )
                     )
-                )
 
 
 class AddItemModal(BaseModal):
@@ -152,18 +155,20 @@ class AddItemModal(BaseModal):
         if not self.count.value.isdigit():
             return await return_todo(i)
         item_id = text_map.get_id_from_name(self.item.value.capitalize())
-        await i.client.db.execute(
-            "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, 0, ?) ON CONFLICT (user_id, item) DO UPDATE SET max = max + ? WHERE item = ? AND user_id = ?",
-            (
-                i.user.id,
-                item_id or self.item.value,
-                self.count.value,
-                self.count.value,
-                item_id or self.item.value,
-                i.user.id,
-            ),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET max = max + ? WHERE item = ? AND user_id = ?",
+                (
+                    i.user.id,
+                    item_id or self.item.value,
+                    self.count.value,
+                    self.count.value,
+                    self.count.value,
+                    item_id or self.item.value,
+                    i.user.id,
+                ),
+            )
+            await db.commit()
         await return_todo(i)
 
 
@@ -195,24 +200,25 @@ class InputItemAmountModal(BaseModal):
         self.count.default = str(current_amount)
 
     async def on_submit(self, i: Interaction) -> None:
-        
+
         if not self.count.value.isdigit():
             return await return_todo(i)
 
-        if self.action is TodoAction.REMOVE:
-            await i.client.db.execute(
-                "UPDATE todo SET max = max - ? WHERE item = ? AND user_id = ?",
-                (self.count.value, self.item_name, i.user.id),
-            )
-            await i.client.db.execute("DELETE FROM todo WHERE max = 0")
-        elif self.action is TodoAction.EDIT:
-            await i.client.db.execute(
-                "UPDATE todo SET count = ? WHERE item = ? AND user_id = ?",
-                (self.count.value, self.item_name, i.user.id),
-            )
-            await i.client.db.execute("DELETE FROM todo WHERE count >= max")
+        async with aiosqlite.connect("shenhe.db") as db:
+            if self.action is TodoAction.REMOVE:
+                await db.execute(
+                    "UPDATE todo SET max = max - ? WHERE item = ? AND user_id = ?",
+                    (self.count.value, self.item_name, i.user.id),
+                )
+                await db.execute("DELETE FROM todo WHERE max = 0")
+            elif self.action is TodoAction.EDIT:
+                await db.execute(
+                    "UPDATE todo SET count = ? WHERE item = ? AND user_id = ?",
+                    (self.count.value, self.item_name, i.user.id),
+                )
+                await db.execute("DELETE FROM todo WHERE count >= max")
+            await db.commit()
 
-        await i.client.db.commit()
         await return_todo(i)
 
 
@@ -223,12 +229,13 @@ async def return_todo(i: Interaction):
     todo_items: List[TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
 
-    async with i.client.db.execute(
-        "SELECT item, count, max FROM todo WHERE user_id = ? ORDER BY item",
-        (i.user.id,),
-    ) as c:
-        async for row in c:
-            todo_items.append(TodoItem(name=row[0], current=row[1], max=row[2]))
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT item, count, max FROM todo WHERE user_id = ? ORDER BY item",
+            (i.user.id,),
+        ) as c:
+            async for row in c:
+                todo_items.append(TodoItem(name=row[0], current=row[1], max=row[2]))
 
     view = View(todo_items, locale)
     view.author = i.user

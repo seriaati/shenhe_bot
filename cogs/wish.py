@@ -97,7 +97,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 permanent_banner_num=permanent_banner,
                 novice_banner_num=novice_banner,
             )
-            embed = await get_wish_info_embed(i, locale, wish_info)
+            embed = await get_wish_info_embed(i, str(locale), wish_info)
             view = SetAuthKey.View(locale, True, True)
             view.clear_items()
             view.add_item(
@@ -167,22 +167,23 @@ class WishCog(commands.GroupCog, name="wish"):
         locale = await get_user_locale(i.user.id) or i.locale
 
         # charcter banner data
-        async with self.bot.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(member.id)),
-        ) as cursor:
-            up_num = 0
-            std = get_standard_characters()
-            data_length = 0
-            async for row in cursor:
-                name = row[0]
-                rarity = row[1]
-                if rarity == 5:
-                    if name not in std:
-                        up_num += 1
-                data_length += 1
-            dist_c = GI.up_5star_character(item_num=up_num)
-            player_luck = round(100 * sum((dist_c)[: data_length + 1]), 2)
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
+                (i.user.id, await get_uid(member.id)),
+            ) as cursor:
+                up_num = 0
+                std = get_standard_characters()
+                data_length = 0
+                async for row in cursor:
+                    name = row[0]
+                    rarity = row[1]
+                    if rarity == 5:
+                        if name not in std:
+                            up_num += 1
+                    data_length += 1
+                dist_c = GI.up_5star_character(item_num=up_num)
+                player_luck = round(100 * sum((dist_c)[: data_length + 1]), 2)
 
         embed = default_embed(
             message=f"""
@@ -219,26 +220,24 @@ class WishCog(commands.GroupCog, name="wish"):
             )
         await i.response.defer()
 
-        async with self.bot.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id)),
-        ) as cursor:
-            data: List[Tuple[str, int, str]] = await cursor.fetchall()
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = ? ORDER BY wish_id DESC",
+                (i.user.id, await get_uid(i.user.id)),
+            ) as c:
+                pull_state = 0
+                up_guarantee = 0
 
-        pull_state = 0
-        up_guarantee = 0
+                std = get_standard_characters()
 
-        if data:
-            std = get_standard_characters()
-
-            for pull, tpl in enumerate(data):
-                name = tpl[0]
-                rarity = tpl[1]
-                if rarity == 5:
-                    if name in std:
-                        up_guarantee = 1
-                    pull_state = pull
-                    break
+                async for row in c:
+                    name = row[0]
+                    rarity = row[1]
+                    if rarity == 5:
+                        if name in std:
+                            up_guarantee = 1
+                        break
+                    pull_state += 1
 
         dist_c = GI.up_5star_character(
             item_num=item_num, pull_state=pull_state, up_guarantee=up_guarantee
@@ -248,7 +247,7 @@ class WishCog(commands.GroupCog, name="wish"):
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
             f"• {text_map.get(370 if up_guarantee==1 else 371, i.locale, user_locale)}\n"
-            f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_c.exp))}\n"
+            f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_c.exp))}\n" # type: ignore
         )
         embed.set_author(
             name=text_map.get(386, i.locale, user_locale),
@@ -290,23 +289,21 @@ class WishCog(commands.GroupCog, name="wish"):
                 ephemeral=True,
             )
 
-        async with self.bot.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id)),
-        ) as cursor:
-            data: List[Tuple[str, int, str]] = await cursor.fetchall()
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_name, wish_rarity, wish_time FROM wish_history WHERE user_id = ? AND wish_banner_type = 302 AND uid = ? ORDER BY wish_id DESC",
+                (i.user.id, await get_uid(i.user.id)),
+            ) as c:
+                pull_state = 0
+                last_name = ""
 
-        pull_state = 0
-
-        if data:
-            last_name = ""
-            for pull, tpl in enumerate(data):
-                name = tpl[0]
-                rarity = tpl[1]
-                if rarity == 5:
-                    if last_name == "":
-                        last_name = name
-                        pull_state = pull
+                async for row in c:
+                    name = row[0]
+                    rarity = row[1]
+                    if rarity == 5:
+                        if last_name == "":
+                            last_name = name
+                    pull_state += 1
 
             view = ChooseWeapon.View(i.locale, user_locale)
             view.author = i.user
@@ -325,8 +322,6 @@ class WishCog(commands.GroupCog, name="wish"):
                 up_guarantee = 0
             else:  # 是常駐
                 up_guarantee = 1
-        else:
-            up_guarantee = 0
 
         dist_w = GI.up_5star_ep_weapon(
             item_num=item_num,
@@ -339,7 +334,7 @@ class WishCog(commands.GroupCog, name="wish"):
             message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
             f"• {text_map.get(657, i.locale, user_locale).replace('-', ' ')}: **{fate_point}**\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
-            f"• {text_map.get(385, i.locale, user_locale).format(a=round(dist_w.exp))}\n"
+            f"• {text_map.get(385, i.locale, user_locale).format(a=round(dist_w.exp))}\n" # type: ignore
         )
         embed.set_author(
             name=text_map.get(393, i.locale, user_locale),
@@ -477,7 +472,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=user_locale or i.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, self.bot.db),
+                dark_mode=await get_user_appearance_mode(i.user.id),
             ),
             list(all_wish_data.values())[0],
             member.display_avatar.url,

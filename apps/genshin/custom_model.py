@@ -100,11 +100,9 @@ class WishInfo(BaseModel):
 class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
-    db: aiosqlite.Connection
-    main_db: aiosqlite.Connection
-    backup_db: aiosqlite.Connection
     gd_text_map: Dict[str, Dict[str, str]]
     browsers: Dict[str, Browser]
+    gateway: HuTaoLoginAPI
     debug: bool
     maintenance: bool = False
     maintenance_time: Optional[str] = ""
@@ -331,25 +329,17 @@ class TodoItem(BaseModel):
     current: int
     max: int
 
-
-class AbyssEnemy(BaseModel):
-    name: str
-    num: int
-
 class AbyssHalf(BaseModel):
     num: int
-    enemies: List[AbyssEnemy]
+    enemies: List[str]
 
 class AbyssChamber(BaseModel):
     num: int
     enemy_level: int
-    challenge_target: str
     halfs: List[AbyssHalf]
-
 
 class AbyssFloor(BaseModel):
     num: int
-    ley_line_disorders: List[str]
     chambers: List[AbyssChamber]
 
 class InitLevels(BaseModel):

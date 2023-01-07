@@ -94,8 +94,7 @@ def genshin_error_handler(func):
 
 
 class GenshinApp:
-    def __init__(self, db: aiosqlite.Connection, bot) -> None:
-        self.db = db
+    def __init__(self, bot) -> None:
         self.bot: ShenheBot = bot
 
     @genshin_error_handler
@@ -132,7 +131,7 @@ class GenshinApp:
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=shenhe_user.user_locale or str(locale),
-                dark_mode=await get_user_appearance_mode(author_id, self.db),
+                dark_mode=await get_user_appearance_mode(author_id),
             )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
@@ -212,7 +211,7 @@ class GenshinApp:
             if not isinstance(characters, List):
                 raise TypeError("Characters is not a list")
 
-            mode = await get_user_appearance_mode(author_id, self.db)
+            mode = await get_user_appearance_mode(author_id)
             fp = await main_funcs.draw_stats_card(
                 DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
                 namecard,
@@ -241,7 +240,7 @@ class GenshinApp:
         explorations = genshin_user.explorations
         fp = self.bot.area_card_cache.get(uid)
         if fp is None:
-            mode = await get_user_appearance_mode(author_id, self.db)
+            mode = await get_user_appearance_mode(author_id)
             fp = await main_funcs.draw_area_card(
                 DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
                 list(explorations),
@@ -278,7 +277,7 @@ class GenshinApp:
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=shenhe_user.user_locale or locale,
-                dark_mode=await get_user_appearance_mode(author_id, self.db),
+                dark_mode=await get_user_appearance_mode(author_id),
             ),
             diary,
             user,
@@ -363,7 +362,7 @@ class GenshinApp:
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         overview.set_footer(text=text_map.get(254, new_locale))
-        dark_mode = await get_user_appearance_mode(author_id, self.db)
+        dark_mode = await get_user_appearance_mode(author_id)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
         if fp is None:
@@ -456,7 +455,7 @@ class GenshinApp:
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=new_locale,
-                dark_mode=await get_user_appearance_mode(author_id, self.db),
+                dark_mode=await get_user_appearance_mode(author_id),
             ),
             list(characters),
             "All",

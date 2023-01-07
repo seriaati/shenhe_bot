@@ -1,12 +1,14 @@
-from apps.text_map.text_map_app import text_map
-from UI_base_models import BaseView
-from discord import Interaction, Locale, SelectOption, ButtonStyle
-from discord.ui import Button, button, Select
-from apps.text_map.utils import get_user_locale
-from utility.utils import default_embed
-import config
-from UI_elements.wish import SetAuthKey
 from typing import List
+
+from discord import ButtonStyle, Interaction, Locale, SelectOption
+from discord.ui import Button, Select, button
+
+import config
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from UI_base_models import BaseView
+from UI_elements.wish import SetAuthKey
+from utility.utils import default_embed
 
 import_options = {
     "PC - #1": {
@@ -44,7 +46,7 @@ import_options = {
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale):
+    def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
 
@@ -108,7 +110,7 @@ class ChooseMethod(Select):
     async def callback(self, i: Interaction):
         self.view: View
         embeds = []
-        option = import_options.get(self.values[0])
+        option = import_options.get(self.values[0], {})
         embed = default_embed()
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
@@ -143,6 +145,7 @@ class GOBack(Button):
         super().__init__(emoji="<:left:982588994778972171>")
 
     async def callback(self, i: Interaction):
+        self.view: View
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id)
         view = View(self.view.locale)

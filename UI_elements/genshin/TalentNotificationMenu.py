@@ -2,15 +2,17 @@ import ast
 from typing import Any, List
 
 import aiosqlite
+from discord import Interaction, Locale, SelectOption
+from discord.ui import Button, Select
+
 import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.utils import get_character_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.elements import convert_elements, elements
+from exceptions import DBError
 from UI_base_models import BaseView
-from discord import Interaction, Locale, SelectOption
-from discord.ui import Button, Select
 from UI_elements.genshin import ReminderMenu
 
 
@@ -27,12 +29,14 @@ class View(BaseView):
             )
         self.add_item(GoBackTwo())
 
+
 class GoBackTwo(Button):
     def __init__(self):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
-    
+
     async def callback(self, i: Interaction):
-        await ReminderMenu.return_talent_notification(i, self.view)
+        await ReminderMenu.return_talent_notification(i, self.view)  # type: ignore
+
 
 class ElementButton(Button):
     def __init__(self, element: str, element_emoji: str, row: int):
@@ -41,20 +45,24 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        async with i.client.db.execute(
-            "SELECT character_list FROM talent_notification WHERE user_id = ?",
-            (i.user.id,),
-        ) as cursor:
-            character_list = await cursor.fetchone()
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT character_list FROM talent_notification WHERE user_id = ?",
+                (i.user.id,),
+            ) as cursor:
+                character_list = await cursor.fetchone()
+                if character_list is None:
+                    raise DBError(f"User {i.user.id} not found in talent_notification")
         character_list = ast.literal_eval(character_list[0])
+
         locale = self.view.locale
         options = []
         ambr_locale = to_ambr_top(locale)
-        client = AmbrTopAPI(i.client.session, ambr_locale)
+        client = AmbrTopAPI(i.client.session, ambr_locale)  # type: ignore
         characters = await client.get_character()
         if not isinstance(characters, List):
             raise TypeError("Characters is not a list")
-        
+
         for character in characters:
             if character.element == self.element:
                 description = (
@@ -102,22 +110,24 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "SELECT character_list FROM talent_notification WHERE user_id = ?",
-            (i.user.id,),
-        )
-        (character_list,) = await c.fetchone()
-        character_list = ast.literal_eval(character_list)
-        for character_id in self.values:
-            if character_id in character_list:
-                character_list.remove(character_id)
-            else:
-                character_list.append(character_id)
-        await c.execute(
-            "UPDATE talent_notification SET character_list = ? WHERE user_id = ?",
-            (str(character_list), i.user.id),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT character_list FROM talent_notification WHERE user_id = ?",
+                (i.user.id,),
+            ) as c:
+                character_list = await c.fetchone()
+                if character_list is None:
+                    raise DBError(f"User {i.user.id} not found in talent_notification")
+                character_list = ast.literal_eval(str(character_list))
+                for character_id in self.values:
+                    if character_id in character_list:
+                        character_list.remove(character_id)
+                    else:
+                        character_list.append(character_id)
+                await c.execute(
+                    "UPDATE talent_notification SET character_list = ? WHERE user_id = ?",
+                    (str(character_list), i.user.id),
+                )
+            await db.commit()
         await i.response.edit_message(view=self.view)
-        await ReminderMenu.return_talent_notification(i, self.view)
+        await ReminderMenu.return_talent_notification(i, self.view)  # type: ignore

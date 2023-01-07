@@ -1,16 +1,17 @@
 import ast
 from typing import Dict, List
 
+import aiosqlite
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-from apps.genshin.custom_model import ShenheBot
-from apps.text_map.convert_locale import to_ambr_top
 
 import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.utils import get_weapon_emoji
+from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.weapon_types import get_weapon_type_emoji
+from exceptions import DBError
 from UI_base_models import BaseView
 from UI_elements.genshin import ReminderMenu
 from utility.utils import divide_chunks
@@ -36,7 +37,7 @@ class GOBackReminder(Button):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
-        await ReminderMenu.return_weapon_notification(i, self.view)
+        await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
 
 
 class GOBack(Button):
@@ -47,7 +48,7 @@ class GOBack(Button):
         self.view: View
         self.view.clear_items()
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
         weapon_types = await ambr.get_weapon_types()
 
         for weapon_type_id, weapon_type in weapon_types.items():
@@ -69,14 +70,10 @@ class WeaponTypeButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        async with i.client.db.execute(
-            "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
-            (i.user.id,),
-        ) as c:
-            weapon_list = await c.fetchone()
-        weapon_list: List[str] = ast.literal_eval(weapon_list[0])
+        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id)))
+
         select_options = []
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, List):
             raise TypeError("weapons is not a list")
@@ -118,21 +115,28 @@ class WeaponSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        async with i.client.db.execute(
-            "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
-            (i.user.id,),
-        ) as c:
-            (weapon_list,) = await c.fetchone()
-        weapon_list: List[str] = ast.literal_eval(weapon_list)
+        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id)))
         for weapon_id in self.values:
             if weapon_id in weapon_list:
                 weapon_list.remove(weapon_id)
             else:
                 weapon_list.append(weapon_id)
-        await i.client.db.execute(
-            "UPDATE weapon_notification SET weapon_list = ? WHERE user_id = ?",
-            (str(weapon_list), i.user.id),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE weapon_notification SET weapon_list = ? WHERE user_id = ?",
+                (str(weapon_list), i.user.id),
+            )
+            await db.commit()
         await i.response.edit_message(view=self.view)
-        await ReminderMenu.return_weapon_notification(i, self.view)
+        await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
+
+
+async def get_weapon_list(user_id: int):
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
+            (user_id,),
+        ) as c:
+            (weapon_list) = await c.fetchone()
+            if weapon_list is None:
+                raise DBError(f"User {user_id} not found in weapon_notification")

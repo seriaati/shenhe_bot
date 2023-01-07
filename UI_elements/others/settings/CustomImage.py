@@ -1,18 +1,19 @@
-import discord
-from UI_base_models import BaseModal, BaseView
-from ambr.client import AmbrTopAPI
+from typing import List, Optional
 
+import aiohttp
+import aiosqlite
+import discord
+
+import asset
+import config
+from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import UserCustomImage
 from apps.genshin.utils import get_character_emoji
 from apps.text_map.convert_locale import to_ambr_top
-from data.game.elements import get_element_emoji, get_element_list
-from utility.utils import default_embed, error_embed
 from apps.text_map.text_map_app import text_map
-from typing import List, Optional
-import aiosqlite
-import config
-import asset
-import aiohttp
+from data.game.elements import get_element_emoji, get_element_list
+from UI_base_models import BaseModal, BaseView
+from utility.utils import default_embed, error_embed
 
 
 class View(BaseView):
@@ -247,66 +248,75 @@ async def return_custom_image_interaction(
     disabled = True if not options else False
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
-    custom_image = await get_user_custom_image(i.user.id, i.client.db, character_id)
-    embed = await get_user_custom_image_embed(i, view.locale, str(character_id), custom_image)
+    custom_image = await get_user_custom_image(i.user.id, character_id)
+    embed = await get_user_custom_image_embed(
+        i, view.locale, str(character_id), custom_image
+    )
     view.message = await i.edit_original_response(embed=embed, view=view)
 
 
 async def change_user_custom_image(
     i: discord.Interaction, url: str, character_id: int
 ) -> None:
-    await i.client.db.execute(
-        "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
-        (i.user.id, character_id),
-    )
-    await i.client.db.execute(
-        "UPDATE custom_image SET current = 1 WHERE user_id = ? AND character_id = ? AND image_url = ?",
-        (i.user.id, character_id, url),
-    )
-    await i.client.db.commit()
+    async with aiosqlite.connect("shenhe.db") as db:
+        await db.execute(
+            "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
+            (i.user.id, character_id),
+        )
+        await db.execute(
+            "UPDATE custom_image SET current = 1 WHERE user_id = ? AND character_id = ? AND image_url = ?",
+            (i.user.id, character_id, url),
+        )
+        await db.commit()
 
 
 async def add_user_custom_image(
     i: discord.Interaction, url: str, character_id: int, nickname: str
 ) -> None:
-    await i.client.db.execute(
-        "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
-        (i.user.id, character_id),
-    )
-    await i.client.db.execute(
-        "INSERT INTO custom_image VALUES (?, ?, ?, ?, 1) ON CONFLICT DO NOTHING",
-        (i.user.id, character_id, url, nickname),
-    )
-    await i.client.db.commit()
+    async with aiosqlite.connect("shenhe.db") as db:
+        await db.execute(
+            "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
+            (i.user.id, character_id),
+        )
+        await db.execute(
+            "INSERT INTO custom_image VALUES (?, ?, ?, ?, 1) ON CONFLICT DO NOTHING",
+            (i.user.id, character_id, url, nickname),
+        )
+        await db.commit()
 
 
 async def remove_user_custom_image(
     i: discord.Interaction, url: str, character_id: int
 ) -> None:
-    await i.client.db.execute(
-        "DELETE FROM custom_image WHERE user_id = ? AND character_id = ? AND image_url = ?",
-        (
-            i.user.id,
-            character_id,
-            url,
-        ),
-    )
-    await i.client.db.commit()
+    async with aiosqlite.connect("shenhe.db") as db:
+        await db.execute(
+            "DELETE FROM custom_image WHERE user_id = ? AND character_id = ? AND image_url = ?",
+            (
+                i.user.id,
+                character_id,
+                url,
+            ),
+        )
+        await db.commit()
 
 
 async def get_user_custom_image_options(
     i: discord.Interaction, character_id: int
 ) -> List[discord.SelectOption]:
-    async with i.client.db.execute(
-        "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ?",
-        (i.user.id, character_id),
-    ) as cursor:
-        rows = await cursor.fetchall()
     options = []
-    for row in rows:
-        options.append(
-            discord.SelectOption(label=row[3][:100], description=row[2][:100], value=row[2])
-        )
+
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ?",
+            (i.user.id, character_id),
+        ) as cursor:
+            async for row in cursor:
+                options.append(
+                    discord.SelectOption(
+                        label=row[3][:100], description=row[2][:100], value=row[2]
+                    )
+                )
+                
     return options
 
 
@@ -362,7 +372,7 @@ async def get_user_custom_image(
             (user_id, character_id),
         ) as cursor:
             image = await cursor.fetchone()
-            
+
     if image is None:
         return None
     else:

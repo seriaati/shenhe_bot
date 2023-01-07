@@ -1,5 +1,5 @@
 import io
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import aiosqlite
 import genshin
@@ -64,12 +64,13 @@ class LinkUID(Button):
         embed = default_embed(message=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
         )
-        async with i.client.db.execute(
-            "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
-            (i.user.id,),
-        ) as cursor:
-            accounts = await cursor.fetchall()
-        options = get_account_options(accounts, locale)
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
+                (i.user.id,),
+            ) as cursor:
+                accounts = await cursor.fetchall()
+        options = get_account_options(accounts, str(locale))  # type: ignore
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(UIDSelect(locale, options))
@@ -81,11 +82,12 @@ class UIDSelect(Select):
         super().__init__(placeholder=text_map.get(682, locale), options=options)
 
     async def callback(self, i: Interaction):
-        await i.client.db.execute(
-            "UPDATE wish_history SET uid = ? WHERE user_id = ?",
-            (self.values[0], i.user.id),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE wish_history SET uid = ? WHERE user_id = ?",
+                (self.values[0], i.user.id),
+            )
+            await db.commit()
         await wish_import_command(i)
 
 
@@ -115,7 +117,7 @@ class ImportWishHistory(Button):
 class ImportGenshinImpact(Button):
     def __init__(self, locale: Locale | str):
         self.locale = locale
-        
+
         super().__init__(
             label=text_map.get(313, locale),
             emoji=asset.genshin_emoji,
@@ -136,7 +138,7 @@ class ImportGenshinImpact(Button):
 class ImportShenhe(Button):
     def __init__(self, locale: Locale | str):
         self.locale = locale
-        
+
         super().__init__(
             label=text_map.get(684, locale),
             emoji=asset.shenhe_emoji,
@@ -164,11 +166,13 @@ class ExportWishHistory(Button):
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
-        async with i.client.db.execute(
-            "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (i.user.id, await get_uid(i.user.id)),
-        ) as c:
-            wishes = await c.fetchall()
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
+                (i.user.id, await get_uid(i.user.id)),
+            ) as c:
+                wishes = await c.fetchall()
+
         s.write(str(wishes))
         s.seek(0)
         await i.followup.send(file=File(s, "shenhe_wish_export.txt"), ephemeral=True)
@@ -204,10 +208,13 @@ class Confirm(Button):
 
     async def callback(self, i: Interaction):
         uid = await get_uid(i.user.id)
-        await i.client.db.execute(
-            "DELETE FROM wish_history WHERE uid = ? AND user_id = ?", (uid, i.user.id)
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "DELETE FROM wish_history WHERE uid = ? AND user_id = ?",
+                (uid, i.user.id),
+            )
+            await db.commit()
+
         await wish_import_command(i)
 
 
@@ -243,70 +250,72 @@ class ConfirmWishImport(Button):
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
-        if self.from_text_file:
-            for item in self.wish_history:
-                name = item[0]
-                rarity = item[1]
-                time = item[2]
-                banner = item[3]
-                wish_id = item[4]
-                item_id = item[5]
-                await i.client.db.execute(
-                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
-                    (
-                        i.user.id,
-                        name,
-                        rarity,
-                        time,
-                        banner,
-                        wish_id,
-                        uid,
-                        item_id,
-                    ),
-                )
-        else:
-            for wish in self.wish_history:
-                await i.client.db.execute(
-                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id, uid, item_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
-                    (
-                        i.user.id,
-                        wish.name,
-                        wish.rarity,
-                        wish.time.strftime("%Y/%m/%d %H:%M:%S"),
-                        wish.type,
-                        wish.banner_type,
-                        wish.id,
-                        uid,
-                        text_map.get_id_from_name(wish.name),
-                    ),
-                )
-        banners = [100, 200, 301, 302, 400]
-        for banner in banners:
-            async with i.client.db.execute(
-                "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND uid = ? ORDER BY wish_id ASC",
-                (i.user.id, banner, uid),
-            ) as c:
-                wishes = await c.fetchall()
-            if not wishes:
-                count = 1
-            else:
-                if wishes[-1][2] is None:
-                    count = 1
-                else:
-                    count = wishes[-1][2] + 1
-            for wish in wishes:
-                wish_id = wish[0]
-                rarity = wish[1]
-                await i.client.db.execute(
-                    "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
-                    (count, wish_id),
-                )
-                if rarity == 5:
-                    count = 1
-                else:
-                    count += 1
 
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            if self.from_text_file:
+                for item in self.wish_history:
+                    name = item[0]  # type: ignore
+                    rarity = item[1]  # type: ignore
+                    time = item[2]  # type: ignore
+                    banner = item[3]  # type: ignore
+                    wish_id = item[4]  # type: ignore
+                    item_id = item[5]  # type: ignore
+                    await db.execute(
+                        "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
+                        (
+                            i.user.id,
+                            name,
+                            rarity,
+                            time,
+                            banner,
+                            wish_id,
+                            uid,
+                            item_id,
+                        ),
+                    )
+            else:
+                for wish in self.wish_history:
+                    await db.execute(
+                        "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id, uid, item_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
+                        (
+                            i.user.id,
+                            wish.name,
+                            wish.rarity,
+                            wish.time.strftime("%Y/%m/%d %H:%M:%S"),
+                            wish.type,
+                            wish.banner_type,
+                            wish.id,
+                            uid,
+                            text_map.get_id_from_name(wish.name),
+                        ),
+                    )
+            banners = [100, 200, 301, 302, 400]
+            for banner in banners:
+                async with db.execute(
+                    "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND uid = ? ORDER BY wish_id ASC",
+                    (i.user.id, banner, uid),
+                ) as c:
+                    wishes = await c.fetchall()
+                if not wishes:
+                    count = 1
+                else:
+                    if wishes[-1][2] is None:  # type: ignore
+                        count = 1
+                    else:
+                        count = wishes[-1][2] + 1  # type: ignore
+                for wish in wishes:
+                    wish_id = wish[0]
+                    rarity = wish[1]
+                    await db.execute(
+                        "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
+                        (count, wish_id),
+                    )
+                    if rarity == 5:
+                        count = 1
+                    else:
+                        count += 1
+
+            await db.commit()
         await wish_import_command(i, True)
 
 

@@ -1,7 +1,7 @@
 from apps.genshin.custom_model import ShenheBot
 
 from discord.ext import commands
-
+import aiosqlite
 from logingateway import HuTaoLoginAPI
 from logingateway.model import Player, Ready, LoginMethod, ServerId
 
@@ -37,6 +37,9 @@ class LoginGatewayCog(commands.Cog):
         
         self.bot.gateway = self.gateway
         self.bot.tokenStore = self.tokenStore
+    
+    async def cog_unload(self):
+        self.gateway.disconnect()
 
     async def gateway_connect(self, data: Ready):
         log.info("[System][LoginGateway] Gateway connected")
@@ -60,10 +63,11 @@ class LoginGatewayCog(commands.Cog):
 
         # Append discord ID
         _data.append(user_id)
-        await self.bot.db.execute(
-            f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
-        )
-        await self.bot.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
+            )
+            await db.commit()
 
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:
@@ -88,23 +92,24 @@ class LoginGatewayCog(commands.Cog):
             }
 
         china = 1 if data.genshin.server == ServerId.CHINA else 0
-        await self.bot.db.execute(
-            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
-            (
-                uid,
-                user_id,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                china,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                uid,
-                user_id,
-            ),
-        )
-        await self.bot.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
+                (
+                    uid,
+                    user_id,
+                    cookie["ltuid"],
+                    cookie["ltoken"],
+                    cookie["cookie_token"],
+                    china,
+                    cookie["ltuid"],
+                    cookie["ltoken"],
+                    cookie["cookie_token"],
+                    uid,
+                    user_id,
+                ),
+            )
+            await db.commit()
 
         try:
             await ctx["message"].edit(
