@@ -1,15 +1,18 @@
 import asyncio
-from apps.genshin.genshin_app import GenshinApp
 import calendar
-from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseView
-import config
-from discord import Locale, ButtonStyle, Interaction
+
+import aiosqlite
+import genshin
+from discord import ButtonStyle, Interaction, Locale
 from discord.errors import InteractionResponded
 from discord.ui import Button
+
+import config
+from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from UI_base_models import BaseView
 from utility.utils import default_embed, divide_chunks, error_embed, get_dt_now
-import genshin
 
 
 class View(BaseView):
@@ -28,7 +31,9 @@ class ClaimReward(Button):
     async def callback(self, i: Interaction):
         await i.response.defer()
         self.view: View
-        result, _ = await self.view.genshin_app.claim_daily_reward(i.user.id, i.user.id, i.locale)
+        result, _ = await self.view.genshin_app.claim_daily_reward(
+            i.user.id, i.user.id, i.locale
+        )
         for item in self.view.children:
             item.disabled = True
         await i.edit_original_response(embed=result, view=self.view)
@@ -44,18 +49,25 @@ class TurnOff(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
-        async with i.client.db.execute(  
-            "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
-        ) as cursor:
-            toggle = (await cursor.fetchone())[0]
-            toggle = 1 if toggle == 0 else 0
-            await cursor.execute(
-                "UPDATE user_accounts SET daily_checkin = ? WHERE user_id = ?",
-                (toggle, i.user.id,),
-            )
-            await i.client.db.commit()  
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT daily_checkin FROM user_accounts WHERE user_id = ?",
+                (i.user.id,),
+            ) as cursor:
+                toggle = await cursor.fetchone()
+                toggle = 0 if toggle == 1 else 1
+                await cursor.execute(
+                    "UPDATE user_accounts SET daily_checkin = ? WHERE user_id = ?",
+                    (
+                        toggle,
+                        i.user.id,
+                    ),
+                )
+            await db.commit()
+
         for item in self.view.children:
             item.disabled = True
+
         await i.edit_original_response(
             embed=default_embed().set_author(
                 name=text_map.get(628 if toggle == 1 else 629, self.locale),
@@ -72,7 +84,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         await i.response.defer()
     except InteractionResponded:
         pass
-    user_locale = await get_user_locale(i.user.id, i.client.db)  
+    user_locale = await get_user_locale(i.user.id)
     locale = user_locale or i.locale
     now = get_dt_now()
     day_in_month = calendar.monthrange(now.year, now.month)[1]
@@ -86,10 +98,12 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             icon_url=i.user.display_avatar.url,
         )
         return await i.followup.send(embed=embed)
-    async with i.client.db.execute(  
-        "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
-    ) as cursor:
-        toggle = (await cursor.fetchone())[0]
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
+        ) as cursor:
+            toggle = await cursor.fetchone()
+
     embed = default_embed(
         message=f"{text_map.get(606, i.locale, user_locale)}: {claimed_rewards}/{day_in_month}\n"
         f"{text_map.get(101, i.locale, user_locale)}: {text_map.get(99 if toggle == 1 else 100, i.locale, user_locale)}"

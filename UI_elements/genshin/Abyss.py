@@ -20,11 +20,9 @@ class View(BaseView):
         author: User | Member,
         result: AbyssResult,
         locale: Locale | str,
-        db: aiosqlite.Connection,
     ):
-        super().__init__(timeout=config.mid_timeout)
         self.author = author
-        self.db = db
+        super().__init__(timeout=config.mid_timeout)
 
         self.add_item(FloorSelect(result, locale))
 
@@ -45,8 +43,8 @@ class FloorSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
-        locale = await get_user_locale(i.user.id, i.client.db) or i.locale
+        dark_mode = await get_user_appearance_mode(i.user.id)
+        locale = await get_user_locale(i.user.id) or i.locale
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)

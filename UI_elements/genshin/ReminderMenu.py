@@ -1,15 +1,10 @@
 import ast
 import asyncio
+from typing import Optional
 
-from discord import (
-    ButtonStyle,
-    Embed,
-    Forbidden,
-    Interaction,
-    InteractionResponded,
-    Locale,
-    NotFound,
-)
+import aiosqlite
+from discord import (ButtonStyle, Embed, Forbidden, Interaction,
+                     InteractionResponded, Locale, NotFound)
 from discord.ui import Button, TextInput
 
 import asset
@@ -19,9 +14,10 @@ from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
+from exceptions import DBError
 from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import default_embed, divide_chunks, error_embed
+from utility.utils import default_embed, divide_chunks, error_embed, log
 
 
 class View(BaseView):
@@ -97,11 +93,12 @@ class RemoveAllWeapon(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.db.execute(
-            "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
-            (i.user.id,),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
+                (i.user.id,),
+            )
+            await db.commit()
         await return_weapon_notification(i, self.view)
 
 
@@ -123,11 +120,12 @@ class RemoveAllCharacter(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.db.execute(
-            "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
-            (i.user.id,),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
+                (i.user.id,),
+            )
+            await db.commit()
         await return_talent_notification(i, self.view)
 
 
@@ -195,33 +193,7 @@ class NotificationON(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()
-        if (
-            self.table_name == "talent_notification"
-            or self.table_name == "weapon_notification"
-            or self.table_name == "pt_notification"
-        ):
-            await c.execute(
-                f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ?",
-                (i.user.id,),
-            )
-        else:
-            await c.execute(
-                f"UPDATE {self.table_name} SET toggle = 1 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id, i.client.db)),
-            )
-        await i.client.db.commit()
-        await c.close()
-        if self.table_name == "resin_notification":
-            await return_resin_notification(i, self.view)
-        elif self.table_name == "pot_notification":
-            await return_pot_notification(i, self.view)
-        elif self.table_name == "talent_notification":
-            await return_talent_notification(i, self.view)
-        elif self.table_name == "weapon_notification":
-            await return_weapon_notification(i, self.view)
-        elif self.table_name == "pt_notification":
-            await return_pt_notification(i, self.view)
+        await on_off_function(self.view, self.table_name, i, 1)
 
 
 class NotificationOFF(Button):
@@ -235,33 +207,34 @@ class NotificationOFF(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()
-        if (
-            self.table_name == "talent_notification"
-            or self.table_name == "weapon_notification"
-            or self.table_name == "pt_notification"
-        ):
-            await c.execute(
-                f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ?",
+        await on_off_function(self.view, self.table_name, i, 0)
+
+
+async def on_off_function(view: View, table_name: str, i: Interaction, toggle: int):
+    async with aiosqlite.connect("shenhe.db") as db:
+        if table_name in ["talent_notification", "weapon_notification"]:
+            await db.execute(
+                f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ?",
                 (i.user.id,),
             )
         else:
-            await c.execute(
-                f"UPDATE {self.table_name} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id, i.client.db)),
+            await db.execute(
+                f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ? AND uid = ?",
+                (i.user.id, await get_uid(i.user.id)),
             )
-        await i.client.db.commit()
-        await c.close()
-        if self.table_name == "resin_notification":
-            await return_resin_notification(i, self.view)
-        elif self.table_name == "pot_notification":
-            await return_pot_notification(i, self.view)
-        elif self.table_name == "talent_notification":
-            await return_talent_notification(i, self.view)
-        elif self.table_name == "weapon_notification":
-            await return_weapon_notification(i, self.view)
-        elif self.table_name == "pt_notification":
-            await return_pt_notification(i, self.view)
+
+        await db.commit()
+
+    if table_name == "resin_notification":
+        await return_resin_notification(i, view)
+    elif table_name == "pot_notification":
+        await return_pot_notification(i, view)
+    elif table_name == "talent_notification":
+        await return_talent_notification(i, view)
+    elif table_name == "weapon_notification":
+        await return_weapon_notification(i, view)
+    elif table_name == "pt_notification":
+        await return_pt_notification(i, view)
 
 
 class ChangeSettings(Button):
@@ -272,70 +245,72 @@ class ChangeSettings(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c = await i.client.db.cursor()
-        uid = await get_uid(i.user.id, i.client.db)
-        try:
-            if self.table_name == "resin_notification":
-                modal = ResinModal(self.locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                threshold = modal.resin_threshold.value
-                max_notif = modal.max_notif.value
-                if not threshold or not max_notif:
-                    pass
-                else:
-                    if not threshold.isdigit() or not max_notif.isdigit():
-                        raise ValueError
-                    await c.execute(
-                        "UPDATE resin_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                        (threshold, max_notif, i.user.id, uid),
-                    )
-                await return_resin_notification(i, self.view)
-            elif self.table_name == "pot_notification":
-                modal = PotModal(self.locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                threshold = modal.threshold.value
-                max_notif = modal.max_notif.value
-                if not threshold or not max_notif:
-                    pass
-                else:
-                    if not threshold.isdigit() or not max_notif.isdigit():
-                        raise ValueError
-                    await c.execute(
-                        "UPDATE pot_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                        (threshold, max_notif, i.user.id, uid),
-                    )
-                await return_pot_notification(i, self.view)
-            elif self.table_name == "pt_notification":
-                modal = PTModal(self.locale)
-                await i.response.send_modal(modal)
-                await modal.wait()
-                max_notif = modal.max_notif.value
-                if not max_notif:
-                    pass
-                else:
-                    if not max_notif.isdigit():
-                        raise ValueError
-                    await c.execute(
-                        "UPDATE pt_notification SET max = ? WHERE user_id = ? AND uid = ?",
-                        (max_notif, i.user.id, uid),
-                    )
-                await return_pt_notification(i, self.view)
-        except ValueError:
-            children = [item for item in self.view.children if isinstance(item, Button)]
-            for child in children:
-                child.disabled = True
-            await i.edit_original_response(
-                embed=error_embed().set_author(
-                    name=text_map.get(187, self.locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                view=self.view,
-            )
-            await asyncio.sleep(2)
-            await return_notification_menu(i, self.locale)
-        await i.client.db.commit()
+        uid = await get_uid(i.user.id)
+        async with aiosqlite.connect("shenhe.db") as db:
+            try:
+                if self.table_name == "resin_notification":
+                    modal = ResinModal(self.locale)
+                    await i.response.send_modal(modal)
+                    await modal.wait()
+                    threshold = modal.resin_threshold.value
+                    max_notif = modal.max_notif.value
+                    if not threshold or not max_notif:
+                        pass
+                    else:
+                        if not threshold.isdigit() or not max_notif.isdigit():
+                            raise ValueError
+                        await db.execute(
+                            "UPDATE resin_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
+                            (threshold, max_notif, i.user.id, uid),
+                        )
+                    await return_resin_notification(i, self.view)
+                elif self.table_name == "pot_notification":
+                    modal = PotModal(self.locale)
+                    await i.response.send_modal(modal)
+                    await modal.wait()
+                    threshold = modal.threshold.value
+                    max_notif = modal.max_notif.value
+                    if not threshold or not max_notif:
+                        pass
+                    else:
+                        if not threshold.isdigit() or not max_notif.isdigit():
+                            raise ValueError
+                        await db.execute(
+                            "UPDATE pot_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
+                            (threshold, max_notif, i.user.id, uid),
+                        )
+                    await return_pot_notification(i, self.view)
+                elif self.table_name == "pt_notification":
+                    modal = PTModal(self.locale)
+                    await i.response.send_modal(modal)
+                    await modal.wait()
+                    max_notif = modal.max_notif.value
+                    if not max_notif:
+                        pass
+                    else:
+                        if not max_notif.isdigit():
+                            raise ValueError
+                        await db.execute(
+                            "UPDATE pt_notification SET max = ? WHERE user_id = ? AND uid = ?",
+                            (max_notif, i.user.id, uid),
+                        )
+                    await return_pt_notification(i, self.view)
+            except ValueError:
+                children = [
+                    item for item in self.view.children if isinstance(item, Button)
+                ]
+                for child in children:
+                    child.disabled = True
+                await i.edit_original_response(
+                    embed=error_embed().set_author(
+                        name=text_map.get(187, self.locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    view=self.view,
+                )
+                await asyncio.sleep(2)
+                await return_notification_menu(i, self.locale)
+            await db.commit()
 
 
 class GOBack(Button):
@@ -396,19 +371,24 @@ class PTModal(BaseModal):
 
 # Functions
 async def return_resin_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.db)
-    
-    await i.client.db.execute(
-        "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
-    )
-    await i.client.db.commit()
-    
-    async with i.client.db.execute(
-        "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, uid),
-    ) as c:
-        (toggle, threshold, max) = await c.fetchone()
+    uid = await get_uid(i.user.id)
+
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
+            (i.user.id, uid),
+        ) as c:
+            await c.execute(
+                "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
+                (i.user.id, uid),
+            )
+            rows = await c.fetchone()
+            if rows is not None:
+                toggle, threshold, max = rows
+            else:
+                raise ValueError("No rows found")
+
+        await db.commit()
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
@@ -437,19 +417,10 @@ async def return_resin_notification(i: Interaction, view: View):
 
 
 async def return_pt_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.db)
-    
-    await i.client.db.execute(
-        "INSERT INTO pt_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
+    uid = await get_uid(i.user.id)
+    toggle, max_notif = await get_notification_status(
+        i.user.id, uid, "pt_notification", "toggle, max"
     )
-    await i.client.db.commit()
-    
-    async with i.client.db.execute(
-        "SELECT max, toggle FROM pt_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, uid),
-    ) as c:
-        max_notif, toggle = await c.fetchone()
     value = f"""
         {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
         {text_map.get(103, view.locale)}: {max_notif}
@@ -475,19 +446,11 @@ async def return_pt_notification(i: Interaction, view: View):
 
 
 async def return_pot_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.db)
-    
-    await i.client.db.execute(
-        "INSERT INTO pot_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-        (i.user.id, uid),
+    uid = await get_uid(i.user.id)
+    toggle, threshold, max = await get_notification_status(
+        i.user.id, uid, "pot_notification", "toggle, threshold, max"
     )
-    await i.client.db.commit()
-    
-    async with i.client.db.execute(
-        "SELECT toggle, threshold, max FROM pot_notification WHERE user_id = ? AND uid = ?",
-        (i.user.id, uid),
-    ) as c:
-        (toggle, threshold, max) = await c.fetchone()
+
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
@@ -512,12 +475,11 @@ async def return_pot_notification(i: Interaction, view: View):
 
 
 async def return_talent_notification(i: Interaction, view: View):
-    async with i.client.db.execute(
-        "SELECT toggle, character_list FROM talent_notification WHERE user_id = ?",
-        (i.user.id,),
-    ) as c:
-        toggle, character_list = await c.fetchone()
+    toggle, character_list = await get_notification_status(
+        i.user.id, None, "talent_notification", "toggle, character_list"
+    )
     character_list = ast.literal_eval(character_list)
+
     embed = default_embed(message=text_map.get(590, view.locale))
     embed.set_author(
         name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
@@ -558,12 +520,11 @@ async def return_talent_notification(i: Interaction, view: View):
 
 
 async def return_weapon_notification(i: Interaction, view: View):
-    async with i.client.db.execute(
-        "SELECT toggle, weapon_list FROM weapon_notification WHERE user_id = ?",
-        (i.user.id,),
-    ) as c:
-        toggle, weapon_list = await c.fetchone()
+    toggle, weapon_list = await get_notification_status(
+        i.user.id, None, "weapon_notification", "toggle, weapon_list"
+    )
     weapon_list = ast.literal_eval(weapon_list)
+
     embed = default_embed(message=text_map.get(633, view.locale))
     embed.set_author(
         name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
@@ -606,20 +567,9 @@ async def return_weapon_notification(i: Interaction, view: View):
 async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
-    c = await i.client.db.cursor()
-    await c.execute(
-        "INSERT INTO talent_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
-        (i.user.id,),
-    )
-    await c.execute(
-        "INSERT INTO weapon_notification (user_id) VALUES (?) ON CONFLICT DO NOTHING",
-        (i.user.id,),
-    )
-    await i.client.db.commit()
-    await c.close()
-    
     embed = default_embed(message=text_map.get(592, locale))
     embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
+
     view = View(locale)
     if send:
         await i.response.send_message(embed=embed, view=view)
@@ -633,3 +583,31 @@ async def return_notification_menu(
         view.message = await i.original_response()
     except NotFound:
         pass
+
+
+async def get_notification_status(
+    user_id: int, uid: Optional[int], table_name: str, items: str
+):
+    _data = (user_id, uid) if uid else (user_id,)
+    insert_query = "(user_id, uid)" if uid else "(user_id)"
+    select_query = "user_id = ? AND uid = ?" if uid else "user_id = ?"
+    values_query = "(?, ?)" if uid else "(?)"
+
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            f"INSERT INTO {table_name} {insert_query} VALUES {values_query} ON CONFLICT DO NOTHING",
+            _data,
+        ) as c:
+            await c.execute(
+                f"SELECT {items} FROM {table_name} WHERE {select_query}",
+                _data,
+            )
+            rows = await c.fetchone()
+            if rows is None:
+                log.warning(f"User {user_id} with uid {uid} not found in {table_name}")
+                raise DBError(
+                    f"User {user_id} with uid {uid} not found in {table_name}"
+                )
+        await db.commit()
+
+    return rows

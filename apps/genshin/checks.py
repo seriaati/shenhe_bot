@@ -29,10 +29,13 @@ async def check_account_predicate(
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
-    c: aiosqlite.Cursor = await i.client.db.cursor()
-    await c.execute("SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,))
-    uid = await c.fetchone()
+    locale = (await get_user_locale(i.user.id)) or i.locale
+
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,)
+        ) as c:
+            uid = await c.fetchone()
     if uid is None:
         if respond_message:
             embed = error_embed(message=text_map.get(572, locale)).set_author(
@@ -71,12 +74,15 @@ def check_wish_history():
             user = i.namespace["user"]
         else:
             user = i.user
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        async with i.client.db.execute(
-            "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
-            (user.id, await get_uid(i.user.id, i.client.db)),
-        ) as c:
-            data = await c.fetchone()
+        user_locale = await get_user_locale(i.user.id)
+
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
+                (user.id, await get_uid(i.user.id)),
+            ) as c:
+                data = await c.fetchone()
+
         if data is None:
             await i.response.send_message(
                 embed=error_embed(
@@ -94,7 +100,9 @@ def check_wish_history():
     return app_commands.check(predicate)
 
 
-async def check_cookie_predicate(i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True) -> bool:
+async def check_cookie_predicate(
+    i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True
+) -> bool:
     check = await check_account_predicate(i, member)
     if not check:
         return False
@@ -105,43 +113,44 @@ async def check_cookie_predicate(i: Interaction, member: Optional[User | Member]
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id, i.client.db)) or i.locale
-    async with i.client.db.execute(
-        "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
-        (user.id,),
-    ) as c:
-        data = await c.fetchone()
-        if data is None or data[0] is None:
-            await c.execute(
-                "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 0",
-                (user.id,),
-            )
-            if (await c.fetchone()) is None:
-                embed = error_embed(message=text_map.get(572, locale)).set_author(
-                    name=text_map.get(573 if user.id == i.user.id else 580, locale),
-                    icon_url=user.display_avatar.url,
+    locale = (await get_user_locale(i.user.id)) or i.locale
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
+            (user.id,),
+        ) as c:
+            data = await c.fetchone()
+            if data is None or data[0] is None:
+                await c.execute(
+                    "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 0",
+                    (user.id,),
                 )
-                if respond_message:
-                    try:
-                        await i.response.send_message(
-                            embed=embed,
-                            ephemeral=True,
-                        )
-                    except InteractionResponded:
-                        await i.followup.send(embed=embed, ephemeral=True)
+                if (await c.fetchone()) is None:
+                    embed = error_embed(message=text_map.get(572, locale)).set_author(
+                        name=text_map.get(573 if user.id == i.user.id else 580, locale),
+                        icon_url=user.display_avatar.url,
+                    )
+                    if respond_message:
+                        try:
+                            await i.response.send_message(
+                                embed=embed,
+                                ephemeral=True,
+                            )
+                        except InteractionResponded:
+                            await i.followup.send(embed=embed, ephemeral=True)
+                else:
+                    embed = error_embed(message=text_map.get(575, locale)).set_author(
+                        name=text_map.get(574 if user.id == i.user.id else 581, locale),
+                        icon_url=user.display_avatar.url,
+                    )
+                    if respond_message:
+                        try:
+                            await i.response.send_message(
+                                embed=embed,
+                                ephemeral=True,
+                            )
+                        except InteractionResponded:
+                            await i.followup.send(embed=embed, ephemeral=True)
+                return False
             else:
-                embed = error_embed(message=text_map.get(575, locale)).set_author(
-                    name=text_map.get(574 if user.id == i.user.id else 581, locale),
-                    icon_url=user.display_avatar.url,
-                )
-                if respond_message:
-                    try:
-                        await i.response.send_message(
-                            embed=embed,
-                            ephemeral=True,
-                        )
-                    except InteractionResponded:
-                        await i.followup.send(embed=embed, ephemeral=True)
-            return False
-        else:
-            return True
+                return True

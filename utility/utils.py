@@ -82,10 +82,10 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     return weekday_name_dict.get(weekday_name, 0)
 
 
-async def get_user_appearance_mode(user_id: int, db: aiosqlite.Connection) -> bool:
-    c = await db.cursor()
-    await c.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,))
-    mode = await c.fetchone()
+async def get_user_appearance_mode(user_id: int) -> bool:
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,)) as c:
+            mode = await c.fetchone()
     if mode is not None and mode[0] == 1:
         return True
     return False

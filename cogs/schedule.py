@@ -130,7 +130,7 @@ class Schedule(commands.Cog):
         result["data"] = []
 
         # accounts = await self.get_schedule_users()
-        accounts = [await get_shenhe_account(912623031170519110, self.bot.db, self.bot)]
+        accounts = [await get_shenhe_account(912623031170519110, self.bot)]
 
         for account in accounts:
             client = account.client
@@ -186,7 +186,7 @@ class Schedule(commands.Cog):
                 abyss_dict["user"] = user_dict
                 result["data"].append(abyss_dict)
                 break
-        
+
         log.info("[Schedule] Generated abyss.json")
 
         lvlurarti = self.bot.get_user(630235350526328844) or await self.bot.fetch_user(
@@ -196,7 +196,7 @@ class Schedule(commands.Cog):
         fp.write(json.dumps(result, indent=4).encode())
         fp.seek(0)
         await lvlurarti.send(file=File(fp, "abyss.json"))
-        
+
         log.info("[Schedule] Sent abyss.json")
 
     async def check_notification(self, notification_type: str):
@@ -205,10 +205,9 @@ class Schedule(commands.Cog):
         n_users = await self.get_notification_users(notification_type)
         now = get_dt_now()
         sent_num = 0
-        c = await self.bot.db.cursor()
         for n_user in n_users:
             try:
-                s_user = await get_shenhe_account(n_user.user_id, self.bot.db, self.bot)
+                s_user = await get_shenhe_account(n_user.user_id, self.bot)
             except (ShenheAccountNotFound, UIDNotFound):
                 continue
 
@@ -314,20 +313,23 @@ class Schedule(commands.Cog):
 
                     if success:
                         sent_num += 1
-                        # update notification count
-                        await c.execute(
-                            f"UPDATE {notification_type} SET current = current + 1 WHERE user_id = ? AND uid = ?",
-                            (n_user.user_id, s_user.uid),
-                        )
-                        # update last notification time
-                        await c.execute(
-                            f"UPDATE {notification_type} SET {'last_notif' if notification_type == 'pt_notification' else 'last_notif_time'} = ? WHERE user_id = ? AND uid = ?",
-                            (now, n_user.user_id, s_user.uid),
-                        )
+
+                        async with aiosqlite.connect("shenhe.db") as db:
+                            # update notification count
+                            await db.execute(
+                                f"UPDATE {notification_type} SET current = current + 1 WHERE user_id = ? AND uid = ?",
+                                (n_user.user_id, s_user.uid),
+                            )
+                            # update last notification time
+                            await db.execute(
+                                f"UPDATE {notification_type} SET {'last_notif' if notification_type == 'pt_notification' else 'last_notif_time'} = ? WHERE user_id = ? AND uid = ?",
+                                (now, n_user.user_id, s_user.uid),
+                            )
+
+                            await db.commit()
+
             await asyncio.sleep(2.5)
 
-        await c.close()
-        await self.bot.db.commit()
         log.info(
             f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users"
         )
@@ -406,18 +408,20 @@ class Schedule(commands.Cog):
     async def disable_notification(
         self, user_id: int, uid: int, notification_type: str
     ):
-        await self.bot.db.execute(
-            f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
-            (user_id, uid),
-        )
-        await self.bot.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
+                (user_id, uid),
+            )
+            await db.commit()
 
     async def reset_current(self, user_id: int, uid: int, notification_type: str):
-        await self.bot.db.execute(
-            f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
-            (user_id, uid),
-        )
-        await self.bot.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
+                (user_id, uid),
+            )
+            await db.commit()
 
     async def get_schedule_users(
         self, user_ids: Optional[List[int]] = None
@@ -428,37 +432,35 @@ class Schedule(commands.Cog):
             List[ShenheAccount]: List of shenhe users
         """
         result = []
-        c = await self.bot.db.cursor()
 
-        if user_ids is not None:
-            seq = ",".join(["?"] * len(user_ids))
-            await c.execute(
-                f"SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL AND user_id IN ({seq})",
-                (tuple(user_ids)),
-            )
-        else:
-            await c.execute(
-                "SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL",
-            )
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.cursor() as c:
+                if user_ids is not None:
+                    seq = ",".join(["?"] * len(user_ids))
+                    await c.execute(
+                        f"SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL AND user_id IN ({seq})",
+                        (tuple(user_ids)),
+                    )
+                else:
+                    await c.execute(
+                        "SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL",
+                    )
 
-        users = await c.fetchall()
-        for _, tpl in enumerate(users):
-            ltuid = tpl[0]
-            ltoken = tpl[1]
-            user_id = tpl[2]
-            uid = tpl[3]
-            daily_checkin = tpl[4]
-            shenhe_user = await get_shenhe_account(
-                user_id,
-                self.bot.db,
-                self.bot,
-                cookie={"ltuid": ltuid, "ltoken": ltoken},
-                custom_uid=uid,
-                daily_checkin=True if daily_checkin == 1 else False,
-            )
-            result.append(shenhe_user)
+                async for row in c:
+                    ltuid = row[0]
+                    ltoken = row[1]
+                    user_id = row[2]
+                    uid = row[3]
+                    daily_checkin = row[4]
+                    shenhe_user = await get_shenhe_account(
+                        user_id,
+                        self.bot,
+                        cookie={"ltuid": ltuid, "ltoken": ltoken},
+                        custom_uid=uid,
+                        daily_checkin=True if daily_checkin == 1 else False,
+                    )
+                    result.append(shenhe_user)
 
-        await c.close()
         return result
 
     async def get_notification_users(self, table_name: str) -> List[NotificationUser]:
@@ -471,43 +473,46 @@ class Schedule(commands.Cog):
             List[NotificationUser]: a list of notification users
         """
         result = []
-        if table_name == "pt_notification":
-            async with self.bot.db.execute(
-                f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = 1"
-            ) as c:
-                async for row in c:
-                    result.append(
-                        NotificationUser(
-                            user_id=row[0],
-                            uid=row[1],
-                            max=row[2],
-                            last_notif=row[3],
+        async with aiosqlite.connect("shenhe.db") as db:
+            if table_name == "pt_notification":
+                async with db.execute(
+                    f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = 1"
+                ) as c:
+                    async for row in c:
+                        result.append(
+                            NotificationUser(
+                                user_id=row[0],
+                                uid=row[1],
+                                max=row[2],
+                                last_notif=row[3],
+                            )
                         )
-                    )
-        else:  # resin_notification, pot_notification
-            async with self.bot.db.execute(
-                f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
-            ) as c:
-                async for row in c:
-                    result.append(
-                        NotificationUser(
-                            user_id=row[0],
-                            threshold=row[1],
-                            current=row[2],
-                            max=row[3],
-                            last_notif=row[4],
-                            uid=row[5],
+            else:  # resin_notification, pot_notification
+                async with db.execute(
+                    f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
+                ) as c:
+                    async for row in c:
+                        result.append(
+                            NotificationUser(
+                                user_id=row[0],
+                                threshold=row[1],
+                                current=row[2],
+                                max=row[3],
+                                last_notif=row[4],
+                                uid=row[5],
+                            )
                         )
-                    )
         return result
 
     @schedule_error_handler
     async def backup_database(self):
         """Backs up the shenhe database, the new database is named backup.db"""
         log.info("[Schedule][Backup] Start")
-        db: aiosqlite.Connection = self.bot.db
-        await db.commit()
-        await db.backup(self.bot.backup_db)
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.commit()
+            async with aiosqlite.connect("backup.db") as backup:
+                await db.backup(backup)
+
         log.info("[Schedule][Backup] Ended")
 
     @schedule_error_handler
@@ -563,10 +568,13 @@ class Schedule(commands.Cog):
                 success_count += 1
 
             if error:
-                await self.bot.db.execute(
-                    "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
-                    (user.discord_user.id, user.uid),
-                )
+                async with aiosqlite.connect("shenhe.db") as db:
+                    await db.execute(
+                        "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
+                        (user.discord_user.id, user.uid),
+                    )
+                    await db.commit()
+                    
                 embed = embed = error_embed(
                     message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
                 )
@@ -585,7 +593,6 @@ class Schedule(commands.Cog):
 
             await asyncio.sleep(2.5)
 
-        await self.bot.db.commit()
 
         log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
 
@@ -610,104 +617,105 @@ class Schedule(commands.Cog):
             if notification_type == "weapon_notification"
             else "character_list"
         )
-        async with self.bot.db.execute(
-            f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
-        ) as c:
-            count = 0
-            async for row in c:
-                user_id = row[0]
-                item_list = row[1]
-                now = get_dt_now() + timedelta(hours=time_offset)
-                locale = await get_user_locale(user_id, self.bot.db) or "en-US"
-                client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
-                domains = await client.get_domain()
-                user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-                uid = await get_uid(user_id, self.bot.db)
-                uid_tz = get_uid_tz(uid)
-                if uid_tz != time_offset:
-                    continue
-                item_list = ast.literal_eval(item_list)
-                notified = {}
-                today_domains = [d for d in domains if d.weekday == now.weekday()]
-                for item_id in item_list:
-                    for domain in today_domains:
-                        for reward in domain.rewards:
-                            if notification_type == "talent_notification":
-                                upgrade = await client.get_character_upgrade(
-                                    str(item_id)
-                                )
-                            else:
-                                upgrade = await client.get_weapon_upgrade(int(item_id))
-
-                            if upgrade is None or isinstance(upgrade, List):
-                                continue
-
-                            if reward in upgrade.items:
-                                if item_id not in notified:
-                                    notified[item_id] = {
-                                        "materials": [],
-                                        "domain": domain,
-                                    }
-                                if reward.id not in notified[item_id]["materials"]:
-                                    notified[item_id]["materials"].append(reward.id)
-
-                for item_id, item_info in notified.items():
-                    item = None
-                    if notification_type == "talent_notification":
-                        item = await client.get_character(item_id)
-                    elif notification_type == "weapon_notification":
-                        item = await client.get_weapon(int(item_id))
-                    if not isinstance(item, (Character, Weapon)):
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
+            ) as c:
+                count = 0
+                async for row in c:
+                    user_id = row[0]
+                    item_list = row[1]
+                    now = get_dt_now() + timedelta(hours=time_offset)
+                    locale = await get_user_locale(user_id) or "en-US"
+                    client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+                    domains = await client.get_domain()
+                    user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+                    uid = await get_uid(user_id)
+                    uid_tz = get_uid_tz(uid)
+                    if uid_tz != time_offset:
                         continue
+                    item_list = ast.literal_eval(item_list)
+                    notified = {}
+                    today_domains = [d for d in domains if d.weekday == now.weekday()]
+                    for item_id in item_list:
+                        for domain in today_domains:
+                            for reward in domain.rewards:
+                                if notification_type == "talent_notification":
+                                    upgrade = await client.get_character_upgrade(
+                                        str(item_id)
+                                    )
+                                else:
+                                    upgrade = await client.get_weapon_upgrade(int(item_id))
 
-                    materials = []
-                    for material_id in item_info["materials"]:
-                        material = await client.get_material(material_id)
-                        if not isinstance(material, Material):
+                                if upgrade is None or isinstance(upgrade, List):
+                                    continue
+
+                                if reward in upgrade.items:
+                                    if item_id not in notified:
+                                        notified[item_id] = {
+                                            "materials": [],
+                                            "domain": domain,
+                                        }
+                                    if reward.id not in notified[item_id]["materials"]:
+                                        notified[item_id]["materials"].append(reward.id)
+
+                    for item_id, item_info in notified.items():
+                        item = None
+                        if notification_type == "talent_notification":
+                            item = await client.get_character(item_id)
+                        elif notification_type == "weapon_notification":
+                            item = await client.get_weapon(int(item_id))
+                        if not isinstance(item, (Character, Weapon)):
                             continue
-                        materials.append((material, ""))
 
-                    dark_mode = await get_user_appearance_mode(user_id, self.bot.db)
-                    fp = await main_funcs.draw_material_card(
-                        DrawInput(
-                            loop=self.bot.loop,
-                            session=self.bot.session,
-                            locale=locale,
-                            dark_mode=dark_mode,
-                        ),
-                        materials,
-                        "",
-                        draw_title=False,
-                    )
-                    fp.seek(0)
-                    file = File(fp, "reminder_card.jpeg")
-                    domain: Domain = item_info["domain"]
-                    embed = default_embed()
-                    embed.add_field(
-                        name=text_map.get(609, locale),
-                        value=f"{domain.name} ({domain.city.name})",
-                    )
-                    embed.set_author(
-                        name=text_map.get(312, locale).format(name=item.name),
-                        icon_url=item.icon,
-                    )
-                    embed.set_footer(text=text_map.get(134, locale))
-                    embed.set_image(url="attachment://reminder_card.jpeg")
-                    try:
-                        await user.send(embed=embed, files=[file])
-                    except Forbidden:
-                        await c.execute(
-                            f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
-                            (user_id,),
+                        materials = []
+                        for material_id in item_info["materials"]:
+                            material = await client.get_material(material_id)
+                            if not isinstance(material, Material):
+                                continue
+                            materials.append((material, ""))
+
+                        dark_mode = await get_user_appearance_mode(user_id)
+                        fp = await main_funcs.draw_material_card(
+                            DrawInput(
+                                loop=self.bot.loop,
+                                session=self.bot.session,
+                                locale=locale,
+                                dark_mode=dark_mode,
+                            ),
+                            materials,
+                            "",
+                            draw_title=False,
                         )
-                    else:
-                        await c.execute(
-                            f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
-                            (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
+                        fp.seek(0)
+                        file = File(fp, "reminder_card.jpeg")
+                        domain: Domain = item_info["domain"]
+                        embed = default_embed()
+                        embed.add_field(
+                            name=text_map.get(609, locale),
+                            value=f"{domain.name} ({domain.city.name})",
                         )
-                        count += 1
-                await asyncio.sleep(2.5)
-        await self.bot.db.commit()
+                        embed.set_author(
+                            name=text_map.get(312, locale).format(name=item.name),
+                            icon_url=item.icon,
+                        )
+                        embed.set_footer(text=text_map.get(134, locale))
+                        embed.set_image(url="attachment://reminder_card.jpeg")
+                        try:
+                            await user.send(embed=embed, files=[file])
+                        except Forbidden:
+                            await c.execute(
+                                f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
+                                (user_id,),
+                            )
+                        else:
+                            await c.execute(
+                                f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
+                                (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
+                            )
+                            count += 1
+                    await asyncio.sleep(2.5)
+            await db.commit()
         log.info(f"[Schedule][{notification_type}] Ended (Notified {count} users)")
 
     @schedule_error_handler

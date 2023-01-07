@@ -225,7 +225,7 @@ class LineupSelector(Select):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.view.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
+                dark_mode=await get_user_appearance_mode(i.user.id),
             ),
             lineup,
             self.character_id,

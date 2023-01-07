@@ -34,8 +34,8 @@ class Select(discord.ui.Select):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=await get_user_locale(i.user.id, i.client.db) or i.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.db),
+                locale=await get_user_locale(i.user.id) or i.locale,
+                dark_mode=await get_user_appearance_mode(i.user.id),
             ),
             self.view.all_wish_data[self.values[0]],
             self.view.user.display_avatar.url,

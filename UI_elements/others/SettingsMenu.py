@@ -27,16 +27,18 @@ class Appearance(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
-            (i.user.id,),
-        )
-        await c.execute(
-            "SELECT dark_mode FROM user_settings WHERE user_id = ?", (i.user.id,)
-        )
-        (toggle,) = await c.fetchone()
+        user_locale = await get_user_locale(i.user.id)
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
+                "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
+                (i.user.id,),
+            ) as c:
+                await c.execute(
+                    "SELECT dark_mode FROM user_settings WHERE user_id = ?",
+                    (i.user.id,),
+                )
+                toggle = await c.fetchone()
+
         emoji = "🌙" if toggle == 1 else "☀️"
         toggle_text = 536 if toggle == 1 else 537
         embed = default_embed(
@@ -59,13 +61,13 @@ class LightModeButton(Button):
         super().__init__(emoji="☀️", label=label)
 
     async def callback(self, i: Interaction) -> Any:
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "UPDATE user_settings SET dark_mode = 0 WHERE user_id = ?",
-            (i.user.id,),
-        )
-        await i.client.db.commit()
-        await Appearance.callback(self, i)
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE user_settings SET dark_mode = 0 WHERE user_id = ?",
+                (i.user.id,),
+            )
+            await db.commit()
+        await Appearance.callback(self, i)  # type: ignore
 
 
 class DarkModeButton(Button):
@@ -73,13 +75,13 @@ class DarkModeButton(Button):
         super().__init__(emoji="🌙", label=label)
 
     async def callback(self, i: Interaction) -> Any:
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "UPDATE user_settings SET dark_mode = 1 WHERE user_id = ?",
-            (i.user.id,),
-        )
-        await i.client.db.commit()
-        await Appearance.callback(self, i)
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE user_settings SET dark_mode = 1 WHERE user_id = ?",
+                (i.user.id,),
+            )
+            await db.commit()
+        await Appearance.callback(self, i)  # type: ignore
 
 
 class Langauge(Button):
@@ -88,28 +90,24 @@ class Langauge(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        user_locale = await get_user_locale(i.user.id, i.client.db)
-        embed = default_embed(message=text_map.get(125, i.locale, user_locale))
-        lang_name = lang_options.get(user_locale or str(i.locale), {"name": "Unknown"})[
-            "name"
-        ]
+        locale = await get_user_locale(i.user.id) or str(i.locale)
+        embed = default_embed(message=text_map.get(125, locale))
+        lang_name = lang_options.get(locale, {"name": "Unknown"})["name"]
         lang_name = lang_name.split("|")[0]
         embed.set_author(
-            name=f"{text_map.get(34, i.locale, user_locale)}: {lang_name}",
+            name=f"{text_map.get(34, i.locale)}: {lang_name}",
             icon_url=i.user.display_avatar.url,
         )
         self.view.clear_items()
         self.view.add_item(GOBack())
-        self.view.add_item(LangSelect(i.locale, user_locale))
+        self.view.add_item(LangSelect(locale))
         await i.response.edit_message(embed=embed, view=self.view)
 
 
 class LangSelect(Select):
-    def __init__(self, locale: Locale, user_locale: str):
+    def __init__(self, locale: Locale | str):
         options = [
-            SelectOption(
-                label=text_map.get(124, locale, user_locale), emoji="🏳️", value="none"
-            )
+            SelectOption(label=text_map.get(124, locale), emoji="🏳️", value="none")
         ]
         for lang, lang_info in lang_options.items():
             options.append(
@@ -117,22 +115,22 @@ class LangSelect(Select):
                     label=lang_info["name"], value=lang, emoji=lang_info["emoji"]
                 )
             )
-        super().__init__(
-            options=options, placeholder=text_map.get(32, locale, user_locale), row=1
-        )
+        super().__init__(options=options, placeholder=text_map.get(32, locale), row=1)
         self.locale = locale
 
     async def callback(self, i: Interaction) -> Any:
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.values[0] == "none":
-            await c.execute("DELETE FROM user_settings WHERE user_id = ?", (i.user.id,))
-        else:
-            await c.execute(
-                "INSERT INTO user_settings (user_id, lang) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET lang = ? WHERE user_id = ?",
-                (i.user.id, self.values[0], self.values[0], i.user.id),
-            )
-        await i.client.db.commit()
-        await Langauge.callback(self, i)
+        async with aiosqlite.connect("shenhe.db") as db:
+            if self.values[0] == "none":
+                await db.execute(
+                    "DELETE FROM user_settings WHERE user_id = ?", (i.user.id,)
+                )
+            else:
+                await db.execute(
+                    "INSERT INTO user_settings (user_id, lang) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET lang = ? WHERE user_id = ?",
+                    (i.user.id, self.values[0], self.values[0], i.user.id),
+                )
+            await db.commit()
+        await Langauge.callback(self, i)  # type: ignore
 
 
 class GOBack(Button):
@@ -140,7 +138,7 @@ class GOBack(Button):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.db)
+        user_locale = await get_user_locale(i.user.id)
         view = View(user_locale or i.locale)
         view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))

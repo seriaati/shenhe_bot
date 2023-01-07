@@ -145,12 +145,12 @@ class NicknameModal(BaseModal):
         self.name.placeholder = text_map.get(601, locale).lower()
 
     async def on_submit(self, i: Interaction):
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        await c.execute(
-            "UPDATE user_accounts SET nickname = ? WHERE uid = ? AND user_id = ?",
-            (self.name.value, self.uid, i.user.id),
-        )
-        await i.client.db.commit()
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute(
+                "UPDATE user_accounts SET nickname = ? WHERE uid = ? AND user_id = ?",
+                (self.name.value, self.uid, i.user.id),
+            )
+            await db.commit()
         await return_accounts(i)
 
 
@@ -200,35 +200,37 @@ class SwitchAccount(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        c: aiosqlite.Cursor = await i.client.db.cursor()
-        if self.remove_account:
-            for uid in self.values:
-                await c.execute(
-                    "DELETE FROM user_accounts WHERE uid = ? AND user_id = ?",
-                    (uid, i.user.id),
+        
+        async with aiosqlite.connect("shenhe.db") as db:
+            if self.remove_account:
+                for uid in self.values:
+                    await db.execute(
+                        "DELETE FROM user_accounts WHERE uid = ? AND user_id = ?",
+                        (uid, i.user.id),
+                    )
+                embed = default_embed().set_author(
+                    name=text_map.get(561, self.view.locale),
+                    icon_url=i.user.display_avatar.url,
                 )
-            embed = default_embed().set_author(
-                name=text_map.get(561, self.view.locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            for item in self.view.children:
-                item.disabled = True
-            await i.response.edit_message(embed=embed, view=self.view)
-            await asyncio.sleep(2)
-            await return_accounts(i)
-        elif self.change_nickname:
-            modal = NicknameModal(self.view.locale, self.values[0])
-            await i.response.send_modal(modal)
-        else:
-            await c.execute(
-                "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
-            )
-            await c.execute(
-                "UPDATE user_accounts SET current = 1 WHERE uid = ? AND user_id = ?",
-                (self.values[0], i.user.id),
-            )
-            await return_accounts(i)
-        await i.client.db.commit()
+                for item in self.view.children:
+                    item.disabled = True
+                await i.response.edit_message(embed=embed, view=self.view)
+                await asyncio.sleep(2)
+                await return_accounts(i)
+            elif self.change_nickname:
+                modal = NicknameModal(self.view.locale, self.values[0])
+                await i.response.send_modal(modal)
+            else:
+                await db.execute(
+                    "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
+                )
+                await db.execute(
+                    "UPDATE user_accounts SET current = 1 WHERE uid = ? AND user_id = ?",
+                    (self.values[0], i.user.id),
+                )
+                await return_accounts(i)
+                
+            await db.commit()
 
 
 class GOBack(Button):
@@ -240,6 +242,7 @@ class GOBack(Button):
         self.layer = layer
 
     async def callback(self, i: Interaction):
+        self.view: View
         if self.layer == 2:
             await add_account_callback(self.view, i)
         else:
@@ -247,53 +250,55 @@ class GOBack(Button):
 
 
 async def return_accounts(i: Interaction):
-    user_locale = await get_user_locale(i.user.id, i.client.db)
-    c: aiosqlite.Cursor = await i.client.db.cursor()
-    await c.execute(
-        "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
-        (i.user.id,),
-    )
-    accounts = await c.fetchall()
-    select_options = []
-    view = View(user_locale or i.locale, select_options)
-    if not accounts:
-        embed = default_embed().set_author(
-            name=text_map.get(545, i.locale, user_locale),
-            icon_url=i.user.display_avatar.url,
-        )
-        try:
-            await i.response.edit_message(
-                embed=embed,
-                view=view,
-            )
-            view.message = await i.original_response()
-        except InteractionResponded:
-            view.message = await i.edit_original_response(embed=embed, view=view)
-        return
-    account_str = ""
-    current_account = False
-    for account in accounts:
-        emoji = (
-            "<:cookie_add:1018776813922693120> Cookie"
-            if account[1] is not None
-            else "<:number:1018838745614667817> UID"
-        )
-        nickname = f"{account[3]} | " if account[3] is not None else ""
-        if len(nickname) > 15:
-            nickname = nickname[:15] + "..."
-        if account[2] == 1:
-            current_account = True
-            account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}**__\n"
-        else:
-            account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}\n"
-    select_options = get_account_options(accounts, user_locale or i.locale)
-    if not current_account:
-        await c.execute(
-            "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
-            (i.user.id, accounts[0][0]),
-        )
-        await i.client.db.commit()
-        return await return_accounts(i)
+    user_locale = await get_user_locale(i.user.id)
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute(
+            "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
+            (i.user.id,),
+        ) as c:
+            accounts = await c.fetchall()
+            
+            select_options = []
+            view = View(user_locale or i.locale, select_options)
+            if not accounts:
+                embed = default_embed().set_author(
+                    name=text_map.get(545, i.locale, user_locale),
+                    icon_url=i.user.display_avatar.url,
+                )
+                try:
+                    await i.response.edit_message(
+                        embed=embed,
+                        view=view,
+                    )
+                    view.message = await i.original_response()
+                except InteractionResponded:
+                    view.message = await i.edit_original_response(embed=embed, view=view)
+                return
+            account_str = ""
+            current_account = False
+            for account in accounts:
+                emoji = (
+                    "<:cookie_add:1018776813922693120> Cookie"
+                    if account[1] is not None
+                    else "<:number:1018838745614667817> UID"
+                )
+                nickname = f"{account[3]} | " if account[3] is not None else ""
+                if len(nickname) > 15:
+                    nickname = nickname[:15] + "..."
+                if account[2] == 1:
+                    current_account = True
+                    account_str += f"• __**{nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}**__\n"
+                else:
+                    account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), i.locale, user_locale)} | {text_map.get(569, i.locale, user_locale)}: {emoji}\n"
+            select_options = get_account_options(accounts, user_locale or i.locale)
+            if not current_account:
+                await c.execute(
+                    "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
+                    (i.user.id, accounts[0][0]),
+                )
+                return await return_accounts(i)
+        await db.commit()
+        
     embed = default_embed(message=account_str).set_author(
         name=text_map.get(555, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,

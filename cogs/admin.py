@@ -77,7 +77,7 @@ class AdminCog(commands.Cog, name="admin"):
 
     @commands.is_owner()
     @commands.command(name="sync")
-    async def roles(self, ctx: commands.Context):
+    async def sync(self, ctx: commands.Context):
         await self.bot.tree.sync()
         await ctx.send("commands synced")
         

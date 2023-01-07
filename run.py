@@ -41,8 +41,15 @@ class Translator(app_commands.Translator):
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
+            if len(text.split(" ")) == 1:
+                return text.lower()
             if text == "":
                 return None
+            
+            # hard code stuff
+            if str(locale) == "vi" and string.extras["hash"] == 105:
+                return "nhân-vật"
+            
             return text
         except KeyError:
             return None
@@ -75,31 +82,29 @@ class Shenhe(commands.AutoShardedBot):
         self.maintenance_time = ""
         self.launch_time = datetime.utcnow()
         self.session = aiohttp.ClientSession()
-        self.db = await aiosqlite.connect("shenhe.db")
-        self.main_db = await aiosqlite.connect("../shenhe_main/main.db")
-        self.backup_db = await aiosqlite.connect("backup.db")
         self.debug = debug
         self.gd_text_map = load_text_maps()
 
         cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})
-        async with self.db.execute(
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute(
             "SELECT DISTINCT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
-        ) as c:
-            async for row in c:
-                uid = row[0]
-                if str(uid) in ["1", "2", "5"]:
-                    continue
-
-                ltuid = row[1]
-                ltoken = row[2]
-                cookie = {"ltuid": ltuid, "ltoken": ltoken}
-
-                for c in cookie_list:
-                    if c["ltuid"] == ltuid:
-                        break
-                else:
-                    cookie_list.append(cookie)
+            ) as c:
+                async for row in c:
+                    uid = row[0]
+                    if str(uid) in ["1", "2", "5"]:
+                        continue
+                    
+                    ltuid = row[1]
+                    ltoken = row[2]
+                    cookie = {"ltuid": ltuid, "ltoken": ltoken}
+                    
+                    for c in cookie_list:
+                        if c["ltuid"] == ltuid:
+                            break
+                    else:
+                        cookie_list.append(cookie)
 
         try:
             self.genshin_client.set_cookies(cookie_list)
@@ -155,9 +160,6 @@ class Shenhe(commands.AutoShardedBot):
             sentry_sdk.capture_exception(error)
 
     async def close(self) -> None:
-        await self.db.close()
-        await self.main_db.close()
-        await self.backup_db.close()
         await self.session.close()
         if not self.debug:
             if hasattr(self, "browsers"):

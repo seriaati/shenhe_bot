@@ -88,11 +88,12 @@ def get_month_name(
     return month_dict.get(month, str(month))
 
 
-async def get_user_locale(user_id: int, db: aiosqlite.Connection) -> str | None:
-    c = await db.cursor()
-    await c.execute("SELECT lang FROM user_settings WHERE user_id = ?", (user_id,))
-    user_lang = await c.fetchone()
-    if user_lang is None:
+async def get_user_locale(user_id: int) -> Optional[str]:
+    async with aiosqlite.connect("shenhe.db") as db:
+        async with db.execute("SELECT lang FROM user_settings WHERE user_id = ?", (user_id,)) as c:
+            user_lang = await c.fetchone()
+            
+    if user_lang is None or user_lang[0] is None:
         return None
     else:
         return user_lang[0]

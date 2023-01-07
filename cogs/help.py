@@ -35,7 +35,7 @@ class Dropdown(Select):
         self.bot: ShenheBot = bot
 
     async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         index = 0
         cogs = ["genshin", "wish", "calc", "todo", "others"]
         for index, option in enumerate(self.options):
@@ -93,7 +93,7 @@ class HelpCog(commands.Cog):
         name="help", description=_("View a list of all commands", hash=486)
     )
     async def help(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, self.bot.db)
+        user_locale = await get_user_locale(i.user.id)
         view = DropdownView(self.bot, i.locale, user_locale)
         await i.response.send_message(view=view)
         view.message = await i.original_response()

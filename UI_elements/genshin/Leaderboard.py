@@ -3,6 +3,7 @@ from typing import Dict, List
 
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
+import aiosqlite
 
 import asset
 import config
@@ -91,7 +92,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
     query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
     locale = view.locale
-    dark_mode = await get_user_appearance_mode(i.user.id, i.client.db)
+    dark_mode = await get_user_appearance_mode(i.user.id)
     await image_gen_transition(i, view, locale)
 
     # change color of button based on current region selection
@@ -153,38 +154,39 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             users = []
             uids = []
             
-            async with i.client.db.execute(
-                f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id, const, refine, c_level, c_icon FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
-            ) as c:
-                rank = 1
-                current_user = None
-                async for row in c:
-                    if view.area == "server" and row[6] not in guild_member_ids:
-                        continue
-                    if row[0] in uids:
-                        continue
+            async with aiosqlite.connect("shenhe.db") as db:
+                async with db.execute(
+                    f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id, const, refine, c_level, c_icon FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
+                ) as c:
+                    rank = 1
+                    current_user = None
+                    async for row in c:
+                        if view.area == "server" and row[6] not in guild_member_ids:
+                            continue
+                        if row[0] in uids:
+                            continue
 
-                    users.append(
-                        user := SingleStrikeLeaderboardUser(
-                            user_name=row[5],
-                            rank=rank,
-                            character=SingleStrikeLeaderboardCharacter(
-                                constellation=row[7],
-                                refinement=row[8],
-                                level=row[9],
-                                icon=row[10],
-                            ),
-                            single_strike=row[2],
-                            floor=row[3],
-                            stars_collected=row[4],
-                            uid=row[0],
+                        users.append(
+                            user := SingleStrikeLeaderboardUser(
+                                user_name=row[5],
+                                rank=rank,
+                                character=SingleStrikeLeaderboardCharacter(
+                                    constellation=row[7],
+                                    refinement=row[8],
+                                    level=row[9],
+                                    icon=row[10],
+                                ),
+                                single_strike=row[2],
+                                floor=row[3],
+                                stars_collected=row[4],
+                                uid=row[0],
+                            )
                         )
-                    )
-                    uids.append(row[0])
-                    
-                    if row[0] == uid:
-                        current_user = user
-                    rank += 1
+                        uids.append(row[0])
+                        
+                        if row[0] == uid:
+                            current_user = user
+                        rank += 1
                     
             if not users:
                 raise EmptyLeaderboard
@@ -218,10 +220,11 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 view=view,
             )
         elif leaderboard == "character_usage_rate":
-            async with i.client.db.execute(
-                f"SELECT * FROM abyss_character_leaderboard {query_str}"
-            ) as c:
-                data = await c.fetchall()
+            async with aiosqlite.connect("shenhe.db") as db:
+                async with db.execute(
+                    f"SELECT * FROM abyss_character_leaderboard {query_str}"
+                ) as c:
+                    data = await c.fetchall()
             if view.area == "server":
                 data = [item for item in data if item[2] in guild_member_ids]
             if not data:
@@ -271,32 +274,33 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             )
         elif leaderboard == "full_clear":
             users = []
-            async with i.client.db.execute(
-                f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} AND stars_collected = 36 ORDER BY runs ASC"
-            ) as c:
-                rank = 1
-                current_user = None
-                async for row in c:
-                    if view.area == "server" and row[5] not in guild_member_ids:
-                        continue
-                    if row[0] in [u.uid for u in users]:
-                        continue
+            async with aiosqlite.connect("shenhe.db") as db:
+                async with db.execute(
+                    f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} AND stars_collected = 36 ORDER BY runs ASC"
+                ) as c:
+                    rank = 1
+                    current_user = None
+                    async for row in c:
+                        if view.area == "server" and row[5] not in guild_member_ids:
+                            continue
+                        if row[0] in [u.uid for u in users]:
+                            continue
 
-                    users.append(
-                        user := RunLeaderboardUser(
-                            icon_url=row[4],
-                            user_name=row[7],
-                            level=row[3],
-                            wins_slash_runs=f"{row[1]}/{row[2]}",
-                            win_percentage=round(row[1] / row[2] * 100, 1),
-                            stars_collected=row[6],
-                            uid=row[0],
-                            rank=rank,
+                        users.append(
+                            user := RunLeaderboardUser(
+                                icon_url=row[4],
+                                user_name=row[7],
+                                level=row[3],
+                                wins_slash_runs=f"{row[1]}/{row[2]}",
+                                win_percentage=round(row[1] / row[2] * 100, 1),
+                                stars_collected=row[6],
+                                uid=row[0],
+                                rank=rank,
+                            )
                         )
-                    )
-                    if row[0] == uid:
-                        current_user = user
-                    rank += 1
+                        if row[0] == uid:
+                            current_user = user
+                        rank += 1
             if not users:
                 raise EmptyLeaderboard
             fp = await main_funcs.draw_run_leaderboard(

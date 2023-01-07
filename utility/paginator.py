@@ -1,13 +1,15 @@
-from typing import List, Union
+from typing import Any, Dict, List, Optional, Union
 from apps.text_map.utils import get_user_locale
 
-from discord import ButtonStyle, Embed, Interaction
+from discord import ButtonStyle, Embed, Interaction, File
 from discord.ui import Button, Select, button
-
+from apps.genshin.custom_model import DrawInput
 import config
 from UI_base_models import BaseView
 
 from apps.text_map.text_map_app import text_map
+
+from apps.draw import main_funcs
 
 
 class _view(BaseView):
@@ -15,12 +17,15 @@ class _view(BaseView):
         self,
         embeds: List[Embed],
         locale: str,
+        domains: Optional[List[Dict[str, Any]]],
     ):
-        super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
         self.locale = locale
+        self.domains = domains
         
         self.current_page = 0
+            
+        super().__init__(timeout=config.mid_timeout)
 
     async def update_children(self, i: Interaction):
         self.first.disabled = self.current_page == 0
@@ -30,8 +35,22 @@ class _view(BaseView):
         
         text = text_map.get(176, self.locale)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
+        
+        attachments: List[File] = []
+        if self.domains:
+            card = await main_funcs.draw_farm_domain_card(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session, # type: ignore
+                    locale=self.locale,
+                ),
+                self.domains[self.current_page]["domain"],
+                self.domains[self.current_page]["items"],
+            )
+            card.seek(0)
+            attachments = [File(card, filename="farm.jpeg")]
 
-        await i.response.edit_message(embed=self.embeds[self.current_page], view=self)
+        await i.response.edit_message(embed=self.embeds[self.current_page], view=self, attachments=attachments)
 
     @button(
         emoji="<:double_left:982588991461281833>",
@@ -93,10 +112,12 @@ class GeneralPaginator:
         i: Interaction,
         embeds: List[Embed],
         custom_children: List[Union[Button, Select]] = [],
+        domains: Optional[List[Dict[str, Any]]] = None,
     ):
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children
+        self.domains = domains
 
     async def start(
         self,
@@ -107,8 +128,8 @@ class GeneralPaginator:
         if not (self.embeds):
             raise ValueError("Missing embeds")
 
-        locale = await get_user_locale(self.i.user.id, self.i.client.db) or self.i.locale
-        view = _view(self.embeds, str(locale))
+        locale = await get_user_locale(self.i.user.id) or self.i.locale
+        view = _view(self.embeds, str(locale), self.domains)
         view.author = self.i.user
         view.first.disabled = view.previous.disabled = True
         view.last.disabled = view.next.disabled = (
@@ -126,6 +147,19 @@ class GeneralPaginator:
         kwargs["view"] = view
         if ephemeral:
             kwargs["ephemeral"] = ephemeral
+        
+        if self.domains:
+            card = await main_funcs.draw_farm_domain_card(
+                DrawInput(
+                    loop=self.i.client.loop,
+                    session=self.i.client.session, # type: ignore
+                    locale=locale,
+                ),
+                self.domains[0]["domain"], # type: ignore
+                self.domains[0]["items"], # type: ignore
+            )
+            card.seek(0)
+            kwargs["files"] = [File(card, filename="farm.jpeg")]
 
         if edit and ephemeral:
             raise ValueError("Cannot edit the ephemeral status of a message")
