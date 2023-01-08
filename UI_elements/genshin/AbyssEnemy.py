@@ -1,17 +1,19 @@
 from typing import Dict, List
-from UI_base_models import BaseView
+
+from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption
+from discord.ui import Button, Select
+
+import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Material, Monster
+from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import AbyssHalf, DrawInput
 from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.utils import get_element_name
-import config
-from discord.ui import Select, Button
-from discord import Locale, Interaction, SelectOption, File, Embed, ButtonStyle
 from apps.text_map.text_map_app import text_map
-from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
-from apps.draw import main_funcs
+from UI_base_models import BaseView
+from utility.utils import (default_embed, divide_chunks,
+                           get_user_appearance_mode)
 
 
 class View(BaseView):
@@ -37,7 +39,7 @@ class View(BaseView):
         divided_options = list(divide_chunks(options, 25))
         for i, options in enumerate(divided_options):
             self.add_item(ChamberSelect(locale, options, i))
-        
+
         self.add_item(BuffButton(text_map.get(732, locale), buff_embed))
 
 
@@ -61,22 +63,27 @@ class InstantButton(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await select_callback(i, self.view, self.label)
-        
+
+
 class BuffButton(Button):
     def __init__(self, label: str, embed: Embed):
         super().__init__(label=label, style=ButtonStyle.green, row=2)
         self.embed = embed
-    
+
     async def callback(self, i: Interaction):
         await i.response.edit_message(embed=self.embed, attachments=[])
 
+
 async def select_callback(i: Interaction, view: View, value: str):
     await image_gen_transition(i, view, view.locale)
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale)) # type: ignore
+    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))  # type: ignore
     halfs = view.halfs[value]
     embeds = []
     attachments = []
     for index, half in enumerate(halfs):
+        if not half.enemies:
+            continue
+
         materials = []
         for enemy in half.enemies:
             enemy_id = text_map.get_id_from_name(enemy)
@@ -95,10 +102,11 @@ async def select_callback(i: Interaction, view: View, value: str):
                         "",
                     )
                 )
+
         fp = await main_funcs.draw_material_card(
             DrawInput(
                 loop=i.client.loop,
-                session=i.client.session, # type: ignore
+                session=i.client.session,  # type: ignore
                 locale=view.locale,
                 dark_mode=await get_user_appearance_mode(i.user.id),
             ),
