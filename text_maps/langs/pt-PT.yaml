@@ -33,8 +33,8 @@
 '32': Select a language
 '33': Weapon
 '34': Current language
-'35': </register:1044926380242120744> for more information
-'36': Your Cookie is invalid, please register again using </register:1044926380242120744>
+'35': /register for more information
+'36': Your Cookie is invalid, please register again using /register
 '37': Artifact Set
 '38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': Account added
@@ -180,7 +180,7 @@
 '164': builds
 '165': |-
   This user hasn't registered their account yet
-  </register:1044926380242120744> to register
+  /register to register
 '166': User not found
 '167': "{name}'s UID"
 '168': current level
@@ -307,11 +307,11 @@
 '293': win %
 '294': View the list of enemies in the current abyss phase
 '295': Enemy level
-'296': Challenge target
+'296': ''
 '297': Meet the awesome people that helped me!
 '298': Translators
 '299': Friendship Level
-'300': The highest artifact score is 99, only +20 artifacts will have scores
+'300': ''
 '301': Stats
 '302': Threshold
 '303': Current resin
@@ -360,7 +360,7 @@
 '346': Conditions
 '347': Effects
 '348': Calculate Damage
-'349': Artifact and weapon effects are not included for now
+'349': ''
 '350': melt
 '351': vaporize
 '352': Authkey URL
@@ -754,7 +754,7 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
-'672': UID not found (link it with </register:1044926380242120744> !)
+'672': UID not found (link it with /register !)
 '673': You currently have **{a}** wishes stored in Shenhe's database
 '674': Please link a UID before importing new wishes
 '675': Newest wish
