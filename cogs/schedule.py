@@ -1,47 +1,36 @@
 import ast
 import asyncio
+import io
 import json
-import random
 from datetime import timedelta
+from pathlib import Path
 from typing import List, Literal, Optional
 from uuid import uuid4
-from apps.draw import main_funcs
+
 import aiosqlite
-from exceptions import ShenheAccountNotFound, UIDNotFound
 import genshin
 import sentry_sdk
-from pathlib import Path
-from discord import File, Game
+from discord import File
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
 from discord.utils import find, format_dt
-import io
+
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Artifact, Character, Domain, Material, Weapon
-from apps.genshin.custom_model import (
-    DrawInput,
-    NotificationUser,
-    ShenheBot,
-    ShenheAccount,
-)
-from apps.genshin.utils import (
-    get_current_abyss_season,
-    get_shenhe_account,
-    get_uid,
-    get_uid_tz,
-)
+from apps.draw import main_funcs
+from apps.genshin.custom_model import (DrawInput, NotificationUser,
+                                       ShenheAccount, ShenheBot)
+from apps.genshin.find_codes import find_codes
+from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
+                                get_uid, get_uid_tz)
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from exceptions import ShenheAccountNotFound, UIDNotFound
 from utility.fetch_card import fetch_cards, process_i18n
-from utility.utils import (
-    default_embed,
-    error_embed,
-    get_dt_now,
-    get_user_appearance_mode,
-    log,
-)
+from utility.utils import (default_embed, error_embed, get_dt_now,
+                           get_user_appearance_mode, log)
 
 
 def schedule_error_handler(func):
@@ -99,6 +88,9 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_card_data())
             await asyncio.create_task(self.backup_database())
 
+        if now.hour == 3 and now.minute < self.loop_interval:  # 3am
+            await asyncio.create_task(self.redeem_codes())
+
         if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
             hour_dict = {
                 4: 0,  # Asia
@@ -116,11 +108,7 @@ class Schedule(commands.Cog):
                 )
             )
 
-    async def restart_gateway(self):
-        log.info("[Schedule] Restarting gateway...")
-        await self.bot.reload_extension("cogs.login")
-        log.info("[Schedule] Gateway restarted.")
-
+    @schedule_error_handler
     async def generate_abyss_json(self):
         log.info("[Schedule] Generating abyss.json...")
 
@@ -199,6 +187,7 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule] Sent abyss.json")
 
+    @schedule_error_handler
     async def check_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Checking...")
 
@@ -516,6 +505,58 @@ class Schedule(commands.Cog):
         log.info("[Schedule][Backup] Ended")
 
     @schedule_error_handler
+    async def redeem_codes(self):
+        """Auto-redeems codes for all Shenhe users that have Cookie registered"""
+        log.info("[Schedule][Redeem Codes] Start")
+        codes = await find_codes()
+        if codes:
+            users = await self.get_schedule_users()
+
+            for index, user in enumerate(users):
+                locale = user.user_locale or "en-US"
+                embed = default_embed(text_map.get(126, locale))
+                value = ""
+
+                for code in codes:
+                    success = False
+
+                    try:
+                        await user.client.redeem_code(code, user.uid)
+                    except genshin.errors.InvalidCookies:
+                        value = text_map.get(36, locale)
+                    except genshin.errors.RedemptionClaimed:
+                        value = text_map.get(106, locale)
+                    except genshin.errors.RedemptionCooldown:
+                        await asyncio.sleep(10)
+                        try:
+                            await user.client.redeem_code(code, user.uid)
+                        except:
+                            value = text_map.get(127, locale)
+                    except genshin.errors.RedemptionException as e:
+                        value = e.msg
+                    except Exception as e:
+                        value = f"{type(e)} {e}"
+                    else:
+                        success = True
+                        value = text_map.get(109, locale)
+
+                    await asyncio.sleep(5)
+
+                    embed.add_field(
+                        name=f"{'✅' if success else '⛔'} {code}",
+                        value=value,
+                    )
+
+                try:
+                    await user.discord_user.send(embed=embed)  # type: ignore
+                except Forbidden:
+                    pass
+
+                await asyncio.sleep(5)
+                if index % 100 == 0:
+                    await asyncio.sleep(30)
+
+    @schedule_error_handler
     async def claim_reward(self):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
@@ -574,7 +615,7 @@ class Schedule(commands.Cog):
                         (user.discord_user.id, user.uid),
                     )
                     await db.commit()
-                    
+
                 embed = embed = error_embed(
                     message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
                 )
@@ -592,7 +633,6 @@ class Schedule(commands.Cog):
                 await asyncio.sleep(30)
 
             await asyncio.sleep(2.5)
-
 
         log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
 
@@ -629,7 +669,9 @@ class Schedule(commands.Cog):
                     locale = await get_user_locale(user_id) or "en-US"
                     client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                     domains = await client.get_domain()
-                    user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+                    user = self.bot.get_user(user_id) or await self.bot.fetch_user(
+                        user_id
+                    )
                     uid = await get_uid(user_id)
                     uid_tz = get_uid_tz(uid)
                     if uid_tz != time_offset:
@@ -645,7 +687,9 @@ class Schedule(commands.Cog):
                                         str(item_id)
                                     )
                                 else:
-                                    upgrade = await client.get_weapon_upgrade(int(item_id))
+                                    upgrade = await client.get_weapon_upgrade(
+                                        int(item_id)
+                                    )
 
                                 if upgrade is None or isinstance(upgrade, List):
                                     continue
