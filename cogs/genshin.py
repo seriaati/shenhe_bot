@@ -8,7 +8,6 @@ from discord import (Embed, File, Interaction, Member, SelectOption, User,
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
-from discord.ui import Button
 from discord.utils import format_dt
 from dotenv import load_dotenv
 
@@ -31,7 +30,8 @@ from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
                                parse_furniture_wiki, parse_material_wiki,
                                parse_monster_wiki, parse_namecard_wiki,
                                parse_weapon_wiki)
-from apps.genshin_data.abyss import get_abyss_blessing, get_abyss_enemies, get_ley_line_disorders
+from apps.genshin_data.abyss import (get_abyss_blessing, get_abyss_enemies,
+                                     get_ley_line_disorders)
 from apps.text_map.convert_locale import (to_ambr_top, to_event_lang,
                                           to_genshin_py)
 from apps.text_map.text_map_app import text_map
@@ -41,7 +41,7 @@ from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound,
                         NoPlayerFound, UIDNotFound)
 from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, Domain,
                                  EnkaProfile, EventTypeChooser, Leaderboard,
-                                 Lineup, ShowAllCharacters, UIDCommand)
+                                 Lineup, MeToo, ShowAllCharacters, UIDCommand)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
@@ -682,7 +682,12 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
         )
-        await i.followup.send(embed=result.result, ephemeral=not result.success)
+        await i.followup.send(
+            embed=result.result,
+            view=MeToo.View(
+                code, self.genshin_app, await get_user_locale(i.user.id) or i.locale
+            ),
+        )
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
@@ -928,9 +933,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=text_map.get(706, locale),
-                    value=add_bullet_points(
-                        ley_line_disorders.get(floor.num, [])
-                    ),
+                    value=add_bullet_points(ley_line_disorders.get(floor.num, [])),
                     inline=False,
                 )
                 embed.add_field(

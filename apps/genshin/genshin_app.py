@@ -1,45 +1,31 @@
 from datetime import timedelta
 from typing import List, Optional
-from UI_base_models import get_error_handle_embed
 
 import aiosqlite
 import enkanetwork
-from exceptions import UIDNotFound
 import genshin
 import sentry_sdk
-from discord import Asset, ClientUser, Embed, Locale, Member, SelectOption, User
-from discord.utils import format_dt
 from dateutil.relativedelta import relativedelta
+from discord import (Asset, ClientUser, Embed, Locale, Member, SelectOption,
+                     User)
+from discord.utils import format_dt
+
 from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
-from apps.genshin.custom_model import (
-    AbyssResult,
-    AreaResult,
-    CharacterResult,
-    DiaryResult,
-    DrawInput,
-    GenshinAppResult,
-    RealtimeNoteResult,
-    ShenheBot,
-    ShenheAccount,
-    StatsResult,
-)
-from apps.genshin.utils import (
-    get_character_emoji,
-    get_shenhe_account,
-    get_uid,
-    get_uid_tz,
-)
+from apps.genshin.custom_model import (AbyssResult, AreaResult,
+                                       CharacterResult, DiaryResult, DrawInput,
+                                       GenshinAppResult, RealtimeNoteResult,
+                                       ShenheAccount, ShenheBot, StatsResult)
+from apps.genshin.utils import (get_character_emoji, get_shenhe_account,
+                                get_uid, get_uid_tz)
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
+from apps.text_map.utils import (get_element_name, get_month_name,
+                                 get_user_locale)
 from data.game.elements import element_emojis
-from utility.utils import (
-    default_embed,
-    error_embed,
-    get_dt_now,
-    get_user_appearance_mode,
-    log,
-)
+from exceptions import UIDNotFound
+from UI_base_models import get_error_handle_embed
+from utility.utils import (default_embed, error_embed, get_dt_now,
+                           get_user_appearance_mode, log)
 
 
 def genshin_error_handler(func):
@@ -128,14 +114,15 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
         draw_input = DrawInput(
-                loop=self.bot.loop,
-                session=self.bot.session,
-                locale=shenhe_user.user_locale or str(locale),
-                dark_mode=await get_user_appearance_mode(author_id),
-            )
+            loop=self.bot.loop,
+            session=self.bot.session,
+            locale=shenhe_user.user_locale or str(locale),
+            dark_mode=await get_user_appearance_mode(author_id),
+        )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
-            success=True, result=RealtimeNoteResult(embed=embed, draw_input=draw_input, notes=notes)
+            success=True,
+            result=RealtimeNoteResult(embed=embed, draw_input=draw_input, notes=notes),
         )
 
     async def parse_resin_embed(
@@ -393,16 +380,16 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
             raise UIDNotFound
-        
+
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
         ambr = AmbrTopAPI(self.bot.session)
         all_characters = await ambr.get_character(include_beta=False)
         if not isinstance(all_characters, List):
             raise TypeError("all_characters is not a list")
-        
+
         author_locale = await get_user_locale(author_id)
         new_locale = author_locale or shenhe_user.user_locale or str(locale)
-        
+
         embed = default_embed(
             message=f"{text_map.get(576, new_locale).format(current=len(characters), total=len(all_characters)-1)}\n"
             f"{text_map.get(577, new_locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters)-1)}"
@@ -412,7 +399,7 @@ class GenshinApp:
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         embed.set_image(url="attachment://characters.jpeg")
-        
+
         result = {
             "embeds": {"All": embed},
             "options": [
@@ -430,7 +417,13 @@ class GenshinApp:
             elements[character.element].append(character)
 
         for element, chars in elements.items():
-            total = len([c for c in all_characters if '10000007' not in c.id and c.element == element])
+            total = len(
+                [
+                    c
+                    for c in all_characters
+                    if "10000007" not in c.id and c.element == element
+                ]
+            )
             embed = default_embed(
                 message=f"{text_map.get(576, new_locale).format(current=len(chars), total=total)}\n"
                 f"{text_map.get(577, new_locale).format(current=len([c for c in chars if c.friendship == 10]), total=total)}"
@@ -440,7 +433,7 @@ class GenshinApp:
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             embed.set_image(url="attachment://characters.jpeg")
-            result['embeds'][element] = embed
+            result["embeds"][element] = embed
 
             result["options"].append(
                 SelectOption(
@@ -474,7 +467,9 @@ class GenshinApp:
             await shenhe_user.client.redeem_code(code)
         except genshin.errors.RedemptionClaimed:
             return GenshinAppResult(
-                result=error_embed().set_author(
+                result=error_embed(
+                    message=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
+                ).set_author(
                     name=text_map.get(106, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
@@ -482,7 +477,9 @@ class GenshinApp:
             )
         except genshin.errors.RedemptionInvalid:
             return GenshinAppResult(
-                result=error_embed().set_author(
+                result=error_embed(
+                    message=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
+                ).set_author(
                     name=text_map.get(107, locale, shenhe_user.user_locale),
                     icon_url=shenhe_user.discord_user.display_avatar.url,
                 ),
