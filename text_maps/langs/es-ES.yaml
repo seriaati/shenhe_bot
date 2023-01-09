@@ -106,10 +106,10 @@
 '103': Max notification number
 '104': Settings saved
 '105': Character
-'106': This gift code has already been redeemed!
-'107': Gift code invalid
-'108': Gift code
-'109': Code redeemed
+'106': Code has been redeemed already
+'107': Code is invalid
+'108': Code
+'109': Code redeemed successfully
 '110': Summer event data not found
 '111': Golden Apple Archipelago
 '112': Waverider Waypoints Unlocked
@@ -131,13 +131,13 @@
   • If any text is not translated yet, shenhe will respond to you with English
   • Names of genshin characters, weapons, and other game elements will be translated automatically
   • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
-'126': ''
-'127': ''
+'126': Automatic promo code redemption
+'127': Code redemption failed
 '128': Language
 '129': Mondstat
 '130': Liyue
 '131': Inazuma
-'132': ''
+'132': Me too!
 '133': ''
 '134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
 '135': There was an error
