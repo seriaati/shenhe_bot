@@ -84,6 +84,10 @@ class Shenhe(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession()
         self.debug = debug
         self.gd_text_map = load_text_maps()
+        
+        async with aiosqlite.connect("shenhe.db") as db:
+            await db.execute("PRAGMA journal_mode=WAL")
+            await db.commit()
 
         cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})
@@ -238,7 +242,7 @@ async def on_error(i: Interaction, e: app_commands.AppCommandError):
     await global_error_handler(i, e)
 
 
-if not debug:
+if platform.system() == "Linux":
     import uvloop  # type: ignore
 
     uvloop.install()
