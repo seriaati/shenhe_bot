@@ -138,8 +138,8 @@ class Shenhe(commands.AutoShardedBot):
         if not self.debug:
             try:
                 self.browsers = await launch_browsers()
-            except:
-                log.warning("[System]on_ready: Launch browsers failed")
+            except Exception as e:
+                log.warning("[System]on_ready: Launch browsers failed", exc_info=e)
 
     async def on_message(self, message: Message):
         if self.user is None:
