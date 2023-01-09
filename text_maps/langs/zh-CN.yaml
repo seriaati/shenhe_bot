@@ -106,10 +106,10 @@
 '103': 最大提醒值
 '104': 设置成功
 '105': 角色
-'106': 你已经兑换过这个兑换码了!
-'107': 兑换码无效
-'108': 兑换码
-'109': 兑换码兑换成功
+'106': Code has been redeemed already
+'107': Code is invalid
+'108': Code
+'109': Code redeemed successfully
 '110': 找不到你的海岛活动资料
 '111': 金苹果群岛
 '112': 浪船锚点
@@ -131,8 +131,8 @@
   • 如果任何一个字串还尚未被翻译，申鹤将会使用英文
   • 原神的游戏元素，像是角色、武器名称等将会自动翻译
   • 有兴趣将申鹤翻译为你会说的语言吗？欢迎查看申鹤的 [crowdin](https://crowdin.com/project/shenhe-bot) 页面
-'126': ''
-'127': ''
+'126': Automatic promo code redemption
+'127': Code redemption failed
 '128': 语言
 '129': 蒙德
 '130': 璃月
