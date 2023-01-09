@@ -959,14 +959,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
 
         view = AbyssEnemy.View(locale, enemies, embeds, buff_embed)
-        view.add_item(
-            Button(
-                url="https://genshin-impact.fandom.com/wiki/Spiral_Abyss/Floors",
-                label=text_map.get(96, locale),
-                emoji=asset.fandom_emoji,
-                row=4,
-            )
-        )
         view.author = i.user
         await i.followup.send(embed=embed, view=view)
         view.message = await i.original_response()
