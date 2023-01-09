@@ -78,8 +78,6 @@ class Schedule(commands.Cog):
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
             await asyncio.create_task(self.claim_reward())
-            if now.day in [3, 18]:
-                await asyncio.create_task(self.generate_abyss_json())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
             await asyncio.create_task(self.update_ambr_cache())
@@ -87,6 +85,8 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_game_data())
             await asyncio.create_task(self.update_card_data())
             await asyncio.create_task(self.backup_database())
+            if now.day in [3, 18]:
+                await asyncio.create_task(self.generate_abyss_json())
 
         if now.hour == 3 and now.minute < self.loop_interval:  # 3am
             await asyncio.create_task(self.redeem_codes())
@@ -508,53 +508,74 @@ class Schedule(commands.Cog):
     async def redeem_codes(self):
         """Auto-redeems codes for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Redeem Codes] Start")
+        
         codes = await find_codes()
-        if codes:
-            users = await self.get_schedule_users()
+        
+        log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
+        
+        async with aiosqlite.connect("shenhe.db") as db:
+            async with db.execute("CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)") as c:
+                await c.execute("SELECT code FROM redeem_codes")
+                async for row in c:
+                    if row[0] in codes:
+                        codes.remove(row[0])
+                    
+        if not codes:
+            return
+                
+        users = await self.get_schedule_users()
 
-            for index, user in enumerate(users):
-                locale = user.user_locale or "en-US"
-                embed = default_embed(text_map.get(126, locale))
-                value = ""
+        for index, user in enumerate(users):
+            locale = user.user_locale or "en-US"
+            embed = default_embed(text_map.get(126, locale))
+            value = ""
 
-                for code in codes:
-                    success = False
-
-                    try:
-                        await user.client.redeem_code(code, user.uid)
-                    except genshin.errors.InvalidCookies:
-                        value = text_map.get(36, locale)
-                    except genshin.errors.RedemptionClaimed:
-                        value = text_map.get(106, locale)
-                    except genshin.errors.RedemptionCooldown:
-                        await asyncio.sleep(10)
-                        try:
-                            await user.client.redeem_code(code, user.uid)
-                        except:
-                            value = text_map.get(127, locale)
-                    except genshin.errors.RedemptionException as e:
-                        value = e.msg
-                    except Exception as e:
-                        value = f"{type(e)} {e}"
-                    else:
-                        success = True
-                        value = text_map.get(109, locale)
-
-                    await asyncio.sleep(5)
-
-                    embed.add_field(
-                        name=f"{'✅' if success else '⛔'} {code}",
-                        value=value,
-                    )
+            for code in codes:
+                success = False
 
                 try:
-                    await user.discord_user.send(embed=embed)  # type: ignore
-                except Forbidden:
-                    pass
+                    await user.client.redeem_code(code, user.uid)
+                except genshin.errors.InvalidCookies:
+                    value = text_map.get(36, locale)
+                except genshin.errors.RedemptionClaimed:
+                    value = text_map.get(106, locale)
+                except genshin.errors.RedemptionCooldown:
+                    await asyncio.sleep(10)
+                    try:
+                        await user.client.redeem_code(code, user.uid)
+                    except:
+                        value = text_map.get(127, locale)
+                except genshin.errors.RedemptionException as e:
+                    value = e.msg
+                except Exception as e:
+                    value = f"{type(e)} {e}"
+                else:
+                    success = True
+                    value = text_map.get(109, locale)
 
                 await asyncio.sleep(5)
-                if index % 100 == 0:
-                    await asyncio.sleep(30)
+
+                embed.add_field(
+                    name=f"{'✅' if success else '⛔'} {code}",
+                    value=value,
+                )
+
+            try:
+                await user.discord_user.send(embed=embed)  # type: ignore
+            except Forbidden:
+                pass
+
+            await asyncio.sleep(5)
+            if index % 100 == 0:
+                await asyncio.sleep(30)
+        
+        async with aiosqlite.connect("shenhe.db") as db:
+            for code in codes:
+                await db.execute("INSERT INTO redeem_codes (code) VALUES (?)", (code,))
+            
+            await db.commit()
+
+        log.info("[Schedule][Redeem Codes] Done")
 
     @schedule_error_handler
     async def claim_reward(self):
