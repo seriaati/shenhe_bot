@@ -106,8 +106,7 @@ class ReloadGateway(Button):
     async def callback(self, i: Interaction):
         await i.response.defer()
         await i.client.reload_extension("cogs.login")
-        self.disabled = True
-        await i.edit_original_response(view=self.view)
+        await return_accounts(i)
 
 
 class ChangeNickname(Button):
@@ -296,7 +295,7 @@ async def return_accounts(i: Interaction):
                     "UPDATE user_accounts SET current = 1 WHERE user_id = ? AND uid = ?",
                     (i.user.id, accounts[0][0]),
                 )
-                return await return_accounts(i)
+                await return_accounts(i)
         await db.commit()
         
     embed = default_embed(message=account_str).set_author(

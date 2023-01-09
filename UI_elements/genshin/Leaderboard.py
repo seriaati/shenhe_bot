@@ -276,7 +276,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             users = []
             async with aiosqlite.connect("shenhe.db") as db:
                 async with db.execute(
-                    f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} AND stars_collected = 36 ORDER BY runs ASC"
+                    f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} {'AND' if query_str else ''} stars_collected = 36 ORDER BY runs ASC"
                 ) as c:
                     rank = 1
                     current_user = None
