@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import List, Optional
 
-import aiosqlite
 import enkanetwork
 import genshin
 import sentry_sdk
@@ -37,8 +36,8 @@ def genshin_error_handler(func):
         user = genshin_app.bot.get_user(user_id) or await genshin_app.bot.fetch_user(
             user_id
         )
-        uid = await get_uid(user_id)
-        author_locale = await get_user_locale(author_id)
+        uid = await get_uid(user_id, genshin_app.bot.pool)
+        author_locale = await get_user_locale(author_id, genshin_app.bot.pool)
         locale = author_locale or locale
         try:
             return await func(*args, **kwargs)
@@ -117,7 +116,7 @@ class GenshinApp:
             loop=self.bot.loop,
             session=self.bot.session,
             locale=shenhe_user.user_locale or str(locale),
-            dark_mode=await get_user_appearance_mode(author_id),
+            dark_mode=await get_user_appearance_mode(author_id, self.bot.pool),
         )
         embed = await self.parse_resin_embed(notes, locale, shenhe_user.user_locale)
         return GenshinAppResult(
@@ -198,7 +197,7 @@ class GenshinApp:
             if not isinstance(characters, List):
                 raise TypeError("Characters is not a list")
 
-            mode = await get_user_appearance_mode(author_id)
+            mode = await get_user_appearance_mode(author_id, self.bot.pool)
             fp = await main_funcs.draw_stats_card(
                 DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
                 namecard,
@@ -227,7 +226,7 @@ class GenshinApp:
         explorations = genshin_user.explorations
         fp = self.bot.area_card_cache.get(uid)
         if fp is None:
-            mode = await get_user_appearance_mode(author_id)
+            mode = await get_user_appearance_mode(author_id, self.bot.pool)
             fp = await main_funcs.draw_area_card(
                 DrawInput(loop=self.bot.loop, session=self.bot.session, dark_mode=mode),
                 list(explorations),
@@ -264,7 +263,7 @@ class GenshinApp:
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=shenhe_user.user_locale or locale,
-                dark_mode=await get_user_appearance_mode(author_id),
+                dark_mode=await get_user_appearance_mode(author_id, self.bot.pool),
             ),
             diary,
             user,
@@ -328,7 +327,7 @@ class GenshinApp:
             shenhe_user.uid, previous=previous
         )
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
-        author_locale = await get_user_locale(author_id)
+        author_locale = await get_user_locale(author_id, self.bot.pool)
         new_locale = author_locale or shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
             embed = error_embed(message=text_map.get(74, new_locale))
@@ -349,7 +348,7 @@ class GenshinApp:
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         overview.set_footer(text=text_map.get(254, new_locale))
-        dark_mode = await get_user_appearance_mode(author_id)
+        dark_mode = await get_user_appearance_mode(author_id, self.bot.pool)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
         if fp is None:
@@ -387,7 +386,7 @@ class GenshinApp:
         if not isinstance(all_characters, List):
             raise TypeError("all_characters is not a list")
 
-        author_locale = await get_user_locale(author_id)
+        author_locale = await get_user_locale(author_id, self.bot.pool)
         new_locale = author_locale or shenhe_user.user_locale or str(locale)
 
         embed = default_embed(
@@ -448,7 +447,7 @@ class GenshinApp:
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=new_locale,
-                dark_mode=await get_user_appearance_mode(author_id),
+                dark_mode=await get_user_appearance_mode(author_id, self.bot.pool),
             ),
             list(characters),
             "All",
@@ -591,13 +590,13 @@ class GenshinApp:
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
-        uid = await get_uid(user_id)
+        uid = await get_uid(user_id, self.bot.pool)
         return uid
 
     async def get_user_cookie(
         self, user_id: int, author_id: int, locale: Optional[Locale] = None
     ) -> ShenheAccount:
-        author_locale = await get_user_locale(author_id)
+        author_locale = await get_user_locale(author_id, self.bot.pool)
         shenhe_user = await get_shenhe_account(
             user_id, self.bot, locale, author_locale=author_locale
         )

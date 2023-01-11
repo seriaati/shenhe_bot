@@ -28,7 +28,7 @@ class Hoyolab(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
         await hoyolab_rss_feeds.hoyolab.create_game_feeds_from_config(genshin_locale)
@@ -167,7 +167,7 @@ class GOBack(Button):
 
 async def return_events(i: Interaction):
     await i.response.defer()
-    user_locale = await get_user_locale(i.user.id)
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)
     embed = default_embed().set_author(
         name=text_map.get(361, i.locale, user_locale),

@@ -17,7 +17,7 @@ async def global_error_handler(
 
     log.warning(f"[Error][{i.user.id}]{type(e)}: {e}", exc_info=e)
 
-    locale = await get_user_locale(i.user.id) or i.locale
+    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
 
     view = discord.ui.View()
@@ -98,7 +98,7 @@ class BaseView(discord.ui.View):
     async def interaction_check(self, i: discord.Interaction) -> bool:
         if self.author is None:
             return True
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         if self.author.id != i.user.id:
             await i.response.send_message(
                 embed=error_embed().set_author(

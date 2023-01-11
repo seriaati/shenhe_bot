@@ -3,7 +3,6 @@ from typing import Dict, List
 
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select
-import aiosqlite
 
 import asset
 import config
@@ -92,7 +91,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
     query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
     locale = view.locale
-    dark_mode = await get_user_appearance_mode(i.user.id)
+    dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
     await image_gen_transition(i, view, locale)
 
     # change color of button based on current region selection
@@ -154,13 +153,13 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             users = []
             uids = []
             
-            async with aiosqlite.connect("shenhe.db") as db:
+            async with i.client.pool.acquire() as db:
                 async with db.execute(
                     f"SELECT uid, data_uuid, single_strike, floor, stars_collected, user_name, user_id, const, refine, c_level, c_icon FROM abyss_leaderboard {query_str} ORDER BY single_strike DESC"
                 ) as c:
                     rank = 1
                     current_user = None
-                    async for row in c:
+                    for row in c.get_cursor():
                         if view.area == "server" and row[6] not in guild_member_ids:
                             continue
                         if row[0] in uids:
@@ -220,7 +219,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 view=view,
             )
         elif leaderboard == "character_usage_rate":
-            async with aiosqlite.connect("shenhe.db") as db:
+            async with i.client.pool.acquire() as db:
                 async with db.execute(
                     f"SELECT * FROM abyss_character_leaderboard {query_str}"
                 ) as c:
@@ -274,13 +273,13 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
             )
         elif leaderboard == "full_clear":
             users = []
-            async with aiosqlite.connect("shenhe.db") as db:
+            async with i.client.pool.acquire() as db:
                 async with db.execute(
                     f"SELECT uid, wins, runs, level, icon_url, user_id, stars_collected, user_name FROM abyss_leaderboard {query_str} {'AND' if query_str else ''} stars_collected = 36 ORDER BY runs ASC"
                 ) as c:
                     rank = 1
                     current_user = None
-                    async for row in c:
+                    for row in c.get_cursor():
                         if view.area == "server" and row[5] not in guild_member_ids:
                             continue
                         if row[0] in [u.uid for u in users]:

@@ -275,7 +275,7 @@ class LevelModal(BaseModal):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id),
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
             ),
             all_materials,
             "",

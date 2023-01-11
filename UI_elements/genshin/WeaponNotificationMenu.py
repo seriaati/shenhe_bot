@@ -1,7 +1,6 @@
 import ast
 from typing import Dict, List
 
-import aiosqlite
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
@@ -70,7 +69,7 @@ class WeaponTypeButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id)))
+        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id, i)))
 
         select_options = []
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
@@ -115,13 +114,13 @@ class WeaponSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id)))
+        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id, i)))
         for weapon_id in self.values:
             if weapon_id in weapon_list:
                 weapon_list.remove(weapon_id)
             else:
                 weapon_list.append(weapon_id)
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE weapon_notification SET weapon_list = ? WHERE user_id = ?",
                 (str(weapon_list), i.user.id),
@@ -131,8 +130,8 @@ class WeaponSelect(Select):
         await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
 
 
-async def get_weapon_list(user_id: int):
-    async with aiosqlite.connect("shenhe.db") as db:
+async def get_weapon_list(user_id: int, i: Interaction):
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
             (user_id,),

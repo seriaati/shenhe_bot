@@ -1,7 +1,6 @@
 import asyncio
 from typing import List
 
-import aiosqlite
 from discord import ButtonStyle, Interaction, Locale, SelectOption
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
@@ -144,7 +143,7 @@ class NicknameModal(BaseModal):
         self.name.placeholder = text_map.get(601, locale).lower()
 
     async def on_submit(self, i: Interaction):
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE user_accounts SET nickname = ? WHERE uid = ? AND user_id = ?",
                 (self.name.value, self.uid, i.user.id),
@@ -200,7 +199,7 @@ class SwitchAccount(Select):
     async def callback(self, i: Interaction):
         self.view: View
         
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             if self.remove_account:
                 for uid in self.values:
                     await db.execute(
@@ -249,8 +248,8 @@ class GOBack(Button):
 
 
 async def return_accounts(i: Interaction):
-    user_locale = await get_user_locale(i.user.id)
-    async with aiosqlite.connect("shenhe.db") as db:
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
             (i.user.id,),

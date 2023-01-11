@@ -1,7 +1,7 @@
 from apps.genshin.custom_model import ShenheBot
 
 from discord.ext import commands
-import aiosqlite
+import asqlite
 from logingateway import HuTaoLoginAPI
 from logingateway.model import Player, Ready, LoginMethod, ServerId
 
@@ -63,7 +63,7 @@ class LoginGatewayCog(commands.Cog):
 
         # Append discord ID
         _data.append(user_id)
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             await db.execute(
                 f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
             )
@@ -92,7 +92,7 @@ class LoginGatewayCog(commands.Cog):
             }
 
         china = 1 if data.genshin.server == ServerId.CHINA else 0
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             await db.execute(
                 "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
                 (

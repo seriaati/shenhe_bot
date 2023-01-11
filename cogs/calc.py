@@ -28,7 +28,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         description=_("Calcualte materials needed for upgrading a weapon", hash=465),
     )
     async def calc_weapon(self, i: Interaction):
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
         view = CalcWeapon.View(locale, await ambr.get_weapon_types())
         view.author = i.user

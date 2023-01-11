@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import aiohttp
-import aiosqlite
+import asqlite
 import genshin
 import sentry_sdk
 from cachetools import TTLCache
@@ -84,18 +84,19 @@ class Shenhe(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession()
         self.debug = debug
         self.gd_text_map = load_text_maps()
+        self.pool = await asqlite.create_pool("shenhe.db", check_same_thread=False)
         
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.pool.acquire() as db:
             await db.execute("PRAGMA journal_mode=WAL")
             await db.commit()
 
         cookie_list: List[Dict[str, str]] = []
         self.genshin_client = genshin.Client({})
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.pool.acquire() as db:
             async with db.execute(
             "SELECT DISTINCT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
             ) as c:
-                async for row in c:
+                for row in c.get_cursor():
                     uid = row[0]
                     if str(uid) in ["1", "2", "5"]:
                         continue

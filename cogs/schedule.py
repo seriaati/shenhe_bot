@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Literal, Optional
 from uuid import uuid4
 
-import aiosqlite
+import asqlite
 import genshin
 import sentry_sdk
 from discord import File
@@ -303,7 +303,7 @@ class Schedule(commands.Cog):
                     if success:
                         sent_num += 1
 
-                        async with aiosqlite.connect("shenhe.db") as db:
+                        async with self.bot.pool.acquire() as db:
                             # update notification count
                             await db.execute(
                                 f"UPDATE {notification_type} SET current = current + 1 WHERE user_id = ? AND uid = ?",
@@ -397,7 +397,7 @@ class Schedule(commands.Cog):
     async def disable_notification(
         self, user_id: int, uid: int, notification_type: str
     ):
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             await db.execute(
                 f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ? AND uid = ?",
                 (user_id, uid),
@@ -405,7 +405,7 @@ class Schedule(commands.Cog):
             await db.commit()
 
     async def reset_current(self, user_id: int, uid: int, notification_type: str):
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             await db.execute(
                 f"UPDATE {notification_type} SET current = 0 WHERE user_id = ? AND uid = ?",
                 (user_id, uid),
@@ -422,7 +422,7 @@ class Schedule(commands.Cog):
         """
         result = []
 
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             async with db.cursor() as c:
                 if user_ids is not None:
                     seq = ",".join(["?"] * len(user_ids))
@@ -435,7 +435,7 @@ class Schedule(commands.Cog):
                         "SELECT ltuid, ltoken, user_id, uid, daily_checkin FROM user_accounts WHERE ltuid IS NOT NULL",
                     )
 
-                async for row in c:
+                for row in c.get_cursor():
                     ltuid = row[0]
                     ltoken = row[1]
                     user_id = row[2]
@@ -462,12 +462,12 @@ class Schedule(commands.Cog):
             List[NotificationUser]: a list of notification users
         """
         result = []
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             if table_name == "pt_notification":
                 async with db.execute(
                     f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = 1"
                 ) as c:
-                    async for row in c:
+                    for row in c.get_cursor():
                         result.append(
                             NotificationUser(
                                 user_id=row[0],
@@ -480,7 +480,7 @@ class Schedule(commands.Cog):
                 async with db.execute(
                     f"SELECT user_id, threshold, current, max, last_notif_time, uid FROM {table_name} WHERE toggle = 1"
                 ) as c:
-                    async for row in c:
+                    for row in c.get_cursor():
                         result.append(
                             NotificationUser(
                                 user_id=row[0],
@@ -497,10 +497,10 @@ class Schedule(commands.Cog):
     async def backup_database(self):
         """Backs up the shenhe database, the new database is named backup.db"""
         log.info("[Schedule][Backup] Start")
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             await db.commit()
-            async with aiosqlite.connect("backup.db") as backup:
-                await db.backup(backup)
+            async with asqlite.connect("backup.db") as backup:
+                db.get_connection().backup(backup.get_connection())
 
         log.info("[Schedule][Backup] Ended")
 
@@ -513,10 +513,10 @@ class Schedule(commands.Cog):
         
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
         
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             async with db.execute("CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)") as c:
                 await c.execute("SELECT code FROM redeem_codes")
-                async for row in c:
+                for row in c.get_cursor():
                     if row[0] in codes:
                         codes.remove(row[0])
                     
@@ -569,7 +569,7 @@ class Schedule(commands.Cog):
             if index % 100 == 0:
                 await asyncio.sleep(30)
         
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             for code in codes:
                 await db.execute("INSERT INTO redeem_codes (code) VALUES (?)", (code,))
             
@@ -630,7 +630,7 @@ class Schedule(commands.Cog):
                 success_count += 1
 
             if error:
-                async with aiosqlite.connect("shenhe.db") as db:
+                async with self.bot.pool.acquire() as db:
                     await db.execute(
                         "UPDATE user_accounts SET daily_checkin = 0 WHERE user_id = ? AND uid = ?",
                         (user.discord_user.id, user.uid),
@@ -678,22 +678,22 @@ class Schedule(commands.Cog):
             if notification_type == "weapon_notification"
             else "character_list"
         )
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with self.bot.pool.acquire() as db:
             async with db.execute(
                 f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
             ) as c:
                 count = 0
-                async for row in c:
+                for row in c.get_cursor():
                     user_id = row[0]
                     item_list = row[1]
                     now = get_dt_now() + timedelta(hours=time_offset)
-                    locale = await get_user_locale(user_id) or "en-US"
+                    locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
                     client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                     domains = await client.get_domain()
                     user = self.bot.get_user(user_id) or await self.bot.fetch_user(
                         user_id
                     )
-                    uid = await get_uid(user_id)
+                    uid = await get_uid(user_id, self.bot.pool)
                     uid_tz = get_uid_tz(uid)
                     if uid_tz != time_offset:
                         continue
@@ -740,7 +740,7 @@ class Schedule(commands.Cog):
                                 continue
                             materials.append((material, ""))
 
-                        dark_mode = await get_user_appearance_mode(user_id)
+                        dark_mode = await get_user_appearance_mode(user_id, self.bot.loop)
                         fp = await main_funcs.draw_material_card(
                             DrawInput(
                                 loop=self.bot.loop,

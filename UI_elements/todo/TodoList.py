@@ -1,5 +1,4 @@
 from typing import Dict, List, Tuple
-import aiosqlite
 from ambr.client import AmbrTopAPI
 from ambr.models import Material
 from apps.text_map.convert_locale import to_ambr_top
@@ -45,7 +44,7 @@ class AddItem(Button):
         )
 
     async def callback(self, i: Interaction):
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         await i.response.send_modal(AddItemModal(locale))
 
 
@@ -81,7 +80,7 @@ class ClearItems(Button):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
     async def callback(self, i: Interaction):
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute("DELETE FROM todo WHERE user_id = ?", (i.user.id,))
             await db.commit()
         await return_todo(i)
@@ -117,7 +116,7 @@ class ItemSelect(Select):
     async def callback(self, i: Interaction):
         self.view: _view
 
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT max FROM todo WHERE item = ?", (self.values[0],)
             ) as c:
@@ -155,7 +154,7 @@ class AddItemModal(BaseModal):
         if not self.count.value.isdigit():
             return await return_todo(i)
         item_id = text_map.get_id_from_name(self.item.value.capitalize())
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET max = max + ? WHERE item = ? AND user_id = ?",
                 (
@@ -204,7 +203,7 @@ class InputItemAmountModal(BaseModal):
         if not self.count.value.isdigit():
             return await return_todo(i)
 
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             if self.action is TodoAction.REMOVE:
                 await db.execute(
                     "UPDATE todo SET max = max - ? WHERE item = ? AND user_id = ?",
@@ -225,16 +224,16 @@ class InputItemAmountModal(BaseModal):
 async def return_todo(i: Interaction):
     await i.response.defer()
 
-    locale = await get_user_locale(i.user.id) or i.locale
+    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     todo_items: List[TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
 
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT item, count, max FROM todo WHERE user_id = ? ORDER BY item",
             (i.user.id,),
         ) as c:
-            async for row in c:
+            for row in c.get_cursor():
                 todo_items.append(TodoItem(name=row[0], current=row[1], max=row[2]))
 
     view = View(todo_items, locale)
@@ -247,7 +246,7 @@ async def return_todo(i: Interaction):
         embed.description = text_map.get(204, locale)
         await i.edit_original_response(embed=embed, view=view, attachments=[])
     else:
-        dark_mode = await get_user_appearance_mode(i.user.id)
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         client = AmbrTopAPI(i.client.session, to_ambr_top(locale))
 
         for item in todo_items:

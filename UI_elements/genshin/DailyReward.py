@@ -1,7 +1,6 @@
 import asyncio
 import calendar
 
-import aiosqlite
 import genshin
 from discord import ButtonStyle, Interaction, Locale
 from discord.errors import InteractionResponded
@@ -49,7 +48,7 @@ class TurnOff(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT daily_checkin FROM user_accounts WHERE user_id = ?",
                 (i.user.id,),
@@ -84,7 +83,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         await i.response.defer()
     except InteractionResponded:
         pass
-    user_locale = await get_user_locale(i.user.id)
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
     locale = user_locale or i.locale
     now = get_dt_now()
     day_in_month = calendar.monthrange(now.year, now.month)[1]
@@ -98,7 +97,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             icon_url=i.user.display_avatar.url,
         )
         return await i.followup.send(embed=embed)
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
         ) as cursor:

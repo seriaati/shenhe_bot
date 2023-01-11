@@ -1,7 +1,6 @@
 import ast
 from typing import Any, List
 
-import aiosqlite
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
@@ -45,7 +44,7 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT character_list FROM talent_notification WHERE user_id = ?",
                 (i.user.id,),
@@ -110,7 +109,7 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT character_list FROM talent_notification WHERE user_id = ?",
                 (i.user.id,),

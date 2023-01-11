@@ -48,7 +48,7 @@ class ElementSelect(Select):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.view.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id),
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
             ),
             self.view.characters,
             self.values[0],

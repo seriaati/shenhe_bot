@@ -47,7 +47,7 @@ class ElementButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
         characters = await ambr.get_character()
         if not isinstance(characters, List):
@@ -73,7 +73,7 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         embed = default_embed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
         )
@@ -111,7 +111,7 @@ class CharacterSelect(Select):
         elif not check or init_levels.ascension_phase is None:
             check = await check_account_predicate(i, respond_message=False)  # check uid
             if check:
-                uid = await get_uid(i.user.id)
+                uid = await get_uid(i.user.id, i.client.pool) # type: ignore
                 if uid is not None:
                     enka_data = await get_enka_data(
                         i, locale, uid, i.user, respond_message=False
@@ -529,7 +529,7 @@ class TargetLevelModal(BaseModal):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id),
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
             ),
             all_materials,
             "",
