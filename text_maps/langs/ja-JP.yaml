@@ -33,8 +33,8 @@
 '32': 言語を選択
 '33': 武器
 '34': 現在の言語
-'35': /register for more information
-'36': Your Cookie is invalid, please register again using /register
+'35': /register で詳細を表示
+'36': あなたのCookieは無効です。/register を使用して再度登録してください。
 '37': 聖遺物セット
 '38': HoYoLABのチーム編成シミュレータでチーム編成を検索
 '39': アカウントが追加されました
@@ -105,10 +105,10 @@
 '103': 最大通知件数
 '104': 設定完了
 '105': キャラクター
-'106': Code has been redeemed already
-'107': Code is invalid
-'108': Code
-'109': Code redeemed successfully
+'106': この交換コードは既に引き換えられています
+'107': この交換コードは無効です
+'108': 交換コード
+'109': 交換完了！
 '110': サマータイムオデッセイ に関するデーダ は 見つかりません。
 '111': 金リンゴ群島
 '112': ボートポイント開放数
@@ -131,17 +131,17 @@
   • 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
   • 申鶴の翻訳に興味がありますか？[crowdin] (https://crowdin.com/project/shenhe-bot)をチェックしてください！
 
-'126': Automatic promo code redemption
-'127': Code redemption failed
+'126': 自動交換コード引き換え
+'127': コードの引き換えに失敗しました
 '128': 言語設定
 '129': モンド
 '130': 璃月
 '131': 稲妻
-'132': Me too!
+'132': 私も！
 '133': ''
 '134': 間違ったタイミングですか？どのサーバーなのかを知るために、/accountsを使ってUIDを追加してください
 '135': エラーが発生しました
-'136': Select an account
+'136': アカウントを選択
 '137': ''
 '138': ''
 '139': キャラクターラインナップ
@@ -179,8 +179,8 @@
 '163': ビルドを選択
 '164': 装備
 '165': |-
-  This user hasn't registered their account yet
-  /register to register
+  このユーザーはまだアカウント登録をしていません
+  /register で登録できます
 '166': 参量物質変化器がありません。
 '167': "{name}のUID"
 '168': 現在のレベル
@@ -751,7 +751,7 @@
 '669': モラ
 '670': ログインページへ移動
 '671': 祈願履歴
-'672': UID not found (link it with /register !)
+'672': UID が見つかりません (/register でリンクしてください!)
 '673': あなたは現在**{a}**個の祈願が申鶴のデータベースに保存されています
 '674': 新しい祈願履歴をインポートする前にUIDをリンクしてください
 '675': 最新の祈願
@@ -815,9 +815,8 @@
 '726': UID をコピー
 '727': サーバーの地域
 '728': |-
-  If your account is not added after logging in on the website (a ✅ is shown),
-  please press the reload button below, then add your account on the website again.
-  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
+  アカウントを追加した後、ウェブサイトに表示されない場合（ウェブサイトには✅のアイコンが表示されます）、下のリロードボタンをクリックしてから、ウェブサイト上で再度アカウントを追加してください。
+  アカウントが正常に追加されていない場合は、seria#5334にDMするか、 </feedback:1054261265561833512>コマンドでフィードバックします。
 '729': 素材の量を変更
 '730': 無効な突破段階
 '731': 祈願データが見つかりません
