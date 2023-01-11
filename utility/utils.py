@@ -92,7 +92,7 @@ async def get_user_appearance_mode(user_id: int, pool: asqlite.Pool) -> bool:
 
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8 timezone."""
-    return datetime.now() + timedelta(hours=8)
+    return datetime.now()
 
 def add_bullet_points(texts: List[str]) -> str:
     """Add bullet points to a list of texts."""
