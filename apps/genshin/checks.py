@@ -1,5 +1,5 @@
 from typing import Optional
-import aiosqlite
+import asqlite
 from apps.genshin.utils import get_uid
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -29,9 +29,10 @@ async def check_account_predicate(
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id)) or i.locale
+    locale = (await get_user_locale(i.user.id, i.client.pool)) or i.locale
 
-    async with aiosqlite.connect("shenhe.db") as db:
+    pool: asqlite.Pool = i.client.pool # type: ignore
+    async with pool.acquire() as db:
         async with db.execute(
             "SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,)
         ) as c:
@@ -74,12 +75,13 @@ def check_wish_history():
             user = i.namespace["user"]
         else:
             user = i.user
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
 
-        async with aiosqlite.connect("shenhe.db") as db:
+        pool: asqlite.Pool = i.client.pool # type: ignore
+        async with pool.acquire() as db:
             async with db.execute(
                 "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
-                (user.id, await get_uid(i.user.id)),
+                (user.id, await get_uid(i.user.id, pool)),
             ) as c:
                 data = await c.fetchone()
 
@@ -113,8 +115,10 @@ async def check_cookie_predicate(
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id)) or i.locale
-    async with aiosqlite.connect("shenhe.db") as db:
+    locale = (await get_user_locale(i.user.id, i.client.pool)) or i.locale
+    
+    pool: asqlite.Pool = i.client.pool # type: ignore
+    async with pool.acquire() as db:
         async with db.execute(
             "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
             (user.id,),

@@ -1,6 +1,5 @@
 from typing import Any
 
-import aiosqlite
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
@@ -27,8 +26,8 @@ class Appearance(Button):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        user_locale = await get_user_locale(i.user.id)
-        async with aiosqlite.connect("shenhe.db") as db:
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT (user_id) DO NOTHING",
                 (i.user.id,),
@@ -61,7 +60,7 @@ class LightModeButton(Button):
         super().__init__(emoji="☀️", label=label)
 
     async def callback(self, i: Interaction) -> Any:
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE user_settings SET dark_mode = 0 WHERE user_id = ?",
                 (i.user.id,),
@@ -75,7 +74,7 @@ class DarkModeButton(Button):
         super().__init__(emoji="🌙", label=label)
 
     async def callback(self, i: Interaction) -> Any:
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE user_settings SET dark_mode = 1 WHERE user_id = ?",
                 (i.user.id,),
@@ -90,7 +89,7 @@ class Langauge(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id) or str(i.locale)
+        locale = await get_user_locale(i.user.id, i.client.pool) or str(i.locale)
         embed = default_embed(message=text_map.get(125, locale))
         lang_name = lang_options.get(locale, {"name": "Unknown"})["name"]
         lang_name = lang_name.split("|")[0]
@@ -119,7 +118,7 @@ class LangSelect(Select):
         self.locale = locale
 
     async def callback(self, i: Interaction) -> Any:
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             if self.values[0] == "none":
                 await db.execute(
                     "DELETE FROM user_settings WHERE user_id = ?", (i.user.id,)
@@ -138,7 +137,7 @@ class GOBack(Button):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         view = View(user_locale or i.locale)
         view.author = i.user
         embed = default_embed(message=text_map.get(534, i.locale, user_locale))

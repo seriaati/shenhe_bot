@@ -1,9 +1,8 @@
 from typing import List, Optional
 
 import aiohttp
-import aiosqlite
 import discord
-
+import asqlite
 import asset
 import config
 from ambr.client import AmbrTopAPI
@@ -248,7 +247,7 @@ async def return_custom_image_interaction(
     disabled = True if not options else False
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
-    custom_image = await get_user_custom_image(i.user.id, character_id)
+    custom_image = await get_user_custom_image(i.user.id, character_id, i.client.pool)
     embed = await get_user_custom_image_embed(
         i, view.locale, str(character_id), custom_image
     )
@@ -258,7 +257,7 @@ async def return_custom_image_interaction(
 async def change_user_custom_image(
     i: discord.Interaction, url: str, character_id: int
 ) -> None:
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         await db.execute(
             "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
             (i.user.id, character_id),
@@ -273,7 +272,7 @@ async def change_user_custom_image(
 async def add_user_custom_image(
     i: discord.Interaction, url: str, character_id: int, nickname: str
 ) -> None:
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         await db.execute(
             "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
             (i.user.id, character_id),
@@ -288,7 +287,7 @@ async def add_user_custom_image(
 async def remove_user_custom_image(
     i: discord.Interaction, url: str, character_id: int
 ) -> None:
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         await db.execute(
             "DELETE FROM custom_image WHERE user_id = ? AND character_id = ? AND image_url = ?",
             (
@@ -305,12 +304,12 @@ async def get_user_custom_image_options(
 ) -> List[discord.SelectOption]:
     options = []
 
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ?",
             (i.user.id, character_id),
-        ) as cursor:
-            async for row in cursor:
+        ) as c:
+            for row in c.get_cursor():
                 options.append(
                     discord.SelectOption(
                         label=row[3][:100], description=row[2][:100], value=row[2]
@@ -364,9 +363,9 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
 
 
 async def get_user_custom_image(
-    user_id: int, character_id: int
+    user_id: int, character_id: int, pool: asqlite.Pool
 ) -> Optional[UserCustomImage]:
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with pool.acquire() as db:
         async with db.execute(
             "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ? AND current = 1",
             (user_id, character_id),

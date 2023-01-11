@@ -2,7 +2,7 @@ import ast
 import asyncio
 from typing import Optional
 
-import aiosqlite
+import asqlite
 from discord import (ButtonStyle, Embed, Forbidden, Interaction,
                      InteractionResponded, Locale, NotFound)
 from discord.ui import Button, TextInput
@@ -93,7 +93,7 @@ class RemoveAllWeapon(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
                 (i.user.id,),
@@ -120,7 +120,7 @@ class RemoveAllCharacter(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
                 (i.user.id,),
@@ -211,7 +211,7 @@ class NotificationOFF(Button):
 
 
 async def on_off_function(view: View, table_name: str, i: Interaction, toggle: int):
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         if table_name in ["talent_notification", "weapon_notification"]:
             await db.execute(
                 f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ?",
@@ -220,7 +220,7 @@ async def on_off_function(view: View, table_name: str, i: Interaction, toggle: i
         else:
             await db.execute(
                 f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id)),
+                (i.user.id, await get_uid(i.user.id, i.client.pool)),
             )
 
         await db.commit()
@@ -245,8 +245,8 @@ class ChangeSettings(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        uid = await get_uid(i.user.id)
-        async with aiosqlite.connect("shenhe.db") as db:
+        uid = await get_uid(i.user.id, i.client.pool)
+        async with i.client.pool.acquire() as db:
             try:
                 if self.table_name == "resin_notification":
                     modal = ResinModal(self.locale)
@@ -371,9 +371,9 @@ class PTModal(BaseModal):
 
 # Functions
 async def return_resin_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id)
+    uid = await get_uid(i.user.id, i.client.pool)
 
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
             (i.user.id, uid),
@@ -417,9 +417,9 @@ async def return_resin_notification(i: Interaction, view: View):
 
 
 async def return_pt_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id)
+    uid = await get_uid(i.user.id, i.client.pool)
     toggle, max_notif = await get_notification_status(
-        i.user.id, uid, "pt_notification", "toggle, max"
+        i.user.id, uid, "pt_notification", "toggle, max", i
     )
     value = f"""
         {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
@@ -446,9 +446,9 @@ async def return_pt_notification(i: Interaction, view: View):
 
 
 async def return_pot_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id)
+    uid = await get_uid(i.user.id, i.client.pool)
     toggle, threshold, max = await get_notification_status(
-        i.user.id, uid, "pot_notification", "toggle, threshold, max"
+        i.user.id, uid, "pot_notification", "toggle, threshold, max", i
     )
 
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
@@ -476,7 +476,7 @@ async def return_pot_notification(i: Interaction, view: View):
 
 async def return_talent_notification(i: Interaction, view: View):
     toggle, character_list = await get_notification_status(
-        i.user.id, None, "talent_notification", "toggle, character_list"
+        i.user.id, None, "talent_notification", "toggle, character_list", i
     )
     character_list = ast.literal_eval(character_list)
 
@@ -521,7 +521,7 @@ async def return_talent_notification(i: Interaction, view: View):
 
 async def return_weapon_notification(i: Interaction, view: View):
     toggle, weapon_list = await get_notification_status(
-        i.user.id, None, "weapon_notification", "toggle, weapon_list"
+        i.user.id, None, "weapon_notification", "toggle, weapon_list", i
     )
     weapon_list = ast.literal_eval(weapon_list)
 
@@ -586,14 +586,14 @@ async def return_notification_menu(
 
 
 async def get_notification_status(
-    user_id: int, uid: Optional[int], table_name: str, items: str
+    user_id: int, uid: Optional[int], table_name: str, items: str, i: Interaction
 ):
     _data = (user_id, uid) if uid else (user_id,)
     insert_query = "(user_id, uid)" if uid else "(user_id)"
     select_query = "user_id = ? AND uid = ?" if uid else "user_id = ?"
     values_query = "(?, ?)" if uid else "(?)"
 
-    async with aiosqlite.connect("shenhe.db") as db:
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             f"INSERT INTO {table_name} {insert_query} VALUES {values_query} ON CONFLICT DO NOTHING",
             _data,

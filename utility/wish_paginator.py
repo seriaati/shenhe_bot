@@ -109,7 +109,7 @@ class WishPaginator:
         if not (self.embeds):
             raise ValueError("Missing embeds")
         
-        locale = await get_user_locale(self.i.user.id) or self.i.locale
+        locale = await get_user_locale(self.i.user.id, self.i.client.pool) or self.i.locale
         view = _view(self.embeds, str(locale))
 
         view.author = self.i.user

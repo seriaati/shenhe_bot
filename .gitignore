@@ -183,4 +183,6 @@ data/cards/*.json
 feeds/*
 .vscode
 apps/draw/cache/*
+shenhe.db-shm
+shenhe.db-wal
 !/**/.gitkeep

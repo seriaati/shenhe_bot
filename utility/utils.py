@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from itertools import islice
 from typing import Dict, List
 
-import aiosqlite
+import asqlite
 import discord
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -62,12 +62,12 @@ def parse_HTML(HTML_string: str):
 
 def divide_dict(d: Dict, size: int):
     it = iter(d)
-    for i in range(0, len(d), size):
+    for _ in range(0, len(d), size):
         yield {k: d[k] for k in islice(it, size)}
 
 def format_number(text: str) -> str:
     """Format numbers into bolded texts."""
-    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)
+    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text) # type: ignore
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
     weekday_name_dict = {
@@ -82,8 +82,8 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     return weekday_name_dict.get(weekday_name, 0)
 
 
-async def get_user_appearance_mode(user_id: int) -> bool:
-    async with aiosqlite.connect("shenhe.db") as db:
+async def get_user_appearance_mode(user_id: int, pool: asqlite.Pool) -> bool:
+    async with pool.acquire() as db:
         async with db.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,)) as c:
             mode = await c.fetchone()
     if mode is not None and mode[0] == 1:

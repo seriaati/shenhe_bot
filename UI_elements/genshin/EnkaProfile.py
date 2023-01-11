@@ -136,7 +136,7 @@ class SetCustomImage(Button):
         self.view: View
         options = await get_user_custom_image_options(i, int(self.view.character_id))
         custom_image = await get_user_custom_image(
-            i.user.id, int(self.view.character_id)
+            i.user.id, int(self.view.character_id), i.client.pool
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
@@ -164,7 +164,7 @@ class Reload(Button):
     async def callback(self, i: Interaction):
         self.view: View
         custom_image = await get_user_custom_image(
-            i.user.id, int(self.view.character_id)
+            i.user.id, int(self.view.character_id), i.client.pool
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
@@ -193,7 +193,7 @@ class SelectImage(Select):
         self.view: CustomImageView
         await change_user_custom_image(i, self.values[0], int(self.view.character_id))
         custom_image = await get_user_custom_image(
-            i.user.id, int(self.view.character_id)
+            i.user.id, int(self.view.character_id), i.client.pool
         )
         embed = await get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False

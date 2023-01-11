@@ -222,8 +222,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     ) -> None:
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id)
-        uid = await get_uid(member.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        uid = await get_uid(member.id, self.bot.pool)
         if uid is None:
             raise UIDNotFound
         enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
@@ -307,7 +307,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ephemeral: bool = True,
     ):
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         await i.response.send_message(
             embed=default_embed().set_author(
@@ -356,7 +356,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if not check:
             return
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         result = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
         if not result.success:
             await i.followup.send(embed=result.result)
@@ -396,7 +396,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         member = member or i.user
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         result = await self.genshin_app.get_abyss(
             member.id, i.user.id, True if previous == 1 else False, i.locale
         )
@@ -420,11 +420,12 @@ class GenshinCog(commands.Cog, name="genshin"):
                 abyss_result.genshin_user.info.nickname,
                 i.user.id,
                 previous,
+                self.bot.pool,
             )
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         embed = default_embed(
             text_map.get(149, i.locale, user_locale),
             text_map.get(150, i.locale, user_locale),
@@ -434,7 +435,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         await return_notification_menu(i, user_locale or i.locale, True)
 
     @app_commands.command(
@@ -442,8 +443,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def farm(self, i: Interaction):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id) or i.locale
-        uid = await get_uid(i.user.id)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        uid = await get_uid(i.user.id, self.bot.pool)
         now = get_dt_now() + timedelta(hours=get_uid_tz(uid))
         result, embeds, options = await get_farm_data(i, now.weekday())
 
@@ -497,12 +498,12 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search_uid_command(
         self, i: Interaction, player: User, ephemeral: bool = True
     ):
-        locale = await get_user_locale(i.user.id) or i.locale
-        uid = await get_uid(player.id)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        uid = await get_uid(player.id, self.bot.pool)
         try:
             if uid is None:
                 if i.guild is not None and i.guild.id == 916838066117824553:
-                    async with aiosqlite.connect("../shenhe_main/main.db") as db:
+                    async with asqlite.connect("../shenhe_main/main.db") as db:
                         async with db.execute(
                             f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
                             (player.id,),
@@ -574,8 +575,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        locale = await get_user_locale(i.user.id) or i.locale
-        uid = custom_uid or await get_uid(member.id)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        uid = custom_uid or await get_uid(member.id, self.bot.pool)
         if uid is None:
             check = await check_account_predicate(i, member)
             if not check:
@@ -649,7 +650,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_image(url="attachment://profile.jpeg")
         embed_two = default_embed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
-        dark_mode = await get_user_appearance_mode(i.user.id)
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         fp, fp_two = await main_funcs.draw_profile_card(
             DrawInput(
                 loop=self.bot.loop,
@@ -685,7 +686,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.followup.send(
             embed=result.result,
             view=MeToo.View(
-                code, self.genshin_app, await get_user_locale(i.user.id) or i.locale
+                code, self.genshin_app, await get_user_locale(i.user.id, i.client.pool) or i.locale
             ),
         )
 
@@ -700,8 +701,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="leaderboard", description=_("The Shenhe leaderboard", hash=252)
     )
     async def leaderboard(self, i: Interaction):
-        locale = await get_user_locale(i.user.id) or i.locale
-        uid = await get_uid(i.user.id)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        uid = await get_uid(i.user.id, self.bot.pool)
         if uid is None:
             raise UIDNotFound
         embed = default_embed(message=text_map.get(253, locale))
@@ -717,8 +718,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, i: Interaction, query: str):
         await i.response.defer()
-        user_locale = await get_user_locale(i.user.id)
-        dark_mode = await get_user_appearance_mode(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         try:
             ambr_top_locale = to_ambr_top(locale)
@@ -804,7 +805,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def query_autocomplete(
         self, i: Interaction, current: str
     ) -> List[Choice[str]]:
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         ambr_top_locale = to_ambr_top(user_locale or i.locale)
         result = []
         for queries in self.text_map_files:
@@ -847,7 +848,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         description=_("View the list of current beta items in Genshin", hash=434),
     )
     async def view_beta_items(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
         result = ""
         first_icon_url = ""
@@ -885,7 +886,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def banners(self, i: Interaction):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         client = AmbrTopAPI(self.bot.session)
         events = await client.get_events()
         banners: List[Event] = []
@@ -919,7 +920,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def abyss_enemies(self, i: Interaction):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         floors = await get_abyss_enemies(self.bot.gd_text_map, locale)
 
         ley_line_disorders = await get_ley_line_disorders(self.bot.gd_text_map, locale)
@@ -973,7 +974,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_lineup(self, i: Interaction):
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
         client = self.bot.genshin_client
         client.lang = to_genshin_py(locale)
@@ -1006,7 +1007,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(card_id=_("card", hash=718))
     async def slash_tcg(self, i: Interaction, card_id: str):
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         g_locale = to_genshin_py(locale)
 
         the_card = None
@@ -1083,7 +1084,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def card_autocomplete(
         self, i: Interaction, current: str
     ) -> List[Choice[str]]:
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         g_locale = to_genshin_py(locale)
 
         choices = []

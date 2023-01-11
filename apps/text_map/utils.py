@@ -1,8 +1,9 @@
 from typing import Optional
 
-import aiosqlite
-from apps.text_map.text_map_app import text_map
+import asqlite
 from discord import Locale
+
+from apps.text_map.text_map_app import text_map
 from text_maps.artifact_main_stat import art_main_stat_map
 
 
@@ -88,11 +89,13 @@ def get_month_name(
     return month_dict.get(month, str(month))
 
 
-async def get_user_locale(user_id: int) -> Optional[str]:
-    async with aiosqlite.connect("shenhe.db") as db:
-        async with db.execute("SELECT lang FROM user_settings WHERE user_id = ?", (user_id,)) as c:
+async def get_user_locale(user_id: int, pool: asqlite.Pool) -> Optional[str]:
+    async with pool.acquire() as db:
+        async with db.execute(
+            "SELECT lang FROM user_settings WHERE user_id = ?", (user_id,)
+        ) as c:
             user_lang = await c.fetchone()
-            
+
     if user_lang is None or user_lang[0] is None:
         return None
     else:

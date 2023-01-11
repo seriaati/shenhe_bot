@@ -1,8 +1,7 @@
 from typing import List
 
-import aiosqlite
 import genshin
-
+import asqlite
 from apps.genshin.utils import get_current_abyss_season
 
 
@@ -14,6 +13,7 @@ async def update_user_abyss_leaderboard(
     user_name: str,
     user_id: int,
     previous: int,
+    pool: asqlite.Pool,
 ) -> None:
     character = abyss_data.ranks.strongest_strike[0]
     g_c = next((c for c in characters if c.id == character.id), None)
@@ -23,7 +23,8 @@ async def update_user_abyss_leaderboard(
 
     runs = None
     wins = None
-    async with aiosqlite.connect("shenhe.db") as db:
+    
+    async with pool.acquire() as db:
         async with db.execute(
             """
                 SELECT

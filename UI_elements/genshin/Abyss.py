@@ -1,6 +1,5 @@
 from typing import Any
 
-import aiosqlite
 from discord import File, Interaction, Locale, Member, SelectOption, User
 from discord.ui import Select
 
@@ -43,8 +42,8 @@ class FloorSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_appearance_mode(i.user.id)
-        locale = await get_user_locale(i.user.id) or i.locale
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)

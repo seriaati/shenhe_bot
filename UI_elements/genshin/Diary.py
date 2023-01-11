@@ -51,14 +51,14 @@ class MonthSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         embed = default_embed()
         embed.set_author(
             name=text_map.get(644, i.locale, user_locale),
             icon_url="https://i.imgur.com/V76M9Wa.gif",
         )
         await i.response.edit_message(embed=embed, attachments=[])
-        user_locale = await get_user_locale(i.user.id)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)
         result = await self.view.genshin_app.get_diary(
             self.view.member.id, i.user.id, i.locale, int(self.values[0])
         )

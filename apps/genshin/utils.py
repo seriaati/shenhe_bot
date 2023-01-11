@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import aiohttp
-import aiosqlite
+import asqlite
 import discord
 import enkanetwork
 import genshin
@@ -213,13 +213,13 @@ async def get_shenhe_account(
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
     if cookie is None:
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with bot.pool.acquire() as db:
             async with db.execute(
                 "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
                 (user_id,),
             ) as c:
                 user_data = None
-                async for row in c:
+                for row in c.get_cursor():
                     user_data = row
                     if row[5] == 1:
                         break
@@ -242,9 +242,9 @@ async def get_shenhe_account(
     else:
         client = genshin.Client()
         client.set_cookies(cookie)
-        client.uid = await get_uid(user_id)
+        client.uid = await get_uid(user_id, bot.pool)
 
-    user_locale = await get_user_locale(user_id)
+    user_locale = await get_user_locale(user_id, bot.pool)
     final_locale = author_locale or user_locale or locale
 
     client.lang = to_genshin_py(str(final_locale)) or "en-us"
@@ -270,14 +270,14 @@ async def get_shenhe_account(
     return user_obj
 
 
-async def get_uid(user_id: int) -> Optional[int]:
-    async with aiosqlite.connect("shenhe.db") as db:
+async def get_uid(user_id: int, pool: asqlite.Pool) -> Optional[int]:
+    async with pool.acquire() as db:
         async with db.execute(
             "SELECT uid, current FROM user_accounts WHERE user_id = ?",
             (user_id,),
         ) as c:
             uid = None
-            async for row in c:
+            for row in c.get_cursor():
                 uid = row[0]
                 if row[1] == 1:
                     break
@@ -322,7 +322,7 @@ async def get_farm_data(
     i: discord.Interaction, weekday: int
 ) -> Tuple[List[Dict[str, Any]], List[discord.Embed], List[discord.SelectOption]]:
     result: List[Dict[str, Any]] = []
-    user_locale = await get_user_locale(i.user.id)
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
     locale = user_locale or i.locale
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))  # type: ignore
     domains = await ambr.get_domain()
@@ -441,11 +441,13 @@ async def get_wish_history_embed(
     member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
     member = member or i.user
-    user_locale = await get_user_locale(i.user.id)
-    async with aiosqlite.connect("shenhe.db") as db:
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
+    
+    pool: asqlite.Pool = i.client.pool # type: ignore
+    async with pool.acquire() as db:
         async with db.execute(
             f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (member.id, await get_uid(member.id)),
+            (member.id, await get_uid(member.id, pool)),
         ) as c:
             wish_history = await c.fetchall()
 
@@ -504,7 +506,7 @@ async def get_wish_info_embed(
     )
     embed.add_field(
         name="UID",
-        value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id)),
+        value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.pool)), # type: ignore
         inline=False,
     )
     newest_wish = wish_info.newest_wish

@@ -1,7 +1,6 @@
 import io
-from typing import Any, List, Tuple
+from typing import List, Tuple
 
-import aiosqlite
 import genshin
 import sentry_sdk
 from discord import (ButtonStyle, Embed, File, Interaction, Locale,
@@ -35,7 +34,7 @@ async def wish_import_command(i: Interaction, responded: bool = False):
     if not responded:
         await i.response.defer()
     embed, linked, empty = await get_wish_import_embed(i)
-    view = View(await get_user_locale(i.user.id) or i.locale, linked, empty)
+    view = View(await get_user_locale(i.user.id, i.client.pool) or i.locale, linked, empty)
     view.message = await i.edit_original_response(embed=embed, view=view)
     view.author = i.user
 
@@ -64,7 +63,7 @@ class LinkUID(Button):
         embed = default_embed(message=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
         )
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
                 (i.user.id,),
@@ -82,7 +81,7 @@ class UIDSelect(Select):
         super().__init__(placeholder=text_map.get(682, locale), options=options)
 
     async def callback(self, i: Interaction):
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "UPDATE wish_history SET uid = ? WHERE user_id = ?",
                 (self.values[0], i.user.id),
@@ -166,10 +165,10 @@ class ExportWishHistory(Button):
     async def callback(self, i: Interaction):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             async with db.execute(
                 "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-                (i.user.id, await get_uid(i.user.id)),
+                (i.user.id, await get_uid(i.user.id, i.client.pool)),
             ) as c:
                 wishes = await c.fetchall()
 
@@ -207,8 +206,8 @@ class Confirm(Button):
         )
 
     async def callback(self, i: Interaction):
-        uid = await get_uid(i.user.id)
-        async with aiosqlite.connect("shenhe.db") as db:
+        uid = await get_uid(i.user.id, i.client.pool)
+        async with i.client.pool.acquire() as db:
             await db.execute(
                 "DELETE FROM wish_history WHERE uid = ? AND user_id = ?",
                 (uid, i.user.id),
@@ -245,13 +244,13 @@ class ConfirmWishImport(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        uid = await get_uid(i.user.id)
+        uid = await get_uid(i.user.id, i.client.pool)
         embed = default_embed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
 
-        async with aiosqlite.connect("shenhe.db") as db:
+        async with i.client.pool.acquire() as db:
             if self.from_text_file:
                 for item in self.wish_history:
                     name = item[0]  # type: ignore
@@ -348,7 +347,7 @@ class Modal(BaseModal):
         self.url.placeholder = text_map.get(354, locale)
 
     async def on_submit(self, i: Interaction):
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         client: genshin.Client = i.client.genshin_client
         client.lang = to_genshin_py(locale)
         authkey = genshin.utility.extract_authkey(self.url.value)
@@ -438,9 +437,9 @@ class Modal(BaseModal):
 
 async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
     linked = True
-    locale = await get_user_locale(i.user.id) or i.locale
-    uid = await get_uid(i.user.id)
-    async with aiosqlite.connect("shenhe.db") as db:
+    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    uid = await get_uid(i.user.id, i.client.pool)
+    async with i.client.pool.acquire() as db:
         async with db.execute(
             "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid IS NULL ORDER BY wish_id DESC",
             (i.user.id,),

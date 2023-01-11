@@ -1,19 +1,20 @@
 import asyncio
-from enum import Enum
 import io
 from datetime import datetime
+from enum import Enum
 from typing import Any, Dict, List, Optional, Union
-from dateutil import parser
+
 import aiohttp
-import aiosqlite
+import asqlite
 import cachetools
 import discord
 import genshin
+from dateutil import parser
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
+from logingateway import HuTaoLoginAPI
 from pydantic import BaseModel, Field, validator
 from pyppeteer.browser import Browser
-from logingateway import HuTaoLoginAPI
 
 from ambr.models import Character
 
@@ -113,6 +114,7 @@ class ShenheBot(commands.AutoShardedBot):
     abyss_floor_card_cache: cachetools.TTLCache
     abyss_one_page_cache: cachetools.TTLCache
     tokenStore: Dict[str, Any]
+    pool: asqlite.Pool
 
 
 class TodoList:

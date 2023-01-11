@@ -58,7 +58,7 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        locale = await get_user_locale(i.user.id) or i.locale
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         builds = get_character_builds(self.values[0], self.builds, locale)
         embeds = []
         options = []
@@ -115,8 +115,8 @@ class TeamButton(Button):
     async def callback(self, i: Interaction):
         self.view: View
 
-        locale = await get_user_locale(i.user.id) or i.locale
-        dark_mode = await get_user_appearance_mode(i.user.id)
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
 
         await image_gen_transition(i, self.view, locale)
 
@@ -280,10 +280,10 @@ class GoBack(Button):
 async def element_button_callback(i: Interaction, element: str, view: View):
     with open(f"data/builds/{element.lower()}.yaml", "r", encoding="utf-8") as f:
         builds = yaml.full_load(f)
-    user_locale = await get_user_locale(i.user.id)
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
     options = []
     placeholder = text_map.get(157, i.locale, user_locale)
-    user_locale = await get_user_locale(i.user.id)
+    user_locale = await get_user_locale(i.user.id, i.client.pool)
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
         localized_character_name = text_map.get_character_name(

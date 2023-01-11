@@ -108,7 +108,7 @@ async def select_callback(i: Interaction, view: View, value: str):
                 loop=i.client.loop,
                 session=i.client.session,  # type: ignore
                 locale=view.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id),
+                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
             ),
             materials,
             "",
