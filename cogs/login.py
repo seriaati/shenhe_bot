@@ -39,9 +39,9 @@ class LoginGatewayCog(commands.Cog):
         self.bot.tokenStore = self.tokenStore
     
     async def cog_unload(self):
-        self.gateway.disconnect()
+        self.gateway.close()
 
-    async def gateway_connect(self, data: Ready):
+    async def gateway_connect(self, _: Ready):
         log.info("[System][LoginGateway] Gateway connected")
 
     async def gateway_player_update(self, data: Player):
