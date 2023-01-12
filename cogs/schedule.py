@@ -740,7 +740,7 @@ class Schedule(commands.Cog):
                                 continue
                             materials.append((material, ""))
 
-                        dark_mode = await get_user_appearance_mode(user_id, self.bot.loop)
+                        dark_mode = await get_user_appearance_mode(user_id, self.bot.pool)
                         fp = await main_funcs.draw_material_card(
                             DrawInput(
                                 loop=self.bot.loop,
