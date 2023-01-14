@@ -1,7 +1,6 @@
 import asyncio
-from typing import Dict, List
+from typing import List
 from cogs.login import register_user
-import asqlite
 
 from discord import ButtonStyle, Interaction, Locale, SelectOption, HTTPException
 from discord.errors import InteractionResponded
@@ -9,7 +8,6 @@ from discord.ui import Button, Select, TextInput
 from logingateway import HuTaoLoginAPI
 from logingateway.api import HuTaoLoginRESTAPI
 from logingateway.exception import UserTokenNotFound
-from logingateway.model.gateway import LoginMethod, ServerId
 import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region_hash

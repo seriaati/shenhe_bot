@@ -69,11 +69,11 @@ class LoginGatewayCog(commands.Cog):
             await db.commit()
 
     async def gateway_player(self, data: Player):
-        if not data.token in self.tokenStore:
+        if not data.token in self.bot.tokenStore:
             return
 
         log.info(f"[System][LoginGateway][Player] Recieved data: {data}")
-        ctx = self.tokenStore[data.token]
+        ctx = self.bot.tokenStore[data.token]
         uid = data.genshin.uid
         user_id = data.discord.user_id
         await register_user(data.genshin, int(uid), int(user_id), self.bot.pool)
