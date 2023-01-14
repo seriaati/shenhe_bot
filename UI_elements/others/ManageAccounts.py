@@ -1,5 +1,7 @@
 import asyncio
-from typing import List
+from typing import Dict, List
+from cogs.login import register_user
+import asqlite
 
 from discord import ButtonStyle, Interaction, Locale, SelectOption, HTTPException
 from discord.errors import InteractionResponded
@@ -15,7 +17,7 @@ from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
-from utility.utils import default_embed
+from utility.utils import default_embed, log
 
 
 class View(BaseView):
@@ -72,7 +74,7 @@ class GenerateLink(Button):
         self.disabled = True
         await i.response.edit_message(embed=embed, view=self.view)
 
-        gateway: HuTaoLoginAPI = i.client.gateway
+        gateway: HuTaoLoginAPI = i.client.gateway  # type: ignore
         url, token = gateway.generate_login_url(
             user_id=str(i.user.id),
             guild_id=str(i.guild_id),
@@ -93,92 +95,63 @@ class GenerateLink(Button):
 
         message = await i.edit_original_response(embed=embed, view=self.view)
 
-        i.client.tokenStore[token] = {
+        i.client.tokenStore[token] = {  # type: ignore
             "message": message,
             "locale": self.view.locale,
             "interaction": i,
             "author": i.user,
         }
 
-class ResendToken(Button):
-    clicked: bool = False
 
+class ResendToken(Button):
     def __init__(self, user_id: str, token: str):
         super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
         self.user_id = user_id
         self.token = token
+        self.clicked = False
 
-    async def callback(self, interaction: Interaction):
+    async def callback(self, i: Interaction):
         self.view: View
-        await interaction.response.defer()
-        api: HuTaoLoginRESTAPI = interaction.client.gateway.api
+        await i.response.defer()
+        api: HuTaoLoginRESTAPI = i.client.gateway.api  # type: ignore
+        
         try:
             result = await api.resend_token(
-                user_id=self.user_id, 
-                token=self.token, 
-                show_token=self.clicked, 
-                is_register_event=True
+                user_id=self.user_id,
+                token=self.token,
+                show_token=self.clicked,
+                is_register_event=True,
             )
             if self.clicked:
-                if result.login_type == LoginMethod.UID:
-                    cookie = {
-                        "ltuid": None,
-                        "ltoken": None,
-                        "cookie_token": None,
-                    }
-                else:
-                    cookie = {
-                        "ltuid": result.ltuid,
-                        "ltoken": result.ltoken,
-                        "cookie_token": result.cookie_token,
-                    }
-                uid = result.uid
-                china = 1 if result.server == ServerId.CHINA else 0
-                async with interaction.client.pool.acquire() as db:
-                    await db.execute(
-                        "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
-                        (
-                            uid,
-                            self.user_id,
-                            cookie["ltuid"],
-                            cookie["ltoken"],
-                            cookie["cookie_token"],
-                            china,
-                            cookie["ltuid"],
-                            cookie["ltoken"],
-                            cookie["cookie_token"],
-                            uid,
-                            self.user_id,
-                        ),
-                    )
-                    await db.commit()
+                await register_user(
+                    result, int(result.uid), int(result.user_id), i.client.pool  # type: ignore
+                )
 
                 try:
-                    await interaction.followup.edit_message(embed=default_embed().set_author(
-                        name=text_map.get(39, self.view.locale),
-                        icon_url=interaction.user.display_avatar.url,
-                    ), view=None)
+                    await i.edit_original_response(
+                        embed=default_embed().set_author(
+                            name=text_map.get(39, self.view.locale),
+                            icon_url=i.user.display_avatar.url,
+                        ),
+                        view=None,
+                    )
                 except HTTPException:
                     pass
-                    
+
                 # Reload gateway
-                return await interaction.client.reload_extension("cogs.login")
+                return await i.client.reload_extension("cogs.login") # type: ignore
 
             self.clicked = True
 
         except UserTokenNotFound:
-            print("%s was not found in database. (Token key: %s). Deleteing ...." % (self.user_id, self.token))
-            # Delete key old if user has spam message 
-            del interaction.client.tokenStore[self.token]
+            log.warning(f"User ID {self.user_id} was not found in database. (Token key: {self.token})")
+            
+            # Delete token from tokenStore
+            del i.client.tokenStore[self.token] # type: ignore
+            
             # Return into account manager page
-            return await return_accounts(interaction)
-        
-        # I don't know how to replace original message without edit xd
-        await interaction.followup.edit_message(
-            message_id=interaction.message.id,
-            embeds=interaction.message.embeds,
-            view=interaction.message.components
-        )
+            return await return_accounts(i)
+
 
 class ChangeNickname(Button):
     def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
@@ -270,7 +243,7 @@ class SwitchAccount(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        
+
         async with i.client.pool.acquire() as db:
             if self.remove_account:
                 for uid in self.values:
@@ -292,14 +265,15 @@ class SwitchAccount(Select):
                 await i.response.send_modal(modal)
             else:
                 await db.execute(
-                    "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
+                    "UPDATE user_accounts SET current = 0 WHERE user_id = ?",
+                    (i.user.id,),
                 )
                 await db.execute(
                     "UPDATE user_accounts SET current = 1 WHERE uid = ? AND user_id = ?",
                     (self.values[0], i.user.id),
                 )
                 await return_accounts(i)
-                
+
             await db.commit()
 
 
@@ -327,7 +301,7 @@ async def return_accounts(i: Interaction):
             (i.user.id,),
         ) as c:
             accounts = await c.fetchall()
-            
+
             select_options = []
             view = View(user_locale or i.locale, select_options)
             if not accounts:
@@ -342,7 +316,9 @@ async def return_accounts(i: Interaction):
                     )
                     view.message = await i.original_response()
                 except InteractionResponded:
-                    view.message = await i.edit_original_response(embed=embed, view=view)
+                    view.message = await i.edit_original_response(
+                        embed=embed, view=view
+                    )
                 return
             account_str = ""
             current_account = False
@@ -368,7 +344,7 @@ async def return_accounts(i: Interaction):
                 )
                 await return_accounts(i)
         await db.commit()
-        
+
     embed = default_embed(message=account_str).set_author(
         name=text_map.get(555, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
