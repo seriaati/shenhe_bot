@@ -5,6 +5,8 @@ from discord import ButtonStyle, Interaction, Locale, SelectOption
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
 from logingateway import HuTaoLoginAPI
+from logingateway.api import HuTaoLoginRESTAPI
+from logingateway.exception import UserTokenNotFound
 import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region_hash
@@ -85,7 +87,7 @@ class GenerateLink(Button):
         await asyncio.sleep(1)
         self.view.clear_items()
         self.view.add_item(GOBack(layer=2, blurple=True))
-        self.view.add_item(ReloadGateway())
+        self.view.add_item(ResendToken(str(i.user.id), token))
         self.view.add_item(Button(label=text_map.get(670, locale), url=url))
 
         message = await i.edit_original_response(embed=embed, view=self.view)
@@ -97,16 +99,28 @@ class GenerateLink(Button):
             "author": i.user,
         }
 
-
-class ReloadGateway(Button):
-    def __init__(self):
+class ResendToken(Button):
+    def __init__(self, user_id: str, token: str):
         super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
+        self.user_id = user_id
+        self.token = token
 
-    async def callback(self, i: Interaction):
-        await i.response.defer()
-        await i.client.reload_extension("cogs.login")
-        await return_accounts(i)
+    async def callback(self, interaction: Interaction):
+        await interaction.response.defer()
+        api: HuTaoLoginRESTAPI = interaction.client.gateway.api
+        try:
+            await api.resend_token(
+                user_id=self.user_id, 
+                token=self.token, 
+                show_token=False, 
+                is_register_event=True
+            )
+        except UserTokenNotFound:
+            print("%s was not found in database. (Token key: %s). Deleteing ...." % (self.user_id, self.token))
+            # Delete key old if user has spam message 
+            del interaction.client.tokenStore[self.token]
 
+        self.disabled = True
 
 class ChangeNickname(Button):
     def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
