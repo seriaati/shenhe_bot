@@ -170,6 +170,8 @@ class ResendToken(Button):
             print("%s was not found in database. (Token key: %s). Deleteing ...." % (self.user_id, self.token))
             # Delete key old if user has spam message 
             del interaction.client.tokenStore[self.token]
+            # Return into account manager page
+            return await return_accounts(interaction)
         
         # I don't know how to replace original message without edit xd
         await interaction.followup.edit_message(
