@@ -1,12 +1,13 @@
 import asyncio
 from typing import List
 
-from discord import ButtonStyle, Interaction, Locale, SelectOption
+from discord import ButtonStyle, Interaction, Locale, SelectOption, HTTPException
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
 from logingateway import HuTaoLoginAPI
 from logingateway.api import HuTaoLoginRESTAPI
 from logingateway.exception import UserTokenNotFound
+from logingateway.model.gateway import LoginMethod, ServerId
 import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region_hash
@@ -100,27 +101,82 @@ class GenerateLink(Button):
         }
 
 class ResendToken(Button):
+    clicked: bool = False
+
     def __init__(self, user_id: str, token: str):
         super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
         self.user_id = user_id
         self.token = token
 
     async def callback(self, interaction: Interaction):
+        self.view: View
         await interaction.response.defer()
         api: HuTaoLoginRESTAPI = interaction.client.gateway.api
         try:
-            await api.resend_token(
+            result = await api.resend_token(
                 user_id=self.user_id, 
                 token=self.token, 
-                show_token=False, 
+                show_token=self.clicked, 
                 is_register_event=True
             )
+            if self.clicked:
+                if result.login_type == LoginMethod.UID:
+                    cookie = {
+                        "ltuid": None,
+                        "ltoken": None,
+                        "cookie_token": None,
+                    }
+                else:
+                    cookie = {
+                        "ltuid": result.ltuid,
+                        "ltoken": result.ltoken,
+                        "cookie_token": result.cookie_token,
+                    }
+                uid = result.uid
+                china = 1 if result.server == ServerId.CHINA else 0
+                async with interaction.client.pool.acquire() as db:
+                    await db.execute(
+                        "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
+                        (
+                            uid,
+                            self.user_id,
+                            cookie["ltuid"],
+                            cookie["ltoken"],
+                            cookie["cookie_token"],
+                            china,
+                            cookie["ltuid"],
+                            cookie["ltoken"],
+                            cookie["cookie_token"],
+                            uid,
+                            self.user_id,
+                        ),
+                    )
+                    await db.commit()
+
+                try:
+                    await interaction.followup.edit_message(embed=default_embed().set_author(
+                        name=text_map.get(39, self.view.locale),
+                        icon_url=interaction.user.display_avatar.url,
+                    ), view=None)
+                except HTTPException:
+                    pass
+                    
+                # Reload gateway
+                return await interaction.client.reload_extension("cogs.login")
+
+            self.clicked = True
+
         except UserTokenNotFound:
             print("%s was not found in database. (Token key: %s). Deleteing ...." % (self.user_id, self.token))
             # Delete key old if user has spam message 
             del interaction.client.tokenStore[self.token]
-
-        self.disabled = True
+        
+        # I don't know how to replace original message without edit xd
+        await interaction.followup.edit_message(
+            message_id=interaction.message.id,
+            embeds=interaction.message.embeds,
+            view=interaction.message.components
+        )
 
 class ChangeNickname(Button):
     def __init__(self, locale: Locale | str, select_options: List[SelectOption]):
