@@ -20,7 +20,7 @@ class View(BaseView):
         self.locale = locale
         self.genshin_app = genshin_app
         self.add_item(ClaimReward(self.locale))
-        self.add_item(TurnOff(self.locale))
+        self.add_item(ClaimRewardToggle(self.locale))
 
 
 class ClaimReward(Button):
@@ -34,47 +34,35 @@ class ClaimReward(Button):
             i.user.id, i.user.id, i.locale
         )
         for item in self.view.children:
-            item.disabled = True
+            item.disabled = True  # type: ignore
         await i.edit_original_response(embed=result, view=self.view)
         await asyncio.sleep(2)
         await return_claim_reward(i, self.view.genshin_app)
 
 
-class TurnOff(Button):
+class ClaimRewardToggle(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(label=text_map.get(627, locale), style=ButtonStyle.green)
         self.locale = locale
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.response.defer()
-        async with i.client.pool.acquire() as db:
+        async with i.client.pool.acquire() as db:  # type: ignore
             async with db.execute(
                 "SELECT daily_checkin FROM user_accounts WHERE user_id = ?",
                 (i.user.id,),
-            ) as cursor:
-                toggle = await cursor.fetchone()
-                toggle = 0 if toggle == 1 else 1
-                await cursor.execute(
+            ) as c:
+                current = await c.fetchone()
+                toggle = 0 if current[0] == 1 else 1
+                await c.execute(
                     "UPDATE user_accounts SET daily_checkin = ? WHERE user_id = ?",
-                    (
-                        toggle,
-                        i.user.id,
-                    ),
+                    (toggle, i.user.id),
                 )
             await db.commit()
 
         for item in self.view.children:
-            item.disabled = True
+            item.disabled = True  # type: ignore
 
-        await i.edit_original_response(
-            embed=default_embed().set_author(
-                name=text_map.get(628 if toggle == 1 else 629, self.locale),
-                icon_url=i.user.display_avatar.url,
-            ),
-            view=self.view,
-        )
-        await asyncio.sleep(2)
         await return_claim_reward(i, self.view.genshin_app)
 
 
@@ -83,11 +71,12 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         await i.response.defer()
     except InteractionResponded:
         pass
-    user_locale = await get_user_locale(i.user.id, i.client.pool)
-    locale = user_locale or i.locale
+
+    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
     now = get_dt_now()
     day_in_month = calendar.monthrange(now.year, now.month)[1]
     shenhe_user = await genshin_app.get_user_cookie(i.user.id, i.user.id, i.locale)
+
     try:
         _, claimed_rewards = await shenhe_user.client.get_reward_info()
     except genshin.errors.InvalidCookies:
@@ -97,33 +86,34 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             icon_url=i.user.display_avatar.url,
         )
         return await i.followup.send(embed=embed)
-    async with i.client.pool.acquire() as db:
+
+    async with i.client.pool.acquire() as db:  # type: ignore
         async with db.execute(
             "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
         ) as cursor:
             toggle = await cursor.fetchone()
 
     embed = default_embed(
-        message=f"{text_map.get(606, i.locale, user_locale)}: {claimed_rewards}/{day_in_month}\n"
-        f"{text_map.get(101, i.locale, user_locale)}: {text_map.get(99 if toggle == 1 else 100, i.locale, user_locale)}"
+        message=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
+        f"{text_map.get(101, locale)}: **__{text_map.get(99 if toggle[0] == 1 else 100, locale)}__**"
     )
     embed.set_author(
-        name=text_map.get(604, i.locale, user_locale),
+        name=text_map.get(604, locale),
         icon_url=i.user.display_avatar.url,
     )
-    value = []
+
+    values = []
     async for reward in shenhe_user.client.claimed_rewards(limit=claimed_rewards):
-        value.append(
+        values.append(
             f"{reward.time.month}/{reward.time.day} - {reward.name} x{reward.amount}\n"
         )
-    value = list(divide_chunks(value, 10))
-    for index, val in enumerate(value):
+    divided_value = list(divide_chunks(values, 10))
+    for index, val in enumerate(divided_value):
         r = ""
         for v in val:
             r += v
-        embed.add_field(
-            name=f"{text_map.get(605, i.locale, user_locale)} ({index+1})", value=r
-        )
+        embed.add_field(name=f"{text_map.get(605, locale)} ({index+1})", value=r)
+
     view = View(locale, genshin_app)
     try:
         await i.response.send_message(embed=embed, view=view)
