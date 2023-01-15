@@ -106,7 +106,6 @@ class ResendToken(Button):
         super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
         self.user_id = user_id
         self.token = token
-        self.clicked = False
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -117,38 +116,35 @@ class ResendToken(Button):
             result = await api.resend_token(
                 user_id=self.user_id,
                 token=self.token,
-                show_token=self.clicked,
+                show_token=True,
                 is_register_event=True,
             )
-            if self.clicked:
-                await register_user(
-                    result, int(result.uid), int(result.user_id), i.client.pool  # type: ignore
-                )
-
-                try:
-                    await i.edit_original_response(
-                        embed=default_embed().set_author(
-                            name=text_map.get(39, self.view.locale),
-                            icon_url=i.user.display_avatar.url,
-                        ),
-                        view=None,
-                    )
-                except HTTPException:
-                    pass
-
-                # Reload gateway
-                return await i.client.reload_extension("cogs.login") # type: ignore
-
-            self.clicked = True
-
         except UserTokenNotFound:
             log.warning(f"User ID {self.user_id} was not found in database. (Token key: {self.token})")
             
             # Delete token from tokenStore
             del i.client.tokenStore[self.token] # type: ignore
+        else:
+            await register_user(
+                result, int(result.uid), int(result.user_id), i.client.pool  # type: ignore
+            )
+
+            try:
+                await i.edit_original_response(
+                    embed=default_embed().set_author(
+                        name=text_map.get(39, self.view.locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    view=None,
+                )
+            except HTTPException:
+                pass
+
+            # Reload gateway
+            return await i.client.reload_extension("cogs.login") # type: ignore
             
-            # Return into account manager page
-            return await return_accounts(i)
+        # Return into account manager page
+        await return_accounts(i)
 
 
 class ChangeNickname(Button):
