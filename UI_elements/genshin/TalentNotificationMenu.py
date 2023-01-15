@@ -109,7 +109,7 @@ class CharacterSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        async with i.client.pool.acquire() as db:
+        async with i.client.pool.acquire() as db: # type: ignore
             async with db.execute(
                 "SELECT character_list FROM talent_notification WHERE user_id = ?",
                 (i.user.id,),
@@ -117,7 +117,7 @@ class CharacterSelect(Select):
                 character_list = await c.fetchone()
                 if character_list is None:
                     raise DBError(f"User {i.user.id} not found in talent_notification")
-                character_list = ast.literal_eval(str(character_list))
+                character_list = ast.literal_eval(str(character_list[0]))
                 for character_id in self.values:
                     if character_id in character_list:
                         character_list.remove(character_id)
