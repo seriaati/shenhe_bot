@@ -1,5 +1,5 @@
 import ast
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
@@ -69,13 +69,15 @@ class WeaponTypeButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id, i)))
-
-        select_options = []
+        w_list = await get_weapon_list(i.user.id, i)
+        weapon_list: List[str] = [] if not w_list else ast.literal_eval(w_list)
+        
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, List):
             raise TypeError("weapons is not a list")
+        
+        select_options = []
         for weapon in weapons:
             if weapon.type == self.weapon_type:
                 description = (
@@ -91,8 +93,10 @@ class WeaponTypeButton(Button):
                         description=description,
                     )
                 )
+        
         self.view.clear_items()
         self.view.add_item(GOBack())
+        
         select_options = list(divide_chunks(select_options, 25))
         count = 1
         for options in select_options:
@@ -130,12 +134,12 @@ class WeaponSelect(Select):
         await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
 
 
-async def get_weapon_list(user_id: int, i: Interaction):
-    async with i.client.pool.acquire() as db:
+async def get_weapon_list(user_id: int, i: Interaction) -> Optional[str]:
+    """Get user's weapon notificaction list from database"""
+    async with i.client.pool.acquire() as db: # type: ignore
         async with db.execute(
             "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
             (user_id,),
         ) as c:
-            (weapon_list) = await c.fetchone()
-            if weapon_list is None:
-                raise DBError(f"User {user_id} not found in weapon_notification")
+            weapon_list = await c.fetchone()
+            return None if not weapon_list else weapon_list[0]
