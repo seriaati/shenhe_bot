@@ -1,10 +1,13 @@
 import asyncio
 from typing import List
+from cogs.login import register_user
 
-from discord import ButtonStyle, Interaction, Locale, SelectOption
+from discord import ButtonStyle, Interaction, Locale, SelectOption, HTTPException
 from discord.errors import InteractionResponded
 from discord.ui import Button, Select, TextInput
 from logingateway import HuTaoLoginAPI
+from logingateway.api import HuTaoLoginRESTAPI
+from logingateway.exception import UserTokenNotFound
 import asset
 import config
 from apps.genshin.utils import get_account_options, get_uid_region_hash
@@ -12,7 +15,7 @@ from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
-from utility.utils import default_embed
+from utility.utils import default_embed, log
 
 
 class View(BaseView):
@@ -69,7 +72,7 @@ class GenerateLink(Button):
         self.disabled = True
         await i.response.edit_message(embed=embed, view=self.view)
 
-        gateway: HuTaoLoginAPI = i.client.gateway
+        gateway: HuTaoLoginAPI = i.client.gateway  # type: ignore
         url, token = gateway.generate_login_url(
             user_id=str(i.user.id),
             guild_id=str(i.guild_id),
@@ -85,12 +88,12 @@ class GenerateLink(Button):
         await asyncio.sleep(1)
         self.view.clear_items()
         self.view.add_item(GOBack(layer=2, blurple=True))
-        self.view.add_item(ReloadGateway())
+        self.view.add_item(ResendToken(str(i.user.id), token))
         self.view.add_item(Button(label=text_map.get(670, locale), url=url))
 
         message = await i.edit_original_response(embed=embed, view=self.view)
 
-        i.client.tokenStore[token] = {
+        i.client.tokenStore[token] = {  # type: ignore
             "message": message,
             "locale": self.view.locale,
             "interaction": i,
@@ -98,13 +101,49 @@ class GenerateLink(Button):
         }
 
 
-class ReloadGateway(Button):
-    def __init__(self):
+class ResendToken(Button):
+    def __init__(self, user_id: str, token: str):
         super().__init__(emoji=asset.reload_emoji, style=ButtonStyle.green)
+        self.user_id = user_id
+        self.token = token
 
     async def callback(self, i: Interaction):
+        self.view: View
         await i.response.defer()
-        await i.client.reload_extension("cogs.login")
+        api: HuTaoLoginRESTAPI = i.client.gateway.api  # type: ignore
+        
+        try:
+            result = await api.resend_token(
+                user_id=self.user_id,
+                token=self.token,
+                show_token=True,
+                is_register_event=True,
+            )
+        except UserTokenNotFound:
+            log.warning(f"User ID {self.user_id} was not found in database. (Token key: {self.token})")
+            
+            # Delete token from tokenStore
+            del i.client.tokenStore[self.token] # type: ignore
+        else:
+            await register_user(
+                result, int(result.uid), int(result.user_id), i.client.pool  # type: ignore
+            )
+
+            try:
+                await i.edit_original_response(
+                    embed=default_embed().set_author(
+                        name=text_map.get(39, self.view.locale),
+                        icon_url=i.user.display_avatar.url,
+                    ),
+                    view=None,
+                )
+            except HTTPException:
+                pass
+
+            # Reload gateway
+            return await i.client.reload_extension("cogs.login") # type: ignore
+            
+        # Return into account manager page
         await return_accounts(i)
 
 
@@ -198,7 +237,7 @@ class SwitchAccount(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        
+
         async with i.client.pool.acquire() as db:
             if self.remove_account:
                 for uid in self.values:
@@ -220,14 +259,15 @@ class SwitchAccount(Select):
                 await i.response.send_modal(modal)
             else:
                 await db.execute(
-                    "UPDATE user_accounts SET current = 0 WHERE user_id = ?", (i.user.id,)
+                    "UPDATE user_accounts SET current = 0 WHERE user_id = ?",
+                    (i.user.id,),
                 )
                 await db.execute(
                     "UPDATE user_accounts SET current = 1 WHERE uid = ? AND user_id = ?",
                     (self.values[0], i.user.id),
                 )
                 await return_accounts(i)
-                
+
             await db.commit()
 
 
@@ -255,7 +295,7 @@ async def return_accounts(i: Interaction):
             (i.user.id,),
         ) as c:
             accounts = await c.fetchall()
-            
+
             select_options = []
             view = View(user_locale or i.locale, select_options)
             if not accounts:
@@ -270,7 +310,9 @@ async def return_accounts(i: Interaction):
                     )
                     view.message = await i.original_response()
                 except InteractionResponded:
-                    view.message = await i.edit_original_response(embed=embed, view=view)
+                    view.message = await i.edit_original_response(
+                        embed=embed, view=view
+                    )
                 return
             account_str = ""
             current_account = False
@@ -296,7 +338,7 @@ async def return_accounts(i: Interaction):
                 )
                 await return_accounts(i)
         await db.commit()
-        
+
     embed = default_embed(message=account_str).set_author(
         name=text_map.get(555, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
