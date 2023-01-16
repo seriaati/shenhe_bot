@@ -117,8 +117,7 @@ class Schedule(commands.Cog):
         result["size"] = 0
         result["data"] = []
 
-        # accounts = await self.get_schedule_users()
-        accounts = [await get_shenhe_account(912623031170519110, self.bot)]
+        accounts = await self.get_schedule_users()
 
         for account in accounts:
             client = account.client
