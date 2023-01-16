@@ -6,7 +6,7 @@ atoma==0.0.17
 cachetools==5.2.1
 discord.py==2.1.0
 diskcache==5.4.0
-enkanetwork.py==1.3.3
+enkanetwork.py==1.3.5
 GitPython==3.1.30
 hutao_login_gateway==0.1.0
 matplotlib==3.6.2
