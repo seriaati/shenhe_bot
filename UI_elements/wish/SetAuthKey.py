@@ -348,8 +348,6 @@ class Modal(BaseModal):
 
     async def on_submit(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        client: genshin.Client = i.client.genshin_client
-        client.lang = to_genshin_py(locale)
         authkey = genshin.utility.extract_authkey(self.url.value)
         log.info(f"[Wish Import][{i.user.id}]: [Authkey]{authkey}")
         if authkey is None:
@@ -362,7 +360,13 @@ class Modal(BaseModal):
             )
             return await wish_import_command(i, True)
         else:
+            client: genshin.Client = i.client.genshin_client
+            client.lang = to_genshin_py(locale)
+            uid = await get_uid(i.user.id, i.client.pool)
+            if str(uid)[0] in ["1", "2", "5"]:
+                client.region = genshin.Region.CHINESE
             client.authkey = authkey
+            
         await i.response.edit_message(
             embed=default_embed().set_author(
                 name=text_map.get(355, locale),
