@@ -906,7 +906,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 banner.name[event_lang],
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        datetime.strptime(banner.end_time, "%Y-%m-%d %H:%M:%S")
+                        datetime.strptime(banner.end_time, "%Y-%m-%d %H:%M:%S"), "R"
                     )
                 ),
             )
