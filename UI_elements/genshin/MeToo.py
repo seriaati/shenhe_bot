@@ -1,4 +1,5 @@
 from UI_base_models import BaseView
+from apps.genshin.checks import check_cookie_predicate
 import config
 from discord import Locale, Locale, ui
 from discord import ButtonStyle, Interaction
@@ -22,6 +23,10 @@ class MeToo(ui.Button):
         self.view: View
         
         await i.response.defer()
+        check = await check_cookie_predicate(i)
+        if not check:
+            return
+        
         result = await self.view.genshin_app.redeem_code(
             i.user.id, i.user.id, self.view.code, i.locale
         )
