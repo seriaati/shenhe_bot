@@ -60,14 +60,14 @@ to_go_dict = {
     "es-ES": 5,
     "fr": 6,
     "in": 7,
-    # "it": 8,
-    "ja": 8,
-    "ko": 9,
-    "pt-BR": 10,
-    "ru": 11,
-    "th": 12,
-    # "tr": 14,
-    "vi": 13,
+    "it": 8,
+    "ja": 9,
+    "ko": 10,
+    "pt-BR": 11,
+    "ru": 12,
+    "th": 13,
+    "tr": 14,
+    "vi": 15,
 }
 
 paths = {
@@ -83,6 +83,7 @@ paths = {
     "vi": "vi-VN",
     "zh-CN": "zh-CN",
     "zh-TW": "zh-TW",
+    "uk": "uk-UA",
 }
 
 to_event_lang_dict = {
