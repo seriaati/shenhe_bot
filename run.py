@@ -94,11 +94,11 @@ class Shenhe(commands.AutoShardedBot):
         self.genshin_client = genshin.Client({})
         async with self.pool.acquire() as db:
             async with db.execute(
-            "SELECT DISTINCT uid, ltuid, ltoken FROM user_accounts WHERE china = 0 AND ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
+            "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
             ) as c:
                 for row in c.get_cursor():
                     uid = row[0]
-                    if str(uid) in ["1", "2", "5"]:
+                    if str(uid)[0] in ["1", "2", "5"]:
                         continue
                     
                     ltuid = row[1]
@@ -114,7 +114,7 @@ class Shenhe(commands.AutoShardedBot):
         try:
             self.genshin_client.set_cookies(cookie_list)
         except Exception as e:
-            log.warning(f"[Genshin Client Error]: {e}")
+            log.warning(f"[Genshin Client]: {e}")
             sentry_sdk.capture_exception(e)
         else:
             log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
