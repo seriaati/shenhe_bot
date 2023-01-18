@@ -85,7 +85,7 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_game_data())
             await asyncio.create_task(self.update_card_data())
             await asyncio.create_task(self.backup_database())
-            if now.day in [3, 18]:
+            if now.day in [3, 19]:
                 await asyncio.create_task(self.generate_abyss_json())
 
         if now.hour == 3 and now.minute < self.loop_interval:  # 3am
