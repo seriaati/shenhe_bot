@@ -121,7 +121,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     async def cog_load(self) -> None:
         cookie_list: List[Dict[str, str]] = []
-        self.genshin_client = genshin.Client({})
+        self.bot.genshin_client = genshin.Client({})
         async with self.bot.pool.acquire() as db:
             async with db.execute(
                 "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
@@ -142,7 +142,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         cookie_list.append(cookie)
 
         try:
-            self.genshin_client.set_cookies(cookie_list)
+            self.bot.genshin_client.set_cookies(cookie_list)
         except Exception as e:
             log.warning(f"[Genshin Client]: {e}")
             sentry_sdk.capture_exception(e)
