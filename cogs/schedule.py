@@ -172,7 +172,6 @@ class Schedule(commands.Cog):
 
                 abyss_dict["user"] = user_dict
                 result["data"].append(abyss_dict)
-                break
 
         log.info("[Schedule] Generated abyss.json")
 
