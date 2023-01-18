@@ -30,15 +30,17 @@ class LoginGatewayCog(commands.Cog):
         self.gateway.player_update(self.gateway_player_update)
 
         # Start gateway
-        log.info("[System][LoginGateway] Starting gateway...")
-        self.gateway.start()
+        if not self.bot.debug:
+            log.info("[System][LoginGateway] Starting gateway...")
+            self.gateway.start()
         
         self.bot.gateway = self.gateway
         self.bot.tokenStore = {}
     
     async def cog_unload(self):
-        log.info("[System][LoginGateway] Closing gateway...")
-        await self.gateway.close()
+        if not self.bot.debug:
+            log.info("[System][LoginGateway] Closing gateway...")
+            await self.gateway.close()
 
     async def gateway_connect(self, _: Ready):
         log.info("[System][LoginGateway] Gateway connected")
