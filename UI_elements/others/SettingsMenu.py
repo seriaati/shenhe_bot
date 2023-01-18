@@ -94,7 +94,7 @@ class Langauge(Button):
         lang_name = lang_options.get(locale, {"name": "Unknown"})["name"]
         lang_name = lang_name.split("|")[0]
         embed.set_author(
-            name=f"{text_map.get(34, i.locale)}: {lang_name}",
+            name=f"{text_map.get(34, locale)}: {lang_name}",
             icon_url=i.user.display_avatar.url,
         )
         self.view.clear_items()
