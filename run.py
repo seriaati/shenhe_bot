@@ -90,35 +90,6 @@ class Shenhe(commands.AutoShardedBot):
             await db.execute("PRAGMA journal_mode=WAL")
             await db.commit()
 
-        cookie_list: List[Dict[str, str]] = []
-        self.genshin_client = genshin.Client({})
-        async with self.pool.acquire() as db:
-            async with db.execute(
-            "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
-            ) as c:
-                for row in c.get_cursor():
-                    uid = row[0]
-                    if str(uid)[0] in ["1", "2", "5"]:
-                        continue
-                    
-                    ltuid = row[1]
-                    ltoken = row[2]
-                    cookie = {"ltuid": ltuid, "ltoken": ltoken}
-                    
-                    for c in cookie_list:
-                        if c["ltuid"] == ltuid:
-                            break
-                    else:
-                        cookie_list.append(cookie)
-
-        try:
-            self.genshin_client.set_cookies(cookie_list)
-        except Exception as e:
-            log.warning(f"[Genshin Client]: {e}")
-            sentry_sdk.capture_exception(e)
-        else:
-            log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
-
         # load jishaku
         await self.load_extension("jishaku")
 

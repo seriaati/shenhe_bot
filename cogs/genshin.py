@@ -3,6 +3,8 @@ import random
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
+import genshin
+import sentry_sdk
 from discord import (Embed, File, Interaction, Member, SelectOption, User,
                      app_commands)
 from discord.app_commands import Choice
@@ -48,7 +50,7 @@ from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
 from utility.utils import (add_bullet_points, default_embed, divide_chunks,
                            error_embed, get_dt_now, get_user_appearance_mode,
-                           parse_HTML)
+                           log, parse_HTML)
 
 load_dotenv()
 
@@ -116,6 +118,36 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot.tree.add_command(self.characters_context_menu)
         self.bot.tree.add_command(self.stats_context_menu)
         self.bot.tree.add_command(self.check_context_menu)
+
+    async def cog_load(self) -> None:
+        cookie_list: List[Dict[str, str]] = []
+        self.genshin_client = genshin.Client({})
+        async with self.bot.pool.acquire() as db:
+            async with db.execute(
+                "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
+            ) as c:
+                for row in c.get_cursor():
+                    uid = row[0]
+                    if str(uid)[0] in ["1", "2", "5"]:
+                        continue
+
+                    ltuid = row[1]
+                    ltoken = row[2]
+                    cookie = {"ltuid": ltuid, "ltoken": ltoken}
+
+                    for c in cookie_list:
+                        if c["ltuid"] == ltuid:
+                            break
+                    else:
+                        cookie_list.append(cookie)
+
+        try:
+            self.genshin_client.set_cookies(cookie_list)
+        except Exception as e:
+            log.warning(f"[Genshin Client]: {e}")
+            sentry_sdk.capture_exception(e)
+        else:
+            log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
 
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(
@@ -683,12 +715,16 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
         )
+        view = MeToo.View(
+            code,
+            self.genshin_app,
+            await get_user_locale(i.user.id, i.client.pool) or i.locale,
+        )
         await i.followup.send(
             embed=result.result,
-            view=MeToo.View(
-                code, self.genshin_app, await get_user_locale(i.user.id, i.client.pool) or i.locale
-            ),
+            view=view,
         )
+        view.message = await i.original_response()
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
