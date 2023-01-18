@@ -1,17 +1,17 @@
 ---
-'1': Full
-'2': Realm currency
-'3': Choose an import method
-'4': Resin
-'5': Resin discounts
-'6': Daily comission
-'7': min
-'8': P.T. remaining time
-'9': Available to use
-'10': There was an error in Genshin's API
-'11': P.T. not found
-'12': sec
-'13': Today
+'1': Повний
+'2': Валюта Області
+'3': Виберіть метод імпорту
+'4': Смола
+'5': Знижка на смолу
+'6': Щоденні завдання
+'7': хв
+'8': Час, що залишився в П.П
+'9': Доступний до використання
+'10': Виникла помилка в API Genshin's
+'11': P.T. не знайдено
+'12': сек
+'13': Сьогодні
 '14': The month of diary you are trying to view is unavailable
 '15': Recovery time
 '16': It is recommended to use the /check command
