@@ -52,32 +52,24 @@ def get_error_handle_embed(
 ):
     embed = error_embed()
 
-    unknown = False
-
-    if hasattr(e, "code") and e.code in [10062, 10008, 10015]:
+    if isinstance(e, discord.app_commands.errors.CommandInvokeError):
+        e = e.original
+    
+    if isinstance(e, discord.errors.NotFound) and e.code in [
+        10062,
+        10008,
+        10015,
+    ]:
         embed.description = text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
-    elif isinstance(e, discord.app_commands.errors.CommandInvokeError):
-        if isinstance(e.original, discord.errors.NotFound) and e.original.code in [
-            10062,
-            10008,
-            10015,
-        ]:
-            embed.description = text_map.get(624, locale)
-            embed.set_author(name=text_map.get(623, locale))
-        if isinstance(e.original, UIDNotFound):
-            embed.set_author(name=text_map.get(672, locale))
-        elif isinstance(e, ShenheAccountNotFound):
-            embed.description = text_map.get(35, locale)
-            embed.set_author(name=text_map.get(545, locale))
-        elif isinstance(e, NoPlayerFound):
-            embed.set_author(name=text_map.get(367, locale))
-        else:
-            unknown = True
+    elif isinstance(e, UIDNotFound):
+        embed.set_author(name=text_map.get(672, locale))
+    elif isinstance(e, ShenheAccountNotFound):
+        embed.description = text_map.get(35, locale)
+        embed.set_author(name=text_map.get(545, locale))
+    elif isinstance(e, NoPlayerFound):
+        embed.set_author(name=text_map.get(367, locale))
     else:
-        unknown = True
-
-    if unknown:
         sentry_sdk.capture_exception(e)
 
         embed.description = text_map.get(513, locale)
