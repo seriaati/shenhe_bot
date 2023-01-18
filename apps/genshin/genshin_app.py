@@ -484,6 +484,16 @@ class GenshinApp:
                 ),
                 success=False,
             )
+        except genshin.errors.RedemptionCooldown:
+            return GenshinAppResult(
+                result=error_embed(
+                    message=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
+                ).set_author(
+                    name=text_map.get(133, locale, shenhe_user.user_locale),
+                    icon_url=shenhe_user.discord_user.display_avatar.url,
+                ),
+                success=False,
+            )
         else:
             return GenshinAppResult(
                 result=default_embed(
