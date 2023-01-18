@@ -1,26 +1,34 @@
 class UIDNotFound(Exception):
-    pass
+    def __str__(self):
+        return "UID not found"
 
 class ShenheAccountNotFound(Exception):
-    pass
+    def __str__(self):
+        return "Shenhe account not found"
 
 class ItemNotFound(Exception):
-    pass
+    def __str__(self):
+        return "Item not found"
 
 class NoPlayerFound(Exception):
-    pass
+    def __str__(self):
+        return "No player found"
 
 class NoCharacterFound(Exception):
-    pass
+    def __str__(self):
+        return "No character found"
 
 class CardNotFound(Exception):
-    pass
+    def __str__(self):
+        return "Card not found"
 
 class InvalidWeaponCalcInput(Exception):
-    pass
+    def __str__(self):
+        return "Invalid weapon calc input"
 
 class InvalidAscensionInput(Exception):
-    pass
+    def __str__(self):
+        return "Invalid ascension input"
 
 class DBError(Exception):
     def __init__(self, msg: str):
