@@ -935,9 +935,10 @@ class GenshinCog(commands.Cog, name="genshin"):
                     name=text_map.get(23, locale)
                 )
             )
+        banners.sort(key=lambda x: x.end_time)
         event_lang = to_event_lang(locale)
         embeds = []
-        for banner in banners:
+        for banner in banners[:3]:
             embed = default_embed(
                 banner.name[event_lang],
                 text_map.get(381, locale).format(
