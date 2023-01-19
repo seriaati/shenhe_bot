@@ -322,7 +322,7 @@
 琺露珊:
   builds:
     - weapon: 終末嗟嘆之詩
-      artifacts: 翠綠4件套
+      artifacts: 千岩4件套
       main_stats: 充風暴
       talents: 6/12/13
       stats:
@@ -330,9 +330,9 @@
         暴率/暴傷: 60/120
         充能效率: 226.90%
       move: Q 釋放傷害
-      dmg: 35593
+      dmg: 32921
     - weapon: 西風獵弓
-      artifacts: 翠綠4件套
+      artifacts: 千岩4件套
       main_stats: 充風暴
       talents: 6/12/13
       stats:
@@ -340,4 +340,4 @@
         暴率/暴傷: 60/120
         充能效率: 233.10%
       move: Q 釋放傷害
-      dmg: 30144
+      dmg: 27881

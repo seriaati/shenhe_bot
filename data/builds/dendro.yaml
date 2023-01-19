@@ -204,4 +204,59 @@
         充能效率: 130%
       move: 激化滅淨三業
       dmg: 21896
-    
+艾爾海森:
+  element: 草
+  builds:
+    - weapon: 裁葉萃光
+      artifacts: 飾金4件套
+      main_stats: 精草暴
+      talents: 9/10/8
+      stats:
+        攻擊力: 1166
+        暴率/暴傷: 80/177.2
+        元素精通: 347
+      move: E光幕激化傷害
+      dmg: 20018
+    - weapon: 磐岩結綠
+      artifacts: 飾金4件套
+      main_stats: 精草暴
+      talents: 9/10/8
+      stats:
+        攻擊力: 1416
+        暴率/暴傷: 80/169.2
+        元素精通: 347
+      move: E光幕激化傷害
+      dmg: 18815
+    - weapon: 黑劍
+      artifacts: 飾金4件套
+      main_stats: 精草暴
+      talents: 9/10/8
+      stats:
+        攻擊力: 1134
+        暴率/暴傷: 74/148
+        元素精通: 347
+      move: E光幕激化傷害
+      dmg: 16500
+瑤瑤:
+  element: 草
+  builds:
+    - weapon: 西風長槍
+      artifacts: 千岩4件套
+      main_stats: 生生治
+      talents: 2/12/11
+      stats:
+        攻擊力: 1088
+        暴率/暴傷: 30/任意
+        生命值: 39460
+      move: E白玉蘿蔔治療
+      dmg: 2412
+    - weapon: 黑纓槍
+      artifacts: 千岩4件套
+      main_stats: 生生治
+      talents: 2/12/11
+      stats:
+        攻擊力: 877
+        暴率/暴傷: 任意
+        生命值: 47069
+      move: E白玉蘿蔔治療
+      dmg: 2766
