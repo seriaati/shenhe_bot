@@ -40,62 +40,62 @@
 '39': Обліковий запис додано
 '40': Ви вже отримали сьогоднішню нагороду за відмітку!
 '41': Отримано
-'42': Claim successful
-'43': Overview
-'44': Days Active
-'45': Type a nickname for the custom image
-'46': Achievements
-'47': Spiral Abyss
-'48': Oculi
-'49': Anemoculi
-'50': Geoculi
-'51': Electroculi
-'52': "{element} characters"
-'53': Common Chests
-'54': Exquisite Chests
-'55': Luxurious Chests
-'56': Genshin stats
-'57': Precious Chests
-'58': World Exploration
-'59': Set custom image for {character_name}
-'60': Image URL
-'61': Remove image
-'62': Set custom image
-'63': View the bot's info
-'64': image-file
-'65': The image file to upload
-'66': The nickname for the image
-'67': The character to use the image
-'68': Upload a custom image for /profile character cards
-'69': Traveler's Diary
-'70': Primo Log
+'42': Успішно отримано
+'43': Огляд
+'44': Активних днів
+'45': Введіть псевдонім для користувацького зображення
+'46': Досягнення
+'47': Спіральна безодня
+'48': Окул
+'49': Анемокул
+'50': Геокул
+'51': Електрокул
+'52': "{element} персонаж"
+'53': Звичайні Скрині
+'54': Вишукані скрині
+'55': Розкішні Скрині
+'56': Genshin статистика
+'57': Дорогоцінні Скрині
+'58': Світове дослідження
+'59': Встановити власне зображення для {character_name}
+'60': URL-адреса зображення
+'61': Видалити зображення
+'62': Встановити власне зображення
+'63': Переглянути інформацію про бота
+'64': файл-зображення
+'65': Файл зображення для завантаження
+'66': Назва для зображення
+'67': Персонаж для використання зображення
+'68': Завантажте власне зображення для карток персонажів /profile
+'69': Щоденник Мандрівника
+'70': Журнал пріогемів
 '71': primos
-'72': Mora Log
-'73': mora
+'72': Журнал Мори
+'73': мора
 '74': |-
-  Use the </stats:1006486283725590530> to check your abyss progress,
-  this command only shows data above floor 9.
-'75': No wish data found for this filter
-'76': Spiral abyss data not found
-'77': Lunar phase
-'78': Deepest descent
+  Використовуйте </stats:1006486283725590530> для перевірки прогресу вашої безодні,
+  ця команда показує лише дані починаючи з 9 поверху.
+'75': Для цього фільтру не знайдено даних бажань
+'76': Дані спіральної безодні не знайдено
+'77': Фази Місяця
+'78': Найглибший спуск
 '79': Challenge Summary
-'80': Strongest single strike
-'81': Most kills
-'82': Most damage taken
-'83': Most bursts used
-'84': Most skills used
-'85': Spiral Abyss Overview
-'86': image-name
-'87': Shenhe has claimed today's daily reward for you!
-'88': Spiral Abyss Leaderboard ({phase}{num})
-'89': rank
-'90': 'Build #'
-'91': Weapon
-'92': Artifacts
-'93': Main Stats
-'94': Talents
-'95': Character Stats
+'80': Найсильніший удар
+'81': Найбільше вбивств
+'82': Найбільше пошкоджень
+'83': Більшість сплесків використано
+'84': Найбільше використаних навичок
+'85': Огляд спіральної безодні
+'86': назва зображення
+'87': Shenhe зібрав на сьогодні щоденну винагороду за вас!
+'88': Таблиця лідерів спіральної безодні ({phase}{num})
+'89': ранг
+'90': 'Побудувати #'
+'91': Зброя
+'92': Артефакти
+'93': Основна статистика
+'94': Таланти
+'95': Статистика персонажа
 '96': Source
 '97': Artifact Thoughts
 '98': Resin reminder has been turned off
@@ -150,24 +150,25 @@
 '142': Select an element
 '143': You are not the issuer of this command
 '144': Profile overview
-'145': Character showcase
-'146': Floor {a}
-'147': Uptime
-'148': Choose abyss floor
-'149': Data not public?
+'145': Вигляд персонажа
+'146': Поверх {a}
+'147': Час роботи
+'148': Виберіть поверх безодні
+'149': Дані не публічні?
 '150': |-
-  Please go to https://www.hoyolab.com/home and login
-  Follow the steps in the image below
+  Будь ласка, перейдіть за адресою https://www.hoyolab.com/home і увійдіть до логін. 
 
-  1. Click the avatar on the top right
-  2. Personal homepage
-  3. Click `Genshin` on the top right corner
-  4. Click the gear icon
-  5. Toggle all the switches
-'151': Last last phase
-'152': Resin threshold
-'153': Select an abyss phase
-'154': All time
+  Дотримуйтесь кроків на зображенні нижче:
+
+  1. Клацніть аватар зверху. 
+  2. Особиста домашня сторінка. 
+  3. Натисніть кнопку `Genshin` у правому верхньому куті. 
+  4. Натисніть значок шестерні. 
+  5. Переключити всі перемикачі. 
+'151': Остання фаза
+'152': Поріг смоли
+'153': Виберіть фазу безодні
+'154': За весь час
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
 '157': Choose a character
