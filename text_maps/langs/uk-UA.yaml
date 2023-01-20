@@ -142,8 +142,9 @@
 '134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
 '135': There was an error
 '136': Select an account
-'137': ''
-'138': ''
+'137': Notification
+'138': |-
+  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
 '139': Character Lineup
 '140': Select a lineup scenario
 '141': Account data not found!
@@ -228,7 +229,9 @@
 '208': Item name
 '209': 'For example: mora'
 '210': Amount of {item}
-'211': ''
+'211': |-
+  Don't want to see this message again? Use /settings
+  Don't want auto check-in anymore? Use /claim
 '212': You can't remove more items than you have in your dodo list
 '213': Cryo
 '214': Geo
