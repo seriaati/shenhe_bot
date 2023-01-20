@@ -4,7 +4,7 @@ import io
 import json
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List, Optional
 from uuid import uuid4
 
 import asqlite
@@ -21,7 +21,6 @@ from ambr.models import Artifact, Character, Domain, Material, Weapon
 from apps.draw import main_funcs
 from apps.genshin.custom_model import (DrawInput, NotificationUser,
                                        ShenheAccount, ShenheBot)
-from apps.genshin.find_codes import find_codes
 from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
                                 get_uid, get_uid_tz)
 from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
@@ -87,9 +86,6 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.backup_database())
             if now.day in [3, 19]:
                 await asyncio.create_task(self.generate_abyss_json())
-
-        if now.hour == 3 and now.minute < self.loop_interval:  # 3am
-            await asyncio.create_task(self.redeem_codes())
 
         if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
             hour_dict = {
@@ -503,79 +499,6 @@ class Schedule(commands.Cog):
         log.info("[Schedule][Backup] Ended")
 
     @schedule_error_handler
-    async def redeem_codes(self):
-        """Auto-redeems codes for all Shenhe users that have Cookie registered"""
-        log.info("[Schedule][Redeem Codes] Start")
-        
-        codes = await find_codes()
-        
-        log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
-        
-        async with self.bot.pool.acquire() as db:
-            async with db.execute("CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)") as c:
-                await c.execute("SELECT code FROM redeem_codes")
-                for row in c.get_cursor():
-                    if row[0] in codes:
-                        codes.remove(row[0])
-                    
-        if not codes:
-            return
-                
-        users = await self.get_schedule_users()
-
-        for index, user in enumerate(users):
-            locale = user.user_locale or "en-US"
-            embed = default_embed(text_map.get(126, locale))
-            value = ""
-
-            for code in codes:
-                success = False
-
-                try:
-                    await user.client.redeem_code(code, user.uid)
-                except genshin.errors.InvalidCookies:
-                    value = text_map.get(36, locale)
-                except genshin.errors.RedemptionClaimed:
-                    value = text_map.get(106, locale)
-                except genshin.errors.RedemptionCooldown:
-                    await asyncio.sleep(10)
-                    try:
-                        await user.client.redeem_code(code, user.uid)
-                    except:
-                        value = text_map.get(127, locale)
-                except genshin.errors.RedemptionException as e:
-                    value = e.msg
-                except Exception as e:
-                    value = f"{type(e)} {e}"
-                else:
-                    success = True
-                    value = text_map.get(109, locale)
-
-                await asyncio.sleep(5)
-
-                embed.add_field(
-                    name=f"{'✅' if success else '⛔'} {code}",
-                    value=value,
-                )
-
-            try:
-                await user.discord_user.send(embed=embed)  # type: ignore
-            except Forbidden:
-                pass
-
-            await asyncio.sleep(5)
-            if index % 100 == 0:
-                await asyncio.sleep(30)
-        
-        async with self.bot.pool.acquire() as db:
-            for code in codes:
-                await db.execute("INSERT INTO redeem_codes (code) VALUES (?)", (code,))
-            
-            await db.commit()
-
-        log.info("[Schedule][Redeem Codes] Done")
-
-    @schedule_error_handler
     async def claim_reward(self):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
@@ -621,7 +544,7 @@ class Schedule(commands.Cog):
                 embed.set_thumbnail(url=reward.icon)
 
                 try:
-                    await user.discord_user.send(embed=embed)
+                    await user.discord_user.send(embed=embed)  # type: ignore
                 except Forbidden:
                     pass
 
@@ -644,7 +567,7 @@ class Schedule(commands.Cog):
                 )
                 embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
                 try:
-                    await user.discord_user.send(embed=embed)
+                    await user.discord_user.send(embed=embed)  # type: ignore
                 except Forbidden:
                     pass
 
@@ -668,7 +591,7 @@ class Schedule(commands.Cog):
 
     @schedule_error_handler
     async def weapon_talent_base_notifiction(
-        self, notification_type: str, time_offset: Literal[0, -13, -7]
+        self, notification_type: str, time_offset: int
     ):
         log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
         list_name = (
@@ -738,7 +661,9 @@ class Schedule(commands.Cog):
                                 continue
                             materials.append((material, ""))
 
-                        dark_mode = await get_user_appearance_mode(user_id, self.bot.pool)
+                        dark_mode = await get_user_appearance_mode(
+                            user_id, self.bot.pool
+                        )
                         fp = await main_funcs.draw_material_card(
                             DrawInput(
                                 loop=self.bot.loop,
