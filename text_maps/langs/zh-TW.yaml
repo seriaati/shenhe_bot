@@ -142,9 +142,9 @@
 '134': 錯誤的通知時間？使用 /accounts 新增你的 UID 來讓申鶴知道你的伺服器地區
 '135': 未知錯誤
 '136': 選擇一個帳戶
-'137': Notification
+'137': 通知
 '138': |-
-  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
+  關閉申鶴除了 </remind:1044926380242120753> 功能以外傳送的其他通知。
 '139': 角色陣容
 '140': 選擇一個陣容適用場景
 '141': 找不到帳號資料!
@@ -229,8 +229,8 @@
 '209': '例如: 摩拉'
 '210': '{item} 的數量'
 '211': |-
-  Don't want to see this message again? Use /settings
-  Don't want auto check-in anymore? Use /claim
+  不想再看到這個訊息？使用/settings
+  不想要自動簽到？使用/claim
 '212': 不可輸入大於目前素材數量的數字
 '213': 冰元素
 '214': 岩元素
