@@ -589,17 +589,17 @@ def get_account_options(
 
 
 def level_to_ascension_phase(level: int) -> int:
-    if level <= 20:
+    if level < 20:
         return 0
-    elif level <= 40:
+    elif level < 40:
         return 1
-    elif level <= 50:
+    elif level < 50:
         return 2
-    elif level <= 60:
+    elif level < 60:
         return 3
-    elif level <= 70:
+    elif level < 70:
         return 4
-    elif level <= 80:
+    elif level < 80:
         return 5
     elif level <= 90:
         return 6
