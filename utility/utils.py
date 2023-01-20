@@ -86,9 +86,17 @@ async def get_user_appearance_mode(user_id: int, pool: asqlite.Pool) -> bool:
     async with pool.acquire() as db:
         async with db.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,)) as c:
             mode = await c.fetchone()
-    if mode is not None and mode[0] == 1:
+    if mode and mode[0] == 1:
         return True
     return False
+
+async def get_user_notification(user_id: int, pool: asqlite.Pool) -> bool:
+    async with pool.acquire() as db:
+        async with db.execute("SELECT notification FROM user_settings WHERE user_id = ?", (user_id,)) as c:
+            mode = await c.fetchone()
+    if mode and mode[0] == 0:
+        return False
+    return True
 
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8 timezone."""

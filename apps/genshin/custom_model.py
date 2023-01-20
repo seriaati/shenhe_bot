@@ -354,3 +354,10 @@ class InitLevels(BaseModel):
 class TodoAction(str, Enum):
     REMOVE = "remove"
     EDIT = "edit"
+
+class OriginalInfo(BaseModel):
+    view: discord.ui.View
+    embed: discord.Embed
+    
+    class Config:
+        arbitrary_types_allowed = True

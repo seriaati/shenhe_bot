@@ -1,11 +1,13 @@
 from typing import Optional, Union
+from apps.genshin.custom_model import OriginalInfo
 
 import discord
-from exceptions import NoPlayerFound, ShenheAccountNotFound, UIDNotFound
 import sentry_sdk
 
+import asset
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from exceptions import NoPlayerFound, ShenheAccountNotFound, UIDNotFound
 from utility.utils import error_embed, log
 
 
@@ -54,7 +56,7 @@ def get_error_handle_embed(
 
     if isinstance(e, discord.app_commands.errors.CommandInvokeError):
         e = e.original
-    
+
     if isinstance(e, discord.errors.NotFound) and e.code in [
         10062,
         10008,
@@ -77,7 +79,9 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
-    embed.set_author(name=embed.author.name or "Error", icon_url=user.display_avatar.url)
+    embed.set_author(
+        name=embed.author.name or "Error", icon_url=user.display_avatar.url
+    )
     return embed
 
 
@@ -121,3 +125,20 @@ class BaseView(discord.ui.View):
 class BaseModal(discord.ui.Modal):
     async def on_error(self, i: discord.Interaction, e: Exception) -> None:
         await global_error_handler(i, e)
+
+
+class GoBackButton(discord.ui.Button):
+    def __init__(self, original_info: OriginalInfo, **kwargs):
+        super().__init__(emoji=asset.back_emoji, **kwargs)
+        self.original_embed = original_info.embed
+        self.original_view = original_info.view
+
+    async def callback(self, i: discord.Interaction):
+        try:
+            await i.response.edit_message(
+                embed=self.original_embed, view=self.original_view
+            )
+        except discord.InteractionResponded:
+            await i.edit_original_response(
+                embed=self.original_embed, view=self.original_view
+            )

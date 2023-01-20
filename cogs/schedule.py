@@ -29,7 +29,7 @@ from apps.text_map.utils import get_user_locale
 from exceptions import ShenheAccountNotFound, UIDNotFound
 from utility.fetch_card import fetch_cards, process_i18n
 from utility.utils import (default_embed, error_embed, get_dt_now,
-                           get_user_appearance_mode, log)
+                           get_user_appearance_mode, get_user_notification, log)
 
 
 def schedule_error_handler(func):
@@ -536,17 +536,19 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
             else:
-                embed = default_embed(message=f"{reward.name} x{reward.amount}")
-                embed.set_author(
-                    name=text_map.get(87, "en-US", user.user_locale),
-                    icon_url=user.discord_user.display_avatar.url,
-                )
-                embed.set_thumbnail(url=reward.icon)
+                if (await get_user_notification(user.discord_user.id, self.bot.pool)):
+                    embed = default_embed(message=f"{reward.name} x{reward.amount}")
+                    embed.set_author(
+                        name=text_map.get(87, "en-US", user.user_locale),
+                        icon_url=user.discord_user.display_avatar.url,
+                    )
+                    embed.set_thumbnail(url=reward.icon)
+                    embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
 
-                try:
-                    await user.discord_user.send(embed=embed)  # type: ignore
-                except Forbidden:
-                    pass
+                    try:
+                        await user.discord_user.send(embed=embed)  # type: ignore
+                    except Forbidden:
+                        pass
 
                 success_count += 1
 

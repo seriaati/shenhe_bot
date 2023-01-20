@@ -3,12 +3,14 @@ from typing import Any
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
+import asset
 import config
+from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.others.language_options import lang_options
 from UI_base_models import BaseView
-from UI_elements.others.settings import CustomImage
+from UI_elements.others.settings import CustomImage, Notif
 from utility.utils import default_embed
 
 
@@ -18,6 +20,7 @@ class View(BaseView):
         self.add_item(Appearance(text_map.get(535, locale)))
         self.add_item(Langauge(text_map.get(128, locale)))
         self.add_item(CustomProfileImage(locale))
+        self.add_item(Notification(locale))
 
 
 class Appearance(Button):
@@ -134,7 +137,7 @@ class LangSelect(Select):
 
 class GOBack(Button):
     def __init__(self):
-        super().__init__(emoji="<:left:982588994778972171>", row=2)
+        super().__init__(emoji=asset.back_emoji, row=2)
 
     async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
@@ -151,7 +154,7 @@ class GOBack(Button):
 
 class CustomProfileImage(Button):
     def __init__(self, locale: str | Locale):
-        super().__init__(emoji="🖼️", label=text_map.get(275, locale))
+        super().__init__(emoji="🖼️", label=text_map.get(275, locale), row=2)
         self.locale = locale
 
     async def callback(self, i: Interaction):
@@ -163,3 +166,13 @@ class CustomProfileImage(Button):
         view.author = i.user
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()
+
+
+class Notification(Button):
+    def __init__(self, locale: str | Locale):
+        super().__init__(emoji="🔔", label=text_map.get(137, locale), row=2)
+        self.locale = locale
+
+    async def callback(self, i: Interaction):
+        self.view: View
+        await Notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0]))  # type: ignore
