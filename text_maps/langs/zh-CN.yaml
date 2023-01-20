@@ -142,8 +142,9 @@
 '134': 错误的通知时间？使用 /accounts 新增你的 UID 来让申鹤知道你的伺服器区域
 '135': 未知错误
 '136': 选择一个帐户
-'137': ''
-'138': ''
+'137': Notification
+'138': |-
+  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
 '139': 角色阵容
 '140': 选择一个阵容适用场景
 '141': 找不到帐号资料!
@@ -227,7 +228,9 @@
 '208': 材料名称
 '209': '例如: 摩拉'
 '210': '{item} 的数量'
-'211': ''
+'211': |-
+  Don't want to see this message again? Use /settings
+  Don't want auto check-in anymore? Use /claim
 '212': 不可输入大于目前素材数量的数字
 '213': 冰元素
 '214': 岩元素
