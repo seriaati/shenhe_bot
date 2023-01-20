@@ -142,8 +142,9 @@
 '134': 間違ったタイミングですか？どのサーバーなのかを知るために、/accountsを使ってUIDを追加してください
 '135': エラーが発生しました
 '136': アカウントを選択
-'137': ''
-'138': ''
+'137': Notification
+'138': |-
+  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
 '139': キャラクターラインナップ
 '140': ラインナップの選択
 '141': アカウントデータが見つかりません！
@@ -227,7 +228,9 @@
 '208': アイテム名
 '209': '例: モラ'
 '210': '{item}の数量'
-'211': ''
+'211': |-
+  Don't want to see this message again? Use /settings
+  Don't want auto check-in anymore? Use /claim
 '212': ToDo リストよりも多くのアイテムを削除することはできません。
 '213': 氷元素
 '214': 岩元素
