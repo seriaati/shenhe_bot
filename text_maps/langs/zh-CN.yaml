@@ -147,7 +147,7 @@
   关闭申鶴除了 </remind:1044926380242120753> 功能以外发送的其他通知。
 '139': 角色阵容
 '140': 选择一个阵容适用场景
-'141': 找不到帐号资料!
+'141': No character found in your in-game showcase!
 '142': 选择一个元素
 '143': 你不是这个指令的发起者
 '144': 个人资料总览
@@ -299,8 +299,8 @@
 '282': 返回副词条选择
 '283': 或直接输入你的 UID
 '284': 无效帐号
-'285': 这是一个没有角色的空号
-'286': 无效 UID
+'285': ''
+'286': UID is invalid or not found in enka.network
 '287': 请在游戏中打开「显示角色详情」
 '288': 玩家等级
 '289': 世界等级
@@ -566,7 +566,7 @@
 '508': 搜索任何与原神有关的角色、武器、物品
 '509': 关键词
 '510': 须弥
-'511': ''
+'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
 '512': |-
   • 在你的质变仪可使用时通知你
   • 每天1个通知
@@ -576,11 +576,11 @@
 '516': 洞天宝钱阀值
 '517': 洞天宝钱提醒关闭
 '518': 洞天宝钱要满了！
-'519': Enka API 目前处于关闭状态，请耐心等待其恢复
+'519': '|- [Enka.network](https://enka.network/) is currently down, please try again later. Check their [twitter](https://twitter.com/EnkaNetwork) for updates.'
 '520': 草神瞳
 '521': 删除账号资料
 '522': 账号资料删除成功
-'523': ''
+'523': Enka.network API error
 '524': ''
 '525': 蔓激化
 '526': 超激化
