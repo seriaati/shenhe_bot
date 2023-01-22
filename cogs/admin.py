@@ -3,12 +3,12 @@ import importlib
 import sys
 from pathlib import Path
 from typing import Optional
-
+from diskcache import FanoutCache
 import git
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.errors import Forbidden
-
+import pickle
 from apps.genshin.custom_model import ShenheBot
 from utility.utils import default_embed, error_embed
 
@@ -92,6 +92,20 @@ class AdminCog(commands.Cog, name="admin"):
             await ctx.send("user has DMs disabled")
         else:
             await ctx.send("message sent")
+    
+    @commands.is_owner()
+    @commands.command(name="transfer-enka-cache")
+    async def transfer_enka_cache(self, ctx: commands.Context, uid: int):
+        async with self.bot.pool.acquire() as db:
+            await db.execute("CREATE TABLE IF NOT EXISTS enka_cache (uid INTEGER PRIMARY KEY, en_data BLOB, data BLOB)")
+            await ctx.send("getting old cache...")
+            en_cache = FanoutCache("data/cache/enka_eng_cache")
+            cache = FanoutCache("data/cache/enka_data_cache")
+            en_cache_data = en_cache.get(uid)
+            cache_data = cache.get(uid)
+            await db.execute("INSERT OR REPLACE INTO enka_cache (uid, en_data, data) VALUES (?, ?, ?)", (uid, pickle.dumps(en_cache_data), pickle.dumps(cache_data)))
+            await db.commit()
+            await ctx.send("done")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:

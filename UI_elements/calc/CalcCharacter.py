@@ -1,5 +1,6 @@
 from typing import List
 from apps.draw.utility import image_gen_transition
+from apps.genshin.enka import get_enka_data
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
 
@@ -16,12 +17,11 @@ from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
 from apps.genshin.utils import (
     get_character_emoji,
     get_character_suggested_talent_levels,
-    get_enka_data,
     get_shenhe_account,
     get_uid,
     level_to_ascension_phase,
 )
-from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.convert_locale import to_ambr_top, to_enka
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
@@ -112,30 +112,32 @@ class CharacterSelect(Select):
             check = await check_account_predicate(i, respond_message=False)  # check uid
             if check:
                 uid = await get_uid(i.user.id, i.client.pool) # type: ignore
-                if uid is not None:
-                    enka_data = await get_enka_data(
-                        i, locale, uid, i.user, respond_message=False
-                    )
-                    if enka_data is not None and enka_data.cache.characters is not None:
-                        character = [
-                            c
-                            for c in enka_data.cache.characters
-                            if c.id == character_id
-                        ]
-                        if character:
-                            init_levels.level = character[0].level
-                            talent_levels = []
-                            for talent in character[0].skills:
-                                if talent.id in [
-                                    10013,
-                                    10413,
-                                ]:  # ayaka and mona passive sprint
-                                    continue
-                                talent_levels.append(talent.level)
-                            init_levels.a_level = talent_levels[0]
-                            init_levels.e_level = talent_levels[1]
-                            init_levels.q_level = talent_levels[2]
-                            init_levels.ascension_phase = character[0].ascension
+                if uid:
+                    try:
+                        enka_data, _ = await get_enka_data(uid, to_enka(locale), i.client.pool)
+                    except Exception:
+                        pass
+                    else:
+                        if enka_data.characters:
+                            character = [
+                                c
+                                for c in enka_data.characters
+                                if c.id == character_id
+                            ]
+                            if character:
+                                init_levels.level = character[0].level
+                                talent_levels = []
+                                for talent in character[0].skills:
+                                    if talent.id in [
+                                        10013,
+                                        10413,
+                                    ]:  # ayaka and mona passive sprint
+                                        continue
+                                    talent_levels.append(talent.level)
+                                init_levels.a_level = talent_levels[0]
+                                init_levels.e_level = talent_levels[1]
+                                init_levels.q_level = talent_levels[2]
+                                init_levels.ascension_phase = character[0].ascension
 
         # change None levels in init_levels to 1
         for key, value in init_levels.dict().items():

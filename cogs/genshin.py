@@ -22,11 +22,11 @@ from apps.genshin.custom_model import (AbyssHalf, AbyssResult, AreaResult,
                                        CharacterResult, DiaryResult, DrawInput,
                                        RealtimeNoteResult, ShenheBot,
                                        StatsResult)
+from apps.genshin.enka import get_enka_data
 from apps.genshin.genshin_app import GenshinApp
 from apps.genshin.leaderboard import update_user_abyss_leaderboard
-from apps.genshin.utils import (get_character_emoji, get_enka_data,
-                                get_farm_data, get_uid, get_uid_region_hash,
-                                get_uid_tz)
+from apps.genshin.utils import (get_character_emoji, get_farm_data, get_uid,
+                                get_uid_region_hash, get_uid_tz)
 from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
                                parse_character_wiki, parse_food_wiki,
                                parse_furniture_wiki, parse_material_wiki,
@@ -34,7 +34,7 @@ from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
                                parse_weapon_wiki)
 from apps.genshin_data.abyss import (get_abyss_blessing, get_abyss_enemies,
                                      get_ley_line_disorders)
-from apps.text_map.convert_locale import (to_ambr_top, to_event_lang,
+from apps.text_map.convert_locale import (to_ambr_top, to_enka, to_event_lang,
                                           to_genshin_py)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -255,15 +255,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_locale(i.user.id, i.client.pool)
+
         uid = await get_uid(member.id, self.bot.pool)
         if uid is None:
             raise UIDNotFound
-        enka_data = await get_enka_data(i, user_locale or i.locale, uid, member)
-        if enka_data is None:
-            return
-        if enka_data.data.player is None:
-            raise NoPlayerFound
-        namecard = enka_data.data.player.namecard
+
+        enka_data, _ = await get_enka_data(
+            uid, to_enka(user_locale or i.locale), self.bot.pool
+        )
+        namecard = enka_data.player.namecard
         result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
@@ -610,29 +610,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         uid = custom_uid or await get_uid(member.id, self.bot.pool)
         if uid is None:
-            check = await check_account_predicate(i, member)
-            if not check:
-                return
-        enka_data = await get_enka_data(i, locale, uid, member)
-        if enka_data is None:
-            return
-        if enka_data.cache.characters is None:
-            raise NoCharacterFound
-        elif enka_data.data.characters is None:
-            raise NoCharacterFound
+            raise UIDNotFound
 
-        from_cache = []
-        for c in enka_data.cache.characters:
-            found = False
-            for d in enka_data.data.characters:
-                if c.id == d.id:
-                    found = True
-                    break
-            if not found:
-                from_cache.append(c.id)
-
-        data = enka_data.cache
-        eng_data = enka_data.eng_cache
+        data, en_data = await get_enka_data(uid, to_enka(locale), self.bot.pool)
 
         embeds = [
             default_embed()
@@ -648,7 +628,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             .set_image(url="https://i.imgur.com/25pdyUG.gif"),
         ]
-
+        
         options = []
         if data.characters is not None:
             for character in data.characters:
@@ -656,13 +636,15 @@ class GenshinCog(commands.Cog, name="genshin"):
                     SelectOption(
                         label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
                         description=text_map.get(543, locale)
-                        if character.id in from_cache
+                        if str(character.id)
+                        not in [c.id for c in data.player.characters_preview]
                         else "",
                         value=str(character.id),
                         emoji=get_character_emoji(str(character.id)),
                     )
                 )
-        view = EnkaProfile.View([], [], options, data, eng_data, member, locale)
+                
+        view = EnkaProfile.View([], [], options, data, en_data, member, locale)
         for child in view.children:
             child.disabled = True
 
@@ -676,12 +658,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             text_map.get(144, locale),
             f"""
             {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.network/u/{uid})
-            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(get_dt_now()+timedelta(seconds=enka_data.data.ttl), "R"))}
+            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(get_dt_now()+timedelta(seconds=data.ttl), "R"))}
             """,
         )
         embed.set_image(url="attachment://profile.jpeg")
         embed_two = default_embed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
+        embed_two.set_footer(text=text_map.get(511, locale))
+        
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         fp, fp_two = await main_funcs.draw_profile_card(
             DrawInput(
@@ -690,21 +674,23 @@ class GenshinCog(commands.Cog, name="genshin"):
                 locale=locale,
                 dark_mode=dark_mode,
             ),
-            enka_data.data,
+            data,
         )
         fp.seek(0)
         fp_two.seek(0)
+        
         discord_file = File(fp, filename="profile.jpeg")
         discord_file_two = File(fp_two, filename="character.jpeg")
-        view.author = i.user
+        
         view = EnkaProfile.View(
-            [embed, embed_two], [fp, fp_two], options, data, eng_data, member, locale
+            [embed, embed_two], [fp, fp_two], options, data, en_data, member, locale
         )
         await i.edit_original_response(
             embeds=[embed, embed_two],
             view=view,
             attachments=[discord_file, discord_file_two],
         )
+        view.author = i.user
         view.message = await i.original_response()
 
     @check_cookie()

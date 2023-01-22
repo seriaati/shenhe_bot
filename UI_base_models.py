@@ -1,13 +1,15 @@
 from typing import Optional, Union
-from apps.genshin.custom_model import OriginalInfo
 
 import discord
+import enkanetwork
 import sentry_sdk
 
 import asset
+from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import NoPlayerFound, ShenheAccountNotFound, UIDNotFound
+from exceptions import (NoCharacterFound, NoPlayerFound, ShenheAccountNotFound,
+                        UIDNotFound)
 from utility.utils import error_embed, log
 
 
@@ -71,11 +73,30 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(545, locale))
     elif isinstance(e, NoPlayerFound):
         embed.set_author(name=text_map.get(367, locale))
+    elif isinstance(e, enkanetwork.EnkaServerMaintanance):
+        embed.description = text_map.get(519, locale)
+        embed.set_author(name=text_map.get(523, locale))
+    elif isinstance(e, enkanetwork.UIDNotFounded) or isinstance(
+        e, enkanetwork.VaildateUIDError
+    ):
+        embed.description = text_map.get(286, locale)
+        embed.set_author(name=text_map.get(523, locale))
+    elif isinstance(e, enkanetwork.EnkaServerError) or isinstance(
+        e, enkanetwork.HTTPException
+    ):
+        embed.set_author(name=text_map.get(523, locale))
+    elif isinstance(e, NoCharacterFound):
+        embed.description = text_map.get(287, locale)
+        embed.set_author(
+            name=text_map.get(141, locale),
+        )
+        embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
+
     else:
         sentry_sdk.capture_exception(e)
 
         embed.description = text_map.get(513, locale)
-        embed.description += f"\n\n```{e}```"
+        embed.description += f"\n\n```{type(e)}: {e}```"
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 

@@ -36,3 +36,7 @@ class DBError(Exception):
 
     def __str__(self):
         return self.msg
+
+class NeverRaised(Exception):
+    def __str__(self):
+        return "This exception should never be raised"

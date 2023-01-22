@@ -258,6 +258,7 @@ async def get_shenhe_account(
     china = True if str(client.uid)[0] in ["1", "2", "5"] else False
     if china:
         client.lang = "zh-cn"
+        client.region = genshin.Region.CHINESE
 
     user_obj = ShenheAccount(
         client=client,
@@ -282,40 +283,6 @@ async def get_uid(user_id: int, pool: asqlite.Pool) -> Optional[int]:
                 if row[1] == 1:
                     break
             return uid
-
-
-async def load_and_update_enka_cache(
-    cache: enkanetwork.model.base.EnkaNetworkResponse,
-    data: enkanetwork.model.base.EnkaNetworkResponse,
-    uid: int,
-    en: bool = False,
-) -> enkanetwork.model.base.EnkaNetworkResponse:
-    if data.characters is None:
-        raise NoCharacterFound
-    if cache is None or cache.characters is None:
-        cache = data
-    c_dict = {}
-    d_dict = {}
-    new_dict = {}
-    if cache.characters is not None:
-        for c in cache.characters:
-            c_dict[c.id] = c
-    for d in data.characters:
-        d_dict[d.id] = d
-    new_dict = c_dict | d_dict
-    cache.characters = []
-    for character in list(new_dict.values()):
-        cache.characters.append(character)
-    cache.player = data.player
-
-    if en:
-        cache_path = "data/cache/enka_eng_cache"
-    else:
-        cache_path = "data/cache/enka_data_cache"
-    with FanoutCache(cache_path) as enka_cache:
-        enka_cache[uid] = cache
-
-    return cache
 
 
 async def get_farm_data(
@@ -623,93 +590,6 @@ async def get_character_suggested_talent_levels(
     talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
     talents = talents.split("/")
     return [int(talent) for talent in talents]
-
-
-async def get_enka_data(
-    i: discord.Interaction,
-    locale: discord.Locale | str,
-    uid: int,
-    member: discord.Member | discord.User,
-    respond_message: bool = True,
-) -> Optional[EnkanetworkData]:
-    """Get and return enka data from enka.network, will return None if there is an error
-
-    Args:
-        i (discord.Interaction): Interaction object
-        locale (discord.Locale | str): discord locale
-        uid (int): user's uid
-        member (discord.Member | discord.User): discord member object
-
-    Returns:
-        Tuple[enkanetwork.EnkaNetworkResponse, enkanetwork.EnkaNetworkResponse]: First element is the user's data in user's locale, second one is the user's data in en-US
-    """
-    with FanoutCache("data/cache/enka_data_cache") as enka_cache:
-        cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)
-    with FanoutCache("data/cache/enka_eng_cache") as enka_cache:
-        eng_cache: enkanetwork.model.base.EnkaNetworkResponse = enka_cache.get(uid)
-    enka_locale = to_enka(locale)
-    async with enkanetwork.EnkaNetworkAPI(enka_locale) as enka:
-        try:
-            data = await enka.fetch_user(uid)
-            await enka.set_language(enkanetwork.Language.EN)
-            eng_data = await enka.fetch_user(uid)
-        except (
-            enkanetwork.UIDNotFounded,
-            asyncio.exceptions.TimeoutError,
-            enkanetwork.EnkaServerError,
-        ):
-            if cache is None:
-                if respond_message:
-                    await i.followup.send(
-                        embed=error_embed(message=text_map.get(519, locale)).set_author(
-                            name=text_map.get(286, locale),
-                            icon_url=member.display_avatar.url,
-                        ),
-                        ephemeral=True,
-                    )
-                return None
-            else:
-                data = cache
-                eng_data = eng_cache
-        except enkanetwork.VaildateUIDError:
-            if respond_message:
-                await i.followup.send(
-                    embed=error_embed().set_author(
-                        name=text_map.get(286, locale),
-                        icon_url=member.display_avatar.url,
-                    ),
-                    ephemeral=True,
-                )
-                return None
-            else:
-                return None
-    try:
-        cache = await load_and_update_enka_cache(cache, data, uid)
-        eng_cache = await load_and_update_enka_cache(eng_cache, eng_data, uid, en=True)
-    except NoCharacterFound:
-        embed = (
-            default_embed(message=text_map.get(287, locale))
-            .set_author(
-                name=text_map.get(141, locale),
-                icon_url=member.display_avatar.url,
-            )
-            .set_image(url="https://i.imgur.com/frMsGHO.gif")
-        )
-        if respond_message:
-            await i.followup.send(embed=embed, ephemeral=True)
-            return None
-        else:
-            return None
-    return EnkanetworkData(
-        data=data,
-        eng_data=eng_data,
-        cache=enkanetwork.model.base.EnkaNetworkResponse(
-            playerInfo=cache.player, avatarInfoList=cache.characters
-        ),
-        eng_cache=enkanetwork.model.base.EnkaNetworkResponse(
-            playerInfo=eng_cache.player, avatarInfoList=eng_cache.characters
-        ),
-    )
 
 
 def get_current_abyss_season():
