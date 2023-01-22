@@ -1,11 +1,11 @@
 from typing import Optional
+
 import asqlite
+from discord import Interaction, Member, User, app_commands
+
 from apps.genshin.utils import get_uid
-from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from discord import Interaction, app_commands, User, Member
-from discord.errors import InteractionResponded
-from utility.utils import error_embed
+from exceptions import NoCookie, NoUID, NoWishHistory
 
 
 def check_account():
@@ -20,37 +20,25 @@ def check_account():
 
 
 async def check_account_predicate(
-    i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True
-) -> bool:
+    i: Interaction, member: Optional[User | Member] = None
+):
     if "member" in i.namespace.__dict__:
         user = i.namespace["member"]
-    elif "user" in i.namespace.__dict__:
-        user = i.namespace["user"]
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id, i.client.pool)) or i.locale
 
-    pool: asqlite.Pool = i.client.pool # type: ignore
+    pool: asqlite.Pool = i.client.pool  # type: ignore
     async with pool.acquire() as db:
         async with db.execute(
             "SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,)
         ) as c:
             uid = await c.fetchone()
     if uid is None:
-        if respond_message:
-            embed = error_embed(message=text_map.get(572, locale)).set_author(
-                name=text_map.get(571 if user.id == i.user.id else 579, locale),
-                icon_url=user.display_avatar.url,
-            )
-            try:
-                await i.response.send_message(
-                    embed=embed,
-                    ephemeral=True,
-                )
-            except InteractionResponded:
-                await i.followup.send(embed=embed, ephemeral=True)
-        return False
+        if user.id == i.user.id:
+            raise NoUID(True)
+        else:
+            raise NoUID(False)
     else:
         return True
 
@@ -59,8 +47,7 @@ def check_cookie():
     """Checks if the current user account has a cookie."""
 
     async def predicate(i: Interaction) -> bool:
-        check = await check_cookie_predicate(i)
-        return check
+        return await check_cookie_predicate(i)
 
     return app_commands.check(predicate)
 
@@ -71,13 +58,10 @@ def check_wish_history():
     async def predicate(i: Interaction) -> bool:
         if "member" in i.namespace.__dict__:
             user = i.namespace["member"]
-        elif "user" in i.namespace.__dict__:
-            user = i.namespace["user"]
         else:
             user = i.user
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
 
-        pool: asqlite.Pool = i.client.pool # type: ignore
+        pool: asqlite.Pool = i.client.pool  # type: ignore
         async with pool.acquire() as db:
             async with db.execute(
                 "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
@@ -86,16 +70,7 @@ def check_wish_history():
                 data = await c.fetchone()
 
         if data is None:
-            await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(368, i.locale, user_locale)
-                ).set_author(
-                    name=text_map.get(683, i.locale, user_locale),
-                    icon_url=user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
-            return False
+            raise NoWishHistory
         else:
             return True
 
@@ -103,11 +78,10 @@ def check_wish_history():
 
 
 async def check_cookie_predicate(
-    i: Interaction, member: Optional[User | Member] = None, respond_message: bool = True
-) -> bool:
-    check = await check_account_predicate(i, member)
-    if not check:
-        return False
+    i: Interaction, member: Optional[User | Member] = None
+):
+    await check_account_predicate(i, member)
+
     if "member" in i.namespace.__dict__:
         user = i.namespace["member"]
     elif "user" in i.namespace.__dict__:
@@ -115,9 +89,8 @@ async def check_cookie_predicate(
     else:
         user = i.user
     user = member or user
-    locale = (await get_user_locale(i.user.id, i.client.pool)) or i.locale
-    
-    pool: asqlite.Pool = i.client.pool # type: ignore
+
+    pool: asqlite.Pool = i.client.pool  # type: ignore
     async with pool.acquire() as db:
         async with db.execute(
             "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
@@ -130,31 +103,14 @@ async def check_cookie_predicate(
                     (user.id,),
                 )
                 if (await c.fetchone()) is None:
-                    embed = error_embed(message=text_map.get(572, locale)).set_author(
-                        name=text_map.get(573 if user.id == i.user.id else 580, locale),
-                        icon_url=user.display_avatar.url,
-                    )
-                    if respond_message:
-                        try:
-                            await i.response.send_message(
-                                embed=embed,
-                                ephemeral=True,
-                            )
-                        except InteractionResponded:
-                            await i.followup.send(embed=embed, ephemeral=True)
+                    if user.id == i.user.id:
+                        raise NoCookie(True, True)
+                    else:
+                        raise NoCookie(False, True)
                 else:
-                    embed = error_embed(message=text_map.get(575, locale)).set_author(
-                        name=text_map.get(574 if user.id == i.user.id else 581, locale),
-                        icon_url=user.display_avatar.url,
-                    )
-                    if respond_message:
-                        try:
-                            await i.response.send_message(
-                                embed=embed,
-                                ephemeral=True,
-                            )
-                        except InteractionResponded:
-                            await i.followup.send(embed=embed, ephemeral=True)
-                return False
+                    if user.id == i.user.id:
+                        raise NoCookie(True, False)
+                    else:
+                        raise NoCookie(False, False)
             else:
                 return True

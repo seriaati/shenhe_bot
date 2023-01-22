@@ -51,6 +51,7 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_import(self, i: Interaction):
         await wish_import_command(i)
 
+    @check_account()
     @app_commands.command(
         name="file-import",
         description=_(

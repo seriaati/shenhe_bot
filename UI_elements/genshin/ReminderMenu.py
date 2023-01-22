@@ -38,9 +38,7 @@ class ResinNotification(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        check = await check_cookie_predicate(i)
-        if not check:
-            return
+        await check_cookie_predicate(i)
         await return_resin_notification(i, self.view)
 
 
@@ -50,9 +48,7 @@ class PotNotification(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        check = await check_cookie_predicate(i)
-        if not check:
-            return
+        await check_cookie_predicate(i)
         await return_pot_notification(i, self.view)
 
 
@@ -176,9 +172,7 @@ class PTNotification(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        check = await check_cookie_predicate(i)
-        if not check:
-            return
+        await check_cookie_predicate(i)
         await return_pt_notification(i, self.view)
 
 

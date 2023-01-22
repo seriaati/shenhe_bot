@@ -23,9 +23,7 @@ class MeToo(ui.Button):
         self.view: View
         
         await i.response.defer()
-        check = await check_cookie_predicate(i)
-        if not check:
-            return
+        await check_cookie_predicate(i)
         
         result = await self.view.genshin_app.redeem_code(
             i.user.id, i.user.id, self.view.code, i.locale

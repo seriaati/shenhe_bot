@@ -125,7 +125,6 @@ class Shenhe(commands.AutoShardedBot):
             return
         ignored = (
             commands.CommandNotFound,
-            app_commands.errors.CheckFailure,
             commands.NotOwner,
         )
         error = getattr(error, "original", error)

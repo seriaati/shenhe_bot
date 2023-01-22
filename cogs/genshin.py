@@ -188,9 +188,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.check_command(i, member or i.user)
 
     async def check_ctx_menu(self, i: Interaction, member: User):
-        check = await check_account_predicate(i, member)
-        if not check:
-            return
+        await check_cookie_predicate(i, member)
         await self.check_command(i, member, ephemeral=True)
 
     async def check_command(
@@ -241,9 +239,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.stats_command(i, member)
 
     async def stats_ctx_menu(self, i: Interaction, member: User):
-        check = await check_account_predicate(i, member)
-        if not check:
-            return
+        await check_account_predicate(i, member)
         await self.stats_command(i, member, context_command=True)
 
     async def stats_command(
@@ -327,9 +323,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.characters_comamnd(i, member, False)
 
     async def characters_ctx_menu(self, i: Interaction, member: User):
-        check = await check_cookie_predicate(i, member)
-        if not check:
-            return
+        await check_cookie_predicate(i, member)
         await self.characters_comamnd(i, member)
 
     async def characters_comamnd(
@@ -371,6 +365,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         view.message = await i.original_response()
 
+    @check_cookie()
     @app_commands.command(
         name="diary",
         description=_(
@@ -384,9 +379,6 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def diary(self, i: Interaction, member: Optional[User | Member] = None):
         member = member or i.user
-        check = await check_cookie_predicate(i, member)
-        if not check:
-            return
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         result = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
@@ -593,9 +585,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.profile_command(i, member, False, uid)
 
     async def profile_ctx_menu(self, i: Interaction, member: User):
-        check = await check_account_predicate(i, member)
-        if not check:
-            return
+        await check_account_predicate(i, member)
         await self.profile_command(i, member)
 
     async def profile_command(

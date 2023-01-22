@@ -8,7 +8,7 @@ import asset
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import (NoCharacterFound, NoPlayerFound, ShenheAccountNotFound,
+from exceptions import (NoCharacterFound, NoCookie, NoPlayerFound, NoUID, NoWishHistory, ShenheAccountNotFound,
                         UIDNotFound)
 from utility.utils import error_embed, log
 
@@ -16,10 +16,8 @@ from utility.utils import error_embed, log
 async def global_error_handler(
     i: discord.Interaction, e: Exception | discord.app_commands.AppCommandError
 ):
-    if isinstance(e, discord.app_commands.errors.CheckFailure):
-        return
-
-    log.warning(f"[Error][{i.user.id}]{type(e)}: {e}", exc_info=e)
+    if not isinstance(e, discord.app_commands.CheckFailure):
+        log.warning(f"[Error][{i.user.id}]{type(e)}: {e}", exc_info=e)
 
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
@@ -91,7 +89,19 @@ def get_error_handle_embed(
             name=text_map.get(141, locale),
         )
         embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
-
+    elif isinstance(e, NoUID):
+        embed.description = text_map.get(572, locale)
+        embed.set_author(name=text_map.get(571 if e.current_user else 579, locale))
+    elif isinstance(e, NoCookie):
+        if e.current_account:
+            embed.description = text_map.get(572, locale)
+            embed.set_author(name=text_map.get(573 if e.current_user else 580, locale))
+        else:
+            embed.description = text_map.get(575, locale)
+            embed.set_author(name=text_map.get(574 if e.current_user else 581, locale))
+    elif isinstance(e, NoWishHistory):
+        embed.description = text_map.get(368, locale)
+        embed.set_author(name=text_map.get(683, locale))
     else:
         sentry_sdk.capture_exception(e)
 

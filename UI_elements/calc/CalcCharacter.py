@@ -1,18 +1,16 @@
 from typing import List
 from apps.draw.utility import image_gen_transition
-from apps.genshin.enka import get_enka_data
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
 
-import genshin
-from discord import ButtonStyle, File, Interaction, Locale, SelectOption
+from discord import ButtonStyle, File, Interaction, Locale, SelectOption, utils
 from discord.ui import Button, Select, TextInput
 from apps.draw import main_funcs
 import asset
 import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
-from apps.genshin.checks import check_account_predicate, check_cookie_predicate
+from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
 from apps.genshin.utils import (
     get_character_emoji,
@@ -21,7 +19,7 @@ from apps.genshin.utils import (
     get_uid,
     level_to_ascension_phase,
 )
-from apps.text_map.convert_locale import to_ambr_top, to_enka
+from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
@@ -83,21 +81,25 @@ class CharacterSelect(Select):
         init_levels = InitLevels()
 
         # get genshin calculator levels or enka talent levels
-        check = await check_cookie_predicate(i, respond_message=False)
-        character_id = int(self.values[0].split("-")[0])
-        if check:  # the user has cookie
+        try:
+            await check_cookie_predicate(i)
+        except Exception:
+            pass
+        else:
+            character_id = int(self.values[0].split("-")[0])
             shenhe_user = await get_shenhe_account(i.user.id, i.client, locale)
+            
             calculator_characters = await shenhe_user.client.get_calculator_characters(
                 sync=True
             )
-            calculator_character = [
-                c for c in calculator_characters if c.id == character_id
-            ]
+            calculator_character = utils.get(calculator_characters, id=character_id)
+            
             if calculator_character:
-                init_levels.level = calculator_character[0].level
+                init_levels.level = calculator_character.level
+                
             try:
                 character = await shenhe_user.client.get_character_details(character_id)
-            except genshin.GenshinException:
+            except Exception:
                 pass
             else:
                 talent_levels: List[int] = []
@@ -108,36 +110,6 @@ class CharacterSelect(Select):
                 init_levels.a_level = talent_levels[0]
                 init_levels.e_level = talent_levels[1]
                 init_levels.q_level = talent_levels[2]
-        elif not check or init_levels.ascension_phase is None:
-            check = await check_account_predicate(i, respond_message=False)  # check uid
-            if check:
-                uid = await get_uid(i.user.id, i.client.pool) # type: ignore
-                if uid:
-                    try:
-                        enka_data, _ = await get_enka_data(uid, to_enka(locale), i.client.pool)
-                    except Exception:
-                        pass
-                    else:
-                        if enka_data.characters:
-                            character = [
-                                c
-                                for c in enka_data.characters
-                                if c.id == character_id
-                            ]
-                            if character:
-                                init_levels.level = character[0].level
-                                talent_levels = []
-                                for talent in character[0].skills:
-                                    if talent.id in [
-                                        10013,
-                                        10413,
-                                    ]:  # ayaka and mona passive sprint
-                                        continue
-                                    talent_levels.append(talent.level)
-                                init_levels.a_level = talent_levels[0]
-                                init_levels.e_level = talent_levels[1]
-                                init_levels.q_level = talent_levels[2]
-                                init_levels.ascension_phase = character[0].ascension
 
         # change None levels in init_levels to 1
         for key, value in init_levels.dict().items():
