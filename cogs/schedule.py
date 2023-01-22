@@ -606,12 +606,18 @@ class Schedule(commands.Cog):
         )
         async with self.bot.pool.acquire() as db:
             async with db.execute(
-                f"SELECT user_id, {list_name}, last_notif FROM {notification_type} WHERE toggle = 1"
+                f"SELECT user_id, {list_name} FROM {notification_type} WHERE toggle = 1"
             ) as c:
                 count = 0
                 for row in c.get_cursor():
                     user_id = row[0]
                     item_list = row[1]
+                    
+                    uid = await get_uid(user_id, self.bot.pool)
+                    uid_tz = get_uid_tz(uid)
+                    if uid_tz != time_offset:
+                        continue
+                    
                     now = get_dt_now() + timedelta(hours=time_offset)
                     locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
                     client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
@@ -619,10 +625,6 @@ class Schedule(commands.Cog):
                     user = self.bot.get_user(user_id) or await self.bot.fetch_user(
                         user_id
                     )
-                    uid = await get_uid(user_id, self.bot.pool)
-                    uid_tz = get_uid_tz(uid)
-                    if uid_tz != time_offset:
-                        continue
                     item_list = ast.literal_eval(item_list)
                     notified = {}
                     today_domains = [d for d in domains if d.weekday == now.weekday()]
@@ -702,10 +704,6 @@ class Schedule(commands.Cog):
                                 (user_id,),
                             )
                         else:
-                            await c.execute(
-                                f"UPDATE {notification_type} SET last_notif = ? WHERE user_id = ?",
-                                (now.strftime("%Y/%m/%d %H:%M:%S"), user_id),
-                            )
                             count += 1
                     await asyncio.sleep(2.5)
             await db.commit()
