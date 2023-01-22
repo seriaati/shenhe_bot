@@ -147,7 +147,7 @@
   Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
 '139': Đội hình Nhân vật
 '140': Select a lineup scenario
-'141': Không tìm thấy dữ liệu tài khoản!
+'141': No character found in your in-game showcase!
 '142': Hãy chọn một nguyên tố
 '143': You are not the issuer of this command
 '144': Tóm tắt hồ sơ
@@ -299,8 +299,8 @@
 '282': Go back
 '283': Or enter your UID in the options
 '284': Invalid account
-'285': This is an account without the main character
-'286': Invalid UID
+'285': ''
+'286': UID is invalid or not found in enka.network
 '287': Please turn on the character showcase toggle in-game
 '288': Player level
 '289': World level
@@ -567,7 +567,7 @@
 '508': Search anything genshin related
 '509': query
 '510': Sumeru
-'511': ''
+'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
 '512': |-
   • Notify you when your parametric transformer is ready
   • 1 notification per day
@@ -577,11 +577,11 @@
 '516': Realm currency threshold
 '517': Realm currency reminder disabled
 '518': Realm currency is almost full!
-'519': The Enka API is probably down right now, please wait patiently until it's back
+'519': '|- [Enka.network](https://enka.network/) is currently down, please try again later. Check their [twitter](https://twitter.com/EnkaNetwork) for updates.'
 '520': Dendroculus
 '521': Remove account data
 '522': Account data removed
-'523': ''
+'523': Enka.network API error
 '524': ''
 '525': Spread
 '526': Aggravate
