@@ -84,7 +84,7 @@ class Schedule(commands.Cog):
             await asyncio.create_task(self.update_game_data())
             await asyncio.create_task(self.update_card_data())
             await asyncio.create_task(self.backup_database())
-            if now.day in [3, 19]:
+            if now.day in [3, 18]:
                 await asyncio.create_task(self.generate_abyss_json())
 
         if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
@@ -116,6 +116,9 @@ class Schedule(commands.Cog):
         accounts = await self.get_schedule_users()
 
         for account in accounts:
+            if account.china:
+                continue
+            
             client = account.client
             client.lang = "en-us"
 
