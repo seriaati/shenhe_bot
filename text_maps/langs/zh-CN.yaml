@@ -576,7 +576,9 @@
 '516': 洞天宝钱阀值
 '517': 洞天宝钱提醒关闭
 '518': 洞天宝钱要满了！
-'519': '|- [Enka.network](https://enka.network/) is currently down, please try again later. Check their [twitter](https://twitter.com/EnkaNetwork) for updates.'
+'519': |-
+  [Enka.network](https://enka.network/) is currently down, please try again later.
+  Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
 '520': 草神瞳
 '521': 删除账号资料
 '522': 账号资料删除成功
