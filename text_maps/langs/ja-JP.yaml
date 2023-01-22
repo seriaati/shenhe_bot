@@ -576,7 +576,9 @@
 '516': 洞天宝銭通知のしきい値
 '517': 洞天宝銭リマインダーは無効になっています
 '518': 洞天宝銭が溢れそうです！！
-'519': '|- [Enka.network](https://enka.network/) is currently down, please try again later. Check their [twitter](https://twitter.com/EnkaNetwork) for updates.'
+'519': |-
+  [Enka.network](https://enka.network/) is currently down, please try again later.
+  Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
 '520': 草神の瞳
 '521': アカウントデータを削除
 '522': アカウントデータの削除が完了しました
