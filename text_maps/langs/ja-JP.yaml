@@ -147,7 +147,7 @@
   Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
 '139': キャラクターラインナップ
 '140': ラインナップの選択
-'141': アカウントデータが見つかりません！
+'141': No character found in your in-game showcase!
 '142': 元素を選択
 '143': あなたはこのコマンドの実行者ではありません
 '144': プロフィール概要
@@ -299,8 +299,8 @@
 '282': 戻る
 '283': または、オプションにUIDを入力してください
 '284': 無効なアカウント
-'285': メインキャラクターがいないアカウントです
-'286': 無効なUID
+'285': ''
+'286': UID is invalid or not found in enka.network
 '287': ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
 '288': プレイヤーレベル
 '289': 世界ランク
@@ -566,7 +566,7 @@
 '508': 原神に関すること を検索してくたさい
 '509': クエリ
 '510': スメール
-'511': ''
+'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
 '512': |-
   • 参量物質変化器の準備ができたときに通知します
   • 1日あたり1通知
@@ -576,11 +576,11 @@
 '516': 洞天宝銭通知のしきい値
 '517': 洞天宝銭リマインダーは無効になっています
 '518': 洞天宝銭が溢れそうです！！
-'519': 現在、Enka APIがダウンしていると思われますので、復旧まで今しばらくお待ちください。
+'519': '|- [Enka.network](https://enka.network/) is currently down, please try again later. Check their [twitter](https://twitter.com/EnkaNetwork) for updates.'
 '520': 草神の瞳
 '521': アカウントデータを削除
 '522': アカウントデータの削除が完了しました
-'523': ''
+'523': Enka.network API error
 '524': ''
 '525': 草激化
 '526': 超激化
