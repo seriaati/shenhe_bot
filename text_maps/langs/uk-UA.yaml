@@ -131,7 +131,7 @@
   • If any text is not translated yet, shenhe will respond to you with English
   • Names of genshin characters, weapons, and other game elements will be translated automatically
   • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
-'126': Automatic promo code redemption
+'126': Auto code redemption
 '127': Code redemption failed
 '128': Language
 '129': Mondstat
@@ -300,7 +300,9 @@
 '282': Go back
 '283': Or enter your UID in the options
 '284': Invalid account
-'285': ''
+'285': |-
+  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  • You can also redeem codes manually using </redeem:1044926380456017924>
 '286': UID is invalid or not found in enka.network
 '287': Please turn on the character showcase toggle in-game
 '288': Player level

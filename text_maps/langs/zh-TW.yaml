@@ -299,7 +299,9 @@
 '282': 返回
 '283': 或直接輸入你的 UID
 '284': 無效帳號
-'285': ''
+'285': |-
+  • 自動兌換在 [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes) 找到的原神兌換碼
+  • 你也可以透過 </redeem:1044926380456017924> 手動兌換兌換碼
 '286': UID 無效或無法在 enka.network 中找到
 '287': 請在遊戲中打開「顯示角色詳情」
 '288': 玩家等級
