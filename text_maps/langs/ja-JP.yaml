@@ -131,7 +131,7 @@
   • 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
   • 申鶴の翻訳に興味がありますか？[crowdin](https://crowdin.com/project/shenhe-bot)をチェックしてください！
 
-'126': Auto code redemption
+'126': 自動交換コード引き換え
 '127': コードの引き換えに失敗しました
 '128': 言語設定
 '129': モンド
@@ -144,10 +144,10 @@
 '136': アカウントを選択
 '137': 通知
 '138': |-
-  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
+  </remind:1044926380242120753> 以外の申鶴からのDMをオフにします。
 '139': キャラクターラインナップ
 '140': ラインナップの選択
-'141': No character found in your in-game showcase!
+'141': ゲーム内のキャラクター展示にキャラクターが見つかりませんでした！
 '142': 元素を選択
 '143': あなたはこのコマンドの実行者ではありません
 '144': プロフィール概要
@@ -229,8 +229,7 @@
 '209': '例: モラ'
 '210': '{item}の数量'
 '211': |-
-  Don't want to see this message again? Use /settings
-  Don't want auto check-in anymore? Use /claim
+  このメッセージを再び表示したくない場合は、/settings を使用してください。これ以上自動チェックインをしたくない場合は、/claim を使用してください。
 '212': ToDo リストよりも多くのアイテムを削除することはできません。
 '213': 氷元素
 '214': 岩元素
