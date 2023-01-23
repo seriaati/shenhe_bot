@@ -19,6 +19,6 @@ python-dotenv==0.21.0
 python_dateutil==2.8.2
 pytz==2022.7
 PyYAML==6.0
-sentry_sdk==1.12.1
+sentry_sdk==1.14.0
 six==1.16.0
 uvloop==0.17.0
