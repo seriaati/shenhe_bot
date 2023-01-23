@@ -98,6 +98,14 @@ async def get_user_notification(user_id: int, pool: asqlite.Pool) -> bool:
         return False
     return True
 
+async def get_user_auto_redeem(user_id: int, pool: asqlite.Pool) -> bool:
+    async with pool.acquire() as db:
+        async with db.execute("SELECT auto_redeem FROM user_settings WHERE user_id = ?", (user_id,)) as c:
+            mode = await c.fetchone()
+    if mode and mode[0] == 1:
+        return True
+    return False
+
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8 timezone."""
     return datetime.now()

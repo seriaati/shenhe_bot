@@ -6,6 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
+from apps.genshin.find_codes import find_codes
 
 import asqlite
 import genshin
@@ -500,6 +501,82 @@ class Schedule(commands.Cog):
                 db.get_connection().backup(backup.get_connection())
 
         log.info("[Schedule][Backup] Ended")
+
+    @schedule_error_handler
+    async def redeem_codes(self):
+        """Auto-redeems codes for all Shenhe users that have Cookie registered"""
+        log.info("[Schedule][Redeem Codes] Start")
+
+        codes = await find_codes()
+
+        log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
+
+        async with self.bot.pool.acquire() as db:
+            async with db.execute("CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)") as c:
+                await c.execute("SELECT code FROM redeem_codes")
+                for row in c.get_cursor():
+                    if row[0] in codes:
+                        codes.remove(row[0])
+
+                if not codes:
+                    return
+                
+                users: List[ShenheAccount] = []
+                await c.execute("SELECT user_id FROM user_settings WHERE auto_redeem = 1")
+                for row in c.get_cursor():
+                    users.append(await get_shenhe_account(row[0], self.bot))
+
+        for index, user in enumerate(users):
+            locale = user.user_locale or "en-US"
+            embed = default_embed(text_map.get(126, locale))
+            value = ""
+
+            for code in codes:
+                success = False
+
+                try:
+                    await user.client.redeem_code(code, user.uid)
+                except genshin.errors.InvalidCookies:
+                    value = text_map.get(36, locale)
+                except genshin.errors.RedemptionClaimed:
+                    value = text_map.get(106, locale)
+                except genshin.errors.RedemptionCooldown:
+                    await asyncio.sleep(10)
+                    try:
+                        await user.client.redeem_code(code, user.uid)
+                    except:
+                        value = text_map.get(127, locale)
+                except genshin.errors.RedemptionException as e:
+                    value = e.msg
+                except Exception as e:
+                    value = f"{type(e)} {e}"
+                else:
+                    success = True
+                    value = text_map.get(109, locale)
+
+                await asyncio.sleep(5)
+
+                embed.add_field(
+                    name=f"{'✅' if success else '⛔'} {code}",
+                    value=value,
+                )
+
+            try:
+                await user.discord_user.send(embed=embed)  # type: ignore
+            except Forbidden:
+                pass
+
+            await asyncio.sleep(5)
+            if index % 100 == 0:
+                await asyncio.sleep(30)
+
+        async with self.bot.pool.acquire() as db:
+            for code in codes:
+                await db.execute("INSERT INTO redeem_codes (code) VALUES (?)", (code,))
+
+            await db.commit()
+
+        log.info("[Schedule][Redeem Codes] Done")
 
     @schedule_error_handler
     async def claim_reward(self):
