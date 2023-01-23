@@ -110,7 +110,7 @@
 '107': Неправильний код
 '108': Код
 '109': Код успішно активований
-'110': Summer event data not found
+'110': Дані літнього заходу не знайдено
 '111': Архіпелаг золотого яблука
 '112': Точки телепортації Waverider розблоковані
 '113': Точки телепортацій розблоковано
@@ -121,16 +121,16 @@
 '118': Дослідження королівства
 '119': Час на виконання
 '120': Successfully challenged
-'121': times
+'121': рази(ів)
 '122': Unleashed elemental skill
-'123': Custom UID searched
-'124': Back to default
+'123': Пошук користувацьких UID
+'124': Повернутися до налаштувань за замовчуванням
 '125': |-
-  • By default, shenhe responds to you with the same language your discord uses
-  • Changing language will override the default language
-  • If any text is not translated yet, shenhe will respond to you with English
-  • Names of genshin characters, weapons, and other game elements will be translated automatically
-  • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  • За замовчуванням, Shenhe відповідає на вас тією ж мовою, яку ваш discord використовує
+  • Зміна мови замінить стандартну мову
+  • Якщо будь-який текст ще не перекладений стенавлі відгукнуться на вас англійською мовою
+  • Імена Genshin персонажів, зброя, та інші ігрові елементи будуть перекладені автоматично
+  • Зацікавлені в перекладі Shenhe на вашу мову? Погляньте на [crowdin](https://crowdin. сторінка om/project/shenhe-bot)
 '126': Auto code redemption
 '127': Code redemption failed
 '128': Language
