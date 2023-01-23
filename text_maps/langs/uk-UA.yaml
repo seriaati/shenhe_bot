@@ -120,7 +120,7 @@
 '117': Літня пам'ять
 '118': Дослідження королівства
 '119': Час на виконання
-'120': Successfully challenged
+'120': Виклик успішно здійснений
 '121': рази(ів)
 '122': Unleashed elemental skill
 '123': Пошук користувацьких UID
@@ -131,26 +131,26 @@
   • Якщо будь-який текст ще не перекладений стенавлі відгукнуться на вас англійською мовою
   • Імена Genshin персонажів, зброя, та інші ігрові елементи будуть перекладені автоматично
   • Зацікавлені в перекладі Shenhe на вашу мову? Погляньте на [crowdin](https://crowdin. сторінка om/project/shenhe-bot)
-'126': Auto code redemption
-'127': Code redemption failed
+'126': Автоматичне погашення коду
+'127': Збій активації коду
 '128': Мова
 '129': Мондштадт
 '130': Лі Юе
 '131': Інадзума
 '132': Мені теж!
 '133': Спокута знаходиться на перезаряджені. Повторіть спробу пізніше
-'134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
-'135': There was an error
-'136': Select an account
-'137': Notification
+'134': Неправильний час? Додайте свій UID за допомогою /accounts, щоб Shenhe визначив, на якому сервері ви граєте
+'135': Сталася помилка
+'136': Оберіть обліковий запис
+'137': Сповіщення
 '138': |-
-  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
-'139': Character Lineup
-'140': Select a lineup scenario
-'141': No character found in your in-game showcase!
-'142': Select an element
-'143': You are not the issuer of this command
-'144': Profile overview
+  Вимкніть особисті повідомлення, які надсилає Shenhe, окрім </remind:1044926380242120753>.
+'139': Розташування персонажу
+'140': Виберіть сценарій розкладу
+'141': На вашій ігровій вітрині не знайдено персонажа!
+'142': Оберіть елемент
+'143': Ви не є власником, цієї команди
+'144': Огляд профілю
 '145': Вигляд персонажа
 '146': Поверх {a}
 '147': Час роботи
@@ -172,37 +172,37 @@
 '154': За весь час
 '155': DM will stop after this number of times
 '156': Choosing a character that already has notification ON will remove its notification
-'157': Choose a character
-'158': There are currently no notifications set for any characters
-'159': Current characters
+'157': Обери персонажа
+'158': Наразі немає жодного набору сповіщень для будь-якого персонажу
+'159': Поточні персонажі
 '160': Least runs taken to full clear abyss
 '161': Choosing this character will turn OFF its notifications
-'162': Build
-'163': Choose a build
-'164': builds
+'162': Збірка
+'163': Обрати збірку
+'164': збірки
 '165': |-
-  This user hasn't registered their account yet
-  /register to register
-'166': User not found
-'167': "{name}'s UID"
-'168': current level
-'169': Character {level_type}
-'170': 'For Example: {a}'
+  Користувач ще не зареєстрував свій обліковий запис в Shenhe використайте: 
+  /register для реєстрації
+'166': Користувача не знайдено в базі
+'167': "{name} UID"
+'168': поточний рівень
+'169': Персонаж {level_type}
+'170': 'Для прикладу: {a}'
 '171': Auto attack target (A) {level_type}
-'172': Level needs to be between {a} and {b}
-'173': Elemental skill (E) {level_type}
-'174': Elemental burst (Q) {level_type}
-'175': Add to todo list
-'176': Page {num}
+'172': Рівень повинен бути між {a} і {b}
+'173': Елементальне вміння (E) {level_type}
+'174': Елементальний вибух (Q) {level_type}
+'175': Додати до списку завдань
+'176': Сторінка {num}
 '177': Chamber {a}
-'178': Use </todo:1020188057628065863> to view your todo list
-'179': Success
-'180': Choose a weapon
-'181': Input calculation data
+'178': Використовуйте </todo:1020188057628065863> для перегляду вашого списку завдань
+'179': Успішно
+'180': Обрати зброю
+'181': Дані введеного розрахунку
 '182': target level
-'183': Character level
-'184': Use the {command} command to calculate the number of materials needed to level up this character
-'185': Weapon {level_type}
+'183': Рівень персонажа
+'184': Використовуйте команду {command} для обчислення кількості матеріалів, необхідних для підвищення цього персонажу
+'185': Зброя {level_type}
 '186': "wins/runs"
 '187': Please enter numbers only
 '188': Use the {command} command to calculate the number of materials needed to level up this weapon
@@ -244,61 +244,61 @@
 '221': January
 '222': February
 '223': March
-'224': April
-'225': May
-'226': June
-'227': July
-'228': August
-'229': September
-'230': October
-'231': November
-'232': December
-'234': Monday
-'235': Tuesday
-'236': Wednesday
-'237': Thursday
-'238': Friday
-'239': Saturday
-'240': Sunday
+'224': Квітень
+'225': Травень
+'226': Червень
+'227': Липень
+'228': Серпень
+'229': Вересень
+'230': Жовтень
+'231': Листопад
+'232': Грудень
+'234': Понеділок
+'235': Вівторок
+'236': Середа
+'237': Четвер
+'238': П'ятниця
+'239': Субота
+'240': Неділя
 '250': farmable items
-'251': Achievement leaderboard
-'252': The Shenhe leaderboard
-'253': Compete with other Shenhe users and try to get the highest ranks in different categories!
-'254': Use /leaderboard to view the leaderboard
-'255': Comfort
-'256': Creation time
-'257': Trust
+'251': Таблиця лідерів досягнень
+'252': Таблиця лідерів Shenhe
+'253': Змагайтеся з іншими користувачами Shenhe і спробуйте отримати найвищі ранги в різних категоріях!
+'254': Використовуйте /leaderboard щоб переглянути таблицю лідерів
+'255': Комфорт
+'256': Дата створення
+'257': Довіра
 '258': HP
 '259': HP%
-'260': Atk.
-'261': Atk.%
-'262': Def.
-'263': Def.%
-'264': Crit Rate
-'265': Crit DMG
+'260': Атака.
+'261': Атака%
+'262': Захист.
+'263': Захист.%
+'264': Оцінка кріта
+'265': Критичне пошкодження
 '266': Elem. Mastery
 '267': Energy Recharge
-'268': Base HP
-'269': Base Atk.
-'270': Base Def.
-'271': Healing Bonus
+'268': Базове HP
+'269': Базова Атака.
+'270': Базовий захист.
+'271': Бонус Лікування
 '272': Physic DMG Bonus
 '273': Elem. DMG Bonus
-'274': Invalid image URL
-'275': Custom Image
+'274': Некоректний URL зображення
+'275': Своє зображення
 '276': |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 25 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
-  • Alternatively, upload an image using </img-upload:1041966109533929522>
-'277': Current Image
-'278': You have reached the limit of images you can have for this character (25)
-'279': No custom image set for this character
-'280': Base Speed
-'281': Speed%
-'282': Go back
-'283': Or enter your UID in the options
+  • Ви можете встановити власні зображення для карток персонажів у </profile:1020580644419551336>
+  • Ви можете мати до 25 зображень для кожного персонажа
+  • Надайте URL-адресу зображення, гарний інструмент для використання [imgur](https://imgur.com/)
+  • Використовуйте [This](https://croppola.com/), щоб обрізати зображення, виберіть співвідношення 2,64:1
+  • Або завантажте зображення за допомогою </img-upload:1041966109533929522>
+'277': Поточне зображення
+'278': Ви досягли межі кількості зображень, які можете використати для цього персонажа (25)
+'279': Немає користувацької картинки для цього персонажу
+'280': Базова швидкість
+'281': Швидкість%
+'282': Повернутися назад
+'283': Або введіть свій UID у налаштуваннях
 '284': Invalid account
 '285': |-
   • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
@@ -348,74 +348,74 @@
 '328': Plunging Atk.
 '329': Calculating damage...
 '330': This requires around 5 to 10 seconds
-'331': No reaction
+'331': Немає реакції
 '332': Melt
 '333': Vaporize
 '334': Avg. DMG
 '335': Non-Crit DMG
 '336': Crit Hit DMG
-'337': Select elemental reaction
+'337': Виберіть елементарну реакцію
 '338': No team melee infusion
-'339': Pyro infusion
-'340': Cryo infusion
-'341': Bennett C6
+'339': Інфузія Піро
+'340': Інфузія Кріо
+'341': Беннетт С6
 '342': Chongyun Skill
 '343': Select team melee infusion
 '344': Select teammates
-'345': Team
-'346': Conditions
-'347': Effects
+'345': Команда
+'346': Умови
+'347': Ефекти
 '348': Calculate Damage
 '349': ''
 '350': melt
 '351': vaporize
 '352': Authkey URL
-'353': Importing wish history
-'354': Please paste the link here
-'355': Please wait while Shenhe is processing your wish history...
-'356': Successfully imported wish history
+'353': Імпорт історії побажань
+'354': Будь ласка, вставте посилання тут
+'355': Будь ласка, зачекайте поки Shenhe обробляє ваші побажання...
+'356': Імпорт історії бажань успішно завершено
 '357': Candace Q
 '358': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will copied to your clipboard
-  6. Click the submit button and paste the link to the textbox that pops up
-'359': Importing wish history using your android phone
-'360': Hydro infusion
-'361': Choose your information source
+  1. Відкрийте вплив Genshin на цьому комп'ютері (якщо ви використовуєте кілька облікових записів, перезапустіть гру)
+  2. Відкрийте історію побажань в грі і зачекайте поки вона завантажиться
+  3. Натисніть WIN на клавіатурі, потім шукайте Powershell
+  4. Натисніть Powershell, потім скопіюйте та вставте скрипт нижче до Powershell
+  5. Натисніть ENTER, і посилання буде скопійоване в буфер обміну
+  6. Натисніть кнопку Надіслати і вставте посилання в текстове поле, що спливає
+'359': Імпорт історії побажань з використанням телефону Android
+'360': Інфузія гідро
+'361': Виберіть джерело інформації
 '362': |-
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Click the submit button and paste the link to the textbox that pops up
-'363': The link you have provided is invalid
-'364': Video Tutorial
-'365': Choose your platform
+  1. Завантажити потік у App Store [here](https://apps.apple.com/app/stream/id1312141691)
+  2. Відкрийте додаток, потім дозвольте VPN в налаштуваннях системи (Налаштування > Загальні > VPN)
+  3. Встановіть CA (натисніть Sniff зараз на Stream App > Встановити CA > Виринаюче вікно з'явиться і виберіть дозволити > Зараз CA завантажене
+  4. Перейдіть до Налаштувань > Загальні > VPN та керування пристроями > Натисніть на Stream Generated CA та встановіть
+  5. Відкрийте Genshin а потім відкрийте екран бажання, і залишитися на цій сторінці
+  6. Повернувшись до розширеного додатку > Оберіть я довірений> Торкніться кнопки Сніг Тепер
+  7. Повернемося до впливу Genshin та відкрийте сторінку історії бажань
+  8. Чекати на сторінку завантаження
+  9. Назад до програми Stream > Stop Sniffing
+  10. Натисніть Закуп Sniff History > Виберіть запит, який закінчується .json (посилання починається з https://hk4e-api-os.mihoyo.com/)
+  11. Натисніть вкладку "Замовити", потім скопіюйте посилання
+  12. Натисніть кнопку "Надіслати і вставте посилання до текстового поля, що спливає
+'363': Надане посилання недійсне
+'364': Відеоуроки
+'365': Виберіть платформу
 '366': Your P.T. is ready to use!
-'367': This UID has no player data in it
-'368': Use </wish import:1000187021635104890> to import your wish history
-'369': Wish history
-'370': The last 5-star character you pulled was a standard character
-'371': The last 5-star character you pulled was a banner character
-'372': Wish luck analysis
-'373': Your luck is better than **{luck}%** of players
+'367': Цей UID не має даних гравця в ньому
+'368': Використовуйте </wish import:1000187021635104890>, щоб імпортувати вашу історію побажань
+'369': Історія бажань
+'370': Останній 5-зірковий персонаж, якого ви виграли, був стандартним
+'371': Останній 5-зірковий персонаж, якого ви виграли, був персонажа з банера
+'372': Аналіз удачі
+'373': Ваша удача краща за **{luck}%** з гравців
 '374': Choosing this filter will remove it
-'375': View ongoing Genshin banners
-'376': There are currently no ongoing banners
-'378': Method 1
+'375': Постійні банери Genshin
+'376': Наразі немає поточних банерів
+'378': Спосіб 1
 '379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
 '380': Your current number of five-star pity is **{a}**
-'381': "Ends at: {time}"
+'381': "Завершується: {time}"
 '382': Wishing to pull
 '383': UP 5-star characters
 '384': It is estimated that you will pull a five-star banner character in **{a}** pulls
@@ -471,55 +471,55 @@
 '412': Manage your custom images in </settings:1020580644478275614>
 '413': Add image
 '414': 'View real-time notes: Current resin, pot, expedition status (need /register)'
-'415': user
-'416': Check other user's data
-'417': 'View genshin stats: Active days, oculis, number of chests'
-'418': A user's genshin UID
+'415': користувач
+'416': Перевіряти дані інших користувачів
+'417': 'Переглянути статистику Genshin: активні дні, окули, кількість скринь'
+'418': Genshin UID користувача
 '419': View area exploration rates
 '420': View info about your Hoyolab daily check-in rewards
 '421': View all owned characters (need /register)
 '422': View traveler's diary (need /register)
-'423': month
-'424': Choose a month to view
-'425': This month
+'423': місяць
+'424': Виберіть місяць для перегляду
+'425': Цього місяця
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
-'429': type
-'430': phase
-'431': The type of data you wish to view
+'429': тип
+'430': фаза
+'431': Тип даних, які ви бажаєте переглянути
 '432': Which abyss phase?
-'433': Detailed
+'433': Докладно
 '434': View the list of current beta items in Genshin
-'435': This phase
-'436': Last phase
+'435': Ця фаза
+'436': Остання фаза
 '437': Beta Items
 '438': Set notification features
-'439': function
-'440': toggle
-'441': Resin notification (need /register)
+'439': функція
+'440': перемикнути
+'441': Повторне сповіщення (вимагає /register)
 '442': Talent notification
-'443': Check privacy settings
+'443': Перевірити налаштування конфіденційності
 '444': You can use this command with /search to get more information about a beta item
 '445': There are currently no beta items, check back later
 '446': View farmable items today
-'447': 'View character builds: Weapons, artifacts, talent levels, stats'
-'448': Search a user's UID
-'449': View characters' artifacts, stats, weapons, and talents, and calculate damage
-'450': Redeem gift codes (need /register)
-'451': code
-'452': View ongoing events in genshin
-'453': Global
-'454': Read More
-'455': Server
-'456': Load
-'457': You are currently not in the leaderboard
-'458': character
+'447': 'Перегляд персонажів: зброя, артефакти, рівні талантів, статистика'
+'448': Пошук UID користувача
+'449': Перегляд артефактів персонажів, статистики, зброї, талантів і обчислення пошкоджень
+'450': Активувати подарункові коди (потребує /register)
+'451': код
+'452': Переглядати поточні події в геншині
+'453': Глобальний
+'454': Читати більше
+'455': Сервер
+'456': Загрузити
+'457': Наразі ви не в таблиці лідерів
+'458': персонаж
 '459': View past genshin event stats
-'460': Calculate materials needed for upgrading a character
-'461': sync
-'462': sync with in-game data (autofill the levels)
-'463': Main stat
+'460': Розрахунок матеріалів, необхідних для прокачування персонажу
+'461': синхронізувати
+'462': синхронізація з ігровими даними (автозаповнення рівнів)
+'463': Основна статистика
 '464': Sub stat
 '465': Calculate materials needed for upgrading a weapon
 '466': Developers that helped me
@@ -557,69 +557,69 @@
   Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
   I really appreciate all of you and I hope you enjoy using Shenhe.
   DM me for any feature requests, imporvements, and bug reports!
-'498': View profile
-'499': View all characters
-'500': An error occured while trying to do daily check-in
-'501': Select a chapter of the book
-'502': Run calculator
+'498': Переглянути профіль
+'499': Переглянути всіх персонажів
+'500': Сталася помилка при спробі виконати щоденний вхід
+'501': Виберіть розділ книги
+'502': Запустити калькулятор
 '503': Number of guilds
 '504': 'Made by seria#5334, DM me if you have any questions'
-'505': An error has occured while trying to send you a notification
-'506': Last month
+'505': Сталася помилка при спробі відправки вам сповіщення
+'506': За минулий місяць
 '507': How many 5-star banner weapons do you wish to pull?
 '508': Search anything genshin related
 '509': query
-'510': Sumeru
+'510': Сумеру
 '511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
 '512': |-
   • Notify you when your parametric transformer is ready
   • 1 notification per day
 '513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
 '514': Realm currency reminder
-'515': Notification settings
+'515': Налаштування сповіщень
 '516': Realm currency threshold
 '517': Realm currency reminder disabled
 '518': Realm currency is almost full!
 '519': |-
-  [Enka.network](https://enka.network/) is currently down, please try again later.
-  Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
-'520': Dendroculus
-'521': Remove account data
-'522': Account data removed
-'523': Enka.network API error
+  [Enka.network](https://enka.network/) зараз недоступна, будь ласка, повторіть спробу пізніше.
+  Перевірте їх [twitter](https://twitter.com/EnkaNetwork) для оновлень.
+'520': Дендрокул
+'521': Вилучити дані облікового запису
+'522': Дані облікового запису видалені
+'523': Помилка API Enka.network
 '524': ''
-'525': Spread
+'525': Різниця
 '526': Aggravate
-'527': Hydro infusion
+'527': Інфузія гідро
 '528': ''
 '529': Item type
-'530': Sources
-'531': Weapon effect
-'532': "{num} custom images"
-'533': Error while calculating damage
-'534': View and change your user settings in Shenhe
+'530': Джерела
+'531': Ефект зброї
+'532': "{num} користувацькі зображення"
+'533': Помилка при розрахунку пошкоджень
+'534': Переглянути та змінити налаштування вашого користувача в Shenhe
 '535': Appearance
-'536': Dark mode
-'537': Light mode
+'536': Темний режим
+'537': Світлий режим
 '538': |
-  • This setting changes the appearance of your cards
-  • If there is no dark mode version of the card, it will be displayed in light mode
-  • Default is light mode
-  • See below for an example
-'539': Settings
+  • Це змінює зовнішній вигляд ваших карт
+  • Якщо немає темної версії карти, він буде відображатися в світлому режимі
+  • Світлий режим
+  • Дивитися нижче приклад
+'539': Налаштування
 '540': |-
-  • In some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
-'541': Developer Messages
-'542': Item not found
-'543': Data is from cache
-'544': Manage your accounts in Shenhe
-'545': You don't have any account registered
+  • У деяких випадках, я відправляю сповіщення за допомогою Shenhe
+  • Більша частина часу, вони з'являються, коли є критичні питання з Shenhe, або є оновлення
+'541': Повідомлення для розробників
+'542': Товар не знайдено
+'543': Дані з кешу
+'544': Керування обліковими записами у Shenhe
+'545': Ви не маєте жодного облікового запису
 '546': |-
-  • You can register multiple accounts in Shenhe
-  • You can switch between accounts using the dropdown menu
+  • Ви можете зареєструвати кілька облікових записів у Shenhe
+  • Ви можете переключатися між обліковими записами за допомогою випадаючого меню
 '547': TW, HK, MO
-'548': Celestia
+'548': Целестія
 '549': Irminsul
 '550': America
 '551': Europe
@@ -664,23 +664,23 @@
   One of this user's accounts is linked to a Cookie,
   but the current one is only linked to a UID
 '582': Resin notification
-'583': Select a weekday
+'583': Виберіть день тижня
 '584': Realm currency notification
 '585': Test DM
 '586': Notify you when your resin exceeds a certain amount
 '587': Can be used to ugprade
-'588': View on Enka.network
-'589': Refreshes {in_x_seconds}
+'588': Переглянути в Enka.network
+'589': Оновлює {in_x_seconds}
 '590': |-
   • Notify you when a character's talent domain is farmable
   • Selecting a character that already has notification enabled will disable it
-'591': Current settings
+'591': Поточні налаштування
 '592': |-
   • Set reminders to do the homework provided by Genshin on-time
   • Reminder settings are separate for each account you have registered, except talent and weapon notification
   • Click on the buttons below for more information on each feature
-'593': Reminders
-'594': Change settings
+'593': Нагадування
+'594': Змінити параметри
 '595': Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
 '596': Test it out!
 '597': Shenhe has failed to DM you
