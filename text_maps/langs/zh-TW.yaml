@@ -131,7 +131,7 @@
   • 如果任何一個字串還尚未被翻譯，申鶴將會使用英文
   • 原神的遊戲元素，像是角色、武器名稱等將會自動翻譯
   • 有興趣將申鶴翻譯為你會說的語言嗎？歡迎查看申鶴的 [crowdin](https://crowdin.com/project/shenhe-bot) 頁面
-'126': Auto code redemption
+'126': 自動兌換兌換碼
 '127': 兌換碼兌換失敗
 '128': 語言
 '129': 蒙德
@@ -300,8 +300,8 @@
 '283': 或直接輸入你的 UID
 '284': 無效帳號
 '285': |-
-  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  • You can also redeem codes manually using </redeem:1044926380456017924>
+  • 自動兌換在 [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes) 找到的原神兌換碼
+  • 你也可以透過 </redeem:1044926380456017924> 手動兌換兌換碼
 '286': UID 無效或無法在 enka.network 中找到
 '287': 請在遊戲中打開「顯示角色詳情」
 '288': 玩家等級
