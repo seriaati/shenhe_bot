@@ -131,7 +131,7 @@
   • 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
   • 申鶴の翻訳に興味がありますか？[crowdin](https://crowdin.com/project/shenhe-bot)をチェックしてください！
 
-'126': 自動交換コード引き換え
+'126': Auto code redemption
 '127': コードの引き換えに失敗しました
 '128': 言語設定
 '129': モンド
@@ -299,7 +299,9 @@
 '282': 戻る
 '283': または、オプションにUIDを入力してください
 '284': 無効なアカウント
-'285': ''
+'285': |-
+  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  • You can also redeem codes manually using </redeem:1044926380456017924>
 '286': UID is invalid or not found in enka.network
 '287': ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
 '288': プレイヤーレベル
