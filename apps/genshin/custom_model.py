@@ -358,6 +358,7 @@ class TodoAction(str, Enum):
 class OriginalInfo(BaseModel):
     view: discord.ui.View
     embed: discord.Embed
+    children: List[discord.ui.Item]
     
     class Config:
         arbitrary_types_allowed = True

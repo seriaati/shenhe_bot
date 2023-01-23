@@ -13,11 +13,11 @@ from dotenv import load_dotenv
 
 from ambr.client import AmbrTopAPI
 from ambr.models import Character
-from apps.genshin.custom_model import ShenheBot
+from apps.genshin.custom_model import OriginalInfo, ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_elements.others import ManageAccounts, SettingsMenu, Feedback
+from UI_elements.others import Feedback, ManageAccounts, SettingsMenu
 from UI_elements.others.settings import CustomImage
 from utility.utils import default_embed
 
@@ -38,16 +38,28 @@ class OthersCog(commands.Cog, name="others"):
         description=_("View and change your user settings in Shenhe", hash=534),
     )
     async def settings(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
-        view = SettingsMenu.View(user_locale or i.locale)
-        view.author = i.user
-        embed = default_embed(message=text_map.get(534, i.locale, user_locale))
+        async with self.bot.pool.acquire() as db:
+            await db.execute(
+                "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT DO NOTHING",
+                (i.user.id,),
+            )
+            await db.commit()
+
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+
+        embed = default_embed(message=text_map.get(534, locale))
         embed.set_author(
-            name=f"⚙️ {text_map.get(539, i.locale, user_locale)}",
+            name=f"⚙️ {text_map.get(539, locale)}",
             icon_url=i.user.display_avatar.url,
         )
+        view = SettingsMenu.View(locale)
+
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
+        view.author = i.user
+        view.original_info = OriginalInfo(
+            view=view, embed=embed, children=view.children.copy()
+        )
 
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
@@ -121,7 +133,9 @@ class OthersCog(commands.Cog, name="others"):
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        embed = default_embed(self.bot.user.name if self.bot.user is not None else "申鶴 | Shenhe")
+        embed = default_embed(
+            self.bot.user.name if self.bot.user is not None else "申鶴 | Shenhe"
+        )
         delta_uptime = datetime.utcnow() - self.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)

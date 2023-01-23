@@ -121,10 +121,12 @@ class BaseView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.message: Optional[discord.Message | discord.InteractionMessage] = None
         self.author: Optional[discord.Member | discord.User] = None
+        self.original_info: Optional[OriginalInfo] = None
 
     async def interaction_check(self, i: discord.Interaction) -> bool:
         if self.author is None:
             return True
+        
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         if self.author.id != i.user.id:
             await i.response.send_message(
@@ -160,11 +162,16 @@ class BaseModal(discord.ui.Modal):
 
 class GoBackButton(discord.ui.Button):
     def __init__(self, original_info: OriginalInfo, **kwargs):
-        super().__init__(emoji=asset.back_emoji, **kwargs)
+        super().__init__(emoji=asset.back_emoji, row=2, **kwargs)
         self.original_embed = original_info.embed
         self.original_view = original_info.view
+        self.original_children = original_info.children
 
     async def callback(self, i: discord.Interaction):
+        self.original_view.clear_items()
+        for item in self.original_children:
+            self.original_view.add_item(item)
+            
         try:
             await i.response.edit_message(
                 embed=self.original_embed, view=self.original_view
