@@ -79,7 +79,7 @@
 '76': 找不到深境螺旋资料
 '77': 期别
 '78': 最深抵达
-'79': 挑战详情
+'79': Equipped by {character_name}
 '80': 单次最高伤害
 '81': 最多击杀
 '82': 最高承伤
@@ -828,3 +828,8 @@
 '731': 未找到祈愿资料
 '732': 渊月祝福
 '733': 渊月祝福
+'734': Flower of Life
+'735': Plume of Death
+'736': Sands of Eon
+'737': Goblet of Eonothem
+'738': Circlet of Logos
