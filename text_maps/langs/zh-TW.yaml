@@ -79,7 +79,7 @@
 '76': 找不到深境螺旋資料
 '77': 期別
 '78': 最深抵達
-'79': Equipped by {character_name}
+'79': '{character_name} 已裝備'
 '80': 單次最高傷害
 '81': 最多擊殺
 '82': 最高承傷
@@ -826,8 +826,8 @@
 '731': 未找到祈願資料
 '732': 淵月祝福
 '733': 淵月祝福
-'734': Flower of Life
-'735': Plume of Death
-'736': Sands of Eon
-'737': Goblet of Eonothem
-'738': Circlet of Logos
+'734': 生之花
+'735': 死之羽
+'736': 時之沙
+'737': 空之杯
+'738': 理之冠
