@@ -4,11 +4,10 @@ import os
 import platform
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import aiohttp
 import asqlite
-import genshin
 import sentry_sdk
 from cachetools import TTLCache
 from discord import Game, Intents, Interaction, Locale, Message, app_commands

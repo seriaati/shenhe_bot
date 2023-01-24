@@ -39,8 +39,7 @@ from apps.text_map.convert_locale import (to_ambr_top, to_enka, to_event_lang,
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
-from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound,
-                        NoPlayerFound, UIDNotFound)
+from exceptions import CardNotFound, ItemNotFound, UIDNotFound
 from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, Domain,
                                  EnkaProfile, EventTypeChooser, Leaderboard,
                                  Lineup, MeToo, ShowAllCharacters, UIDCommand)
