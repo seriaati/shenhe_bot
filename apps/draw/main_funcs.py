@@ -8,28 +8,13 @@ import genshin
 import matplotlib.pyplot as plt
 
 from ambr.models import Character, Domain, Material, Weapon
-from apps.draw.draw_funcs import (
-    abyss,
-    characters,
-    check,
-    diary,
-    farm,
-    lineup,
-    profile,
-    remind,
-    stats,
-    todo,
-    wish,
-)
+from apps.draw.draw_funcs import (abyss, artifact, characters, check, diary,
+                                  farm, lineup, profile, stats, todo, wish)
 from apps.draw.utility import calculate_time, download_images, extract_urls
-from apps.genshin.custom_model import (
-    CharacterUsageResult,
-    DrawInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-    UsageCharacter,
-    WishData,
-)
+from apps.genshin.custom_model import (CharacterUsageResult, DrawInput,
+                                       RunLeaderboardUser,
+                                       SingleStrikeLeaderboardUser,
+                                       UsageCharacter, WishData)
 
 
 @calculate_time
@@ -348,5 +333,17 @@ async def draw_lineup_card(
     await download_images(urls, input.session)
     func = functools.partial(
         lineup.card, input.dark_mode, input.locale, lineup_preview, character_id
+    )
+    return await input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_artifact_card(
+    input: DrawInput, art: enkanetwork.Equipments, character: enkanetwork.CharacterInfo
+) -> io.BytesIO:
+    urls = [art.detail.icon.url, character.image.icon.url]
+    await download_images(urls, input.session)
+    func = functools.partial(
+        artifact.draw_artifact, art, character, input.locale, input.dark_mode
     )
     return await input.loop.run_in_executor(None, func)
