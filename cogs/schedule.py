@@ -299,6 +299,7 @@ class Schedule(commands.Cog):
                         success = await self.notify_pt(n_user, locale)
 
                     if success:
+                        log.info(f"[Schedule][{notification_type}][{n_user.user_id}] Notification sent")
                         sent_num += 1
 
                         async with self.bot.pool.acquire() as db:
@@ -551,6 +552,7 @@ class Schedule(commands.Cog):
                 except Exception as e:
                     value = f"{type(e)} {e}"
                 else:
+                    log.info(f"[Schedule][Redeem Codes] Redeemed {code} for {user.discord_user.id}")
                     success = True
                     value = text_map.get(109, locale)
 
@@ -689,6 +691,8 @@ class Schedule(commands.Cog):
                 for row in c.get_cursor():
                     user_id = row[0]
                     item_list = row[1]
+                    
+                    log.info(f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})")
                     
                     uid = await get_uid(user_id, self.bot.pool)
                     uid_tz = get_uid_tz(uid)
