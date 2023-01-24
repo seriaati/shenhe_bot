@@ -79,7 +79,7 @@
 '76': No han sido encontrados datos del Espiral del Abismo
 '77': Fase lunar
 '78': Nivel máximo
-'79': Historial de desafíos
+'79': Equipped by {character_name}
 '80': Golpe único más fuerte
 '81': Más muertes
 '82': Más daño recibido
@@ -833,3 +833,8 @@
 '731': No wish data found
 '732': Blessing
 '733': Blessing of the Abyssal Moon
+'734': Flower of Life
+'735': Plume of Death
+'736': Sands of Eon
+'737': Goblet of Eonothem
+'738': Circlet of Logos
