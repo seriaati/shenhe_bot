@@ -174,9 +174,9 @@ class GoBackButton(discord.ui.Button):
             
         try:
             await i.response.edit_message(
-                embed=self.original_embed, view=self.original_view
+                embed=self.original_embed, view=self.original_view, attachments=[]
             )
         except discord.InteractionResponded:
             await i.edit_original_response(
-                embed=self.original_embed, view=self.original_view
+                embed=self.original_embed, view=self.original_view, attachments=[]
             )
