@@ -131,7 +131,7 @@
   • 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
   • 申鶴の翻訳に興味がありますか？[crowdin](https://crowdin.com/project/shenhe-bot)をチェックしてください！
 
-'126': Auto code redemption
+'126': 自動交換コード引き換え
 '127': コードの引き換えに失敗しました
 '128': 言語設定
 '129': モンド
@@ -144,10 +144,10 @@
 '136': アカウントを選択
 '137': 通知
 '138': |-
-  Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
+  </remind:1044926380242120753> 以外の申鶴からのDMをオフにします。
 '139': キャラクターラインナップ
 '140': ラインナップの選択
-'141': No character found in your in-game showcase!
+'141': ゲーム内のキャラクター展示にキャラクターが見つかりませんでした！
 '142': 元素を選択
 '143': あなたはこのコマンドの実行者ではありません
 '144': プロフィール概要
@@ -229,8 +229,7 @@
 '209': '例: モラ'
 '210': '{item}の数量'
 '211': |-
-  Don't want to see this message again? Use /settings
-  Don't want auto check-in anymore? Use /claim
+  このメッセージを再び表示したくない場合は、/settings を使用してください。これ以上自動チェックインをしたくない場合は、/claim を使用してください。
 '212': ToDo リストよりも多くのアイテムを削除することはできません。
 '213': 氷元素
 '214': 岩元素
@@ -300,9 +299,9 @@
 '283': または、オプションにUIDを入力してください
 '284': 無効なアカウント
 '285': |-
-  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  • You can also redeem codes manually using </redeem:1044926380456017924>
-'286': UID is invalid or not found in enka.network
+  • [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)で見つかった交換コードを自動で交換します
+  • </redeem:1044926380456017924>で手動で交換もできます
+'286': UID が無効か、enka.network で見つかりません
 '287': ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
 '288': プレイヤーレベル
 '289': 世界ランク
@@ -568,7 +567,7 @@
 '508': 原神に関すること を検索してくたさい
 '509': クエリ
 '510': スメール
-'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
+'511': 'キャッシュの変更によりキャッシュが消去されました。本当にデータが必要な場合は、seria#5334にDMしてください'
 '512': |-
   • 参量物質変化器の準備ができたときに通知します
   • 1日あたり1通知
@@ -579,8 +578,8 @@
 '517': 洞天宝銭リマインダーは無効になっています
 '518': 洞天宝銭が溢れそうです！！
 '519': |-
-  [Enka.network](https://enka.network/) is currently down, please try again later.
-  Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
+  [Enka.network](https://enka.network/) がダウンしています。後でもう一度お試しください。
+  アップデートについては、 [twitter](https://twitter.com/EnkaNetwork) をご確認ください。
 '520': 草神の瞳
 '521': アカウントデータを削除
 '522': アカウントデータの削除が完了しました
