@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import aiohttp
 import PIL
-from discord import ButtonStyle, File, Interaction, Locale, SelectOption
+from discord import ButtonStyle, File, Interaction, Locale, SelectOption, utils
 from discord.ui import Button, Select
 from pyppeteer import browser
 
@@ -12,7 +12,7 @@ from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import DrawInput, EnkaView
 from apps.text_map.text_map_app import text_map
-from exceptions import NoCharacterFound
+from exceptions import NeverRaised, NoCharacterFound
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
 from utility.utils import (default_embed, divide_chunks, error_embed,
@@ -133,6 +133,13 @@ class GoBack(Button):
 
 
 async def go_back_callback(i: Interaction, enka_view: EnkaView):
+    enka_view.clear_items()
+    for child in enka_view.original_children:
+        enka_view.add_item(child)
+    
+    for child in enka_view.children:
+        child.disabled = True # type: ignore
+    
     await i.response.edit_message(
         embed=default_embed()
         .set_author(
@@ -141,31 +148,19 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         )
         .set_image(url="https://i.imgur.com/AsxZdAu.gif"),
         attachments=[],
+        view=enka_view,
     )
-    overview = [
-        item
-        for item in enka_view.children
-        if isinstance(item, Button) and item.custom_id == "overview"
-    ][0]
-    set_custom_image = [
-        item
-        for item in enka_view.children
-        if isinstance(item, Button) and item.custom_id == "set_custom_image"
-    ][0]
-    calculate = [
-        item
-        for item in enka_view.children
-        if isinstance(item, Button) and item.custom_id == "calculate"
-    ][0]
-    overview.disabled = False
-    set_custom_image.disabled = False
-    calculate.disabled = False
+    
+    for child in enka_view.children:
+        child.disabled = False # type: ignore
 
     if enka_view.data.characters is None:
         raise NoCharacterFound
-    character = [
-        c for c in enka_view.data.characters if c.id == int(enka_view.character_id)
-    ][0]
+    
+    character = utils.get(enka_view.data.characters, id=int(enka_view.character_id))
+    if not character:
+        raise NeverRaised
+    
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(
