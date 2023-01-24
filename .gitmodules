@@ -10,6 +10,3 @@
 [submodule "GenshinData"]
 	path = GenshinData
 	url = https://github.com/Dimbreath/GenshinData
-[submodule "genshin-substat-lookup"]
-	path = genshin-substat-lookup
-	url = https://github.com/frzyc/genshin-substat-lookup
