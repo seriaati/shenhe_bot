@@ -78,7 +78,7 @@
 '76': 深境螺旋のデータが見つかりません
 '77': 淵月
 '78': 最高記録
-'79': 戦績
+'79': Equipped by {character_name}
 '80': 最大ダメージ
 '81': 最多撃破数
 '82': 受けた最大ダメージ
@@ -828,3 +828,8 @@
 '731': 祈願データが見つかりません
 '732': 祝福
 '733': 淵月の祝福
+'734': Flower of Life
+'735': Plume of Death
+'736': Sands of Eon
+'737': Goblet of Eonothem
+'738': Circlet of Logos
