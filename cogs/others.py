@@ -11,6 +11,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 from dotenv import load_dotenv
 
+import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character
 from apps.genshin.custom_model import OriginalInfo, ShenheBot
@@ -47,11 +48,7 @@ class OthersCog(commands.Cog, name="others"):
 
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
-        embed = default_embed(message=text_map.get(534, locale))
-        embed.set_author(
-            name=f"⚙️ {text_map.get(539, locale)}",
-            icon_url=i.user.display_avatar.url,
-        )
+        embed = default_embed(message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}")
         view = SettingsMenu.View(locale)
 
         await i.response.send_message(embed=embed, view=view)

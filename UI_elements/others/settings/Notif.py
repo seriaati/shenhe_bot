@@ -1,5 +1,5 @@
-from discord import ButtonStyle, Interaction, Locale, ui
-
+from discord import Interaction, Locale, ui, ButtonStyle
+import asset
 import config
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
@@ -19,7 +19,7 @@ class View(BaseView):
 class NotificationButton(ui.Button):
     def __init__(self, locale: Locale | str, toggle: int, current: int):
         super().__init__(
-            emoji="🔔" if toggle == 1 else "🔕",
+            emoji=asset.bell_outline if toggle == 1 else asset.bell_off_outline,
             label=text_map.get(99 if toggle == 1 else 100, locale),
             style=ButtonStyle.primary if current == toggle else ButtonStyle.secondary,
         )
