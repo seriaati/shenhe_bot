@@ -692,12 +692,12 @@ class Schedule(commands.Cog):
                     user_id = row[0]
                     item_list = row[1]
                     
-                    log.info(f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})")
-                    
                     uid = await get_uid(user_id, self.bot.pool)
                     uid_tz = get_uid_tz(uid)
                     if uid_tz != time_offset:
                         continue
+                    
+                    log.info(f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})")
                     
                     now = get_dt_now() + timedelta(hours=time_offset)
                     locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
