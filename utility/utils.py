@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from itertools import islice
 from typing import Dict, List
 
@@ -107,8 +107,8 @@ async def get_user_auto_redeem(user_id: int, pool: asqlite.Pool) -> bool:
     return False
 
 def get_dt_now() -> datetime:
-    """Get current datetime in UTC+8 timezone."""
-    return datetime.now()
+    """Get current datetime in UTC+8"""
+    return datetime.now(timezone(timedelta(hours=8)))
 
 def add_bullet_points(texts: List[str]) -> str:
     """Add bullet points to a list of texts."""
