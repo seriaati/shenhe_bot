@@ -4,7 +4,7 @@ import io
 import json
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 from apps.genshin.find_codes import find_codes
 
@@ -18,7 +18,7 @@ from discord.utils import find, format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Artifact, Character, Domain, Material, Weapon
+from ambr.models import Artifact, Character, CharacterUpgrade, Domain, Material, Weapon, WeaponUpgrade
 from apps.draw import main_funcs
 from apps.genshin.custom_model import (DrawInput, NotificationUser,
                                        ShenheAccount, ShenheBot)
@@ -95,12 +95,12 @@ class Schedule(commands.Cog):
                 21: -7,  # Europe
             }
             await asyncio.create_task(
-                self.weapon_talent_base_notifiction(
+                self.weapon_talent_base_notification(
                     "talent_notification", hour_dict[now.hour]
                 )
             )
             await asyncio.create_task(
-                self.weapon_talent_base_notifiction(
+                self.weapon_talent_base_notification(
                     "weapon_notification", hour_dict[now.hour]
                 )
             )
@@ -674,7 +674,7 @@ class Schedule(commands.Cog):
         )
 
     @schedule_error_handler
-    async def weapon_talent_base_notifiction(
+    async def weapon_talent_base_notification(
         self, notification_type: str, time_offset: int
     ):
         log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
@@ -683,6 +683,9 @@ class Schedule(commands.Cog):
             if notification_type == "weapon_notification"
             else "character_list"
         )
+        upgrade_cache: Dict[int, CharacterUpgrade | WeaponUpgrade] = {}
+        item_cache: Dict[int, Weapon | Character] = {}
+        
         async with self.bot.pool.acquire() as db:
             async with db.execute(
                 f"SELECT user_id, {list_name} FROM {notification_type} WHERE toggle = 1"
@@ -701,28 +704,34 @@ class Schedule(commands.Cog):
                     
                     now = get_dt_now() + timedelta(hours=time_offset)
                     locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
+                    
                     client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                     domains = await client.get_domain()
+                    today_domains = [d for d in domains if d.weekday == now.weekday()]
+                    
                     user = self.bot.get_user(user_id) or await self.bot.fetch_user(
                         user_id
                     )
+                    notified: Dict[str, Dict[str, Any]] = {}
+                    
                     item_list = ast.literal_eval(item_list)
-                    notified = {}
-                    today_domains = [d for d in domains if d.weekday == now.weekday()]
                     for item_id in item_list:
                         for domain in today_domains:
                             for reward in domain.rewards:
-                                if notification_type == "talent_notification":
-                                    upgrade = await client.get_character_upgrade(
-                                        str(item_id)
-                                    )
-                                else:
-                                    upgrade = await client.get_weapon_upgrade(
-                                        int(item_id)
-                                    )
-
-                                if upgrade is None or isinstance(upgrade, List):
-                                    continue
+                                upgrade = upgrade_cache.get(int(item_id))
+                                
+                                if upgrade is None:
+                                    if notification_type == "talent_notification":
+                                        upgrade = await client.get_character_upgrade(
+                                            str(item_id)
+                                        )
+                                    else:
+                                        upgrade = await client.get_weapon_upgrade(
+                                            int(item_id)
+                                        )
+                                    if not isinstance(upgrade, (CharacterUpgrade, WeaponUpgrade)):
+                                        continue
+                                    upgrade_cache[int(item_id)] = upgrade
 
                                 if reward in upgrade.items:
                                     if item_id not in notified:
@@ -734,15 +743,18 @@ class Schedule(commands.Cog):
                                         notified[item_id]["materials"].append(reward.id)
 
                     for item_id, item_info in notified.items():
-                        item = None
-                        if notification_type == "talent_notification":
-                            item = await client.get_character(item_id)
-                        elif notification_type == "weapon_notification":
-                            item = await client.get_weapon(int(item_id))
-                        if not isinstance(item, (Character, Weapon)):
-                            continue
+                        item = item_cache.get(int(item_id))
+                        
+                        if item is None:
+                            if notification_type == "talent_notification":
+                                item = await client.get_character(str(item_id))
+                            else:
+                                item = await client.get_weapon(int(item_id))
+                            if not isinstance(item, (Character, Weapon)):
+                                continue
+                            item_cache[int(item_id)] = item
 
-                        materials = []
+                        materials: List[Tuple[Material, str]] = []
                         for material_id in item_info["materials"]:
                             material = await client.get_material(material_id)
                             if not isinstance(material, Material):
@@ -759,13 +771,15 @@ class Schedule(commands.Cog):
                                 locale=locale,
                                 dark_mode=dark_mode,
                             ),
-                            materials,
+                            materials, # type: ignore
                             "",
                             draw_title=False,
                         )
                         fp.seek(0)
                         file = File(fp, "reminder_card.jpeg")
+                        
                         domain: Domain = item_info["domain"]
+                        
                         embed = default_embed()
                         embed.add_field(
                             name=text_map.get(609, locale),
@@ -777,6 +791,7 @@ class Schedule(commands.Cog):
                         )
                         embed.set_footer(text=text_map.get(134, locale))
                         embed.set_image(url="attachment://reminder_card.jpeg")
+                        
                         try:
                             await user.send(embed=embed, files=[file])
                         except Forbidden:
@@ -784,10 +799,10 @@ class Schedule(commands.Cog):
                                 f"UPDATE {notification_type} SET toggle = 0 WHERE user_id = ?",
                                 (user_id,),
                             )
+                            await db.commit()
                         else:
                             count += 1
                     await asyncio.sleep(2.5)
-            await db.commit()
         log.info(f"[Schedule][{notification_type}] Ended (Notified {count} users)")
 
     @schedule_error_handler
