@@ -1,40 +1,27 @@
 import ast
 from typing import Dict, List, Optional
-from apps.draw import main_funcs
+
 import GGanalysis.games.genshin_impact as GI
 import sentry_sdk
-from discord import (
-    Attachment,
-    File,
-    Interaction,
-    Member,
-    SelectOption,
-    User,
-    app_commands,
-)
+from discord import (Attachment, File, Interaction, Member, SelectOption, User,
+                     app_commands)
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
+from apps.draw import main_funcs
 from apps.genshin.checks import check_account, check_wish_history
-from apps.genshin.custom_model import (
-    DrawInput,
-    RecentWish,
-    ShenheBot,
-    Wish,
-    WishData,
-    WishInfo,
-    WishItem,
-)
-from apps.genshin.utils import get_uid, get_wish_history_embed, get_wish_info_embed
+from apps.genshin.custom_model import (DrawInput, RecentWish, ShenheBot, Wish,
+                                       WishData, WishInfo, WishItem)
+from apps.genshin.utils import (get_uid, get_wish_history_embed,
+                                get_wish_info_embed)
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
 from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from UI_elements.wish.SetAuthKey import wish_import_command
-from utility.paginator import GeneralPaginator
 from utility.utils import default_embed, error_embed, get_user_appearance_mode
 from utility.wish_paginator import WishPaginator
 
