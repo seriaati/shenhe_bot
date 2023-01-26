@@ -1051,12 +1051,12 @@ class Schedule(commands.Cog):
 
     @commands.is_owner()
     @commands.command(name="run-func")
-    async def run_func(self, ctx: commands.Context, func_name: str, *args):
+    async def run_func(self, ctx: commands.Context, func_name: str):
         func = getattr(self, func_name)
         if not func:
             return await ctx.send("Function not found")
         else:
-            await asyncio.create_task(func(*args))
+            await asyncio.create_task(func())
             await ctx.send(f"Function {func_name} ran")
 
 
