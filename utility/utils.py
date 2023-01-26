@@ -108,7 +108,7 @@ async def get_user_auto_redeem(user_id: int, pool: asqlite.Pool) -> bool:
 
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8"""
-    return datetime.now(timezone(timedelta(hours=8)))
+    return datetime.now() + timedelta(hours=8)
 
 def add_bullet_points(texts: List[str]) -> str:
     """Add bullet points to a list of texts."""
