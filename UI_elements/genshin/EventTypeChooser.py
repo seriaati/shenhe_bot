@@ -7,6 +7,7 @@ from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
 from apps.text_map.utils import get_user_locale
 import config
+import asset
 from dateutil import parser
 from discord.utils import format_dt
 from utility.paginator import GeneralPaginator, _view
@@ -23,17 +24,21 @@ class View(BaseView):
 
 class Hoyolab(Button):
     def __init__(self):
-        super().__init__(label="Hoyolab", emoji="<:hoyolab_icon:1025044103135776809>")
+        super().__init__(label="HoYoLAB", emoji=asset.hoyolab_emoji)
 
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.defer()
+        
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
+        
         await hoyolab_rss_feeds.hoyolab.create_game_feeds_from_config(genshin_locale)
+        
         with open(f"feeds/{genshin_locale}_genshin.json") as f:
             events: Dict = json.load(f)
+        
         select_options = []
         tags = []
         embeds = {}
