@@ -1051,13 +1051,14 @@ class Schedule(commands.Cog):
 
     @commands.is_owner()
     @commands.command(name="run-func")
-    async def run_func(self, ctx: commands.Context, func_name: str):
+    async def run_func(self, ctx: commands.Context, func_name: str, *args):
         func = getattr(self, func_name)
         if not func:
             return await ctx.send("Function not found")
         else:
-            await asyncio.create_task(func())
-            await ctx.send(f"Function {func_name} ran")
+            message = await ctx.send(f"Function {func_name} ran")
+            await asyncio.create_task(func(*args))
+            await message.edit(content=f"Function {func_name} ended")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
