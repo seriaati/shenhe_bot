@@ -210,7 +210,10 @@
 '191': Calculation results
 '192': Calculation content
 '193': Powered by Genshin Optimizer
-'194': Python version
+'194': |-
+  {total} total
+  {cookie} with Cookie
+  {china} China users
 '195': Invalid file type
 '196': Genshin character summary
 '197': No materials needed
@@ -312,11 +315,11 @@
 '293': win %
 '294': View the list of enemies in the current abyss phase
 '295': Enemy level
-'296': ''
+'296': Latest Changes
 '297': Meet the awesome people that helped me!
 '298': Translators
 '299': Friendship Level
-'300': ''
+'300': Registered Users
 '301': Stats
 '302': Threshold
 '303': Current resin
@@ -365,7 +368,7 @@
 '346': Conditions
 '347': Effects
 '348': Calculate Damage
-'349': ''
+'349': Resources Used
 '350': melt
 '351': vaporize
 '352': Authkey URL
@@ -586,11 +589,11 @@
 '521': Remove account data
 '522': Account data removed
 '523': Enka.network API error
-'524': ''
+'524': Registered Users
 '525': Spread
 '526': Aggravate
 '527': Hydro infusion
-'528': ''
+'528': Members
 '529': Item type
 '530': Sources
 '531': Weapon effect
@@ -638,7 +641,9 @@
   • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
 '564': Latency
 '565': Credits
-'566': Libraries used
+'566': |-
+  {total} total
+  {unique} unique
 '567': |-
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
   The only file that is supported is the .txt file exported from Shenhe.
