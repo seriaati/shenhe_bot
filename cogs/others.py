@@ -1,10 +1,12 @@
+import datetime
+import itertools
 import json
 import os
-import sys
-from datetime import datetime
 
+import psutil
+import pygit2
 from aioimgur import ImgurClient
-from discord import Attachment, Interaction, app_commands
+from discord import Attachment, Interaction, app_commands, utils
 from discord.app_commands import Choice
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -48,7 +50,9 @@ class OthersCog(commands.Cog, name="others"):
 
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
-        embed = default_embed(message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}")
+        embed = default_embed(
+            message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
+        )
         view = SettingsMenu.View(locale)
 
         await i.response.send_message(embed=embed, view=view)
@@ -127,69 +131,116 @@ class OthersCog(commands.Cog, name="others"):
         )
         await i.response.send_message(embed=embed)
 
+    def format_commit(self, commit: pygit2.Commit) -> str:
+        short, _, _ = commit.message.partition("\n")
+        short_sha2 = commit.hex[0:6]
+        commit_tz = datetime.timezone(
+            datetime.timedelta(minutes=commit.commit_time_offset)
+        )
+        commit_time = datetime.datetime.fromtimestamp(commit.commit_time).astimezone(
+            commit_tz
+        )
+
+        # [`hash`](url) message (offset)
+        offset = utils.format_dt((commit_time.astimezone(datetime.timezone.utc)), "R")
+        return f"[`{short_sha2}`](https://github.com/seriaati/shenhe_bot/commit/{commit.hex}) {short} ({offset})"
+
+    def get_last_commits(self, count: int = 5):
+        repo = pygit2.Repository(".git")
+        commits = list(
+            itertools.islice(
+                repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL), count
+            )
+        )
+        return "\n".join(self.format_commit(c) for c in commits)
+
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        embed = default_embed(
-            self.bot.user.name if self.bot.user is not None else "申鶴 | Shenhe"
+
+        revision = self.get_last_commits()
+        embed = default_embed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
+
+        seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
+            410036441129943050
         )
-        delta_uptime = datetime.utcnow() - self.bot.launch_time
+        embed.set_author(name=str(seria), icon_url=seria.display_avatar.url)
+
+        process = psutil.Process()
+        memory_usage = process.memory_full_info().uss / 1024**2  # type: ignore
+        cpu_usage = process.cpu_percent() / psutil.cpu_count()  # type: ignore
+        embed.add_field(
+            name=text_map.get(349, locale),
+            value=f"{memory_usage:.2f} MB\n{cpu_usage:.2f}% CPU",
+        )
+
+        async with self.bot.pool.acquire() as db:
+            async with db.execute("SELECT COUNT(*) FROM user_accounts") as cursor:
+                total = await cursor.fetchone()
+                await cursor.execute(
+                    "SELECT COUNT(*) FROM user_accounts WHERE ltuid IS NOT NULL"
+                )
+                cookie = await cursor.fetchone()
+                await cursor.execute(
+                    "SELECT COUNT(*) FROM user_accounts WHERE china = 1"
+                )
+                china = await cursor.fetchone()
+                embed.add_field(
+                    name=text_map.get(524, locale),
+                    value=text_map.get(194, locale).format(
+                        total=total[0], cookie=cookie[0], china=china[0]
+                    ),
+                )
+
+        total_members = 0
+        total_unique = len(self.bot.users)
+
+        guilds = 0
+        for guild in self.bot.guilds:
+            guilds += 1
+            if guild.unavailable:
+                continue
+            total_members += guild.member_count or 0
+
+        embed.add_field(
+            name=text_map.get(528, locale),
+            value=text_map.get(566, locale).format(
+                total=total_members, unique=total_unique
+            ),
+        )
+
+        embed.add_field(
+            name=text_map.get(503, locale),
+            value=str(guilds),
+        )
+        embed.add_field(
+            name=text_map.get(564, locale),
+            value=f"{round(self.bot.latency*1000, 2)} ms",
+        )
+
+        delta_uptime = datetime.datetime.utcnow() - self.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         embed.add_field(
             name=text_map.get(147, locale),
             value=f"{days}d {hours}h {minutes}m {seconds}s",
-            inline=False,
         )
-        embed.add_field(
-            name=text_map.get(194, locale), value=f"`{sys.version}`", inline=False
-        )
-        embed.add_field(
-            name=text_map.get(503, locale),
-            value=str(len(self.bot.guilds)),
-            inline=False,
-        )
-        embed.add_field(
-            name=text_map.get(564, locale),
-            value=f"{round(self.bot.latency*1000, 2)} ms",
-            inline=False,
-        )
-        embed.add_field(
-            name=text_map.get(565, locale),
-            value="</credits:1028913972377817129>",
-            inline=False,
-        )
-        embed.add_field(
-            name=text_map.get(566, locale),
-            value=f"[discord.py](https://github.com/Rapptz/discord.py)\n"
-            f"[genshin.py](https://github.com/thesadru/genshin.py)\n"
-            f"[Enkanetwork.py](https://github.com/mrwan200/EnkaNetwork.py)\n"
-            f"[GGanalysis](https://github.com/OneBST/GGanalysis)\n"
-            f"[pyppeteer](https://github.com/pyppeteer/pyppeteer)\n"
-            f"[Pillow](https://github.com/python-pillow/Pillow)\n"
-            f"[pydantic](https://github.com/pydantic/pydantic)\n"
-            f"[asqlite](https://github.com/Rapptz/asqlite)\n"
-            f"[matplotlib](https://github.com/matplotlib/matplotlib)\n",
-            inline=False,
-        )
-        embed.add_field(
-            name=text_map.get(220, locale),
-            value=f"[seria#5334](http://discord.com/users/410036441129943050)",
-            inline=False,
-        )
-        if self.bot.user is not None and self.bot.user.avatar is not None:
-            embed.set_thumbnail(url=self.bot.user.avatar.url)
+
         view = View()
         view.add_item(
             Button(
                 label=text_map.get(642, locale),
                 url="https://discord.gg/ryfamUykRw",
-                emoji="<:discord_icon:1032123254103621632>",
+                emoji=asset.discord_emoji,
             )
         )
         view.add_item(
-            Button(label="GitHub", url="https://github.com/seriaati/shenhe_bot")
+            Button(
+                label="GitHub",
+                url="https://github.com/seriaati/shenhe_bot",
+                emoji=asset.github_emoji,
+            )
         )
         await i.response.send_message(embed=embed, view=view)
 
