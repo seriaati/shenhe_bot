@@ -3,11 +3,10 @@ import asyncio
 import io
 import json
 from datetime import timedelta
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
-from apps.genshin.find_codes import find_codes
 
+import aiofiles
 import asqlite
 import genshin
 import sentry_sdk
@@ -18,19 +17,22 @@ from discord.utils import find, format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Artifact, Character, CharacterUpgrade, Domain, Material, Weapon, WeaponUpgrade
+from ambr.models import (Artifact, Character, CharacterUpgrade, Domain,
+                         Material, Weapon, WeaponUpgrade)
 from apps.draw import main_funcs
 from apps.genshin.custom_model import (DrawInput, NotificationUser,
                                        ShenheAccount, ShenheBot)
+from apps.genshin.find_codes import find_codes
 from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
                                 get_uid, get_uid_tz)
-from apps.text_map.convert_locale import to_ambr_top, to_ambr_top_dict
+from apps.text_map.convert_locale import AMBR_LANGS, to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from exceptions import ShenheAccountNotFound, UIDNotFound
-from utility.fetch_card import fetch_cards, process_i18n
+from utility.fetch_card import fetch_cards
 from utility.utils import (default_embed, error_embed, get_dt_now,
-                           get_user_appearance_mode, get_user_notification, log)
+                           get_user_appearance_mode, get_user_notification,
+                           log)
 
 
 def schedule_error_handler(func):
@@ -119,7 +121,7 @@ class Schedule(commands.Cog):
         for account in accounts:
             if account.china:
                 continue
-            
+
             client = account.client
             client.lang = "en-us"
 
@@ -299,7 +301,9 @@ class Schedule(commands.Cog):
                         success = await self.notify_pt(n_user, locale)
 
                     if success:
-                        log.info(f"[Schedule][{notification_type}][{n_user.user_id}] Notification sent")
+                        log.info(
+                            f"[Schedule][{notification_type}][{n_user.user_id}] Notification sent"
+                        )
                         sent_num += 1
 
                         async with self.bot.pool.acquire() as db:
@@ -513,7 +517,9 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
 
         async with self.bot.pool.acquire() as db:
-            async with db.execute("CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)") as c:
+            async with db.execute(
+                "CREATE TABLE IF NOT EXISTS redeem_codes (code TEXT)"
+            ) as c:
                 await c.execute("SELECT code FROM redeem_codes")
                 for row in c.get_cursor():
                     if row[0] in codes:
@@ -521,9 +527,11 @@ class Schedule(commands.Cog):
 
                 if not codes:
                     return
-                
+
                 users: List[ShenheAccount] = []
-                await c.execute("SELECT user_id FROM user_settings WHERE auto_redeem = 1")
+                await c.execute(
+                    "SELECT user_id FROM user_settings WHERE auto_redeem = 1"
+                )
                 for row in c.get_cursor():
                     users.append(await get_shenhe_account(row[0], self.bot))
 
@@ -552,7 +560,9 @@ class Schedule(commands.Cog):
                 except Exception as e:
                     value = f"{type(e)} {e}"
                 else:
-                    log.info(f"[Schedule][Redeem Codes] Redeemed {code} for {user.discord_user.id}")
+                    log.info(
+                        f"[Schedule][Redeem Codes] Redeemed {code} for {user.discord_user.id}"
+                    )
                     success = True
                     value = text_map.get(109, locale)
 
@@ -618,7 +628,7 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
             else:
-                if (await get_user_notification(user.discord_user.id, self.bot.pool)):
+                if await get_user_notification(user.discord_user.id, self.bot.pool):
                     embed = default_embed(message=f"{reward.name} x{reward.amount}")
                     embed.set_author(
                         name=text_map.get(87, "en-US", user.user_locale),
@@ -683,9 +693,9 @@ class Schedule(commands.Cog):
             if notification_type == "weapon_notification"
             else "character_list"
         )
-        upgrade_cache: Dict[int, CharacterUpgrade | WeaponUpgrade] = {}
-        item_cache: Dict[int, Weapon | Character] = {}
-        
+        upgrade_cache: Dict[str, CharacterUpgrade | WeaponUpgrade] = {}
+        item_cache: Dict[str, Weapon | Character] = {}
+
         async with self.bot.pool.acquire() as db:
             async with db.execute(
                 f"SELECT user_id, {list_name} FROM {notification_type} WHERE toggle = 1"
@@ -694,32 +704,34 @@ class Schedule(commands.Cog):
                 for row in c.get_cursor():
                     user_id = row[0]
                     item_list = row[1]
-                    
+
                     uid = await get_uid(user_id, self.bot.pool)
                     uid_tz = get_uid_tz(uid)
                     if uid_tz != time_offset:
                         continue
-                    
-                    log.info(f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})")
-                    
+
+                    log.info(
+                        f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})"
+                    )
+
                     now = get_dt_now() + timedelta(hours=time_offset)
                     locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
-                    
+
                     client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
                     domains = await client.get_domain()
                     today_domains = [d for d in domains if d.weekday == now.weekday()]
-                    
+
                     user = self.bot.get_user(user_id) or await self.bot.fetch_user(
                         user_id
                     )
                     notified: Dict[str, Dict[str, Any]] = {}
-                    
+
                     item_list = ast.literal_eval(item_list)
                     for item_id in item_list:
                         for domain in today_domains:
                             for reward in domain.rewards:
-                                upgrade = upgrade_cache.get(int(item_id))
-                                
+                                upgrade = upgrade_cache.get(str(item_id))
+
                                 if upgrade is None:
                                     if notification_type == "talent_notification":
                                         upgrade = await client.get_character_upgrade(
@@ -729,9 +741,11 @@ class Schedule(commands.Cog):
                                         upgrade = await client.get_weapon_upgrade(
                                             int(item_id)
                                         )
-                                    if not isinstance(upgrade, (CharacterUpgrade, WeaponUpgrade)):
+                                    if not isinstance(
+                                        upgrade, (CharacterUpgrade, WeaponUpgrade)
+                                    ):
                                         continue
-                                    upgrade_cache[int(item_id)] = upgrade
+                                    upgrade_cache[str(item_id)] = upgrade
 
                                 if reward in upgrade.items:
                                     if item_id not in notified:
@@ -743,8 +757,8 @@ class Schedule(commands.Cog):
                                         notified[item_id]["materials"].append(reward.id)
 
                     for item_id, item_info in notified.items():
-                        item = item_cache.get(int(item_id))
-                        
+                        item = item_cache.get(str(item_id))
+
                         if item is None:
                             if notification_type == "talent_notification":
                                 item = await client.get_character(str(item_id))
@@ -752,7 +766,7 @@ class Schedule(commands.Cog):
                                 item = await client.get_weapon(int(item_id))
                             if not isinstance(item, (Character, Weapon)):
                                 continue
-                            item_cache[int(item_id)] = item
+                            item_cache[str(item_id)] = item
 
                         materials: List[Tuple[Material, str]] = []
                         for material_id in item_info["materials"]:
@@ -771,15 +785,15 @@ class Schedule(commands.Cog):
                                 locale=locale,
                                 dark_mode=dark_mode,
                             ),
-                            materials, # type: ignore
+                            materials,  # type: ignore
                             "",
                             draw_title=False,
                         )
                         fp.seek(0)
                         file = File(fp, "reminder_card.jpeg")
-                        
+
                         domain: Domain = item_info["domain"]
-                        
+
                         embed = default_embed()
                         embed.add_field(
                             name=text_map.get(609, locale),
@@ -791,7 +805,7 @@ class Schedule(commands.Cog):
                         )
                         embed.set_footer(text=text_map.get(134, locale))
                         embed.set_image(url="attachment://reminder_card.jpeg")
-                        
+
                         try:
                             await user.send(embed=embed, files=[file])
                         except Forbidden:
@@ -932,7 +946,7 @@ class Schedule(commands.Cog):
         ]
         for thing in things_to_update:
             dict = {}
-            for lang in list(to_ambr_top_dict.values()):
+            for lang in list(AMBR_LANGS.values()):
                 async with self.bot.session.get(
                     f"https://api.ambr.top/v2/{lang}/{thing}"
                 ) as r:
@@ -962,7 +976,7 @@ class Schedule(commands.Cog):
 
         # daily dungeon text map
         dict = {}
-        for lang in list(to_ambr_top_dict.values()):
+        for lang in list(AMBR_LANGS.values()):
             async with self.bot.session.get(
                 f"https://api.ambr.top/v2/{lang}/dailyDungeon"
             ) as r:
@@ -995,18 +1009,13 @@ class Schedule(commands.Cog):
     @schedule_error_handler
     async def update_card_data(self):
         log.info("[Schedule][Update Card Data] Start")
+
         cards = await fetch_cards(self.bot.session)
-
-        log.info("[Schedule][Update Card Data] Processing data")
-        english_cards, i18n_data = process_i18n(cards)
-
-        base_path = Path("data/cards/")
-
-        with open(base_path / "cards_en-us.json", "w") as f:
-            json.dump(english_cards, f, indent=2, ensure_ascii=False)
-
-        with open(base_path / "cards_i18n.json", "w") as f:
-            json.dump(i18n_data, f, indent=2, ensure_ascii=False)
+        for lang, card_data in cards.items():
+            async with aiofiles.open(
+                f"data/cards/card_data_{lang}.json", "w+", encoding="utf-8"
+            ) as f:
+                await f.write(json.dumps(card_data, indent=4, ensure_ascii=False))
 
         log.info("[Schedule][Update Card Data] Ended")
 
@@ -1039,6 +1048,16 @@ class Schedule(commands.Cog):
         message = await ctx.send("Backing up database...")
         await asyncio.create_task(self.backup_database())
         await message.edit(content="Database backed up")
+
+    @commands.is_owner()
+    @commands.command(name="run-func")
+    async def run_func(self, ctx: commands.Context, func_name: str, *args):
+        func = getattr(self, func_name)
+        if not func:
+            return await ctx.send("Function not found")
+        else:
+            await asyncio.create_task(func(*args))
+            await ctx.send(f"Function {func_name} ran")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:

@@ -4,12 +4,12 @@ from typing import Dict
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 
-from apps.text_map.convert_locale import to_go_dict
+from apps.text_map.convert_locale import GENSHIN_OPTIMIZER_LANGS
 
 
 async def launch_browsers() -> Dict[str, Browser]:
     result = {}
-    for key, value in to_go_dict.items():
+    for key, value in GENSHIN_OPTIMIZER_LANGS.items():
         browser = await launch({"headless": True, "args": ["--no-sandbox"]})
         page = await browser.newPage()
         await page.setViewport({"width": 1440, "height": 900})

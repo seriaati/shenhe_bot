@@ -1,74 +1,40 @@
-import json
+from typing import Any, Dict, List
+
 import aiohttp
 
-BASE_URL = (
-    "https://sg-hk4e-api-static.hoyoverse.com/event/e20221205drawcard/card_config?lang="
-)
+BASE_URL = "https://genshin-db-api.vercel.app/api/{folder}?query=names&matchCategories=true&verboseCategories=true"
 
-# English, Simplified Chinese, Traditional Chinese, Japanese, Korean, Indonesian, Thai, Vietnamese, German, French, Portuguese, Spanish, Russian.
-ALL_LANGUAGES = [
-    "en-us",
-    "zh-cn",
-    "zh-tw",
-    "ja-jp",
-    "ko-kr",
-    "id-id",
-    "th-th",
-    "vi-vn",
-    "de-de",
-    "fr-fr",
-    "pt-pt",
-    "es-es",
-    "ru-ru",
+FOLDERS = [
+    "tcgactioncards",
+    "tcgcharactercards",
+    "tcgsummons",
+    "tcgcardbacks",
+    "tcgcardboxes",
+    "tcgstatuseffects",
 ]
 
-
-async def fetch_cards(session: aiohttp.ClientSession):
-    i18n_data = {}
-
-    for lang in ALL_LANGUAGES:
-        async with session.get(BASE_URL + lang) as resp:
-            card_config = await resp.read()
-        assert len(card_config) > 0
-
-        data = json.loads(card_config.decode("utf-8"))["data"]
-        assert data["role_card_infos"][0]["name"]
-
-        i18n_data[lang] = data
-
-    return i18n_data
+LANGUAGE_URL = "https://genshin-db-api.vercel.app/api/languages"
 
 
-def json_traverse(data, path=""):
-    """
-    Traverse all nodes in the JSON data and yield them.
-    """
+async def fetch_cards(
+    session: aiohttp.ClientSession,
+) -> Dict[str, List[Dict[str, Any]]]:
+    result: Dict[str, List[Dict[str, Any]]] = {}
 
-    if isinstance(data, dict):
-        for key, value in sorted(data.items()):
-            if isinstance(value, str):
-                yield f"{path}.{key}", value
-            yield from json_traverse(value, f"{path}.{key}")
-    elif isinstance(data, list):
-        for idx, item in enumerate(data):
-            yield from json_traverse(item, f"{path}.{idx}")
+    async with session.get(LANGUAGE_URL) as resp:
+        languages = await resp.json()
 
+    for lang in languages:
+        if lang not in result:
+            result[lang] = []
 
-def process_i18n(data):
-    i18n = {}
+        for folder in FOLDERS:
+            async with session.get(
+                BASE_URL.format(folder=folder) + f"&resultLanguage={lang}"
+            ) as resp:
+                cards: List[Dict[str, Any]] = await resp.json()
+                for card in cards:
+                    card["cardType"] = folder
+                    result[lang].append(card)
 
-    for lang in ALL_LANGUAGES:
-        i18n[lang] = {}
-
-        for (_, i), (_, j) in zip(
-            json_traverse(data["en-us"]), json_traverse(data[lang])
-        ):
-            if i != j:
-                if i in i18n[lang] and i18n[lang][i] != j:
-                    raise ValueError(
-                        f"Duplicate translation for {i}: {i18n[lang][i]} and {j}"
-                    )
-
-                i18n[lang][i] = j
-
-    return data["en-us"], i18n
+    return result

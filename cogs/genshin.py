@@ -1,13 +1,13 @@
 import json
 import random
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
+import aiofiles
+import discord
 import genshin
 import sentry_sdk
-from discord import (Embed, File, Interaction, Member, SelectOption, User,
-                     app_commands)
-from discord.app_commands import Choice
+from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
@@ -34,7 +34,7 @@ from apps.genshin.wiki import (parse_artifact_wiki, parse_book_wiki,
                                parse_weapon_wiki)
 from apps.genshin_data.abyss import (get_abyss_blessing, get_abyss_enemies,
                                      get_ley_line_disorders)
-from apps.text_map.convert_locale import (to_ambr_top, to_enka, to_event_lang,
+from apps.text_map.convert_locale import (to_ambr_top, to_enka, to_event_lang, to_genshin_db,
                                           to_genshin_py)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -59,42 +59,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot: ShenheBot = bot
         self.genshin_app = GenshinApp(self.bot)
         self.debug = self.bot.debug
-        maps_to_open = [
-            "avatar",
-            "weapon",
-            "material",
-            "reliquary",
-            "monster",
-            "food",
-            "furniture",
-            "namecard",
-            "book",
-        ]
-        self.text_map_files = []
-        for m in maps_to_open:
-            try:
-                with open(f"text_maps/{m}.json", "r", encoding="utf-8") as f:
-                    data = json.load(f)
-            except FileNotFoundError:
-                data = {}
-            self.text_map_files.append(data)
-        try:
-            with open(f"text_maps/item_name.json", "r", encoding="utf-8") as f:
-                self.item_names = json.load(f)
-        except FileNotFoundError:
-            self.item_names = {}
-
-        try:
-            with open("data/cards/cards_en-us.json", "r") as f:
-                self.card_en_us = json.load(f)
-        except FileNotFoundError:
-            self.card_en_us = {}
-
-        try:
-            with open("data/cards/cards_i18n.json", "r") as f:
-                self.card_i18n = json.load(f)
-        except FileNotFoundError:
-            self.card_i18n = {}
 
         # Right click commands
         self.search_uid_context_menu = app_commands.ContextMenu(
@@ -148,6 +112,48 @@ class GenshinCog(commands.Cog, name="genshin"):
         else:
             log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
 
+        async with self.bot.session.get(
+            "https://genshin-db-api.vercel.app/api/languages"
+        ) as r:
+            languages = await r.json()
+
+        self.card_data: Dict[str, List[Dict[str, Any]]] = {}
+        for lang in languages:
+            try:
+                async with aiofiles.open(f"data/cards/card_data_{lang}.json", "r") as f:
+                    self.card_data[lang] = json.loads(await f.read())
+            except FileNotFoundError:
+                self.card_data[lang] = []
+
+        maps_to_open: List[str] = [
+            "avatar",
+            "weapon",
+            "material",
+            "reliquary",
+            "monster",
+            "food",
+            "furniture",
+            "namecard",
+            "book",
+        ]
+        self.text_map_files: List[Dict[str, Any]] = []
+        for map in maps_to_open:
+            try:
+                async with aiofiles.open(
+                    f"text_maps/{map}.json", "r", encoding="utf-8"
+                ) as f:
+                    data = json.loads(await f.read())
+            except FileNotFoundError:
+                data = {}
+            self.text_map_files.append(data)
+        try:
+            async with aiofiles.open(
+                f"text_maps/item_name.json", "r", encoding="utf-8"
+            ) as f:
+                self.item_names = json.loads(await f.read())
+        except FileNotFoundError:
+            self.item_names = {}
+
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(
             self.search_uid_context_menu.name, type=self.search_uid_context_menu.type
@@ -172,7 +178,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=410,
         ),
     )
-    async def slash_register(self, i: Interaction):
+    async def slash_register(self, i: discord.Interaction):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
@@ -183,17 +189,17 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
-    async def slash_check(self, i: Interaction, member: Optional[User | Member] = None):
+    async def slash_check(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         await self.check_command(i, member or i.user)
 
-    async def check_ctx_menu(self, i: Interaction, member: User):
+    async def check_ctx_menu(self, i: discord.Interaction, member: discord.User):
         await check_cookie_predicate(i, member)
         await self.check_command(i, member, ephemeral=True)
 
     async def check_command(
         self,
-        i: Interaction,
-        member: Optional[User | Member] = None,
+        i: discord.Interaction,
+        member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = False,
     ):
         member = member or i.user
@@ -219,7 +225,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embed=note_result.embed.set_image(
                     url="attachment://realtime_notes.jpeg"
                 ),
-                attachments=[File(fp, filename="realtime_notes.jpeg")],
+                attachments=[discord.File(fp, filename="realtime_notes.jpeg")],
             )
 
     @check_account()
@@ -234,17 +240,17 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("Check other user's data", hash=416),
     )
-    async def stats(self, i: Interaction, member: Optional[User | Member] = None):
+    async def stats(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         await self.stats_command(i, member)
 
-    async def stats_ctx_menu(self, i: Interaction, member: User):
+    async def stats_ctx_menu(self, i: discord.Interaction, member: discord.User):
         await check_account_predicate(i, member)
         await self.stats_command(i, member, context_command=True)
 
     async def stats_command(
         self,
-        i: Interaction,
-        member: Optional[User | Member] = None,
+        i: discord.Interaction,
+        member: Optional[discord.User | discord.Member] = None,
         context_command: bool = False,
     ) -> None:
         await i.response.defer()
@@ -268,7 +274,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             stats_result: StatsResult = result.result
             fp = stats_result.file
             fp.seek(0)
-            file = File(fp, "stat_card.jpeg")
+            file = discord.File(fp, "stat_card.jpeg")
             await i.followup.send(
                 embed=stats_result.embed,
                 ephemeral=False if not context_command else True,
@@ -284,7 +290,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("Check other user's data", hash=416),
     )
-    async def area(self, i: Interaction, member: Optional[User | Member] = None):
+    async def area(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         await i.response.defer()
         member = member or i.user
         result = await self.genshin_app.get_area(member.id, i.user.id, i.locale)
@@ -294,7 +300,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             area_result: AreaResult = result.result
             fp = area_result.file
             fp.seek(0)
-            image = File(fp, "area.jpeg")
+            image = discord.File(fp, "area.jpeg")
             await i.followup.send(embed=area_result.embed, files=[image])
 
     @check_cookie()
@@ -305,7 +311,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=420,
         ),
     )
-    async def claim(self, i: Interaction):
+    async def claim(self, i: discord.Interaction):
         await return_claim_reward(i, self.genshin_app)
 
     @check_cookie()
@@ -318,17 +324,17 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
-    async def characters(self, i: Interaction, member: Optional[User | Member] = None):
+    async def characters(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         await self.characters_comamnd(i, member, False)
 
-    async def characters_ctx_menu(self, i: Interaction, member: User):
+    async def characters_ctx_menu(self, i: discord.Interaction, member: discord.User):
         await check_cookie_predicate(i, member)
         await self.characters_comamnd(i, member)
 
     async def characters_comamnd(
         self,
-        i: Interaction,
-        member: Optional[User | Member] = None,
+        i: discord.Interaction,
+        member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
     ):
         member = member or i.user
@@ -348,7 +354,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         character_result: CharacterResult = result.result
         fp = character_result.file
         fp.seek(0)
-        file = File(fp, "characters.jpeg")
+        file = discord.File(fp, "characters.jpeg")
         view = ShowAllCharacters.View(
             locale,
             character_result.characters,
@@ -376,7 +382,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("Check other user's data", hash=416),
     )
-    async def diary(self, i: Interaction, member: Optional[User | Member] = None):
+    async def diary(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         member = member or i.user
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.pool)
@@ -391,7 +397,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.followup.send(
                 embed=diary_result.embed,
                 view=view,
-                files=[File(fp, "diary.jpeg")],
+                files=[discord.File(fp, "diary.jpeg")],
             )
             view.message = await i.original_response()
 
@@ -410,12 +416,12 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.choices(
         previous=[
-            Choice(name=_("Current season", hash=435), value=0),
-            Choice(name=_("Last season", hash=436), value=1),
+            app_commands.Choice(name=_("Current season", hash=435), value=0),
+            app_commands.Choice(name=_("Last season", hash=436), value=1),
         ],
     )
     async def abyss(
-        self, i: Interaction, previous: int = 0, member: Optional[User | Member] = None
+        self, i: discord.Interaction, previous: int = 0, member: Optional[discord.User | discord.Member] = None
     ):
         member = member or i.user
         await i.response.defer()
@@ -430,7 +436,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             view = Abyss.View(i.user, abyss_result, user_locale or i.locale)
             fp = abyss_result.overview_file
             fp.seek(0)
-            image = File(fp, "overview_card.jpeg")
+            image = discord.File(fp, "overview_card.jpeg")
             await i.followup.send(
                 embed=abyss_result.overview_embed, view=view, files=[image]
             )
@@ -447,7 +453,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
-    async def stuck(self, i: Interaction):
+    async def stuck(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         embed = default_embed(
             text_map.get(149, i.locale, user_locale),
@@ -457,14 +463,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
-    async def remind(self, i: Interaction):
+    async def remind(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         await return_notification_menu(i, user_locale or i.locale, True)
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
     )
-    async def farm(self, i: Interaction):
+    async def farm(self, i: discord.Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         uid = await get_uid(i.user.id, self.bot.pool)
@@ -499,7 +505,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             "View character builds: Talent levels, artifacts, weapons", hash=447
         ),
     )
-    async def build(self, i: Interaction):
+    async def build(self, i: discord.Interaction):
         view = Build.View()
         view.author = i.user
         await i.response.send_message(view=view)
@@ -512,14 +518,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     @app_commands.rename(player=_("user", hash=415))
-    async def search_uid(self, i: Interaction, player: User):
+    async def search_uid(self, i: discord.Interaction, player: discord.User):
         await self.search_uid_command(i, player, False)
 
-    async def search_uid_ctx_menu(self, i: Interaction, player: User):
+    async def search_uid_ctx_menu(self, i: discord.Interaction, player: discord.User):
         await self.search_uid_command(i, player)
 
     async def search_uid_command(
-        self, i: Interaction, player: User, ephemeral: bool = True
+        self, i: discord.Interaction, player: discord.User, ephemeral: bool = True
     ):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         uid = await get_uid(player.id, self.bot.pool)
@@ -577,20 +583,20 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def profile(
         self,
-        i: Interaction,
-        member: Optional[User | Member] = None,
+        i: discord.Interaction,
+        member: Optional[discord.User | discord.Member] = None,
         uid: Optional[int] = None,
     ):
         await self.profile_command(i, member, False, uid)
 
-    async def profile_ctx_menu(self, i: Interaction, member: User):
+    async def profile_ctx_menu(self, i: discord.Interaction, member: discord.User):
         await check_account_predicate(i, member)
         await self.profile_command(i, member)
 
     async def profile_command(
         self,
-        i: Interaction,
-        member: Optional[User | Member] = None,
+        i: discord.Interaction,
+        member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
         custom_uid: Optional[int] = None,
     ):
@@ -617,12 +623,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             .set_image(url="https://i.imgur.com/25pdyUG.gif"),
         ]
-        
+
         options = []
         if data.characters is not None:
             for character in data.characters:
                 options.append(
-                    SelectOption(
+                    discord.SelectOption(
                         label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
                         description=text_map.get(543, locale)
                         if str(character.id)
@@ -632,7 +638,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         emoji=get_character_emoji(str(character.id)),
                     )
                 )
-                
+
         view = EnkaProfile.View([], [], options, data, en_data, member, locale)
         for child in view.children:
             child.disabled = True
@@ -654,7 +660,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed_two = default_embed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
         embed_two.set_footer(text=text_map.get(511, locale))
-        
+
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         fp, fp_two = await main_funcs.draw_profile_card(
             DrawInput(
@@ -667,10 +673,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         fp.seek(0)
         fp_two.seek(0)
-        
-        discord_file = File(fp, filename="profile.jpeg")
-        discord_file_two = File(fp_two, filename="character.jpeg")
-        
+
+        discord_file = discord.File(fp, filename="profile.jpeg")
+        discord_file_two = discord.File(fp_two, filename="character.jpeg")
+
         view = EnkaProfile.View(
             [embed, embed_two], [fp, fp_two], options, data, en_data, member, locale
         )
@@ -685,7 +691,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @check_cookie()
     @app_commands.command(name="redeem", description=_("Redeem a gift code", hash=450))
     @app_commands.rename(code=_("code", hash=451))
-    async def redeem(self, i: Interaction, code: str):
+    async def redeem(self, i: discord.Interaction, code: str):
         await i.response.defer()
         result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
@@ -704,14 +710,14 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
     )
-    async def events(self, i: Interaction):
+    async def events(self, i: discord.Interaction):
         await EventTypeChooser.return_events(i)
 
     @check_account()
     @app_commands.command(
         name="leaderboard", description=_("The Shenhe leaderboard", hash=252)
     )
-    async def leaderboard(self, i: Interaction):
+    async def leaderboard(self, i: discord.Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         uid = await get_uid(i.user.id, self.bot.pool)
         if uid is None:
@@ -727,7 +733,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="search", description=_("Search anything related to genshin", hash=508)
     )
     @app_commands.rename(query=_("query", hash=509))
-    async def search(self, i: Interaction, query: str):
+    async def search(self, i: discord.Interaction, query: str):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
@@ -814,8 +820,8 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @search.autocomplete("query")
     async def query_autocomplete(
-        self, i: Interaction, current: str
-    ) -> List[Choice[str]]:
+        self, i: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         ambr_top_locale = to_ambr_top(user_locale or i.locale)
         result = []
@@ -823,7 +829,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             for item_id, query_names in queries.items():
                 item_name = query_names[ambr_top_locale]
                 if current.lower() in item_name.lower() and item_name != "":
-                    result.append(Choice(name=item_name, value=item_id))
+                    result.append(app_commands.Choice(name=item_name, value=item_id))
                 elif " " in current:
                     splited = current.split(" ")
                     all_match = True
@@ -832,7 +838,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             all_match = False
                             break
                     if all_match and item_name != "":
-                        result.append(Choice(name=item_name, value=item_id))
+                        result.append(app_commands.Choice(name=item_name, value=item_id))
         if current == "":
             random.shuffle(result)
         return result[:25]
@@ -846,7 +852,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.describe(
         member=_("Check other user's data", hash=416),
     )
-    async def activity(self, i: Interaction, member: Optional[User | Member] = None):
+    async def activity(self, i: discord.Interaction, member: Optional[discord.User | discord.Member] = None):
         await i.response.defer()
         member = member or i.user
         result = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
@@ -858,7 +864,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="beta",
         description=_("View the list of current beta items in Genshin", hash=434),
     )
-    async def view_beta_items(self, i: Interaction):
+    async def view_beta_items(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         client = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
         result = ""
@@ -895,7 +901,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="banners", description=_("View ongoing Genshin banners", hash=375)
     )
-    async def banners(self, i: Interaction):
+    async def banners(self, i: discord.Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         client = AmbrTopAPI(self.bot.session)
@@ -930,14 +936,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="abyss-enemies",
         description=_("View the list of enemies in the current abyss phases", hash=294),
     )
-    async def abyss_enemies(self, i: Interaction):
+    async def abyss_enemies(self, i: discord.Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         floors = await get_abyss_enemies(self.bot.gd_text_map, locale)
 
         ley_line_disorders = await get_ley_line_disorders(self.bot.gd_text_map, locale)
 
-        embeds: Dict[str, Embed] = {}
+        embeds: Dict[str, discord.discord.Embed] = {}
         enemies: Dict[str, List[AbyssHalf]] = {}
         for floor in floors:
             for chamber in floor.chambers:
@@ -985,7 +991,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             "Search Genshin lineups with Hoyolab's lineup simulator", hash=38
         ),
     )
-    async def slash_lineup(self, i: Interaction):
+    async def slash_lineup(self, i: discord.Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
         client = self.bot.genshin_client
@@ -1002,7 +1008,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         options = []
         scenario_dict = {}
         for scenario in scenarios_to_search:
-            options.append(SelectOption(label=scenario.name, value=str(scenario.id)))
+            options.append(discord.SelectOption(label=scenario.name, value=str(scenario.id)))
             scenario_dict[str(scenario.id)] = scenario
 
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
@@ -1018,113 +1024,102 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="tcg", description=_("Search a card in the Genshin TCG", hash=717)
     )
     @app_commands.rename(card_id=_("card", hash=718))
-    async def slash_tcg(self, i: Interaction, card_id: str):
+    async def slash_tcg(self, i: discord.Interaction, card_id: str):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        g_locale = to_genshin_py(locale)
+        genshin_db_locale = to_genshin_db(locale)
 
         the_card = None
         card_type = None
 
-        try:
-            if not card_id.isdigit():
-                raise CardNotFound
+        if not card_id.isdigit():
+            raise CardNotFound
 
-            for card in self.card_en_us["role_card_infos"]:
-                if card["id"] == int(card_id):
-                    the_card = card
-                    card_type = "role"
-                    break
+        for card in self.card_data[genshin_db_locale]:
+            if card["id"] == int(card_id):
+                the_card = card
+                card_type = card["cardType"]
+                break
 
-            if not the_card:
-                for card in self.card_en_us["action_card_infos"]:
-                    if card["id"] == int(card_id):
-                        the_card = card
-                        card_type = "action"
-                        break
-
-            if the_card is None:
-                raise CardNotFound
-
-        except CardNotFound:
-            return await i.response.send_message(
-                embed=error_embed().set_author(
-                    name=text_map.get(719, locale), icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
+        if the_card is None:
+            raise CardNotFound
 
         card = the_card
 
-        if card_type == "role":
-            embed = default_embed(self.tcg_trans(card["name"], g_locale))
-            embed.set_footer(
-                text=f"{text_map.get(33, locale)}: {self.tcg_trans(card['weapon'], g_locale)}"
-            )
-            for skill in card["role_skill_infos"]:
+        if card_type == "tcgcharactercards":
+            embed = default_embed(card["name"])
+            embed.set_author(name=card["storytitle"])
+            embed.set_footer(text=card["source"])
+            embed.set_image(url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_cardface_HD']}.png")
+            
+            for skill in card["skills"]:
                 cost_str = f"**{text_map.get(710, locale)}: **"
                 cost_str += " / ".join(
                     [
-                        f"{get_dice_emoji(cost['cost_icon'])} ({cost['cost_num']})"
-                        for cost in skill["skill_costs"]
-                        if cost["cost_num"]
+                        f"{get_dice_emoji(cost['costtype'])} ({cost['count']})"
+                        for cost in skill["playcost"]
                     ]
                 )
                 embed.add_field(
-                    name=self.tcg_trans(skill["name"], g_locale),
-                    value=parse_HTML(self.tcg_trans(skill["skill_text"], g_locale))
+                    name=skill["name"],
+                    value=parse_HTML(skill["description"])
                     + "\n"
                     + cost_str,
                     inline=False,
                 )
-        else:
+        elif card_type == "tcgactioncards":
             embed = default_embed(
-                self.tcg_trans(card["name"], g_locale),
-                parse_HTML(self.tcg_trans(card["content"], g_locale)),
+                card["name"],
+                card["description"],
             )
-            if card["cost_num1"]:
-                cost_str = (
-                    f"{get_dice_emoji(card['cost_type1_icon'])} ({card['cost_num1']})"
+            embed.set_author(name=card["cardtypetext"])
+            if "storytext" in card:
+                embed.set_footer(text=card["storytext"])
+            embed.set_image(url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_cardface_HD']}.png")
+            
+            if card["playcost"]:
+                cost_str = " / ".join(
+                    [
+                        f"{get_dice_emoji(cost['costtype'])} ({cost['count']})"
+                        for cost in card["playcost"]
+                    ]
                 )
-                if card["cost_num2"]:
-                    cost_str += f" / {get_dice_emoji(card['cost_type2_icon'])} ({card['cost_num2']})"
                 embed.add_field(name=text_map.get(710, locale), value=cost_str)
-        embed.set_image(url=card["resource"].replace("-sea", ""))
+        elif card_type == "tcgcardbacks":
+            embed = default_embed(card["name"], card["description"])
+            embed.set_footer(text=card["source"])
+            embed.set_image(url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_icon_HD']}.png")
+        elif card_type == "tcgcardboxes":
+            embed = default_embed(card["name"], card["description"])
+            embed.set_footer(text=card["source"])
+            embed.set_image(url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_bg']}.png")
+        elif card_type == "tcgstatuseffects":
+            embed = default_embed(card["name"], card["description"])
+            embed.set_author(name=card["statustypetext"])
+        else: # card_type == "tcgsummons"
+            embed = default_embed(card["name"], card["description"])
+            embed.set_author(name=card["cardtypetext"])
+            embed.set_image(url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_cardface_HD']}.png")
 
         await i.response.send_message(embed=embed)
 
     @slash_tcg.autocomplete("card_id")
     async def card_autocomplete(
-        self, i: Interaction, current: str
-    ) -> List[Choice[str]]:
+        self, i: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        g_locale = to_genshin_py(locale)
+        genshin_db_locale = to_genshin_db(locale)
 
-        choices = []
+        choices: List[app_commands.Choice] = []
 
-        cards = (
-            self.card_en_us["role_card_infos"] + self.card_en_us["action_card_infos"]
-        )
-
+        cards = self.card_data[genshin_db_locale]
         for card in cards:
-            if g_locale == "en-us":
-                card_name = card["name"]
-            else:
-                card_name = self.card_i18n.get(g_locale, {}).get(
-                    card["name"], card["name"]
-                )
-            if current.lower() in card_name.lower():
-                choices.append(Choice(name=card_name, value=str(card["id"])))
+            if current.lower() in card["name"].lower():
+                choices.append(app_commands.Choice(name=card["name"], value=str(card["id"])))
 
         if not current:
             choices = random.choices(choices, k=25)
 
         return choices[:25]
-
-    def tcg_trans(self, text: str, locale: str):
-        if locale == "en-us":
-            return text
-        else:
-            return self.card_i18n[locale][text]
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:

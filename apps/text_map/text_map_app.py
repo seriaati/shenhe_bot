@@ -4,13 +4,13 @@ from typing import Dict, Optional
 
 import discord
 import yaml
-from apps.text_map.convert_locale import to_ambr_top, to_paths, paths
+from apps.text_map.convert_locale import to_ambr_top, to_paths, CROWDIN_FILE_PATHS
 from utility.utils import log
 
 
 class TextMap:
     def __init__(self):
-        langs = paths.values()
+        langs = CROWDIN_FILE_PATHS.values()
         self.text_maps = {}
         for lang in langs:
             try:
