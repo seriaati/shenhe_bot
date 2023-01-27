@@ -1,7 +1,9 @@
 import datetime
+import inspect
 import itertools
 import json
 import os
+from typing import Optional
 
 import psutil
 import pygit2
@@ -22,7 +24,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_elements.others import Feedback, ManageAccounts, SettingsMenu
 from UI_elements.others.settings import CustomImage
-from utility.utils import default_embed
+from utility.utils import default_embed, error_embed
 
 load_dotenv()
 
@@ -303,6 +305,60 @@ class OthersCog(commands.Cog, name="others"):
                 await get_user_locale(i.user.id, i.client.pool) or i.locale
             )
         )
+
+    @app_commands.command(
+        name="source", description=_("View the bot source code", hash=739)
+    )
+    @app_commands.rename(command=_("command", hash=742))
+    @app_commands.describe(command=_("Name of command to view the source code of", hash=743))
+    async def source(self, i: Interaction, command: Optional[str] = None):
+        source_url = "https://github.com/seriaati/shenhe_bot"
+        branch = "main"
+
+        if not command:
+            return await i.response.send_message(f"<{source_url}>")
+
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        obj = self.bot.tree.get_command(command)
+        if obj is None:
+            return await i.response.send_message(
+                embed=error_embed().set_author(
+                    name=text_map.get(740, locale), icon_url=i.user.display_avatar.url
+                )
+            )
+
+        assert isinstance(obj, app_commands.commands.Command)
+
+        src = obj.callback.__code__
+        module = obj.callback.__module__
+        filename = src.co_filename
+
+        lines, firstlineno = inspect.getsourcelines(src)
+        if not module.startswith("discord"):
+            if filename is None:
+                return await i.response.send_message(
+                    embed=error_embed().set_author(
+                        name=text_map.get(741, locale),
+                        icon_url=i.user.display_avatar.url,
+                    )
+                )
+
+            location = os.path.relpath(filename).replace("\\", "/")
+        else:
+            location = module.replace(".", "/") + ".py"
+            source_url = "https://github.com/Rapptz/discord.py"
+            branch = "master"
+
+        final_url = f"<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>"
+        await i.response.send_message(final_url)
+    
+    @source.autocomplete(name="command")
+    async def source_autocomplete(self, i: Interaction, current: str):
+        options = []
+        for command in self.bot.tree.get_commands():
+            if current.lower() in command.name.lower():
+                options.append(Choice(name=command.name, value=command.name))
+        return options[:25]
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
