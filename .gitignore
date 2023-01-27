@@ -188,3 +188,4 @@ apps/draw/cache/*
 shenhe.db-shm
 shenhe.db-wal
 !/**/.gitkeep
+command_map.json

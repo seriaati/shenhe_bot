@@ -1,88 +1,76 @@
-from discord import Interaction, Locale, SelectOption, app_commands
+import json
+from typing import Dict
+
+import aiofiles
+from discord import Interaction, Locale, SelectOption, app_commands, utils
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import Select
 
-from apps.genshin.custom_model import ShenheBot
+import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from utility.utils import default_embed
 
-import config
-
 
 class Dropdown(Select):
-    def __init__(self, bot, locale: Locale, user_locale: str | None):
+    def __init__(self, locale: Locale | str):
         options = [
-            SelectOption(label=text_map.get(487, locale, user_locale), emoji="🌟"),
+            SelectOption(label=text_map.get(487, locale), emoji="🌟", value="genshin"),
             SelectOption(
-                label=text_map.get(488, locale, user_locale),
-                description=text_map.get(489, locale, user_locale),
+                label=text_map.get(488, locale),
+                description=text_map.get(489, locale),
                 emoji="🌠",
+                value="wish",
             ),
             SelectOption(
-                label=text_map.get(490, locale, user_locale),
-                description=text_map.get(491, locale, user_locale),
+                label=text_map.get(490, locale),
+                description=text_map.get(491, locale),
                 emoji="<:CALCULATOR:999540912319369227>",
+                value="calc",
             ),
-            SelectOption(label=text_map.get(202, locale, user_locale), emoji="✅"),
-            SelectOption(label=text_map.get(494, locale, user_locale), emoji="❄️"),
+            SelectOption(label=text_map.get(202, locale), emoji="✅", value="todo"),
+            SelectOption(label=text_map.get(494, locale), emoji="❄️", value="others"),
         ]
-        super().__init__(
-            placeholder=text_map.get(495, locale, user_locale), options=options
-        )
-        self.bot: ShenheBot = bot
+        super().__init__(placeholder=text_map.get(495, locale), options=options)
+
+        self.locale = locale
 
     async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
-        index = 0
-        cogs = ["genshin", "wish", "calc", "todo", "others"]
-        for index, option in enumerate(self.options):
-            if option.value == self.values[0]:
-                selected_option = option
-                index = index
-                break
-        command_cog = self.bot.get_cog(cogs[index])
-        if command_cog is None:
-            raise ValueError(f"Cog {cogs[index]} not found")
-        commands = command_cog.__cog_app_commands__
-        is_group = command_cog.__cog_is_app_commands_group__
-        group_name = command_cog.__cog_group_name__
-        app_commands = await self.bot.tree.fetch_commands()
-        app_command_dict = {}
-        for app_command in app_commands:
-            app_command_dict[app_command.name] = app_command.id
+        locale = self.locale
 
+        bot: commands.Bot = i.client  # type: ignore
+        cog = bot.get_cog(self.values[0])
+        assert cog
+
+        selected_option = utils.get(self.options, value=self.values[0])
+        assert selected_option
         embed = default_embed(f"{selected_option.emoji} {selected_option.label}")
-        for command in commands:
-            try:
-                hash = command._locale_description.extras["hash"]
-            except KeyError:
-                value = command.description
+
+        async with aiofiles.open("command_map.json", "r") as f:
+            command_map: Dict[str, int] = json.loads(await f.read())
+
+        for command in cog.walk_app_commands():
+            assert command._locale_description
+            
+            if cog.__cog_is_app_commands_group__:
+                mention = f"</{self.values[0]} {command.name}:{command_map.get(self.values[0])}>"
             else:
-                value = ""
-                try:
-                    value = text_map.get(hash, i.locale, user_locale)
-                except (ValueError, KeyError):
-                    value = command.description
-            if is_group:
-                embed.add_field(
-                    name=f"</{group_name} {command.name}:{app_command_dict[group_name]}>",
-                    value=value,
-                )
-            else:
-                embed.add_field(
-                    name=f"</{command.name}:{app_command_dict[command.name]}>",
-                    value=value,
-                )
+                mention = f"</{command.name}:{command_map.get(command.name)}>"
+            embed.add_field(
+                name=mention,
+                value=text_map.get(command._locale_description.extras["hash"], locale),
+                inline=False,
+            )
+
         await i.response.edit_message(embed=embed)
 
 
 class DropdownView(BaseView):
-    def __init__(self, bot: commands.AutoShardedBot, locale: Locale, user_locale: str | None):
+    def __init__(self, locale: Locale | str):
         super().__init__(timeout=config.mid_timeout)
-        self.add_item(Dropdown(bot, locale, user_locale))
+        self.add_item(Dropdown(locale))
 
 
 class HelpCog(commands.Cog):
@@ -93,8 +81,8 @@ class HelpCog(commands.Cog):
         name="help", description=_("View a list of all commands", hash=486)
     )
     async def help(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
-        view = DropdownView(self.bot, i.locale, user_locale)
+        user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
+        view = DropdownView(user_locale or i.locale)
         await i.response.send_message(view=view)
         view.message = await i.original_response()
 
