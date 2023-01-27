@@ -86,7 +86,7 @@
 '83': Більшість сплесків використано
 '84': Найбільше використаних навичок
 '85': Огляд спіральної безодні
-'86': назва зображення
+'86': назва-зображення
 '87': Shenhe зібрав на сьогодні щоденну винагороду за вас!
 '88': Таблиця лідерів спіральної безодні ({phase}{num})
 '89': ранг
@@ -844,3 +844,8 @@
 '736': Sands of Eon
 '737': Goblet of Eonothem
 '738': Circlet of Logos
+'739': View the bot's source code
+'740': Command not found
+'741': Could not find source for this command
+'742': command
+'743': Name of command to view the source code of
