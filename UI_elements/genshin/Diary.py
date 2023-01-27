@@ -1,14 +1,17 @@
-from discord import File, Interaction, Locale, Member, User
+import io
+from typing import List
+from discord import File, Interaction, Locale, Member, User, utils
 from discord.ui import Button, Select
 
 import asset
 import config
-from apps.genshin.custom_model import DiaryResult
+from apps.genshin.custom_model import DiaryLogsResult, DiaryResult
 from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed
+from utility.utils import default_embed, divide_chunks
+from matplotlib import pyplot as plt
 
 
 class View(BaseView):
@@ -86,12 +89,10 @@ class Primo(Button):
         super().__init__(label=label, emoji=asset.primo_emoji)
 
     async def callback(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
         self.view: View
-        result, _ = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.user.id, True, i.locale
-        )
-        await i.followup.send(embed=result, ephemeral=True)
+        assert self.label
+        
+        await primo_mora_button_callback(i, self.view, True, self.label)
 
 
 class Mora(Button):
@@ -99,9 +100,35 @@ class Mora(Button):
         super().__init__(label=label, emoji=asset.mora_emoji)
 
     async def callback(self, i: Interaction):
-        await i.response.defer(ephemeral=True)
         self.view: View
-        result, _ = await self.view.genshin_app.get_diary_logs(
-            self.view.member.id, i.user.id, False, i.locale
-        )
-        await i.followup.send(embed=result, ephemeral=True)
+        assert self.label
+        
+        await primo_mora_button_callback(i, self.view, False, self.label)
+
+async def primo_mora_button_callback(i: Interaction, view: View, is_primo: bool, label: str):
+    await i.response.defer(ephemeral=True)
+    result = await view.genshin_app.get_diary_logs(
+        view.member.id, i.user.id, is_primo, i.locale
+    )
+    log_result : DiaryLogsResult = result.result
+    
+    embed = default_embed()
+    embed.title = label
+    embed.set_image(url="attachment://diary.png")
+    
+    now = utils.utcnow()
+    values: List[str] = []
+    for day, amount in log_result.before_adding.items():
+        values.append(f"{utils.format_dt(now.replace(day=day), 'd')} / **{amount}**\n")
+    divided_values: List[List[str]] = list(divide_chunks(values, 15))
+    for d_v in divided_values:
+        embed.add_field(name="** **", value="".join(d_v), inline=True)
+    
+    plt.plot(log_result.primo_per_day.keys(), log_result.primo_per_day.values(), color="#617d9d")
+    plot = io.BytesIO()
+    plt.savefig(plot, bbox_inches=None, format="png")
+    plt.clf()
+    
+    plot.seek(0)
+    file_ = File(plot, "diary.png")
+    await i.followup.send(embed=embed, ephemeral=True, file=file_)

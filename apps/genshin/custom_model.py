@@ -362,3 +362,7 @@ class OriginalInfo(BaseModel):
     
     class Config:
         arbitrary_types_allowed = True
+
+class DiaryLogsResult(BaseModel):
+    primo_per_day: Dict[int, int]
+    before_adding: Dict[int, int]

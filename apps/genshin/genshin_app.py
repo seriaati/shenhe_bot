@@ -1,18 +1,19 @@
+import calendar
 from datetime import timedelta
-from typing import List, Optional
+from typing import Dict, List, Optional
 
+import discord
 import enkanetwork
 import genshin
 import sentry_sdk
 from dateutil.relativedelta import relativedelta
-from discord import (Asset, ClientUser, Embed, Locale, Member, SelectOption,
-                     User)
 from discord.utils import format_dt
 
 from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin.custom_model import (AbyssResult, AreaResult,
-                                       CharacterResult, DiaryResult, DrawInput,
+                                       CharacterResult, DiaryLogsResult,
+                                       DiaryResult, DrawInput,
                                        GenshinAppResult, RealtimeNoteResult,
                                        ShenheAccount, ShenheBot, StatsResult)
 from apps.genshin.utils import (get_character_emoji, get_shenhe_account,
@@ -83,7 +84,9 @@ class GenshinApp:
         self.bot: ShenheBot = bot
 
     @genshin_error_handler
-    async def claim_daily_reward(self, user_id: int, author_id: int, locale: Locale):
+    async def claim_daily_reward(
+        self, user_id: int, author_id: int, locale: discord.Locale
+    ):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             reward = await shenhe_user.client.claim_daily_reward()
@@ -108,7 +111,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_real_time_notes(
-        self, user_id: int, author_id: int, locale: Locale
+        self, user_id: int, author_id: int, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
@@ -127,9 +130,9 @@ class GenshinApp:
     async def parse_resin_embed(
         self,
         notes: genshin.models.Notes,
-        locale: Locale,
+        locale: discord.Locale,
         user_locale: Optional[str] = None,
-    ) -> Embed:
+    ) -> discord.Embed:
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, locale, user_locale)
         else:
@@ -178,8 +181,8 @@ class GenshinApp:
         user_id: int,
         author_id: int,
         namecard: enkanetwork.Namecard,
-        avatar_asset: Asset,
-        locale: Locale,
+        avatar_asset: discord.Asset,
+        locale: discord.Locale,
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
@@ -210,7 +213,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_area(
-        self, user_id: int, author_id: int, locale: Locale
+        self, user_id: int, author_id: int, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
@@ -242,7 +245,7 @@ class GenshinApp:
         self,
         user_id: int,
         author_id: int,
-        locale: Locale,
+        locale: discord.Locale,
         month: Optional[int] = None,
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
@@ -280,44 +283,46 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_diary_logs(
-        self, user_id: int, author_id: int, primo: bool, locale: Locale
+        self, user_id: int, author_id: int, primo: bool, locale: discord.Locale
     ):
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
-        if primo:
-            primo_log = ""
-            async for action in shenhe_user.client.diary_log(limit=30):
-                primo_log = (
-                    primo_log
-                    + f"{format_dt(action.time, 'd')} {action.action} - {action.amount} {text_map.get(71, locale, shenhe_user.user_locale)}"
-                    + "\n"
-                )
-            embed = default_embed(message=f"{primo_log}")
-            embed.set_author(
-                name=text_map.get(70, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-        else:
-            mora_log = ""
-            async for action in shenhe_user.client.diary_log(
-                limit=30, type=genshin.models.DiaryType.MORA
-            ):
-                mora_log = (
-                    mora_log
-                    + f"{format_dt(action.time, 'd')} {action.action} - {action.amount} {text_map.get(73, locale, shenhe_user.user_locale)}"
-                    + "\n"
-                )
-            embed = default_embed(message=f"{mora_log}")
-            embed.set_author(
-                name=text_map.get(72, locale, shenhe_user.user_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-        return embed, True
+
+        now = get_dt_now()
+        primo_per_day: Dict[int, int] = {}
+
+        async for action in shenhe_user.client.diary_log(
+            uid=shenhe_user.uid,
+            month=now.month,
+            type=genshin.models.DiaryType.PRIMOGEMS
+            if primo
+            else genshin.models.DiaryType.MORA,
+        ):
+            if action.time.day not in primo_per_day:
+                primo_per_day[action.time.day] = 0
+            primo_per_day[action.time.day] += action.amount
+
+        before_adding: Dict[int, int] = primo_per_day.copy()
+        before_adding = dict(sorted(before_adding.items()))
+
+        for i in range(1, calendar.monthrange(now.year, now.month)[1] + 1):
+            if i not in primo_per_day:
+                primo_per_day[i] = 0
+
+        primo_per_day = dict(sorted(primo_per_day.items()))
+
+        return GenshinAppResult(
+            success=True,
+            result=DiaryLogsResult(
+                primo_per_day=primo_per_day,
+                before_adding=before_adding,
+            ),
+        )
 
     @genshin_error_handler
     async def get_abyss(
-        self, user_id: int, author_id: int, previous: bool, locale: Locale
+        self, user_id: int, author_id: int, previous: bool, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
@@ -374,7 +379,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_all_characters(
-        self, user_id: int, author_id: int, locale: Locale
+        self, user_id: int, author_id: int, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
@@ -402,7 +407,7 @@ class GenshinApp:
         result = {
             "embeds": {"All": embed},
             "options": [
-                SelectOption(
+                discord.SelectOption(
                     label=f"{text_map.get(701, new_locale)} ({len(characters)})",
                     value="All",
                 )
@@ -435,7 +440,7 @@ class GenshinApp:
             result["embeds"][element] = embed
 
             result["options"].append(
-                SelectOption(
+                discord.SelectOption(
                     emoji=element_emojis.get(element),
                     label=f"{text_map.get(52, new_locale).format(element=get_element_name(element, new_locale))} ({len(chars)})",
                     value=element,
@@ -459,7 +464,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def redeem_code(
-        self, user_id: int, author_id: int, code: str, locale: Locale
+        self, user_id: int, author_id: int, code: str, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
@@ -507,7 +512,7 @@ class GenshinApp:
 
     @genshin_error_handler
     async def get_activities(
-        self, user_id: int, author_id: int, locale: Locale
+        self, user_id: int, author_id: int, locale: discord.Locale
     ) -> GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
@@ -533,9 +538,9 @@ class GenshinApp:
     async def parse_summer_embed(
         self,
         summer: genshin.models.Summer,
-        user: User | Member | ClientUser,
-        locale: Locale | str,
-    ) -> list[Embed]:
+        user: discord.User | discord.Member | discord.ClientUser,
+        locale: discord.Locale | str,
+    ) -> list[discord.Embed]:
         embeds = []
         embed = default_embed().set_author(
             name=text_map.get(111, locale),
@@ -604,7 +609,7 @@ class GenshinApp:
         return uid
 
     async def get_user_cookie(
-        self, user_id: int, author_id: int, locale: Optional[Locale] = None
+        self, user_id: int, author_id: int, locale: Optional[discord.Locale] = None
     ) -> ShenheAccount:
         author_locale = await get_user_locale(author_id, self.bot.pool)
         shenhe_user = await get_shenhe_account(

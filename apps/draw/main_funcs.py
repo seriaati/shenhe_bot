@@ -257,6 +257,7 @@ async def draw_diary_card(
         )
         plot = io.BytesIO()
         plt.savefig(plot, bbox_inches=None, transparent=True, format="png")
+        plt.clf()
 
     func = functools.partial(
         diary.card, diary_data, user_data, input.locale, month, input.dark_mode, plot

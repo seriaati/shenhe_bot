@@ -224,7 +224,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.edit_original_response(
                 embed=note_result.embed.set_image(
                     url="attachment://realtime_notes.jpeg"
-                ),
+                ).set_author(name=text_map.get(24, await get_user_locale(member.id, self.bot.pool) or i.locale), icon_url=member.display_avatar.url),
                 attachments=[discord.File(fp, filename="realtime_notes.jpeg")],
             )
 
