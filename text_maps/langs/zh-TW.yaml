@@ -836,8 +836,8 @@
 '736': 時之沙
 '737': 空之杯
 '738': 理之冠
-'739': View the bot's source code
-'740': Command not found
-'741': Could not find source for this command
-'742': command
-'743': Name of command to view the source code of
+'739': 查看機器人的原始碼
+'740': 找不到該指令
+'741': 找不到此指令的原始碼
+'742': 指令
+'743': 要查看原始碼的指令名稱
