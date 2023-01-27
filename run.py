@@ -1,19 +1,21 @@
 # shenhe-bot by seria
 
+import asyncio
 import os
 import platform
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional
+import aiofiles
+import json
 
 import aiohttp
 import asqlite
 import sentry_sdk
 from cachetools import TTLCache
-from discord import Game, Intents, Interaction, Locale, Message, app_commands
-from discord.app_commands import TranslationContext, locale_str
+import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.ext.commands import Context
 from dotenv import load_dotenv
 
 from apps.genshin.browser import launch_browsers
@@ -36,7 +38,7 @@ else:
 
 class Translator(app_commands.Translator):
     async def translate(
-        self, string: locale_str, locale: Locale, context: TranslationContext
+        self, string: app_commands.locale_str, locale: discord.Locale, context: app_commands.TranslationContext
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
@@ -53,19 +55,61 @@ class Translator(app_commands.Translator):
         except KeyError:
             return None
 
+class ShenheCommandTree(app_commands.CommandTree):
+    def __init__(self, bot: commands.AutoShardedBot):
+        super().__init__(bot)
+    
+    async def sync(self, *, guild: Optional[discord.abc.Snowflake] = None) -> List[app_commands.AppCommand]:
+        synced = await super().sync(guild=guild)
+        log.info(f"[System]sync: Synced {len(synced)} commands")
+        if synced:
+            command_map: Dict[str, int] = {}
+            for command in synced:
+                command_map[command.name] = command.id
+            async with aiofiles.open("command_map.json", "w") as f:
+                await f.write(json.dumps(command_map))
+                
+        return synced
 
-intents = Intents.default()
-intents.members = True
-
+    async def interaction_check(self, i: discord.Interaction, /) -> bool:
+        if i.guild is not None and not i.guild.chunked:
+            await i.guild.chunk()
+        
+        if i.user.id == 410036441129943050:
+            return True
+        else:
+            if i.client.maintenance: # type: ignore
+                await i.response.send_message(
+                    embed=error_embed(
+                        "申鶴正在維護中\nShenhe is under maintenance",
+                        f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}", # type: ignore
+                    ).set_thumbnail(
+                        url=i.client.user.avatar.url # type: ignore
+                    ),
+                    ephemeral=True,
+                )
+                return False
+            else:
+                return True
+    
+    async def on_error(self, i: discord.Interaction, e: app_commands.AppCommandError, /) -> None:
+        return await global_error_handler(i, e)
 
 class Shenhe(commands.AutoShardedBot):
-    def __init__(self):
+    def __init__(self, session: aiohttp.ClientSession, pool: asqlite.Pool):
+        intents = discord.Intents.default()
+        intents.members = True
+        
+        self.session = session
+        self.pool = pool
+        
         super().__init__(
             command_prefix=commands.when_mentioned,
             intents=intents,
             application_id=application_id,
             chunk_guilds_at_startup=False,
-            activity=Game(name="/help | shenhe.bot.nu"),
+            activity=discord.Game(name="/help | shenhe.bot.nu"),
+            tree_cls=ShenheCommandTree,
         )
 
     async def setup_hook(self) -> None:
@@ -80,10 +124,8 @@ class Shenhe(commands.AutoShardedBot):
         self.maintenance = False
         self.maintenance_time = ""
         self.launch_time = datetime.utcnow()
-        self.session = aiohttp.ClientSession()
         self.debug = debug
         self.gd_text_map = load_text_maps()
-        self.pool = await asqlite.create_pool("shenhe.db", check_same_thread=False)
         
         async with self.pool.acquire() as db:
             await db.execute("PRAGMA journal_mode=WAL")
@@ -112,7 +154,7 @@ class Shenhe(commands.AutoShardedBot):
             except Exception as e:
                 log.warning("[System]on_ready: Launch browsers failed", exc_info=e)
 
-    async def on_message(self, message: Message):
+    async def on_message(self, message: discord.Message):
         if self.user is None:
             return
         if message.author.id == self.user.id:
@@ -132,7 +174,7 @@ class Shenhe(commands.AutoShardedBot):
         else:
             log.warning(f"[{ctx.author.id}]on_command_error: {error}")
             sentry_sdk.capture_exception(error)
-
+    
     async def close(self) -> None:
         await self.session.close()
         if not self.debug:
@@ -145,76 +187,62 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"), integrations=[sentry_logging], traces_sample_rate=1.0
 )
 
-bot = Shenhe()
-
-
-@bot.before_invoke
-async def before_invoke(ctx: Context):
-    if ctx.guild is not None and not ctx.guild.chunked:
-        await ctx.guild.chunk()
-
-
-@bot.listen()
-async def on_message_edit(before: Message, after: Message):
-    if before.content == after.content:
-        return
-    if before.author.id != bot.owner_id:
-        return
-    return await bot.process_commands(after)
-
-
-@bot.listen()
-async def on_interaction(i: Interaction):
-    if i.command is None:
-        return
-
-    if isinstance(i.command, app_commands.Command):
-        namespace_str = "" if not i.namespace.__dict__ else ": "
-        for key, value in i.namespace.__dict__.items():
-            namespace_str += f"[{key}] {value} "
-        if i.command.parent is None:
-            log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
-        else:
-            log.info(
-                f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{namespace_str}"
-            )
-    else:
-        log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
-
-
-tree = bot.tree
-
-
-async def check_maintenance(i: Interaction, /) -> bool:
-    if i.user.id == 410036441129943050:
-        return True
-    else:
-        if i.client.maintenance: # type: ignore
-            await i.response.send_message(
-                embed=error_embed(
-                    "申鶴正在維護中\nShenhe is under maintenance",
-                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}", # type: ignore
-                ).set_thumbnail(
-                    url=i.client.user.avatar.url # type: ignore
-                ),
-                ephemeral=True,
-            )
-            return False
-        else:
-            return True
-
-
-tree.interaction_check = check_maintenance
-
-
-@tree.error
-async def on_error(i: Interaction, e: app_commands.AppCommandError):
-    await global_error_handler(i, e)
-
-
 if platform.system() == "Linux":
     import uvloop  # type: ignore
-
     uvloop.install()
 
-bot.run(token=token)
+async def main() -> None:
+    assert token
+    
+    try:
+        pool = await asqlite.create_pool("shenhe.db", check_same_thread=False)
+    except Exception as e:
+        log.error("Failed to connect to database", exc_info=e)
+        return
+
+    session = aiohttp.ClientSession()
+    bot = Shenhe(session=session, pool=pool)
+    
+    @bot.before_invoke
+    async def before_invoke(ctx: commands.Context):
+        if ctx.guild is not None and not ctx.guild.chunked:
+            await ctx.guild.chunk()
+
+
+    @bot.listen()
+    async def on_message_edit(before: discord.Message, after: discord.Message):
+        if before.content == after.content:
+            return
+        if before.author.id != bot.owner_id:
+            return
+        return await bot.process_commands(after)
+
+
+    @bot.listen()
+    async def on_interaction(i: discord.Interaction):
+        if i.command is None:
+            return
+
+        if isinstance(i.command, app_commands.Command):
+            namespace_str = "" if not i.namespace.__dict__ else ": "
+            for key, value in i.namespace.__dict__.items():
+                namespace_str += f"[{key}] {value} "
+            if i.command.parent is None:
+                log.info(f"[Command][{i.user.id}][{i.command.name}]{namespace_str}")
+            else:
+                log.info(
+                    f"[Command][{i.user.id}][{i.command.parent.name} {i.command.name}]{namespace_str}"
+                )
+        else:
+            log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
+    
+    async with (session, bot, pool):
+        try:
+            await bot.start(token)
+        except KeyboardInterrupt:
+            return
+        except Exception as e:
+            log.error("Failed to start bot", exc_info=e)
+            return
+
+asyncio.run(main())
