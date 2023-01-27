@@ -212,7 +212,7 @@
 '193': Powered by Genshin Optimizer
 '194': |-
   合計ユーザー: {total}
-  内Cookie登録者: {cookie}
+  Cookie登録者: {cookie}
   中国版ユーザー: {china}
 '195': 無効なファイル形式
 '196': 原神キャラクター概要
@@ -838,8 +838,8 @@
 '736': 時の砂
 '737': 空の杯
 '738': 理の冠
-'739': View the bot's source code
-'740': Command not found
-'741': Could not find source for this command
-'742': command
-'743': Name of command to view the source code of
+'739': botのソースコードを表示
+'740': コマンドが見つかりません
+'741': このコマンドのソースが見つかりませんでした
+'742': コマンド
+'743': ソースコードを表示するコマンド名
