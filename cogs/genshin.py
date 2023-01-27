@@ -735,88 +735,81 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, i: discord.Interaction, query: str):
         await i.response.defer()
+        
         user_locale = await get_user_locale(i.user.id, i.client.pool)
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         locale = user_locale or i.locale
-        try:
-            ambr_top_locale = to_ambr_top(locale)
-            client = AmbrTopAPI(self.bot.session, ambr_top_locale)
-            if not query.isdigit():
-                query = (
-                    self.item_names.get(query)
-                    or self.item_names.get(query.title())
-                    or query
-                )
-            item_type = None
-            for index, file in enumerate(self.text_map_files):
-                if query in file:
-                    item_type = index
-                    break
-            if item_type is None:
-                raise ItemNotFound
-
-            if item_type == 0:  # character
-                character = await client.get_character_detail(query)
-                if character is None:
-                    raise ItemNotFound
-                await parse_character_wiki(character, i, locale, client, dark_mode)
-
-            elif item_type == 1:  # weapon
-                weapon = await client.get_weapon_detail(int(query))
-                if weapon is None:
-                    raise ItemNotFound
-                await parse_weapon_wiki(weapon, i, locale, client, dark_mode)
-
-            elif item_type == 2:  # material
-                material = await client.get_material_detail(int(query))
-                if material is None:
-                    raise ItemNotFound
-                await parse_material_wiki(material, i, locale, client, dark_mode)
-
-            elif item_type == 3:  # artifact
-                artifact = await client.get_artifact_detail(int(query))
-                if artifact is None:
-                    raise ItemNotFound
-                await parse_artifact_wiki(artifact, i, locale)
-
-            elif item_type == 4:  # monster
-                monster = await client.get_monster_detail(int(query))
-                if monster is None:
-                    raise ItemNotFound
-                await parse_monster_wiki(monster, i, locale, client, dark_mode)
-
-            elif item_type == 5:  # food
-                food = await client.get_food_detail(int(query))
-                if food is None:
-                    raise ItemNotFound
-                await parse_food_wiki(food, i, locale, client, dark_mode)
-
-            elif item_type == 6:  # furniture
-                furniture = await client.get_furniture_detail(int(query))
-                if furniture is None:
-                    raise ItemNotFound
-                await parse_furniture_wiki(furniture, i, locale, client, dark_mode)
-
-            elif item_type == 7:  # namecard
-                namecard = await client.get_name_card_detail(int(query))
-                if namecard is None:
-                    raise ItemNotFound
-                await parse_namecard_wiki(namecard, i, locale)
-
-            elif item_type == 8:  # book
-                book = await client.get_book_detail(int(query))
-                if book is None:
-                    raise ItemNotFound
-                await parse_book_wiki(book, i, locale, client)
-
-        except ItemNotFound:
-            await i.followup.send(
-                embed=error_embed().set_author(
-                    name=text_map.get(542, i.locale, user_locale),
-                    icon_url=asset.error_icon,
-                ),
-                ephemeral=True,
+        ambr_top_locale = to_ambr_top(locale)
+        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
+        client = AmbrTopAPI(self.bot.session, ambr_top_locale)
+        
+        if not query.isdigit():
+            query = (
+                self.item_names.get(query)
+                or self.item_names.get(query.title())
+                or query
             )
+            
+        item_type = None
+        for index, file in enumerate(self.text_map_files):
+            if query in file:
+                item_type = index
+                break
+        if item_type is None:
+            raise ItemNotFound
+
+        if item_type == 0:  # character
+            character = await client.get_character_detail(query)
+            if character is None:
+                raise ItemNotFound
+            await parse_character_wiki(character, i, locale, client, dark_mode)
+
+        elif item_type == 1:  # weapon
+            weapon = await client.get_weapon_detail(int(query))
+            if weapon is None:
+                raise ItemNotFound
+            await parse_weapon_wiki(weapon, i, locale, client, dark_mode)
+
+        elif item_type == 2:  # material
+            material = await client.get_material_detail(int(query))
+            if material is None:
+                raise ItemNotFound
+            await parse_material_wiki(material, i, locale, client, dark_mode)
+
+        elif item_type == 3:  # artifact
+            artifact = await client.get_artifact_detail(int(query))
+            if artifact is None:
+                raise ItemNotFound
+            await parse_artifact_wiki(artifact, i, locale)
+
+        elif item_type == 4:  # monster
+            monster = await client.get_monster_detail(int(query))
+            if monster is None:
+                raise ItemNotFound
+            await parse_monster_wiki(monster, i, locale, client, dark_mode)
+
+        elif item_type == 5:  # food
+            food = await client.get_food_detail(int(query))
+            if food is None:
+                raise ItemNotFound
+            await parse_food_wiki(food, i, locale, client, dark_mode)
+
+        elif item_type == 6:  # furniture
+            furniture = await client.get_furniture_detail(int(query))
+            if furniture is None:
+                raise ItemNotFound
+            await parse_furniture_wiki(furniture, i, locale, client, dark_mode)
+
+        elif item_type == 7:  # namecard
+            namecard = await client.get_name_card_detail(int(query))
+            if namecard is None:
+                raise ItemNotFound
+            await parse_namecard_wiki(namecard, i, locale)
+
+        elif item_type == 8:  # book
+            book = await client.get_book_detail(int(query))
+            if book is None:
+                raise ItemNotFound
+            await parse_book_wiki(book, i, locale, client)
 
     @search.autocomplete("query")
     async def query_autocomplete(
@@ -839,7 +832,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             break
                     if all_match and item_name != "":
                         result.append(app_commands.Choice(name=item_name, value=item_id))
-        if current == "":
+        if not current:
             random.shuffle(result)
         return result[:25]
 

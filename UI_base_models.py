@@ -8,7 +8,7 @@ import asset
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import (CardNotFound, NoCharacterFound, NoCookie, NoPlayerFound, NoUID, NoWishHistory, ShenheAccountNotFound,
+from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie, NoPlayerFound, NoUID, NoWishHistory, ShenheAccountNotFound,
                         UIDNotFound)
 from utility.utils import error_embed, log
 
@@ -104,6 +104,8 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(683, locale))
     elif isinstance(e, CardNotFound):
         embed.set_author(name=text_map.get(719, locale))
+    elif isinstance(e, ItemNotFound):
+        embed.set_author(name=text_map.get(542, locale))
     else:
         sentry_sdk.capture_exception(e)
 
