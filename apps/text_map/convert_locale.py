@@ -148,5 +148,6 @@ def to_event_lang(locale: Locale | str):
 def to_hutao_login_lang(locale: Locale | str):
     return HUTAO_LOGIN_LANGS.get(str(locale), "en")
 
+
 def to_genshin_db(locale: Locale | str):
     return GENSHIN_DB_LANGS.get(str(locale), "English")

@@ -512,7 +512,7 @@ class Schedule(commands.Cog):
         """Auto-redeems codes for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Redeem Codes] Start")
 
-        codes = await find_codes()
+        codes = await find_codes(self.bot.session)
 
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
 
