@@ -103,7 +103,7 @@ def draw_artifact(
     color = asset.white if dark_mode else asset.primary_text
     draw.text(
         (102, 489),
-        text_map.get(79).format(character_name=character.name),
+        text_map.get(79, locale).format(character_name=character.name),
         font=font,
         fill=color,
     )
