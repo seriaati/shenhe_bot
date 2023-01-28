@@ -278,10 +278,11 @@ class ShowArtifacts(ui.Button):
             self.view.clear_items()
             for equipment in character.equipments:
                 art_type = equipment.detail.artifact_type
-                print(get_artifact_slot_emoji(art_type))
-                self.view.add_item(
-                    ArtifactSlot(get_artifact_slot_emoji(art_type), art_type, character)
-                )
+                e = get_artifact_slot_emoji(art_type)
+                if e:
+                    self.view.add_item(
+                        ArtifactSlot(e, art_type, character)
+                    )
 
             self.view.add_item(GoBackButton(original_info))
             await i.response.edit_message(view=self.view)
