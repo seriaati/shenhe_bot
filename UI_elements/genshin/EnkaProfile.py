@@ -280,8 +280,12 @@ class ShowArtifacts(Button):
             self.view.clear_items()
             for index in range(5):
                 self.view.add_item(
-                    ArtifactSlot(get_artifact_slot_emoji(index), index, character)
+                    button:=ArtifactSlot(get_artifact_slot_emoji(index), index, character)
                 )
+                try:
+                    character.equipments[index]
+                except IndexError:
+                    button.disabled = True
 
             self.view.add_item(GoBackButton(original_info))
             await i.response.edit_message(view=self.view)

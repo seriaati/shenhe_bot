@@ -3,6 +3,7 @@ from typing import List
 import genshin
 import asqlite
 from apps.genshin.utils import get_current_abyss_season
+from discord import utils
 
 
 async def update_user_abyss_leaderboard(
@@ -16,9 +17,9 @@ async def update_user_abyss_leaderboard(
     pool: asqlite.Pool,
 ) -> None:
     character = abyss_data.ranks.strongest_strike[0]
-    g_c = next((c for c in characters if c.id == character.id), None)
-    if g_c is None:
-        raise ValueError("Genshin character data not found")
+    g_c = utils.get(characters, id=character.id)
+    assert g_c
+    
     current_season = get_current_abyss_season() - previous
 
     runs = None
