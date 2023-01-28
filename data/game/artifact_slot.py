@@ -4,14 +4,14 @@ from enkanetwork import enum
 from apps.text_map.text_map_app import text_map
 
 ARTIFACT_SLOT_EMOJIS = {
-    0: "<:Flower_of_Life:982167959717945374>",
-    1: "<:Plume_of_Death:982167959915077643>",
-    2: "<:Sands_of_Eon:982167959881547877>",
-    3: "<:Goblet_of_Eonothem:982167959835402240>",
-    4: "<:Circlet_of_Logos:982167959692787802>",
+    enum.EquipType.Flower: "<:Flower_of_Life:982167959717945374>",
+    enum.EquipType.Feather: "<:Plume_of_Death:982167959915077643>",
+    enum.EquipType.Sands: "<:Sands_of_Eon:982167959881547877>",
+    enum.EquipType.Goblet: "<:Goblet_of_Eonothem:982167959835402240>",
+    enum.EquipType.Circlet: "<:Circlet_of_Logos:982167959692787802>",
 }
 
-def get_artifact_slot_emoji(slot: int) -> str:
+def get_artifact_slot_emoji(slot: enum.EquipType) -> str:
     return ARTIFACT_SLOT_EMOJIS.get(slot, "")
 
 
