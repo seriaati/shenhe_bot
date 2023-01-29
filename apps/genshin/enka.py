@@ -8,15 +8,20 @@ from exceptions import NeverRaised, NoCharacterFound
 async def get_enka_data(
     uid: int, lang: str, pool: asqlite.Pool
 ) -> Tuple[
-    enkanetwork.model.EnkaNetworkResponse, enkanetwork.model.EnkaNetworkResponse
-]:  
+    enkanetwork.model.EnkaNetworkResponse,
+    enkanetwork.model.EnkaNetworkResponse,
+    Optional[enkanetwork.model.EnkaNetworkResponse],
+]:
     async with enkanetwork.EnkaNetworkAPI(lang=lang) as enka:
         try:
             data = await enka.fetch_user(uid)
 
             await enka.set_language(enkanetwork.Language.EN)
             en_data = await enka.fetch_user(uid)
-        except (enkanetwork.exception.VaildateUIDError, enkanetwork.exception.UIDNotFounded) as e:
+        except (
+            enkanetwork.exception.VaildateUIDError,
+            enkanetwork.exception.UIDNotFounded,
+        ) as e:
             raise e
         except Exception as e:
             cache = await get_enka_cache(uid, pool)
@@ -24,16 +29,16 @@ async def get_enka_data(
             if not cache or not en_cache:
                 raise e
             else:
-                return cache, en_cache
+                return cache, en_cache, None
         else:
             await update_enka_cache(uid, data, en_data, pool)
 
             cache = await get_enka_cache(uid, pool)
             en_cache = await get_enka_cache(uid, pool, en=True)
-            
+
             if not cache or not en_cache:
                 raise NeverRaised
-            return cache, en_cache
+            return cache, en_cache, data
 
 
 async def get_enka_cache(

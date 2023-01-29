@@ -260,7 +260,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if uid is None:
             raise UIDNotFound
 
-        enka_data, _ = await enka.get_enka_data(
+        enka_data, _, _ = await enka.get_enka_data(
             uid, convert_locale.to_enka(user_locale or i.locale), self.bot.pool
         )
         namecard = enka_data.player.namecard
@@ -621,7 +621,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if uid is None:
             raise UIDNotFound
 
-        data, en_data = await enka.get_enka_data(
+        data, en_data, card_data = await enka.get_enka_data(
             uid, convert_locale.to_enka(locale), self.bot.pool
         )
 
@@ -686,7 +686,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 locale=locale,
                 dark_mode=dark_mode,
             ),
-            data,
+            card_data or data,
         )
         fp.seek(0)
         fp_two.seek(0)
