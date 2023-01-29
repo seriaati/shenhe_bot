@@ -3,8 +3,15 @@ import asyncio
 from typing import Optional
 
 import asqlite
-from discord import (ButtonStyle, Embed, Forbidden, Interaction,
-                     InteractionResponded, Locale, NotFound)
+from discord import (
+    ButtonStyle,
+    Embed,
+    Forbidden,
+    Interaction,
+    InteractionResponded,
+    Locale,
+    NotFound,
+)
 from discord.ui import Button, TextInput
 
 import asset
@@ -34,7 +41,7 @@ class View(BaseView):
 
 class ResinNotification(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="🌙", label=text_map.get(582, locale))
+        super().__init__(emoji=asset.resin_emoji, label=text_map.get(582, locale))
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -44,7 +51,9 @@ class ResinNotification(Button):
 
 class PotNotification(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="🫖", label=text_map.get(584, locale))
+        super().__init__(
+            emoji=asset.realm_currency_emoji, label=text_map.get(584, locale)
+        )
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -54,7 +63,9 @@ class PotNotification(Button):
 
 class TalentNotification(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="📘", label=text_map.get(442, locale), row=2)
+        super().__init__(
+            emoji=asset.talent_book_emoji, label=text_map.get(442, locale), row=2
+        )
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -63,7 +74,9 @@ class TalentNotification(Button):
 
 class WeaponNotification(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="🗡️", label=text_map.get(632, locale), row=2)
+        super().__init__(
+            emoji=asset.weapon_emoji, label=text_map.get(632, locale), row=2
+        )
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -72,11 +85,16 @@ class WeaponNotification(Button):
 
 class AddWeapon(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="✏️", label=text_map.get(634, locale))
+        super().__init__(
+            emoji=asset.add_emoji,
+            label=text_map.get(634, locale),
+            row=1,
+            style=ButtonStyle.green,
+        )
         self.locale = locale
 
     async def callback(self, i: Interaction):
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale)) # type: ignore
         view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user
@@ -85,7 +103,12 @@ class AddWeapon(Button):
 
 class RemoveAllWeapon(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="🗑️", label=text_map.get(635, locale))
+        super().__init__(
+            emoji=asset.remove_emoji,
+            label=text_map.get(635, locale),
+            row=1,
+            style=ButtonStyle.red,
+        )
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -100,7 +123,12 @@ class RemoveAllWeapon(Button):
 
 class AddCharacter(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="✏️", label=text_map.get(598, locale))
+        super().__init__(
+            emoji=asset.add_emoji,
+            label=text_map.get(598, locale),
+            row=1,
+            style=ButtonStyle.green,
+        )
         self.locale = locale
 
     async def callback(self, i: Interaction):
@@ -112,7 +140,12 @@ class AddCharacter(Button):
 
 class RemoveAllCharacter(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(emoji="🗑️", label=text_map.get(599, locale))
+        super().__init__(
+            emoji=asset.remove_emoji,
+            label=text_map.get(599, locale),
+            row=1,
+            style=ButtonStyle.red,
+        )
 
     async def callback(self, i: Interaction):
         self.view: View
@@ -179,7 +212,7 @@ class PTNotification(Button):
 class NotificationON(Button):
     def __init__(self, locale: Locale | str, table_name: str, current: bool):
         super().__init__(
-            emoji="🔔",
+            emoji=asset.bell_outline,
             label=text_map.get(99, locale),
             style=ButtonStyle.blurple if current else ButtonStyle.gray,
         )
@@ -193,7 +226,7 @@ class NotificationON(Button):
 class NotificationOFF(Button):
     def __init__(self, locale: Locale | str, table_name: str, current: bool):
         super().__init__(
-            emoji="🔕",
+            emoji=asset.bell_off_outline,
             label=text_map.get(100, locale),
             style=ButtonStyle.blurple if current else ButtonStyle.gray,
         )
