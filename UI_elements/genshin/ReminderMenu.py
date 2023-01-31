@@ -2,7 +2,6 @@ import ast
 import asyncio
 from typing import Optional
 
-import asqlite
 from discord import (
     ButtonStyle,
     Embed,

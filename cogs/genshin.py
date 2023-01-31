@@ -1,6 +1,7 @@
+import datetime
 import json
 import random
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 
 import aiofiles
@@ -922,33 +923,46 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def banners(self, i: discord.Interaction):
         await i.response.defer()
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
+
         client = AmbrTopAPI(self.bot.session)
         events = await client.get_events()
+
         banners: List[Event] = []
         for event in events:
             if "祈願" in event.name["CHT"]:
                 banners.append(event)
-        if len(banners) == 0:
+        if not banners:
             return await i.followup.send(
                 embed=default_embed(message=text_map.get(376, locale)).set_author(
                     name=text_map.get(23, locale)
                 )
             )
+
         banners.sort(key=lambda x: x.end_time)
         event_lang = convert_locale.to_event_lang(locale)
-        embeds = []
-        for banner in banners[:3]:
-            embed = default_embed(
-                banner.name[event_lang],
+
+        fp = await main_funcs.draw_banner_card(
+            custom_model.DrawInput(
+                loop=self.bot.loop, session=self.bot.session, locale=locale
+            ),
+            [banner.banner[event_lang] for banner in banners],
+        )
+        fp.seek(0)
+
+        await i.followup.send(
+            embed=default_embed(
+                text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        datetime.strptime(banner.end_time, "%Y-%m-%d %H:%M:%S"), "R"
+                        datetime.datetime.strptime(
+                            banners[0].end_time, "%Y-%m-%d %H:%M:%S"
+                        ),
+                        "R",
                     )
                 ),
-            )
-            embed.set_image(url=banner.banner[event_lang])
-            embeds.append(embed)
-        await GeneralPaginator(i, embeds).start(followup=True)
+            ).set_image(url="attachment://banner.jpeg"),
+            file=discord.File(fp, "banner.jpeg"),
+        )
 
     @app_commands.command(
         name="abyss-enemies",
