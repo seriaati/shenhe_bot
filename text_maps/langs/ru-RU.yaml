@@ -417,7 +417,7 @@
 '378': Method 1
 '379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
 '380': Your current number of five-star pity is **{a}**
-'381': "Ends at: {time}"
+'381': "Changes {time}"
 '382': Wishing to pull
 '383': UP 5-star characters
 '384': It is estimated that you will pull a five-star banner character in **{a}** pulls
@@ -848,3 +848,6 @@
 '741': Could not find source for this command
 '742': command
 '743': Name of command to view the source code of
+'744': Current Banners
+'745': Future Banners
+'746': Current Wish Banners
