@@ -22,11 +22,7 @@ def check_account():
 async def check_account_predicate(
     i: Interaction, member: Optional[User | Member] = None
 ):
-    if "member" in i.namespace.__dict__:
-        user = i.namespace["member"]
-    else:
-        user = i.user
-    user = member or user
+    user = member or i.namespace.member or i.user
 
     pool: asqlite.Pool = i.client.pool  # type: ignore
     async with pool.acquire() as db:
@@ -56,10 +52,7 @@ def check_wish_history():
     """Checks if the current user account has a wish history."""
 
     async def predicate(i: Interaction) -> bool:
-        if "member" in i.namespace.__dict__:
-            user = i.namespace["member"]
-        else:
-            user = i.user
+        user = i.namespace.membr or i.user
 
         pool: asqlite.Pool = i.client.pool  # type: ignore
         async with pool.acquire() as db:
@@ -81,14 +74,7 @@ async def check_cookie_predicate(
     i: Interaction, member: Optional[User | Member] = None
 ):
     await check_account_predicate(i, member)
-
-    if "member" in i.namespace.__dict__:
-        user = i.namespace["member"]
-    elif "user" in i.namespace.__dict__:
-        user = i.namespace["user"]
-    else:
-        user = i.user
-    user = member or user
+    user = member or i.namespace.member or i.user
 
     pool: asqlite.Pool = i.client.pool  # type: ignore
     async with pool.acquire() as db:
