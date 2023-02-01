@@ -12,8 +12,7 @@ from apps.genshin.custom_model import AbyssHalf, DrawInput
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
-from utility.utils import (default_embed, divide_chunks,
-                           get_user_appearance_mode)
+from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
 
 
 class View(BaseView):
@@ -87,20 +86,23 @@ async def select_callback(i: Interaction, view: View, value: str):
         materials = []
         for enemy in half.enemies:
             enemy_id = text_map.get_id_from_name(enemy)
-            if enemy_id is None:
-                continue
-            monster = await ambr.get_monster(enemy_id)
-            if isinstance(monster, Monster):
-                materials.append(
-                    (
-                        Material(
-                            id=monster.id,
-                            name=monster.name,
-                            icon=monster.icon,
-                            type="custom",
-                        ),
-                        "",
+            if enemy_id:
+                monster = await ambr.get_monster(enemy_id)
+                if isinstance(monster, Monster):
+                    materials.append(
+                        (
+                            Material(
+                                id=monster.id,
+                                name=monster.name,
+                                icon=monster.icon,
+                                type="custom",
+                            ),
+                            "",
+                        )
                     )
+            else:
+                materials.append(
+                    (Material(id=0, name=enemy, icon="", type="custom"), "")
                 )
 
         fp = await main_funcs.draw_material_card(

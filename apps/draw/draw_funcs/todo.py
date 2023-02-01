@@ -92,10 +92,11 @@ def small_card(
     draw = ImageDraw.Draw(im)
 
     # material icon
-    icon = get_cache(material.icon)
-    icon = circular_crop(icon)
-    icon = icon.resize((80, 80))
-    im.paste(icon, (18, 30), icon)
+    if material.icon:
+        icon = get_cache(material.icon)
+        icon = circular_crop(icon)
+        icon = icon.resize((80, 80))
+        im.paste(icon, (18, 30), icon)
 
     # material name
     font = get_font(locale, 40)

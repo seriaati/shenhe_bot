@@ -839,7 +839,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         for queries in self.text_map_files:
             for item_id, query_names in queries.items():
                 item_name = query_names[ambr_top_locale]
-                if current.lower() in item_name.lower() and item_name != "":
+                if current.lower() in item_name.lower() and item_name:
                     result.append(app_commands.Choice(name=item_name, value=item_id))
                 elif " " in current:
                     splited = current.split(" ")
@@ -1000,7 +1000,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         embed = default_embed()
         embed.set_image(
-            url="https://cdn.esports.gg/wp-content/uploads/2022/08/04011001/Kazuha-Spiral-genshin_ui.Abyss.jpg"
+            url=asset.abyss_image
         )
         embed.set_author(
             name=f"{text_map.get(705, locale)}",
