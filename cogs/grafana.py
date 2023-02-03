@@ -6,4 +6,4 @@ class GrafanaCog(commands.Cog):
         self.bot = bot
 
 async def setup(bot: commands.AutoShardedBot):
-    await bot.add_cog(PrometheusCog(bot))
+    await bot.add_cog(PrometheusCog(bot, port=7000))
