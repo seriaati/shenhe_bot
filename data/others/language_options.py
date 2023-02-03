@@ -3,9 +3,11 @@ lang_options = {
     "zh-TW": {"name": "繁體中文 | 100%", "emoji": "🇹🇼"},
     "zh-CN": {"name": "简体中文 | 100%", "emoji": "🇨🇳"},
     "ja": {"name": "日本語 | 100%", "emoji": "🇯🇵"},
+    "uk": {"name": "українська | 38%", "emoji": "🇺🇦"},
     "vi": {"name": "Tiếng Việt | 5%", "emoji": "🇻🇳"},
     "es-ES": {"name": "español/española | 4%", "emoji": "🇪🇸"},
     "th": {"name": "แบบไทย | 1%", "emoji": "🇹🇭"},
+    "id": {"name": "Bahasa Indonesia | 0%", "emoji": "🇮🇩"},
     "de": {"name": "deutsch | 0%", "emoji": "🇩🇪"},
     "fr": {"name": "français/française | 0%", "emoji": "🇫🇷"},
     "ko": {"name": "한국어 | 0%", "emoji": "🇰🇷"},
@@ -13,5 +15,4 @@ lang_options = {
     "ru": {"name": "русский | 0%", "emoji": "🇷🇺"},
     "it": {"name": "italiano | 0%", "emoji": "🇮🇹"},
     "tr": {"name": "Türkçe | 0%", "emoji": "🇹🇷"},
-    "uk": {"name": "українська | 0%", "emoji": "🇺🇦"},
 }

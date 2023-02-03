@@ -16,6 +16,7 @@ ENKA_LANGS = {
     "vi": "vi",
     "it": "it",
     "tr": "tr",
+    "id": "id",
 }
 
 AMBR_LANGS = {
@@ -33,6 +34,7 @@ AMBR_LANGS = {
     "vi": "vi",
     "it": "it",
     "tr": "tr",
+    "id": "id",
 }
 
 GENSHIN_PY_LANGS = {
@@ -50,6 +52,7 @@ GENSHIN_PY_LANGS = {
     "vi": "vi-vn",
     "it": "it-it",
     "tr": "tr-tr",
+    "id": "id-id",
 }
 
 GENSHIN_OPTIMIZER_LANGS = {
@@ -59,7 +62,7 @@ GENSHIN_OPTIMIZER_LANGS = {
     "en-US": 4,
     "es-ES": 5,
     "fr": 6,
-    "in": 7,
+    "id": 7,
     "it": 8,
     "ja": 9,
     "ko": 10,
@@ -84,6 +87,7 @@ CROWDIN_FILE_PATHS = {
     "zh-CN": "zh-CN",
     "zh-TW": "zh-TW",
     "uk": "uk-UA",
+    "id": "id-ID",
 }
 
 AMBR_EVENT_LANGS = {
@@ -118,6 +122,7 @@ GENSHIN_DB_LANGS = {
     "vi": "Vietnamese",
     "it": "Italian",
     "tr": "Turkish",
+    "id": "Indonesian",
 }
 
 
