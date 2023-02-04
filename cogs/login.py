@@ -5,7 +5,7 @@ import asqlite
 from logingateway import HuTaoLoginAPI
 from logingateway.model import AccountToken, Genshin, Player, Ready, LoginMethod, ServerId
 
-from utility.utils import default_embed, log
+from utility.utils import DefaultEmbed, log
 
 import os
 from dotenv import load_dotenv
@@ -82,7 +82,7 @@ class LoginGatewayCog(commands.Cog):
 
         try:
             await ctx["message"].edit(
-                embed=default_embed().set_author(
+                embed=DefaultEmbed().set_author(
                     name=text_map.get(39, ctx["locale"]),
                     icon_url=ctx["author"].display_avatar.url,
                 ),

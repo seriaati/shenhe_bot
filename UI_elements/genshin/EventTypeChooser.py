@@ -11,7 +11,7 @@ import asset
 from dateutil import parser
 from discord.utils import format_dt
 from utility.paginator import GeneralPaginator, _view
-from utility.utils import default_embed, parse_HTML
+from utility.utils import DefaultEmbed, parse_HTML
 import hoyolab_rss_feeds.hoyolab
 
 class View(BaseView):
@@ -45,7 +45,7 @@ class Hoyolab(Button):
         events = events["items"]
         for event in events:
             date_published = parser.parse(event["date_published"])
-            embed = default_embed(event["title"])
+            embed = DefaultEmbed(event["title"])
             embed.add_field(
                 name=text_map.get(625, locale),
                 value=format_dt(date_published, "R"),
@@ -114,7 +114,7 @@ class Genshin(Button):
             if first_id is None:
                 first_id = str(event_list[0]["type"])
             for e in event_list:
-                embed = default_embed(e["title"])
+                embed = DefaultEmbed(e["title"])
                 embed.set_author(name=e["type_label"], icon_url=e["tag_icon"])
                 embed.set_image(url=e["banner"])
                 embed.add_field(
@@ -174,7 +174,7 @@ async def return_events(i: Interaction):
     await i.response.defer()
     user_locale = await get_user_locale(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)
-    embed = default_embed().set_author(
+    embed = DefaultEmbed().set_author(
         name=text_map.get(361, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
     )

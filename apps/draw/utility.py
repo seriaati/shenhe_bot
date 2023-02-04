@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
 from apps.genshin.custom_model import DynamicBackgroundInput
 from data.draw.fonts import FONTS
-from utility.utils import default_embed, log
+from utility.utils import DefaultEmbed, log
 
 
 def extract_file_name(url: str):
@@ -188,7 +188,7 @@ async def image_gen_transition(
     i: discord.Interaction, view: discord.ui.View, locale: discord.Locale | str
 ):
     """Disable all items in a view, show a loader text"""
-    embed = default_embed().set_author(
+    embed = DefaultEmbed().set_author(
         name=text_map.get(644, locale), icon_url=asset.loader
     )
     # disable all items in the view

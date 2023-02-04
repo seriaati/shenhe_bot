@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Tuple
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import DrawInput
 from apps.text_map.convert_locale import to_genshin_py
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 from apps.draw import main_funcs
 import yaml
 import genshin
@@ -230,7 +230,7 @@ async def get_embeds_for_lineup(
         character_id,
     )
 
-    embed = default_embed(f"{text_map.get(139, locale)} | {scenario_name}")
+    embed = DefaultEmbed(f"{text_map.get(139, locale)} | {scenario_name}")
     embed.set_footer(
         text=f"{text_map.get(496, locale)}: {lineup.author_nickname} (AR {lineup.author_level})",
         icon_url=lineup.author_icon,

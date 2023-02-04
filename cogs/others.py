@@ -24,7 +24,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_elements.others import Feedback, ManageAccounts, SettingsMenu
 from UI_elements.others.settings import CustomImage
-from utility.utils import default_embed, error_embed
+from utility.utils import DefaultEmbed, ErrorEmbed
 
 load_dotenv()
 
@@ -65,7 +65,7 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def view_credits(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        embed = default_embed(text_map.get(475, locale) + " 🎉")
+        embed = DefaultEmbed(text_map.get(475, locale) + " 🎉")
         kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
             425140480334888980
         )
@@ -149,7 +149,7 @@ class OthersCog(commands.Cog, name="others"):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
         revision = self.get_last_commits()
-        embed = default_embed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
+        embed = DefaultEmbed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
 
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
             410036441129943050
@@ -310,7 +310,7 @@ class OthersCog(commands.Cog, name="others"):
         obj = self.bot.tree.get_command(command)
         if obj is None:
             return await i.response.send_message(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(740, locale), icon_url=i.user.display_avatar.url
                 )
             )
@@ -325,7 +325,7 @@ class OthersCog(commands.Cog, name="others"):
         if not module.startswith("discord"):
             if filename is None:
                 return await i.response.send_message(
-                    embed=error_embed().set_author(
+                    embed=ErrorEmbed().set_author(
                         name=text_map.get(741, locale),
                         icon_url=i.user.display_avatar.url,
                     )

@@ -11,7 +11,7 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed, divide_chunks, error_embed, get_dt_now
+from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
 
 
 class View(BaseView):
@@ -80,7 +80,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
     try:
         _, claimed_rewards = await shenhe_user.client.get_reward_info()
     except genshin.errors.InvalidCookies:
-        embed = error_embed(message=text_map.get(35, locale))
+        embed = ErrorEmbed(description=text_map.get(35, locale))
         embed.set_author(
             name=text_map.get(36, locale),
             icon_url=i.user.display_avatar.url,
@@ -93,8 +93,8 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         ) as cursor:
             toggle = await cursor.fetchone()
 
-    embed = default_embed(
-        message=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
+    embed = DefaultEmbed(
+        description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
         f"{text_map.get(101, locale)}: **__{text_map.get(99 if toggle[0] == 1 else 100, locale)}__**"
     )
     embed.set_author(

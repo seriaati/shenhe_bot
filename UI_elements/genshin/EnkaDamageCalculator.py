@@ -15,7 +15,7 @@ from apps.text_map.text_map_app import text_map
 from exceptions import NeverRaised, NoCharacterFound
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
-from utility.utils import (default_embed, divide_chunks, error_embed,
+from utility.utils import (DefaultEmbed, divide_chunks, ErrorEmbed,
                            get_user_appearance_mode)
 from yelan.damage_calculator import (DamageCalculator, return_current_status,
                                      return_damage)
@@ -141,7 +141,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         child.disabled = True # type: ignore
     
     # await i.response.edit_message(
-    #     # embed=default_embed()
+    #     # embed=DefaultEmbed()
     #     # .set_author(
     #     #     name=text_map.get(644, enka_view.locale),
     #     #     icon_url=asset.loader,
@@ -181,7 +181,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         )
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
-            embed=error_embed().set_author(
+            embed=ErrorEmbed().set_author(
                 name=text_map.get(274, enka_view.locale),
                 icon_url=i.user.display_avatar.url,
             ),
@@ -189,7 +189,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
             view=enka_view,
         )
     if card is None:
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(189, enka_view.locale),
             icon_url=i.user.display_avatar.url,
         )

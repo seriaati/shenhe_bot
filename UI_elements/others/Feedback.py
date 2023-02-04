@@ -3,7 +3,7 @@ from discord import Locale, TextStyle, Interaction
 from discord.ui import TextInput
 from apps.text_map.text_map_app import text_map
 import config
-from utility.utils import default_embed
+from utility.utils import DefaultEmbed
 
 
 class FeedbackModal(BaseModal):
@@ -17,7 +17,7 @@ class FeedbackModal(BaseModal):
 
     async def on_submit(self, i: Interaction) -> None:
         await i.response.send_message(
-            embed=default_embed().set_author(
+            embed=DefaultEmbed().set_author(
                 name=text_map.get(725, self.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
@@ -26,7 +26,7 @@ class FeedbackModal(BaseModal):
             410036441129943050
         )
         await seria.send(
-            embed=default_embed(message=self.feedback.value).set_author(
+            embed=DefaultEmbed(description=self.feedback.value).set_author(
                 name=str(i.user), icon_url=i.user.display_avatar.url
             ).set_footer(text=i.user.id)
         )

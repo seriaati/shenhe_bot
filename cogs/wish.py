@@ -22,7 +22,7 @@ from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
 from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from UI_elements.wish.SetAuthKey import wish_import_command
-from utility.utils import default_embed, error_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
 from utility.wish_paginator import WishPaginator
 
 
@@ -96,7 +96,7 @@ class WishCog(commands.GroupCog, name="wish"):
             view.message = await i.original_response()
         except UnicodeEncodeError:
             await i.response.send_message(
-                embed=error_embed(message=text_map.get(567, locale)).set_author(
+                embed=ErrorEmbed(description=text_map.get(567, locale)).set_author(
                     name=text_map.get(195, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
@@ -104,7 +104,7 @@ class WishCog(commands.GroupCog, name="wish"):
         except Exception as e:
             sentry_sdk.capture_exception(e)
             await i.response.send_message(
-                embed=error_embed(message=text_map.get(693, locale)).set_author(
+                embed=ErrorEmbed(description=text_map.get(693, locale)).set_author(
                     name=text_map.get(135, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
@@ -172,8 +172,8 @@ class WishCog(commands.GroupCog, name="wish"):
                 dist_c = GI.up_5star_character(item_num=up_num)
                 player_luck = round(100 * sum((dist_c)[: data_length + 1]), 2)
 
-        embed = default_embed(
-            message=f"""
+        embed = DefaultEmbed(
+            description=f"""
                 • {text_map.get(373, locale).format(luck=round(100-player_luck, 2))}
                 • {text_map.get(379, locale).format(a=data_length, b=up_num)}
             """
@@ -199,7 +199,7 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         if item_num > 10:
             return await i.response.send_message(
-                embed=error_embed(message="number <= 10").set_author(
+                embed=ErrorEmbed(description="number <= 10").set_author(
                     name=text_map.get(190, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
@@ -230,8 +230,8 @@ class WishCog(commands.GroupCog, name="wish"):
             item_num=item_num, pull_state=pull_state, up_guarantee=up_guarantee
         )
 
-        embed = default_embed(
-            message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
+        embed = DefaultEmbed(
+            description=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(383, i.locale, user_locale)}\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
             f"• {text_map.get(370 if up_guarantee==1 else 371, i.locale, user_locale)}\n"
             f"• {text_map.get(384, i.locale, user_locale).format(a=round(dist_c.exp))}\n" # type: ignore
@@ -259,8 +259,8 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         if fate_point not in [0, 1, 2]:
             return await i.followup.send(
-                embed=error_embed(
-                    message=text_map.get(659, user_locale or i.locale)
+                embed=ErrorEmbed(
+                    description=text_map.get(659, user_locale or i.locale)
                 ).set_author(
                     name=text_map.get(23, user_locale or i.locale),
                     icon_url=i.user.display_avatar.url,
@@ -269,7 +269,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         if item_num > 1000:
             return await i.followup.send(
-                embed=error_embed(message="number <= 1000").set_author(
+                embed=ErrorEmbed(description="number <= 1000").set_author(
                     name=text_map.get(190, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),
@@ -294,8 +294,8 @@ class WishCog(commands.GroupCog, name="wish"):
 
             view = ChooseWeapon.View(i.locale, user_locale)
             view.author = i.user
-            embed = default_embed(
-                message=f"{text_map.get(391, i.locale, user_locale)}:\n"
+            embed = DefaultEmbed(
+                description=f"{text_map.get(391, i.locale, user_locale)}:\n"
                 f"**{last_name}**\n"
                 f"{text_map.get(392, i.locale, user_locale)}\n"
             )
@@ -317,8 +317,8 @@ class WishCog(commands.GroupCog, name="wish"):
             up_guarantee=up_guarantee,
         )
 
-        embed = default_embed(
-            message=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
+        embed = DefaultEmbed(
+            description=f"• {text_map.get(382, i.locale, user_locale)} **{item_num}** {text_map.get(395, i.locale, user_locale)}\n"
             f"• {text_map.get(657, i.locale, user_locale).replace('-', ' ')}: **{fate_point}**\n"
             f"• {text_map.get(380, i.locale, user_locale).format(a=pull_state)}\n"
             f"• {text_map.get(385, i.locale, user_locale).format(a=round(dist_w.exp))}\n" # type: ignore
@@ -443,7 +443,7 @@ class WishCog(commands.GroupCog, name="wish"):
 
         if not all_wish_data:
             return await i.followup.send(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(731, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -470,7 +470,7 @@ class WishCog(commands.GroupCog, name="wish"):
             member, text_map.get(656, i.locale, user_locale), options, all_wish_data
         )
         await i.followup.send(
-            embed=default_embed().set_image(url="attachment://overview.jpeg"),
+            embed=DefaultEmbed().set_image(url="attachment://overview.jpeg"),
             file=File(fp, filename="overview.jpeg"),
             view=view,
         )

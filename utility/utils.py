@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime
 from itertools import islice
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import asqlite
 import discord
@@ -17,15 +17,13 @@ log = logging
 
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
 
-
-def default_embed(title: str = "", message: str = ""):
-    embed = discord.Embed(title=title, description=message, color=0xA68BD3)
-    return embed
-
-
-def error_embed(title: str = "", message: str = ""):
-    embed = discord.Embed(title=title, description=message, color=0xFC5165)
-    return embed
+class DefaultEmbed(discord.Embed):
+    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
+        super().__init__(title=title, description=description, color=0xA68BD3)
+    
+class ErrorEmbed(discord.Embed):
+    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
+        super().__init__(title=title, description=description, color=0xFC5165)
 
 
 def time_in_range(start, end, x):

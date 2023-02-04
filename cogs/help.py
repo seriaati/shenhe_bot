@@ -11,7 +11,7 @@ import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed
+from utility.utils import DefaultEmbed
 
 
 class Dropdown(Select):
@@ -46,7 +46,7 @@ class Dropdown(Select):
 
         selected_option = utils.get(self.options, value=self.values[0])
         assert selected_option
-        embed = default_embed(f"{selected_option.emoji} {selected_option.label}")
+        embed = DefaultEmbed(f"{selected_option.emoji} {selected_option.label}")
 
         async with aiofiles.open("command_map.json", "r") as f:
             command_map: Dict[str, int] = json.loads(await f.read())

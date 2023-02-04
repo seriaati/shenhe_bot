@@ -23,7 +23,7 @@ from apps.genshin.browser import launch_browsers
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
-from utility.utils import error_embed, log, sentry_logging
+from utility.utils import ErrorEmbed, log, sentry_logging
 
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())
@@ -82,7 +82,7 @@ class ShenheCommandTree(app_commands.CommandTree):
         else:
             if i.client.maintenance: # type: ignore
                 await i.response.send_message(
-                    embed=error_embed(
+                    embed=ErrorEmbed(
                         "申鶴正在維護中\nShenhe is under maintenance",
                         f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}", # type: ignore
                     ).set_thumbnail(

@@ -23,7 +23,7 @@ from apps.text_map.text_map_app import text_map
 from exceptions import DBError
 from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import default_embed, divide_chunks, error_embed, log
+from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, log
 
 
 class View(BaseView):
@@ -164,7 +164,7 @@ class PrivacySettings(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        embed = default_embed(
+        embed = DefaultEmbed(
             message=f"{text_map.get(595, self.locale)}\n"
             f"1. {text_map.get(308, self.locale)}\n"
             f"2. {text_map.get(309, self.locale)}\n"
@@ -328,7 +328,7 @@ class ChangeSettings(Button):
                 for child in children:
                     child.disabled = True
                 await i.edit_original_response(
-                    embed=error_embed().set_author(
+                    embed=ErrorEmbed().set_author(
                         name=text_map.get(187, self.locale),
                         icon_url=i.user.display_avatar.url,
                     ),
@@ -418,7 +418,7 @@ async def return_resin_notification(i: Interaction, view: View):
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
-    embed = default_embed(message=text_map.get(586, view.locale))
+    embed = DefaultEmbed(description=text_map.get(586, view.locale))
     embed.add_field(name=text_map.get(591, view.locale), value=value)
     embed.set_author(
         name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url
@@ -451,7 +451,7 @@ async def return_pt_notification(i: Interaction, view: View):
         {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
         {text_map.get(103, view.locale)}: {max_notif}
     """
-    embed = default_embed(message=text_map.get(512, view.locale))
+    embed = DefaultEmbed(description=text_map.get(512, view.locale))
     embed.add_field(name=text_map.get(591, view.locale), value=value)
     embed.set_author(
         name=text_map.get(704, view.locale), icon_url=i.user.display_avatar.url
@@ -480,7 +480,7 @@ async def return_pot_notification(i: Interaction, view: View):
     value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
     value += f"{text_map.get(302, view.locale)}: {threshold}\n"
     value += f"{text_map.get(103, view.locale)}: {max}"
-    embed = default_embed(message=text_map.get(639, view.locale))
+    embed = DefaultEmbed(description=text_map.get(639, view.locale))
     embed.set_author(
         name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url
     )
@@ -506,7 +506,7 @@ async def return_talent_notification(i: Interaction, view: View):
     )
     character_list = ast.literal_eval(character_list)
 
-    embed = default_embed(message=text_map.get(590, view.locale))
+    embed = DefaultEmbed(description=text_map.get(590, view.locale))
     embed.set_author(
         name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
     )
@@ -551,7 +551,7 @@ async def return_weapon_notification(i: Interaction, view: View):
     )
     weapon_list = ast.literal_eval(weapon_list)
 
-    embed = default_embed(message=text_map.get(633, view.locale))
+    embed = DefaultEmbed(description=text_map.get(633, view.locale))
     embed.set_author(
         name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
     )
@@ -593,7 +593,7 @@ async def return_weapon_notification(i: Interaction, view: View):
 async def return_notification_menu(
     i: Interaction, locale: Locale | str, send: bool = False
 ):
-    embed = default_embed(message=text_map.get(592, locale))
+    embed = DefaultEmbed(description=text_map.get(592, locale))
     embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
 
     view = View(locale)

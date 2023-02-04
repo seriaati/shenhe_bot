@@ -10,7 +10,7 @@ from apps.genshin.genshin_app import GenshinApp
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed, divide_chunks
+from utility.utils import DefaultEmbed, divide_chunks
 from matplotlib import pyplot as plt
 
 
@@ -40,7 +40,7 @@ class InfoButton(Button):
     async def callback(self, i: Interaction):
         self.view: View
         await i.response.send_message(
-            embed=default_embed(message=text_map.get(398, self.view.locale)),
+            embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
             ephemeral=True,
         )
 
@@ -55,7 +55,7 @@ class MonthSelect(Select):
     async def callback(self, i: Interaction):
         self.view: View
         user_locale = await get_user_locale(i.user.id, i.client.pool)
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.set_author(
             name=text_map.get(644, i.locale, user_locale),
             icon_url="https://i.imgur.com/V76M9Wa.gif",
@@ -112,7 +112,7 @@ async def primo_mora_button_callback(i: Interaction, view: View, is_primo: bool,
     )
     log_result : DiaryLogsResult = result.result
     
-    embed = default_embed()
+    embed = DefaultEmbed()
     embed.title = label
     embed.set_image(url="attachment://diary.png")
     

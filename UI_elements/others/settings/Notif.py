@@ -4,7 +4,7 @@ import config
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView, GoBackButton
-from utility.utils import default_embed, get_user_notification
+from utility.utils import DefaultEmbed, get_user_notification
 
 
 class View(BaseView):
@@ -49,7 +49,7 @@ async def return_view(
     notif = await get_user_notification(i.user.id, i.client.pool)  # type: ignore
     view = View(locale, 1 if notif else 0, original_info)
     view.add_item(GoBackButton(original_info))
-    embed = default_embed(message=text_map.get(138, locale))
+    embed = DefaultEmbed(description=text_map.get(138, locale))
     embed.set_author(name=text_map.get(137, locale), icon_url=i.user.display_avatar.url)
     await i.response.edit_message(embed=embed, view=view)
     view.author = i.user

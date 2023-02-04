@@ -17,7 +17,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
 from UI_elements.wish import ChoosePlatform
-from utility.utils import default_embed, error_embed, log
+from utility.utils import DefaultEmbed, ErrorEmbed, log
 
 
 class View(BaseView):
@@ -60,7 +60,7 @@ class LinkUID(Button):
     async def callback(self, i: Interaction):
         self.view: View
         locale = self.view.locale
-        embed = default_embed(message=text_map.get(681, locale)).set_author(
+        embed = DefaultEmbed(description=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
         )
         async with i.client.pool.acquire() as db:
@@ -103,7 +103,7 @@ class ImportWishHistory(Button):
     async def callback(self, i: Interaction):
         self.view: View
         locale = self.view.locale
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(685, locale), icon_url=i.user.display_avatar.url
         )
         self.view.clear_items()
@@ -124,7 +124,7 @@ class ImportGenshinImpact(Button):
         )
 
     async def callback(self, i: Interaction):
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(365, self.locale), icon_url=i.user.display_avatar.url
         )
         view = ChoosePlatform.View(self.locale)
@@ -145,7 +145,7 @@ class ImportShenhe(Button):
         )
 
     async def callback(self, i: Interaction):
-        embed = default_embed(message=(text_map.get(687, self.locale))).set_author(
+        embed = DefaultEmbed(description=(text_map.get(687, self.locale))).set_author(
             name=(text_map.get(686, self.locale)),
             icon_url=i.user.display_avatar.url,
         )
@@ -189,7 +189,7 @@ class ClearWishHistory(Button):
     async def callback(self, i: Interaction):
         self.view: View
         locale = self.view.locale
-        embed = default_embed(message=text_map.get(689, locale)).set_author(
+        embed = DefaultEmbed(description=text_map.get(689, locale)).set_author(
             name=text_map.get(688, locale), icon_url=i.user.display_avatar.url
         )
         self.view.clear_items()
@@ -245,7 +245,7 @@ class ConfirmWishImport(Button):
     async def callback(self, i: Interaction):
         self.view: View
         uid = await get_uid(i.user.id, i.client.pool)
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
@@ -352,7 +352,7 @@ class Modal(BaseModal):
         log.info(f"[Wish Import][{i.user.id}]: [Authkey]{authkey}")
         if authkey is None:
             await i.response.edit_message(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(363, locale),
                     icon_url=i.user.display_avatar.url,
                 ),
@@ -368,7 +368,7 @@ class Modal(BaseModal):
             client.authkey = authkey
             
         await i.response.edit_message(
-            embed=default_embed().set_author(
+            embed=DefaultEmbed().set_author(
                 name=text_map.get(355, locale),
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             ),
@@ -378,14 +378,14 @@ class Modal(BaseModal):
             wish_history = await client.wish_history()
         except genshin.errors.InvalidAuthkey:
             return await i.edit_original_response(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(363, locale),
                     icon_url=i.user.display_avatar.url,
                 )
             )
         except genshin.errors.AuthkeyTimeout:
             return await i.edit_original_response(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(702, locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -393,7 +393,7 @@ class Modal(BaseModal):
         except Exception as e:
             sentry_sdk.capture_exception(e)
             return await i.edit_original_response(
-                embed=error_embed(message=f"```py\n{e}\n```").set_author(
+                embed=ErrorEmbed(description=f"```py\n{e}\n```").set_author(
                     name=text_map.get(135, locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -456,7 +456,7 @@ async def get_wish_import_embed(i: Interaction) -> Tuple[Embed, bool, bool]:
                 )  # 檢查是否有綁定 UID 的歷史紀錄
                 wish_data = await c.fetchall()
                 if not wish_data:  # 使用者完全沒有任何歷史紀錄
-                    embed = default_embed(message=f"UID: {uid}").set_author(
+                    embed = DefaultEmbed(description=f"UID: {uid}").set_author(
                         name=text_map.get(683, locale),
                         icon_url=i.user.display_avatar.url,
                     )

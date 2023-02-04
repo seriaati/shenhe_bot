@@ -25,7 +25,7 @@ from apps.text_map.utils import get_user_locale
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from UI_base_models import BaseModal, BaseView
 from UI_elements.calc import AddToTodo
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):
@@ -72,7 +72,7 @@ class CharacterSelect(Select):
     async def callback(self, i: Interaction):
         self.view: View
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
@@ -262,7 +262,7 @@ class InitLevelModal(BaseModal):
                 suggested_levlels,
             )
         )
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.set_author(
             name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
         )
@@ -380,7 +380,7 @@ class TargetLevelModal(BaseModal):
             view = View.from_message(i.message)
         if view is None:
             await i.edit_original_response(
-                embed=default_embed().set_author(
+                embed=DefaultEmbed().set_author(
                     name=text_map.get(644, self.locale), icon_url=asset.loader
                 ),
                 view=None,
@@ -488,7 +488,7 @@ class TargetLevelModal(BaseModal):
 
         if not all_materials:
             await i.edit_original_response(
-                embed=default_embed().set_author(
+                embed=DefaultEmbed().set_author(
                     name=text_map.get(197, self.locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -511,7 +511,7 @@ class TargetLevelModal(BaseModal):
             draw_title=False,
         )
         fp.seek(0)
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.add_field(
             name=text_map.get(192, self.locale),
             value=f"{text_map.get(183, self.locale)}: {init} ▸ {target}\n"
@@ -540,7 +540,7 @@ async def validate_level_input(
     i: Interaction,
     locale: Locale | str,
 ):
-    embed = default_embed().set_author(
+    embed = DefaultEmbed().set_author(
         name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
     )
     try:

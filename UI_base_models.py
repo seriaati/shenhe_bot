@@ -12,7 +12,7 @@ from apps.text_map.utils import get_user_locale
 from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie,
                         NoPlayerFound, NoUID, NoWishHistory,
                         ShenheAccountNotFound, UIDNotFound)
-from utility.utils import error_embed, log
+from utility.utils import ErrorEmbed, log
 
 
 async def global_error_handler(
@@ -54,7 +54,7 @@ def get_error_handle_embed(
     e: Exception,
     locale: Union[discord.Locale, str],
 ):
-    embed = error_embed()
+    embed = ErrorEmbed()
 
     if isinstance(e, discord.app_commands.errors.CommandInvokeError):
         e = e.original
@@ -136,7 +136,7 @@ class BaseView(discord.ui.View):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         if self.author.id != i.user.id:
             await i.response.send_message(
-                embed=error_embed().set_author(
+                embed=ErrorEmbed().set_author(
                     name=text_map.get(143, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 ),

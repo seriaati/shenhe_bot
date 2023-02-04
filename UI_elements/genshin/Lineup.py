@@ -11,7 +11,7 @@ import config
 from genshin.models import LineupScenario, LineupPreview
 from genshin import Client
 from discord.ui import Select, Button
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 from apps.draw import main_funcs
 from apps.text_map.text_map_app import text_map
 import asset
@@ -213,7 +213,7 @@ class LineupSelector(Select):
         client.lang = to_genshin_py(self.view.locale)
         lineup_detail = await client.get_lineup_details(lineup)
 
-        embed = default_embed(lineup_detail.title, lineup_detail.description)
+        embed = DefaultEmbed(lineup_detail.title, lineup_detail.description)
         embed.set_footer(
             text=f"{text_map.get(496, self.view.locale)}: {lineup.author_nickname} (AR {lineup.author_level})",
             icon_url=lineup.author_icon,
@@ -283,7 +283,7 @@ async def search_lineup(i: Interaction, view: View):
 
     locale = view.locale
 
-    embed = default_embed()
+    embed = DefaultEmbed()
     embed.set_author(name=text_map.get(709, locale), icon_url=i.user.display_avatar.url)
     embed = update_search_status(view, embed)
 

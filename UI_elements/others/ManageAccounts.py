@@ -15,7 +15,7 @@ from apps.text_map.convert_locale import to_hutao_login_lang
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
-from utility.utils import default_embed, log
+from utility.utils import DefaultEmbed, log
 
 
 class View(BaseView):
@@ -48,7 +48,7 @@ async def add_account_callback(view: View, i: Interaction):
     view.clear_items()
     view.add_item(GOBack())
     view.add_item(GenerateLink(locale))
-    embed = default_embed(message=text_map.get(563, locale))
+    embed = DefaultEmbed(description=text_map.get(563, locale))
     embed.set_author(name=text_map.get(556, locale), icon_url=i.user.display_avatar.url)
     embed.set_image(url="https://i.imgur.com/r31nQMN.png")
     await i.edit_original_response(embed=embed, view=view)
@@ -66,7 +66,7 @@ class GenerateLink(Button):
         self.view: View
         locale = self.view.locale
 
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(402, locale), icon_url=asset.loader
         )
         self.disabled = True
@@ -80,7 +80,7 @@ class GenerateLink(Button):
             language=to_hutao_login_lang(locale),
         )
 
-        embed = default_embed(message=text_map.get(728, locale))
+        embed = DefaultEmbed(description=text_map.get(728, locale))
         embed.set_author(
             name=text_map.get(400, locale), icon_url=i.user.display_avatar.url
         )
@@ -131,7 +131,7 @@ class ResendToken(Button):
 
             try:
                 await i.edit_original_response(
-                    embed=default_embed().set_author(
+                    embed=DefaultEmbed().set_author(
                         name=text_map.get(39, self.view.locale),
                         icon_url=i.user.display_avatar.url,
                     ),
@@ -165,7 +165,7 @@ class ChangeNickname(Button):
             )
         )
         self.view.add_item(GOBack())
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(602, self.view.locale), icon_url=i.user.display_avatar.url
         )
         await i.response.edit_message(embed=embed, view=self.view)
@@ -208,7 +208,7 @@ class RemoveAccount(Button):
         account_select.placeholder = text_map.get(136, locale)
         self.view.add_item(account_select)
         self.view.add_item(GOBack())
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(560, locale), icon_url=i.user.display_avatar.url
         )
         await i.response.edit_message(embed=embed, view=self.view)
@@ -245,7 +245,7 @@ class SwitchAccount(Select):
                         "DELETE FROM user_accounts WHERE uid = ? AND user_id = ?",
                         (uid, i.user.id),
                     )
-                embed = default_embed().set_author(
+                embed = DefaultEmbed().set_author(
                     name=text_map.get(561, self.view.locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -299,7 +299,7 @@ async def return_accounts(i: Interaction):
             select_options = []
             view = View(user_locale or i.locale, select_options)
             if not accounts:
-                embed = default_embed().set_author(
+                embed = DefaultEmbed().set_author(
                     name=text_map.get(545, i.locale, user_locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -339,7 +339,7 @@ async def return_accounts(i: Interaction):
                 await return_accounts(i)
         await db.commit()
 
-    embed = default_embed(message=account_str).set_author(
+    embed = DefaultEmbed(description=account_str).set_author(
         name=text_map.get(555, i.locale, user_locale),
         icon_url=i.user.display_avatar.url,
     )

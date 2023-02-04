@@ -13,7 +13,7 @@ from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseModal, BaseView
 from utility.todo_paginator import TodoPaginator, _view
 from utility.utils import (
-    default_embed,
+    DefaultEmbed,
     get_user_appearance_mode,
 )
 
@@ -239,7 +239,7 @@ async def return_todo(i: Interaction):
     view = View(todo_items, locale)
     view.author = i.user
 
-    embed = default_embed()
+    embed = DefaultEmbed()
     embed.set_author(name=text_map.get(202, locale), icon_url=i.user.display_avatar.url)
 
     if not todo_items:
@@ -286,7 +286,7 @@ async def return_todo(i: Interaction):
 
         for _ in range(14, len(todo_items), 14):
             embeds.append(
-                default_embed()
+                DefaultEmbed()
                 .set_author(
                     name=text_map.get(202, locale), icon_url=i.user.display_avatar.url
                 )

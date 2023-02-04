@@ -10,7 +10,7 @@ from discord.ext import commands
 from discord.errors import Forbidden
 import pickle
 from apps.genshin.custom_model import ShenheBot
-from utility.utils import default_embed, error_embed
+from utility.utils import DefaultEmbed, ErrorEmbed
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -59,7 +59,7 @@ class AdminCog(commands.Cog, name="admin"):
                         importlib.reload(module)
                     except Exception as e:
                         return await ctx.send(
-                            embed=error_embed(module.__name__, f"```{e}```"),
+                            embed=ErrorEmbed(module.__name__, f"```{e}```"),
                             ephemeral=True,
                         )
 
@@ -72,7 +72,7 @@ class AdminCog(commands.Cog, name="admin"):
                 await self.bot.reload_extension(f"cogs.{cog_name}")
             except Exception as e:
                 return await message.edit(
-                    embed=error_embed(cog_name, f"```{e}```"),
+                    embed=ErrorEmbed(cog_name, f"```{e}```"),
                 )
         await message.edit(content="bot reloaded")
 
@@ -85,7 +85,7 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="dm")
     async def direct_message(self, ctx: commands.Context, user: commands.UserConverter, *, message: str):
-        embed = default_embed(message=message)
+        embed = DefaultEmbed(description=message)
         embed.set_author(name=ctx.author.name+"#"+ctx.author.discriminator, icon_url=ctx.author.display_avatar.url)
         try:
             await user.send(embed=embed)

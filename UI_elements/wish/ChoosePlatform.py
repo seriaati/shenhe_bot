@@ -8,7 +8,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from UI_elements.wish import SetAuthKey
-from utility.utils import default_embed
+from utility.utils import DefaultEmbed
 
 import_options = {
     "PC - #1": {
@@ -59,7 +59,7 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
         )
         self.add_item(ChooseMethod(options, self.locale))
@@ -76,7 +76,7 @@ class View(BaseView):
     #             options.append(
     #                 SelectOption(label=option, value=option, emoji=button.emoji)
     #             )
-    #     embed = default_embed().set_author(
+    #     embed = DefaultEmbed().set_author(
     #         name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
     #     )
     #     self.add_item(ChooseMethod(options, self.locale))
@@ -93,7 +93,7 @@ class View(BaseView):
                 options.append(
                     SelectOption(label=option, value=option, emoji=button.emoji)
                 )
-        embed = default_embed().set_author(
+        embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
         )
         self.add_item(ChooseMethod(options, self.locale))
@@ -111,12 +111,12 @@ class ChooseMethod(Select):
         self.view: View
         embeds = []
         option = import_options.get(self.values[0], {})
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.set_author(name=self.values[0], icon_url=i.user.display_avatar.url)
         embed.description = text_map.get(option["hash"], self.locale)
         embeds.append(embed)
         if option["link"] != "":
-            video_embed = default_embed(message=option["link"])
+            video_embed = DefaultEmbed(description=option["link"])
             video_embed.set_author(
                 name=text_map.get(364, self.locale),
                 icon_url="https://i.pinimg.com/originals/7d/c9/93/7dc993c70d4adba215b87cafdc59d82d.png",
@@ -149,7 +149,7 @@ class GOBack(Button):
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         view = View(self.view.locale)
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.set_author(
             name=text_map.get(365, i.locale, user_locale),
             icon_url=i.user.display_avatar.url,

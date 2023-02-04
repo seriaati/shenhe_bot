@@ -26,8 +26,8 @@ from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from exceptions import NoCharacterFound, ShenheAccountNotFound, UIDNotFound
-from utility.utils import (default_embed, divide_chunks, divide_dict,
-                           error_embed, get_dt_now)
+from utility.utils import (DefaultEmbed, divide_chunks, divide_dict,
+                           ErrorEmbed, get_dt_now)
 
 
 def calculate_artifact_score(substats: dict):
@@ -78,7 +78,7 @@ def get_character_builds(
         weapon_id = text_map.get_id_from_name(build["weapon"])
         if weapon_id is None:
             raise ValueError(f"Unknown weapon {build['weapon']}")
-        embed = default_embed(
+        embed = DefaultEmbed(
             f"{translated_character_name} - {text_map.get(90, locale)}{count}",
             f"{text_map.get(91, locale)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, locale)}\n"
             f"{text_map.get(92, locale)} • {cond_text.get_text(str(locale), 'build', build['artifacts'])}\n"
@@ -100,7 +100,7 @@ def get_character_builds(
 
     if "thoughts" in element_builds_dict[character_name]:
         count = 1
-        embed = default_embed(text_map.get(97, locale))
+        embed = DefaultEmbed(text_map.get(97, locale))
         for _ in element_builds_dict[character_name]["thoughts"]:
             embed.add_field(
                 name=f"#{count}",
@@ -333,7 +333,7 @@ async def get_farm_data(
     embeds: List[discord.Embed] = []
     options: List[discord.SelectOption] = []
     for index, items in enumerate(result):
-        embed = default_embed(
+        embed = DefaultEmbed(
             f"{get_weekday_name(weekday, i.locale, user_locale, full_name=True)} {text_map.get(250, i.locale, user_locale)}"
         )
         embed.set_image(url=f"attachment://farm.jpeg")
@@ -419,7 +419,7 @@ async def get_wish_history_embed(
             wish_history = await c.fetchall()
 
     if not wish_history:
-        embed = error_embed(message=text_map.get(75, i.locale, user_locale)).set_author(
+        embed = ErrorEmbed(description=text_map.get(75, i.locale, user_locale)).set_author(
             name=text_map.get(648, i.locale, user_locale),
             icon_url=member.display_avatar.url,
         )
@@ -446,7 +446,7 @@ async def get_wish_history_embed(
             embed_str = ""
             for wish_str in small_segment:
                 embed_str += f"{wish_str}\n"
-            embed = default_embed(message=embed_str)
+            embed = DefaultEmbed(description=embed_str)
             embed.set_author(
                 name=text_map.get(369, i.locale, user_locale),
                 icon_url=member.display_avatar.url,
@@ -463,8 +463,8 @@ async def get_wish_info_embed(
     import_command: bool = False,
     linked: bool = False,
 ) -> discord.Embed:
-    embed = default_embed(
-        message=text_map.get(673 if import_command else 690, locale).format(
+    embed = DefaultEmbed(
+        description=text_map.get(673 if import_command else 690, locale).format(
             a=wish_info.total
         )
     ).set_author(

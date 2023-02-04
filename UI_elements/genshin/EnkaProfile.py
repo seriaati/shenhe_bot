@@ -15,7 +15,7 @@ from data.game.artifact_slot import get_artifact_slot_emoji
 from UI_base_models import BaseView, GoBackButton
 from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings import CustomImage
-from utility.utils import (default_embed, divide_chunks,
+from utility.utils import (DefaultEmbed, divide_chunks,
                            get_user_appearance_mode)
 from yelan.damage_calculator import return_current_status
 
@@ -62,7 +62,7 @@ class InfoButton(ui.Button):
     async def callback(self, i: discord.Interaction):
         self.view: View
         await i.response.send_message(
-            embed=default_embed(message=text_map.get(399, self.view.locale)),
+            embed=DefaultEmbed(description=text_map.get(399, self.view.locale)),
             ephemeral=True,
         )
 

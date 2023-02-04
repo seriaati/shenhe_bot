@@ -18,9 +18,9 @@ from UI_base_models import BaseModal, BaseView
 from UI_elements.calc import AddToTodo
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from utility.utils import (
-    default_embed,
+    DefaultEmbed,
     divide_chunks,
-    error_embed,
+    ErrorEmbed,
     get_user_appearance_mode,
 )
 from apps.draw import main_funcs
@@ -134,7 +134,7 @@ class LevelModal(BaseModal):
             target_ascension = int(self.target_ascension.value)
         except ValueError:
             return await i.followup.send(
-                embed=error_embed(message=text_map.get(187, locale)).set_author(
+                embed=ErrorEmbed(description=text_map.get(187, locale)).set_author(
                     name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
@@ -182,7 +182,7 @@ class LevelModal(BaseModal):
                 raise InvalidWeaponCalcInput
 
         except InvalidWeaponCalcInput:
-            embed = error_embed(message=text_map.get(172, locale).format(a=a, b=b))
+            embed = ErrorEmbed(description=text_map.get(172, locale).format(a=a, b=b))
             embed.set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             )
@@ -191,7 +191,7 @@ class LevelModal(BaseModal):
                 ephemeral=True,
             )
         except InvalidAscensionInput:
-            embed = error_embed(message=text_map.get(730, locale))
+            embed = ErrorEmbed(description=text_map.get(730, locale))
             embed.set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             )
@@ -202,7 +202,7 @@ class LevelModal(BaseModal):
             view = View.from_message(i.message)
         if view is None:
             await i.edit_original_response(
-                embed=default_embed().set_author(
+                embed=DefaultEmbed().set_author(
                     name=text_map.get(644, self.locale), icon_url=asset.loader
                 ),
                 view=None,
@@ -263,7 +263,7 @@ class LevelModal(BaseModal):
 
         if not all_materials:
             await i.edit_original_response(
-                embed=default_embed().set_author(
+                embed=DefaultEmbed().set_author(
                     name=text_map.get(197, self.locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -283,7 +283,7 @@ class LevelModal(BaseModal):
         )
         fp.seek(0)
 
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.add_field(
             name=text_map.get(192, self.locale),
             value=f"""

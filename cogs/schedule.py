@@ -30,7 +30,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from exceptions import ShenheAccountNotFound, UIDNotFound
 from utility.fetch_card import fetch_cards
-from utility.utils import (default_embed, error_embed, get_dt_now,
+from utility.utils import (DefaultEmbed, ErrorEmbed, get_dt_now,
                            get_user_appearance_mode, get_user_notification,
                            log)
 
@@ -45,7 +45,7 @@ def schedule_error_handler(func):
                 410036441129943050
             )
             await seria.send(
-                embed=error_embed(
+                embed=ErrorEmbed(
                     f"[Schedule] Error in {func.__name__}", f"```\n{e}\n```"
                 )
             )
@@ -254,8 +254,8 @@ class Schedule(commands.Cog):
                     else:  # resin_notification
                         map_hash = 582
 
-                    embed = error_embed(
-                        message=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
+                    embed = ErrorEmbed(
+                        description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
                     )
                     embed.set_author(
                         name=text_map.get(505, locale),
@@ -332,8 +332,8 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = default_embed(
-            message=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
+        embed = DefaultEmbed(
+            description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
             f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else format_dt(notes.resin_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
         )
@@ -359,8 +359,8 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = default_embed(
-            message=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
+        embed = DefaultEmbed(
+            description=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
             f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else format_dt(notes.realm_currency_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
         )
@@ -382,7 +382,7 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = default_embed(message=f"UID: {user.uid}")
+        embed = DefaultEmbed(description=f"UID: {user.uid}")
         embed.set_author(
             name=text_map.get(366, locale),
             icon_url=discord_user.display_avatar.url,
@@ -537,7 +537,7 @@ class Schedule(commands.Cog):
 
         for index, user in enumerate(users):
             locale = user.user_locale or "en-US"
-            embed = default_embed(text_map.get(126, locale))
+            embed = DefaultEmbed(text_map.get(126, locale))
             value = ""
 
             for code in codes:
@@ -629,7 +629,7 @@ class Schedule(commands.Cog):
                 sentry_sdk.capture_exception(e)
             else:
                 if await get_user_notification(user.discord_user.id, self.bot.pool):
-                    embed = default_embed(message=f"{reward.name} x{reward.amount}")
+                    embed = DefaultEmbed(description=f"{reward.name} x{reward.amount}")
                     embed.set_author(
                         name=text_map.get(87, "en-US", user.user_locale),
                         icon_url=user.discord_user.display_avatar.url,
@@ -652,8 +652,8 @@ class Schedule(commands.Cog):
                     )
                     await db.commit()
 
-                embed = embed = error_embed(
-                    message=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
+                embed = ErrorEmbed(
+                    description=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
                 )
                 embed.set_author(
                     name=text_map.get(500, "en-US", user.user_locale),
@@ -677,7 +677,7 @@ class Schedule(commands.Cog):
             410036441129943050
         )
         await seria.send(
-            embed=default_embed(
+            embed=DefaultEmbed(
                 "Automatic daily check-in report",
                 f"Claimed {success_count}/{user_count}",
             )
@@ -794,7 +794,7 @@ class Schedule(commands.Cog):
 
                         domain: Domain = item_info["domain"]
 
-                        embed = default_embed()
+                        embed = DefaultEmbed()
                         embed.add_field(
                             name=text_map.get(609, locale),
                             value=f"{domain.name} ({domain.city.name})",

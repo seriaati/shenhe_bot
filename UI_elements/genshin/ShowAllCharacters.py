@@ -10,7 +10,7 @@ import asset
 import config
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):
@@ -38,7 +38,7 @@ class ElementSelect(Select):
         self.view: View
         
         await i.response.edit_message(
-            embed=default_embed().set_author(
+            embed=DefaultEmbed().set_author(
                 name=text_map.get(644, self.view.locale), icon_url=asset.loader
             ),
             attachments=[],

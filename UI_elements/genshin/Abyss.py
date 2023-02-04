@@ -9,7 +9,7 @@ from apps.genshin.custom_model import AbyssResult, DrawInput
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 from apps.draw import main_funcs
 
 
@@ -53,7 +53,7 @@ class FloorSelect(Select):
                 attachments=[image],
             )
         elif self.values[0] == "one-page":
-            embed = default_embed()
+            embed = DefaultEmbed()
             embed.set_author(
                 name=text_map.get(644, locale),
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
@@ -77,7 +77,7 @@ class FloorSelect(Select):
                 cache[key] = fp
             fp.seek(0)
             image = File(fp, filename="abyss_one_page.jpeg")
-            embed = default_embed()
+            embed = DefaultEmbed()
             embed.set_image(url="attachment://abyss_one_page.jpeg")
             embed.set_author(
                 name=self.abyss_result.embed_title,
@@ -85,13 +85,13 @@ class FloorSelect(Select):
             )
             await i.edit_original_response(embed=embed, attachments=[image])
         else:
-            embed = default_embed()
+            embed = DefaultEmbed()
             embed.set_author(
                 name=text_map.get(644, locale),
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             )
             await i.edit_original_response(embed=embed, attachments=[])
-            embed = default_embed()
+            embed = DefaultEmbed()
             embed.set_image(url="attachment://floor.jpeg")
             embed.set_author(
                 name=self.abyss_result.embed_title,

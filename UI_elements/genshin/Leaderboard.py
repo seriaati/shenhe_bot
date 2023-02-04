@@ -25,7 +25,7 @@ from apps.genshin.utils import (
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
-from utility.utils import default_embed, error_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
 
 
 class EmptyLeaderboard(Exception):
@@ -200,7 +200,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 users,
             )
             fp.seek(0)
-            embed = default_embed(
+            embed = DefaultEmbed(
                 title,
                 f"""
                     {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
@@ -255,7 +255,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 uc_list,
             )
             result.fp.seek(0)
-            embed = default_embed(
+            embed = DefaultEmbed(
                 title,
                 f"{text_map.get(618, locale).format(name=get_character_emoji(result.first_character.id)+' '+result.first_character.name, num=result.uses, percent=round(result.percentage, 1))}\n"
                 f"{text_map.get(615, locale).format(num=len(data))}",
@@ -313,7 +313,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
                 users,
             )
             fp.seek(0)
-            embed = default_embed(
+            embed = DefaultEmbed(
                 title,
                 f"""
                     {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
@@ -339,7 +339,7 @@ async def select_callback(view: View, i: Interaction, leaderboard: str):
         glob.disabled = True
         server.disabled = True
         await i.edit_original_response(
-            embed=error_embed(title, text_map.get(620, locale)).set_author(
+            embed=ErrorEmbed(title, text_map.get(620, locale)).set_author(
                 name=get_al_title(view.season, locale), icon_url=asset.error_icon
             ),
             view=view,

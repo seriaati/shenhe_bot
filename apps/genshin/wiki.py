@@ -28,7 +28,7 @@ from apps.text_map.utils import get_weekday_name
 from data.game.elements import get_element_emoji
 from UI_elements.genshin import Search
 from utility.utils import (
-    default_embed,
+    DefaultEmbed,
     get_weekday_int_with_name,
 )
 
@@ -43,7 +43,7 @@ async def parse_character_wiki(
     embeds: List[discord.Embed] = []
 
     # basic info
-    embed = default_embed(title=character.name)
+    embed = DefaultEmbed(title=character.name)
     embed.set_thumbnail(url=character.icon)
     embed.add_field(
         name=text_map.get(315, locale),
@@ -63,8 +63,8 @@ async def parse_character_wiki(
     embeds.append(embed)
 
     # ascension
-    embed = default_embed(
-        message=text_map.get(184, locale).format(
+    embed = DefaultEmbed(
+        description=text_map.get(184, locale).format(
             command="</calc character:1020188057628065862>"
         )
     )
@@ -86,7 +86,7 @@ async def parse_character_wiki(
             passive_count += 1
         else:
             count += 1
-        embed = default_embed(title=talent.name, message=talent.description)
+        embed = DefaultEmbed(talent.name, talent.description)
         embed.set_author(
             name=text_map.get(
                 323 if talent.type is CharacterTalentType.PASSIVE else 94,
@@ -102,9 +102,7 @@ async def parse_character_wiki(
     count = 0
     for constellation in character.constellations:
         count += 1
-        embed = default_embed(
-            title=constellation.name, message=constellation.description
-        )
+        embed = DefaultEmbed(constellation.name,constellation.description)
         embed.set_author(
             name=text_map.get(318, locale) + f" {count}",
             icon_url=character.icon,
@@ -114,7 +112,7 @@ async def parse_character_wiki(
 
     # namecard
     if character.other is not None:
-        embed = default_embed(
+        embed = DefaultEmbed(
             character.other.name_card.name,
             character.other.name_card.description,
         )
@@ -161,7 +159,7 @@ async def parse_weapon_wiki(
     rarity_str = ""
     for _ in range(weapon.rarity):
         rarity_str += asset.white_star_emoji
-    embed = default_embed(weapon.name, f"{rarity_str}")
+    embed = DefaultEmbed(weapon.name, f"{rarity_str}")
     embed.set_footer(text=weapon.description)
     embed.add_field(
         name=text_map.get(529, locale),
@@ -240,7 +238,7 @@ async def parse_material_wiki(
     rarity_str = ""
     for _ in range(material.rarity):
         rarity_str += asset.white_star_emoji
-    embed = default_embed(material.name, f"{rarity_str}\n\n{material.description}")
+    embed = DefaultEmbed(material.name, f"{rarity_str}\n\n{material.description}")
     embed.add_field(
         name=text_map.get(529, locale),
         value=material.type,
@@ -314,7 +312,7 @@ async def parse_artifact_wiki(
     rarity_str = ""
     for _ in range(artifact.rarities[-1]):
         rarity_str += asset.white_star_emoji
-    embed = default_embed(artifact.name, rarity_str)
+    embed = DefaultEmbed(artifact.name, rarity_str)
     embed.add_field(
         name=text_map.get(640, locale),
         value=artifact.effects.two_piece,
@@ -336,7 +334,7 @@ async def parse_monster_wiki(
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
-    embed = default_embed(monster.name, monster.description)
+    embed = DefaultEmbed(monster.name, monster.description)
     embed.set_author(name=monster.type)
     embed.set_thumbnail(url=monster.icon)
     files = []
@@ -374,7 +372,7 @@ async def parse_food_wiki(
     rarity_str = ""
     for _ in range(food.rarity):
         rarity_str += asset.white_star_emoji
-    embed = default_embed(food.name, rarity_str)
+    embed = DefaultEmbed(food.name, rarity_str)
     embed.set_thumbnail(url=food.icon)
     embed.set_footer(text=food.description)
     embed.set_author(name=food.type)
@@ -418,7 +416,7 @@ async def parse_furniture_wiki(
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
-    embed = default_embed(furniture.name)
+    embed = DefaultEmbed(furniture.name)
     embed.description = f"""
         {furniture.description}
         
@@ -458,7 +456,7 @@ async def parse_namecard_wiki(
     rarity_str = ""
     for _ in range(namecard.rarity):
         rarity_str += asset.white_star_emoji
-    embed = default_embed(namecard.name, rarity_str)
+    embed = DefaultEmbed(namecard.name, rarity_str)
     embed.set_author(name=namecard.type)
     embed.set_image(url=namecard.icon)
     embed.add_field(name=text_map.get(530, locale), value=namecard.source)
@@ -474,13 +472,13 @@ async def parse_book_wiki(
     rarity_str = ""
     for _ in range(book.rarity):
         rarity_str += asset.white_star_emoji
-    book_embed = default_embed(book.name, rarity_str)
+    book_embed = DefaultEmbed(book.name, rarity_str)
     book_embed.set_thumbnail(url=book.icon)
     book_embeds: Dict[str, discord.Embed] = {}
     options = [discord.SelectOption(label=book.name, value="book_info")]
     for volume in book.volumes:
         story = await client.get_book_story(volume.story_id)
-        embed = default_embed(volume.name, story)
+        embed = DefaultEmbed(volume.name, story)
         embed.set_footer(text=volume.description)
         options.append(discord.SelectOption(label=volume.name, value=str(volume.id)))
         book_embeds[str(volume.id)] = embed

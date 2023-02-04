@@ -5,7 +5,7 @@ from apps.text_map.utils import get_user_locale
 import config
 from typing import List
 from apps.draw import main_funcs
-from utility.utils import default_embed, get_user_appearance_mode
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):
@@ -28,7 +28,7 @@ class Select(discord.ui.Select):
 
     async def callback(self, i: discord.Interaction):
         self.view: View
-        embed = default_embed()
+        embed = DefaultEmbed()
         embed.set_image(url="attachment://overview.jpeg")
         fp = await main_funcs.draw_wish_overview_card(
             DrawInput(

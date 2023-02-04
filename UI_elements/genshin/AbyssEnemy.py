@@ -12,7 +12,7 @@ from apps.genshin.custom_model import AbyssHalf, DrawInput
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
-from utility.utils import default_embed, divide_chunks, get_user_appearance_mode
+from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
 
 
 class View(BaseView):
@@ -123,7 +123,7 @@ async def select_callback(i: Interaction, view: View, value: str):
         if index == 0:
             embed = view.embeds[value]
         else:
-            embed = default_embed(text_map.get(708, view.locale))
+            embed = DefaultEmbed(text_map.get(708, view.locale))
             embed.set_image(url=f"attachment://enemies2.jpeg")
         embeds.append(embed)
 

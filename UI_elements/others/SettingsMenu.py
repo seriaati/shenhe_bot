@@ -11,7 +11,7 @@ from apps.text_map.utils import get_user_locale
 from data.others.language_options import lang_options
 from UI_base_models import BaseView, GoBackButton
 from UI_elements.others.settings import CustomImage, Notif
-from utility.utils import (default_embed, get_user_appearance_mode,
+from utility.utils import (DefaultEmbed, get_user_appearance_mode,
                            get_user_auto_redeem)
 
 
@@ -38,8 +38,8 @@ class Appearance(Button):
 
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
 
-        embed = default_embed(
-            message=text_map.get(538, locale),
+        embed = DefaultEmbed(
+            description=text_map.get(538, locale),
         )
         embed.set_author(
             name=text_map.get(535, locale),
@@ -86,7 +86,7 @@ class Langauge(Button):
         self.view: View
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
 
-        embed = default_embed(message=text_map.get(125, locale))
+        embed = DefaultEmbed(description=text_map.get(125, locale))
         lang_name = lang_options.get(str(locale), {"name": "Unknown"})["name"]
         lang_name = lang_name.split("|")[0]
         embed.set_author(
@@ -144,7 +144,7 @@ class CustomProfileImage(Button):
     async def callback(self, i: Interaction):
         self.view: View
 
-        embed = default_embed(message=text_map.get(276, self.locale))
+        embed = DefaultEmbed(description=text_map.get(276, self.locale))
         embed.set_author(
             name=text_map.get(62, self.locale), icon_url=i.user.display_avatar.url
         )
@@ -181,7 +181,7 @@ class AutoRedeem(Button):
 
         auto_redeem = await get_user_auto_redeem(i.user.id, i.client.pool)  # type: ignore
 
-        embed = default_embed(message=text_map.get(285, self.locale))
+        embed = DefaultEmbed(description=text_map.get(285, self.locale))
         embed.set_author(
             name=text_map.get(126, self.locale), icon_url=i.user.display_avatar.url
         )
@@ -217,8 +217,8 @@ class RedeemButton(Button):
 async def return_settings(i: Interaction):
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
-    embed = default_embed(
-        message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
+    embed = DefaultEmbed(
+        description=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
     )
     view = View(locale)
 

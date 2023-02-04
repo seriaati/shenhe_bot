@@ -12,7 +12,7 @@ from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.elements import get_element_emoji, get_element_list
 from UI_base_models import BaseModal, BaseView
-from utility.utils import default_embed, error_embed
+from utility.utils import DefaultEmbed, ErrorEmbed
 
 
 class View(BaseView):
@@ -84,7 +84,7 @@ async def element_button_callback(i: discord.Interaction, view: View, element: s
     view.clear_items()
     view.add_item(CharacterSelect(view.locale, options, element))
     view.add_item(GoBack())
-    embed = default_embed(message=text_map.get(276, view.locale))
+    embed = DefaultEmbed(description=text_map.get(276, view.locale))
     embed.set_author(
         name=text_map.get(62, view.locale), icon_url=i.user.display_avatar.url
     )
@@ -139,8 +139,8 @@ class AddImageModal(BaseModal):
         check = await validate_image_url(self.url.value, i.client.session)
         if not check:
             return await i.response.send_message(
-                embed=error_embed(
-                    message=text_map.get(568, self.view.locale)
+                embed=ErrorEmbed(
+                    description=text_map.get(568, self.view.locale)
                 ).set_author(
                     name=text_map.get(274, self.view.locale),
                     icon_url=i.user.display_avatar.url,
@@ -326,8 +326,8 @@ async def get_user_custom_image_embed(
     custom_image: Optional[UserCustomImage] = None,
     from_settings: bool = True,
 ) -> discord.Embed:
-    embed = default_embed(
-        message=text_map.get(412, locale) if not from_settings else ""
+    embed = DefaultEmbed(
+        description=text_map.get(412, locale) if not from_settings else ""
     )
     embed.set_author(
         name=text_map.get(59, locale).format(

@@ -2,7 +2,7 @@ from typing import Any, Dict
 from apps.text_map.text_map_app import text_map
 from discord import ButtonStyle, Interaction, Locale
 from discord.ui import Button
-from utility.utils import default_embed
+from utility.utils import DefaultEmbed
 
 
 class AddToTodo(Button):
@@ -27,7 +27,7 @@ class AddToTodo(Button):
             await db.commit()
             
         await i.response.send_message(
-            embed=default_embed(message=text_map.get(178, self.locale)).set_author(
+            embed=DefaultEmbed(description=text_map.get(178, self.locale)).set_author(
                 name=text_map.get(179, self.locale), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
