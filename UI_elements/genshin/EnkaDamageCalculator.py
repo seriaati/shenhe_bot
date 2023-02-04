@@ -140,16 +140,18 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     for child in enka_view.children:
         child.disabled = True # type: ignore
     
-    await i.response.edit_message(
-        embed=default_embed()
-        .set_author(
-            name=text_map.get(644, enka_view.locale),
-            icon_url=asset.loader,
-        )
-        .set_image(url="https://i.imgur.com/AsxZdAu.gif"),
-        attachments=[],
-        view=enka_view,
-    )
+    # await i.response.edit_message(
+    #     # embed=default_embed()
+    #     # .set_author(
+    #     #     name=text_map.get(644, enka_view.locale),
+    #     #     icon_url=asset.loader,
+    #     # )
+    #     # .set_image(url="https://i.imgur.com/AsxZdAu.gif"),
+    #     embed=None,
+    #     attachments=[],
+    #     view=enka_view,
+    # )
+    await i.response.defer()
     
     for child in enka_view.children:
         child.disabled = False # type: ignore
@@ -195,19 +197,9 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
             embed=embed, attachments=[], view=enka_view
         )
 
-    embed = default_embed()
-    embed.set_image(url=f"attachment://card.jpeg")
-    if enka_view.data.player is not None:
-        embed.set_author(
-            name=enka_view.data.player.nickname,
-            icon_url=enka_view.data.player.avatar.icon.url
-            if enka_view.data.player.avatar is not None
-            and enka_view.data.player.avatar.icon is not None
-            else i.user.display_avatar.url,
-        )
     card.seek(0)
     file = File(card, "card.jpeg")
-    await i.edit_original_response(embed=embed, attachments=[file], view=enka_view)
+    await i.edit_original_response(embed=None, attachments=[file], view=enka_view)
 
 
 class HitModeButton(Button):

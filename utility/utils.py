@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from itertools import islice
 from typing import Dict, List
 

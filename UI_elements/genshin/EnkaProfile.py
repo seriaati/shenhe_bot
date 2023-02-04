@@ -273,7 +273,7 @@ class ShowArtifacts(ui.Button):
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
 
         if character:
-            original_info = OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy())  # type: ignore
+            original_info = OriginalInfo(view=self.view, attachments=i.message.attachments.copy(), children=self.view.children.copy())  # type: ignore
 
             self.view.clear_items()
             for equipment in character.equipments:
@@ -318,7 +318,7 @@ class ArtifactSlot(ui.Button):
         file_ = discord.File(fp, filename="artifact.jpeg")
         fp.seek(0)
         await i.edit_original_response(
-            embed=default_embed().set_image(url="attachment://artifact.jpeg"),
+            embed=None,
             attachments=[file_],
             view=self.view,
         )

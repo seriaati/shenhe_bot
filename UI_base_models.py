@@ -1,4 +1,5 @@
-from typing import Optional, Union
+import io
+from typing import Any, Dict, Optional, Union
 
 import discord
 import enkanetwork
@@ -8,8 +9,9 @@ import asset
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie, NoPlayerFound, NoUID, NoWishHistory, ShenheAccountNotFound,
-                        UIDNotFound)
+from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie,
+                        NoPlayerFound, NoUID, NoWishHistory,
+                        ShenheAccountNotFound, UIDNotFound)
 from utility.utils import error_embed, log
 
 
@@ -130,7 +132,7 @@ class BaseView(discord.ui.View):
     async def interaction_check(self, i: discord.Interaction) -> bool:
         if self.author is None:
             return True
-        
+
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         if self.author.id != i.user.id:
             await i.response.send_message(
@@ -170,17 +172,24 @@ class GoBackButton(discord.ui.Button):
         self.original_embed = original_info.embed
         self.original_view = original_info.view
         self.original_children = original_info.children
+        self.original_attachments = original_info.attachments
 
     async def callback(self, i: discord.Interaction):
+        await i.response.defer()
+        
         self.original_view.clear_items()
         for item in self.original_children:
             self.original_view.add_item(item)
-            
-        try:
-            await i.response.edit_message(
-                embed=self.original_embed, view=self.original_view, attachments=[]
-            )
-        except discord.InteractionResponded:
-            await i.edit_original_response(
-                embed=self.original_embed, view=self.original_view, attachments=[]
-            )
+        
+        kwargs: Dict[str, Any] = {
+            "embed": self.original_embed,
+            "view": self.original_view,
+        }
+        
+        if self.original_attachments:
+            async with i.client.session.get(self.original_attachments[0].url) as r:
+                image = await r.read()
+                file_ = discord.File(io.BytesIO(image), filename=self.original_attachments[0].filename)
+                kwargs["attachments"] = [file_]
+
+        await i.edit_original_response(**kwargs)

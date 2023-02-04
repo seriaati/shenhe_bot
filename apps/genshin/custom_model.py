@@ -357,8 +357,9 @@ class TodoAction(str, Enum):
 
 class OriginalInfo(BaseModel):
     view: discord.ui.View
-    embed: discord.Embed
     children: List[discord.ui.Item]
+    embed: Optional[discord.Embed] = None
+    attachments: Optional[List[discord.Attachment]] = None
     
     class Config:
         arbitrary_types_allowed = True
