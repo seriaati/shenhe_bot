@@ -1,0 +1,854 @@
+---
+'1': Penuh
+'2': Mata Uang
+'3': Pilih metode masukan
+'4': Resin
+'5': Resin discounts
+'6': Daily comission
+'7': menit
+'8': P.T. waktu yang tersisa
+'9': Tersedia untuk digunakan
+'10': Ada kesalahan di API Genshin
+'11': P.T. tidak ditemukan
+'12': detik
+'13': Hari ini
+'14': Buku harian bulanan yang anda coba lihat tidak tersedia
+'15': Waktu pemulihan
+'16': Disarankan untuk menggunakan /check command
+'17': Klik saya untuk melanjutkan
+'18': Discord tidak mengizinkan modal setelah modal, jadi Anda harus mengklik tombol untuk melanjutkan ¯\_(ツ)_/¯
+'19': Semua karakter
+'20': Ekspedisi
+'21': </stuck:1006486283725590536> tidak ada informasi
+'22': Data tidak publik
+'23': Kesalahan
+'24': Catatan waktu
+'25': Sen.
+'26': Sel.
+'27': Rab.
+'28': Kam.
+'29': Jum.
+'30': Sab.
+'31': Min.
+'32': Pilih bahasa
+'33': Senjata
+'34': Bahasa saat ini
+'35': /register untuk informasi lebih lanjut
+'36': Cookie Anda tidak valid, silakan daftar lagi menggunakan /register
+'37': Set Artefak
+'38': Cari lineup Genshin dengan simulator lineup Hoyolab
+'39': Akun ditambahkan
+'40': Anda telah mengklaim hadiah login hari ini!
+'41': Diperoleh
+'42': Berhasil diklaim
+'43': Overview
+'44': Hari Aktif
+'45': Ketik nickname untuk kustom gambar
+'46': Achievements
+'47': Spiral Abyss
+'48': Oculus
+'49': Anemoculus
+'50': Geoculus
+'51': Elecroculus
+'52': "{element} karakter"
+'53': Common Chest
+'54': Exquisite Chests
+'55': Luxurious Chests
+'56': Statistik Genshin
+'57': Precious Chests
+'58': Eksplorasi Dunia
+'59': Tetapkan gambar kustom untuk {character_name}
+'60': Image URL
+'61': Hapus gambar
+'62': Terapkan gambar custom
+'63': Lihat info bot
+'64': File gambar
+'65': File gambar untuk unggah
+'66': Nickname untuk gambar
+'67': Karakter untuk menggunakan gambar
+'68': Unggah gambar kustom untuk /profile character cards
+'69': Buku Harian Traveler
+'70': Log Primo
+'71': primo
+'72': Log Mora
+'73': mora
+'74': |-
+  Gunakan </stats:1006486283725590530> untuk memeriksa kemajuan abyss Anda,
+  command ini hanya menampilkan data di atas lantai 9.
+'75': Tidak ada data keinginan yang ditemukan untuk filter ini
+'76': Data Spiral abyss tidak ditemukan
+'77': Lunar phase
+'78': Deepest descent
+'79': Digunakan oleh {character_name}
+'80': Single strike terkuat
+'81': Membunuh terbanyak
+'82': Menerima damage terbanyak
+'83': Menggunakan burst terbanyak
+'84': Menggunakan skill terbanyak
+'85': Spiral Abyss Overview
+'86': nama-gambar
+'87': Shenhe telah mengklaim hadiah harian hari ini untukmu!
+'88': Spiral Abyss Leaderboard ({phase}{num})
+'89': rank
+'90': 'Build #'
+'91': Senjata
+'92': Artefak
+'93': Main Stats
+'94': Talenta
+'95': Karakter stats
+'96': Source
+'97': Artifact Thoughts
+'98': Pengingat resin telah dimatikan
+'99': 'Nyala'
+'100': 'Mati'
+'101': Beralih
+'102': Realm currency saat ini
+'103': Nomor notifikasi maks
+'104': Setelan disimpan
+'105': Karakter
+'106': Kode sudah ditukarkan
+'107': Kode tidak valid
+'108': Kode
+'109': Kode berhasil ditukarkan
+'110': Data event summer tidak ditemukan
+'111': Golden Apple Archipelago
+'112': Waverider Waypoints Terbuka
+'113': Waypoints Terbuka
+'114': Treasure Chests Diperoleh
+'115': Belum selesai
+'116': Surfpiercer
+'117': Summer Memories
+'118': Eksplorasi Dunia
+'119': Waktu selesai
+'120': Berhasil ditantang
+'121': waktu
+'122': Keterampilan elemen yang dilepaskan
+'123': UID khusus dicari
+'124': Kembali ke default
+'125': |-
+  • Secara default, shenhe merespons Anda dengan bahasa yang sama dengan yang digunakan discord Anda
+  • Mengubah bahasa akan menggantikan bahasa default
+  • Jika ada teks yang belum diterjemahkan, shenhe akan membalas Anda dengan bahasa Inggris
+  • Nama karakter genshin, senjata, dan elemen game lainnya akan diterjemahkan secara otomatis
+  • Tertarik menerjemahkan Shenhe ke dalam bahasa Anda? Lihat halaman [crowdin](https://crowdin.com/project/shenhe-bot).
+'126': Penukaran kode otomatis
+'127': Penukaran kode gagal
+'128': Bahasa
+'129': Mondstat
+'130': Liyue
+'131': Inazuma
+'132': Aku juga!
+'133': Penukaran sedang dalam masa cooldown, silakan coba lagi nanti
+'134': Kesalahan timing? Tambahkan UID Anda menggunakan /accounts sehingga Shenhe tahu di server mana Anda berada
+'135': Ada kesalahan
+'136': Pilih akun
+'137': Notifikasi
+'138': |-
+  Matikan pesan langsung yang dikirim oleh Shenhe selain yang </remind:1044926380242120753>.
+'139': Lineup Karakter
+'140': Pilih skenario lineup
+'141': Tidak ada karakter yang ditemukan di etalase dalam game Anda!
+'142': Pilih elemen
+'143': Anda bukan penerbit perintah ini
+'144': Profil overview
+'145': Karakter showcase
+'146': Lantai {a}
+'147': Waktu aktif
+'148': Pilih lantai abyss
+'149': Data tidak publik?
+'150': |-
+  Silakan buka https://www.hoyolab.com/home dan login
+  Ikuti langkah-langkah pada gambar di bawah ini
+
+  1. Klik avatar di kanan atas
+  2. Beranda pribadi
+  3. Klik `Genshin` di pojok kanan atas
+  4. Klik ikon roda gigi
+  5. Alihkan semua sakelar
+'151': Fase terakhir
+'152': Ambang resin
+'153': Pilih fase abyss
+'154': Semua waktu
+'155': DM akan berhenti setelah beberapa kali
+'156': Memilih karakter yang notifikasinya AKTIF akan menghapus notifikasinya
+'157': Pilih karakter
+'158': Saat ini tidak ada notifikasi yang disetel untuk karakter apa pun
+'159': Karakter saat ini
+'160': Paling sedikit menyelesaikan semua abyss
+'161': Memilih karakter ini akan MENONAKTIFKAN notifikasinya
+'162': Build
+'163': Pilih Build
+'164': build
+'165': |-
+  Pengguna ini belum mendaftarkan akunnya
+  /register untuk mendaftar
+'166': Pengguna tidak ditemukan
+'167': "{name} UID"
+'168': level saat ini
+'169': Karakter {level_type}
+'170': 'Contoh: {a}'
+'171': Serangan auto target (A) {level_type}
+'172': Level harus antara {a} dan {b}
+'173': Elemental skill (E) {level_type}
+'174': Elemental burst (Q) {level_type}
+'175': Tambahkan ke daftar tugas
+'176': Halaman {num}
+'177': Ruangan {a}
+'178': Gunakan </todo:1020188057628065863> untuk melihat daftar tugas
+'179': Berhasil
+'180': Pilih senjata
+'181': Masukan kalkulasi data
+'182': target level
+'183': Karakter level
+'184': Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level karakter ini
+'185': Senjata {level_type}
+'186': "menang/berjalan"
+'187': Harap masukkan angka saja
+'188': Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level senjata ini
+'189': Belum ada kartu untuk karakter ini, periksa lagi nanti!
+'190': Masukan Tidak Valid
+'191': Hasil perhitungan
+'192': Konten perhitungan
+'193': Didukung oleh Genshin Optimizer
+'194': |-
+  {total} total
+  {cookie} dengan Cookie
+  {china} China users
+'195': Jenis file tidak valid
+'196': Ringkasan karakter Genshin
+'197': Tidak perlu bahan
+'198': player
+'199': single strike
+'200': Level Senjata
+'201': lantai
+'202': Daftar tugas
+'203': Tambahkan item
+'204': |-
+  Daftar tugas Anda kosong, gunakan </calc character:1020188057628065862> atau </calc weapon:1020188057628065862> untuk menghitung material untuk karakter dan senjata, atau gunakan tombol hijau di bawah untuk menambahkan item khusus.
+'205': Hapus item
+'206': Bersihkan item
+'207': Pilih item
+'208': Nama barang
+'209': 'Contoh: mora'
+'210': Jumlah {item}
+'211': |-
+  Tidak ingin melihat pesan ini lagi? Gunakan /settings
+  Tidak ingin check-in otomatis lagi? Gunakan /claim
+'212': Anda tidak dapat menghapus lebih banyak item daripada yang ada di daftar tugas Anda
+'213': Cryo
+'214': Geo
+'215': Pyro
+'216': Anemo
+'217': Hydro
+'218': Dendro
+'219': Electro
+'220': Developer Shenhe
+'221': Januari
+'222': Februari
+'223': Maret
+'224': April
+'225': Mei
+'226': Juni
+'227': Juli
+'228': Agustus
+'229': September
+'230': Oktober
+'231': November
+'232': Desember
+'234': Senin
+'235': Selasa
+'236': Rabu
+'237': Kamis
+'238': Jumat
+'239': Sabtu
+'240': Minggu
+'250': item yang bisa diambil
+'251': Achievement leaderboard
+'252': The Shenhe leaderboard
+'253': Bersaing dengan pengguna Shenhe lainnya dan cobalah untuk mendapatkan peringkat tertinggi dalam berbagai kategori!
+'254': Gunakan /leaderboard untuk melihat leaderboard
+'255': Kenyamanan
+'256': Waktu dibuat
+'257': Trust
+'258': HP
+'259': HP%
+'260': Atk.
+'261': Atk.%
+'262': Def.
+'263': Def.%
+'264': Crit Rate
+'265': Crit DMG
+'266': Elem. Mastery
+'267': Energy Recharge
+'268': Base HP
+'269': Base Atk.
+'270': Base Def.
+'271': Healing Bonus
+'272': Physic DMG Bonus
+'273': Elem. DMG Bonus
+'274': Invalid image URL
+'275': Custom gambar
+'276': |-
+  • Anda dapat mengatur kustom gambar untuk kartu karakter di </profile:1020580644419551336>
+  • Anda dapat memiliki hingga 25 gambar untuk setiap karakter
+  • Berikan URL gambar, alat yang bagus untuk menggunakan [imgur](https://imgur.com/)
+  • Gunakan [this](https://croppola.com/) untuk memotong gambar, pilih rasio 2,64:1
+  • Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
+'277': Gambar saat ini
+'278': Anda telah mencapai batas gambar yang dapat Anda miliki untuk karakter ini (25)
+'279': Tidak ada kustom gambar yang ditetapkan untuk karakter ini
+'280': Base Speed
+'281': Speed%
+'282': Kambali
+'283': Atau masukkan UID Anda di opsi
+'284': Akun tidak valid
+'285': |-
+  • Otomatis tukarkan kode Genshin Impact yang ada di [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  • Anda juga dapat menukarkan kode secara manual menggunakan </redeem:1044926380456017924>
+'286': UID tidak valid atau tidak ditemukan di enka.network
+'287': Silakan aktifkan Tampilkan rincian karakter dalam game
+'288': Level player
+'289': Level dunia
+'290': Achievement
+'291': Spiral abyss
+'292': Max HP
+'293': win %
+'294': Lihat daftar musuh di fase abyss saat ini
+'295': Level musuh
+'296': Perubahan Terbaru
+'297': Temui orang-orang hebat yang membantu saya!
+'298': Translators
+'299': Friendship Level
+'300': Pengguna Terdaftar
+'301': Stats
+'302': Threshold
+'303': Resin saat ini
+'304': Nomor pemberitahuan max. saat ini
+'305': Gunakan /remind untuk mengubah pengaturan
+'306': Resin hampir penuh!!
+'307': Notifikasi talenta sekarang DIMATIKAN
+'308': Klik kanan server mana pun yang memiliki shenhe di dalamnya
+'309': Klik pada `pengaturan privasi`
+'310': Ubah toggle ON
+'311': Cara membuka blokir DM dari server
+'312': Saatnya farm material untuk {name}!
+'313': Genshin Impact
+'314': Pilih fase abyss
+'315': Informasi Dasar
+'316': Tanggal Lahir
+'317': Afiliasi
+'318': Konstelasi
+'319': Kartu nama
+'320': Ascension material
+'321': Ascension ke
+'322': Material peningkatan level talent
+'323': Passive Talents
+'324': Naik level ke
+'325': Navigasi Cepat
+'326': Normal Atk.
+'327': Charged Atk.
+'328': Plunging Atk.
+'329': Menghitung damage...
+'330': Ini membutuhkan sekitar 5 hingga 10 detik
+'331': Tidak Ada Reaksi
+'332': Melt
+'333': Vaporize
+'334': Avg. DMG
+'335': Non-Crit DMG
+'336': Crit Hit DMG
+'337': Pilih elemental reaksi
+'338': Tidak ada tim infusion jarak dekat
+'339': Pyro infusion
+'340': Cryo infusion
+'341': Bennett C6
+'342': Chongyun Skill
+'343': Pilih tim infusion jarak dekat
+'344': Pilih party tim
+'345': Tim
+'346': Kondisi
+'347': Efek
+'348': Kalkulasi Damage
+'349': Sumber Daya yang Digunakan
+'350': melt
+'351': vaporize
+'352': Authkey URL
+'353': Mengimpor riwayat wish
+'354': Silakan tempel tautannya di sini
+'355': Harap tunggu sementara Shenhe sedang memproses riwayat wish Anda...
+'356': Berhasil mengimpor riwayat wish
+'357': Candace Q
+'358': |-
+  1. Buka Genshin Impact di PC (Jika Anda menggunakan banyak akun, harap mulai ulang game)
+  2. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
+  3. Tekan START pada keyboard Anda, lalu cari Powershell
+  4. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell
+  5. Tekan ENTER, dan link akan disalin ke clipboard Anda
+  6. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
+'359': Mengimpor riwayat wish menggunakan ponsel Android Anda
+'360': Hydro infusion
+'361': Pilih sumber informasi Anda
+'362': |-
+  1. Unduh Stream di App Store [here](https://apps.apple.com/app/stream/id1312141691)
+  2. Buka aplikasi, lalu izinkan VPN di preferensi sistem (Settings > General > VPN)
+  3. Instal CA (klik Sniff Now di Stream App > Install CA > Jendela pop-up akan muncul dan pilih izinkan > Sekarang CA telah diunduh
+  4. Buka Settings > General > VPN & Device management > Klik di Stream Generated CA dan installI've trusted
+  5. Buka Genshin Impact lalu buka layar Wish, dan tetap di halaman tersebut
+  6. Kembali ke Aplikasi Stream > Pilih I've trusted > Ketuk Tombol Sniff Now
+  7. Kembali ke Genshin Impact lalu buka halaman riwayat Wish
+  8. Tunggu halaman dimuat
+  9. Kembali ke Aplikasi Streaming > Stop Sniffing
+  10. Klik Sniff History > Pilih permintaan yang diakhiri dengan .json (tautan dimulai dengan https://hk4e-api-os.mihoyo.com/)
+  11. Klik tab Request, lalu salin tautannya
+  12. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
+'363': Tautan yang Anda berikan tidak valid
+'364': Video Tutorial
+'365': Pilih platform Anda
+'366': P.T. Anda siap digunakan!
+'367': UID ini tidak memiliki data pemain di dalamnya
+'368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish Anda
+'369': Riwayat wish
+'370': Karakter bintang 5 terakhir yang Anda pull adalah karakter standar
+'371': Karakter bintang 5 terakhir yang Anda pull adalah karakter banner
+'372': Analisis Wish luck
+'373': Keberuntungan Anda lebih baik daripada **{luck}%** kebanyakan player
+'374': Memilih filter ini akan menghapusnya
+'375': Lihat banner Genshin yang sedang berlangsung
+'376': Saat ini tidak ada banner yang sedang berlangsung
+'378': Metode 1
+'379': Anda telah menghabiskan total **{a}** penarikan untuk menarik **{b}** bintang-lima banner karakter
+'380': Jumlah pity bintang-lima Anda saat ini adalah **{a}**
+'381': "Perubahan {time}"
+'382': Wishing untuk pull
+'383': UP bintang-5 karakter
+'384': Diperkirakan Anda akan pull banner karakter bintang-lima di pull ke **{a}**
+'385': Diperkirakan Anda akan pull banner senjata bintang-lima di pull ke **{a}**
+'386': Prediksi angka Event wish
+'387': Standard
+'388': 'Ya'
+'389': 'Tidak'
+'390': Apakah ini senjata yang Anda inginkan?
+'391': Senjata bintang-5 terakhir yang Anda pull adalah
+'392': Ini adalah senjata standard atau limited waktu terbatas?
+'393': Prediksi jumlah wish senjata
+'394': |-
+  1. Tekan START pada keyboard Anda, lalu cari Powershell
+  2. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell, lalu tekan ENTER (hanya jika pesan 'Tekan Enter untuk melanjutkan...' belum muncul)
+  3. Buka Genshin Impact di PC ini
+  4. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
+  5. Klik tabel, lalu tekan CTRL+A lalu CTRL+C
+  6. Alt+Tab ke powershell, lalu tekan ENTER, link akan disalin ke clipboard Anda
+  7. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
+'395': senjata yang Anda inginkan
+'396': pull
+'397': Transformative Reactions
+'398': |-
+  Jumlah singkapan ley line dikonversi dari jumlah mora yang Anda peroleh bulan ini.
+  Anda tidak farm banyak singkapan ley line, itu hanya membuat angka lebih mudah dipahami.
+'399': |-
+  Karakter di-cache secara otomatis saat Anda menggunakan command ini.
+  Bahkan jika Anda menonaktifkan karakter dari etalase dalam game,
+  mereka akan tetap muncul di sini. Untuk memperbarui etalase, tempatkan karakter kembali
+  dan gunakan perintah ini lagi. Secara teoritis, Anda dapat memiliki semua karakter Anda
+  di /profile Anda dan gunakan di kalkulator damage.
+'400': Tautan dihasilkan, klik tombol di bawah untuk masuk
+'401': Hasilkan tautan masuk
+'402': Membuat tautan masuk...
+'403': |-
+  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
+  2. Then open the wish history in the game and wait it to load
+  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
+  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
+  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
+  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
+  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
+  8. Click the submit button and paste the link to the textbox that pops up
+'404': Select a custom image
+'405': You haven't pulled in the weapon banner yet
+'406': Start time
+'407': End time
+'408': Details
+'409': Choose event type
+'410': Register your genshin account to use commands that require one
+'411': options
+'412': Manage your custom images in </settings:1020580644478275614>
+'413': Add image
+'414': 'View real-time notes: Current resin, pot, expedition status (need /register)'
+'415': user
+'416': Check other user's data
+'417': 'View genshin stats: Active days, oculis, number of chests'
+'418': A user's genshin UID
+'419': View area exploration rates
+'420': View info about your Hoyolab daily check-in rewards
+'421': View all owned characters (need /register)
+'422': View traveler's diary (need /register)
+'423': month
+'424': Choose a month to view
+'425': This month
+'426': Text tutorial is coming soon, for now please watch the video tutorial
+'427': The month before last month
+'428': View abyss data (need /register)
+'429': type
+'430': phase
+'431': The type of data you wish to view
+'432': Which abyss phase?
+'433': Detailed
+'434': View the list of current beta items in Genshin
+'435': This phase
+'436': Last phase
+'437': Beta Items
+'438': Set notification features
+'439': function
+'440': toggle
+'441': Resin notification (need /register)
+'442': Talent notification
+'443': Check privacy settings
+'444': You can use this command with /search to get more information about a beta item
+'445': There are currently no beta items, check back later
+'446': View farmable items today
+'447': 'View character builds: Weapons, artifacts, talent levels, stats'
+'448': Search a user's UID
+'449': View characters' artifacts, stats, weapons, and talents, and calculate damage
+'450': Redeem gift codes (need /register)
+'451': code
+'452': View ongoing events in genshin
+'453': Global
+'454': Read More
+'455': Server
+'456': Load
+'457': You are currently not in the leaderboard
+'458': character
+'459': View past genshin event stats
+'460': Calculate materials needed for upgrading a character
+'461': sync
+'462': sync with in-game data (autofill the levels)
+'463': Main stat
+'464': Sub stat
+'465': Calculate materials needed for upgrading a weapon
+'466': Developers that helped me
+'467': rarity
+'468': sword
+'469': catalyst
+'470': claymore
+'471': bow
+'472': polearm
+'473': View the todo list
+'474': Import wish history
+'475': Huge thank you to these people!
+'476': Wish history import tutorial
+'477': Submit link
+'478': View wish history
+'479': And you!
+'480': Predict the chance of pulling a 5-star banner character
+'481': number
+'482': How many 5-star banner characters do you wish to pull?
+'483': Predict the chance of pulling a 5-star banner weapon
+'484': View wish overview
+'485': Change the language shenhe responds to you with
+'486': View a list of all commands
+'487': Genshin
+'488': Genshin wish
+'489': Requires wish history import using /wish import
+'490': Enhancement progress calculator
+'491': Calculate upgrade materials
+'492': Video tutorial
+'493': Waifus
+'494': Others
+'495': Choose your category
+'496': Author
+'497': |-
+  Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
+  I really appreciate all of you and I hope you enjoy using Shenhe.
+  DM me for any feature requests, imporvements, and bug reports!
+'498': View profile
+'499': View all characters
+'500': An error occured while trying to do daily check-in
+'501': Select a chapter of the book
+'502': Run calculator
+'503': Number of guilds
+'504': 'Made by seria#5334, DM me if you have any questions'
+'505': An error has occured while trying to send you a notification
+'506': Last month
+'507': How many 5-star banner weapons do you wish to pull?
+'508': Search anything genshin related
+'509': query
+'510': Sumeru
+'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
+'512': |-
+  • Notify you when your parametric transformer is ready
+  • 1 notification per day
+'513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
+'514': Realm currency reminder
+'515': Notification settings
+'516': Realm currency threshold
+'517': Realm currency reminder disabled
+'518': Realm currency is almost full!
+'519': |-
+  [Enka.network](https://enka.network/) is currently down, please try again later.
+  Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
+'520': Dendroculus
+'521': Remove account data
+'522': Account data removed
+'523': Enka.network API error
+'524': Registered Users
+'525': Spread
+'526': Aggravate
+'527': Hydro infusion
+'528': Members
+'529': Item type
+'530': Sources
+'531': Weapon effect
+'532': "{num} custom images"
+'533': Error while calculating damage
+'534': View and change your user settings in Shenhe
+'535': Appearance
+'536': Dark mode
+'537': Light mode
+'538': |
+  • This setting changes the appearance of your cards
+  • If there is no dark mode version of the card, it will be displayed in light mode
+  • Default is light mode
+  • See below for an example
+'539': Settings
+'540': |-
+  • In some cases, I will push notifications using Shenhe
+  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
+'541': Developer Messages
+'542': Item not found
+'543': Data is from cache
+'544': Manage your accounts in Shenhe
+'545': You don't have any account registered
+'546': |-
+  • You can register multiple accounts in Shenhe
+  • You can switch between accounts using the dropdown menu
+'547': TW, HK, MO
+'548': Celestia
+'549': Irminsul
+'550': America
+'551': Europe
+'552': Asia
+'553': Unknown region
+'554': (Internal)
+'555': Your accounts
+'556': Add an account
+'557': Remove accounts
+'559': Switch account
+'560': Choose one or multiple accounts below to remove
+'561': Accounts removed
+'562': Choose a custom image
+'563': |-
+  • There are two account types: UID and Cookie
+  • Some commands require Cookie, to add them, choose one of the options in the red box when adding an account
+  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+'564': Latency
+'565': Credits
+'566': |-
+  {total} total
+  {unique} unique
+'567': |-
+  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
+  The only file that is supported is the .txt file exported from Shenhe.
+'568': Please provide an Image URL in either .png or .jpg format
+'569': Account type
+'570': |-
+  Your Cookie contains multiple accounts
+  please choose the one you want to add
+'571': You don't have an account registered
+'572': Use </accounts:1020188057628065866> to add one
+'573': Your current account is not linked to a Cookie
+'574': |-
+  One of your other accounts is linked to a Cookie,
+  but the current one is only linked to a UID
+'575': Use </accounts:1020188057628065866> to switch between accounts
+'576': "Owned characters: {current}/{total}"
+'577': "Maxed friendship level: {current}/{total}"
+'578': Friendship Lv.
+'579': This user doesn't have an account registered
+'580': This user's current account is not linked to a Cookie
+'581': |-
+  One of this user's accounts is linked to a Cookie,
+  but the current one is only linked to a UID
+'582': Resin notification
+'583': Select a weekday
+'584': Realm currency notification
+'585': Test DM
+'586': Notify you when your resin exceeds a certain amount
+'587': Can be used to ugprade
+'588': View on Enka.network
+'589': Refreshes {in_x_seconds}
+'590': |-
+  • Notify you when a character's talent domain is farmable
+  • Selecting a character that already has notification enabled will disable it
+'591': Current settings
+'592': |-
+  • Set reminders to do the homework provided by Genshin on-time
+  • Reminder settings are separate for each account you have registered, except talent and weapon notification
+  • Click on the buttons below for more information on each feature
+'593': Reminders
+'594': Change settings
+'595': Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
+'596': Test it out!
+'597': Shenhe has failed to DM you
+'598': Add/Remove characters
+'599': Remove all characters
+'600': Change nicknames
+'601': nickname
+'602': Select the account you want to change the nickname of
+'603': Claim reward
+'604': Hoyolab daily check in
+'605': Claimed rewards
+'606': Current status
+'607': View claimed rewards
+'608': Please wait while Shenhe is processing your character data...
+'609': Domain
+'610': stars collected
+'611': It is recommended to do the check-in by yourself today
+'612': Used {num} times
+'613': Most used characters
+'614': "Your current rank is **#{rank}**"
+'615': "**{num}** people has participated in this leaderboard"
+'616': Select a leaderboard category
+'617': Character usage rate in abyss
+'618': The most used character is **{name}** with **{num}** uses ({percent}%)
+'619': To update or add your data in the leaderboard, use {command}
+'620': This leaderboard is currently empty
+'621': Food effect
+'622': Drops
+'623': Interaction timed out
+'624': Please try again
+'625': Date published
+'626': Ingredients
+'627': Toggle daily check-in
+'628': You have enabled the daily check-in feature
+'629': You have disabled the daily check-in feature
+'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
+'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
+'632': Weapon notification
+'633': |-
+  • Notify you when a weapon's domain is farmable
+  • Selecting a weapon that already has notification enabled will disable its notification
+'634': Add/Remove weapons
+'635': Remove all weapons
+'636': Current weapons
+'637': There are currently no notifications set for any weapons
+'638': Choosing this weapon will turn OFF its notifications
+'639': Notif you when your realm currency exceeds a certain amount
+'640': Two-piece effect
+'641': Four-piece effect
+'642': Support server
+'643': One-page image
+'644': Please wait while Shenhe is generating the image...
+'645': Character Banner
+'646': Weapon Banner
+'647': Novice Banner
+'648': Search failed
+'649': "{a} primogems spent"
+'650': Total Wishes
+'651': 5-star Pity
+'652': Four Stars
+'653': Five Stars
+'654': Recent 5 star pulls
+'655': Permanent Banner
+'656': Choose a banner
+'657': fate-point
+'658': A number that is either 0, 1, or 2
+'659': |-
+  Fate point must be a number that is either 0, 1, or 2.
+  You can view your current fate point number in the weapon banner.
+'660': You haven't pulled in the character banner yet
+'661': Choose a rarity filter
+'662': Choose a banner filter
+'663': Total primogems
+'664': Intertwined fates
+'665': Total mora
+'666': Ley line outcrops
+'667': Compared to last month
+'668': Primogems
+'669': Mora
+'670': Go to login page
+'671': Wish History
+'672': UID not found (link it with /register !)
+'673': You currently have **{a}** wishes stored in Shenhe's database
+'674': Please link a UID before importing new wishes
+'675': Newest wish
+'676': Oldest wish
+'677': Link UID
+'678': Import
+'679': Export
+'680': Clear wish history
+'681': |-
+  You can now have separate wish history for each account you have registered.
+  For past wishes, you have to choose an account from below to link them to
+'682': Select an account
+'683': No wish history found for this account
+'684': Shenhe
+'685': Select a method of importing wishes
+'686': 'Import your Genshin wish history from a file'
+'687': |-
+  You can use the </wish file-import:123123> command to import wishes from a file
+  Only support `.txt` files exported from Shenhe
+'688': Are you sure?
+'689': |-
+  • You are about to clear your wish history for this account, this action cannot be undone.
+  • It is recommended to export your wish history before clearing it.
+  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+'690': Shenhe has found **{a}** wishes in this link/file
+'691': Confirm wish import
+'692': Import your Genshin wish history from a txt file exported by Shenhe
+'693': Please check the file you have provided
+'694': Ongoing
+'695': Finished
+'696': Remaining
+'697': Completed
+'698': Today
+'699': Tomorrow
+'700': Unknown
+'701': All
+'702': The link you have provided has expired, please generate a new one
+'703': Element
+'704': PT notification
+'705': Spiral abyss enemies
+'706': Ley line disorder of this floor
+'707': First Half
+'708': Second Half
+'709': Lineup Simulator
+'710': Dice cost
+'711': Select a lineup to view its details
+'712': Include characters
+'713': Applicable scenario
+'714': Select characters
+'715': Search
+'716': Clear character
+'717': Search a card in the Genshin TCG
+'718': card
+'719': Card not found
+'720': current ascension phase (0~6)
+'721': target ascension phase (0~6)
+'722': Ascension phase
+'723': Send feedback to the bot developer
+'724': Feedback
+'725': Feedback sent, thank you! 🥰
+'726': Copy UID
+'727': Server region
+'728': |-
+  If your account is not added after logging in on the website (a ✅ is shown),
+  please press the reload button below, then add your account on the website again.
+  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
+'729': Edit item's current amount
+'730': Invalid ascension phase number
+'731': No wish data found
+'732': Blessing
+'733': Blessing of the Abyssal Moon
+'734': Flower of Life
+'735': Plume of Death
+'736': Sands of Eon
+'737': Goblet of Eonothem
+'738': Circlet of Logos
+'739': View the bot's source code
+'740': Command not found
+'741': Could not find source for this command
+'742': command
+'743': Name of command to view the source code of
+'744': Current Banners
+'745': Future Banners
+'746': Current Wish Banners
+'747': CV
