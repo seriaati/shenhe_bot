@@ -16,6 +16,7 @@ from cachetools import TTLCache
 import discord
 from discord import app_commands
 from discord.ext import commands
+from discord.ext.prometheus import PrometheusCog, PrometheusLoggingHandler
 from dotenv import load_dotenv
 
 from apps.genshin.browser import launch_browsers
@@ -25,6 +26,7 @@ from UI_base_models import global_error_handler
 from utility.utils import error_embed, log, sentry_logging
 
 load_dotenv()
+log.getLogger().addHandler(PrometheusLoggingHandler())
 
 if platform.system() == "Windows":
     token = os.getenv("YAE_TOKEN")
@@ -38,7 +40,7 @@ else:
 
 class Translator(app_commands.Translator):
     async def translate(
-        self, string: app_commands.locale_str, locale: discord.Locale, context: app_commands.TranslationContext
+        self, string: app_commands.locale_str, locale: discord.Locale, _: app_commands.TranslationContext
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
@@ -133,6 +135,9 @@ class Shenhe(commands.AutoShardedBot):
 
         # load jishaku
         await self.load_extension("jishaku")
+        
+        # load grafana
+        await self.add_cog(PrometheusCog(self, port=7005))
 
         # load cogs
         for filepath in Path("./cogs").glob("**/*.py"):
