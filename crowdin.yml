@@ -2,7 +2,7 @@ project_id: '532400'
 api_token: 89dd44c5ed88107882cd7c3765da0ccf6717751b669507e95cd197db4be5274461831404f12f4999
 pull_request_title: "localization: new Crowdin translations"
 pull_request_labels: ["localization"]
-commit_message: "localization: new Crowdin translations"
+commit_message: "localization(%language%): new Crowdin translations"
 append_commit_message: false
 files:
   - source: /text_maps/langs/en-US.yaml
