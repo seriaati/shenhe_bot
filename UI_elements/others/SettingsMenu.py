@@ -94,10 +94,16 @@ class Langauge(Button):
             icon_url=i.user.display_avatar.url,
         )
         self.view.clear_items()
-        self.view.add_item(GoBackButton(self.view.original_info))
+        self.view.add_item(LanguageGoBack())
         self.view.add_item(LangSelect(locale))
         await i.response.edit_message(embed=embed, view=self.view)
 
+class LanguageGoBack(Button):
+    def __init__(self):
+        super().__init__(emoji=asset.back_emoji, row=2)
+        
+    async def callback(self, i: Interaction):
+        await return_settings(i)
 
 class LangSelect(Select):
     def __init__(self, locale: Locale | str):
@@ -207,3 +213,18 @@ class RedeemButton(Button):
             )
             await db.commit()
         await AutoRedeem.callback(self, i)  # type: ignore
+
+async def return_settings(i: Interaction):
+    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+
+    embed = default_embed(
+        message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
+    )
+    view = View(locale)
+
+    await i.response.send_message(embed=embed, view=view)
+    view.message = await i.original_response()
+    view.author = i.user
+    view.original_info = OriginalInfo(
+        view=view, embed=embed, children=view.children.copy()
+    )

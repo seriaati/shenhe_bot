@@ -50,19 +50,7 @@ class OthersCog(commands.Cog, name="others"):
             )
             await db.commit()
 
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-
-        embed = default_embed(
-            message=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
-        )
-        view = SettingsMenu.View(locale)
-
-        await i.response.send_message(embed=embed, view=view)
-        view.message = await i.original_response()
-        view.author = i.user
-        view.original_info = OriginalInfo(
-            view=view, embed=embed, children=view.children.copy()
-        )
+        await SettingsMenu.return_settings(i)
 
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
