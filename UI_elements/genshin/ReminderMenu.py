@@ -165,7 +165,7 @@ class PrivacySettings(Button):
     async def callback(self, i: Interaction):
         self.view: View
         embed = DefaultEmbed(
-            message=f"{text_map.get(595, self.locale)}\n"
+            description=f"{text_map.get(595, self.locale)}\n"
             f"1. {text_map.get(308, self.locale)}\n"
             f"2. {text_map.get(309, self.locale)}\n"
             f"3. {text_map.get(310, self.locale)}"
