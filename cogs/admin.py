@@ -66,7 +66,7 @@ class AdminCog(commands.Cog, name="admin"):
         await message.edit(content="reloading cogs...")
         for filepath in Path("./cogs").glob("**/*.py"):
             cog_name = Path(filepath).stem
-            if cog_name == "login":
+            if cog_name in ["login", "grafana"]:
                 continue
             try:
                 await self.bot.reload_extension(f"cogs.{cog_name}")
