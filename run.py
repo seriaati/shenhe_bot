@@ -135,9 +135,6 @@ class Shenhe(commands.AutoShardedBot):
 
         # load jishaku
         await self.load_extension("jishaku")
-        
-        # load grafana
-        await self.add_cog(PrometheusCog(self, port=7005))
 
         # load cogs
         for filepath in Path("./cogs").glob("**/*.py"):
