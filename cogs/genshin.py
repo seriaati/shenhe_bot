@@ -34,8 +34,8 @@ from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
-from utility.utils import (add_bullet_points, DefaultEmbed, divide_chunks,
-                           ErrorEmbed, get_dt_now, get_user_appearance_mode,
+from utility.utils import (DefaultEmbed, ErrorEmbed, add_bullet_points,
+                           divide_chunks, get_dt_now, get_user_appearance_mode,
                            log, parse_HTML)
 
 load_dotenv()
@@ -949,14 +949,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         fp.seek(0)
 
+        end_time = datetime.datetime.strptime(banners[0].end_time, "%Y-%m-%d %H:%M:%S")
+        end_time = end_time.replace(tzinfo=datetime.timezone(datetime.timedelta(hours=8)))
+
         await i.followup.send(
             embed=DefaultEmbed(
                 text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        datetime.datetime.strptime(
-                            banners[0].end_time, "%Y-%m-%d %H:%M:%S"
-                        ),
+                        end_time,
                         "R",
                     )
                 ),
@@ -999,9 +1000,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
 
         embed = DefaultEmbed()
-        embed.set_image(
-            url=asset.abyss_image
-        )
+        embed.set_image(url=asset.abyss_image)
         embed.set_author(
             name=f"{text_map.get(705, locale)}",
             icon_url=i.user.display_avatar.url,
