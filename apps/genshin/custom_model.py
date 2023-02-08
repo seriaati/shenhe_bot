@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
-import asqlite
+import asyncpg
 import cachetools
 import discord
 import genshin
@@ -114,7 +114,7 @@ class ShenheBot(commands.AutoShardedBot):
     abyss_floor_card_cache: cachetools.TTLCache
     abyss_one_page_cache: cachetools.TTLCache
     tokenStore: Dict[str, Any]
-    pool: asqlite.Pool
+    pool: asyncpg.Pool
 
 
 class TodoList:

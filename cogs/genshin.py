@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 
 import aiofiles
+import asyncpg
 import discord
 import genshin
 import sentry_sdk
@@ -73,23 +74,22 @@ class GenshinCog(commands.Cog, name="genshin"):
         cookie_list: List[Dict[str, str]] = []
         self.bot.genshin_client = genshin.Client({})
         async with self.bot.pool.acquire() as db:
-            async with db.execute(
+            async for row in db.execute(
                 "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
-            ) as c:
-                for row in c.get_cursor():
-                    uid = row[0]
-                    if str(uid)[0] in ["1", "2", "5"]:
-                        continue
+            ):
+                uid = row[0]
+                if str(uid)[0] in ["1", "2", "5"]:
+                    continue
 
-                    ltuid = row[1]
-                    ltoken = row[2]
-                    cookie = {"ltuid": ltuid, "ltoken": ltoken}
+                ltuid = row[1]
+                ltoken = row[2]
+                cookie = {"ltuid": ltuid, "ltoken": ltoken}
 
-                    for c in cookie_list:
-                        if c["ltuid"] == ltuid:
-                            break
-                    else:
-                        cookie_list.append(cookie)
+                for c in cookie_list:
+                    if c["ltuid"] == ltuid:
+                        break
+                else:
+                    cookie_list.append(cookie)
 
         try:
             self.bot.genshin_client.set_cookies(cookie_list)
