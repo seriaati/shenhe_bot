@@ -446,7 +446,7 @@ class Modal(BaseModal):
             permanent_banner_num=permanent_banner,
             novice_banner_num=novice_banner,
         )
-        embed = await get_wish_info_embed(i, str(locale), wish_info)
+        embed = await get_wish_info_embed(i, str(locale), wish_info, True)
         view = View(locale, True, True)
         view.author = i.user
         view.clear_items()

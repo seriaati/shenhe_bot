@@ -529,7 +529,8 @@ def format_wish_str(wish_data: Dict, locale: discord.Locale | str):
         str(wish_data["item_id"])
     )
     pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
-    return f"{format_dt(wish_time, 'd')} {item_emoji} **{text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)}** ({wish_data['item_rarity']} ✦) {pity_pull}"
+    result_str = f"{format_dt(wish_time, 'd')} {item_emoji} {text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)} ({wish_data['item_rarity']} ✦) {pity_pull}"
+    return result_str if wish_data["item_rarity"] != 5 else f"[{result_str}](http://shenhe.bot.nu/)"
 
 
 def get_account_options(

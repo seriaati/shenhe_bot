@@ -103,7 +103,7 @@ class LanguageGoBack(Button):
         super().__init__(emoji=asset.back_emoji, row=2)
         
     async def callback(self, i: Interaction):
-        await return_settings(i)
+        await return_settings(i, go_back=True)
 
 class LangSelect(Select):
     def __init__(self, locale: Locale | str):
@@ -214,7 +214,7 @@ class RedeemButton(Button):
             await db.commit()
         await AutoRedeem.callback(self, i)  # type: ignore
 
-async def return_settings(i: Interaction):
+async def return_settings(i: Interaction, go_back: bool = False):
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
     embed = DefaultEmbed(
@@ -222,7 +222,10 @@ async def return_settings(i: Interaction):
     )
     view = View(locale)
 
-    await i.response.send_message(embed=embed, view=view)
+    if go_back:
+        await i.response.edit_message(embed=embed, view=view)
+    else:
+        await i.response.send_message(embed=embed, view=view)
     view.message = await i.original_response()
     view.author = i.user
     view.original_info = OriginalInfo(
