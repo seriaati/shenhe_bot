@@ -10,7 +10,7 @@ from apps.text_map.text_map_app import text_map
 
 
 def card(banner_image_urls: List[str], locale: Locale | str) -> io.BytesIO:
-    im = Image.new("RGB", (2180, 1908))
+    im = Image.new("RGB", (2180 if len(banner_image_urls) > 3 else 1080, 1908))
     draw = ImageDraw.Draw(im)
 
     # draw titles
@@ -18,9 +18,10 @@ def card(banner_image_urls: List[str], locale: Locale | str) -> io.BytesIO:
     draw.text(
         (540, 81), text_map.get(744, locale), fill=asset.white, anchor="mm", font=font
     )
-    draw.text(
-        (1620, 81), text_map.get(745, locale), fill=asset.white, anchor="mm", font=font
-    )
+    if len(banner_image_urls) > 3:
+        draw.text(
+            (1620, 81), text_map.get(745, locale), fill=asset.white, anchor="mm", font=font
+        )
 
     # draw banners
     offset = (0, 161)
