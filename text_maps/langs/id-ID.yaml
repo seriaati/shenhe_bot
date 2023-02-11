@@ -7,7 +7,7 @@
 '6': Daily comission
 '7': menit
 '8': P.T. waktu yang tersisa
-'9': Tersedia untuk digunakan
+'9': Siap digunakan
 '10': Ada kesalahan di API Genshin
 '11': P.T. tidak ditemukan
 '12': detik
@@ -356,7 +356,7 @@
 '334': Avg. DMG
 '335': Non-Crit DMG
 '336': Crit Hit DMG
-'337': Pilih elemental reaksi
+'337': Pilih reaksi elemental 
 '338': Tidak ada tim infusion jarak dekat
 '339': Pyro infusion
 '340': Cryo infusion
@@ -537,7 +537,7 @@
 '477': Kirim tautan
 '478': Lihat riwayat wish
 '479': Dan kamu!
-'480': Memprediksi peluang pull banner karakter bintang-5
+'480': Prediksi peluang pull banner karakter bintang-5
 '481': nomor
 '482': Berapa banyak karakter banner bintang-5 yang ingin kamu pull?
 '483': Prediksi peluang pull banner senjata bintang-5
