@@ -76,9 +76,7 @@ def get_error_handle_embed(
     elif isinstance(e, enkanetwork.EnkaServerMaintanance):
         embed.description = text_map.get(519, locale)
         embed.set_author(name=text_map.get(523, locale))
-    elif isinstance(e, enkanetwork.UIDNotFounded) or isinstance(
-        e, enkanetwork.VaildateUIDError
-    ):
+    elif isinstance(e, enkanetwork.VaildateUIDError):
         embed.description = text_map.get(286, locale)
         embed.set_author(name=text_map.get(523, locale))
     elif isinstance(e, enkanetwork.EnkaServerError) or isinstance(
