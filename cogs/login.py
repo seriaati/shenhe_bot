@@ -1,17 +1,16 @@
-from apps.genshin.custom_model import ShenheBot
-
-from discord.ext import commands
-import asqlite
-from logingateway import HuTaoLoginAPI
-from logingateway.model import AccountToken, Genshin, Player, Ready, LoginMethod, ServerId
-
-from utility.utils import DefaultEmbed, log
-
 import os
-from dotenv import load_dotenv
-from discord import HTTPException
 
+import asyncpg
+from discord import HTTPException
+from discord.ext import commands
+from dotenv import load_dotenv
+from logingateway import HuTaoLoginAPI
+from logingateway.model import (AccountToken, Genshin, LoginMethod, Player,
+                                Ready, ServerId)
+
+from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map
+from utility.utils import DefaultEmbed, log
 
 load_dotenv()
 
@@ -33,10 +32,10 @@ class LoginGatewayCog(commands.Cog):
         if not self.bot.debug:
             log.info("[System][LoginGateway] Starting gateway...")
             self.gateway.start()
-        
+
         self.bot.gateway = self.gateway
         self.bot.tokenStore = {}
-    
+
     async def cog_unload(self):
         if not self.bot.debug:
             log.info("[System][LoginGateway] Closing gateway...")
@@ -52,23 +51,30 @@ class LoginGatewayCog(commands.Cog):
         user_id = data.discord.user_id
         genshin = data.genshin
 
-        # Update cookie_token
-        _data = [genshin.ltuid, genshin.cookie_token]
-
-        # Set default value
-        update_value = "ltuid = ?, cookie_token = ?"
         # Check if ltoken is not empty string
-        if data.genshin.ltoken != "":
-            update_value += ", ltoken = ?"
-            _data.append(genshin.ltoken)
-
-        # Append discord ID
-        _data.append(user_id)
-        async with self.bot.pool.acquire() as db:
-            await db.execute(
-                f"UPDATE user_accounts SET {update_value} WHERE user_id = ?", tuple(_data)
+        if data.genshin.ltoken:
+            await self.bot.pool.execute(
+                """
+                UPDATE user_accounts
+                SET ltuid = $1, cookie_token = $2, ltoken = $3
+                WHERE user_id = $4
+                """,
+                genshin.ltuid,
+                genshin.cookie_token,
+                genshin.ltoken,
+                user_id,
             )
-            await db.commit()
+        else:
+            await self.bot.pool.execute(
+                """
+                UPDATE user_accounts
+                SET ltuid = $1, cookie_token = $2
+                WHERE user_id = $3
+                """,
+                genshin.ltuid,
+                genshin.cookie_token,
+                user_id,
+            )
 
     async def gateway_player(self, data: Player):
         if not data.token in self.bot.tokenStore:
@@ -91,10 +97,14 @@ class LoginGatewayCog(commands.Cog):
         except HTTPException:
             pass
 
+
 async def setup(client: ShenheBot):
     await client.add_cog(LoginGatewayCog(client))
 
-async def register_user(data: Genshin | AccountToken, uid: int, user_id: int, pool: asqlite.Pool):
+
+async def register_user(
+    data: Genshin | AccountToken, uid: int, user_id: int, pool: asyncpg.Pool
+):
     """Register user to database"""
     if data.login_type == LoginMethod.UID:
         cookie = {
@@ -109,22 +119,30 @@ async def register_user(data: Genshin | AccountToken, uid: int, user_id: int, po
             "cookie_token": data.cookie_token,
         }
 
-    china = 1 if data.server == ServerId.CHINA else 0
-    async with pool.acquire() as db:
-        await db.execute(
-            "INSERT INTO user_accounts (uid, user_id, ltuid, ltoken, cookie_token, china) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (uid, user_id) DO UPDATE SET ltuid = ?, ltoken = ?, cookie_token = ? WHERE uid = ? AND user_id = ?",
-            (
-                uid,
-                user_id,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                china,
-                cookie["ltuid"],
-                cookie["ltoken"],
-                cookie["cookie_token"],
-                uid,
-                user_id,
-            ),
-        )
-        await db.commit()
+    china = True if data.server is ServerId.CHINA else False
+    await pool.execute(
+        """
+        UPDATE user_accounts
+        SET current = false
+        WHERE user_id = $1
+        """,
+        user_id,
+    )
+    await pool.execute(
+        """
+        INSERT INTO user_accounts
+        (uid, user_id, ltuid, ltoken, cookie_token, china)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT (uid, user_id)
+        DO UPDATE SET
+        ltuid = $3,
+        ltoken = $4,
+        cookie_token = $5
+        """,
+        uid,
+        user_id,
+        cookie["ltuid"],
+        cookie["ltoken"],
+        cookie["cookie_token"],
+        china,
+    )

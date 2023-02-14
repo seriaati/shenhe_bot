@@ -1,5 +1,5 @@
-import ast
-from typing import Dict, List, Optional
+import asyncpg
+from typing import Dict, List
 
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
@@ -10,7 +10,6 @@ from apps.genshin.utils import get_weapon_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.weapon_types import get_weapon_type_emoji
-from exceptions import DBError
 from UI_base_models import BaseView
 from UI_elements.genshin import ReminderMenu
 from utility.utils import divide_chunks
@@ -69,14 +68,16 @@ class WeaponTypeButton(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        w_list = await get_weapon_list(i.user.id, i)
-        weapon_list: List[str] = [] if not w_list else ast.literal_eval(w_list)
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
         
+        weapon_list: List[str] = await pool.fetchval(
+            "SELECT item_list FROM weapon_notification WHERE user_id = $1", i.user.id
+        )
+
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
         weapons = await ambr.get_weapon()
-        if not isinstance(weapons, List):
-            raise TypeError("weapons is not a list")
-        
+        assert isinstance(weapons, list)
+
         select_options = []
         for weapon in weapons:
             if weapon.type == self.weapon_type:
@@ -93,10 +94,10 @@ class WeaponTypeButton(Button):
                         description=description,
                     )
                 )
-        
+
         self.view.clear_items()
         self.view.add_item(GOBack())
-        
+
         select_options = list(divide_chunks(select_options, 25))
         count = 1
         for options in select_options:
@@ -118,28 +119,21 @@ class WeaponSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: View
-        weapon_list = ast.literal_eval(str(await get_weapon_list(i.user.id, i)))
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
+
+        weapon_list: List[str] = await pool.fetchval(
+            "SELECT item_list FROM weapon_notification WHERE user_id = $1", i.user.id
+        )
         for weapon_id in self.values:
             if weapon_id in weapon_list:
                 weapon_list.remove(weapon_id)
             else:
                 weapon_list.append(weapon_id)
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "UPDATE weapon_notification SET weapon_list = ? WHERE user_id = ?",
-                (str(weapon_list), i.user.id),
-            )
-            await db.commit()
+
+        await pool.execute(
+            "UPDATE weapon_notification SET item_list = $1 WHERE user_id = $2",
+            weapon_list,
+            i.user.id,
+        )
         await i.response.edit_message(view=self.view)
         await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
-
-
-async def get_weapon_list(user_id: int, i: Interaction) -> Optional[str]:
-    """Get user's weapon notificaction list from database"""
-    async with i.client.pool.acquire() as db: # type: ignore
-        async with db.execute(
-            "SELECT weapon_list FROM weapon_notification WHERE user_id = ?",
-            (user_id,),
-        ) as c:
-            weapon_list = await c.fetchone()
-            return None if not weapon_list else weapon_list[0]

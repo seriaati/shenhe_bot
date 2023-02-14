@@ -4,7 +4,7 @@ from datetime import datetime
 from itertools import islice
 from typing import Dict, List, Optional
 
-import asqlite
+import asyncpg
 import discord
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -80,29 +80,23 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     return weekday_name_dict.get(weekday_name, 0)
 
 
-async def get_user_appearance_mode(user_id: int, pool: asqlite.Pool) -> bool:
-    async with pool.acquire() as db:
-        async with db.execute("SELECT dark_mode FROM user_settings WHERE user_id = ?", (user_id,)) as c:
-            mode = await c.fetchone()
-    if mode and mode[0] == 1:
-        return True
-    return False
-
-async def get_user_notification(user_id: int, pool: asqlite.Pool) -> bool:
-    async with pool.acquire() as db:
-        async with db.execute("SELECT notification FROM user_settings WHERE user_id = ?", (user_id,)) as c:
-            mode = await c.fetchone()
-    if mode and mode[0] == 0:
+async def get_user_appearance_mode(user_id: int, pool: asyncpg.Pool) -> bool:
+    dark_mode: Optional[bool] = await pool.fetchval("SELECT dark_mode FROM user_settings WHERE user_id = $1", user_id)
+    if dark_mode is None:
         return False
-    return True
+    return dark_mode
 
-async def get_user_auto_redeem(user_id: int, pool: asqlite.Pool) -> bool:
-    async with pool.acquire() as db:
-        async with db.execute("SELECT auto_redeem FROM user_settings WHERE user_id = ?", (user_id,)) as c:
-            mode = await c.fetchone()
-    if mode and mode[0] == 1:
+async def get_user_notification(user_id: int, pool: asyncpg.Pool) -> bool:
+    notification: Optional[bool] = await pool.fetchval("SELECT notification FROM user_settings WHERE user_id = $1", user_id)
+    if notification is None:
         return True
-    return False
+    return notification
+
+async def get_user_auto_redeem(user_id: int, pool: asyncpg.Pool) -> bool:
+    auto_redeem: Optional[bool] = await pool.fetchval("SELECT auto_redeem FROM user_settings WHERE user_id = $1", user_id)
+    if auto_redeem is None:
+        return False
+    return auto_redeem
 
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8"""

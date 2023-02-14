@@ -39,10 +39,6 @@ class DBError(Exception):
     def __str__(self):
         return self.msg
 
-class NeverRaised(Exception):
-    def __str__(self):
-        return "This exception should never be raised"
-
 class NoUID(app_commands.CheckFailure):
     def __init__(self, current_user: bool):
         self.current_user = current_user
@@ -55,3 +51,6 @@ class NoCookie(app_commands.CheckFailure):
 class NoWishHistory(app_commands.CheckFailure):
     def __str__(self):
         return "No wish history"
+
+class NumbersOnly(Exception):
+    pass

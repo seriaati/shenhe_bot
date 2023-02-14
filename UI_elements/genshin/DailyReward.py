@@ -47,18 +47,7 @@ class ClaimRewardToggle(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        async with i.client.pool.acquire() as db:  # type: ignore
-            async with db.execute(
-                "SELECT daily_checkin FROM user_accounts WHERE user_id = ?",
-                (i.user.id,),
-            ) as c:
-                current = await c.fetchone()
-                toggle = 0 if current[0] == 1 else 1
-                await c.execute(
-                    "UPDATE user_accounts SET daily_checkin = ? WHERE user_id = ?",
-                    (toggle, i.user.id),
-                )
-            await db.commit()
+        await i.client.pool.execute("UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1", i.user.id)
 
         for item in self.view.children:
             item.disabled = True  # type: ignore
@@ -87,15 +76,11 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         )
         return await i.followup.send(embed=embed)
 
-    async with i.client.pool.acquire() as db:  # type: ignore
-        async with db.execute(
-            "SELECT daily_checkin FROM user_accounts WHERE user_id = ?", (i.user.id,)
-        ) as cursor:
-            toggle = await cursor.fetchone()
+    daily_checkin: bool = await i.client.pool.fetchval("SELECT daily_checkin FROM user_accounts WHERE user_id = $1", i.user.id)
 
     embed = DefaultEmbed(
         description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
-        f"{text_map.get(101, locale)}: **__{text_map.get(99 if toggle[0] == 1 else 100, locale)}__**"
+        f"{text_map.get(101, locale)}: **__{text_map.get(99 if daily_checkin else 100, locale)}__**"
     )
     embed.set_author(
         name=text_map.get(604, locale),

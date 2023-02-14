@@ -72,7 +72,7 @@ def genshin_error_handler(func):
                 )
                 return GenshinAppResult(result=embed, success=False)
         except Exception as e:
-            log.warning(f"[Genshin App] Error in {func.__name__}: {e}")
+            log.warning(f"[Genshin App] Error in {func.__name__}: {e}", exc_info=e)
             embed = get_error_handle_embed(user, e, locale)
             return GenshinAppResult(result=embed, success=False)
 
@@ -155,7 +155,8 @@ class GenshinApp:
                     notes.transformer_recovery_time, "R"
                 )
         result = DefaultEmbed(
-            description=f"""
+            text_map.get(24, locale, user_locale),
+            f"""
                 <:resin:1004648472995168326> {text_map.get(15, locale, user_locale)}: {resin_recover_time}
                 <:realm:1004648474266062880> {text_map.get(15, locale, user_locale)}: {realm_recover_time}
                 <:transformer:1004648470981902427> {text_map.get(8, locale, user_locale)}: {transformer_recover_time}
@@ -609,10 +610,10 @@ class GenshinApp:
         return uid
 
     async def get_user_cookie(
-        self, user_id: int, author_id: int, locale: Optional[discord.Locale] = None
+        self, user_id: int, author_id: int, locale: discord.Locale
     ) -> ShenheAccount:
         author_locale = await get_user_locale(author_id, self.bot.pool)
         shenhe_user = await get_shenhe_account(
-            user_id, self.bot, locale, author_locale=author_locale
+            user_id, self.bot, locale or author_locale
         )
         return shenhe_user

@@ -1,6 +1,6 @@
 from typing import Optional
 
-import asqlite
+import asyncpg
 from discord import Locale
 
 from apps.text_map.text_map_app import text_map
@@ -89,14 +89,6 @@ def get_month_name(
     return month_dict.get(month, str(month))
 
 
-async def get_user_locale(user_id: int, pool: asqlite.Pool) -> Optional[str]:
-    async with pool.acquire() as db:
-        async with db.execute(
-            "SELECT lang FROM user_settings WHERE user_id = ?", (user_id,)
-        ) as c:
-            user_lang = await c.fetchone()
-
-    if user_lang is None or user_lang[0] is None:
-        return None
-    else:
-        return user_lang[0]
+async def get_user_locale(user_id: int, pool: asyncpg.Pool) -> Optional[str]:
+    user_locale = await pool.fetchval("SELECT lang FROM user_settings WHERE user_id = $1", user_id)
+    return user_locale

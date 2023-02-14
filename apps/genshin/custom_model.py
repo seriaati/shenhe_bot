@@ -46,10 +46,6 @@ class NotificationUser(BaseModel):
     max: int = 3
     uid: int
     last_notif: Optional[datetime] = None
-    
-    @validator("last_notif", pre=True, always=True, allow_reuse=True)
-    def parse_last_notif(cls, v):
-        return parser.parse(v).replace(tzinfo=None) if v else None
 
 class DrawInput(BaseModel):
     loop: asyncio.AbstractEventLoop
@@ -96,7 +92,6 @@ class WishInfo(BaseModel):
     permanent_banner_num: int
     weapon_banner_num: int
     novice_banner_num: int
-
 
 class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
@@ -162,11 +157,6 @@ class UserCustomImage(BaseModel):
     nickname: str
     character_id: str
     user_id: int
-    current: bool
-
-    @validator("current", pre=True, allow_reuse=True)
-    def parse_current(cls, v):
-        return True if v == 1 else False
 
 
 class GenshinAppResult(BaseModel):

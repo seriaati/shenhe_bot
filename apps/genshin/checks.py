@@ -1,10 +1,9 @@
 from typing import Optional
 
-import asqlite
+import asyncpg
 from discord import Interaction, Member, User, app_commands
 
 from apps.genshin.utils import get_uid
-from apps.text_map.utils import get_user_locale
 from exceptions import NoCookie, NoUID, NoWishHistory
 
 
@@ -24,12 +23,8 @@ async def check_account_predicate(
 ):
     user = member or i.namespace.member or i.user
 
-    pool: asqlite.Pool = i.client.pool  # type: ignore
-    async with pool.acquire() as db:
-        async with db.execute(
-            "SELECT uid FROM user_accounts WHERE user_id = ?", (user.id,)
-        ) as c:
-            uid = await c.fetchone()
+    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    uid = await pool.fetchval("SELECT uid FROM user_accounts WHERE user_id = $1", user.id)
     if uid is None:
         if user.id == i.user.id:
             raise NoUID(True)
@@ -76,27 +71,23 @@ async def check_cookie_predicate(
     await check_account_predicate(i, member)
     user = member or i.namespace.member or i.user
 
-    pool: asqlite.Pool = i.client.pool  # type: ignore
-    async with pool.acquire() as db:
-        async with db.execute(
-            "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 1",
-            (user.id,),
-        ) as c:
-            data = await c.fetchone()
-            if data is None or data[0] is None:
-                await c.execute(
-                    "SELECT ltuid FROM user_accounts WHERE user_id = ? AND current = 0",
-                    (user.id,),
-                )
-                if (await c.fetchone()) is None:
-                    if user.id == i.user.id:
-                        raise NoCookie(True, True)
-                    else:
-                        raise NoCookie(False, True)
-                else:
-                    if user.id == i.user.id:
-                        raise NoCookie(True, False)
-                    else:
-                        raise NoCookie(False, False)
+    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    ltuid = await pool.fetchval(
+        "SELECT ltuid FROM user_accounts WHERE user_id = $1 AND current = true", user.id
+    )
+    if ltuid is None:
+        ltuid = await pool.fetchval(
+            "SELECT ltuid FROM user_accounts WHERE user_id = $1 AND current = false", user.id
+        )
+        if ltuid is None:
+            if user.id == i.user.id:
+                raise NoCookie(True, True)
             else:
-                return True
+                raise NoCookie(False, True)
+        else:
+            if user.id == i.user.id:
+                raise NoCookie(True, False)
+            else:
+                raise NoCookie(False, False)
+    else:
+        return True

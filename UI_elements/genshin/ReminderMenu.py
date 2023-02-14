@@ -1,17 +1,6 @@
-import ast
-import asyncio
-from typing import Optional
-
-from discord import (
-    ButtonStyle,
-    Embed,
-    Forbidden,
-    Interaction,
-    InteractionResponded,
-    Locale,
-    NotFound,
-)
-from discord.ui import Button, TextInput
+import asyncpg
+import discord
+from discord import ui
 
 import asset
 import config
@@ -20,14 +9,14 @@ from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
-from exceptions import DBError
+from exceptions import NumbersOnly
 from UI_base_models import BaseModal, BaseView
 from UI_elements.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, log
+from utility.utils import DefaultEmbed, divide_chunks
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
         self.add_item(ResinNotification(locale))
@@ -38,218 +27,620 @@ class View(BaseView):
         self.add_item(PrivacySettings(locale))
 
 
-class ResinNotification(Button):
-    def __init__(self, locale: Locale | str):
+class ResinNotification(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(emoji=asset.resin_emoji, label=text_map.get(582, locale))
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await check_cookie_predicate(i)
         await return_resin_notification(i, self.view)
 
 
-class PotNotification(Button):
-    def __init__(self, locale: Locale | str):
+class PotNotification(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.realm_currency_emoji, label=text_map.get(584, locale)
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await check_cookie_predicate(i)
         await return_pot_notification(i, self.view)
 
 
-class TalentNotification(Button):
-    def __init__(self, locale: Locale | str):
+class TalentNotification(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.talent_book_emoji, label=text_map.get(442, locale), row=2
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await return_talent_notification(i, self.view)
 
 
-class WeaponNotification(Button):
-    def __init__(self, locale: Locale | str):
+class WeaponNotification(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.weapon_emoji, label=text_map.get(632, locale), row=2
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await return_weapon_notification(i, self.view)
 
 
-class AddWeapon(Button):
-    def __init__(self, locale: Locale | str):
+class PTNotification(ui.Button):
+    def __init__(self, label: str):
+        super().__init__(emoji=asset.pt_emoji, label=label)
+
+    async def callback(self, i: discord.Interaction):
+        self.view: View
+        await check_cookie_predicate(i)
+        await return_pt_notification(i, self.view)
+
+
+class AddWeapon(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.add_emoji,
             label=text_map.get(634, locale),
             row=1,
-            style=ButtonStyle.green,
+            style=discord.ButtonStyle.green,
         )
         self.locale = locale
 
-    async def callback(self, i: Interaction):
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale)) # type: ignore
+    async def callback(self, i: discord.Interaction):
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  # type: ignore
         view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user
         view.message = await i.original_response()
 
 
-class RemoveAllWeapon(Button):
-    def __init__(self, locale: Locale | str):
+class RemoveAllWeapon(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.remove_emoji,
             label=text_map.get(635, locale),
             row=1,
-            style=ButtonStyle.red,
+            style=discord.ButtonStyle.red,
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "UPDATE weapon_notification SET weapon_list = '[]' WHERE user_id = ?",
-                (i.user.id,),
-            )
-            await db.commit()
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
+        await pool.execute(
+            "UPDATE weapon_notification SET item_list = $1 WHERE user_id = $2",
+            [],
+            i.user.id,
+        )
         await return_weapon_notification(i, self.view)
 
 
-class AddCharacter(Button):
-    def __init__(self, locale: Locale | str):
+class AddCharacter(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.add_emoji,
             label=text_map.get(598, locale),
             row=1,
-            style=ButtonStyle.green,
+            style=discord.ButtonStyle.green,
         )
         self.locale = locale
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         view = TalentNotificationMenu.View(self.locale)
         await i.response.edit_message(view=view)
         view.author = i.user
         view.message = await i.original_response()
 
 
-class RemoveAllCharacter(Button):
-    def __init__(self, locale: Locale | str):
+class RemoveAllCharacter(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji=asset.remove_emoji,
             label=text_map.get(599, locale),
             row=1,
-            style=ButtonStyle.red,
+            style=discord.ButtonStyle.red,
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "UPDATE talent_notification SET character_list = '[]' WHERE user_id = ?",
-                (i.user.id,),
-            )
-            await db.commit()
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
+        await pool.execute(
+            "UPDATE talent_notification SET item_list = $1 WHERE user_id = $2",
+            [],
+            i.user.id,
+        )
         await return_talent_notification(i, self.view)
 
 
-class PrivacySettings(Button):
-    def __init__(self, locale: Locale | str):
+class PrivacySettings(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(emoji="✉️", label=text_map.get(585, locale), row=2)
         self.locale = locale
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
-        embed = DefaultEmbed(
-            description=f"{text_map.get(595, self.locale)}\n"
-            f"1. {text_map.get(308, self.locale)}\n"
-            f"2. {text_map.get(309, self.locale)}\n"
-            f"3. {text_map.get(310, self.locale)}"
-        )
+        embed = DefaultEmbed(description=text_map.get(595, self.locale))
         embed.set_author(
             name=text_map.get(311, self.locale),
             icon_url=i.user.display_avatar.url,
         )
-        embed.set_image(url="https://i.imgur.com/sYg4SpD.gif")
+        embed.set_image(url="https://i.imgur.com/FIVzwXb.gif")
+
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(TestItOut(self.locale, embed))
         await i.response.edit_message(embed=embed, view=self.view)
 
 
-class TestItOut(Button):
-    def __init__(self, locale: Locale | str, embed: Embed):
+class TestItOut(ui.Button):
+    def __init__(self, locale: discord.Locale | str, embed: discord.Embed):
         super().__init__(emoji="📨", label=text_map.get(596, locale))
         self.locale = locale
         self.embed = embed
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         await i.response.defer()
         try:
             await i.user.send("Hello There!\n哈囉!")
-        except Forbidden:
+        except discord.Forbidden:
             embed = self.embed
             embed.author.name = text_map.get(597, self.locale)
             embed.color = 0xFC5165
             await i.edit_original_response(embed=embed)
 
 
-class PTNotification(Button):
-    def __init__(self, label: str):
-        super().__init__(emoji=asset.pt_emoji, label=label)
-
-    async def callback(self, i: Interaction):
-        self.view: View
-        await check_cookie_predicate(i)
-        await return_pt_notification(i, self.view)
-
-
-class NotificationON(Button):
-    def __init__(self, locale: Locale | str, table_name: str, current: bool):
+class NotificationON(ui.Button):
+    def __init__(self, locale: discord.Locale | str, table_name: str, current: bool):
         super().__init__(
             emoji=asset.bell_outline,
             label=text_map.get(99, locale),
-            style=ButtonStyle.blurple if current else ButtonStyle.gray,
+            style=discord.ButtonStyle.blurple if current else discord.ButtonStyle.gray,
         )
         self.table_name = table_name
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
-        await on_off_function(self.view, self.table_name, i, 1)
+        await on_off_function(self.view, self.table_name, i, True)
 
 
-class NotificationOFF(Button):
-    def __init__(self, locale: Locale | str, table_name: str, current: bool):
+class NotificationOFF(ui.Button):
+    def __init__(self, locale: discord.Locale | str, table_name: str, current: bool):
         super().__init__(
             emoji=asset.bell_off_outline,
             label=text_map.get(100, locale),
-            style=ButtonStyle.blurple if current else ButtonStyle.gray,
+            style=discord.ButtonStyle.blurple
+            if not current
+            else discord.ButtonStyle.gray,
         )
         self.table_name = table_name
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
-        await on_off_function(self.view, self.table_name, i, 0)
+        await on_off_function(self.view, self.table_name, i, False)
 
 
-async def on_off_function(view: View, table_name: str, i: Interaction, toggle: int):
-    async with i.client.pool.acquire() as db:
-        if table_name in ["talent_notification", "weapon_notification"]:
-            await db.execute(
-                f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ?",
-                (i.user.id,),
+class ChangeSettings(ui.Button):
+    def __init__(self, locale: discord.Locale | str, table_name: str):
+        super().__init__(emoji=asset.settings_emoji, label=text_map.get(594, locale))
+        self.locale = locale
+        self.table_name = table_name
+
+    async def callback(self, i: discord.Interaction):
+        if self.table_name == "resin_notification":
+            modal = ResinModal(self.locale)
+        elif self.table_name == "pot_notification":
+            modal = PotModal(self.locale)
+        else:  # pt_notification
+            modal = PTModal(self.locale)
+        await i.response.send_modal(modal)
+
+
+class GOBack(ui.Button):
+    def __init__(self):
+        super().__init__(emoji=asset.back_emoji, row=2)
+
+    async def callback(self, i: discord.Interaction):
+        self.view: View
+        await return_notification_menu(i, self.view.locale)
+
+
+class ResinModal(BaseModal):
+    threshold = ui.TextInput(
+        label="樹脂閥值", placeholder="例如: 140 (不得大於 160)", max_length=3
+    )
+    max_notif = ui.TextInput(label="最大提醒值", placeholder="例如: 5", max_length=3)
+
+    def __init__(self, locale: discord.Locale | str):
+        super().__init__(title=text_map.get(515, locale))
+        self.threshold.label = text_map.get(152, locale)
+        self.threshold.placeholder = text_map.get(170, locale).format(a=140)
+        self.max_notif.label = text_map.get(103, locale)
+        self.max_notif.placeholder = text_map.get(155, locale)
+
+        self.locale = locale
+
+    async def on_submit(self, i: discord.Interaction) -> None:
+        await i.response.defer()
+        if not self.threshold.value.isdigit() or not self.max_notif.value.isdigit():
+            raise NumbersOnly
+
+        await resin_pot_modal_on_submit(
+            i,
+            self.locale,
+            int(self.threshold.value),
+            int(self.max_notif.value),
+            "resin_notification",
+        )
+
+
+class PotModal(BaseModal):
+    threshold = ui.TextInput(label="寶錢閥值", max_length=5)
+    max_notif = ui.TextInput(label="最大提醒值", max_length=3)
+
+    def __init__(self, locale: discord.Locale | str):
+        super().__init__(title=text_map.get(515, locale))
+        self.threshold.label = text_map.get(516, locale)
+        self.threshold.placeholder = text_map.get(170, locale).format(a=2000)
+        self.max_notif.label = text_map.get(103, locale)
+        self.max_notif.placeholder = text_map.get(155, locale)
+
+        self.locale = locale
+
+    async def on_submit(self, i: discord.Interaction) -> None:
+        await i.response.defer()
+        if not self.threshold.value.isdigit() or not self.max_notif.value.isdigit():
+            raise NumbersOnly
+
+        await resin_pot_modal_on_submit(
+            i,
+            self.locale,
+            int(self.threshold.value),
+            int(self.max_notif.value),
+            "pot_notification",
+        )
+
+
+class PTModal(BaseModal):
+    max_notif = ui.TextInput(label="最大提醒值", max_length=3)
+
+    def __init__(self, locale: discord.Locale | str):
+        super().__init__(title=text_map.get(515, locale))
+        self.max_notif.label = text_map.get(103, locale)
+        self.max_notif.placeholder = text_map.get(155, locale)
+
+        self.locale = locale
+
+    async def on_submit(self, i: discord.Interaction) -> None:
+        await i.response.defer()
+        if not self.max_notif.value.isdigit():
+            raise NumbersOnly
+
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        await pool.execute(
+            """
+            UPDATE pt_notification
+            SET max = $1
+            WHERE user_id = $2 AND uid = $3
+            """,
+            int(self.max_notif.value),
+            i.user.id,
+            await get_uid(i.user.id, pool),
+        )
+
+        await return_pt_notification(i, View(self.locale))
+
+
+# Functions
+async def return_resin_notification(i: discord.Interaction, view: View):
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+    uid = await get_uid(i.user.id, pool)
+
+    await pool.execute(
+        """
+        INSERT INTO resin_notification (user_id, uid)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        """,
+        i.user.id,
+        uid,
+    )
+    row = await pool.fetchrow(
+        """
+        SELECT toggle, threshold, max
+        FROM resin_notification
+        WHERE user_id = $1 AND uid = $2
+        """,
+        i.user.id,
+        uid,
+    )
+
+    value = f"""
+    {text_map.get(101, view.locale)}: {text_map.get(99 if row['toggle'] else 100, view.locale)}
+    {text_map.get(302, view.locale)}: {row['threshold']}
+    {text_map.get(103, view.locale)}: {row['max']}
+    """
+    embed = DefaultEmbed(description=text_map.get(586, view.locale))
+    embed.add_field(name=text_map.get(591, view.locale), value=value)
+    embed.set_author(
+        name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url
+    )
+
+    view.clear_items()
+    view.add_item(GOBack())
+    view.add_item(ChangeSettings(view.locale, "resin_notification"))
+    view.add_item(NotificationON(view.locale, "resin_notification", row["toggle"]))
+    view.add_item(NotificationOFF(view.locale, "resin_notification", row["toggle"]))
+
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
+async def return_pt_notification(i: discord.Interaction, view: View):
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+    uid = await get_uid(i.user.id, pool)
+
+    await pool.execute(
+        """
+        INSERT INTO pt_notification (user_id, uid)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        """,
+        i.user.id,
+        uid,
+    )
+    row = await pool.fetchrow(
+        """
+        SELECT toggle, max
+        FROM pt_notification
+        WHERE user_id = $1 AND uid = $2
+        """,
+        i.user.id,
+        uid,
+    )
+
+    value = f"""
+        {text_map.get(101, view.locale)}: {text_map.get(99 if row['toggle'] else 100, view.locale)}
+        {text_map.get(103, view.locale)}: {row['max']}
+    """
+    embed = DefaultEmbed(description=text_map.get(512, view.locale))
+    embed.add_field(name=text_map.get(591, view.locale), value=value)
+    embed.set_author(
+        name=text_map.get(704, view.locale), icon_url=i.user.display_avatar.url
+    )
+
+    view.clear_items()
+    view.add_item(ChangeSettings(view.locale, "pt_notification"))
+    view.add_item(GOBack())
+    view.add_item(NotificationON(view.locale, "pt_notification", row["toggle"]))
+    view.add_item(NotificationOFF(view.locale, "pt_notification", row["toggle"]))
+
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
+async def return_pot_notification(i: discord.Interaction, view: View):
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+    uid = await get_uid(i.user.id, pool)
+
+    await pool.execute(
+        """
+        INSERT INTO pot_notification (user_id, uid)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        """,
+        i.user.id,
+        uid,
+    )
+    row = await pool.fetchrow(
+        """
+        SELECT toggle, threshold, max
+        FROM pot_notification
+        WHERE user_id = $1 AND uid = $2
+        """,
+        i.user.id,
+        uid,
+    )
+
+    value = f"""
+    {text_map.get(101, view.locale)}: {text_map.get(99 if row['toggle'] else 100, view.locale)}
+    {text_map.get(302, view.locale)}: {row['threshold']}
+    {text_map.get(103, view.locale)}: {row['max']}
+    """
+    embed = DefaultEmbed(description=text_map.get(639, view.locale))
+    embed.set_author(
+        name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url
+    )
+    embed.add_field(name=text_map.get(591, view.locale), value=value)
+
+    view.clear_items()
+    view.add_item(GOBack())
+    view.add_item(ChangeSettings(view.locale, "pot_notification"))
+    view.add_item(NotificationON(view.locale, "pot_notification", row["toggle"]))
+    view.add_item(NotificationOFF(view.locale, "pot_notification", row["toggle"]))
+
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
+async def return_talent_notification(i: discord.Interaction, view: View):
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+
+    await pool.execute(
+        """
+        INSERT INTO talent_notification (user_id, item_list)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        """,
+        i.user.id,
+        [],
+    )
+    row = await pool.fetchrow(
+        """
+        SELECT toggle, item_list
+        FROM talent_notification
+        WHERE user_id = $1
+        """,
+        i.user.id,
+    )
+
+    embed = DefaultEmbed(description=text_map.get(590, view.locale))
+    embed.set_author(
+        name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
+    )
+    if not row["item_list"]:
+        value = text_map.get(158, view.locale)
+        embed.add_field(name=text_map.get(159, view.locale), value=value)
+    else:
+        values = []
+        for character in row["item_list"]:
+            values.append(
+                f"{get_character_emoji(character)} {text_map.get_character_name(character, view.locale)}\n"
             )
-        else:
-            await db.execute(
-                f"UPDATE {table_name} SET toggle = {toggle} WHERE user_id = ? AND uid = ?",
-                (i.user.id, await get_uid(i.user.id, i.client.pool)),
+        values = list(divide_chunks(values, 20))
+        for index, value in enumerate(values):
+            embed.add_field(
+                name=text_map.get(159, view.locale) + f" (#{index+1})",
+                value="".join(value),
             )
 
-        await db.commit()
+    view.clear_items()
+    view.add_item(GOBack())
+    view.add_item(AddCharacter(view.locale))
+    view.add_item(RemoveAllCharacter(view.locale))
+    view.add_item(NotificationON(view.locale, "talent_notification", row["toggle"]))
+    view.add_item(NotificationOFF(view.locale, "talent_notification", row["toggle"]))
+
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
+async def return_weapon_notification(i: discord.Interaction, view: View):
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+
+    await pool.execute(
+        """
+        INSERT INTO weapon_notification (user_id, item_list)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+        """,
+        i.user.id,
+        [],
+    )
+    row = await pool.fetchrow(
+        """
+        SELECT toggle, item_list
+        FROM weapon_notification
+        WHERE user_id = $1
+        """,
+        i.user.id,
+    )
+
+    embed = DefaultEmbed(description=text_map.get(633, view.locale))
+    embed.set_author(
+        name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
+    )
+    if not row["item_list"]:
+        value = text_map.get(637, view.locale)
+        embed.add_field(name=text_map.get(636, view.locale), value=value)
+    else:
+        values = []
+        for weapon in row["item_list"]:
+            values.append(
+                f"{get_weapon_emoji(int(weapon))} {text_map.get_weapon_name(weapon, view.locale)}\n"
+            )
+        values = list(divide_chunks(values, 20))
+        for index, value in enumerate(values):
+            embed.add_field(
+                name=text_map.get(636, view.locale) + f" (#{index+1})",
+                value="".join(value),
+            )
+
+    view.clear_items()
+    view.add_item(GOBack())
+    view.add_item(AddWeapon(view.locale))
+    view.add_item(RemoveAllWeapon(view.locale))
+    view.add_item(NotificationON(view.locale, "weapon_notification", row["toggle"]))
+    view.add_item(NotificationOFF(view.locale, "weapon_notification", row["toggle"]))
+
+    try:
+        await i.response.edit_message(embed=embed, view=view)
+    except discord.InteractionResponded:
+        await i.edit_original_response(embed=embed, view=view)
+
+
+async def return_notification_menu(
+    i: discord.Interaction, locale: discord.Locale | str, send: bool = False
+):
+    embed = DefaultEmbed(description=text_map.get(592, locale))
+    embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
+
+    view = View(locale)
+    if send:
+        await i.response.send_message(embed=embed, view=view)
+        view.message = await i.original_response()
+    else:
+        try:
+            await i.response.edit_message(embed=embed, view=view)
+            view.message = await i.original_response()
+        except discord.InteractionResponded:
+            view.message = await i.edit_original_response(embed=embed, view=view)
+    view.author = i.user
+
+
+async def resin_pot_modal_on_submit(
+    i: discord.Interaction,
+    locale: discord.Locale | str,
+    threshold: int,
+    max_notif: int,
+    table_name: str,
+):
+    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    uid = await get_uid(i.user.id, pool)
+
+    await pool.execute(
+        f"""
+        UPDATE {table_name}
+        SET threshold = $1, max = $2
+        WHERE user_id = $3 AND uid = $4
+        """,
+        threshold,
+        max_notif,
+        i.user.id,
+        uid,
+    )
+    if table_name == "resin_notification":
+        await return_resin_notification(i, View(locale))
+    elif table_name == "pot_notification":
+        await return_pot_notification(i, View(locale))
+
+
+async def on_off_function(
+    view: View, table_name: str, i: discord.Interaction, toggle: bool
+):
+    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    if table_name in ["talent_notification", "weapon_notification"]:
+        await pool.execute(
+            f"UPDATE {table_name} SET toggle = $1 WHERE user_id = $2", toggle, i.user.id
+        )
+    else:
+        await pool.execute(
+            f"UPDATE {table_name} SET toggle = $1 WHERE user_id = $2 AND uid = $3",
+            toggle,
+            i.user.id,
+            await get_uid(i.user.id, pool),
+        )
 
     if table_name == "resin_notification":
         await return_resin_notification(i, view)
@@ -261,379 +652,3 @@ async def on_off_function(view: View, table_name: str, i: Interaction, toggle: i
         await return_weapon_notification(i, view)
     elif table_name == "pt_notification":
         await return_pt_notification(i, view)
-
-
-class ChangeSettings(Button):
-    def __init__(self, locale: Locale | str, table_name: str):
-        super().__init__(emoji=asset.settings_emoji, label=text_map.get(594, locale))
-        self.locale = locale
-        self.table_name = table_name
-
-    async def callback(self, i: Interaction):
-        self.view: View
-        uid = await get_uid(i.user.id, i.client.pool)
-        async with i.client.pool.acquire() as db:
-            try:
-                if self.table_name == "resin_notification":
-                    modal = ResinModal(self.locale)
-                    await i.response.send_modal(modal)
-                    await modal.wait()
-                    threshold = modal.resin_threshold.value
-                    max_notif = modal.max_notif.value
-                    if not threshold or not max_notif:
-                        pass
-                    else:
-                        if not threshold.isdigit() or not max_notif.isdigit():
-                            raise ValueError
-                        await db.execute(
-                            "UPDATE resin_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                            (threshold, max_notif, i.user.id, uid),
-                        )
-                    await return_resin_notification(i, self.view)
-                elif self.table_name == "pot_notification":
-                    modal = PotModal(self.locale)
-                    await i.response.send_modal(modal)
-                    await modal.wait()
-                    threshold = modal.threshold.value
-                    max_notif = modal.max_notif.value
-                    if not threshold or not max_notif:
-                        pass
-                    else:
-                        if not threshold.isdigit() or not max_notif.isdigit():
-                            raise ValueError
-                        await db.execute(
-                            "UPDATE pot_notification SET threshold = ?, max = ? WHERE user_id = ? AND uid = ?",
-                            (threshold, max_notif, i.user.id, uid),
-                        )
-                    await return_pot_notification(i, self.view)
-                elif self.table_name == "pt_notification":
-                    modal = PTModal(self.locale)
-                    await i.response.send_modal(modal)
-                    await modal.wait()
-                    max_notif = modal.max_notif.value
-                    if not max_notif:
-                        pass
-                    else:
-                        if not max_notif.isdigit():
-                            raise ValueError
-                        await db.execute(
-                            "UPDATE pt_notification SET max = ? WHERE user_id = ? AND uid = ?",
-                            (max_notif, i.user.id, uid),
-                        )
-                    await return_pt_notification(i, self.view)
-            except ValueError:
-                children = [
-                    item for item in self.view.children if isinstance(item, Button)
-                ]
-                for child in children:
-                    child.disabled = True
-                await i.edit_original_response(
-                    embed=ErrorEmbed().set_author(
-                        name=text_map.get(187, self.locale),
-                        icon_url=i.user.display_avatar.url,
-                    ),
-                    view=self.view,
-                )
-                await asyncio.sleep(2)
-                await return_notification_menu(i, self.locale)
-            await db.commit()
-
-
-class GOBack(Button):
-    def __init__(self):
-        super().__init__(emoji="<:left:982588994778972171>", row=2)
-
-    async def callback(self, i: Interaction):
-        self.view: View
-        await return_notification_menu(i, self.view.locale)
-
-
-class ResinModal(BaseModal):
-    resin_threshold = TextInput(
-        label="樹脂閥值", placeholder="例如: 140 (不得大於 160)", max_length=3
-    )
-    max_notif = TextInput(label="最大提醒值", placeholder="例如: 5", max_length=3)
-
-    def __init__(self, locale: Locale | str):
-        super().__init__(title=text_map.get(515, locale))
-        self.resin_threshold.label = text_map.get(152, locale)
-        self.resin_threshold.placeholder = text_map.get(170, locale).format(a=140)
-        self.max_notif.label = text_map.get(103, locale)
-        self.max_notif.placeholder = text_map.get(155, locale)
-
-    async def on_submit(self, interaction: Interaction) -> None:
-        await interaction.response.defer()
-        self.stop()
-
-
-class PotModal(BaseModal):
-    threshold = TextInput(label="寶錢閥值", max_length=5)
-    max_notif = TextInput(label="最大提醒值", max_length=3)
-
-    def __init__(self, locale: Locale | str):
-        super().__init__(title=text_map.get(515, locale))
-        self.threshold.label = text_map.get(516, locale)
-        self.threshold.placeholder = text_map.get(170, locale).format(a=2000)
-        self.max_notif.label = text_map.get(103, locale)
-        self.max_notif.placeholder = text_map.get(155, locale)
-
-    async def on_submit(self, interaction: Interaction) -> None:
-        await interaction.response.defer()
-        self.stop()
-
-
-class PTModal(BaseModal):
-    max_notif = TextInput(label="最大提醒值", max_length=3)
-
-    def __init__(self, locale: Locale | str):
-        super().__init__(title=text_map.get(515, locale))
-        self.max_notif.label = text_map.get(103, locale)
-        self.max_notif.placeholder = text_map.get(155, locale)
-
-    async def on_submit(self, interaction: Interaction) -> None:
-        await interaction.response.defer()
-        self.stop()
-
-
-# Functions
-async def return_resin_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.pool)
-
-    async with i.client.pool.acquire() as db:
-        async with db.execute(
-            "INSERT INTO resin_notification (user_id, uid) VALUES (?, ?) ON CONFLICT DO NOTHING",
-            (i.user.id, uid),
-        ) as c:
-            await c.execute(
-                "SELECT toggle, threshold, max FROM resin_notification WHERE user_id = ? AND uid = ?",
-                (i.user.id, uid),
-            )
-            rows = await c.fetchone()
-            if rows is not None:
-                toggle, threshold, max = rows
-            else:
-                raise ValueError("No rows found")
-
-        await db.commit()
-    value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
-    value += f"{text_map.get(302, view.locale)}: {threshold}\n"
-    value += f"{text_map.get(103, view.locale)}: {max}"
-    embed = DefaultEmbed(description=text_map.get(586, view.locale))
-    embed.add_field(name=text_map.get(591, view.locale), value=value)
-    embed.set_author(
-        name=text_map.get(582, view.locale), icon_url=i.user.display_avatar.url
-    )
-    view.clear_items()
-    view.add_item(GOBack())
-    view.add_item(ChangeSettings(view.locale, "resin_notification"))
-    view.add_item(
-        NotificationON(
-            view.locale, "resin_notification", True if toggle == 1 else False
-        )
-    )
-    view.add_item(
-        NotificationOFF(
-            view.locale, "resin_notification", True if toggle == 0 else False
-        )
-    )
-    try:
-        await i.response.edit_message(embed=embed, view=view)
-    except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
-
-
-async def return_pt_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.pool)
-    toggle, max_notif = await get_notification_status(
-        i.user.id, uid, "pt_notification", "toggle, max", i
-    )
-    value = f"""
-        {text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}
-        {text_map.get(103, view.locale)}: {max_notif}
-    """
-    embed = DefaultEmbed(description=text_map.get(512, view.locale))
-    embed.add_field(name=text_map.get(591, view.locale), value=value)
-    embed.set_author(
-        name=text_map.get(704, view.locale), icon_url=i.user.display_avatar.url
-    )
-    view.clear_items()
-    view.add_item(ChangeSettings(view.locale, "pt_notification"))
-    view.add_item(GOBack())
-    view.add_item(
-        NotificationON(view.locale, "pt_notification", True if toggle == 1 else False)
-    )
-    view.add_item(
-        NotificationOFF(view.locale, "pt_notification", True if toggle == 0 else False)
-    )
-    try:
-        await i.response.edit_message(embed=embed, view=view)
-    except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
-
-
-async def return_pot_notification(i: Interaction, view: View):
-    uid = await get_uid(i.user.id, i.client.pool)
-    toggle, threshold, max = await get_notification_status(
-        i.user.id, uid, "pot_notification", "toggle, threshold, max", i
-    )
-
-    value = f"{text_map.get(101, view.locale)}: {text_map.get(99 if toggle == 1 else 100, view.locale)}\n"
-    value += f"{text_map.get(302, view.locale)}: {threshold}\n"
-    value += f"{text_map.get(103, view.locale)}: {max}"
-    embed = DefaultEmbed(description=text_map.get(639, view.locale))
-    embed.set_author(
-        name=text_map.get(584, view.locale), icon_url=i.user.display_avatar.url
-    )
-    embed.add_field(name=text_map.get(591, view.locale), value=value)
-    view.clear_items()
-    view.add_item(GOBack())
-    view.add_item(ChangeSettings(view.locale, "pot_notification"))
-    view.add_item(
-        NotificationON(view.locale, "pot_notification", True if toggle == 1 else False)
-    )
-    view.add_item(
-        NotificationOFF(view.locale, "pot_notification", True if toggle == 0 else False)
-    )
-    try:
-        await i.response.edit_message(embed=embed, view=view)
-    except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
-
-
-async def return_talent_notification(i: Interaction, view: View):
-    toggle, character_list = await get_notification_status(
-        i.user.id, None, "talent_notification", "toggle, character_list", i
-    )
-    character_list = ast.literal_eval(character_list)
-
-    embed = DefaultEmbed(description=text_map.get(590, view.locale))
-    embed.set_author(
-        name=text_map.get(442, view.locale), icon_url=i.user.display_avatar.url
-    )
-    if not character_list:
-        value = text_map.get(158, view.locale)
-        embed.add_field(name=text_map.get(159, view.locale), value=value)
-    else:
-        values = []
-        for character in character_list:
-            values.append(
-                f"{get_character_emoji(character)} {text_map.get_character_name(character, view.locale)}\n"
-            )
-        values = list(divide_chunks(values, 20))
-        for index, value in enumerate(values):
-            embed.add_field(
-                name=text_map.get(159, view.locale) + f" (#{index+1})",
-                value="".join(value),
-            )
-    view.clear_items()
-    view.add_item(GOBack())
-    view.add_item(AddCharacter(view.locale))
-    view.add_item(RemoveAllCharacter(view.locale))
-    view.add_item(
-        NotificationON(
-            view.locale, "talent_notification", True if toggle == 1 else False
-        )
-    )
-    view.add_item(
-        NotificationOFF(
-            view.locale, "talent_notification", True if toggle == 0 else False
-        )
-    )
-    try:
-        await i.response.edit_message(embed=embed, view=view)
-    except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
-
-
-async def return_weapon_notification(i: Interaction, view: View):
-    toggle, weapon_list = await get_notification_status(
-        i.user.id, None, "weapon_notification", "toggle, weapon_list", i
-    )
-    weapon_list = ast.literal_eval(weapon_list)
-
-    embed = DefaultEmbed(description=text_map.get(633, view.locale))
-    embed.set_author(
-        name=text_map.get(632, view.locale), icon_url=i.user.display_avatar.url
-    )
-    if not weapon_list:
-        value = text_map.get(637, view.locale)
-        embed.add_field(name=text_map.get(636, view.locale), value=value)
-    else:
-        values = []
-        for weapon in weapon_list:
-            values.append(
-                f"{get_weapon_emoji(int(weapon))} {text_map.get_weapon_name(weapon, view.locale)}\n"
-            )
-        values = list(divide_chunks(values, 20))
-        for index, value in enumerate(values):
-            embed.add_field(
-                name=text_map.get(636, view.locale) + f" (#{index+1})",
-                value="".join(value),
-            )
-    view.clear_items()
-    view.add_item(GOBack())
-    view.add_item(AddWeapon(view.locale))
-    view.add_item(RemoveAllWeapon(view.locale))
-    view.add_item(
-        NotificationON(
-            view.locale, "weapon_notification", True if toggle == 1 else False
-        )
-    )
-    view.add_item(
-        NotificationOFF(
-            view.locale, "weapon_notification", True if toggle == 0 else False
-        )
-    )
-    try:
-        await i.response.edit_message(embed=embed, view=view)
-    except InteractionResponded:
-        await i.edit_original_response(embed=embed, view=view)
-
-
-async def return_notification_menu(
-    i: Interaction, locale: Locale | str, send: bool = False
-):
-    embed = DefaultEmbed(description=text_map.get(592, locale))
-    embed.set_author(name=text_map.get(593, locale), icon_url=i.user.display_avatar.url)
-
-    view = View(locale)
-    if send:
-        await i.response.send_message(embed=embed, view=view)
-    else:
-        try:
-            await i.response.edit_message(embed=embed, view=view)
-        except InteractionResponded:
-            await i.edit_original_response(embed=embed, view=view)
-    view.author = i.user
-    try:
-        view.message = await i.original_response()
-    except NotFound:
-        pass
-
-
-async def get_notification_status(
-    user_id: int, uid: Optional[int], table_name: str, items: str, i: Interaction
-):
-    _data = (user_id, uid) if uid else (user_id,)
-    insert_query = "(user_id, uid)" if uid else "(user_id)"
-    select_query = "user_id = ? AND uid = ?" if uid else "user_id = ?"
-    values_query = "(?, ?)" if uid else "(?)"
-
-    async with i.client.pool.acquire() as db:
-        async with db.execute(
-            f"INSERT INTO {table_name} {insert_query} VALUES {values_query} ON CONFLICT DO NOTHING",
-            _data,
-        ) as c:
-            await c.execute(
-                f"SELECT {items} FROM {table_name} WHERE {select_query}",
-                _data,
-            )
-            rows = await c.fetchone()
-            if rows is None:
-                log.warning(f"User {user_id} with uid {uid} not found in {table_name}")
-                raise DBError(
-                    f"User {user_id} with uid {uid} not found in {table_name}"
-                )
-        await db.commit()
-
-    return rows

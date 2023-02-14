@@ -1,23 +1,20 @@
-import asyncio
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import aiohttp
-import asqlite
+import asyncpg
 import discord
-import enkanetwork
 import genshin
 import yaml
 from discord.utils import format_dt
-from diskcache import FanoutCache
 
+import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (CharacterBuild, EnkanetworkData,
-                                       FightProp, ShenheAccount, ShenheBot,
-                                       WishInfo)
+from apps.genshin.custom_model import (CharacterBuild, FightProp,
+                                       ShenheAccount, ShenheBot, WishInfo)
 from apps.text_map.cond_text import cond_text
-from apps.text_map.convert_locale import to_ambr_top, to_enka, to_genshin_py
+from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import (get_user_locale, get_weekday_name,
                                  translate_main_stat)
@@ -25,9 +22,9 @@ from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from exceptions import NoCharacterFound, ShenheAccountNotFound, UIDNotFound
-from utility.utils import (DefaultEmbed, divide_chunks, divide_dict,
-                           ErrorEmbed, get_dt_now)
+from exceptions import ShenheAccountNotFound
+from utility.utils import (DefaultEmbed, ErrorEmbed, divide_chunks,
+                           divide_dict, get_dt_now)
 
 
 def calculate_artifact_score(substats: dict):
@@ -195,7 +192,7 @@ def get_uid_region_hash(uid: int) -> int:
 
 def get_uid_tz(uid: Optional[int]) -> int:
     str_uid = str(uid)
-    region_map = {
+    region_map: Dict[str, int] = {
         "6": -13,  # North America
         "7": -7,  # Europe
     }
@@ -206,83 +203,60 @@ async def get_shenhe_account(
     user_id: int,
     bot: ShenheBot,
     locale: Optional[discord.Locale | str] = None,
-    cookie: Optional[Dict[str, str | int]] = None,
-    custom_uid: Optional[int] = None,
-    daily_checkin: int = 1,
-    author_locale: Optional[discord.Locale | str] = None,
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-    if cookie is None:
-        async with bot.pool.acquire() as db:
-            async with db.execute(
-                "SELECT ltuid, ltoken, cookie_token, uid, china, current FROM user_accounts WHERE user_id = ?",
-                (user_id,),
-            ) as c:
-                user_data = None
-                for row in c.get_cursor():
-                    user_data = row
-                    if row[5] == 1:
-                        break
+    user_data = await bot.pool.fetchrow(
+        """
+        SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
+        FROM user_accounts
+        WHERE user_id = $1
+        AND current = true
+        """,
+        user_id,
+    )
 
-            if user_data is None:
-                raise ShenheAccountNotFound
+    if not user_data:
+        raise ShenheAccountNotFound
 
-            if user_data[0] is not None:
-                client = genshin.Client()
-                client.set_cookies(
-                    ltuid=user_data[0],
-                    ltoken=user_data[1],
-                    account_id=user_data[0],
-                    cookie_token=user_data[2],
-                )
-            else:
-                client = bot.genshin_client
-
-            client.uid = user_data[3]
-    else:
+    if user_data["ltuid"]:
         client = genshin.Client()
-        client.set_cookies(cookie)
-        client.uid = await get_uid(user_id, bot.pool)
+        client.set_cookies(
+            ltuid=user_data["ltuid"],
+            ltoken=user_data["ltoken"],
+            account_id=user_data["ltuid"],
+            cookie_token=user_data["cookie_token"],
+        )
+    else:
+        client = bot.genshin_client
 
-    user_locale = await get_user_locale(user_id, bot.pool)
-    final_locale = author_locale or user_locale or locale
+    final_locale = locale or (await get_user_locale(user_id, bot.pool))
 
-    client.lang = to_genshin_py(str(final_locale)) or "en-us"
-    temp_uid = custom_uid or client.uid
+    client.lang = to_genshin_py(str(final_locale))
     client.default_game = genshin.Game.GENSHIN
-    client.uid = temp_uid
+    client.uid = user_data["uid"]
 
-    if client.uid is None:
-        raise UIDNotFound
-
-    china = True if str(client.uid)[0] in ["1", "2", "5"] else False
-    if china:
+    if user_data["china"]:
         client.lang = "zh-cn"
         client.region = genshin.Region.CHINESE
+    else:
+        client.region = genshin.Region.OVERSEAS
 
     user_obj = ShenheAccount(
         client=client,
         uid=client.uid,
         discord_user=discord_user,
         user_locale=str(final_locale),
-        china=china,
-        daily_checkin=True if daily_checkin == 1 else False,
+        china=user_data["china"],
+        daily_checkin=user_data["daily_checkin"],
     )
     return user_obj
 
 
-async def get_uid(user_id: int, pool: asqlite.Pool) -> Optional[int]:
-    async with pool.acquire() as db:
-        async with db.execute(
-            "SELECT uid, current FROM user_accounts WHERE user_id = ?",
-            (user_id,),
-        ) as c:
-            uid = None
-            for row in c.get_cursor():
-                uid = row[0]
-                if row[1] == 1:
-                    break
-            return uid
+async def get_uid(user_id: int, pool: asyncpg.Pool) -> Optional[int]:
+    return await pool.fetchval(
+        "SELECT uid FROM user_accounts WHERE user_id = $1 AND current = true",
+        user_id,
+    )
 
 
 async def get_farm_data(
@@ -409,8 +383,8 @@ async def get_wish_history_embed(
 ) -> List[discord.Embed]:
     member = member or i.user
     user_locale = await get_user_locale(i.user.id, i.client.pool)
-    
-    pool: asqlite.Pool = i.client.pool # type: ignore
+
+    pool: asqlite.Pool = i.client.pool  # type: ignore
     async with pool.acquire() as db:
         async with db.execute(
             f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
@@ -419,7 +393,9 @@ async def get_wish_history_embed(
             wish_history = await c.fetchall()
 
     if not wish_history:
-        embed = ErrorEmbed(description=text_map.get(75, i.locale, user_locale)).set_author(
+        embed = ErrorEmbed(
+            description=text_map.get(75, i.locale, user_locale)
+        ).set_author(
             name=text_map.get(648, i.locale, user_locale),
             icon_url=member.display_avatar.url,
         )
@@ -473,7 +449,7 @@ async def get_wish_info_embed(
     )
     embed.add_field(
         name="UID",
-        value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.pool)), # type: ignore
+        value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.pool)),  # type: ignore
         inline=False,
     )
     newest_wish = wish_info.newest_wish
@@ -530,29 +506,6 @@ def format_wish_str(wish_data: Dict, locale: discord.Locale | str):
     )
     pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
     return f"{format_dt(wish_time, 'd')} {item_emoji} **{text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)}** ({wish_data['item_rarity']} ✦) {pity_pull}"
-
-
-def get_account_options(
-    accounts: List[Tuple], locale: str
-) -> List[discord.SelectOption]:
-    options = []
-    for account in accounts:
-        emoji = (
-            "<:cookie_add:1018776813922693120>"
-            if account[1] is not None
-            else "<:number:1018838745614667817>"
-        )
-        nickname = f"{account[3]} | " if account[3] is not None else ""
-        if len(nickname) > 15:
-            nickname = nickname[:15] + "..."
-        options.append(
-            discord.SelectOption(
-                label=f"{nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), locale)}",
-                emoji=emoji,
-                value=account[0],
-            )
-        )
-    return options
 
 
 def level_to_ascension_phase(level: int) -> int:
@@ -617,3 +570,22 @@ def get_abyss_season_date_range(season: int) -> str:
     season_end = season_start + timedelta(days=15)
 
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
+
+
+def get_account_select_options(
+    accounts: List[asyncpg.Record], locale: discord.Locale | str
+) -> List[discord.SelectOption]:
+    options = []
+    for account in accounts:
+        emoji = asset.cookie_emoji if account["ltuid"] else asset.uid_emoji
+        nickname = f"{account['nickname']} | " if account["nickname"] else ""
+        if len(nickname) > 15:
+            nickname = nickname[:15] + "..."
+        options.append(
+            discord.SelectOption(
+                label=f"{nickname}{account['uid']} | {text_map.get(get_uid_region_hash(account['uid']), locale)}",
+                emoji=emoji,
+                value=str(account["uid"]),
+            )
+        )
+    return options

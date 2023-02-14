@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 
 import aiofiles
+import asqlite
 import asyncpg
 import discord
 import genshin
@@ -35,8 +36,8 @@ from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
-from utility.utils import (add_bullet_points, DefaultEmbed, divide_chunks,
-                           ErrorEmbed, get_dt_now, get_user_appearance_mode,
+from utility.utils import (DefaultEmbed, ErrorEmbed, add_bullet_points,
+                           divide_chunks, get_dt_now, get_user_appearance_mode,
                            log, parse_HTML)
 
 load_dotenv()
@@ -72,32 +73,36 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     async def cog_load(self) -> None:
         cookie_list: List[Dict[str, str]] = []
-        self.bot.genshin_client = genshin.Client({})
-        async with self.bot.pool.acquire() as db:
-            async for row in db.execute(
-                "SELECT uid, ltuid, ltoken FROM user_accounts WHERE ltoken IS NOT NULL AND ltuid IS NOT NULL AND uid IS NOT NULL"
-            ):
-                uid = row[0]
-                if str(uid)[0] in ["1", "2", "5"]:
-                    continue
+        self.bot.genshin_client = genshin.Client()
+        rows = await self.bot.pool.fetch(
+            """
+            SELECT ltuid, ltoken
+            FROM user_accounts
+            WHERE ltoken IS NOT NULL
+            AND ltuid IS NOT NULL
+            AND uid IS NOT NULL
+            AND china = false
+            """
+        )
+        for row in rows:
+            ltuid = row["ltuid"]
+            ltoken = row["ltoken"]
+            cookie: Dict[str, Any] = {"ltuid": ltuid, "ltoken": ltoken}
 
-                ltuid = row[1]
-                ltoken = row[2]
-                cookie = {"ltuid": ltuid, "ltoken": ltoken}
+            for c in cookie_list:
+                if c["ltuid"] == ltuid:
+                    break
+            else:
+                cookie_list.append(cookie)
 
-                for c in cookie_list:
-                    if c["ltuid"] == ltuid:
-                        break
-                else:
-                    cookie_list.append(cookie)
-
-        try:
-            self.bot.genshin_client.set_cookies(cookie_list)
-        except Exception as e:
-            log.warning(f"[Genshin Client]: {e}")
-            sentry_sdk.capture_exception(e)
-        else:
-            log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
+        if cookie_list:
+            try:
+                self.bot.genshin_client.set_cookies(cookie_list)
+            except Exception as e:
+                log.warning(f"[Genshin Client][Error]: {e}")
+                sentry_sdk.capture_exception(e)
+            else:
+                log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
 
         async with self.bot.session.get(
             "https://genshin-db-api.vercel.app/api/languages"
@@ -193,15 +198,16 @@ class GenshinCog(commands.Cog, name="genshin"):
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = False,
     ):
+        await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
         result = await self.genshin_app.get_real_time_notes(
             member.id, i.user.id, i.locale
         )
         if not result.success:
-            await i.response.send_message(embed=result.result, ephemeral=True)
+            await i.followup.send(embed=result.result, ephemeral=True)
         else:
             note_result: custom_model.RealtimeNoteResult = result.result
-            await i.response.send_message(
+            await i.followup.send(
                 embed=note_result.embed.set_image(
                     url="https://i.imgur.com/cBykL8X.gif"
                 ),
@@ -215,11 +221,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.edit_original_response(
                 embed=note_result.embed.set_image(
                     url="attachment://realtime_notes.jpeg"
-                ).set_author(
-                    name=text_map.get(
-                        24, await get_user_locale(member.id, self.bot.pool) or i.locale
-                    ),
-                    icon_url=member.display_avatar.url,
                 ),
                 attachments=[discord.File(fp, filename="realtime_notes.jpeg")],
             )
@@ -999,9 +1000,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
 
         embed = DefaultEmbed()
-        embed.set_image(
-            url=asset.abyss_image
-        )
+        embed.set_image(url=asset.abyss_image)
         embed.set_author(
             name=f"{text_map.get(705, locale)}",
             icon_url=i.user.display_avatar.url,

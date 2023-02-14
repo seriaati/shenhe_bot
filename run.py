@@ -32,10 +32,12 @@ if platform.system() == "Windows":
     token = os.getenv("YAE_TOKEN")
     debug = True
     application_id = os.getenv("YAE_APP_ID")
+    databse_url = os.getenv("YAE_DATABASE_URL")
 else:
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     application_id = os.getenv("SHENHE_BOT_APP_ID")
+    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
 
 
 class Translator(app_commands.Translator):
@@ -193,7 +195,7 @@ async def main() -> None:
     assert token
     
     try:
-        pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
+        pool = await asyncpg.create_pool(databse_url)
     except Exception as e:
         log.error("Failed to connect to database", exc_info=e)
         return
