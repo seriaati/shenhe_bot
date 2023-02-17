@@ -11,20 +11,29 @@ from discord.utils import format_dt
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (CharacterBuild, FightProp,
-                                       ShenheAccount, ShenheBot, WishInfo)
+from apps.genshin.custom_model import (
+    CharacterBuild,
+    FightProp,
+    ShenheAccount,
+    ShenheBot,
+    WishInfo,
+)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import (get_user_locale, get_weekday_name,
-                                 translate_main_stat)
+from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from exceptions import ShenheAccountNotFound
-from utility.utils import (DefaultEmbed, ErrorEmbed, divide_chunks,
-                           divide_dict, get_dt_now)
+from utility.utils import (
+    DefaultEmbed,
+    ErrorEmbed,
+    divide_chunks,
+    divide_dict,
+    get_dt_now,
+)
 
 
 def calculate_artifact_score(substats: dict):
@@ -384,13 +393,17 @@ async def get_wish_history_embed(
     member = member or i.user
     user_locale = await get_user_locale(i.user.id, i.client.pool)
 
-    pool: asqlite.Pool = i.client.pool  # type: ignore
-    async with pool.acquire() as db:
-        async with db.execute(
-            f"SELECT wish_rarity, wish_time, item_id, pity_pull FROM wish_history WHERE {query} user_id = ? AND uid = ? ORDER BY wish_id DESC",
-            (member.id, await get_uid(member.id, pool)),
-        ) as c:
-            wish_history = await c.fetchall()
+    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    wish_history = await pool.fetch(
+        f"""
+        SELECT wish_rarity, wish_time, item_id, pity_pull
+        FROM wish_history
+        WHERE {query} user_id = $1 AND uid = $2
+        ORDER BY wish_id DESC
+        """,
+        member.id,
+        await get_uid(member.id, pool),
+    )
 
     if not wish_history:
         embed = ErrorEmbed(
@@ -401,28 +414,26 @@ async def get_wish_history_embed(
         )
         return [embed]
     else:
-        user_wish = []
-
-        for _, tpl in enumerate(wish_history):
+        user_wish: List[str] = []
+        for wish in wish_history:
             user_wish.append(
                 format_wish_str(
                     {
-                        "item_rarity": tpl[0],
-                        "time": tpl[1],
-                        "item_id": tpl[2],
-                        "pity_pull": tpl[3],
+                        "item_rarity": wish["wish_rarity"],
+                        "time": wish["wish_time"],
+                        "item_id": wish["item_id"],
+                        "pity_pull": wish["pity_pull"],
                     },
                     user_locale or i.locale,
                 )
             )
 
-        user_wish = list(divide_chunks(user_wish, 20))
-        embeds = []
-        for small_segment in user_wish:
-            embed_str = ""
-            for wish_str in small_segment:
-                embed_str += f"{wish_str}\n"
-            embed = DefaultEmbed(description=embed_str)
+        split_user_wish: List[List[str]] = list(divide_chunks(user_wish, 20))
+
+        embeds: List[discord.Embed] = []
+        for small_segment in split_user_wish:
+            description = "\n".join(small_segment)
+            embed = DefaultEmbed(description=description)
             embed.set_author(
                 name=text_map.get(369, i.locale, user_locale),
                 icon_url=member.display_avatar.url,

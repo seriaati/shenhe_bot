@@ -47,15 +47,10 @@ def check_wish_history():
     """Checks if the current user account has a wish history."""
 
     async def predicate(i: Interaction) -> bool:
-        user = i.namespace.membr or i.user
+        user = i.namespace.member or i.user
 
-        pool: asqlite.Pool = i.client.pool  # type: ignore
-        async with pool.acquire() as db:
-            async with db.execute(
-                "SELECT wish_id FROM wish_history WHERE user_id = ? AND uid = ?",
-                (user.id, await get_uid(i.user.id, pool)),
-            ) as c:
-                data = await c.fetchone()
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
+        data = await pool.fetchval("SELECT wish_id FROM wish_history WHERE user_id = $1 AND uid = $2", user.id, await get_uid(i.user.id, pool))
 
         if data is None:
             raise NoWishHistory

@@ -1,16 +1,18 @@
 import ast
 import functools
 import importlib
+import pickle
 import sys
 from pathlib import Path
 from typing import Optional
+
 import asqlite
-from diskcache import FanoutCache
 import git
 from discord.app_commands import locale_str as _
-from discord.ext import commands
 from discord.errors import Forbidden
-import pickle
+from discord.ext import commands
+from diskcache import FanoutCache
+
 from apps.genshin.custom_model import ShenheBot
 from utility.utils import DefaultEmbed, ErrorEmbed, log
 
@@ -104,21 +106,18 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="transfer-enka-cache")
     async def transfer_enka_cache(self, ctx: commands.Context, uid: int):
-        async with self.bot.pool.acquire() as db:
-            await db.execute(
-                "CREATE TABLE IF NOT EXISTS enka_cache (uid INTEGER PRIMARY KEY, en_data BLOB, data BLOB)"
-            )
-            await ctx.send("getting old cache...")
-            en_cache = FanoutCache("data/cache/enka_eng_cache")
-            cache = FanoutCache("data/cache/enka_data_cache")
-            en_cache_data = en_cache.get(uid)
-            cache_data = cache.get(uid)
-            await db.execute(
-                "INSERT OR REPLACE INTO enka_cache (uid, en_data, data) VALUES (?, ?, ?)",
-                (uid, pickle.dumps(en_cache_data), pickle.dumps(cache_data)),
-            )
-            await db.commit()
-            await ctx.send("done")
+        await ctx.send("getting old cache...")
+        en_cache = FanoutCache("data/cache/enka_eng_cache")
+        cache = FanoutCache("data/cache/enka_data_cache")
+        en_cache_data = en_cache.get(uid)
+        cache_data = cache.get(uid)
+        await self.bot.pool.execute(
+            "INSERT OR REPLACE INTO enka_cache (uid, en_data, data) VALUES ($1, $2, $3)",
+            uid,
+            pickle.dumps(en_cache_data),
+            pickle.dumps(cache_data),
+        )
+        await ctx.send("done")
 
     @commands.is_owner()
     @commands.command(name="migrate-db")
@@ -149,9 +148,11 @@ class AdminCog(commands.Cog, name="admin"):
                     )
                     log.info(f"migrated user_account {user_account['uid']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate user_account {user_account['uid']}: {e}")
+                    log.warning(
+                        f"failed to migrate user_account {user_account['uid']}: {e}"
+                    )
             log.info("migrated user_accounts")
-            
+
             # user_settings
             user_settings = await sqlite.fetchall("SELECT * FROM user_settings")
             for user_setting in user_settings:
@@ -164,18 +165,24 @@ class AdminCog(commands.Cog, name="admin"):
                         ON CONFLICT (user_id) DO NOTHING
                         """,
                         user_setting["user_id"],
-                        None if user_setting["lang"] == "en-US" else user_setting["lang"],
+                        None
+                        if user_setting["lang"] == "en-US"
+                        else user_setting["lang"],
                         True if user_setting["dark_mode"] == 1 else False,
                         True if user_setting["notification"] == 1 else False,
                         True if user_setting["auto_redeem"] == 1 else False,
                     )
                     log.info(f"migrated user_setting {user_setting['user_id']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate user_setting {user_setting['user_id']}: {e}")
+                    log.warning(
+                        f"failed to migrate user_setting {user_setting['user_id']}: {e}"
+                    )
             log.info("migrated user_settings")
-            
+
             # resin_notification
-            resin_notification = await sqlite.fetchall("SELECT * FROM resin_notification")
+            resin_notification = await sqlite.fetchall(
+                "SELECT * FROM resin_notification"
+            )
             # columns: uid, user_id, last_notif, current, max, toggle, threshold
             for resin in resin_notification:
                 try:
@@ -196,9 +203,11 @@ class AdminCog(commands.Cog, name="admin"):
                     )
                     log.info(f"migrated resin_notification {resin['uid']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate resin_notification {resin['uid']}: {e}") 
+                    log.warning(
+                        f"failed to migrate resin_notification {resin['uid']}: {e}"
+                    )
             log.info("migrated resin_notification")
-            
+
             # pot_notification
             pot_notification = await sqlite.fetchall("SELECT * FROM pot_notification")
             # columns: uid, user_id, last_notif, current, max, toggle, threshold
@@ -223,7 +232,7 @@ class AdminCog(commands.Cog, name="admin"):
                 except Exception as e:
                     log.warning(f"failed to migrate pot_notification {pot['uid']}: {e}")
             log.info("migrated pot_notification")
-            
+
             # pt_notification
             pt_notification = await sqlite.fetchall("SELECT * FROM pt_notification")
             # columns: uid, user_id, last_notif, current, max, toggle
@@ -247,9 +256,11 @@ class AdminCog(commands.Cog, name="admin"):
                 except Exception as e:
                     log.warning(f"failed to migrate pt_notification {pt['uid']}: {e}")
             log.info("migrated pt_notification")
-            
+
             # weapon_notification
-            weapon_notification = await sqlite.fetchall("SELECT * FROM weapon_notification")
+            weapon_notification = await sqlite.fetchall(
+                "SELECT * FROM weapon_notification"
+            )
             # columns: user_id, toggle, item_list
             for weapon in weapon_notification:
                 try:
@@ -266,11 +277,15 @@ class AdminCog(commands.Cog, name="admin"):
                     )
                     log.info(f"migrated weapon_notification {weapon['user_id']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate weapon_notification {weapon['user_id']}: {e}")
+                    log.warning(
+                        f"failed to migrate weapon_notification {weapon['user_id']}: {e}"
+                    )
             log.info("migrated weapon_notification")
-            
+
             # talent_notification
-            talent_notification = await sqlite.fetchall("SELECT * FROM talent_notification")
+            talent_notification = await sqlite.fetchall(
+                "SELECT * FROM talent_notification"
+            )
             # columns: user_id, toggle, item_list
             for talent in talent_notification:
                 try:
@@ -287,11 +302,15 @@ class AdminCog(commands.Cog, name="admin"):
                     )
                     log.info(f"migrated talent_notification {talent['user_id']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate talent_notification {talent['user_id']}: {e}")
+                    log.warning(
+                        f"failed to migrate talent_notification {talent['user_id']}: {e}"
+                    )
             log.info("migrated talent_notification")
-            
+
             # abyss_character_leaderboard
-            abyss_character_leaderboard = await sqlite.fetchall("SELECT * FROM abyss_character_leaderboard")
+            abyss_character_leaderboard = await sqlite.fetchall(
+                "SELECT * FROM abyss_character_leaderboard"
+            )
             # columns: uid, season, characters, user_id
             for leaderboard in abyss_character_leaderboard:
                 try:
@@ -307,11 +326,15 @@ class AdminCog(commands.Cog, name="admin"):
                         ast.literal_eval(leaderboard["characters"]),
                         leaderboard["user_id"],
                     )
-                    log.info(f"migrated abyss_character_leaderboard {leaderboard['uid']}")
+                    log.info(
+                        f"migrated abyss_character_leaderboard {leaderboard['uid']}"
+                    )
                 except Exception as e:
-                    log.warning(f"failed to migrate abyss_character_leaderboard {leaderboard['uid']}: {e}")
+                    log.warning(
+                        f"failed to migrate abyss_character_leaderboard {leaderboard['uid']}: {e}"
+                    )
             log.info("migrated abyss_character_leaderboard")
-            
+
             # abyss_leaderboard
             abyss_leaderboard = await sqlite.fetchall("SELECT * FROM abyss_leaderboard")
             # columns: uid, single_strike, floor, stars_collected, user_name, user_id, season, runs, wins, level, icon_url, const, refine, c_level, c_icon
@@ -342,9 +365,11 @@ class AdminCog(commands.Cog, name="admin"):
                     )
                     log.info(f"migrated abyss_leaderboard {leaderboard['uid']}")
                 except Exception as e:
-                    log.warning(f"failed to migrate abyss_leaderboard {leaderboard['uid']}: {e}")
+                    log.warning(
+                        f"failed to migrate abyss_leaderboard {leaderboard['uid']}: {e}"
+                    )
             log.info("migrated abyss_leaderboard")
-            
+
             # custom_image
             custom_image = await sqlite.fetchall("SELECT * FROM custom_image")
             # columns: user_id, character_id, image_url, nickname, current
@@ -362,10 +387,15 @@ class AdminCog(commands.Cog, name="admin"):
                         image["nickname"],
                         True if image["current"] == 1 else False,
                     )
-                    log.info(f"migrated custom_image {image['user_id']} {image['image_url']}")
+                    log.info(
+                        f"migrated custom_image {image['user_id']} {image['image_url']}"
+                    )
                 except Exception as e:
-                    log.warning(f"failed to migrate custom_image {image['user_id']} {image['image_url']}: {e}")
+                    log.warning(
+                        f"failed to migrate custom_image {image['user_id']} {image['image_url']}: {e}"
+                    )
             log.info("migrated custom_image")
+
 
 async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(AdminCog(bot))
