@@ -428,7 +428,7 @@ class AdminCog(commands.Cog, name="admin"):
                             VALUES ($1, $2, $3, $4)
                             """,
                             todo["user_id"],
-                            todo["todo"],
+                            todo["item"],
                             todo["count"],
                             todo["max"],
                         )
