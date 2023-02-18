@@ -547,6 +547,7 @@ class Schedule(commands.Cog):
                 log.warning(f"[Schedule][Claim Reward] Error: {e}")
                 sentry_sdk.capture_exception(e)
             else:
+                log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
                 if await get_user_notification(user.discord_user.id, self.bot.pool):
                     embed = DefaultEmbed(description=f"{reward.name} x{reward.amount}")
                     embed.set_author(
