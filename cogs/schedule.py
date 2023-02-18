@@ -433,6 +433,8 @@ class Schedule(commands.Cog):
                     uid=row["uid"],
                     max=row["max"],
                     last_notif=row["last_notif"],
+                    threshold=row["threshold"],
+                    current=row["current"],
                 )
             )
         return result

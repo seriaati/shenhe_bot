@@ -41,9 +41,9 @@ class DamageResult(BaseModel):
 
 class NotificationUser(BaseModel):
     user_id: int
-    threshold: int = 0
-    current: int = 0
-    max: int = 3
+    threshold: int
+    current: int
+    max: int
     uid: int
     last_notif: Optional[datetime] = None
 
