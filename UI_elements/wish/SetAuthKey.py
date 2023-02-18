@@ -464,10 +464,11 @@ async def get_wish_import_embed(
     
     wish_data = await pool.fetch(
         """
-        SELECT wish_time, wish_rarity, item_id, wish_banner_type
+        SELECT wish_time, wish_rarity, item_id, wish_banner_type, uid
         FROM wish_history
         WHERE user_id = $1
-        ORDER BY wish_id DESC""",
+        ORDER BY wish_id DESC
+        """,
         i.user.id,
     )
     if not wish_data:
