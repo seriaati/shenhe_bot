@@ -286,14 +286,21 @@ class ConfirmWishImport(ui.Button):
             for wish in self.wish_history:
                 assert isinstance(wish, genshin.models.Wish)
                 await pool.execute(
-                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
+                    """
+                    INSERT INTO wish_history
+                    (wish_id, user_id, uid, wish_name, wish_rarity,
+                    wish_time, wish_type, wish_banner_type, item_id)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    ON CONFLICT DO NOTHING
+                    """,
+                    wish.id,
                     i.user.id,
+                    uid,
                     wish.name,
                     wish.rarity,
                     wish.time,
+                    wish.type,
                     wish.banner_type,
-                    wish.id,
-                    uid,
                     text_map.get_id_from_name(wish.name),
                 )
                     
