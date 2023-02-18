@@ -422,22 +422,14 @@ class Schedule(commands.Cog):
         Returns:
             List[NotificationUser]: a list of notification users
         """
-        result = []
+        select_query = "SELECT user_id, uid, max, last_notif, current"
+        if table_name in ("resin_notification", "pot_notification"):
+            select_query += ", threshold"
         rows = await self.bot.pool.fetch(
-            f"SELECT user_id, uid, max, last_notif FROM {table_name} WHERE toggle = true"
+            f"{select_query} FROM {table_name} WHERE toggle = true"
         )
-        for row in rows:
-            result.append(
-                NotificationUser(
-                    user_id=row["user_id"],
-                    uid=row["uid"],
-                    max=row["max"],
-                    last_notif=row["last_notif"],
-                    threshold=row["threshold"],
-                    current=row["current"],
-                )
-            )
-        return result
+        
+        return [NotificationUser(**row) for row in rows]
 
     @schedule_error_handler
     async def redeem_codes(self):
