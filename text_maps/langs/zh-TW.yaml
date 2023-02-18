@@ -327,7 +327,7 @@
 '305': 輸入 /remind 來更改設定
 '306': 樹脂要滿啦!!
 '307': 天賦提醒功能已關閉
-'308': Item amount
+'308': 物品数量
 '309': ''
 '310': ''
 '311': 如何讓申鶴私訊你?
@@ -682,10 +682,10 @@
 '593': 提醒
 '594': 更改設置
 '595': |-
-  Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
-  1. Right-click any server that has Shenhe in it
-  2. Click on "Privacy Settings"
-  3. Turn on the toggle of "Direct Messages"
+  申鶴需要透過私人訊息來向你傳送通知，如果私人訊息被關閉了，請按照下面的步驟來啟用它。
+  1. 右鍵任何有申鶴在內的伺服器
+  2. 點選「隱私設定」
+  3. 打開「私人訊息」的開關
 '596': 試試看！
 '597': 申鶴沒辦法私訊你
 '598': 新增/移除角色
