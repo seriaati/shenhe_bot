@@ -327,9 +327,9 @@
 '305': Use /remind to change the settings
 '306': Resin is almost full!!
 '307': Talent notification is now turned OFF
-'308': Right-click any server that has shenhe in it
-'309': Click on `privacy settings`
-'310': Turn the toggle ON
+'308': Item amount
+'309': ''
+'310': ''
 '311': How to unblock DM from servers
 '312': Time to farm materials for {name}!
 '313': Genshin Impact
@@ -685,7 +685,11 @@
   • Click on the buttons below for more information on each feature
 '593': Reminders
 '594': Change settings
-'595': Shenhe needs to be able to DM you to send you the notifications, if you somehow disabled it, please follow the steps below to enable it.
+'595': |-
+  Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
+  1. Right-click any server that has Shenhe in it
+  2. Click on "Privacy Settings"
+  3. Turn on the toggle of "Direct Messages"
 '596': Test it out!
 '597': Shenhe has failed to DM you
 '598': Add/Remove characters
