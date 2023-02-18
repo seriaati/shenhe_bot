@@ -325,9 +325,9 @@
 '305': 設定を変更する場合は、/remind を実行してください
 '306': 樹脂はほぼ満杯!!
 '307': 天賦のリマインダーをOFFにしました
-'308': 申鶴がいるサーバーで右クリック
-'309': '`プライバシー設定`をクリックしてください'
-'310': トグルをオンにする
+'308': Item amount
+'309': ''
+'310': ''
 '311': 申鶴からのDMを受け取るにはどうすればいいですか？
 '312': '{name}を周回する時間です！'
 '313': 原神
@@ -680,7 +680,11 @@
   • 以下の各ボタンをクリックすると、詳細が表示されます
 '593': 通知
 '594': 設定を変更
-'595': 通知を送るには、申鶴がDMを送れるようにする必要があります。何らかの理由で無効にしている場合は、以下の手順で有効にしてください。
+'595': |-
+  Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
+  1. Right-click any server that has Shenhe in it
+  2. Click on "Privacy Settings"
+  3. Turn on the toggle of "Direct Messages"
 '596': 試してみよう！
 '597': ShenheはDMを送ることができませんでした
 '598': キャラクターの追加/削除
