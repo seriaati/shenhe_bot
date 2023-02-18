@@ -62,7 +62,7 @@ class LoginGatewayCog(commands.Cog):
                 genshin.ltuid,
                 genshin.cookie_token,
                 genshin.ltoken,
-                user_id,
+                int(user_id),
             )
         else:
             await self.bot.pool.execute(
@@ -73,7 +73,7 @@ class LoginGatewayCog(commands.Cog):
                 """,
                 genshin.ltuid,
                 genshin.cookie_token,
-                user_id,
+                int(user_id),
             )
 
     async def gateway_player(self, data: Player):
