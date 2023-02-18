@@ -141,7 +141,7 @@ class AdminCog(commands.Cog, name="admin"):
                             user_account["uid"],
                             user_account["user_id"],
                             str(user_account["ltuid"]),
-                            user_account["ltoken"],
+                            str(user_account["ltoken"]),
                             user_account["cookie_token"],
                             True if user_account["current"] == 1 else False,
                             user_account["nickname"],
