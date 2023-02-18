@@ -10,7 +10,7 @@ from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie,
-                        NoPlayerFound, NoUID, NoWishHistory,
+                        NoPlayerFound, NoUID, NoWishHistory, NumbersOnly,
                         ShenheAccountNotFound, UIDNotFound)
 from utility.utils import ErrorEmbed, log
 
@@ -18,9 +18,6 @@ from utility.utils import ErrorEmbed, log
 async def global_error_handler(
     i: discord.Interaction, e: Exception | discord.app_commands.AppCommandError
 ):
-    if not isinstance(e, discord.app_commands.CheckFailure):
-        log.warning(f"[Error][{i.user.id}]{type(e)}: {e}", exc_info=e)
-
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
 
@@ -106,7 +103,10 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(719, locale))
     elif isinstance(e, ItemNotFound):
         embed.set_author(name=text_map.get(542, locale))
+    elif isinstance(e, NumbersOnly):
+        embed.set_author(name=text_map.get(187, locale))
     else:
+        log.warning(f"Error: {type(e)}: {e}", exc_info=e)
         sentry_sdk.capture_exception(e)
 
         embed.description = text_map.get(513, locale)

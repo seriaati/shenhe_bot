@@ -5,6 +5,7 @@ import json
 import os
 from typing import Optional
 
+import asyncpg
 import psutil
 import pygit2
 from aioimgur import ImgurClient
@@ -43,13 +44,13 @@ class OthersCog(commands.Cog, name="others"):
         description=_("View and change your user settings in Shenhe", hash=534),
     )
     async def settings(self, i: Interaction):
-        async with self.bot.pool.acquire() as db:
-            await db.execute(
-                "INSERT INTO user_settings (user_id) VALUES (?) ON CONFLICT DO NOTHING",
-                (i.user.id,),
-            )
-            await db.commit()
-
+        await self.bot.pool.execute(
+            """
+            INSERT INTO user_settings (user_id) VALUES ($1)
+            ON CONFLICT DO NOTHING
+            """,
+            i.user.id,
+        )
         await SettingsMenu.return_settings(i)
 
     @app_commands.command(
@@ -164,23 +165,19 @@ class OthersCog(commands.Cog, name="others"):
             value=f"{memory_usage:.2f} MB\n{cpu_usage:.2f}% CPU",
         )
 
-        async with self.bot.pool.acquire() as db:
-            async with db.execute("SELECT COUNT(*) FROM user_accounts") as cursor:
-                total = await cursor.fetchone()
-                await cursor.execute(
-                    "SELECT COUNT(*) FROM user_accounts WHERE ltuid IS NOT NULL"
-                )
-                cookie = await cursor.fetchone()
-                await cursor.execute(
-                    "SELECT COUNT(*) FROM user_accounts WHERE china = 1"
-                )
-                china = await cursor.fetchone()
-                embed.add_field(
-                    name=text_map.get(524, locale),
-                    value=text_map.get(194, locale).format(
-                        total=total[0], cookie=cookie[0], china=china[0]
-                    ),
-                )
+        total = await self.bot.pool.fetchval("SELECT COUNT(*) FROM user_accounts")
+        cookie = await self.bot.pool.fetchval(
+            "SELECT COUNT(*) FROM user_accounts WHERE ltuid IS NOT NULL"
+        )
+        china = await self.bot.pool.fetchval(
+            "SELECT COUNT(*) FROM user_accounts WHERE china = true"
+        )
+        embed.add_field(
+            name=text_map.get(524, locale),
+            value=text_map.get(194, locale).format(
+                total=total[0], cookie=cookie[0], china=china[0]
+            ),
+        )
 
         total_members = 0
         total_unique = len(self.bot.users)
@@ -258,7 +255,11 @@ class OthersCog(commands.Cog, name="others"):
         something = await imgur.upload(await image_file.read())
         converted_character_id = int(character_id.split("-")[0])
         await CustomImage.add_user_custom_image(
-            i, something["link"], converted_character_id, image_name
+            i.user.id,
+            converted_character_id,
+            something["link"],
+            image_name,
+            i.client.pool,
         )
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         view = CustomImage.View(locale)
@@ -298,7 +299,9 @@ class OthersCog(commands.Cog, name="others"):
         name="source", description=_("View the bot source code", hash=739)
     )
     @app_commands.rename(command=_("command", hash=742))
-    @app_commands.describe(command=_("Name of command to view the source code of", hash=743))
+    @app_commands.describe(
+        command=_("Name of command to view the source code of", hash=743)
+    )
     async def source(self, i: Interaction, command: Optional[str] = None):
         source_url = "https://github.com/seriaati/shenhe_bot"
         branch = "main"
@@ -339,7 +342,7 @@ class OthersCog(commands.Cog, name="others"):
 
         final_url = f"<{source_url}/blob/{branch}/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>"
         await i.response.send_message(final_url)
-    
+
     @source.autocomplete(name="command")
     async def source_autocomplete(self, i: Interaction, current: str):
         options = []

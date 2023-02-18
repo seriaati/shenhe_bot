@@ -87,7 +87,7 @@ class CharacterSelect(Select):
             pass
         else:
             character_id = int(self.values[0].split("-")[0])
-            shenhe_user = await get_shenhe_account(i.user.id, i.client, locale)
+            shenhe_user = await get_shenhe_account(i.user.id, i.client)
             
             calculator_characters = await shenhe_user.client.get_calculator_characters(
                 sync=True

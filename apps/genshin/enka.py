@@ -1,12 +1,14 @@
-from typing import Dict, List, Optional, Tuple
-import asqlite
-import enkanetwork
 import pickle
-from exceptions import NeverRaised, NoCharacterFound
+from typing import Dict, List, Optional, Tuple
+
+import asyncpg
+import enkanetwork
+
+from exceptions import NoCharacterFound
 
 
 async def get_enka_data(
-    uid: int, lang: str, pool: asqlite.Pool
+    uid: int, lang: str, pool: asyncpg.Pool
 ) -> Tuple[
     enkanetwork.model.EnkaNetworkResponse,
     enkanetwork.model.EnkaNetworkResponse,
@@ -18,10 +20,7 @@ async def get_enka_data(
 
             await enka.set_language(enkanetwork.Language.EN)
             en_data = await enka.fetch_user(uid)
-        except (
-            enkanetwork.exception.VaildateUIDError,
-            enkanetwork.exception.UIDNotFounded,
-        ) as e:
+        except enkanetwork.exception.VaildateUIDError as e:
             raise e
         except Exception as e:
             cache = await get_enka_cache(uid, pool)
@@ -36,51 +35,57 @@ async def get_enka_data(
             cache = await get_enka_cache(uid, pool)
             en_cache = await get_enka_cache(uid, pool, en=True)
 
-            if not cache or not en_cache:
-                raise NeverRaised
+            assert cache and en_cache
             return cache, en_cache, data
 
 
 async def get_enka_cache(
-    uid: int, pool: asqlite.Pool, en: bool = False
+    uid: int, pool: asyncpg.Pool, en: bool = False
 ) -> Optional[enkanetwork.model.EnkaNetworkResponse]:
-    async with pool.acquire() as db:
-        col = "en_data" if en else "data"
-        async with db.execute(
-            f"SELECT {col} FROM enka_cache WHERE uid = ?", (uid,)
-        ) as cursor:
-            row = await cursor.fetchone()
-            if row is None or row[0] is None:
-                return None
-            else:
-                return pickle.loads(row[0])
+    cache = await pool.fetchval(
+        f"""
+        SELECT
+            {'en_data' if en else 'data'}
+        FROM
+            enka_cache
+        WHERE uid = $1
+        """,
+        uid,
+    )
+    if cache:
+        return pickle.loads(cache)
+    else:
+        return None
 
 
 async def save_enka_cache(
     uid: int,
     data: enkanetwork.model.EnkaNetworkResponse,
-    pool: asqlite.Pool,
+    pool: asyncpg.Pool,
     en: bool = False,
 ) -> None:
-    async with pool.acquire() as db:
-        col = "en_data" if en else "data"
-        await db.execute(
-            f"INSERT INTO enka_cache (uid, {col}) VALUES (?, ?) ON CONFLICT(uid) DO UPDATE SET {col} = ? WHERE uid = ?",
-            (
-                uid,
-                pickle.dumps(data),
-                pickle.dumps(data),
-                uid,
-            ),
-        )
-        await db.commit()
+    col = "en_data" if en else "data"
+    await pool.execute(
+        f"""
+        INSERT INTO
+            enka_cache (uid, {col})
+        VALUES
+            ($1, $2)
+        ON CONFLICT 
+            (uid)
+        DO UPDATE SET
+            {col} = $2
+        """,
+        uid,
+        pickle.dumps(data),
+    )
 
 
 async def update_enka_cache(
     uid: int,
     current_data: enkanetwork.model.EnkaNetworkResponse,
     current_en_data: enkanetwork.model.EnkaNetworkResponse,
-    pool: asqlite.Pool,
+    pool: asyncpg.Pool,
 ) -> None:
     """Update enka cache
 
@@ -88,7 +93,7 @@ async def update_enka_cache(
         uid (int): UID of the player
         current_data (enkanetwork.model.EnkaNetworkResponse): current enka data
         current_en_data (enkanetwork.model.EnkaNetworkResponse): current English enka data
-        pool (asqlite.Pool): database pool
+        pool (asyncpg.Pool): database pool
 
     Raises:
         NoCharacterFound: No character is found in the user's character showcase

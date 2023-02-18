@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 from ambr.client import AmbrTopAPI
+import asyncpg
 from ambr.models import Material
 from apps.text_map.convert_locale import to_ambr_top
 from discord import ButtonStyle, Interaction, Locale, SelectOption
@@ -80,9 +81,8 @@ class ClearItems(Button):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
     async def callback(self, i: Interaction):
-        async with i.client.pool.acquire() as db:
-            await db.execute("DELETE FROM todo WHERE user_id = ?", (i.user.id,))
-            await db.commit()
+        pool: asyncpg.Pool = i.client.pool # type: ignore
+        await pool.execute("DELETE FROM todo WHERE user_id = $1", i.user.id)
         await return_todo(i)
 
 
@@ -115,23 +115,19 @@ class ItemSelect(Select):
 
     async def callback(self, i: Interaction):
         self.view: _view
-
-        async with i.client.pool.acquire() as db:
-            async with db.execute(
-                "SELECT max FROM todo WHERE item = ?", (self.values[0],)
-            ) as c:
-                current_amount = await c.fetchone()
-                if current_amount is not None:
-                    current_amount = current_amount[0]
-                    await i.response.send_modal(
-                        InputItemAmountModal(
-                            self.locale,
-                            self.values[0],
-                            self.action,
-                            current_amount,
-                            self.item_dict,
-                        )
-                    )
+        pool: asyncpg.Pool = i.client.pool # type: ignore
+        
+        row = await pool.fetchrow("SELECT count, max FROM todo WHERE item = $1", self.values[0])
+        await i.response.send_modal(
+            InputItemAmountModal(
+                self.locale,
+                self.values[0],
+                self.action,
+                row["count"],
+                row["max"],
+                self.item_dict,
+            )
+        )
 
 
 class AddItemModal(BaseModal):
@@ -147,35 +143,33 @@ class AddItemModal(BaseModal):
         super().__init__(title=text_map.get(203, locale), timeout=config.mid_timeout)
         self.item.label = text_map.get(208, locale)
         self.item.placeholder = text_map.get(209, locale)
-        self.count.label = text_map.get(210, locale)
+        self.count.label = text_map.get(308, locale)
         self.count.placeholder = text_map.get(170, locale).format(a=90)
 
     async def on_submit(self, i: Interaction) -> None:
+        pool: asyncpg.Pool = i.client.pool # type: ignore
+        
         if not self.count.value.isdigit():
             return await return_todo(i)
         item_id = text_map.get_id_from_name(self.item.value.capitalize())
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "INSERT INTO todo (user_id, item, count, max) VALUES (?, ?, ?, ?) ON CONFLICT (user_id, item) DO UPDATE SET max = max + ? WHERE item = ? AND user_id = ?",
-                (
-                    i.user.id,
-                    item_id or self.item.value,
-                    self.count.value,
-                    self.count.value,
-                    self.count.value,
-                    item_id or self.item.value,
-                    i.user.id,
-                ),
-            )
-            await db.commit()
+        
+        await pool.execute(
+            """
+            INSERT INTO todo (user_id, item, max)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, item)
+            DO UPDATE SET max = todo.max + $3
+            """,
+            i.user.id,
+            str(item_id) if item_id else self.item.value,
+            int(self.count.value),
+        )
         await return_todo(i)
 
 
 class InputItemAmountModal(BaseModal):
     count = TextInput(
         label="item_amount",
-        placeholder="for_example:_90_(leave_blank_clear)",
-        required=False,
         max_length=20,
     )
 
@@ -185,6 +179,7 @@ class InputItemAmountModal(BaseModal):
         item_name: str,
         action: TodoAction,
         current_amount: int,
+        max_amount: int,
         item_dict: Dict[str, str],
     ) -> None:
         super().__init__(
@@ -196,27 +191,29 @@ class InputItemAmountModal(BaseModal):
         self.action = action
 
         self.count.label = text_map.get(210, locale).format(item=item_dict[item_name])
-        self.count.default = str(current_amount)
+        self.count.default = str(current_amount) if action is TodoAction.EDIT else str(max_amount)
 
     async def on_submit(self, i: Interaction) -> None:
+        pool: asyncpg.Pool = i.client.pool # type: ignore
 
         if not self.count.value.isdigit():
             return await return_todo(i)
-
-        async with i.client.pool.acquire() as db:
-            if self.action is TodoAction.REMOVE:
-                await db.execute(
-                    "UPDATE todo SET max = max - ? WHERE item = ? AND user_id = ?",
-                    (self.count.value, self.item_name, i.user.id),
-                )
-                await db.execute("DELETE FROM todo WHERE max = 0")
-            elif self.action is TodoAction.EDIT:
-                await db.execute(
-                    "UPDATE todo SET count = ? WHERE item = ? AND user_id = ?",
-                    (self.count.value, self.item_name, i.user.id),
-                )
-                await db.execute("DELETE FROM todo WHERE count >= max")
-            await db.commit()
+        
+        if self.action is TodoAction.EDIT:
+            await pool.execute(
+                "UPDATE todo SET count = $1 WHERE item = $2 AND user_id = $3",
+                int(self.count.value),
+                self.item_name,
+                i.user.id,
+            )
+        elif self.action is TodoAction.REMOVE:
+            await pool.execute(
+                "UPDATE todo SET max = max - $1 WHERE item = $2 AND user_id = $3",
+                int(self.count.value),
+                self.item_name,
+                i.user.id,
+            )
+        await pool.execute("DELETE FROM todo WHERE count >= max OR max = 0")
 
         await return_todo(i)
 
@@ -227,14 +224,14 @@ async def return_todo(i: Interaction):
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     todo_items: List[TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
-
-    async with i.client.pool.acquire() as db:
-        async with db.execute(
-            "SELECT item, count, max FROM todo WHERE user_id = ? ORDER BY item",
-            (i.user.id,),
-        ) as c:
-            for row in c.get_cursor():
-                todo_items.append(TodoItem(name=row[0], current=row[1], max=row[2]))
+    
+    pool: asyncpg.Pool = i.client.pool # type: ignore
+    rows = await pool.fetch(
+        "SELECT item, count, max FROM todo WHERE user_id = $1 ORDER BY item",
+        i.user.id,
+    )
+    for row in rows:
+        todo_items.append(TodoItem(name=row["item"], current=row["count"], max=row["max"]))
 
     view = View(todo_items, locale)
     view.author = i.user
@@ -244,7 +241,7 @@ async def return_todo(i: Interaction):
 
     if not todo_items:
         embed.description = text_map.get(204, locale)
-        await i.edit_original_response(embed=embed, view=view, attachments=[])
+        view.message = await i.edit_original_response(embed=embed, view=view, attachments=[])
     else:
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
         client = AmbrTopAPI(i.client.session, to_ambr_top(locale))

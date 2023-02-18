@@ -1,16 +1,16 @@
 import io
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
+import asyncpg
+import discord
 import genshin
 import sentry_sdk
-import discord
 from discord import ui
 
 import asset
 import config
 from apps.genshin.custom_model import Wish, WishInfo
-from apps.genshin.utils import (get_account_options, get_uid,
-                                get_wish_info_embed)
+from apps.genshin.utils import get_account_select_options, get_uid, get_wish_info_embed
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -64,13 +64,11 @@ class LinkUID(ui.Button):
         embed = DefaultEmbed(description=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
         )
-        async with i.client.pool.acquire() as db:
-            async with db.execute(
-                "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = ?",
-                (i.user.id,),
-            ) as cursor:
-                accounts = await cursor.fetchall()
-        options = get_account_options(accounts, str(locale))  # type: ignore
+        accounts = await i.client.pool.fetch(
+            "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = $1",
+            i.user.id,
+        )
+        options = get_account_select_options(accounts, str(locale))  # type: ignore
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(UIDSelect(locale, options))
@@ -78,16 +76,18 @@ class LinkUID(ui.Button):
 
 
 class UIDSelect(ui.Select):
-    def __init__(self, locale: discord.Locale | str, options: List[discord.SelectOption]):
+    def __init__(
+        self, locale: discord.Locale | str, options: List[discord.SelectOption]
+    ):
         super().__init__(placeholder=text_map.get(682, locale), options=options)
 
     async def callback(self, i: discord.Interaction):
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "UPDATE wish_history SET uid = ? WHERE user_id = ?",
-                (self.values[0], i.user.id),
-            )
-            await db.commit()
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        await pool.execute(
+            "UPDATE wish_history SET uid = $1 WHERE user_id = $2",
+            self.values[0],
+            i.user.id,
+        )
         await wish_import_command(i)
 
 
@@ -166,29 +166,31 @@ class ExportWishHistory(ui.Button):
     async def callback(self, i: discord.Interaction):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
-        wishes: List[Tuple] = []
-        async with i.client.pool.acquire() as db:
-            async with db.execute(
-                "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-                (i.user.id, await get_uid(i.user.id, i.client.pool)),
-            ) as c:
-                data = await c.fetchall()
 
-        for wish in data:
+        wishes: List[Dict[str, Any]] = []
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        rows = await pool.fetch(
+            "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
+            i.user.id,
+            await get_uid(i.user.id, pool),
+        )
+        for row in rows:
             wishes.append(
-                (
-                    wish[0],
-                    wish[1],
-                    wish[2],
-                    wish[3],
-                    wish[4],
-                    wish[5],
-                )
+                {
+                    "wish_name": row["wish_name"],
+                    "wish_rarity": row["wish_rarity"],
+                    "wish_time": row["wish_time"],
+                    "wish_banner_type": row["wish_banner_type"],
+                    "wish_id": row["wish_id"],
+                    "item_id": row["item_id"],
+                }
             )
 
         s.write(str(wishes))
         s.seek(0)
-        await i.followup.send(file=discord.File(s, "shenhe_wish_export.txt"), ephemeral=True)
+        await i.followup.send(
+            file=discord.File(s, "shenhe_wish_export.txt"), ephemeral=True
+        )
 
 
 class ClearWishHistory(ui.Button):
@@ -220,14 +222,14 @@ class Confirm(ui.Button):
         )
 
     async def callback(self, i: discord.Interaction):
-        uid = await get_uid(i.user.id, i.client.pool)
-        async with i.client.pool.acquire() as db:
-            await db.execute(
-                "DELETE FROM wish_history WHERE uid = ? AND user_id = ?",
-                (uid, i.user.id),
-            )
-            await db.commit()
-
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        
+        uid = await get_uid(i.user.id, pool)
+        await pool.execute(
+            "DELETE FROM wish_history WHERE uid = $1 AND user_id = $2",
+            uid,
+            i.user.id,
+        )
         await wish_import_command(i)
 
 
@@ -246,7 +248,7 @@ class ConfirmWishImport(ui.Button):
     def __init__(
         self,
         locale: discord.Locale | str,
-        wish_history: List[genshin.models.Wish],
+        wish_history: List[genshin.models.Wish] | List[Dict[str, Any]],
         from_text_file: bool = False,
     ):
         super().__init__(
@@ -258,77 +260,74 @@ class ConfirmWishImport(ui.Button):
 
     async def callback(self, i: discord.Interaction):
         self.view: View
-        uid = await get_uid(i.user.id, i.client.pool)
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        
+        uid = await get_uid(i.user.id, pool)
         embed = DefaultEmbed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
 
-        async with i.client.pool.acquire() as db:
-            if self.from_text_file:
-                for item in self.wish_history:
-                    name = item[0]  # type: ignore
-                    rarity = item[1]  # type: ignore
-                    time = item[2]  # type: ignore
-                    banner = item[3]  # type: ignore
-                    wish_id = item[4]  # type: ignore
-                    item_id = item[5]  # type: ignore
-                    await db.execute(
-                        "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
-                        (
-                            i.user.id,
-                            name,
-                            rarity,
-                            time,
-                            banner,
-                            wish_id,
-                            uid,
-                            item_id,
-                        ),
-                    )
+        if self.from_text_file:
+            for wish in self.wish_history:
+                assert isinstance(wish, dict)
+                await pool.execute(
+                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
+                    i.user.id,
+                    wish["wish_name"],
+                    wish["wish_rarity"],
+                    wish["wish_time"],
+                    wish["wish_banner_type"],
+                    wish["wish_id"],
+                    uid,
+                    wish["item_id"],
+                )
+        else:
+            for wish in self.wish_history:
+                assert isinstance(wish, genshin.models.Wish)
+                await pool.execute(
+                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
+                    i.user.id,
+                    wish.name,
+                    wish.rarity,
+                    wish.time,
+                    wish.banner_type,
+                    wish.id,
+                    uid,
+                    text_map.get_id_from_name(wish.name),
+                )
+                    
+        
+        banners = (100, 200, 301, 302, 400)
+        for banner in banners:
+            wishes = await pool.fetch(
+                "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = $1 AND wish_banner_type = $2 AND uid = $3 ORDER BY wish_id ASC",
+                i.user.id,
+                banner,
+                uid,
+            )
+            
+            if not wishes:
+                count = 1
             else:
-                for wish in self.wish_history:
-                    await db.execute(
-                        "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_type, wish_banner_type, wish_id, uid, item_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
-                        (
-                            i.user.id,
-                            wish.name,
-                            wish.rarity,
-                            wish.time.strftime("%Y/%m/%d %H:%M:%S"),
-                            wish.type,
-                            wish.banner_type,
-                            wish.id,
-                            uid,
-                            text_map.get_id_from_name(wish.name),
-                        ),
-                    )
-            banners = [100, 200, 301, 302, 400]
-            for banner in banners:
-                async with db.execute(
-                    "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = ? AND wish_banner_type = ? AND uid = ? ORDER BY wish_id ASC",
-                    (i.user.id, banner, uid),
-                ) as c:
-                    wishes = await c.fetchall()
-                if not wishes:
+                if wishes[-1]["pity_pull"] is None:
                     count = 1
                 else:
-                    if wishes[-1][2] is None:  # type: ignore
-                        count = 1
-                    else:
-                        count = wishes[-1][2] + 1  # type: ignore
-                for wish in wishes:
-                    wish_id = wish[0]
-                    rarity = wish[1]
-                    await db.execute(
-                        "UPDATE wish_history SET pity_pull = ? WHERE wish_id = ?",
-                        (count, wish_id),
-                    )
-                    if rarity == 5:
-                        count = 1
-                    else:
-                        count += 1
+                    count = wishes[-1]["pity_pull"] + 1
 
-            await db.commit()
+            for wish in wishes:
+                await pool.execute(
+                    "UPDATE wish_history SET pity_pull = $1 WHERE user_id = $2 AND wish_id = $3 AND uid = $4",
+                    count,
+                    i.user.id,
+                    wish["wish_id"],
+                    uid,
+                )
+                if wish["wish_rarity"] == 5:
+                    count = 1
+                else:
+                    count += 1
+
         await wish_import_command(i, True)
 
 
@@ -455,30 +454,31 @@ class Modal(BaseModal):
         view.message = await i.edit_original_response(embed=embed, view=view)
 
 
-async def get_wish_import_embed(i: discord.Interaction) -> Tuple[discord.Embed, bool, bool]:
+async def get_wish_import_embed(
+    i: discord.Interaction,
+) -> Tuple[discord.Embed, bool, bool]:
     linked = True
+    pool: asyncpg.pool.Pool = i.client.pool # type: ignore
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     uid = await get_uid(i.user.id, i.client.pool)
-    async with i.client.pool.acquire() as db:
-        async with db.execute(
-            "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid IS NULL ORDER BY wish_id DESC",
-            (i.user.id,),
-        ) as c:  # 檢查是否有未綁定 UID 的歷史紀錄
-            wish_data = await c.fetchall()
-            if not wish_data:  # 沒有未綁定 UID 的歷史紀錄
-                await c.execute(
-                    "SELECT wish_time, wish_rarity, item_id, wish_banner_type FROM wish_history WHERE user_id = ? AND uid = ? ORDER BY wish_id DESC",
-                    (i.user.id, uid),
-                )  # 檢查是否有綁定 UID 的歷史紀錄
-                wish_data = await c.fetchall()
-                if not wish_data:  # 使用者完全沒有任何歷史紀錄
-                    embed = DefaultEmbed(description=f"UID: {uid}").set_author(
-                        name=text_map.get(683, locale),
-                        icon_url=i.user.display_avatar.url,
-                    )
-                    return embed, linked, True
-            else:  # 有未綁定 UID 的歷史紀錄
-                linked = False
+    
+    wish_data = await pool.fetch(
+        """
+        SELECT wish_time, wish_rarity, item_id, wish_banner_type
+        FROM wish_history
+        WHERE user_id = $1
+        ORDER BY wish_id DESC""",
+        i.user.id,
+    )
+    if not wish_data:
+        embed = DefaultEmbed(description=f"UID: {uid}").set_author(
+            name=text_map.get(683, locale),
+            icon_url=i.user.display_avatar.url,
+        )
+        return embed, linked, True
+    if any(wish["uid"] is None for wish in wish_data):
+        linked = False
+
     newest_wish = wish_data[0]
     oldest_wish = wish_data[-1]
     character_banner = 0
@@ -486,7 +486,7 @@ async def get_wish_import_embed(i: discord.Interaction) -> Tuple[discord.Embed, 
     permanent_banner = 0
     novice_banner = 0
     for wish in wish_data:
-        banner = wish[3]
+        banner = wish["wish_banner_type"]
         if banner in [301, 400]:
             character_banner += 1
         elif banner == 302:

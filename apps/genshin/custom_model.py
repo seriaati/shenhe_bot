@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
-import asqlite
+import asyncpg
 import cachetools
 import discord
 import genshin
@@ -46,10 +46,6 @@ class NotificationUser(BaseModel):
     max: int = 3
     uid: int
     last_notif: Optional[datetime] = None
-    
-    @validator("last_notif", pre=True, always=True, allow_reuse=True)
-    def parse_last_notif(cls, v):
-        return parser.parse(v).replace(tzinfo=None) if v else None
 
 class DrawInput(BaseModel):
     loop: asyncio.AbstractEventLoop
@@ -97,7 +93,6 @@ class WishInfo(BaseModel):
     weapon_banner_num: int
     novice_banner_num: int
 
-
 class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
@@ -114,7 +109,7 @@ class ShenheBot(commands.AutoShardedBot):
     abyss_floor_card_cache: cachetools.TTLCache
     abyss_one_page_cache: cachetools.TTLCache
     tokenStore: Dict[str, Any]
-    pool: asqlite.Pool
+    pool: asyncpg.Pool
 
 
 class TodoList:
@@ -162,11 +157,6 @@ class UserCustomImage(BaseModel):
     nickname: str
     character_id: str
     user_id: int
-    current: bool
-
-    @validator("current", pre=True, allow_reuse=True)
-    def parse_current(cls, v):
-        return True if v == 1 else False
 
 
 class GenshinAppResult(BaseModel):

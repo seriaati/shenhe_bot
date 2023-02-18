@@ -10,13 +10,13 @@ import aiofiles
 import json
 
 import aiohttp
-import asqlite
+import asyncpg
 import sentry_sdk
 from cachetools import TTLCache
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ext.prometheus import PrometheusCog, PrometheusLoggingHandler
+from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
 from apps.genshin.browser import launch_browsers
@@ -32,10 +32,12 @@ if platform.system() == "Windows":
     token = os.getenv("YAE_TOKEN")
     debug = True
     application_id = os.getenv("YAE_APP_ID")
+    databse_url = os.getenv("YAE_DATABASE_URL")
 else:
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     application_id = os.getenv("SHENHE_BOT_APP_ID")
+    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
 
 
 class Translator(app_commands.Translator):
@@ -98,7 +100,7 @@ class ShenheCommandTree(app_commands.CommandTree):
         return await global_error_handler(i, e)
 
 class Shenhe(commands.AutoShardedBot):
-    def __init__(self, session: aiohttp.ClientSession, pool: asqlite.Pool):
+    def __init__(self, session: aiohttp.ClientSession, pool: asyncpg.Pool):
         intents = discord.Intents.default()
         intents.members = True
         
@@ -128,10 +130,6 @@ class Shenhe(commands.AutoShardedBot):
         self.launch_time = datetime.utcnow()
         self.debug = debug
         self.gd_text_map = load_text_maps()
-        
-        async with self.pool.acquire() as db:
-            await db.execute("PRAGMA journal_mode=WAL")
-            await db.commit()
 
         # load jishaku
         await self.load_extension("jishaku")
@@ -197,10 +195,11 @@ async def main() -> None:
     assert token
     
     try:
-        pool = await asqlite.create_pool("shenhe.db", check_same_thread=False)
+        pool = await asyncpg.create_pool(databse_url)
     except Exception as e:
         log.error("Failed to connect to database", exc_info=e)
         return
+    assert pool
 
     session = aiohttp.ClientSession()
     bot = Shenhe(session=session, pool=pool)

@@ -131,7 +131,7 @@ class SetCustomImage(ui.Button):
 
     async def callback(self, i: discord.Interaction) -> Any:
         self.view: View
-        options = await CustomImage.get_user_custom_image_options(i, int(self.view.character_id))
+        options = await CustomImage.get_user_custom_image_options(int(self.view.character_id), i.client.pool, i.user.id)
         custom_image = await CustomImage.get_user_custom_image(
             i.user.id, int(self.view.character_id), i.client.pool
         )
@@ -166,7 +166,7 @@ class Reload(ui.Button):
         embed = await CustomImage.get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
-        options = await CustomImage.get_user_custom_image_options(i, int(self.view.character_id))
+        options = await CustomImage.get_user_custom_image_options(int(self.view.character_id), i.client.pool, i.user.id)
         self.view.clear_items()
         self.view.add_item(SelectImage(options, self.view.locale))
         self.view.add_item(GoBackToProfile(self.original_view))

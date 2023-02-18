@@ -1,8 +1,9 @@
 from typing import List, Optional
 
 import aiohttp
+import asyncpg
 import discord
-import asqlite
+
 import asset
 import config
 from ambr.client import AmbrTopAPI
@@ -70,7 +71,9 @@ async def element_button_callback(i: discord.Interaction, view: View, element: s
     for character in characters:
         if character.element == element:
             character_id = character.id.split("-")[0]
-            image_options = await get_user_custom_image_options(i, int(character_id))
+            image_options = await get_user_custom_image_options(
+                int(character_id), i.client.pool, i.user.id
+            )
             options.append(
                 discord.SelectOption(
                     label=character.name,
@@ -147,9 +150,9 @@ class AddImageModal(BaseModal):
                 ),
                 ephemeral=True,
             )
-        await add_user_custom_image(
-            i, self.url.value, self.character_id, self.nickname.value
-        )
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        await add_user_custom_image(i.user.id, self.character_id, self.url.value, self.nickname.value, pool)
+
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
         )
@@ -174,7 +177,9 @@ class RemoveImage(discord.ui.Button):
     async def callback(self, i: discord.Interaction):
         self.view: View
         self.view.clear_items()
-        options = await get_user_custom_image_options(i, int(self.character_id))
+        options = await get_user_custom_image_options(
+            int(self.character_id), i.client.pool, i.user.id
+        )
         self.view.add_item(
             ImageSelect(
                 self.view.locale, options, True, int(self.character_id), self.element
@@ -206,10 +211,47 @@ class ImageSelect(discord.ui.Select):
 
     async def callback(self, i: discord.Interaction):
         self.view: View
+        pool: asyncpg.Pool = i.client.pool  # type: ignore
+
         if self.delete:
-            await remove_user_custom_image(i, self.values[0], self.character_id)
+            await pool.execute(
+                """
+                DELETE FROM
+                    custom_image
+                WHERE
+                    user_id = $1 AND character_id = $2 AND image_url = $3
+                """,
+                i.user.id,
+                self.character_id,
+                self.values[0],
+            )
         else:
-            await change_user_custom_image(i, self.values[0], self.character_id)
+            await pool.execute(
+                """
+                UPDATE
+                    custom_image
+                SET
+                    current = false
+                WHERE
+                    user_id = $1 AND character_id = $2
+                """,
+                i.user.id,
+                self.character_id,
+            )
+            await pool.execute(
+                """
+                UPDATE
+                    custom_image
+                SET
+                    current = true
+                WHERE
+                    user_id = $1 AND character_id = $2 AND image_url = $3
+                """,
+                i.user.id,
+                self.character_id,
+                self.values[0],
+            )
+
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
         )
@@ -239,83 +281,55 @@ async def return_custom_image_interaction(
         await i.response.defer()
     except discord.InteractionResponded:
         pass
+
     view.clear_items()
     view.add_item(GoBackCharacter(element))
-    options = await get_user_custom_image_options(i, character_id)
+
+    options = await get_user_custom_image_options(
+        character_id, i.client.pool, i.user.id
+    )
     disabled = True if len(options) == 25 else False
     view.add_item(AddImage(view.locale, character_id, element, disabled))
+
     disabled = True if not options else False
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
+
     custom_image = await get_user_custom_image(i.user.id, character_id, i.client.pool)
     embed = await get_user_custom_image_embed(
         i, view.locale, str(character_id), custom_image
     )
     view.message = await i.edit_original_response(embed=embed, view=view)
-
-
-async def change_user_custom_image(
-    i: discord.Interaction, url: str, character_id: int
-) -> None:
-    async with i.client.pool.acquire() as db:
-        await db.execute(
-            "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
-            (i.user.id, character_id),
-        )
-        await db.execute(
-            "UPDATE custom_image SET current = 1 WHERE user_id = ? AND character_id = ? AND image_url = ?",
-            (i.user.id, character_id, url),
-        )
-        await db.commit()
-
-
-async def add_user_custom_image(
-    i: discord.Interaction, url: str, character_id: int, nickname: str
-) -> None:
-    async with i.client.pool.acquire() as db:
-        await db.execute(
-            "UPDATE custom_image SET current = 0 WHERE user_id = ? AND character_id = ?",
-            (i.user.id, character_id),
-        )
-        await db.execute(
-            "INSERT INTO custom_image VALUES (?, ?, ?, ?, 1) ON CONFLICT DO NOTHING",
-            (i.user.id, character_id, url, nickname),
-        )
-        await db.commit()
-
-
-async def remove_user_custom_image(
-    i: discord.Interaction, url: str, character_id: int
-) -> None:
-    async with i.client.pool.acquire() as db:
-        await db.execute(
-            "DELETE FROM custom_image WHERE user_id = ? AND character_id = ? AND image_url = ?",
-            (
-                i.user.id,
-                character_id,
-                url,
-            ),
-        )
-        await db.commit()
+    view.author = i.user
 
 
 async def get_user_custom_image_options(
-    i: discord.Interaction, character_id: int
+    character_id: int,
+    pool: asyncpg.Pool,
+    user_id: int,
 ) -> List[discord.SelectOption]:
-    options = []
+    options: List[discord.SelectOption] = []
+    rows = await pool.fetch(
+        """
+        SELECT
+            nickname, image_url
+        FROM
+            custom_image
+        WHERE
+            user_id = $1 AND character_id = $2
+        """,
+        user_id,
+        character_id,
+    )
+    for row in rows:
+        options.append(
+            discord.SelectOption(
+                label=row["nickname"][:100],
+                description=row["image_url"][:100],
+                value=row["image_url"],
+            )
+        )
 
-    async with i.client.pool.acquire() as db:
-        async with db.execute(
-            "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ?",
-            (i.user.id, character_id),
-        ) as c:
-            for row in c.get_cursor():
-                options.append(
-                    discord.SelectOption(
-                        label=row[3][:100], description=row[2][:100], value=row[2]
-                    )
-                )
-                
     return options
 
 
@@ -363,22 +377,57 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
 
 
 async def get_user_custom_image(
-    user_id: int, character_id: int, pool: asqlite.Pool
+    user_id: int, character_id: int, pool: asyncpg.Pool
 ) -> Optional[UserCustomImage]:
-    async with pool.acquire() as db:
-        async with db.execute(
-            "SELECT * FROM custom_image WHERE user_id = ? AND character_id = ? AND current = 1",
-            (user_id, character_id),
-        ) as cursor:
-            image = await cursor.fetchone()
-
+    image: Optional[asyncpg.Record] = await pool.fetchrow(
+        """
+        SELECT
+            user_id, character_id, image_url, nickname
+        FROM
+            custom_image
+        WHERE
+            user_id = $1 AND character_id = $2 AND current = true
+        """,
+        user_id,
+        character_id,
+    )
     if image is None:
         return None
-    else:
-        return UserCustomImage(
-            user_id=image[0],
-            character_id=image[1],
-            url=image[2],
-            nickname=image[3],
-            current=image[4],
+    return UserCustomImage(
+        user_id=image["user_id"],
+        character_id=image["character_id"],
+        url=image["image_url"],
+        nickname=image["nickname"],
+    )
+
+async def add_user_custom_image(
+    user_id: int,
+    character_id: int,
+    image_url: str,
+    nickname: str,
+    pool: asyncpg.Pool,
+) -> None:
+    await pool.execute(
+            """
+            UPDATE
+                custom_image
+            SET
+                current = false
+            WHERE
+                user_id = $1 AND character_id = $2
+            """,
+            user_id,
+            character_id,
         )
+    await pool.execute(
+        """
+        INSERT INTO
+            custom_image (user_id, character_id, image_url, nickname, current)
+        VALUES
+            ($1, $2, $3, $4, true)
+        """,
+        user_id,
+        character_id,
+        image_url,
+        nickname,
+    )

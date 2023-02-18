@@ -12,7 +12,7 @@ from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import DrawInput, EnkaView
 from apps.text_map.text_map_app import text_map
-from exceptions import NeverRaised, NoCharacterFound
+from exceptions import NoCharacterFound
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
 from utility.utils import (DefaultEmbed, divide_chunks, ErrorEmbed,
@@ -160,8 +160,7 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         raise NoCharacterFound
     
     character = utils.get(enka_view.data.characters, id=int(enka_view.character_id))
-    if not character:
-        raise NeverRaised
+    assert character
     
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
     try:
