@@ -87,7 +87,7 @@ class LanguageGoBack(ui.Button):
         super().__init__(emoji=asset.back_emoji, row=2)
 
     async def callback(self, i: discord.Interaction):
-        await return_settings(i)
+        await return_settings(i, edit=True)
 
 
 class LangSelect(ui.Select):
@@ -200,7 +200,7 @@ class RedeemButton(ui.Button):
         await i.response.edit_message(embed=embed, view=view)
 
 
-async def return_settings(i: discord.Interaction):
+async def return_settings(i: discord.Interaction, edit: bool = False):
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
     embed = DefaultEmbed(
@@ -208,7 +208,7 @@ async def return_settings(i: discord.Interaction):
     )
     view = View(locale)
 
-    if go_back:
+    if edit:
         await i.response.edit_message(embed=embed, view=view)
     else:
         await i.response.send_message(embed=embed, view=view)
