@@ -378,6 +378,8 @@ class Modal(BaseModal):
             uid = await get_uid(i.user.id, i.client.pool)
             if str(uid)[0] in ["1", "2", "5"]:
                 client.region = genshin.Region.CHINESE
+            else:
+                client.region = genshin.Region.OVERSEAS
             client.authkey = authkey
 
         await i.response.edit_message(
@@ -443,7 +445,7 @@ class Modal(BaseModal):
             permanent_banner_num=permanent_banner,
             novice_banner_num=novice_banner,
         )
-        embed = await get_wish_info_embed(i, str(locale), wish_info)
+        embed = await get_wish_info_embed(i, str(locale), wish_info, True)
         view = View(locale, True, True)
         view.author = i.user
         view.clear_items()

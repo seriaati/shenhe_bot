@@ -7,7 +7,7 @@
 '6': Daily comission
 '7': menit
 '8': P.T. waktu yang tersisa
-'9': Tersedia untuk digunakan
+'9': Siap digunakan
 '10': Ada kesalahan di API Genshin
 '11': P.T. tidak ditemukan
 '12': detik
@@ -83,8 +83,8 @@
 '80': Single strike terkuat
 '81': Membunuh terbanyak
 '82': Menerima damage terbanyak
-'83': Menggunakan burst terbanyak
-'84': Menggunakan skill terbanyak
+'83': Memakai burst terbanyak
+'84': Memakai skill terbanyak
 '85': Spiral Abyss Overview
 '86': nama-gambar
 '87': Shenhe telah mengklaim hadiah harian hari ini untukmu!
@@ -356,7 +356,7 @@
 '334': Avg. DMG
 '335': Non-Crit DMG
 '336': Crit Hit DMG
-'337': Pilih elemental reaksi
+'337': Pilih reaksi elemental 
 '338': Tidak ada tim infusion jarak dekat
 '339': Pyro infusion
 '340': Cryo infusion
@@ -380,7 +380,7 @@
 '358': |-
   1. Buka Genshin Impact di PC (Jika kamu menggunakan banyak akun, harap mulai ulang game)
   2. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
-  3. Tekan START pada keyboardmu, lalu cari Powershell
+  3. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
   4. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell
   5. Tekan ENTER, dan link akan disalin ke clipboardmu
   6. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
@@ -391,7 +391,7 @@
   1. Unduh Stream di App Store [here](https://apps.apple.com/app/stream/id1312141691)
   2. Buka aplikasi, lalu izinkan VPN di preferensi sistem (Settings > General > VPN)
   3. Instal CA (klik Sniff Now di Stream App > Install CA > Jendela pop-up akan muncul dan pilih izinkan > Sekarang CA telah diunduh
-  4. Buka Settings > General > VPN & Device management > Klik di Stream Generated CA dan installI've trusted
+  4. Buka Settings > General > VPN & Device management > Klik di Stream Generated CA dan instal
   5. Buka Genshin Impact lalu buka layar Wish, dan tetap di halaman tersebut
   6. Kembali ke Aplikasi Stream > Pilih I've trusted > Ketuk Tombol Sniff Now
   7. Kembali ke Genshin Impact lalu buka halaman riwayat Wish
@@ -431,7 +431,7 @@
 '392': Ini adalah senjata standard atau limited waktu terbatas?
 '393': Prediksi jumlah wish senjata
 '394': |-
-  1. Tekan START pada keyboardmu, lalu cari Powershell
+  1. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
   2. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell, lalu tekan ENTER (hanya jika pesan 'Tekan Enter untuk melanjutkan...' belum muncul)
   3. Buka Genshin Impact di PC ini
   4. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
@@ -537,7 +537,7 @@
 '477': Kirim tautan
 '478': Lihat riwayat wish
 '479': Dan kamu!
-'480': Memprediksi peluang pull banner karakter bintang-5
+'480': Prediksi peluang pull banner karakter bintang-5
 '481': nomor
 '482': Berapa banyak karakter banner bintang-5 yang ingin kamu pull?
 '483': Prediksi peluang pull banner senjata bintang-5

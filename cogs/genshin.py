@@ -940,6 +940,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
 
         banners.sort(key=lambda x: x.end_time)
+        banners = [b for b in banners if b.end_time > get_dt_now()]
         event_lang = convert_locale.to_event_lang(locale)
 
         fp = await main_funcs.draw_banner_card(
@@ -955,9 +956,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        datetime.datetime.strptime(
-                            banners[0].end_time, "%Y-%m-%d %H:%M:%S"
-                        ),
+                        banners[0].end_time,
                         "R",
                     )
                 ),

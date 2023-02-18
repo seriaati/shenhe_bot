@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, validator
 
 from data.game.elements import convert_element, convert_elements
 from utility.utils import format_number, parse_HTML
+import datetime
 
 
 class City(BaseModel):
@@ -22,7 +23,13 @@ class Event(BaseModel):
     full_name: Dict[str, str] = Field(alias="nameFull")
     description: Dict[str, str]
     banner: Dict[str, str]
-    end_time: str = Field(alias="endAt")
+    end_time: datetime.datetime = Field(alias="endAt")
+    
+    @validator("end_time", allow_reuse=True, pre=True)
+    def parse_end_time(cls, v):
+        # convert string to datetime object
+        # sample string: 2023-02-07 17:59:00
+        return datetime.datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
 
 
 class Weapon(BaseModel):

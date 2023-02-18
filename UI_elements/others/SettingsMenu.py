@@ -208,7 +208,10 @@ async def return_settings(i: discord.Interaction):
     )
     view = View(locale)
 
-    await i.response.send_message(embed=embed, view=view)
+    if go_back:
+        await i.response.edit_message(embed=embed, view=view)
+    else:
+        await i.response.send_message(embed=embed, view=view)
     view.message = await i.original_response()
     view.author = i.user
     view.original_info = OriginalInfo(

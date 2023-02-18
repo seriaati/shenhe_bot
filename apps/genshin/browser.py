@@ -23,7 +23,7 @@ async def launch_browsers() -> Dict[str, Browser]:
             )
             await asyncio.sleep(0.5)
             await page.click(
-                f"div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiMenu-paper.MuiPaper-elevation8.MuiPopover-paper.css-ifhuam:nth-child(3) > ul.MuiList-root.MuiList-padding.MuiMenu-list.css-1ymv12a > li.MuiButtonBase-root.MuiMenuItem-root.MuiMenuItem-gutters.css-szd4wn:nth-child({value})"
+                f"div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.css-16nqea3 > div > ul.MuiList-root.MuiList-padding.css-1925rlh > li.MuiButtonBase-root.MuiMenuItem-root.MuiMenuItem-gutters.css-szd4wn:nth-child({value})"
             )
         await page.close()
         result[key] = browser
