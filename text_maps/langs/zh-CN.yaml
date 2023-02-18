@@ -327,9 +327,9 @@
 '305': 输入 /remind 来更改设定
 '306': 树脂要满啦!!
 '307': 天赋提醒功能已关闭
-'308': 右键任意一个有申鹤在内的群组
-'309': 点击「隐私设置」
-'310': 将开关打开
+'308': Item amount
+'309': ''
+'310': ''
 '311': 如何让申鹤私信你?
 '312': 该为 {name} 刷素材了！
 '313': 原神
@@ -681,7 +681,11 @@
   • 点击下方不同按钮以查看更多信息
 '593': 提醒
 '594': 更改设置
-'595': 申鹤需要私信你才能发送提醒，如果你不小心关掉的话，请按照下面的步骤重新打开
+'595': |-
+  Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
+  1. Right-click any server that has Shenhe in it
+  2. Click on "Privacy Settings"
+  3. Turn on the toggle of "Direct Messages"
 '596': 试试看！
 '597': 申鹤私信不了你
 '598': 添加/删除角色
