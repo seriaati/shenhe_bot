@@ -9,11 +9,10 @@ import asyncpg
 import cachetools
 import discord
 import genshin
-from dateutil import parser
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from pyppeteer.browser import Browser
 
 from ambr.models import Character
@@ -47,6 +46,7 @@ class NotificationUser(BaseModel):
     uid: int
     last_notif: Optional[datetime] = None
 
+
 class DrawInput(BaseModel):
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession
@@ -55,6 +55,7 @@ class DrawInput(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
 
 class RecentWish(BaseModel):
     name: str
@@ -66,7 +67,7 @@ class WishItem(BaseModel):
     name: str
     banner: int
     rarity: int
-    time: str
+    time: datetime
 
 
 class WishData(BaseModel):
@@ -92,6 +93,7 @@ class WishInfo(BaseModel):
     permanent_banner_num: int
     weapon_banner_num: int
     novice_banner_num: int
+
 
 class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
@@ -265,11 +267,13 @@ class DynamicBackgroundInput(BaseModel):
     background_color: str
     draw_title: bool = True
 
+
 class SingleStrikeLeaderboardCharacter(BaseModel):
     constellation: int
     refinement: int
     level: int
     icon: str
+
 
 class SingleStrikeLeaderboardUser(BaseModel):
     user_name: str
@@ -321,18 +325,22 @@ class TodoItem(BaseModel):
     current: int
     max: int
 
+
 class AbyssHalf(BaseModel):
     num: int
     enemies: List[str]
+
 
 class AbyssChamber(BaseModel):
     num: int
     enemy_level: int
     halfs: List[AbyssHalf]
 
+
 class AbyssFloor(BaseModel):
     num: int
     chambers: List[AbyssChamber]
+
 
 class InitLevels(BaseModel):
     level: Optional[int] = None
@@ -341,18 +349,21 @@ class InitLevels(BaseModel):
     q_level: Optional[int] = None
     ascension_phase: Optional[int] = None
 
+
 class TodoAction(str, Enum):
     REMOVE = "remove"
     EDIT = "edit"
+
 
 class OriginalInfo(BaseModel):
     view: discord.ui.View
     children: List[discord.ui.Item]
     embed: Optional[discord.Embed] = None
     attachments: Optional[List[discord.Attachment]] = None
-    
+
     class Config:
         arbitrary_types_allowed = True
+
 
 class DiaryLogsResult(BaseModel):
     primo_per_day: Dict[int, int]
