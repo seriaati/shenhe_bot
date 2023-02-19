@@ -300,10 +300,10 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
             rows = await pool.fetch(
                 f"""
                 SELECT
-                    uid, wins, runs, level, icon_url,
-                    user_id, stars_collected, user_name
-                FROM
-                    abyss_leaderboard {query_str}
+                uid, wins, runs, level, icon_url,
+                user_id, stars_collected, user_name
+                FROM abyss_leaderboard {query_str}
+                WHERE stars_collected = 36
                 ORDER BY runs ASC
                 """
             )
@@ -328,7 +328,7 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                         level=row["level"],
                         wins_slash_runs=f"{row['wins']}/{row['runs']}",
                         win_percentage=str(win_percentage),
-                        stars_collected=row["stars_collected"],
+                        stars_collected=36,
                         uid=row["uid"],
                         rank=rank,
                     )
