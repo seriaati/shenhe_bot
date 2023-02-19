@@ -315,6 +315,11 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                     continue
                 if row["uid"] in uids:
                     continue
+                
+                if row["runs"] == 0:
+                    win_percentage = 0
+                else:
+                    win_percentage = round(row["wins"] / row["runs"] * 100, 1)
 
                 run_users.append(
                     user := RunLeaderboardUser(
@@ -322,7 +327,7 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                         user_name=row["user_name"],
                         level=row["level"],
                         wins_slash_runs=f"{row['wins']}/{row['runs']}",
-                        win_percentage=round(row["wins"] / row["runs"] * 100, 1),
+                        win_percentage=str(win_percentage),
                         stars_collected=row["stars_collected"],
                         uid=row["uid"],
                         rank=rank,
