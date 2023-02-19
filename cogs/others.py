@@ -3,14 +3,13 @@ import inspect
 import itertools
 import json
 import os
-from typing import Optional
+from typing import Dict, List, Optional, Union
 
-import asyncpg
+import discord
 import psutil
 import pygit2
 from aioimgur import ImgurClient
-from discord import Attachment, Interaction, app_commands, utils
-from discord.app_commands import Choice
+from discord import app_commands, utils
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.ui import Button, View
@@ -19,7 +18,7 @@ from dotenv import load_dotenv
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character
-from apps.genshin.custom_model import OriginalInfo, ShenheBot
+from apps.genshin.custom_model import ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
@@ -43,7 +42,7 @@ class OthersCog(commands.Cog, name="others"):
         name="settings",
         description=_("View and change your user settings in Shenhe", hash=534),
     )
-    async def settings(self, i: Interaction):
+    async def settings(self, i: discord.Interaction):
         await self.bot.pool.execute(
             """
             INSERT INTO user_settings (user_id) VALUES ($1)
@@ -56,7 +55,7 @@ class OthersCog(commands.Cog, name="others"):
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
     )
-    async def accounts_command(self, i: Interaction):
+    async def accounts_command(self, i: discord.Interaction):
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
@@ -64,7 +63,7 @@ class OthersCog(commands.Cog, name="others"):
         name="credits",
         description=_("Meet the awesome people that helped me!", hash=297),
     )
-    async def view_credits(self, i: Interaction):
+    async def view_credits(self, i: discord.Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         embed = DefaultEmbed(text_map.get(475, locale) + " 🎉")
         kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
@@ -146,7 +145,7 @@ class OthersCog(commands.Cog, name="others"):
         return "\n".join(self.format_commit(c) for c in commits)
 
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
-    async def view_bot_info(self, i: Interaction):
+    async def view_bot_info(self, i: discord.Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
 
         revision = self.get_last_commits()
@@ -246,7 +245,11 @@ class OthersCog(commands.Cog, name="others"):
         character_id=_("The character to use the image", hash=67),
     )
     async def custom_image_upload(
-        self, i: Interaction, image_file: Attachment, image_name: str, character_id: str
+        self,
+        i: discord.Interaction,
+        image_file: discord.Attachment,
+        image_name: str,
+        character_id: str,
     ):
         await i.response.defer()
         imgur = ImgurClient(
@@ -273,13 +276,15 @@ class OthersCog(commands.Cog, name="others"):
         )
 
     @custom_image_upload.autocomplete(name="character_id")
-    async def custom_image_upload_autocomplete(self, i: Interaction, current: str):
+    async def custom_image_upload_autocomplete(
+        self, i: discord.Interaction, current: str
+    ):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
             if current.lower() in character_names[to_ambr_top(locale)].lower():
                 options.append(
-                    Choice(
+                    app_commands.Choice(
                         name=character_names[to_ambr_top(locale)], value=character_id
                     )
                 )
@@ -288,7 +293,7 @@ class OthersCog(commands.Cog, name="others"):
     @app_commands.command(
         name="feedback", description=_("Send feedback to the bot developer", hash=723)
     )
-    async def feedback(self, i: Interaction):
+    async def feedback(self, i: discord.Interaction):
         await i.response.send_modal(
             Feedback.FeedbackModal(
                 await get_user_locale(i.user.id, i.client.pool) or i.locale
@@ -302,7 +307,7 @@ class OthersCog(commands.Cog, name="others"):
     @app_commands.describe(
         command=_("Name of command to view the source code of", hash=743)
     )
-    async def source(self, i: Interaction, command: Optional[str] = None):
+    async def source(self, i: discord.Interaction, command: Optional[str] = None):
         source_url = "https://github.com/seriaati/shenhe_bot"
         branch = "main"
 
@@ -310,7 +315,9 @@ class OthersCog(commands.Cog, name="others"):
             return await i.response.send_message(f"<{source_url}>")
 
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-        obj = self.bot.tree.get_command(command)
+
+        command_map = self.get_command_map(self.bot.tree)
+        obj = command_map.get(command)
         if obj is None:
             return await i.response.send_message(
                 embed=ErrorEmbed().set_author(
@@ -318,7 +325,9 @@ class OthersCog(commands.Cog, name="others"):
                 )
             )
 
-        assert isinstance(obj, app_commands.commands.Command)
+        assert isinstance(
+            obj, (app_commands.commands.Command, app_commands.commands.ContextMenu)
+        )
 
         src = obj.callback.__code__
         module = obj.callback.__module__
@@ -344,12 +353,34 @@ class OthersCog(commands.Cog, name="others"):
         await i.response.send_message(final_url)
 
     @source.autocomplete(name="command")
-    async def source_autocomplete(self, i: Interaction, current: str):
-        options = []
-        for command in self.bot.tree.get_commands():
-            if current.lower() in command.name.lower():
-                options.append(Choice(name=command.name, value=command.name))
+    async def source_autocomplete(
+        self, i: discord.Interaction, current: str
+    ) -> List[app_commands.Choice]:
+        options: List[app_commands.Choice] = []
+        command_map = self.get_command_map(self.bot.tree)
+        for command_name in command_map.keys():
+            if current.lower() in command_name.lower():
+                options.append(
+                    app_commands.Choice(name=command_name, value=command_name)
+                )
+
         return options[:25]
+
+    def get_command_map(
+        self, tree: app_commands.CommandTree
+    ) -> Dict[str, Union[app_commands.Command, app_commands.ContextMenu]]:
+        command_map: Dict[
+            str, Union[app_commands.commands.Command, app_commands.ContextMenu]
+        ] = {}
+        for command in tree.get_commands():
+            if isinstance(command, app_commands.commands.Group):
+                for subcommand in command.commands:
+                    if isinstance(subcommand, app_commands.commands.Command):
+                        command_map[f"{command.name} {subcommand.name}"] = subcommand
+            else:
+                command_map[command.name] = command
+
+        return command_map
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
