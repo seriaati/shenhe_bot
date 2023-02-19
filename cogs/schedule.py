@@ -541,6 +541,8 @@ class Schedule(commands.Cog):
                 error_message = f"```{e}```"
                 log.warning(f"[Schedule][Claim Reward] Genshin Exception: {e}")
                 sentry_sdk.capture_exception(e)
+            except RuntimeError: # TODO: Find out why this happens
+                pass
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
