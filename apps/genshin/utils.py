@@ -511,12 +511,14 @@ async def get_wish_info_embed(
 
 
 def format_wish_str(wish_data: Dict, locale: discord.Locale | str):
-    wish_time = datetime.strptime(wish_data["time"], "%Y/%m/%d %H:%M:%S")
     item_emoji = get_weapon_emoji(int(wish_data["item_id"])) or get_character_emoji(
         str(wish_data["item_id"])
     )
     pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
-    result_str = f"{format_dt(wish_time, 'd')} {item_emoji} {text_map.get_character_name(wish_data['item_id'], locale) or text_map.get_weapon_name(wish_data['item_id'], locale)} ({wish_data['item_rarity']} ✦) {pity_pull}"
+    dt_str = format_dt(wish_data["wish_time"], "d")
+    item_name = text_map.get_character_name(str(wish_data["item_id"]), locale) or text_map.get_weapon_name(int(wish_data["item_id"]), locale)
+    rarity_str = f"{wish_data['item_rarity']} ✦"
+    result_str = f"{dt_str} {item_emoji} {item_name} ({rarity_str}) {pity_pull}"
     return result_str if wish_data["item_rarity"] != 5 else f"[{result_str}](http://shenhe.bot.nu/)"
 
 
