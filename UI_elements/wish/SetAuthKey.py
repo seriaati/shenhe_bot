@@ -290,7 +290,7 @@ class ConfirmWishImport(ui.Button):
                     INSERT INTO wish_history
                     (wish_id, user_id, uid, wish_name, wish_rarity,
                     wish_time, wish_type, wish_banner_type, item_id)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     ON CONFLICT DO NOTHING
                     """,
                     wish.id,
