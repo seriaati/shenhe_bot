@@ -174,7 +174,7 @@ class OthersCog(commands.Cog, name="others"):
         embed.add_field(
             name=text_map.get(524, locale),
             value=text_map.get(194, locale).format(
-                total=total[0], cookie=cookie[0], china=china[0]
+                total=total, cookie=cookie, china=china
             ),
         )
 
