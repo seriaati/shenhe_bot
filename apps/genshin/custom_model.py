@@ -80,7 +80,7 @@ class WishData(BaseModel):
 
 
 class Wish(BaseModel):
-    time: str
+    time: datetime
     rarity: int
     name: str
 
