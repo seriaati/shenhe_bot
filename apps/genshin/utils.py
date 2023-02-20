@@ -510,12 +510,12 @@ async def get_wish_info_embed(
     return embed
 
 
-def format_wish_str(wish_data: Dict, locale: discord.Locale | str):
+def format_wish_str(wish_data: Dict[str, Any], locale: discord.Locale | str):
     item_emoji = get_weapon_emoji(int(wish_data["item_id"])) or get_character_emoji(
         str(wish_data["item_id"])
     )
     pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
-    dt_str = format_dt(wish_data["wish_time"], "d")
+    dt_str = format_dt(wish_data["time"], "d")
     item_name = text_map.get_character_name(str(wish_data["item_id"]), locale) or text_map.get_weapon_name(int(wish_data["item_id"]), locale)
     rarity_str = f"{wish_data['item_rarity']} ✦"
     result_str = f"{dt_str} {item_emoji} {item_name} ({rarity_str}) {pity_pull}"
