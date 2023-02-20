@@ -64,12 +64,7 @@ def genshin_error_handler(func):
                 embed = ErrorEmbed().set_author(name=text_map.get(14, locale))
                 return GenshinAppResult(result=embed, success=False)
             else:
-                sentry_sdk.capture_exception(e)
-                embed = ErrorEmbed(description=f"```{e}```")
-                embed.set_author(
-                    name=text_map.get(10, locale),
-                    icon_url=user.display_avatar.url,
-                )
+                embed = get_error_handle_embed(user, e, locale)
                 return GenshinAppResult(result=embed, success=False)
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}", exc_info=e)

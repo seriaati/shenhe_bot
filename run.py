@@ -140,8 +140,7 @@ class Shenhe(commands.AutoShardedBot):
             try:
                 await self.load_extension(f"cogs.{cog_name}")
             except Exception as e:
-                log.warning(f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}")
-                sentry_sdk.capture_exception(e)
+                log.warning(f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}", exc_info=e)
 
     async def on_ready(self):
         tree = self.tree
@@ -172,8 +171,7 @@ class Shenhe(commands.AutoShardedBot):
         if isinstance(error, ignored):
             return
         else:
-            log.warning(f"[{ctx.author.id}]on_command_error: {error}")
-            sentry_sdk.capture_exception(error)
+            log.warning(f"[{ctx.author.id}]on_command_error: {error}", exc_info=error)
     
     async def close(self) -> None:
         await self.session.close()

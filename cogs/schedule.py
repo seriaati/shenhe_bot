@@ -4,6 +4,7 @@ import json
 from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 from uuid import uuid4
+from UI_base_models import capture_exception
 
 import aiofiles
 import genshin
@@ -41,8 +42,7 @@ def schedule_error_handler(func):
             seria_id = 410036441129943050
             seria = bot.get_user(seria_id) or await bot.fetch_user(seria_id)
             await seria.send(f"[Schedule] Error in {func.__name__}: {type(e)}\n{e}")
-            log.warning(f"[Schedule] Error in {func.__name__}: {e}", exc_info=e)
-            sentry_sdk.capture_exception(e)
+            capture_exception(e)
 
     return inner_function
 
@@ -538,16 +538,14 @@ class Schedule(commands.Cog):
                 success_count += 1
             except genshin.errors.GenshinException as e:
                 error = True
-                error_message = f"```{e}```"
-                log.warning(f"[Schedule][Claim Reward] Genshin Exception: {e}")
-                sentry_sdk.capture_exception(e)
+                error_message = f"```{type(e)}: {e.msg}```"
+                capture_exception(e)
             except RuntimeError: # TODO: Find out why this happens
                 pass
             except Exception as e:
                 error = True
-                error_message = f"```{e}```"
-                log.warning(f"[Schedule][Claim Reward] Error: {e}")
-                sentry_sdk.capture_exception(e)
+                error_message = f"```{type(e)} {e}```"
+                capture_exception(e)
             else:
                 log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
                 if await get_user_notification(user.discord_user.id, self.bot.pool):
@@ -830,7 +828,7 @@ class Schedule(commands.Cog):
                             log.warning(
                                 f"[Schedule] Emoji creation failed [Object]{object}"
                             )
-                            sentry_sdk.capture_exception(e)
+                            capture_exception(e)
                         else:
                             object_map[str(object.id)]["emoji"] = str(emoji)
                 else:

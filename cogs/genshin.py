@@ -1,4 +1,3 @@
-import datetime
 import json
 import random
 from datetime import timedelta
@@ -6,10 +5,8 @@ from typing import Any, Dict, List, Tuple
 
 import aiofiles
 import asqlite
-import asyncpg
 import discord
 import genshin
-import sentry_sdk
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -99,8 +96,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             try:
                 self.bot.genshin_client.set_cookies(cookie_list)
             except Exception as e:
-                log.warning(f"[Genshin Client][Error]: {e}")
-                sentry_sdk.capture_exception(e)
+                log.warning(f"[Genshin Client][Error]: {e}", exc_info=e)
             else:
                 log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
 

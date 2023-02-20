@@ -412,14 +412,7 @@ class Modal(BaseModal):
                     icon_url=i.user.display_avatar.url,
                 )
             )
-        except Exception as e:
-            sentry_sdk.capture_exception(e)
-            return await i.edit_original_response(
-                embed=ErrorEmbed(description=f"```py\n{e}\n```").set_author(
-                    name=text_map.get(135, locale),
-                    icon_url=i.user.display_avatar.url,
-                )
-            )
+        
         character_banner = 0
         weapon_banner = 0
         permanent_banner = 0

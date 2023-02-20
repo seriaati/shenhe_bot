@@ -1,6 +1,8 @@
 import io
 from typing import Any, Dict, Optional, Union
 
+import genshin
+
 import discord
 import enkanetwork
 import sentry_sdk
@@ -47,10 +49,11 @@ async def global_error_handler(
 
 
 def get_error_handle_embed(
-    user: Union[discord.User, discord.Member],
+    user: Optional[Union[discord.User, discord.Member]],
     e: Exception,
     locale: Union[discord.Locale, str],
 ):
+    """Returns an error embed based on the givern error type."""
     embed = ErrorEmbed()
 
     if isinstance(e, discord.app_commands.errors.CommandInvokeError):
@@ -105,19 +108,26 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(542, locale))
     elif isinstance(e, NumbersOnly):
         embed.set_author(name=text_map.get(187, locale))
+    elif isinstance(e, genshin.GenshinException):
+        embed.set_author(name=text_map.get(10, locale))
     else:
-        log.warning(f"Error: {type(e)}: {e}", exc_info=e)
-        sentry_sdk.capture_exception(e)
-
+        capture_exception(e)
+        
         embed.description = text_map.get(513, locale)
         embed.description += f"\n\n```{type(e)}: {e}```"
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
+    icon_url = user.display_avatar.url if user else None
     embed.set_author(
-        name=embed.author.name or "Error", icon_url=user.display_avatar.url
+        name=embed.author.name or "Error", icon_url=icon_url
     )
     return embed
+
+def capture_exception(e: Exception):
+    """Log the error and traceback then capture exception to sentry."""
+    log.warning(f"Error: {type(e)}: {e}", exc_info=e)
+    sentry_sdk.capture_exception(e)
 
 
 class BaseView(discord.ui.View):
@@ -147,16 +157,14 @@ class BaseView(discord.ui.View):
 
     async def on_timeout(self) -> None:
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+                item.disabled = True
 
         if self.message is not None:
             try:
                 await self.message.edit(view=self)
             except discord.HTTPException:
                 pass
-            except Exception as e:
-                sentry_sdk.capture_exception(e)
-                log.warning(f"[Edit View] Failed{e}")
 
 
 class BaseModal(discord.ui.Modal):
