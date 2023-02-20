@@ -296,14 +296,18 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
         elif leaderboard == "full_clear":
             run_users: List[RunLeaderboardUser] = []
             uids: List[int] = []
+            
+            if query_str:
+                query_str += " AND stars_collected = 36"
+            else:
+                query_str += " WHERE stars_collected = 36"
 
             rows = await pool.fetch(
                 f"""
                 SELECT
                 uid, wins, runs, level, icon_url,
-                user_id, stars_collected, user_name
+                user_id, user_name
                 FROM abyss_leaderboard {query_str}
-                WHERE stars_collected = 36
                 ORDER BY runs ASC
                 """
             )
