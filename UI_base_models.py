@@ -1,24 +1,21 @@
 import io
 from typing import Any, Dict, Optional, Union
 
-import genshin
-
 import discord
 import enkanetwork
+import genshin
 import sentry_sdk
 
 import asset
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from exceptions import (CardNotFound, ItemNotFound, NoCharacterFound, NoCookie,
-                        NoPlayerFound, NoUID, NoWishHistory, NumbersOnly,
-                        ShenheAccountNotFound, UIDNotFound)
+import exceptions
 from utility.utils import ErrorEmbed, log
 
 
 async def global_error_handler(
-    i: discord.Interaction, e: Exception | discord.app_commands.AppCommandError
+    i: discord.Interaction, e: Union[Exception, discord.app_commands.AppCommandError]
 ):
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
@@ -59,19 +56,19 @@ def get_error_handle_embed(
     if isinstance(e, discord.app_commands.errors.CommandInvokeError):
         e = e.original
 
-    if isinstance(e, discord.errors.NotFound) and e.code in [
+    if isinstance(e, discord.errors.NotFound) and e.code in (
         10062,
         10008,
         10015,
-    ]:
+    ):
         embed.description = text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
-    elif isinstance(e, UIDNotFound):
+    elif isinstance(e, exceptions.UIDNotFound):
         embed.set_author(name=text_map.get(672, locale))
-    elif isinstance(e, ShenheAccountNotFound):
+    elif isinstance(e, exceptions.ShenheAccountNotFound):
         embed.description = text_map.get(35, locale)
         embed.set_author(name=text_map.get(545, locale))
-    elif isinstance(e, NoPlayerFound):
+    elif isinstance(e, exceptions.NoPlayerFound):
         embed.set_author(name=text_map.get(367, locale))
     elif isinstance(e, enkanetwork.EnkaServerMaintanance):
         embed.description = text_map.get(519, locale)
@@ -83,46 +80,45 @@ def get_error_handle_embed(
         e, enkanetwork.HTTPException
     ):
         embed.set_author(name=text_map.get(523, locale))
-    elif isinstance(e, NoCharacterFound):
+    elif isinstance(e, exceptions.NoCharacterFound):
         embed.description = text_map.get(287, locale)
         embed.set_author(
             name=text_map.get(141, locale),
         )
         embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
-    elif isinstance(e, NoUID):
+    elif isinstance(e, exceptions.NoUID):
         embed.description = text_map.get(572, locale)
         embed.set_author(name=text_map.get(571 if e.current_user else 579, locale))
-    elif isinstance(e, NoCookie):
+    elif isinstance(e, exceptions.NoCookie):
         if e.current_account:
             embed.description = text_map.get(572, locale)
             embed.set_author(name=text_map.get(573 if e.current_user else 580, locale))
         else:
             embed.description = text_map.get(575, locale)
             embed.set_author(name=text_map.get(574 if e.current_user else 581, locale))
-    elif isinstance(e, NoWishHistory):
+    elif isinstance(e, exceptions.NoWishHistory):
         embed.description = text_map.get(368, locale)
         embed.set_author(name=text_map.get(683, locale))
-    elif isinstance(e, CardNotFound):
+    elif isinstance(e, exceptions.CardNotFound):
         embed.set_author(name=text_map.get(719, locale))
-    elif isinstance(e, ItemNotFound):
+    elif isinstance(e, exceptions.ItemNotFound):
         embed.set_author(name=text_map.get(542, locale))
-    elif isinstance(e, NumbersOnly):
+    elif isinstance(e, exceptions.NumbersOnly):
         embed.set_author(name=text_map.get(187, locale))
     elif isinstance(e, genshin.GenshinException):
         embed.set_author(name=text_map.get(10, locale))
     else:
         capture_exception(e)
-        
+
         embed.description = text_map.get(513, locale)
         embed.description += f"\n\n```{type(e)}: {e}```"
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
     icon_url = user.display_avatar.url if user else None
-    embed.set_author(
-        name=embed.author.name or "Error", icon_url=icon_url
-    )
+    embed.set_author(name=embed.author.name or "Error", icon_url=icon_url)
     return embed
+
 
 def capture_exception(e: Exception):
     """Log the error and traceback then capture exception to sentry."""
@@ -182,20 +178,22 @@ class GoBackButton(discord.ui.Button):
 
     async def callback(self, i: discord.Interaction):
         await i.response.defer()
-        
+
         self.original_view.clear_items()
         for item in self.original_children:
             self.original_view.add_item(item)
-        
+
         kwargs: Dict[str, Any] = {
             "embed": self.original_embed,
             "view": self.original_view,
         }
-        
+
         if self.original_attachments:
             async with i.client.session.get(self.original_attachments[0].url) as r:
                 image = await r.read()
-                file_ = discord.File(io.BytesIO(image), filename=self.original_attachments[0].filename)
+                file_ = discord.File(
+                    io.BytesIO(image), filename=self.original_attachments[0].filename
+                )
                 kwargs["attachments"] = [file_]
 
         await i.edit_original_response(**kwargs)
