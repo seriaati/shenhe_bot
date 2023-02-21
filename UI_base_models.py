@@ -110,8 +110,7 @@ def get_error_handle_embed(
     else:
         capture_exception(e)
 
-        embed.description = text_map.get(513, locale)
-        embed.description += f"\n\n```{type(e)}: {e}```"
+        embed.description = f"```{type(e)}: {e}```"
         embed.set_author(name=text_map.get(135, locale))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
