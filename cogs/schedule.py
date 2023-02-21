@@ -588,10 +588,10 @@ class Schedule(commands.Cog):
                 except Forbidden:
                     pass
 
-            if user_count % 100 == 0:  # Sleep for 30 seconds every 100 users
-                await asyncio.sleep(30)
+            if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
+                await asyncio.sleep(40)
 
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(3)
 
         log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
 
