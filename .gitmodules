@@ -1,9 +1,6 @@
 [submodule "yelan"]
 	path = yelan
 	url = https://github.com/seriaati/yelan
-[submodule "hoyolab_rss_feeds"]
-	path = hoyolab_rss_feeds
-	url = https://github.com/seriaati/hoyolab_rss_feeds
 [submodule "shenhe_external"]
 	path = shenhe_external
 	url = https://github.com/seriaati/shenhe_external
