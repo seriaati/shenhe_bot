@@ -7,3 +7,6 @@
 [submodule "GenshinData"]
 	path = GenshinData
 	url = https://github.com/Dimbreath/GenshinData
+[submodule "hoyolab_rss_feeds"]
+	path = hoyolab_rss_feeds
+	url = https://github.com/seriaati/hoyolab_rss_feeds
