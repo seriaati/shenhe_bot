@@ -431,12 +431,12 @@ class Modal(BaseModal):
         wish_info = WishInfo(
             total=len(wish_history),
             newest_wish=Wish(
-                time=newest_wish.time.strftime("%Y/%m/%d %H:%M:%S"),
+                time=newest_wish.time,
                 name=newest_wish.name,
                 rarity=newest_wish.rarity,
             ),
             oldest_wish=Wish(
-                time=oldest_wish.time.strftime("%Y/%m/%d %H:%M:%S"),
+                time=oldest_wish.time,
                 name=oldest_wish.name,
                 rarity=oldest_wish.rarity,
             ),
@@ -499,17 +499,17 @@ async def get_wish_import_embed(
     wish_info = WishInfo(
         total=len(wish_data),
         newest_wish=Wish(
-            time=newest_wish[0],
-            rarity=newest_wish[1],
-            name=text_map.get_weapon_name(int(newest_wish[2]), locale)
-            or text_map.get_character_name(str(newest_wish[2]), locale)
+            time=newest_wish["wish_time"],
+            rarity=newest_wish["wish_rarity"],
+            name=text_map.get_weapon_name(int(newest_wish["item_id"]), locale)
+            or text_map.get_character_name(str(newest_wish["item_id"]), locale)
             or "",
         ),
         oldest_wish=Wish(
-            time=oldest_wish[0],
-            rarity=oldest_wish[1],
-            name=text_map.get_weapon_name(int(oldest_wish[2]), locale)
-            or text_map.get_character_name(str(oldest_wish[2]), locale)
+            time=oldest_wish["wish_time"],
+            rarity=oldest_wish["wish_rarity"],
+            name=text_map.get_weapon_name(int(oldest_wish["item_id"]), locale)
+            or text_map.get_character_name(str(oldest_wish["item_id"]), locale)
             or "",
         ),
         character_banner_num=character_banner,
