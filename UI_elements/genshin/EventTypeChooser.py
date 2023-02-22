@@ -1,6 +1,7 @@
 import json
-from discord.ui import Select, Button
-from discord import Interaction, Embed, SelectOption, Locale, ButtonStyle
+import aiofiles
+import discord
+from discord import ui
 from typing import Any, Dict, List
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -12,21 +13,21 @@ from dateutil import parser
 from discord.utils import format_dt
 from utility.paginator import GeneralPaginator, _view
 from utility.utils import DefaultEmbed, parse_HTML
-import hoyolab_rss_feeds.hoyolab
+from apps.hoyolab_rss_feeds.create_feed import create_feed
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
         self.add_item(Hoyolab())
         self.add_item(Genshin(locale))
 
 
-class Hoyolab(Button):
+class Hoyolab(ui.Button):
     def __init__(self):
         super().__init__(label="HoYoLAB", emoji=asset.hoyolab_emoji)
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await i.response.defer()
         
@@ -34,10 +35,10 @@ class Hoyolab(Button):
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
         
-        await hoyolab_rss_feeds.hoyolab.create_game_feeds_from_config(genshin_locale)
+        await create_feed(genshin_locale)
         
-        with open(f"feeds/{genshin_locale}_genshin.json") as f:
-            events: Dict = json.load(f)
+        async with aiofiles.open(f"apps/hoyolab_rss_feeds/feeds/{genshin_locale}.json") as f:
+            events = json.loads(await f.read())
         
         select_options = []
         tags = []
@@ -70,7 +71,7 @@ class Hoyolab(Button):
             )
 
         for tag in tags:
-            select_options.append(SelectOption(label=tag, value=tag))
+            select_options.append(discord.SelectOption(label=tag, value=tag))
         await GeneralPaginator(
             i,
             embeds[list(embeds.keys())[0]],
@@ -81,13 +82,13 @@ class Hoyolab(Button):
         ).start(edit=True)
 
 
-class Genshin(Button):
-    def __init__(self, locale: Locale | str):
+class Genshin(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             label=text_map.get(313, locale), emoji="<:genshin_icon:1025630733068423169>"
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         self.view: View
         await i.response.defer()
         genshin_py_locale = to_genshin_py(self.view.locale)
@@ -100,7 +101,7 @@ class Genshin(Button):
         type_list = overview["data"]["type_list"]
         options = []
         for type in type_list:
-            options.append(SelectOption(label=type["mi18n_name"], value=type["id"]))
+            options.append(discord.SelectOption(label=type["mi18n_name"], value=type["id"]))
         # get a dict of details
         detail_dict = {}
         for event in details["data"]["list"]:
@@ -141,36 +142,36 @@ class Genshin(Button):
         ).start(edit=True)
 
 
-class EventTypeSelect(Select):
+class EventTypeSelect(ui.Select):
     def __init__(
         self,
-        options: List[SelectOption],
-        embeds: Dict[str, List[Embed]],
-        locale: Locale | str
+        options: List[discord.SelectOption],
+        embeds: Dict[str, List[discord.Embed]],
+        locale: discord.Locale | str
     ) -> None:
         super().__init__(
             options=options, placeholder=text_map.get(409, locale)
         )
         self.embeds = embeds
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: discord.Interaction) -> Any:
         self.view: _view
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await self.view.update_children(i)
 
 
-class GOBack(Button):
-    def __init__(self, locale: Locale | str):
+class GOBack(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
-            label=text_map.get(282, locale), style=ButtonStyle.green, row=3
+            label=text_map.get(282, locale), style=discord.ButtonStyle.green, row=3
         )
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: discord.Interaction):
         await return_events(i)
 
 
-async def return_events(i: Interaction):
+async def return_events(i: discord.Interaction):
     await i.response.defer()
     user_locale = await get_user_locale(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)

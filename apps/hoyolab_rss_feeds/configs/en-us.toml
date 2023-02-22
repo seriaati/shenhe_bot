@@ -1,0 +1,5 @@
+language = "en-us"
+category_size = 15
+
+[genshin]
+feed.json.path = "apps/hoyolab_rss_feeds/feeds/en-us.json"

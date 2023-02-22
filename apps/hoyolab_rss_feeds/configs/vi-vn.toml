@@ -1,0 +1,5 @@
+language = "vi-vn"
+category_size = 15
+
+[genshin]
+feed.json.path = "apps/hoyolab_rss_feeds/feeds/vi-vn.json"

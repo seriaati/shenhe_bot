@@ -182,10 +182,10 @@ text_maps/furniture.json
 text_maps/monster.json
 text_maps/namecard.json
 data/cards/*.json
-feeds/*
+apps/hoyolab_rss_feeds/feeds/*
 .vscode
 apps/draw/cache/*
 shenhe.db-shm
 shenhe.db-wal
-!/**/.gitkeep
 command_map.json
+!/**/.gitkeep
