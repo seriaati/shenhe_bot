@@ -7,3 +7,6 @@
 [submodule "GenshinData"]
 	path = GenshinData
 	url = https://github.com/Dimbreath/GenshinData
+[submodule "API-docs"]
+	path = API-docs
+	url = https://github.com/EnkaNetwork/API-docs
