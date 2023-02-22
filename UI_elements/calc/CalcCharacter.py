@@ -1,5 +1,6 @@
 from typing import List
 from apps.draw.utility import image_gen_transition
+from apps.enka_api_docs.get_data import get_character_skill_order
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
 
@@ -102,14 +103,15 @@ class CharacterSelect(Select):
             except Exception:
                 pass
             else:
-                talent_levels: List[int] = []
-                for talent in character.talents:
-                    if not talent.upgradeable:
-                        continue
-                    talent_levels.append(talent.level)
-                init_levels.a_level = talent_levels[0]
-                init_levels.e_level = talent_levels[1]
-                init_levels.q_level = talent_levels[2]
+                skill_order = await get_character_skill_order(str(character_id))
+                
+                if skill_order:
+                    skill_a = utils.get(character.talents, id=skill_order[0])
+                    init_levels.a_level = skill_a.level if skill_a else None
+                    skill_e = utils.get(character.talents, id=skill_order[1])
+                    init_levels.e_level = skill_e.level if skill_e else None
+                    skill_q = utils.get(character.talents, id=skill_order[2])
+                    init_levels.q_level = skill_q.level if skill_q else None
 
         # change None levels in init_levels to 1
         for key, value in init_levels.dict().items():
