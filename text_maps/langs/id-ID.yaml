@@ -327,7 +327,7 @@
 '305': Gunakan /remind untuk mengubah pengaturan
 '306': Resin hampir penuh!!
 '307': Notifikasi talenta sekarang DIMATIKAN
-'308': Item amount
+'308': Jumlah item
 '309': ''
 '310': ''
 '311': Cara membuka blokir DM dari server
@@ -685,10 +685,10 @@
 '593': Pengingat
 '594': Ubah pengaturan
 '595': |-
-  Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
-  1. Right-click any server that has Shenhe in it
-  2. Click on "Privacy Settings"
-  3. Turn on the toggle of "Direct Messages"
+  Shenhe harus bisa DM kamu untuk mengirimkan notifikasi. Jika dinonaktifkan, ikuti langkah-langkah di bawah ini untuk mengaktifkannya.
+  1. Klik kanan server mana pun yang terdapat Shenhe di dalamnya
+  2. Klik "Privacy Settings"
+  3. Aktifkan "Direct Messages"
 '596': Tes itu!
 '597': Shenhe gagal DM kamu
 '598': Tambah/Hapus karakter
