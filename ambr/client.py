@@ -1,37 +1,12 @@
 import json
 import os
-import time
 from typing import Dict, List, Optional
 
 import aiohttp
 
 from ambr.constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS
 from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
-from ambr.models import (
-    Artifact,
-    ArtifactDetail,
-    Book,
-    BookDetail,
-    Character,
-    CharacterDetail,
-    CharacterUpgrade,
-    City,
-    Domain,
-    Event,
-    Food,
-    FoodDetail,
-    Furniture,
-    FurnitureDetail,
-    Material,
-    MaterialDetail,
-    Monster,
-    MonsterDetail,
-    NameCard,
-    NameCardDetail,
-    Weapon,
-    WeaponDetail,
-    WeaponUpgrade,
-)
+import ambr.models as models
 
 
 def get_decorator(func):
@@ -201,248 +176,248 @@ class AmbrTopAPI:
                     ) as f:
                         json.dump(data, f, ensure_ascii=False, indent=4)
 
-    async def get_character_detail(self, id: str) -> Optional[CharacterDetail]:
+    async def get_character_detail(self, id: str) -> Optional[models.CharacterDetail]:
         """Get the detail of a character.
 
         Args:
             id (str): id of the character.
 
         Returns:
-            Optional[CharacterDetail]: A CharacterDetail object.
+            Optional[models.CharacterDetail]: A models.CharacterDetail object.
         """
         data = await self.request_from_endpoint("character", id=id)
-        result = CharacterDetail(**data["data"])
+        result = models.CharacterDetail(**data["data"])
         return result
 
-    async def get_monster_detail(self, id: int) -> Optional[MonsterDetail]:
+    async def get_monster_detail(self, id: int) -> Optional[models.MonsterDetail]:
         """Get the detail of a monster.
 
         Args:
             id (int): id of the monster.
 
         Returns:
-            Optional[MonsterDetail]: A MonsterDetail object.
+            Optional[models.MonsterDetail]: A models.MonsterDetail object.
         """
         data = await self.request_from_endpoint("monster", id=id)
-        result = MonsterDetail(**data["data"])
+        result = models.MonsterDetail(**data["data"])
         return result
 
-    async def get_food_detail(self, id: int) -> Optional[FoodDetail]:
+    async def get_food_detail(self, id: int) -> Optional[models.FoodDetail]:
         """Get the detail of a food.
 
         Args:
             id (int): id of the food.
 
         Returns:
-            Optional[FoodDetail]: A FoodDetail object.
+            Optional[models.FoodDetail]: A models.FoodDetail object.
         """
         data = await self.request_from_endpoint("food", id=id)
-        result = FoodDetail(**data["data"])
+        result = models.FoodDetail(**data["data"])
         return result
 
-    async def get_furniture_detail(self, id: int) -> Optional[FurnitureDetail]:
+    async def get_furniture_detail(self, id: int) -> Optional[models.FurnitureDetail]:
         """Get the detail of a furniture.
 
         Args:
             id (int): id of the furniture.
 
         Returns:
-            Optional[FurnitureDetail]: A FurnitureDetail object.
+            Optional[models.FurnitureDetail]: A models.FurnitureDetail object.
         """
         data = await self.request_from_endpoint("furniture", id=id)
-        result = FurnitureDetail(**data["data"])
+        result = models.FurnitureDetail(**data["data"])
         return result
 
-    async def get_book_detail(self, id: int) -> Optional[BookDetail]:
+    async def get_book_detail(self, id: int) -> Optional[models.BookDetail]:
         """Get the detail of a book.
 
         Args:
             id (int): id of the book.
 
         Returns:
-            Optional[BookDetail]: A BookDetail object.
+            Optional[models.BookDetail]: A models.BookDetail object.
         """
         data = await self.request_from_endpoint("book", id=id)
-        result = BookDetail(**data["data"])
+        result = models.BookDetail(**data["data"])
         return result
 
-    async def get_name_card_detail(self, id: int) -> Optional[NameCardDetail]:
+    async def get_name_card_detail(self, id: int) -> Optional[models.NameCardDetail]:
         """Get the detail of a name card.
 
         Args:
             id (int): id of the name card.
 
         Returns:
-            Optional[NameCardDetail]: A NameCardDetail object.
+            Optional[models.NameCardDetail]: A models.NameCardDetail object.
         """
         data = await self.request_from_endpoint("namecard", id=id)
-        result = NameCardDetail(**data["data"])
+        result = models.NameCardDetail(**data["data"])
         return result
 
-    async def get_material_detail(self, id: int) -> Optional[MaterialDetail]:
+    async def get_material_detail(self, id: int) -> Optional[models.MaterialDetail]:
         """Get a material detail by id.
 
         Args:
             id (int): id of the material
 
         Returns:
-            Optional[MaterialDetail]: A material detail object.
+            Optional[models.MaterialDetail]: A material detail object.
         """
         data = await self.request_from_endpoint("material", id=id)
-        result = MaterialDetail(**data["data"])
+        result = models.MaterialDetail(**data["data"])
         return result
 
-    async def get_weapon_detail(self, id: int) -> Optional[WeaponDetail]:
+    async def get_weapon_detail(self, id: int) -> Optional[models.WeaponDetail]:
         """Get a weapon detail by id.
 
         Args:
             id (int): id of the weapon
 
         Returns:
-            WeaponDetail: A weapon detail object.
+            models.WeaponDetail: A weapon detail object.
         """
         data = await self.request_from_endpoint("weapon", id=id)
-        result = WeaponDetail(**data["data"])
+        result = models.WeaponDetail(**data["data"])
         return result
 
-    async def get_artifact_detail(self, id: int) -> Optional[ArtifactDetail]:
+    async def get_artifact_detail(self, id: int) -> Optional[models.ArtifactDetail]:
         """Get an artifact detail by id.
 
         Args:
             id (int): id of the artifact
 
         Returns:
-            Optional[ArtifactDetail]: An artifact detail object.
+            Optional[models.ArtifactDetail]: An artifact detail object.
         """
         data = await self.request_from_endpoint("artifact", id=id)
-        result = ArtifactDetail(**data["data"])
+        result = models.ArtifactDetail(**data["data"])
         return result
 
     @get_decorator
     async def get_material(
         self, id: Optional[int] = None
-    ) -> Optional[List[Material] | Material]:
+    ) -> Optional[List[models.Material] | models.Material]:
         """Get a list of all materials or a specific material by id.
 
         Args:
             id (Optional[int], optional): The id of the material. Defaults to None.
 
         Returns:
-            Optional[List[Material] | Material]: A list of all materials or a specific material.
+            Optional[List[models.Material] | models.Material]: A list of all materials or a specific material.
         """
         result = []
         data = self.get_cache("material")
         if id is not None:
-            return Material(**data["data"]["items"][str(id)])
+            return models.Material(**data["data"]["items"][str(id)])
         else:
             for material in data["data"]["items"].values():
-                result.append(Material(**material))
+                result.append(models.Material(**material))
 
             return result
 
     @get_decorator
     async def get_name_card(
         self, id: Optional[int] = None
-    ) -> Optional[List[NameCard] | NameCard]:
+    ) -> Optional[List[models.NameCard] | models.NameCard]:
         """Get a list of all name cards or a specific name card by id.
 
         Args:
             id (Optional[int], optional): The id of the name card. Defaults to None.
 
         Returns:
-            Optional[List[NameCard] | NameCard]: A list of all name cards or a specific name card.
+            Optional[List[models.NameCard] | models.NameCard]: A list of all name cards or a specific name card.
         """
         result = []
         data = self.get_cache("namecard")
         if id is not None:
-            return NameCard(**data["data"]["items"][str(id)])
+            return models.NameCard(**data["data"]["items"][str(id)])
         else:
             for name_card in data["data"]["items"].values():
-                result.append(NameCard(**name_card))
+                result.append(models.NameCard(**name_card))
 
             return result
 
     @get_decorator
     async def get_artifact(
         self, id: Optional[int] = None
-    ) -> Optional[List[Artifact] | Artifact]:
+    ) -> Optional[List[models.Artifact] | models.Artifact]:
         """Get a list of all artifacts or a specific artifact by id.
 
         Args:
             id (Optional[int], optional): id of the artifact. Defaults to None.
 
         Returns:
-            Optional[List[Artifact] | Artifact]: A list of all artifacts or a specific artifact.
+            Optional[List[models.Artifact] | models.Artifact]: A list of all artifacts or a specific artifact.
         """
         result = []
         data = self.get_cache("artifact")
         if id is not None:
-            return Artifact(**data["data"]["items"][str(id)])
+            return models.Artifact(**data["data"]["items"][str(id)])
         else:
             for material in data["data"]["items"].values():
-                result.append(Artifact(**material))
+                result.append(models.Artifact(**material))
 
             return result
 
     @get_decorator
-    async def get_book(self, id: Optional[int] = None) -> Optional[List[Book] | Book]:
+    async def get_book(self, id: Optional[int] = None) -> Optional[List[models.Book] | models.Book]:
         """Get a list of all books or a specific book by id.
 
         Args:
             id (Optional[int], optional): id of the book. Defaults to None.
 
         Returns:
-            Optional[List[Book] | Book]: A list of all books or a specific book.
+            Optional[List[models.Book] | models.Book]: A list of all books or a specific book.
         """
         result = []
         data = self.get_cache("book")
         if id is not None:
-            return Book(**data["data"]["items"][str(id)])
+            return models.Book(**data["data"]["items"][str(id)])
         else:
             for material in data["data"]["items"].values():
-                result.append(Book(**material))
+                result.append(models.Book(**material))
 
             return result
 
     @get_decorator
-    async def get_food(self, id: Optional[int] = None) -> Optional[List[Food] | Food]:
+    async def get_food(self, id: Optional[int] = None) -> Optional[List[models.Food] | models.Food]:
         """Get a list of all foods or a specific food by id.
 
         Args:
             id (Optional[int], optional): id of the food. Defaults to None.
 
         Returns:
-            Optional[List[Food] | Food]: A list of all foods or a specific food.
+            Optional[List[models.Food] | models.Food]: A list of all foods or a specific food.
         """
         result = []
         data = self.get_cache("food")
         if id is not None:
-            return Food(**data["data"]["items"][str(id)])
+            return models.Food(**data["data"]["items"][str(id)])
         else:
             for material in data["data"]["items"].values():
-                result.append(Food(**material))
+                result.append(models.Food(**material))
 
             return result
 
     @get_decorator
     async def get_funiture(
         self, id: Optional[int] = None
-    ) -> Optional[List[Furniture] | Furniture]:
+    ) -> Optional[List[models.Furniture] | models.Furniture]:
         """Get a list of all furniture or a specific furniture by id.
 
         Args:
             id (Optional[int], optional): id of the furniture. Defaults to None.
 
         Returns:
-            Optional[List[Furniture] | Furniture]: A list of all furniture or a specific furniture.
+            Optional[List[models.Furniture] | models.Furniture]: A list of all furniture or a specific furniture.
         """
         result = []
         data = self.get_cache("furniture")
         if id is not None:
-            return Furniture(**data["data"]["items"][str(id)])
+            return models.Furniture(**data["data"]["items"][str(id)])
         else:
             for material in data["data"]["items"].values():
-                result.append(Furniture(**material))
+                result.append(models.Furniture(**material))
 
             return result
 
@@ -452,7 +427,7 @@ class AmbrTopAPI:
         id: Optional[str] = None,
         include_beta: bool = True,
         include_traveler: bool = True,
-    ) -> Optional[List[Character] | Character]:
+    ) -> Optional[List[models.Character] | models.Character]:
         """Get a list of all characters or a specific character by id.
 
         Args:
@@ -461,12 +436,12 @@ class AmbrTopAPI:
             include_traveler (bool, optional): include travelers. Defaults to True.
 
         Returns:
-            Optional[List[Character] | Character]: A list of all characters or a specific character.
+            Optional[List[models.Character] | models.Character]: A list of all characters or a specific character.
         """
         result = []
         data = self.get_cache("character")
         if id is not None:
-            return Character(**data["data"]["items"][str(id)])
+            return models.Character(**data["data"]["items"][str(id)])
         else:
             for character_id, character_info in data["data"]["items"].items():
                 if "beta" in character_info and not include_beta:
@@ -475,50 +450,50 @@ class AmbrTopAPI:
                     "10000005" in character_id or "10000007" in character_id
                 ) and not include_traveler:
                     continue
-                result.append(Character(**character_info))
+                result.append(models.Character(**character_info))
 
             return result
 
     @get_decorator
     async def get_weapon(
         self, id: Optional[int] = None
-    ) -> Optional[List[Weapon] | Weapon]:
+    ) -> Optional[List[models.Weapon] | models.Weapon]:
         """Get a list of all weapons or a specific weapon by id.
 
         Args:
             id (Optional[int], optional): id of the weapon. Defaults to None.
 
         Returns:
-            Optional[List[Weapon] | Weapon]: A list of all weapons or a specific weapon.
+            Optional[List[models.Weapon] | models.Weapon]: A list of all weapons or a specific weapon.
         """
         result = []
         data = self.get_cache("weapon")
         if id is not None:
-            return Weapon(**data["data"]["items"][str(id)])
+            return models.Weapon(**data["data"]["items"][str(id)])
         else:
             for weapon in data["data"]["items"].values():
-                result.append(Weapon(**weapon))
+                result.append(models.Weapon(**weapon))
         return result
 
     @get_decorator
     async def get_monster(
         self, id: Optional[int] = None
-    ) -> Optional[List[Monster] | Monster]:
+    ) -> Optional[List[models.Monster] | models.Monster]:
         """Get a list of all monsters or a specific monster by id.
 
         Args:
             id (Optional[int], optional): id of the monster. Defaults to None.
 
         Returns:
-            Optional[List[Monster] | Monster]: A list of all monsters or a specific monster.
+            Optional[List[models.Monster] | models.Monster]: A list of all monsters or a specific monster.
         """
         result = []
         data = self.get_cache("monster")
         if id is not None:
-            return Monster(**data["data"]["items"][str(id)])
+            return models.Monster(**data["data"]["items"][str(id)])
         else:
             for monster in data["data"]["items"].values():
-                result.append(Monster(**monster))
+                result.append(models.Monster(**monster))
         return result
 
     async def get_weapon_types(self) -> Dict[str, str]:
@@ -533,14 +508,14 @@ class AmbrTopAPI:
     @get_decorator
     async def get_character_upgrade(
         self, character_id: Optional[str] = None
-    ) -> Optional[List[CharacterUpgrade] | CharacterUpgrade]:
+    ) -> Optional[List[models.CharacterUpgrade] | models.CharacterUpgrade]:
         """Get a list of all character upgrades or a specific character upgrade by character id.
 
         Args:
             character_id (Optional[str], optional): id of the character. Defaults to None.
 
         Returns:
-            Optional[List[CharacterUpgrade] | CharacterUpgrade]: A list of all character upgrades or a specific character upgrade.
+            Optional[List[models.CharacterUpgrade] | models.CharacterUpgrade]: A list of all character upgrades or a specific character upgrade.
         """
         result = []
         data = self.get_cache("upgrade", static=True)
@@ -551,7 +526,7 @@ class AmbrTopAPI:
                 (await self.get_material(id=int(material_id)))
                 for material_id in upgrade_info["items"]
             ]
-            return CharacterUpgrade(**upgrade_info)
+            return models.CharacterUpgrade(**upgrade_info)
         else:
             for upgrade_id, upgrade_info in data["data"]["avatar"].items():
                 upgrade_info["item_list"] = [
@@ -559,21 +534,21 @@ class AmbrTopAPI:
                     for material_id in upgrade_info["items"]
                 ]
                 upgrade_info["character_id"] = upgrade_id
-                result.append(CharacterUpgrade(**upgrade_info))
+                result.append(models.CharacterUpgrade(**upgrade_info))
 
             return result
 
     @get_decorator
     async def get_weapon_upgrade(
         self, weapon_id: Optional[int] = None
-    ) -> Optional[List[WeaponUpgrade] | WeaponUpgrade]:
+    ) -> Optional[List[models.WeaponUpgrade] | models.WeaponUpgrade]:
         """Get a list of all weapon upgrades or a specific weapon upgrade by weapon id.
 
         Args:
             weapon_id (Optional[int], optional): id of the weapon. Defaults to None.
 
         Returns:
-            Optional[List[WeaponUpgrade] | WeaponUpgrade]: A list of all weapon upgrades or a specific weapon upgrade.
+            Optional[List[models.WeaponUpgrade] | models.WeaponUpgrade]: A list of all weapon upgrades or a specific weapon upgrade.
         """
         data = self.get_cache("upgrade", static=True)
         if weapon_id is not None:
@@ -583,7 +558,7 @@ class AmbrTopAPI:
                 (await self.get_material(id=int(material_id)))
                 for material_id in upgrade_info["items"]
             ]
-            return WeaponUpgrade(**upgrade_info)
+            return models.WeaponUpgrade(**upgrade_info)
         else:
             result = []
             for upgrade_id, upgrade_info in data["data"]["weapon"].items():
@@ -592,15 +567,15 @@ class AmbrTopAPI:
                     (await self.get_material(id=int(material_id)))
                     for material_id in upgrade_info["items"]
                 ]
-                result.append(WeaponUpgrade(**upgrade_info))
+                result.append(models.WeaponUpgrade(**upgrade_info))
 
             return result
 
-    async def get_domain(self) -> List[Domain]:
+    async def get_domain(self) -> List[models.Domain]:
         """Get a list of all domains.
 
         Returns:
-            List[Domain]: A list of all domains.
+            List[models.Domain]: A list of all domains.
         """
         result = []
         data = self.get_cache("domain")
@@ -612,7 +587,7 @@ class AmbrTopAPI:
                     city_id,
                     {
                         "cht": "未知城市",
-                        "en": "Unknown City",
+                        "en": "Unknown models.City",
                         "jp": "未知の都市",
                         "chs": "未知城市",
                         "fr": "Ville inconnue",
@@ -626,7 +601,7 @@ class AmbrTopAPI:
                         "th": "เมืองที่ไม่รู้จัก",
                     },
                 )
-                city = City(id=city_id, name=city_lang_dict[self.lang])
+                city = models.City(id=city_id, name=city_lang_dict[self.lang])
                 rewards = []
                 for reward in domain_info["reward"]:
                     if len(str(reward)) == 6:
@@ -635,26 +610,26 @@ class AmbrTopAPI:
                 domain_info["city"] = city
                 domain_info["weekday"] = weekday_int
                 domain_info["reward"] = rewards
-                result.append(Domain(**domain_info))
+                result.append(models.Domain(**domain_info))
 
         return result
 
-    async def get_events(self) -> List[Event]:
+    async def get_events(self) -> List[models.Event]:
         """Get a list of all events.
 
         Returns:
-            List[Event]: A list of all events.
+            List[models.Event]: A list of all events.
         """
         result = []
         async with self.session.get(EVENTS_URL) as resp:
             data = await resp.json()
             for event in list(data.values()):
-                result.append(Event(**event))
+                result.append(models.Event(**event))
         return result
 
     async def get_book_story(self, story_id: str) -> str:
         async with self.session.get(
-            f"https://api.ambr.top/v2/{self.lang}/readable/Book{story_id}"
+            f"https://api.ambr.top/v2/{self.lang}/readable/models.Book{story_id}"
         ) as resp:
             story = await resp.json()
         return story["data"]
