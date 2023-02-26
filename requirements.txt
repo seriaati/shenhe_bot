@@ -13,7 +13,7 @@ fontTools==4.38.0
 genshin @ git+https://github.com/thesadru/genshin.py@4d953d07c1d04497c21dfd0dc39bc5a8fca40d81
 GitPython==3.1.31
 hoyolab_rss_feeds==2.1.1
-hutao_login_gateway==1.0.2
+hutao-login-gateway @ git+https://github.com/Hu-tao-bot/login-service-library-python@fb030bfed5d255e76a6ff20196aed29c52514632
 jishaku==2.5.1
 matplotlib==3.6.2
 Pillow==9.4.0
