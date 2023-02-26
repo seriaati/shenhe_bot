@@ -1,4 +1,3 @@
-import math
 import os
 import time
 import asset
@@ -7,8 +6,6 @@ from apps.text_map.text_map_app import text_map
 import aiofiles
 import aiohttp
 import discord
-import diskcache
-import genshin
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
 from apps.genshin.custom_model import DynamicBackgroundInput
