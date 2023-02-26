@@ -7,6 +7,7 @@ from uuid import uuid4
 from UI_base_models import capture_exception
 
 import aiofiles
+from data.game.elements import convert_element
 import genshin
 import sentry_sdk
 from discord import File
@@ -16,21 +17,41 @@ from discord.utils import find, format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import (Artifact, Character, CharacterUpgrade, Domain,
-                         Material, Weapon, WeaponUpgrade)
+from ambr.models import (
+    Artifact,
+    Character,
+    CharacterUpgrade,
+    Domain,
+    Material,
+    Weapon,
+    WeaponUpgrade,
+)
 from apps.draw import main_funcs
-from apps.genshin.custom_model import (DrawInput, NotificationUser,
-                                       ShenheAccount, ShenheBot)
+from apps.genshin.custom_model import (
+    DrawInput,
+    NotificationUser,
+    ShenheAccount,
+    ShenheBot,
+)
 from apps.genshin.find_codes import find_codes
-from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
-                                get_uid, get_uid_tz)
+from apps.genshin.utils import (
+    get_current_abyss_season,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map.convert_locale import AMBR_LANGS, to_ambr_top
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
+from apps.text_map.utils import get_element_name, get_user_locale
 from utility.fetch_card import fetch_cards
-from utility.utils import (DefaultEmbed, ErrorEmbed, get_dt_now,
-                           get_user_appearance_mode, get_user_notification,
-                           log)
+from utility.utils import (
+    DefaultEmbed,
+    ErrorEmbed,
+    get_dt_now,
+    get_user_appearance_mode,
+    get_user_notification,
+    log,
+)
 
 
 def schedule_error_handler(func):
@@ -191,7 +212,7 @@ class Schedule(commands.Cog):
                 continue
             if n_user.last_notif and now - n_user.last_notif < timedelta(hours=2):
                 continue
-            
+
             try:
                 s_user = await get_shenhe_account(n_user.user_id, self.bot)
             except:
@@ -428,7 +449,7 @@ class Schedule(commands.Cog):
         rows = await self.bot.pool.fetch(
             f"{select_query} FROM {table_name} WHERE toggle = true"
         )
-        
+
         return [NotificationUser(**row) for row in rows]
 
     @schedule_error_handler
@@ -540,7 +561,7 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = f"```{type(e)}: {e.msg}```"
                 capture_exception(e)
-            except RuntimeError: # TODO: Find out why this happens
+            except RuntimeError:  # TODO: Find out why this happens
                 pass
             except Exception as e:
                 error = True
@@ -622,7 +643,7 @@ class Schedule(commands.Cog):
         for row in rows:
             user_id: int = row["user_id"]
             item_list: List[str] = row["item_list"]
-            
+
             uid = await get_uid(user_id, self.bot.pool)
             uid_tz = get_uid_tz(uid)
             if uid_tz != time_offset:
@@ -842,7 +863,7 @@ class Schedule(commands.Cog):
         """Updates genshin text map"""
         log.info("[Schedule][Update Text Map] Start")
         # character, weapon, material, artifact text map
-        things_to_update = [
+        things_to_update = (
             "avatar",
             "weapon",
             "material",
@@ -852,18 +873,28 @@ class Schedule(commands.Cog):
             "furniture",
             "monster",
             "namecard",
-        ]
+        )
         for thing in things_to_update:
-            dict = {}
-            for lang in list(AMBR_LANGS.values()):
+            dict: Dict[str, Dict[str, str]] = {}
+            for discord_lang, lang in AMBR_LANGS.items():
                 async with self.bot.session.get(
                     f"https://api.ambr.top/v2/{lang}/{thing}"
                 ) as r:
                     data = await r.json()
-                for character_id, character_info in data["data"]["items"].items():
-                    if character_id not in dict:
-                        dict[character_id] = {}
-                    dict[character_id][lang] = character_info["name"]
+                for item_id, item_data in data["data"]["items"].items():
+                    if item_id not in dict:
+                        dict[item_id] = {}
+
+                    if thing == "avatar" and (
+                        "10000007" in item_id or "10000005" in item_id
+                    ):
+                        dict[item_id][lang] = (
+                            item_data["name"]
+                            + f" ({get_element_name(convert_element(item_data['element']), discord_lang)})"
+                            + f" ({'♂️' if '10000005' in item_id else '♀️'})"
+                        )
+                    else:
+                        dict[item_id][lang] = item_data["name"]
             if thing == "avatar":
                 dict["10000007"] = {
                     "chs": "旅行者",

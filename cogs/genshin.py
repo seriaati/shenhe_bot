@@ -113,7 +113,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             except FileNotFoundError:
                 self.card_data[lang] = []
 
-        maps_to_open: List[str] = [
+        maps_to_open = (
             "avatar",
             "weapon",
             "material",
@@ -123,7 +123,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             "furniture",
             "namecard",
             "book",
-        ]
+        )
         self.text_map_files: List[Dict[str, Any]] = []
         for map in maps_to_open:
             try:
@@ -832,9 +832,12 @@ class GenshinCog(commands.Cog, name="genshin"):
     ) -> List[app_commands.Choice[str]]:
         user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
         ambr_top_locale = convert_locale.to_ambr_top(user_locale or i.locale)
-        result = []
+        result: List[app_commands.Choice] = []
         for queries in self.text_map_files:
             for item_id, query_names in queries.items():
+                if item_id in ("10000005", "10000007"):
+                    continue
+                
                 item_name = query_names[ambr_top_locale]
                 if current.lower() in item_name.lower() and item_name:
                     result.append(app_commands.Choice(name=item_name, value=item_id))

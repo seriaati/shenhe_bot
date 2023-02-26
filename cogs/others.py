@@ -34,7 +34,7 @@ class OthersCog(commands.Cog, name="others"):
         self.bot: ShenheBot = bot
         try:
             with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
-                self.avatar = json.load(f)
+                self.avatar: Dict[str, Dict[str, str]] = json.load(f)
         except FileNotFoundError:
             self.avatar = {}
 
@@ -269,8 +269,8 @@ class OthersCog(commands.Cog, name="others"):
         view.author = i.user
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
         character = await ambr.get_character(character_id)
-        if not isinstance(character, Character):
-            raise TypeError("character is not a Character")
+        
+        assert isinstance(character, Character)
         await CustomImage.return_custom_image_interaction(
             view, i, converted_character_id, character.element
         )
@@ -282,6 +282,9 @@ class OthersCog(commands.Cog, name="others"):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
+            if character_id in ("10000005", "10000007"):
+                continue
+            
             if current.lower() in character_names[to_ambr_top(locale)].lower():
                 options.append(
                     app_commands.Choice(
