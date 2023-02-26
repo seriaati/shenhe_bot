@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import IntEnum
 from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field, validator
@@ -71,7 +71,7 @@ class Character(BaseModel):
     weapon_type: str = Field(alias="weaponType")
     icon: str
     beta: bool = False
-
+    
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
