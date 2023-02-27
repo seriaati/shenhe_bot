@@ -570,11 +570,7 @@ class Schedule(commands.Cog):
             else:
                 log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
                 if await get_user_notification(user.discord_user.id, self.bot.pool):
-                    embed = DefaultEmbed(description=f"{reward.name} x{reward.amount}")
-                    embed.set_author(
-                        name=text_map.get(87, "en-US", user.user_locale),
-                        icon_url=user.discord_user.display_avatar.url,
-                    )
+                    embed = DefaultEmbed(text_map.get(87, "en-US", user.user_locale), f"{reward.name} x{reward.amount}")
                     embed.set_thumbnail(url=reward.icon)
                     embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
 
@@ -612,7 +608,7 @@ class Schedule(commands.Cog):
             if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
                 await asyncio.sleep(40)
 
-            await asyncio.sleep(3)
+            await asyncio.sleep(3.5)
 
         log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
 
