@@ -14,5 +14,6 @@ ENDPOINTS = {
 }
 
 STATIC_ENDPOINTS = {
-    'upgrade': 'upgrade'
+    'upgrade': 'upgrade',
+    'weapon_curve': 'weaponCurve',
 }

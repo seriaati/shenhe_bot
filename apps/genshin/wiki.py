@@ -31,6 +31,7 @@ from utility.utils import (
     DefaultEmbed,
     get_weekday_int_with_name,
 )
+from data.game.fight_prop import percentage_fight_props
 
 
 async def parse_character_wiki(
@@ -102,7 +103,7 @@ async def parse_character_wiki(
     count = 0
     for constellation in character.constellations:
         count += 1
-        embed = DefaultEmbed(constellation.name,constellation.description)
+        embed = DefaultEmbed(constellation.name, constellation.description)
         embed.set_author(
             name=text_map.get(318, locale) + f" {count}",
             icon_url=character.icon,
@@ -170,32 +171,34 @@ async def parse_weapon_wiki(
         embed.add_field(
             name=f"{weapon.effect.name} (R1)",
             value=weapon.effect.descriptions[0],
+            inline=False
         )
         if len(weapon.effect.descriptions) > 4:
             embed.add_field(
                 name=f"{weapon.effect.name} (R5)",
                 value=weapon.effect.descriptions[4],
+                inline=False
             )
 
-    main_stat = weapon.upgrade.stats[0]
-    sub_stat = weapon.upgrade.stats[1]
-    stat_str = ""
-    if main_stat.prop_id is not None:
-        main_stat_hash = get_fight_prop(id=main_stat.prop_id).text_map_hash
-        stat_str += (
-            f"{text_map.get(463, locale)}: {text_map.get(main_stat_hash, locale)}\n"
-        )
-    if sub_stat.prop_id is not None:
-        sub_stat_hash = get_fight_prop(id=sub_stat.prop_id).text_map_hash
-        stat_str += (
-            f"{text_map.get(464, locale)}: {text_map.get(sub_stat_hash, locale)}"
-        )
-    if stat_str != "":
+    max_level = weapon.upgrade.ascensions[-1].new_max_level
+    for stat in weapon.upgrade.stats:
+        if stat.prop_id is None:
+            continue
+        
+        level_one_curve = await client.get_weapon_curve(stat.grow_type ,1)
+        level_max_curve = await client.get_weapon_curve(stat.grow_type , max_level)
+        percentage = True if stat.prop_id in percentage_fight_props else False
+        multiplier = 100 if percentage else 1
+        
         embed.add_field(
-            name=text_map.get(531, locale),
-            value=stat_str,
-            inline=False,
+            name=text_map.get(get_fight_prop(id=stat.prop_id).text_map_hash, locale),
+            value=f"""
+            Lv.1: {round(level_one_curve*stat.initial_value*multiplier, 1 if percentage else None)}{"%" if percentage else ""}
+            Lv.{max_level}: {round(level_max_curve*stat.initial_value*multiplier, 1 if percentage else None)}{"%" if percentage else ""}
+            """,
+            inline=False
         )
+    
     embed.set_thumbnail(url=weapon.icon)
 
     # ascension

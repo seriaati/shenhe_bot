@@ -633,3 +633,8 @@ class AmbrTopAPI:
         ) as resp:
             story = await resp.json()
         return story["data"]
+    
+    async def get_weapon_curve(self, curve_type: str, level: int) -> float:
+        """Get the percentage number of weapon curve given a weapon level."""
+        data = self.get_cache("weapon_curve", static=True)
+        return data["data"][str(level)]["curveInfos"][curve_type]

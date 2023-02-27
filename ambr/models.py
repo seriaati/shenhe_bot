@@ -170,7 +170,8 @@ class WeaponEffect(BaseModel):
 
 class WeaponStat(BaseModel):
     prop_id: Optional[str] = Field(alias="propType", default=None)
-    initial_value: int = Field(alias="initValue")
+    initial_value: float = Field(alias="initValue")
+    grow_type: str = Field(alias="type", default=None)
 
 
 class WeaponAscension(BaseModel):
