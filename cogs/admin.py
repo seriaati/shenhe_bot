@@ -1,13 +1,10 @@
-import ast
 import functools
 import importlib
 import pickle
 import sys
-import dateutil.parser
 from pathlib import Path
 from typing import Optional
 
-import asqlite
 import git
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
@@ -15,7 +12,7 @@ from discord.ext import commands
 from diskcache import FanoutCache
 
 from apps.genshin.custom_model import ShenheBot
-from utility.utils import DefaultEmbed, ErrorEmbed, log
+from utility.utils import DefaultEmbed, ErrorEmbed
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -32,19 +29,28 @@ class AdminCog(commands.Cog, name="admin"):
 
     @commands.is_owner()
     @commands.command(name="reload")
-    async def reload(self, ctx: commands.Context):
-        message = await ctx.send("pulling from Git...")
+    async def reload(self, ctx: commands.Context, custom_module: Optional[str] = None):
+        message = await ctx.send("reloading Shenhe...")
         if not self.bot.debug:
+            await message.edit(content="pulling from Git...")
             g = git.cmd.Git(Path(__file__).parent.parent)
             pull = functools.partial(g.pull)
             await self.bot.loop.run_in_executor(None, pull)
-        modules = list(sys.modules.values())
-        for _ in range(2):
+            
+        if custom_module:
+            try:
+                importlib.reload(importlib.import_module(custom_module))
+            except Exception as e:
+                return await ctx.send(
+                    embed=ErrorEmbed(custom_module, f"```{e}```"),
+                    ephemeral=True,
+                )
+            await message.edit(content=f"reloaded {custom_module}")
+        else:
+            # reload all modules
             await message.edit(content="reloading modules...")
-            for module in modules:
-                if module is None:
-                    continue
-                if module.__name__.startswith(
+            for module in sys.modules:
+                if not module.startswith(
                     (
                         "asset",
                         "config",
@@ -60,26 +66,27 @@ class AdminCog(commands.Cog, name="admin"):
                         "yelan.",
                     )
                 ):
-                    try:
-                        importlib.reload(module)
-                    except Exception as e:
-                        return await ctx.send(
-                            embed=ErrorEmbed(module.__name__, f"```{e}```"),
-                            ephemeral=True,
-                        )
+                    continue
+                try:
+                    importlib.reload(importlib.import_module(module))
+                except Exception as e:
+                    return await message.edit(
+                        embed=ErrorEmbed(module, f"```{e}```"),
+                    )
 
-        await message.edit(content="reloading cogs...")
-        for filepath in Path("./cogs").glob("**/*.py"):
-            cog_name = Path(filepath).stem
-            if cog_name in ["login", "grafana"]:
-                continue
-            try:
-                await self.bot.reload_extension(f"cogs.{cog_name}")
-            except Exception as e:
-                return await message.edit(
-                    embed=ErrorEmbed(cog_name, f"```{e}```"),
-                )
-        await message.edit(content="bot reloaded")
+            # reload all cogs
+            await message.edit(content="reloading cogs...")
+            for filepath in Path("./cogs").glob("**/*.py"):
+                cog_name = Path(filepath).stem
+                if cog_name in ["login", "grafana"]:
+                    continue
+                try:
+                    await self.bot.reload_extension(f"cogs.{cog_name}")
+                except Exception as e:
+                    return await message.edit(
+                        embed=ErrorEmbed(cog_name, f"```{e}```"),
+                    )
+            await message.edit(content="Shenhe reloaded")
 
     @commands.is_owner()
     @commands.command(name="sync")
@@ -119,11 +126,12 @@ class AdminCog(commands.Cog, name="admin"):
             pickle.dumps(cache_data),
         )
         await ctx.send("done")
-    
+
     @commands.is_owner()
     @commands.command(name="trigger-error")
     async def trigger_error(self, ctx: commands.Context):
         raise Exception("test")
+
 
 async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(AdminCog(bot))
