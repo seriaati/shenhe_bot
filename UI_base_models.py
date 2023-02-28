@@ -106,6 +106,7 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.NumbersOnly):
         embed.set_author(name=text_map.get(187, locale))
     elif isinstance(e, genshin.GenshinException):
+        embed.description = f"```[{e.retcode}]: {e.msg}```\n```{e.original}```"
         embed.set_author(name=text_map.get(10, locale))
     else:
         capture_exception(e)
