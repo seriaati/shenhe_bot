@@ -931,15 +931,16 @@ class GenshinCog(commands.Cog, name="genshin"):
         for event in events:
             if "祈願" in event.name["CHT"]:
                 banners.append(event)
+
+        banners.sort(key=lambda x: x.end_time)
+        banners = [b for b in banners if b.end_time > get_dt_now()]
         if not banners:
             return await i.followup.send(
                 embed=DefaultEmbed(description=text_map.get(376, locale)).set_author(
                     name=text_map.get(23, locale)
                 )
             )
-
-        banners.sort(key=lambda x: x.end_time)
-        banners = [b for b in banners if b.end_time > get_dt_now()]
+        
         event_lang = convert_locale.to_event_lang(locale)
 
         fp = await main_funcs.draw_banner_card(
