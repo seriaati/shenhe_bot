@@ -642,7 +642,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if card_data and card_data.characters:
             non_cache_ids = [str(c.id) for c in card_data.characters]
         else:
-            non_cache_ids = [c.id for c in data.player.characters_preview]
+            non_cache_ids = []
             
         if data.characters is not None:
             for character in data.characters:
