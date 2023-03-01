@@ -6,31 +6,26 @@ from typing import Any, Dict, List, Tuple
 from uuid import uuid4
 
 import aiofiles
+import discord
 import genshin
-from discord import File
-from discord.errors import Forbidden, HTTPException
+from discord import utils
 from discord.ext import commands, tasks
-from discord.utils import find, format_dt
 
+import ambr.models as models
+import apps.genshin.custom_model as custom_model
+import apps.genshin.utils as genshin_utils
 import asset
+import utility.utils as utility_utils
 from ambr.client import AmbrTopAPI
-from ambr.models import (Artifact, Character, CharacterUpgrade, Domain,
-                         Material, Weapon, WeaponUpgrade)
 from apps.draw import main_funcs
-from apps.genshin.custom_model import (DrawInput, NotificationUser,
-                                       ShenheAccount, ShenheBot)
 from apps.genshin.find_codes import find_codes
-from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
-                                get_uid, get_uid_tz)
 from apps.text_map.convert_locale import AMBR_LANGS, to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_user_locale
 from data.game.elements import convert_element
 from UI_base_models import capture_exception
 from utility.fetch_card import fetch_cards
-from utility.utils import (DefaultEmbed, ErrorEmbed, get_dt_now,
-                           get_user_appearance_mode, get_user_notification,
-                           log)
+from utility.utils import log
 
 
 def schedule_error_handler(func):
@@ -49,7 +44,7 @@ def schedule_error_handler(func):
 
 class Schedule(commands.Cog):
     def __init__(self, bot):
-        self.bot: ShenheBot = bot
+        self.bot: custom_model.ShenheBot = bot
         self.debug = self.bot.debug
         if not self.debug:
             self.run_tasks.start()
@@ -63,7 +58,7 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=loop_interval)
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
-        now = get_dt_now()
+        now = utility_utils.get_dt_now()
 
         if now.minute < self.loop_interval:  # every hour
             tasks = ["resin_notification", "pot_notification", "pt_notification"]
@@ -97,7 +92,7 @@ class Schedule(commands.Cog):
                     "weapon_notification", hour_dict[now.hour]
                 )
             )
-        
+
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
             await asyncio.create_task(self.redeem_codes())
 
@@ -106,7 +101,7 @@ class Schedule(commands.Cog):
         log.info("[Schedule] Generating abyss.json...")
 
         result = {}
-        result["schedule_id"] = get_current_abyss_season()
+        result["schedule_id"] = genshin_utils.get_current_abyss_season()
         result["size"] = 0
         result["data"] = []
 
@@ -178,7 +173,7 @@ class Schedule(commands.Cog):
         fp = io.BytesIO()
         fp.write(json.dumps(result, indent=4).encode())
         fp.seek(0)
-        await lvlurarti.send(file=File(fp, "abyss.json"))
+        await lvlurarti.send(file=discord.File(fp, "abyss.json"))
 
         log.info("[Schedule] Sent abyss.json")
 
@@ -187,7 +182,7 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule][{notification_type}] Checking...")
 
         n_users = await self.get_notification_users(notification_type)
-        now = get_dt_now()
+        now = utility_utils.get_dt_now()
         sent_num = 0
         for n_user in n_users:
             if n_user.current == n_user.max:
@@ -196,7 +191,9 @@ class Schedule(commands.Cog):
                 continue
 
             try:
-                s_user = await get_shenhe_account(n_user.user_id, self.bot)
+                s_user = await genshin_utils.get_shenhe_account(
+                    n_user.user_id, self.bot
+                )
             except:
                 continue
 
@@ -254,7 +251,7 @@ class Schedule(commands.Cog):
                     else:  # resin_notification
                         map_hash = 582
 
-                    embed = ErrorEmbed(
+                    embed = utility_utils.ErrorEmbed(
                         description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
                     )
                     embed.set_author(
@@ -264,7 +261,7 @@ class Schedule(commands.Cog):
                     embed.set_footer(text=text_map.get(16, locale))
                     try:
                         await discord_user.send(embed=embed)
-                    except Forbidden:
+                    except discord.Forbidden:
                         pass
                 else:
                     # send notification
@@ -311,14 +308,17 @@ class Schedule(commands.Cog):
         )
 
     async def notify_resin(
-        self, user: NotificationUser, notes: genshin.models.Notes, locale: str
+        self,
+        user: custom_model.NotificationUser,
+        notes: genshin.models.Notes,
+        locale: str,
     ) -> bool:
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = DefaultEmbed(
+        embed = utility_utils.DefaultEmbed(
             description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else format_dt(notes.resin_recovery_time, 'R')}\n"
+            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
         )
         embed.set_author(
@@ -329,7 +329,7 @@ class Schedule(commands.Cog):
         embed.set_footer(text=text_map.get(305, locale))
         try:
             await discord_user.send(embed=embed)
-        except Forbidden:
+        except discord.Forbidden:
             await self.disable_notification(
                 user.user_id, user.uid, "resin_notification"
             )
@@ -338,14 +338,17 @@ class Schedule(commands.Cog):
             return True
 
     async def notify_pot(
-        self, user: NotificationUser, notes: genshin.models.Notes, locale: str
+        self,
+        user: custom_model.NotificationUser,
+        notes: genshin.models.Notes,
+        locale: str,
     ) -> bool:
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = DefaultEmbed(
+        embed = utility_utils.DefaultEmbed(
             description=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else format_dt(notes.realm_currency_recovery_time, 'R')}\n"
+            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else utils.format_dt(notes.realm_currency_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
         )
         embed.set_author(
@@ -356,17 +359,17 @@ class Schedule(commands.Cog):
         embed.set_footer(text=text_map.get(305, locale))
         try:
             await discord_user.send(embed=embed)
-        except Forbidden:
+        except discord.Forbidden:
             await self.disable_notification(user.user_id, user.uid, "pot_notification")
             return False
         else:
             return True
 
-    async def notify_pt(self, user: NotificationUser, locale: str):
+    async def notify_pt(self, user: custom_model.NotificationUser, locale: str):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = DefaultEmbed(description=f"UID: {user.uid}")
+        embed = utility_utils.DefaultEmbed(description=f"UID: {user.uid}")
         embed.set_author(
             name=text_map.get(366, locale),
             icon_url=discord_user.display_avatar.url,
@@ -375,7 +378,7 @@ class Schedule(commands.Cog):
         embed.set_footer(text=text_map.get(305, locale))
         try:
             await discord_user.send(embed=embed)
-        except Forbidden:
+        except discord.Forbidden:
             await self.disable_notification(user.user_id, user.uid, "pt_notification")
             return False
         else:
@@ -397,33 +400,37 @@ class Schedule(commands.Cog):
             uid,
         )
 
-    async def get_schedule_users(self) -> List[ShenheAccount]:
+    async def get_schedule_users(self) -> List[custom_model.ShenheAccount]:
         """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
 
         Returns:
-            List[ShenheAccount]: List of shenhe users
+            List[custom_model.ShenheAccount]: List of shenhe users
         """
-        accounts: List[ShenheAccount] = []
+        accounts: List[custom_model.ShenheAccount] = []
         rows = await self.bot.pool.fetch(
             "SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         for row in rows:
             try:
-                account = await get_shenhe_account(row["user_id"], self.bot)
+                account = await genshin_utils.get_shenhe_account(
+                    row["user_id"], self.bot
+                )
             except:
                 continue
             accounts.append(account)
 
         return accounts
 
-    async def get_notification_users(self, table_name: str) -> List[NotificationUser]:
+    async def get_notification_users(
+        self, table_name: str
+    ) -> List[custom_model.NotificationUser]:
         """Gets a list of notification users that has the reminder feature enabled
 
         Args:
             table_name (str): the table name in the database
 
         Returns:
-            List[NotificationUser]: a list of notification users
+            List[custom_model.NotificationUser]: a list of notification users
         """
         select_query = "SELECT user_id, uid, max, last_notif, current"
         if table_name in ("resin_notification", "pot_notification"):
@@ -432,7 +439,7 @@ class Schedule(commands.Cog):
             f"{select_query} FROM {table_name} WHERE toggle = true"
         )
 
-        return [NotificationUser(**row) for row in rows]
+        return [custom_model.NotificationUser(**row) for row in rows]
 
     @schedule_error_handler
     async def redeem_codes(self):
@@ -442,28 +449,32 @@ class Schedule(commands.Cog):
         codes = await find_codes(self.bot.session)
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
 
-        users: List[ShenheAccount] = []
+        users: List[custom_model.ShenheAccount] = []
         rows = await self.bot.pool.fetch(
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for row in rows:
             try:
-                acc = await get_shenhe_account(row["user_id"], self.bot)
+                acc = await genshin_utils.get_shenhe_account(row["user_id"], self.bot)
             except:
                 pass
             else:
                 users.append(acc)
-        
+
         for index, user in enumerate(users):
             locale = user.user_locale or "en-US"
-            embed = DefaultEmbed(text_map.get(126, locale))
+            embed = utility_utils.DefaultEmbed(text_map.get(126, locale))
             value = ""
 
             for code in codes:
-                c = await self.bot.pool.fetchval("SELECT code FROM redeem_codes WHERE code = $1 AND uid = $2", code, user.uid)
+                c = await self.bot.pool.fetchval(
+                    "SELECT code FROM redeem_codes WHERE code = $1 AND uid = $2",
+                    code,
+                    user.uid,
+                )
                 if c:
                     continue
-                
+
                 success = False
 
                 try:
@@ -495,13 +506,17 @@ class Schedule(commands.Cog):
                     name=f"{'✅' if success else '⛔'} {code}",
                     value=value,
                 )
-                
-                await self.bot.pool.execute("INSERT INTO redeem_codes (code, uid) VALUES ($1, $2)", code, user.uid)
+
+                await self.bot.pool.execute(
+                    "INSERT INTO redeem_codes (code, uid) VALUES ($1, $2)",
+                    code,
+                    user.uid,
+                )
 
             if embed.fields:
                 try:
                     await user.discord_user.send(embed=embed)  # type: ignore
-                except Forbidden:
+                except discord.Forbidden:
                     pass
 
             await asyncio.sleep(10)
@@ -547,14 +562,19 @@ class Schedule(commands.Cog):
                 capture_exception(e)
             else:
                 log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
-                if await get_user_notification(user.discord_user.id, self.bot.pool):
-                    embed = DefaultEmbed(text_map.get(87, "en-US", user.user_locale), f"{reward.name} x{reward.amount}")
+                if await utility_utils.get_user_notification(
+                    user.discord_user.id, self.bot.pool
+                ):
+                    embed = utility_utils.DefaultEmbed(
+                        text_map.get(87, "en-US", user.user_locale),
+                        f"{reward.name} x{reward.amount}",
+                    )
                     embed.set_thumbnail(url=reward.icon)
                     embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
 
                     try:
                         await user.discord_user.send(embed=embed)  # type: ignore
-                    except Forbidden:
+                    except discord.Forbidden:
                         pass
 
                 success_count += 1
@@ -570,7 +590,7 @@ class Schedule(commands.Cog):
                     user.uid,
                 )
 
-                embed = ErrorEmbed(
+                embed = utility_utils.ErrorEmbed(
                     description=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
                 )
                 embed.set_author(
@@ -580,7 +600,7 @@ class Schedule(commands.Cog):
                 embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
                 try:
                     await user.discord_user.send(embed=embed)  # type: ignore
-                except Forbidden:
+                except discord.Forbidden:
                     pass
 
             if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
@@ -595,7 +615,7 @@ class Schedule(commands.Cog):
             410036441129943050
         )
         await seria.send(
-            embed=DefaultEmbed(
+            embed=utility_utils.DefaultEmbed(
                 "Automatic daily check-in report",
                 f"Claimed {success_count}/{user_count}",
             )
@@ -607,8 +627,8 @@ class Schedule(commands.Cog):
     ):
         time_offset = int(time_offset)
         log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
-        upgrade_cache: Dict[str, CharacterUpgrade | WeaponUpgrade] = {}
-        item_cache: Dict[str, Weapon | Character] = {}
+        upgrade_cache: Dict[str, models.CharacterUpgrade | models.WeaponUpgrade] = {}
+        item_cache: Dict[str, models.Weapon | models.Character] = {}
 
         rows = await self.bot.pool.fetch(
             f"SELECT user_id, item_list FROM {notification_type} WHERE toggle = true"
@@ -618,8 +638,8 @@ class Schedule(commands.Cog):
             user_id: int = row["user_id"]
             item_list: List[str] = row["item_list"]
 
-            uid = await get_uid(user_id, self.bot.pool)
-            uid_tz = get_uid_tz(uid)
+            uid = await genshin_utils.get_uid(user_id, self.bot.pool)
+            uid_tz = genshin_utils.get_uid_tz(uid)
             if uid_tz != time_offset:
                 continue
 
@@ -627,7 +647,7 @@ class Schedule(commands.Cog):
                 f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})"
             )
 
-            now = get_dt_now() + timedelta(hours=time_offset)
+            now = utility_utils.get_dt_now() + timedelta(hours=time_offset)
             locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
 
             client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
@@ -650,7 +670,7 @@ class Schedule(commands.Cog):
                             else:
                                 upgrade = await client.get_weapon_upgrade(int(item_id))
                             assert isinstance(
-                                upgrade, (CharacterUpgrade, WeaponUpgrade)
+                                upgrade, (models.CharacterUpgrade, models.WeaponUpgrade)
                             )
                             upgrade_cache[str(item_id)] = upgrade
 
@@ -671,20 +691,22 @@ class Schedule(commands.Cog):
                         item = await client.get_character(str(item_id))
                     else:
                         item = await client.get_weapon(int(item_id))
-                    if not isinstance(item, (Character, Weapon)):
+                    if not isinstance(item, (models.Character, models.Weapon)):
                         continue
                     item_cache[str(item_id)] = item
 
-                materials: List[Tuple[Material, str]] = []
+                materials: List[Tuple[models.Material, str]] = []
                 for material_id in item_info["materials"]:
                     material = await client.get_material(material_id)
-                    if not isinstance(material, Material):
+                    if not isinstance(material, models.Material):
                         continue
                     materials.append((material, ""))
 
-                dark_mode = await get_user_appearance_mode(user_id, self.bot.pool)
+                dark_mode = await utility_utils.get_user_appearance_mode(
+                    user_id, self.bot.pool
+                )
                 fp = await main_funcs.draw_material_card(
-                    DrawInput(
+                    custom_model.DrawInput(
                         loop=self.bot.loop,
                         session=self.bot.session,
                         locale=locale,
@@ -695,11 +717,11 @@ class Schedule(commands.Cog):
                     draw_title=False,
                 )
                 fp.seek(0)
-                file = File(fp, "reminder_card.jpeg")
+                file = discord.File(fp, "reminder_card.jpeg")
 
-                domain: Domain = item_info["domain"]
+                domain: models.Domain = item_info["domain"]
 
-                embed = DefaultEmbed()
+                embed = utility_utils.DefaultEmbed()
                 embed.add_field(
                     name=text_map.get(609, locale),
                     value=f"{domain.name} ({domain.city.name})",
@@ -713,7 +735,7 @@ class Schedule(commands.Cog):
 
                 try:
                     await user.send(embed=embed, files=[file])
-                except Forbidden:
+                except discord.Forbidden:
                     await self.bot.pool.execute(
                         f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1",
                         user_id,
@@ -739,11 +761,11 @@ class Schedule(commands.Cog):
             "rarity": 5,
             "icon": "https://api.ambr.top/assets/UI/UI_AvatarIcon_PlayerBoy.png",
             "eng": "Traveler",
-            "emoji": str(find(lambda e: e.name == "10000005", self.bot.emojis)),
+            "emoji": str(utils.find(lambda e: e.name == "10000005", self.bot.emojis)),
         }
         character_map["10000007"] = character_map["10000005"]
         character_map["10000007"]["emoji"] = str(
-            find(lambda e: e.name == "10000007", self.bot.emojis)
+            utils.find(lambda e: e.name == "10000007", self.bot.emojis)
         )
         with open(f"data/game/character_map.json", "w+", encoding="utf-8") as f:
             json.dump(character_map, f, ensure_ascii=False, indent=4)
@@ -767,7 +789,7 @@ class Schedule(commands.Cog):
 
             for object in objects:
                 english_name = ""
-                if isinstance(object, Character):
+                if isinstance(object, models.Character):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "element": object.element,
@@ -775,32 +797,38 @@ class Schedule(commands.Cog):
                         "icon": object.icon,
                     }
                     eng_object = await eng_client.get_character(object.id)
-                    if isinstance(eng_object, Character) and eng_object is not None:
+                    if (
+                        isinstance(eng_object, models.Character)
+                        and eng_object is not None
+                    ):
                         english_name = eng_object.name
-                elif isinstance(object, Weapon):
+                elif isinstance(object, models.Weapon):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity,
                         "icon": object.icon,
                     }
                     eng_object = await eng_client.get_weapon(object.id)
-                    if isinstance(eng_object, Weapon) and eng_object is not None:
+                    if isinstance(eng_object, models.Weapon) and eng_object is not None:
                         english_name = eng_object.name
-                elif isinstance(object, Artifact):
+                elif isinstance(object, models.Artifact):
                     object_map[str(object.id)] = {
                         "name": object.name,
                         "rarity": object.rarity_list,
                         "icon": object.icon,
                     }
                     eng_object = await eng_client.get_artifact(object.id)
-                    if isinstance(eng_object, Artifact) and eng_object is not None:
+                    if (
+                        isinstance(eng_object, models.Artifact)
+                        and eng_object is not None
+                    ):
                         english_name = eng_object.name
 
                 object_map[str(object.id)]["eng"] = english_name
                 object_id = str(object.id)
                 if "-" in object_id:
                     object_id = (object_id.split("-"))[0]
-                emoji = find(lambda e: e.name == object_id, self.bot.emojis)
+                emoji = utils.find(lambda e: e.name == object_id, self.bot.emojis)
                 if emoji is None:
                     emoji_server = None
                     for guild in self.bot.guilds:
@@ -819,7 +847,7 @@ class Schedule(commands.Cog):
                                 name=object_id,
                                 image=bytes_obj,
                             )
-                        except (Forbidden, HTTPException) as e:
+                        except (discord.Forbidden, discord.HTTPException) as e:
                             log.warning(
                                 f"[Schedule] Emoji creation failed [Object]{object}"
                             )
