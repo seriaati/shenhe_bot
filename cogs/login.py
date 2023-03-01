@@ -50,6 +50,7 @@ class LoginGatewayCog(commands.Cog):
         # Set variable data
         user_id = data.discord.user_id
         genshin = data.genshin
+        uid = data.genshin.uid
 
         # Check if ltoken is not empty string
         if data.genshin.ltoken:
@@ -57,23 +58,26 @@ class LoginGatewayCog(commands.Cog):
                 """
                 UPDATE user_accounts
                 SET ltuid = $1, cookie_token = $2, ltoken = $3
-                WHERE user_id = $4
+                WHERE user_id = $4 AND uid = $5
                 """,
                 genshin.ltuid,
                 genshin.cookie_token,
                 genshin.ltoken,
                 int(user_id),
+                int(uid),
+                
             )
         else:
             await self.bot.pool.execute(
                 """
                 UPDATE user_accounts
                 SET ltuid = $1, cookie_token = $2
-                WHERE user_id = $3
+                WHERE user_id = $3 AND uid = $4
                 """,
                 genshin.ltuid,
                 genshin.cookie_token,
                 int(user_id),
+                int(uid),
             )
 
     async def gateway_player(self, data: Player):
