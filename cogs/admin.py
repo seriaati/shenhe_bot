@@ -1,11 +1,9 @@
-import functools
 import importlib
 import pickle
 import sys
 from pathlib import Path
 from typing import Optional
 
-import git
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
 from discord.ext import commands
@@ -30,13 +28,7 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="reload")
     async def reload(self, ctx: commands.Context, custom_module: Optional[str] = None):
-        message = await ctx.send("reloading Shenhe...")
-        if not self.bot.debug:
-            await message.edit(content="pulling from Git...")
-            g = git.cmd.Git(Path(__file__).parent.parent)
-            pull = functools.partial(g.pull)
-            await self.bot.loop.run_in_executor(None, pull)
-            
+        message = await ctx.send("reloading Shenhe...")    
         if custom_module:
             try:
                 importlib.reload(importlib.import_module(custom_module))
