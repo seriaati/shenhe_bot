@@ -561,8 +561,6 @@ class Schedule(commands.Cog):
                 error = True
                 error_message = f"```{type(e)}: {e.msg}```"
                 capture_exception(e)
-            except RuntimeError:  # TODO: Find out why this happens
-                pass
             except Exception as e:
                 error = True
                 error_message = f"```{type(e)} {e}```"
