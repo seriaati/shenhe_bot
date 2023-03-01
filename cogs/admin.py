@@ -49,7 +49,8 @@ class AdminCog(commands.Cog, name="admin"):
         else:
             # reload all modules
             await message.edit(content="reloading modules...")
-            for module in sys.modules:
+            modules = list(sys.modules.keys())
+            for module in modules:
                 if not module.startswith(
                     (
                         "asset",
@@ -78,7 +79,7 @@ class AdminCog(commands.Cog, name="admin"):
             await message.edit(content="reloading cogs...")
             for filepath in Path("./cogs").glob("**/*.py"):
                 cog_name = Path(filepath).stem
-                if cog_name in ["login", "grafana"]:
+                if cog_name in ("login", "grafana", "schedule"):
                     continue
                 try:
                     await self.bot.reload_extension(f"cogs.{cog_name}")
@@ -86,7 +87,7 @@ class AdminCog(commands.Cog, name="admin"):
                     return await message.edit(
                         embed=ErrorEmbed(cog_name, f"```{e}```"),
                     )
-            await message.edit(content="Shenhe reloaded")
+            await message.edit(content="Shenhe reloaded (cogs skipped : `login`, `grafana`, `schedule`)")
 
     @commands.is_owner()
     @commands.command(name="sync")
