@@ -1,6 +1,6 @@
 import json
 import random
-from datetime import timedelta
+from datetime import timedelta, timezone
 from typing import Any, Dict, List, Tuple
 
 import aiofiles
@@ -638,16 +638,19 @@ class GenshinCog(commands.Cog, name="genshin"):
             .set_image(url="https://i.imgur.com/25pdyUG.gif"),
         ]
 
-        options = []
+        options: List[discord.SelectOption] = []
+        if card_data and card_data.characters:
+            non_cache_ids = [str(c.id) for c in card_data.characters]
+        else:
+            non_cache_ids = [c.id for c in data.player.characters_preview]
+            
         if data.characters is not None:
             for character in data.characters:
+                description = text_map.get(543, locale) if str(character.id) not in non_cache_ids else ""
                 options.append(
                     discord.SelectOption(
                         label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
-                        description=text_map.get(543, locale)
-                        if str(character.id)
-                        not in [c.id for c in data.player.characters_preview]
-                        else "",
+                        description=description,
                         value=str(character.id),
                         emoji=genshin_utils.get_character_emoji(str(character.id)),
                     )
@@ -922,32 +925,27 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def banners(self, i: discord.Interaction):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
-
-        client = AmbrTopAPI(self.bot.session)
-        events = await client.get_events()
-
-        banners: List[Event] = []
-        for event in events:
-            if "祈願" in event.name["CHT"]:
-                banners.append(event)
-
-        banners.sort(key=lambda x: x.end_time)
-        banners = [b for b in banners if b.end_time > get_dt_now()]
-        if not banners:
+        
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        lang = convert_locale.to_genshin_py(locale)
+        
+        zh_tw_annoucements = await genshin.Client().get_genshin_announcements(lang="zh-tw")
+        annoucements = await genshin.Client().get_genshin_announcements(lang=lang)
+        now = get_dt_now().astimezone(timezone(timedelta(hours=8)))
+        event_wish_ids = [a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now]
+        event_wishes = [a for a in annoucements if a.id in event_wish_ids]
+        if not event_wishes:
             return await i.followup.send(
                 embed=DefaultEmbed(description=text_map.get(376, locale)).set_author(
                     name=text_map.get(23, locale)
                 )
             )
-        
-        event_lang = convert_locale.to_event_lang(locale)
 
         fp = await main_funcs.draw_banner_card(
             custom_model.DrawInput(
                 loop=self.bot.loop, session=self.bot.session, locale=locale
             ),
-            [banner.banner[event_lang] for banner in banners],
+            [w.banner for w in event_wishes],
         )
         fp.seek(0)
 
@@ -956,7 +954,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        banners[0].end_time,
+                        event_wishes[0].end_time,
                         "R",
                     )
                 ),
