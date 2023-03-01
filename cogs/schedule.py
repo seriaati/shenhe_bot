@@ -4,12 +4,9 @@ import json
 from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 from uuid import uuid4
-from UI_base_models import capture_exception
 
 import aiofiles
-from data.game.elements import convert_element
 import genshin
-import sentry_sdk
 from discord import File
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands, tasks
@@ -17,41 +14,23 @@ from discord.utils import find, format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import (
-    Artifact,
-    Character,
-    CharacterUpgrade,
-    Domain,
-    Material,
-    Weapon,
-    WeaponUpgrade,
-)
+from ambr.models import (Artifact, Character, CharacterUpgrade, Domain,
+                         Material, Weapon, WeaponUpgrade)
 from apps.draw import main_funcs
-from apps.genshin.custom_model import (
-    DrawInput,
-    NotificationUser,
-    ShenheAccount,
-    ShenheBot,
-)
+from apps.genshin.custom_model import (DrawInput, NotificationUser,
+                                       ShenheAccount, ShenheBot)
 from apps.genshin.find_codes import find_codes
-from apps.genshin.utils import (
-    get_current_abyss_season,
-    get_shenhe_account,
-    get_uid,
-    get_uid_tz,
-)
+from apps.genshin.utils import (get_current_abyss_season, get_shenhe_account,
+                                get_uid, get_uid_tz)
 from apps.text_map.convert_locale import AMBR_LANGS, to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_user_locale
+from data.game.elements import convert_element
+from UI_base_models import capture_exception
 from utility.fetch_card import fetch_cards
-from utility.utils import (
-    DefaultEmbed,
-    ErrorEmbed,
-    get_dt_now,
-    get_user_appearance_mode,
-    get_user_notification,
-    log,
-)
+from utility.utils import (DefaultEmbed, ErrorEmbed, get_dt_now,
+                           get_user_appearance_mode, get_user_notification,
+                           log)
 
 
 def schedule_error_handler(func):
@@ -102,7 +81,7 @@ class Schedule(commands.Cog):
             if now.day in [3, 18]:
                 await asyncio.create_task(self.generate_abyss_json())
 
-        if now.hour in [4, 15, 21] and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
+        if now.hour in (4, 15, 21) and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
             hour_dict = {
                 4: 0,  # Asia
                 15: -13,  # North America
@@ -118,6 +97,9 @@ class Schedule(commands.Cog):
                     "weapon_notification", hour_dict[now.hour]
                 )
             )
+        
+        if now.hour == 10 and now.minute < self.loop_interval:  # 10am
+            await asyncio.create_task(self.redeem_codes())
 
     @schedule_error_handler
     async def generate_abyss_json(self):
@@ -460,27 +442,28 @@ class Schedule(commands.Cog):
         codes = await find_codes(self.bot.session)
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
 
-        db_codes = await self.bot.pool.fetch("SELECT code FROM redeem_codes")
-        for db_code in db_codes:
-            if db_code["code"] in codes:
-                codes.remove(db_code["code"])
-
-        if not codes:
-            return
-
         users: List[ShenheAccount] = []
         rows = await self.bot.pool.fetch(
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for row in rows:
-            users.append(await get_shenhe_account(row["user_id"], self.bot))
-
+            try:
+                acc = await get_shenhe_account(row["user_id"], self.bot)
+            except:
+                pass
+            else:
+                users.append(acc)
+        
         for index, user in enumerate(users):
             locale = user.user_locale or "en-US"
             embed = DefaultEmbed(text_map.get(126, locale))
             value = ""
 
             for code in codes:
+                c = await self.bot.pool.fetchval("SELECT code FROM redeem_codes WHERE code = $1 AND uid = $2", code, user.uid)
+                if c:
+                    continue
+                
                 success = False
 
                 try:
@@ -501,7 +484,7 @@ class Schedule(commands.Cog):
                     value = f"{type(e)} {e}"
                 else:
                     log.info(
-                        f"[Schedule][Redeem Codes] Redeemed {code} for {user.discord_user.id}"
+                        f"[Schedule][Redeem Codes] Redeemed {code} for ({user.discord_user.id}, {user.uid})"
                     )
                     success = True
                     value = text_map.get(109, locale)
@@ -512,21 +495,18 @@ class Schedule(commands.Cog):
                     name=f"{'✅' if success else '⛔'} {code}",
                     value=value,
                 )
+                
+                await self.bot.pool.execute("INSERT INTO redeem_codes (code, uid) VALUES ($1, $2)", code, user.uid)
 
-            try:
-                await user.discord_user.send(embed=embed)  # type: ignore
-            except Forbidden:
-                pass
+            if embed.fields:
+                try:
+                    await user.discord_user.send(embed=embed)  # type: ignore
+                except Forbidden:
+                    pass
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             if index % 100 == 0:
                 await asyncio.sleep(30)
-
-        for code in codes:
-            await self.bot.pool.execute(
-                "INSERT INTO redeem_codes (code) VALUES ($1) ON CONFLICT DO NOTHING",
-                code,
-            )
 
         log.info("[Schedule][Redeem Codes] Done")
 
