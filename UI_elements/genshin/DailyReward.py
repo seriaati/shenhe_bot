@@ -15,10 +15,11 @@ from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str, genshin_app: GenshinApp):
+    def __init__(self, locale: Locale | str, genshin_app: GenshinApp, uid: int):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
         self.genshin_app = genshin_app
+        self.uid = uid
         self.add_item(ClaimReward(self.locale))
         self.add_item(ClaimRewardToggle(self.locale))
 
@@ -47,7 +48,7 @@ class ClaimRewardToggle(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.pool.execute("UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1", i.user.id)
+        await i.client.pool.execute("UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2", i.user.id, self.view.uid)
 
         for item in self.view.children:
             item.disabled = True  # type: ignore
@@ -76,7 +77,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         )
         return await i.followup.send(embed=embed)
 
-    daily_checkin: bool = await i.client.pool.fetchval("SELECT daily_checkin FROM user_accounts WHERE user_id = $1", i.user.id)
+    daily_checkin: bool = await i.client.pool.fetchval("SELECT daily_checkin FROM user_accounts WHERE user_id = $1 AND uid = $2", i.user.id, shenhe_user.uid)
 
     embed = DefaultEmbed(
         description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
@@ -99,7 +100,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
             r += v
         embed.add_field(name=f"{text_map.get(605, locale)} ({index+1})", value=r)
 
-    view = View(locale, genshin_app)
+    view = View(locale, genshin_app, shenhe_user.uid)
     try:
         await i.response.send_message(embed=embed, view=view)
     except InteractionResponded:

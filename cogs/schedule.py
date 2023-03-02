@@ -93,18 +93,20 @@ class Schedule(commands.Cog):
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
             asyncio.create_task(self.redeem_codes())
-    
+
     @schedule_error_handler
     async def update_shenhe_cache_and_data(self):
         await self.update_ambr_cache()
         await self.update_text_map()
         await self.update_game_data()
         await self.update_card_data()
-    
+
     @schedule_error_handler
     async def save_codes(self):
         log.info("[Schedule] Saving codes...")
-        await self.bot.pool.execute("CREATE TABLE IF NOT EXISTS genshin_codes (code text)")
+        await self.bot.pool.execute(
+            "CREATE TABLE IF NOT EXISTS genshin_codes (code text)"
+        )
         await self.bot.pool.execute("DELETE FROM genshin_codes")
         codes = await find_codes(self.bot.session)
         for code in codes:
