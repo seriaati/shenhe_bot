@@ -63,18 +63,16 @@ class Schedule(commands.Cog):
         if now.minute < self.loop_interval:  # every hour
             tasks = ["resin_notification", "pot_notification", "pt_notification"]
             for task in tasks:
-                await asyncio.create_task(self.check_notification(task))
+                asyncio.create_task(self.check_notification(task))
+            asyncio.create_task(self.save_codes())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
-            await asyncio.create_task(self.claim_reward())
+            asyncio.create_task(self.claim_reward())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
-            await asyncio.create_task(self.update_ambr_cache())
-            await asyncio.create_task(self.update_text_map())
-            await asyncio.create_task(self.update_game_data())
-            await asyncio.create_task(self.update_card_data())
+            asyncio.create_task(self.update_shenhe_cache_and_data())
             if now.day in [3, 18]:
-                await asyncio.create_task(self.generate_abyss_json())
+                asyncio.create_task(self.generate_abyss_json())
 
         if now.hour in (4, 15, 21) and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
             hour_dict = {
@@ -82,19 +80,36 @@ class Schedule(commands.Cog):
                 15: -13,  # North America
                 21: -7,  # Europe
             }
-            await asyncio.create_task(
+            asyncio.create_task(
                 self.weapon_talent_base_notification(
                     "talent_notification", hour_dict[now.hour]
                 )
             )
-            await asyncio.create_task(
+            asyncio.create_task(
                 self.weapon_talent_base_notification(
                     "weapon_notification", hour_dict[now.hour]
                 )
             )
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
-            await asyncio.create_task(self.redeem_codes())
+            asyncio.create_task(self.redeem_codes())
+    
+    @schedule_error_handler
+    async def update_shenhe_cache_and_data(self):
+        await self.update_ambr_cache()
+        await self.update_text_map()
+        await self.update_game_data()
+        await self.update_card_data()
+    
+    @schedule_error_handler
+    async def save_codes(self):
+        log.info("[Schedule] Saving codes...")
+        await self.bot.pool.execute("CREATE TABLE IF NOT EXISTS genshin_codes (code text)")
+        await self.bot.pool.execute("DELETE FROM genshin_codes")
+        codes = await find_codes(self.bot.session)
+        for code in codes:
+            await self.bot.pool.execute("INSERT INTO genshin_codes VALUES ($1)", code)
+        log.info(f"[Schedule] Codes saved: {codes}.")
 
     @schedule_error_handler
     async def generate_abyss_json(self):
