@@ -188,9 +188,9 @@ class SelectImage(ui.Select):
 
     async def callback(self, i: discord.Interaction):
         self.view: CustomImageView
-        await CustomImage.change_user_custom_image(i, self.values[0], int(self.view.character_id))
+        await CustomImage.change_user_custom_image(i.user.id, int(self.view.character_id), self.values[0], i.client.pool) # type: ignore
         custom_image = await CustomImage.get_user_custom_image(
-            i.user.id, int(self.view.character_id), i.client.pool
+            i.user.id, int(self.view.character_id), i.client.pool # type: ignore
         )
         embed = await CustomImage.get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False

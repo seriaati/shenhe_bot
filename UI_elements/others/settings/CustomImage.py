@@ -226,31 +226,7 @@ class ImageSelect(discord.ui.Select):
                 self.values[0],
             )
         else:
-            await pool.execute(
-                """
-                UPDATE
-                    custom_image
-                SET
-                    current = false
-                WHERE
-                    user_id = $1 AND character_id = $2
-                """,
-                i.user.id,
-                self.character_id,
-            )
-            await pool.execute(
-                """
-                UPDATE
-                    custom_image
-                SET
-                    current = true
-                WHERE
-                    user_id = $1 AND character_id = $2 AND image_url = $3
-                """,
-                i.user.id,
-                self.character_id,
-                self.values[0],
-            )
+            await change_user_custom_image(i.user.id, self.character_id, self.values[0], pool)
 
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
@@ -375,6 +351,34 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
     except aiohttp.InvalidURL:
         return False
 
+async def change_user_custom_image(
+    user_id: int, character_id: int, image_url: str, pool: asyncpg.Pool
+) -> None:
+    await pool.execute(
+        """
+        UPDATE
+            custom_image
+        SET
+            current = false
+        WHERE
+            user_id = $1 AND character_id = $2
+        """,
+        user_id,
+        character_id,
+    )
+    await pool.execute(
+        """
+        UPDATE
+            custom_image
+        SET
+            current = true
+        WHERE
+            user_id = $1 AND character_id = $2 AND image_url = $3
+        """,
+        user_id,
+        character_id,
+        image_url,
+    )
 
 async def get_user_custom_image(
     user_id: int, character_id: int, pool: asyncpg.Pool
