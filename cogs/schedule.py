@@ -229,6 +229,20 @@ class Schedule(commands.Cog):
                 )
             except (genshin.errors.InternalDatabaseError, OSError):
                 pass
+            except genshin.errors.GenshinException as e:
+                if e.retcode == 1009:
+                    pass
+                else:
+                    error = True
+                    error_message = f"```{e}```"
+                    if e.msg:
+                        error_message += f"\n```{e.msg}```"
+                    log.warning(
+                        f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
+                    )
+                    await self.disable_notification(
+                        n_user.user_id, n_user.uid, notification_type
+                    )
             except Exception as e:
                 error = True
                 error_message = f"```{e}```"
