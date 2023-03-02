@@ -724,6 +724,18 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
         view.message = await i.original_response()
+    
+    @redeem.autocomplete("code")
+    async def code_autocomplete(self, i: discord.Interaction, current:str) -> List[app_commands.Choice]:
+        choices: List[app_commands.Choice] = []
+        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+        codes: List[str] = [c["code"] for c in (await pool.fetch("SELECT code FROM genshin_codes"))]
+        for code in codes:
+            if current.lower() in code.lower():
+                choices.append(app_commands.Choice(name=code, value=code))
+        
+        return choices[:25]
+        
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)

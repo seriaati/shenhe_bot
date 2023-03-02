@@ -609,6 +609,6 @@ class GenshinApp:
     ) -> ShenheAccount:
         author_locale = await get_user_locale(author_id, self.bot.pool)
         shenhe_user = await get_shenhe_account(
-            user_id, self.bot, locale or author_locale
+            user_id, self.bot, author_locale or locale
         )
         return shenhe_user
