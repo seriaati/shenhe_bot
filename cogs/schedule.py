@@ -125,7 +125,7 @@ class Schedule(commands.Cog):
         accounts = await self.get_schedule_users()
 
         for account in accounts:
-            if account.china:
+            if str(account.uid)[0] in (1, 2, 5):
                 continue
 
             client = account.client
