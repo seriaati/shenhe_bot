@@ -102,6 +102,8 @@ class GenerateLink(ui.Button):
             "interaction": i,
             "author": i.user,
         }
+        
+        await i.client.reload_extension("cogs.login")  # type: ignore
 
 
 class ResendToken(ui.Button):
