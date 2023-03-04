@@ -6,34 +6,24 @@ import asyncpg
 import discord
 import genshin
 import yaml
+from discord import Locale
 from discord.utils import format_dt
 
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Domain, Weapon
-from apps.genshin.custom_model import (
-    CharacterBuild,
-    FightProp,
-    ShenheAccount,
-    ShenheBot,
-    WishInfo,
-)
+from ambr.models import Character, Domain, Material, Weapon
+from apps.genshin.custom_model import (CharacterBuild, FarmData, FightProp,
+                                       ShenheAccount, ShenheBot, WishInfo)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale, get_weekday_name, translate_main_stat
+from apps.text_map.utils import get_user_locale, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from exceptions import ShenheAccountNotFound
-from utility.utils import (
-    DefaultEmbed,
-    ErrorEmbed,
-    divide_chunks,
-    divide_dict,
-    get_dt_now,
-)
+from utility.utils import DefaultEmbed, ErrorEmbed, divide_chunks, get_dt_now
 
 
 def calculate_artifact_score(substats: dict):
@@ -269,75 +259,53 @@ async def get_uid(user_id: int, pool: asyncpg.Pool) -> Optional[int]:
 
 
 async def get_farm_data(
-    i: discord.Interaction, weekday: int
-) -> Tuple[List[Dict[str, Any]], List[discord.Embed], List[discord.SelectOption]]:
-    result: List[Dict[str, Any]] = []
-    user_locale = await get_user_locale(i.user.id, i.client.pool)
-    locale = user_locale or i.locale
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))  # type: ignore
-    domains = await ambr.get_domain()
-    character_upgrades = await ambr.get_character_upgrade()
-    weapon_upgrades = await ambr.get_weapon_upgrade()
-    if not isinstance(character_upgrades, List) or not isinstance(
-        weapon_upgrades, List
-    ):
-        raise ValueError("Invalid upgrade data")
-    today_domains = []
+    locale: Locale | str, session: aiohttp.ClientSession, weekday: int
+) -> List[FarmData]:
+    result: List[FarmData] = []
+
+    client = AmbrTopAPI(session, to_ambr_top(locale))
+    domains = await client.get_domain()
+    c_upgrades = await client.get_character_upgrade()
+    w_upgrades = await client.get_weapon_upgrade()
+    assert isinstance(c_upgrades, list)
+    assert isinstance(w_upgrades, list)
+
+    domains = [d for d in domains if d.weekday == weekday]
     for domain in domains:
-        if domain.weekday == weekday:
-            today_domains.append(domain)
-    for domain in today_domains:
-        characters: Dict[str, Character] = {}
-        for reward in domain.rewards:
-            for upgrade in character_upgrades:
-                if "10000005" in upgrade.character_id:
-                    continue
-                for item in upgrade.items:
-                    if item.id == reward.id:
-                        character = await ambr.get_character(upgrade.character_id)
-                        if not isinstance(character, Character):
-                            raise ValueError("Invalid character data")
-                        characters[upgrade.character_id] = character
-        weapons: Dict[int, Weapon] = {}
-        for reward in domain.rewards:
-            for upgrade in weapon_upgrades:
-                for item in upgrade.items:
-                    if item.id == reward.id:
-                        weapon = await ambr.get_weapon(upgrade.weapon_id)
-                        if not isinstance(weapon, Weapon):
-                            raise ValueError("Invalid weapon data")
-                        if not weapon.default_icon:
-                            weapons[upgrade.weapon_id] = weapon
-        # merge two dicts
-        items = characters | weapons
-        chunks = list(divide_dict(items, 12))
-        for chunk in chunks:
-            result.append({"domain": domain, "items": chunk})
-    embeds: List[discord.Embed] = []
-    options: List[discord.SelectOption] = []
-    for index, items in enumerate(result):
-        embed = DefaultEmbed(
-            f"{get_weekday_name(weekday, i.locale, user_locale, full_name=True)} {text_map.get(250, i.locale, user_locale)}"
-        )
-        embed.set_image(url=f"attachment://farm.jpeg")
-        embeds.append(embed)
-        domain: Domain = items["domain"]
-        current_len = 1
-        for option in options:
-            if get_domain_title(domain, locale) in option.label:
-                options[
-                    -1
-                ].label = f"{get_domain_title(domain, locale)} ({current_len})"
-                current_len += 1
-        options.append(
-            discord.SelectOption(
-                label=f"{get_domain_title(domain, locale)} {f'({current_len})' if current_len > 1 else ''}",
-                value=str(index),
-                emoji=get_city_emoji(domain.city.id),
-                description=domain.rewards[0].name,
-            )
-        )
-    return result, embeds, options
+        farm_data = FarmData(domain=domain)
+        if len([r for r in domain.rewards if len(str(r.id)) == 6]) == 4:
+            for w_upgrade in w_upgrades:
+                upgrade_items = [
+                    (await client.get_material(item.id)) for item in w_upgrade.items
+                ]
+                if any(
+                    [
+                        item in domain.rewards
+                        for item in upgrade_items
+                        if isinstance(item, Material)
+                    ]
+                ):
+                    weapon = await client.get_weapon(w_upgrade.weapon_id)
+                    assert isinstance(weapon, Weapon)
+                    farm_data.weapons.append(weapon)
+        else:
+            for c_upgrade in c_upgrades:
+                upgrade_items = [
+                    (await client.get_material(item.id)) for item in c_upgrade.items
+                ]
+                if any(
+                    [
+                        item in domain.rewards
+                        for item in upgrade_items
+                        if isinstance(item, Material)
+                    ]
+                ):
+                    character = await client.get_character(c_upgrade.character_id)
+                    assert isinstance(character, Character)
+                    farm_data.characters.append(character)
+        result.append(farm_data)
+
+    return result
 
 
 def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
@@ -516,10 +484,16 @@ def format_wish_str(wish_data: Dict[str, Any], locale: discord.Locale | str):
     )
     pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
     dt_str = format_dt(wish_data["time"], "d")
-    item_name = text_map.get_character_name(str(wish_data["item_id"]), locale) or text_map.get_weapon_name(int(wish_data["item_id"]), locale)
+    item_name = text_map.get_character_name(
+        str(wish_data["item_id"]), locale
+    ) or text_map.get_weapon_name(int(wish_data["item_id"]), locale)
     rarity_str = f"{wish_data['item_rarity']} ✦"
     result_str = f"{dt_str} {item_emoji} {item_name} ({rarity_str}) {pity_pull}"
-    return result_str if wish_data["item_rarity"] != 5 else f"[{result_str}](http://shenhe.bot.nu/)"
+    return (
+        result_str
+        if wish_data["item_rarity"] != 5
+        else f"[{result_str}](http://shenhe.bot.nu/)"
+    )
 
 
 def level_to_ascension_phase(level: int) -> int:
