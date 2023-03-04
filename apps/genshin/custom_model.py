@@ -15,7 +15,7 @@ from logingateway import HuTaoLoginAPI
 from pydantic import BaseModel, Field
 from pyppeteer.browser import Browser
 
-from ambr.models import Character
+import ambr.models as ambr
 
 
 class ShenheAccount(BaseModel):
@@ -288,7 +288,7 @@ class SingleStrikeLeaderboardUser(BaseModel):
 
 class CharacterUsageResult(BaseModel):
     fp: io.BytesIO
-    first_character: Character
+    first_character: ambr.Character
     uses: int
     percentage: float
 
@@ -297,7 +297,7 @@ class CharacterUsageResult(BaseModel):
 
 
 class UsageCharacter(BaseModel):
-    character: Character
+    character: ambr.Character
     usage_num: int
 
 
@@ -368,3 +368,8 @@ class OriginalInfo(BaseModel):
 class DiaryLogsResult(BaseModel):
     primo_per_day: Dict[int, int]
     before_adding: Dict[int, int]
+
+class FarmData(BaseModel):
+    domain: ambr.Domain
+    characters: List[ambr.Character] = []
+    weapons: List[ambr.Weapon] = []
