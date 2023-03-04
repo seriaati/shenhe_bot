@@ -1,73 +1,118 @@
 import io
-from typing import Dict
+from typing import List
+from apps.genshin.custom_model import FarmData
+from apps.genshin.utils import get_domain_title
 
-import discord
+from discord import Locale
 from PIL import Image, ImageDraw
 
-import asset
-from ambr.models import Character, Domain, Weapon
-from apps.draw.utility import dynamic_font_size, get_cache, get_font
-from apps.genshin.utils import get_domain_title
+from apps.draw.utility import get_cache, get_font
 
 
 def draw_domain_card(
-    domain: Domain,
-    locale: discord.Locale | str,
-    items: Dict[int, Character | Weapon],
+    farm_data: List[FarmData],
+    locale: Locale | str,
+    dark_mode: bool,
 ) -> io.BytesIO:
-    # get domain template image
-    background_paths = ["", "Mondstat", "Liyue", "Inazuma", "Sumeru"]
-    domain_card: Image.Image = Image.open(
-        f"yelan/templates/farm/{background_paths[domain.city.id]} Farm.png"
+    app_mode = "dark" if dark_mode else "light"
+    city_id_dict = {
+        1: "mondstat",
+        2: "liyue",
+        3: "inazuma",
+        4: "sumeru",
+    }
+    basic_cards: List[Image.Image] = []
+
+    for data in farm_data:
+        basic_card = Image.open(f"yelan/templates/farm/[{app_mode}] basic_card.png")
+
+        item_per_row = 9
+        height_per_row = 199
+        new_height = basic_card.height + height_per_row * (
+            len(data.characters + data.weapons) // (item_per_row + 1)
+        )
+        basic_card = basic_card.resize((basic_card.width, new_height))
+
+        lid = Image.open(
+            f"yelan/templates/farm/[light] {city_id_dict.get(data.domain.city.id, 'unknown')}.png"
+        )
+        basic_card.paste(lid, (0, 0), lid)
+
+        font = get_font(locale, 48, "Medium")
+        draw = ImageDraw.Draw(basic_card)
+        draw.text(
+            (32, 23),
+            get_domain_title(data.domain, locale),
+            font=font,
+            fill="#FFFFFF",
+        )
+
+        for index, reward in enumerate(data.domain.rewards):
+            if len(str(reward.id)) == 6:
+                icon = get_cache(reward.icon)
+                icon = icon.resize((82, 82))
+                basic_card.paste(icon, (1286 + (-85) * index, 17), icon)
+
+        starting_pos = (50, 154)
+        dist_between_items = 148
+        next_row_y_up = 152
+        for index, item in enumerate(data.characters + data.weapons):
+            if index % item_per_row == 0 and index != 0:
+                starting_pos = (50, starting_pos[1] + next_row_y_up)
+            icon = get_cache(item.icon)
+            icon = icon.resize((114, 114))
+            basic_card.paste(icon, starting_pos, icon)
+            starting_pos = (starting_pos[0] + dist_between_items, starting_pos[1])
+
+        basic_cards.append(basic_card)
+
+    background_color = "#F2F2F2" if not dark_mode else "#000000"
+    top_bot_margin = 44
+    right_left_margin = 56
+    x_padding_between_cards = 80
+    y_padding_between_cards = 60
+    card_width_offset = -124
+    card_per_column = 4
+    col_num = (
+        len(basic_cards) // card_per_column + 1
+        if len(basic_cards) % card_per_column != 0
+        else len(basic_cards) // card_per_column
     )
 
-    # draw the domain text
-    text = get_domain_title(domain, locale)
-    font = dynamic_font_size(text, 30, 90, 1198, get_font(locale, 50))
-    draw = ImageDraw.Draw(domain_card)
-    draw.text((987, 139), text, fill=asset.primary_text, font=font, anchor="mm")
+    background_width = (
+        right_left_margin * 2
+        + (basic_cards[0].width + card_width_offset) * col_num
+        + x_padding_between_cards * (col_num - 1)
+    )
 
-    # find the highest rarity item in the domain and draw it
-    highest_rarity = 1
-    highest_reward = None
-    for reward in domain.rewards:
-        if reward.rarity > highest_rarity:
-            highest_rarity = reward.rarity
-            highest_reward = reward
-    if highest_reward is not None:
-        icon = get_cache(highest_reward.icon)
-        icon.thumbnail((160, 160))
-        domain_card.paste(icon, (87, 60), icon)
+    background_height = top_bot_margin * 2
+    card_heights = [card.height for card in basic_cards]
+    max_card_height = max(card_heights)
+    max_card_height_col = card_heights.index(max_card_height) // 4
+    for card in basic_cards[max_card_height_col * 4 : (max_card_height_col + 1) * 4]:
+        item_row_num = (card.height - 437) // 199 + 1
+        card_height_offset = -114 + (-55 * (item_row_num - 1))
+        background_height += card.height + card_height_offset + y_padding_between_cards
 
-    count = 1
-    offset = (150, 340)
-    for item in items.values():
-        icon = get_cache(item.icon)
-        icon.thumbnail((180, 180))
-        domain_card.paste(icon, offset, icon)
+    background = Image.new(
+        "RGB", (background_width, background_height), background_color
+    )
 
-        # is the character a traveler?
-        if "10000007" in str(item.id) and isinstance(item, Character):
-            # draw the element of the traveler
-            element_icon: Image.Image = Image.open(
-                f"yelan/templates/elements/{item.element.lower()}.png"
+    x = right_left_margin
+    y = top_bot_margin
+    for index, card in enumerate(basic_cards):
+        item_row_num = (card.height - 437) // 199 + 1
+        card_height_offset = -114 + (-55 * (item_row_num - 1))
+        if index % card_per_column == 0 and index != 0:
+            x += (
+                basic_cards[index - 1].width
+                + card_width_offset
+                + x_padding_between_cards
             )
-            element_icon.thumbnail((64, 64))
-            domain_card.paste(
-                element_icon, (offset[0] + 140, offset[1] + 120), element_icon
-            )
+            y = top_bot_margin
+        background.paste(card, (x, y), card)
+        y += card.height + card_height_offset + y_padding_between_cards
 
-        # change offset
-        offset = (offset[0] + 400, offset[1])
-
-        # if four in a row, move to next row
-        if count % 4 == 0:
-            offset = (150, offset[1] + 250)
-        offset = tuple(offset)
-
-        count += 1
-
-    domain_card = domain_card.convert("RGB")
     fp = io.BytesIO()
-    domain_card.save(fp, "JPEG", optimize=True, quality=40)
+    background.save(fp, format="JPEG", quality=100, optimize=True)
     return fp
