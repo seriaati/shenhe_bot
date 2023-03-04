@@ -66,7 +66,7 @@ def draw_domain_card(
 
         basic_cards.append(basic_card)
 
-    background_color = "#F2F2F2" if not dark_mode else "#000000"
+    background_color = "#F2F2F2" if not dark_mode else "#323232"
     top_bot_margin = 44
     right_left_margin = 56
     x_padding_between_cards = 80

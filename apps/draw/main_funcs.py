@@ -1,13 +1,13 @@
 import functools
 import io
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import discord
 import enkanetwork
 import genshin
 import matplotlib.pyplot as plt
 
-from ambr.models import Character, Domain, Material, Weapon
+from ambr.models import Material
 from apps.draw.draw_funcs import (abyss, artifact, banners, characters, check, diary,
                                   farm, lineup, profile, stats, todo, wish)
 from apps.draw.utility import calculate_time, download_images, extract_urls
