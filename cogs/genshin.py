@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 import apps.genshin.utils as genshin_utils
 import asset
 from ambr.client import AmbrTopAPI
-from ambr.models import Character, Event, Material, Weapon
+from ambr.models import Character, Material, Weapon
 from apps.draw import main_funcs
 from apps.genshin import custom_model, enka, genshin_app, leaderboard, wiki
 from apps.genshin.checks import *
@@ -34,8 +34,8 @@ from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
 from utility.utils import (DefaultEmbed, ErrorEmbed, add_bullet_points,
-                           divide_chunks, get_dt_now, get_user_appearance_mode,
-                           log, parse_HTML)
+                           get_dt_now, get_user_appearance_mode, log,
+                           parse_HTML)
 
 load_dotenv()
 
@@ -483,33 +483,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: discord.Interaction):
-        await i.response.defer()
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
-        uid = await genshin_utils.get_uid(i.user.id, self.bot.pool)
-        now = get_dt_now() + timedelta(hours=genshin_utils.get_uid_tz(uid))
-        result, embeds, options = await genshin_utils.get_farm_data(i, now.weekday())
-
-        children = []
-        options = list(divide_chunks(options, 25))
-        first = 1
-        row = 2
-        for option in options:
-            children.append(
-                Domain.DomainSelect(
-                    f"{text_map.get(325, locale)} ({first}~{first+len(option)})",
-                    option,
-                    row,
-                )
-            )
-            first += 25
-            row += 1
-        children.append(Domain.WeekDaySelect(text_map.get(583, locale), locale))
-        await GeneralPaginator(
-            i,
-            embeds,
-            domains=result,
-            custom_children=children,
-        ).start(followup=True)
+        await Domain.return_farm_interaction(i)
 
     @app_commands.command(
         name="build",
@@ -643,10 +617,14 @@ class GenshinCog(commands.Cog, name="genshin"):
             non_cache_ids = [str(c.id) for c in card_data.characters]
         else:
             non_cache_ids = []
-            
+
         if data.characters is not None:
             for character in data.characters:
-                description = text_map.get(543, locale) if str(character.id) not in non_cache_ids else ""
+                description = (
+                    text_map.get(543, locale)
+                    if str(character.id) not in non_cache_ids
+                    else ""
+                )
                 options.append(
                     discord.SelectOption(
                         label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
@@ -724,18 +702,21 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
         view.message = await i.original_response()
-    
+
     @redeem.autocomplete("code")
-    async def code_autocomplete(self, i: discord.Interaction, current:str) -> List[app_commands.Choice]:
+    async def code_autocomplete(
+        self, i: discord.Interaction, current: str
+    ) -> List[app_commands.Choice]:
         choices: List[app_commands.Choice] = []
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-        codes: List[str] = [c["code"] for c in (await pool.fetch("SELECT code FROM genshin_codes"))]
+        codes: List[str] = [
+            c["code"] for c in (await pool.fetch("SELECT code FROM genshin_codes"))
+        ]
         for code in codes:
             if current.lower() in code.lower():
                 choices.append(app_commands.Choice(name=code, value=code))
-        
+
         return choices[:25]
-        
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
@@ -852,7 +833,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             for item_id, query_names in queries.items():
                 if item_id in ("10000005", "10000007"):
                     continue
-                
+
                 item_name = query_names[ambr_top_locale]
                 if current.lower() in item_name.lower() and item_name:
                     result.append(app_commands.Choice(name=item_name, value=item_id))
@@ -937,14 +918,18 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def banners(self, i: discord.Interaction):
         await i.response.defer()
-        
+
         locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
         lang = convert_locale.to_genshin_py(locale)
-        
-        zh_tw_annoucements = await genshin.Client().get_genshin_announcements(lang="zh-tw")
+
+        zh_tw_annoucements = await genshin.Client().get_genshin_announcements(
+            lang="zh-tw"
+        )
         annoucements = await genshin.Client().get_genshin_announcements(lang=lang)
         now = get_dt_now().astimezone(timezone(timedelta(hours=8)))
-        event_wish_ids = [a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now]
+        event_wish_ids = [
+            a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
+        ]
         event_wishes = [a for a in annoucements if a.id in event_wish_ids]
         if not event_wishes:
             return await i.followup.send(

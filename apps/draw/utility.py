@@ -65,10 +65,10 @@ def human_format(num: int | float):
     while abs(num) >= 1000:
         magnitude += 1
         num /= 1000.0
-        
+
     if int("{:.2f}".format(num).split(".")[1]) == 0:
         return "%d%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
-    
+
     return "%.2f%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
 
 

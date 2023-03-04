@@ -108,7 +108,6 @@ class Domain(BaseModel):
     city: City
     weekday: int
 
-
 class CharacterUpgrade(BaseModel):
     character_id: str
     items: List[Material] = Field(alias="item_list")
