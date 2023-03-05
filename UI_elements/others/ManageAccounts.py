@@ -1,5 +1,6 @@
 import asyncio
 from typing import List
+from apps.genshin.custom_model import ShenheBot
 
 import asyncpg
 import discord
@@ -114,8 +115,10 @@ class ResendToken(ui.Button):
 
     async def callback(self, i: discord.Interaction):
         self.view: View
+        bot: ShenheBot = i.client # type: ignore
+        
         await i.response.defer()
-        api: HuTaoLoginRESTAPI = i.client.gateway.api  # type: ignore
+        api = bot.gateway.api
 
         try:
             result = await api.resend_token(
@@ -128,12 +131,11 @@ class ResendToken(ui.Button):
             log.warning(
                 f"User ID {self.user_id} was not found in database. (Token key: {self.token})"
             )
-
-            # Delete token from tokenStore
-            del i.client.tokenStore[self.token]  # type: ignore
+            bot.tokenStore.pop(self.token, "")
         else:
+            assert result
             await register_user(
-                result, int(result.uid), int(result.user_id), i.client.pool  # type: ignore
+                result, int(result.uid), int(result.user_id), bot.pool
             )
 
             try:
@@ -148,7 +150,7 @@ class ResendToken(ui.Button):
                 pass
 
             # Reload gateway
-            return await i.client.reload_extension("cogs.login")  # type: ignore
+            return await bot.reload_extension("cogs.login")
 
         # Return into account manager page
         await return_accounts(i)

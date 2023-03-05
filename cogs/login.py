@@ -34,7 +34,6 @@ class LoginGatewayCog(commands.Cog):
             self.gateway.start()
 
         self.bot.gateway = self.gateway
-        self.bot.tokenStore = {}
 
     async def cog_unload(self):
         if not self.bot.debug:

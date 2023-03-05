@@ -130,6 +130,7 @@ class Shenhe(commands.AutoShardedBot):
         self.launch_time = datetime.utcnow()
         self.debug = debug
         self.gd_text_map = load_text_maps()
+        self.tokenStore = {}
 
         # load jishaku
         await self.load_extension("jishaku")
