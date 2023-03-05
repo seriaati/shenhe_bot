@@ -363,4 +363,3 @@ class OthersCog(commands.Cog, name="others"):
 
 async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(OthersCog(bot))
-    await bot.add_cog(OthersCog(bot))
