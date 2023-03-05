@@ -161,7 +161,7 @@ class BaseView(discord.ui.View):
         if self.message is not None:
             try:
                 await self.message.edit(view=self)
-            except discord.HTTPException:
+            except:
                 pass
 
 
