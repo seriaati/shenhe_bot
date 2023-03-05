@@ -424,3 +424,46 @@
     - |-
       聖遺物思路推薦（傷害向）： 火傷有就帶 攻擊/精通沙、火傷杯、暴擊（暴傷）頭
       副詞條優先順序： 雙暴（自適應）>（元素精通） >百分比攻擊
+迪希雅:
+  element: 火
+  builds:
+    - weapon: 葦海信標
+      artifacts: 千岩4件套
+      main_stats: 攻火暴
+      talents: 2/10/9
+      stats:
+        攻擊力: 1853
+        暴率/暴傷: 76.8/153.6
+        生命值: 33120
+      move: E 協同純傷
+      dmg: 5339
+    - weapon: 葦海信標
+      artifacts: 千岩4件套
+      main_stats: 生火暴
+      talents: 2/10/9
+      stats:
+        攻擊力: 1446
+        暴率/暴傷: 76.8/153.6
+        生命值: 40425
+      move: E 協同純傷
+      dmg: 4829
+    - weapon: 狼的末路
+      artifacts: 千岩4件套
+      main_stats: 生火暴
+      talents: 2/10/9
+      stats:
+        攻擊力: 2054
+        暴率/暴傷: 60.25/120.5
+        生命值: 35409
+      move: E 協同純傷
+      dmg: 4470
+    - weapon: 鐘劍
+      artifacts: 千岩4件套
+      main_stats: 攻火暴
+      talents: 2/10/9
+      stats:
+        攻擊力: 1680
+        暴率/暴傷: 60.25/120.5
+        生命值: 34594
+      move: E 協同純傷
+      dmg: 3828
