@@ -75,7 +75,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         
         rows = await self.bot.pool.fetch(
             """
-            SELECT ltuid, ltoken
+            SELECT ltuid, ltoken, uid
             FROM user_accounts
             WHERE ltoken IS NOT NULL
             AND ltuid IS NOT NULL
