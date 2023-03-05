@@ -71,6 +71,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def cog_load(self) -> None:
         cookie_list: List[Dict[str, str]] = []
         self.bot.genshin_client = genshin.Client()
+        self.bot.genshin_client.region = genshin.Region.OVERSEAS
+        
         rows = await self.bot.pool.fetch(
             """
             SELECT ltuid, ltoken
@@ -82,6 +84,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             """
         )
         for row in rows:
+            if str(row["uid"])[0] in ("1", "2", "5"):
+                continue
+            
             ltuid = row["ltuid"]
             ltoken = row["ltoken"]
             cookie: Dict[str, Any] = {"ltuid": ltuid, "ltoken": ltoken}
