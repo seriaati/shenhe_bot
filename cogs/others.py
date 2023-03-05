@@ -64,54 +64,29 @@ class OthersCog(commands.Cog, name="others"):
         description=_("Meet the awesome people that helped me!", hash=297),
     )
     async def view_credits(self, i: discord.Interaction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
         embed = DefaultEmbed(text_map.get(475, locale) + " 🎉")
-        kakaka = self.bot.get_user(425140480334888980) or await self.bot.fetch_user(
-            425140480334888980
-        )
-        ginn = self.bot.get_user(489647643342143491) or await self.bot.fetch_user(
-            489647643342143491
-        )
-        fox_fox = self.bot.get_user(274853284764975104) or await self.bot.fetch_user(
-            274853284764975104
-        )
-        tedd = self.bot.get_user(272394461646946304) or await self.bot.fetch_user(
-            272394461646946304
-        )
-        dinnerbone_3rd = self.bot.get_user(
-            808396055879090267
-        ) or await self.bot.fetch_user(808396055879090267)
-        xiaokuai = self.bot.get_user(780643463946698813) or await self.bot.fetch_user(
-            780643463946698813
-        )
+
         embed.add_field(
             name=text_map.get(298, locale),
-            value=f"{kakaka.mention} - 🇯🇵\n"
-            f"{tedd.mention} - 🇯🇵\n"
-            f"{ginn.mention} - 🇺🇸\n"
-            f"{fox_fox.mention} - 🇺🇸\n"
-            f"{dinnerbone_3rd.mention} - 🇨🇳\n"
-            f"{xiaokuai.mention} - 🇨🇳",
+            value=f"""
+            [kakaka#7100](https://discord.com/users/425140480334888980) - 🇯🇵
+            [Tedd#0660](https://discord.com/users/425140480334888980) - 🇯🇵
+            [Ginn#4204](https://discord.com/users/274853284764975104) - 🇺🇸
+            [狐狐#8888](https://discord.com/users/274853284764975104) - 🇺🇸
+            [Dinnerbone_3rd#8828](https://discord.com/users/808396055879090267) - 🇨🇳
+            [xiaokuai#2155](https://discord.com/users/780643463946698813) - 🇨🇳
+            [Ayase#9296](https://discord.com/users/501325246390075394) - 🇮🇩
+            [Korzzex#1381](https://discord.com/users/871456143216635994) - 🇺🇦            """,
             inline=False,
-        )
-        gaurav = self.bot.get_user(327390030689730561) or await self.bot.fetch_user(
-            327390030689730561
-        )
-        kt = self.bot.get_user(153087013447401472) or await self.bot.fetch_user(
-            153087013447401472
-        )
-        algoinde = self.bot.get_user(142949518680391680) or await self.bot.fetch_user(
-            142949518680391680
-        )
-        m_307 = self.bot.get_user(301178730196238339) or await self.bot.fetch_user(
-            301178730196238339
         )
         embed.add_field(
             name=text_map.get(466, locale),
-            value=f"{gaurav.mention}\n"
-            f"{kt.mention}\n"
-            f"{algoinde.mention}\n"
-            f"{m_307.mention}",
+            value=f"""
+            [GauravM#6722](https://discord.com/users/327390030689730561)
+            [KT#7777](https://discord.com/users/153087013447401472)
+            [M-307#8132](https://discord.com/users/301178730196238339)
+            """,
             inline=False,
         )
         embed.add_field(
@@ -269,7 +244,7 @@ class OthersCog(commands.Cog, name="others"):
         view.author = i.user
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
         character = await ambr.get_character(character_id)
-        
+
         assert isinstance(character, Character)
         await CustomImage.return_custom_image_interaction(
             view, i, converted_character_id, character.element
@@ -284,7 +259,7 @@ class OthersCog(commands.Cog, name="others"):
         for character_id, character_names in self.avatar.items():
             if character_id in ("10000005", "10000007"):
                 continue
-            
+
             if current.lower() in character_names[to_ambr_top(locale)].lower():
                 options.append(
                     app_commands.Choice(
@@ -387,4 +362,5 @@ class OthersCog(commands.Cog, name="others"):
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
+    await bot.add_cog(OthersCog(bot))
     await bot.add_cog(OthersCog(bot))
