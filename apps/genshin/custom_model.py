@@ -373,3 +373,8 @@ class FarmData(BaseModel):
     domain: ambr.Domain
     characters: List[ambr.Character] = []
     weapons: List[ambr.Weapon] = []
+
+class ConditionalResult(BaseModel):
+    cond: Dict[str, Any]
+    desc: str
+    effect: str

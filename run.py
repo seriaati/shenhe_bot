@@ -19,7 +19,7 @@ from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
-from apps.genshin.browser import launch_browsers
+from apps.genshin.browser import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map.text_map_app import text_map
 from UI_base_models import global_error_handler
@@ -129,6 +129,7 @@ class Shenhe(commands.AutoShardedBot):
         self.maintenance_time = ""
         self.launch_time = datetime.utcnow()
         self.debug = debug
+        self.launch_browser_in_debug = False
         self.gd_text_map = load_text_maps()
         self.tokenStore = {}
 
@@ -153,6 +154,10 @@ class Shenhe(commands.AutoShardedBot):
                 self.browsers = await launch_browsers()
             except Exception as e:
                 log.warning("[System]on_ready: Launch browsers failed", exc_info=e)
+        if self.debug and self.launch_browser_in_debug:
+            self.browsers = {
+                "en-US": await launch_debug_browser()
+            }
 
     async def on_message(self, message: discord.Message):
         if self.user is None:
@@ -176,10 +181,9 @@ class Shenhe(commands.AutoShardedBot):
     
     async def close(self) -> None:
         await self.session.close()
-        if not self.debug:
-            if hasattr(self, "browsers"):
-                for browser in self.browsers.values():
-                    await browser.close()
+        if hasattr(self, "browsers"):
+            for browser in self.browsers.values():
+                await browser.close()
 
 
 sentry_sdk.init(

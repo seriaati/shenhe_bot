@@ -36,3 +36,7 @@ def get_browser(browsers: Dict[str, Browser], locale: str) -> Browser:
         return browsers.get("en-US")
     else:
         return result
+
+async def launch_debug_browser() -> Browser:
+    browser = await launch({"headless": True, "args": ["--no-sandbox"]})
+    return browser
