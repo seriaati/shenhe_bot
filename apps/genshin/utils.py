@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -533,29 +534,39 @@ async def get_character_suggested_talent_levels(
     return [int(talent) for talent in talents]
 
 
-def get_current_abyss_season():
-    start_season = 59
-    start_seasson_dt = datetime(2022, 12, 1, 4, 0, 0)
-
-    # calculate time difference
-    now = get_dt_now()
-    diff = now - start_seasson_dt
-
-    # calculate season
-    # 1 season = 16 days
-    season = start_season + (diff.days // 15)
-
-    return season
+def get_current_abyss_season() -> int:
+    """Get the current abyss season number based on the current datetime."""
+    ref_season_num = 59
+    ref_season_time = datetime(2022, 12, 1, 4, 0, 0)
+    
+    current_season_num = ref_season_num
+    current_season_time = ref_season_time
+    while current_season_time < get_dt_now():
+        current_season_time += timedelta(days=1)
+        if current_season_time.day in (1, 16):
+            current_season_num += 1
+    
+    return current_season_num
 
 
 def get_abyss_season_date_range(season: int) -> str:
     """Get the date range of a given season"""
 
-    season_num = 59
-    season_start = datetime(2022, 12, 1, 4, 0, 0) + timedelta(
-        days=15 * (season_num - season)
-    )
-    season_end = season_start + timedelta(days=15)
+    ref_season_num = 59
+    ref_season_time = datetime(2022, 12, 1, 4, 0, 0)
+    
+    current_season_num = ref_season_num
+    current_season_time = ref_season_time
+    while current_season_num != season:
+        current_season_time += timedelta(days=1)
+        if current_season_time.day in (1, 16):
+            current_season_num += 1
+    
+    season_start = current_season_time
+    if current_season_time.day == 1:
+        season_end = current_season_time.replace(day=15)
+    else:
+        season_end = current_season_time.replace(day=monthrange(current_season_time.year, current_season_time.month)[1])
 
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
 
