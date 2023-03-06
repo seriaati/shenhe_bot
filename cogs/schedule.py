@@ -439,12 +439,20 @@ class Schedule(commands.Cog):
         """
         accounts: List[custom_model.ShenheAccount] = []
         rows = await self.bot.pool.fetch(
-            "SELECT user_id FROM user_accounts WHERE ltuid IS NOT NULL"
+            "SELECT user_id, ltuid, ltoken, cookie_token, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
         for row in rows:
+            custom_cookie = {
+                "ltuid": row["ltuid"],
+                "ltoken": row["ltoken"],
+                "cookie_token": row["cookie_token"],
+            }
             try:
                 account = await genshin_utils.get_shenhe_account(
-                    row["user_id"], self.bot
+                    row["user_id"],
+                    self.bot,
+                    custom_cookie=custom_cookie,
+                    custom_uid=row["uid"],
                 )
             except:
                 continue

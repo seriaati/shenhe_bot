@@ -203,37 +203,64 @@ async def get_shenhe_account(
     user_id: int,
     bot: ShenheBot,
     locale: Optional[discord.Locale | str] = None,
+    custom_cookie: Optional[Dict[str, Any]] = None,
+    custom_uid: Optional[int] = None,
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-    user_data = await bot.pool.fetchrow(
-        """
-        SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-        FROM user_accounts
-        WHERE user_id = $1
-        AND current = true
-        """,
-        user_id,
-    )
+    
+    if custom_cookie:
+        assert custom_uid
+    
+    if not custom_cookie:
+        user_data = await bot.pool.fetchrow(
+            """
+            SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
+            FROM user_accounts
+            WHERE user_id = $1
+            AND current = true
+            """,
+            user_id,
+        )
+    else:
+        user_data = await bot.pool.fetchrow(
+            """
+            SELECT china, daily_checkin
+            FROM user_accounts
+            WHERE user_id = $1
+            AND uid = $2
+            """,
+            user_id,
+            custom_uid,
+        )
 
     if not user_data:
         raise ShenheAccountNotFound
 
-    if user_data["ltuid"]:
+    if custom_cookie:
         client = genshin.Client()
         client.set_cookies(
-            ltuid=user_data["ltuid"],
-            ltoken=user_data["ltoken"],
-            account_id=user_data["ltuid"],
-            cookie_token=user_data["cookie_token"],
+            ltuid=custom_cookie["ltuid"],
+            ltoken=custom_cookie["ltoken"],
+            account_id=custom_cookie["ltuid"],
+            cookie_token=custom_cookie["cookie_token"],
         )
     else:
-        client = bot.genshin_client
+        if user_data["ltuid"]:
+            client = genshin.Client()
+            client.set_cookies(
+                ltuid=user_data["ltuid"],
+                ltoken=user_data["ltoken"],
+                account_id=user_data["ltuid"],
+                cookie_token=user_data["cookie_token"],
+            )
+        else:
+            client = bot.genshin_client
 
     final_locale = locale or (await get_user_locale(user_id, bot.pool))
 
     client.lang = to_genshin_py(str(final_locale))
     client.default_game = genshin.Game.GENSHIN
-    client.uid = user_data["uid"]
+    client.uid = custom_uid or user_data["uid"]
 
     if user_data["china"]:
         client.lang = "zh-cn"
