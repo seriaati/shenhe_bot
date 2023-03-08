@@ -110,6 +110,9 @@ def get_error_handle_embed(
         if e.original:
             embed.description += f"```{e.original}```"
         embed.set_author(name=text_map.get(10, locale))
+    elif isinstance(e, exceptions.AutocompleteError):
+        embed.set_author(name=text_map.get(310, locale))
+        embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
     else:
         capture_exception(e)
 
@@ -161,7 +164,7 @@ class BaseView(discord.ui.View):
         if self.message is not None:
             try:
                 await self.message.edit(view=self)
-            except:
+            except Exception:
                 pass
 
 
