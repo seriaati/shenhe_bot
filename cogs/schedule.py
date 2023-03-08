@@ -1000,8 +1000,8 @@ class Schedule(commands.Cog):
                 if item_id not in update_dict:
                     update_dict[item_id] = {}
 
-                if thing == "avatar" and (
-                    "10000007" in item_id or "10000005" in item_id
+                if thing == "avatar" and any(
+                    [str(t_id) in str(item_id) for t_id in asset.traveler_ids]
                 ):
                     update_dict[item_id][lang] = (
                         item_data["name"]
@@ -1011,8 +1011,8 @@ class Schedule(commands.Cog):
                 else:
                     update_dict[item_id][lang] = item_data["name"]
         if thing == "avatar":
-            update_dict["10000007"] = asset.traveler_name_dict
-            update_dict["10000005"] = update_dict["10000007"]
+            update_dict["10000007"] = asset.lumine_name_dict
+            update_dict["10000005"] = asset.aether_name_dict
         with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
             json.dump(update_dict, f, indent=4, ensure_ascii=False)
 

@@ -59,17 +59,31 @@ weapon_emoji = "<:11509:990533880308203570>"
 abyss_image = "https://static.wikia.nocookie.net/gensin-impact/images/2/24/Spiral_Abyss_Locked.png/revision/latest/scale-to-width-down/1000?cb=20220415153153"
 cookie_emoji = "<:cookie_add:1018776813922693120>"
 uid_emoji = "<:number:1018838745614667817>"
-traveler_name_dict = {
-    "chs": "旅行者",
-    "cht": "旅行者",
-    "de": "Reisende",
-    "en": "Traveler",
-    "es": "Viajera",
-    "fr": "Voyageuse",
-    "jp": "旅人",
-    "kr": "여행자",
-    "th": "นักเดินทาง",
-    "pt": "Viajante",
-    "ru": "Путешественница",
-    "vi": "Nhà Lữ Hành",
+lumine_name_dict = {
+    "chs": "旅行者 (♀️) (♀️)",
+    "cht": "旅行者 (♀️)",
+    "de": "Reisende (♀️)",
+    "en": "Traveler (♀️)",
+    "es": "Viajera (♀️)",
+    "fr": "Voyageuse (♀️)",
+    "jp": "旅人 (♀️)",
+    "kr": "여행자 (♀️)",
+    "th": "นักเดินทาง (♀️)",
+    "pt": "Viajante (♀️)",
+    "ru": "Путешественница (♀️)",
+    "vi": "Nhà Lữ Hành (♀️)",
+}
+aether_name_dict = {
+    "chs": "旅行者 (♂️)",
+    "cht": "旅行者 (♂️)",
+    "de": "Reisende (♂️)",
+    "en": "Traveler (♂️)",
+    "es": "Viajera (♂️)",
+    "fr": "Voyageuse (♂️)",
+    "jp": "旅人 (♂️)",
+    "kr": "여행자 (♂️)",
+    "th": "นักเดินทาง (♂️)",
+    "pt": "Viajante (♂️)",
+    "ru": "Путешественница (♂️)",
+    "vi": "Nhà Lữ Hành (♂️)",
 }
