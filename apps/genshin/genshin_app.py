@@ -11,14 +11,19 @@ from discord.utils import format_dt
 from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
 import apps.genshin.custom_model as custom_model
-import apps.genshin.utils as genshin_utils
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
 from exceptions import UIDNotFound
 from UI_base_models import get_error_handle_embed
-import utility.utils as utils
 from utility.utils import log
+import utility.utils as utils
 
 
 def genshin_error_handler(func):
@@ -30,7 +35,7 @@ def genshin_error_handler(func):
         user = genshin_app.bot.get_user(user_id) or await genshin_app.bot.fetch_user(
             user_id
         )
-        uid = await genshin_utils.get_uid(user_id, genshin_app.bot.pool)
+        uid = await get_uid(user_id, genshin_app.bot.pool)
         author_locale = await get_user_locale(author_id, genshin_app.bot.pool)
         locale = author_locale or locale
         try:
@@ -160,7 +165,7 @@ class GenshinApp:
             expedition_str = ""
             for expedition in notes.expeditions:
                 if expedition.remaining_time.total_seconds() > 0:
-                    expedition_str += f'{genshin_utils.get_character_emoji(str(expedition.character.id))} {expedition.character.name} | {format_dt(expedition.completion_time, "R")}\n'
+                    expedition_str += f'{get_character_emoji(str(expedition.character.id))} {expedition.character.name} | {format_dt(expedition.completion_time, "R")}\n'
             if expedition_str:
                 result.add_field(
                     name=text_map.get(20, locale, user_locale),
@@ -254,7 +259,7 @@ class GenshinApp:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
-        user_timezone = genshin_utils.get_uid_tz(shenhe_user.uid)
+        user_timezone = get_uid_tz(shenhe_user.uid)
         now = utils.get_dt_now() + timedelta(hours=user_timezone)
         if month is not None:
             now = now + relativedelta(months=month)
@@ -618,14 +623,14 @@ class GenshinApp:
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
-        uid = await genshin_utils.get_uid(user_id, self.bot.pool)
+        uid = await get_uid(user_id, self.bot.pool)
         return uid
 
     async def get_user_cookie(
         self, user_id: int, author_id: int, locale: discord.Locale
     ) -> custom_model.ShenheAccount:
         author_locale = await get_user_locale(author_id, self.bot.pool)
-        shenhe_user = await genshin_utils.get_shenhe_account(
+        shenhe_user = await get_shenhe_account(
             user_id, self.bot, author_locale or locale
         )
         return shenhe_user

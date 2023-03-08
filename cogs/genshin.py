@@ -1,7 +1,7 @@
 import json
 import random
 from datetime import timedelta, timezone
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 import aiofiles
 import asqlite
@@ -19,23 +19,38 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
 from apps.draw import main_funcs
 from apps.genshin import custom_model, enka, genshin_app, leaderboard, wiki
-from apps.genshin.checks import *
+from apps.genshin.checks import (
+    check_account,
+    check_account_predicate,
+    check_cookie,
+    check_cookie_predicate,
+)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
-from exceptions import CardNotFound, ItemNotFound, UIDNotFound
-from UI_elements.genshin import (Abyss, AbyssEnemy, Build, Diary, Domain,
-                                 EnkaProfile, EventTypeChooser, Leaderboard,
-                                 Lineup, MeToo, ShowAllCharacters, UIDCommand)
+from exceptions import AutocompleteError, CardNotFound, ItemNotFound, UIDNotFound
+from UI_elements.genshin import (
+    Abyss,
+    AbyssEnemy,
+    Build,
+    Diary,
+    Domain,
+    EnkaProfile,
+    EventTypeChooser,
+    Leaderboard,
+    Lineup,
+    MeToo,
+    ShowAllCharacters,
+    UIDCommand,
+)
 from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
-from utility.utils import (DefaultEmbed, ErrorEmbed, add_bullet_points,
-                           get_dt_now, get_user_appearance_mode, log,
-                           parse_HTML)
+import utility.utils as utils
+from utility.utils import log
 
 load_dotenv()
 
@@ -72,7 +87,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         cookie_list: List[Dict[str, str]] = []
         self.bot.genshin_client = genshin.Client()
         self.bot.genshin_client.region = genshin.Region.OVERSEAS
-        
+
         rows = await self.bot.pool.fetch(
             """
             SELECT ltuid, ltoken, uid
@@ -86,7 +101,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         for row in rows:
             if str(row["uid"])[0] in ("1", "2", "5"):
                 continue
-            
+
             ltuid = row["ltuid"]
             ltoken = row["ltoken"]
             cookie: Dict[str, Any] = {"ltuid": ltuid, "ltoken": ltoken}
@@ -141,7 +156,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.text_map_files.append(data)
         try:
             async with aiofiles.open(
-                f"text_maps/item_name.json", "r", encoding="utf-8"
+                "text_maps/item_name.json", "r", encoding="utf-8"
             ) as f:
                 self.item_names = json.loads(await f.read())
         except FileNotFoundError:
@@ -276,11 +291,11 @@ class GenshinCog(commands.Cog, name="genshin"):
             stats_result: custom_model.StatsResult = result.result
             fp = stats_result.file
             fp.seek(0)
-            file = discord.File(fp, "stat_card.jpeg")
+            _file = discord.File(fp, "stat_card.jpeg")
             await i.followup.send(
                 embed=stats_result.embed,
                 ephemeral=False if not context_command else True,
-                files=[file],
+                files=[_file],
             )
 
     @check_account()
@@ -351,7 +366,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
         locale = user_locale or i.locale
         await i.response.send_message(
-            embed=DefaultEmbed().set_author(
+            embed=utils.DefaultEmbed().set_author(
                 name=text_map.get(644, locale), icon_url=asset.loader
             ),
             ephemeral=ephemeral,
@@ -364,7 +379,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         character_result: custom_model.CharacterResult = result.result
         fp = character_result.file
         fp.seek(0)
-        file = discord.File(fp, "characters.jpeg")
+        _file = discord.File(fp, "characters.jpeg")
         view = ShowAllCharacters.View(
             locale,
             character_result.characters,
@@ -375,7 +390,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         view.author = i.user
         await i.edit_original_response(
             embed=character_result.embeds["All"],
-            attachments=[file],
+            attachments=[_file],
             view=view,
         )
         view.message = await i.original_response()
@@ -472,7 +487,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
-        embed = DefaultEmbed(
+        embed = utils.DefaultEmbed(
             text_map.get(149, i.locale, user_locale),
             text_map.get(150, i.locale, user_locale),
         )
@@ -525,7 +540,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 if i.guild is not None and i.guild.id == 916838066117824553:
                     async with asqlite.connect("../shenhe_main/main.db") as db:
                         async with db.execute(
-                            f"SELECT uid FROM genshin_accounts WHERE user_id = ?",
+                            "SELECT uid FROM genshin_accounts WHERE user_id = ?",
                             (player.id,),
                         ) as c:
                             uid = await c.fetchone()
@@ -537,14 +552,16 @@ class GenshinCog(commands.Cog, name="genshin"):
                     raise UIDNotFound
         except UIDNotFound:
             return await i.response.send_message(
-                embed=ErrorEmbed(description=text_map.get(165, locale)).set_author(
+                embed=utils.ErrorEmbed(
+                    description=text_map.get(165, locale)
+                ).set_author(
                     name=text_map.get(166, locale),
                     icon_url=player.avatar,
                 ),
                 ephemeral=True,
             )
 
-        embed = DefaultEmbed()
+        embed = utils.DefaultEmbed()
         embed.add_field(
             name=f"{text_map.get(167, locale).format(name=player.display_name)}",
             value=str(uid),
@@ -603,13 +620,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
 
         embeds = [
-            DefaultEmbed()
+            utils.DefaultEmbed()
             .set_author(
                 name=text_map.get(644, locale),
                 icon_url=asset.loader,
             )
             .set_image(url="https://i.imgur.com/3U1bJ0Z.gif"),
-            DefaultEmbed()
+            utils.DefaultEmbed()
             .set_author(
                 name=text_map.get(644, locale),
                 icon_url=asset.loader,
@@ -650,19 +667,19 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
-        embed = DefaultEmbed(
+        embed = utils.DefaultEmbed(
             text_map.get(144, locale),
             f"""
             {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.network/u/{uid})
-            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(get_dt_now()+timedelta(seconds=data.ttl), "R"))}
+            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(utils.get_dt_now()+timedelta(seconds=data.ttl), "R"))}
             """,
         )
         embed.set_image(url="attachment://profile.jpeg")
-        embed_two = DefaultEmbed(text_map.get(145, locale))
+        embed_two = utils.DefaultEmbed(text_map.get(145, locale))
         embed_two.set_image(url="attachment://character.jpeg")
         embed_two.set_footer(text=text_map.get(511, locale))
 
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
+        dark_mode = await utils.get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
         fp, fp_two = await main_funcs.draw_profile_card(
             custom_model.DrawInput(
                 loop=self.bot.loop,
@@ -738,7 +755,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         uid = await genshin_utils.get_uid(i.user.id, self.bot.pool)
         if uid is None:
             raise UIDNotFound
-        embed = DefaultEmbed(description=text_map.get(253, locale))
+        embed = utils.DefaultEmbed(description=text_map.get(253, locale))
         embed.set_author(name=f"👑 {text_map.get(252, locale)}")
         view = Leaderboard.View(locale, uid)
         view.author = i.user
@@ -750,20 +767,16 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, i: discord.Interaction, query: str):
+        if not query.isdigit():
+            raise AutocompleteError
+
         await i.response.defer()
 
         user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
         locale = user_locale or i.locale
         ambr_top_locale = convert_locale.to_ambr_top(locale)
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
+        dark_mode = await utils.get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
         client = AmbrTopAPI(self.bot.session, ambr_top_locale)
-
-        if not query.isdigit():
-            query = (
-                self.item_names.get(query)
-                or self.item_names.get(query.title())
-                or query
-            )
 
         item_type = None
         for index, file in enumerate(self.text_map_files):
@@ -897,7 +910,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             result, first_icon_url = self.get_beta_items(result, thing, first_icon_url)
         if result == "":
             result = text_map.get(445, i.locale, user_locale)
-        embed = DefaultEmbed(text_map.get(437, i.locale, user_locale), result)
+        embed = utils.DefaultEmbed(text_map.get(437, i.locale, user_locale), result)
         if first_icon_url != "":
             embed.set_thumbnail(url=first_icon_url)
         embed.set_footer(text=text_map.get(444, i.locale, user_locale))
@@ -931,16 +944,16 @@ class GenshinCog(commands.Cog, name="genshin"):
             lang="zh-tw"
         )
         annoucements = await genshin.Client().get_genshin_announcements(lang=lang)
-        now = get_dt_now().astimezone(timezone(timedelta(hours=8)))
+        now = utils.get_dt_now().astimezone(timezone(timedelta(hours=8)))
         event_wish_ids = [
             a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
         ]
         event_wishes = [a for a in annoucements if a.id in event_wish_ids]
         if not event_wishes:
             return await i.followup.send(
-                embed=DefaultEmbed(description=text_map.get(376, locale)).set_author(
-                    name=text_map.get(23, locale)
-                )
+                embed=utils.DefaultEmbed(
+                    description=text_map.get(376, locale)
+                ).set_author(name=text_map.get(23, locale))
             )
 
         fp = await main_funcs.draw_banner_card(
@@ -952,7 +965,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
 
         await i.followup.send(
-            embed=DefaultEmbed(
+            embed=utils.DefaultEmbed(
                 text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
@@ -981,12 +994,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         enemies: Dict[str, List[custom_model.AbyssHalf]] = {}
         for floor in floors:
             for chamber in floor.chambers:
-                embed = DefaultEmbed(
+                embed = utils.DefaultEmbed(
                     f"{text_map.get(146, locale).format(a=floor.num)} - {text_map.get(177, locale).format(a=chamber.num)}"
                 )
                 embed.add_field(
                     name=text_map.get(706, locale),
-                    value=add_bullet_points(ley_line_disorders.get(floor.num, [])),
+                    value=utils.add_bullet_points(
+                        ley_line_disorders.get(floor.num, [])
+                    ),
                     inline=False,
                 )
                 embed.add_field(
@@ -998,7 +1013,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 embeds[f"{floor.num}-{chamber.num}"] = embed
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
 
-        embed = DefaultEmbed()
+        embed = utils.DefaultEmbed()
         embed.set_image(url=asset.abyss_image)
         embed.set_author(
             name=f"{text_map.get(705, locale)}",
@@ -1008,7 +1023,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         buff_name, buff_desc = await abyss.get_abyss_blessing(
             self.bot.gd_text_map, locale
         )
-        buff_embed = DefaultEmbed(text_map.get(733, locale))
+        buff_embed = utils.DefaultEmbed(text_map.get(733, locale))
         buff_embed.add_field(
             name=buff_name,
             value=buff_desc,
@@ -1061,14 +1076,14 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(card_id=_("card", hash=718))
     async def slash_tcg(self, i: discord.Interaction, card_id: str):
+        if not card_id.isdigit():
+            raise AutocompleteError
+
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
         genshin_db_locale = convert_locale.to_genshin_db(locale)
 
         the_card = None
         card_type = None
-
-        if not card_id.isdigit():
-            raise CardNotFound
 
         for card in self.card_data[genshin_db_locale]:
             if card["id"] == int(card_id):
@@ -1082,7 +1097,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         card = the_card
 
         if card_type == "tcgcharactercards":
-            embed = DefaultEmbed(card["name"])
+            embed = utils.DefaultEmbed(card["name"])
             embed.set_author(name=card["storytitle"])
             embed.set_footer(text=card["source"])
             embed.set_image(
@@ -1099,11 +1114,11 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=skill["name"],
-                    value=parse_HTML(skill["description"]) + "\n" + cost_str,
+                    value=utils.parse_HTML(skill["description"]) + "\n" + cost_str,
                     inline=False,
                 )
         elif card_type == "tcgactioncards":
-            embed = DefaultEmbed(
+            embed = utils.DefaultEmbed(
                 card["name"],
                 card["description"],
             )
@@ -1123,22 +1138,22 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(name=text_map.get(710, locale), value=cost_str)
         elif card_type == "tcgcardbacks":
-            embed = DefaultEmbed(card["name"], card["description"])
+            embed = utils.DefaultEmbed(card["name"], card["description"])
             embed.set_footer(text=card["source"])
             embed.set_image(
                 url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_icon_HD']}.png"
             )
         elif card_type == "tcgcardboxes":
-            embed = DefaultEmbed(card["name"], card["description"])
+            embed = utils.DefaultEmbed(card["name"], card["description"])
             embed.set_footer(text=card["source"])
             embed.set_image(
                 url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_bg']}.png"
             )
         elif card_type == "tcgstatuseffects":
-            embed = DefaultEmbed(card["name"], card["description"])
+            embed = utils.DefaultEmbed(card["name"], card["description"])
             embed.set_author(name=card["statustypetext"])
         else:  # card_type == "tcgsummons"
-            embed = DefaultEmbed(card["name"], card["description"])
+            embed = utils.DefaultEmbed(card["name"], card["description"])
             embed.set_author(name=card["cardtypetext"])
             embed.set_image(
                 url=f"https://res.cloudinary.com/genshin/image/upload/sprites/{card['images']['filename_cardface_HD']}.png"
