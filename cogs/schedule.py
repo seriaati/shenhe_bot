@@ -1,8 +1,8 @@
 import asyncio
 import io
 import json
-from datetime import timedelta
-from typing import Any, Dict, List, Tuple
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Tuple, Union
 from uuid import uuid4
 
 import aiofiles
@@ -117,7 +117,7 @@ class Schedule(commands.Cog):
     async def generate_abyss_json(self):
         log.info("[Schedule] Generating abyss.json...")
 
-        result = {}
+        result: Dict[str, Any] = {}
         result["schedule_id"] = genshin_utils.get_current_abyss_season()
         result["size"] = 0
         result["data"] = []
@@ -134,52 +134,13 @@ class Schedule(commands.Cog):
             try:
                 abyss = await client.get_genshin_spiral_abyss(account.uid)
                 characters = await client.get_genshin_characters(account.uid)
-            except:
+            except Exception:
                 pass
             else:
                 if abyss.total_stars != 36:
                     continue
 
-                result["size"] += 1
-
-                data_id = str(uuid4())
-                abyss_dict = {
-                    "id": data_id,
-                    "floors": [],
-                }
-                user_dict = {
-                    "_id": data_id,
-                    "uid": account.uid,
-                    "avatars": [],
-                }
-
-                floors = [f for f in abyss.floors if f.floor >= 11]
-                for floor in floors:
-                    floor_dict = {}
-                    floor_dict["floor"] = floor.floor
-                    floor_dict["chambers"] = []
-
-                    for chamber in floor.chambers:
-                        chamber_list = []
-                        for battle in chamber.battles:
-                            chamber_list.append([c.id for c in battle.characters])
-                        floor_dict["chambers"].append(chamber_list)
-                    abyss_dict["floors"].append(floor_dict)
-
-                for character in characters:
-                    character_dict = {
-                        "id": character.id,
-                        "name": character.name,
-                        "element": character.element,
-                        "level": character.level,
-                        "cons": character.constellation,
-                        "weapon": character.weapon.name,
-                        "artifacts": [a.set.name for a in character.artifacts],
-                    }
-                    user_dict["avatars"].append(character_dict)
-
-                abyss_dict["user"] = user_dict
-                result["data"].append(abyss_dict)
+                self.add_abyss_entry(result, account, abyss, list(characters))
 
         log.info("[Schedule] Generated abyss.json")
 
@@ -194,6 +155,54 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule] Sent abyss.json")
 
+    def add_abyss_entry(
+        self,
+        result: Dict[str, Any],
+        account: custom_model.ShenheAccount,
+        abyss: genshin.models.SpiralAbyss,
+        characters: List[genshin.models.Character],
+    ):
+        result["size"] += 1
+
+        data_id = str(uuid4())
+        abyss_dict = {
+            "id": data_id,
+            "floors": [],
+        }
+        user_dict = {
+            "_id": data_id,
+            "uid": account.uid,
+            "avatars": [],
+        }
+
+        floors = [f for f in abyss.floors if f.floor >= 11]
+        for floor in floors:
+            floor_dict = {}
+            floor_dict["floor"] = floor.floor
+            floor_dict["chambers"] = []
+
+            for chamber in floor.chambers:
+                chamber_list = []
+                for battle in chamber.battles:
+                    chamber_list.append([c.id for c in battle.characters])
+                floor_dict["chambers"].append(chamber_list)
+            abyss_dict["floors"].append(floor_dict)
+
+        for character in characters:
+            character_dict = {
+                "id": character.id,
+                "name": character.name,
+                "element": character.element,
+                "level": character.level,
+                "cons": character.constellation,
+                "weapon": character.weapon.name,
+                "artifacts": [a.set.name for a in character.artifacts],
+            }
+            user_dict["avatars"].append(character_dict)
+
+        abyss_dict["user"] = user_dict
+        result["data"].append(abyss_dict)
+
     @schedule_error_handler
     async def check_notification(self, notification_type: str):
         log.info(f"[Schedule][{notification_type}] Checking...")
@@ -202,8 +211,6 @@ class Schedule(commands.Cog):
         now = utility_utils.get_dt_now()
         sent_num = 0
         for n_user in n_users:
-            if n_user.current == n_user.max:
-                continue
             if n_user.last_notif and now - n_user.last_notif < timedelta(hours=2):
                 continue
 
@@ -211,7 +218,7 @@ class Schedule(commands.Cog):
                 s_user = await genshin_utils.get_shenhe_account(
                     n_user.user_id, self.bot
                 )
-            except:
+            except Exception:
                 continue
 
             locale = s_user.user_locale or "en-US"
@@ -232,9 +239,7 @@ class Schedule(commands.Cog):
             except (genshin.errors.InternalDatabaseError, OSError):
                 pass
             except genshin.errors.GenshinException as e:
-                if e.retcode == 1009:
-                    pass
-                else:
+                if e.retcode != 1009:
                     error = True
                     error_message = f"```{e}```"
                     if e.msg:
@@ -256,45 +261,16 @@ class Schedule(commands.Cog):
                 )
             else:
                 # reset current
-                if (
-                    notification_type == "resin_notification"
-                    and notes.current_resin < n_user.threshold
-                ):
-                    await self.reset_current(
-                        n_user.user_id, n_user.uid, notification_type
-                    )
-                elif (
-                    notification_type == "pot_notification"
-                    and notes.current_realm_currency < n_user.threshold
-                ):
-                    await self.reset_current(
-                        n_user.user_id, n_user.uid, notification_type
-                    )
+                await self.reset_notif_current(notification_type, n_user, notes)
 
                 if error:
-                    discord_user = self.bot.get_user(
-                        n_user.user_id
-                    ) or await self.bot.fetch_user(n_user.user_id)
-                    if notification_type == "pot_notification":
-                        map_hash = 584
-                    elif notification_type == "pt_notification":
-                        map_hash = 704
-                    else:  # resin_notification
-                        map_hash = 582
-
-                    embed = utility_utils.ErrorEmbed(
-                        description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
+                    await self.handle_notif_error(
+                        notification_type, n_user, locale, error_message
                     )
-                    embed.set_author(
-                        name=text_map.get(505, locale),
-                        icon_url=discord_user.display_avatar.url,
-                    )
-                    embed.set_footer(text=text_map.get(16, locale))
-                    try:
-                        await discord_user.send(embed=embed)
-                    except discord.Forbidden:
-                        pass
                 else:
+                    if n_user.current == n_user.max:
+                        continue
+
                     # send notification
                     success = False
                     if (
@@ -325,11 +301,8 @@ class Schedule(commands.Cog):
                             f"[Schedule][{notification_type}][{n_user.user_id}] Notification sent"
                         )
                         sent_num += 1
-                        await self.bot.pool.execute(
-                            f"UPDATE {notification_type} SET current = current + 1, last_notif = $1 WHERE user_id = $2 AND uid = $3",
-                            now,
-                            n_user.user_id,
-                            s_user.uid,
+                        await self.update_current(
+                            notification_type, now, n_user, s_user
                         )
 
             await asyncio.sleep(2.5)
@@ -337,6 +310,67 @@ class Schedule(commands.Cog):
         log.info(
             f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users"
         )
+
+    async def reset_notif_current(
+        self,
+        notification_type: str,
+        n_user: custom_model.NotificationUser,
+        notes: genshin.models.Notes,
+    ):
+        if (
+            notification_type == "resin_notification"
+            and notes.current_resin < n_user.threshold
+        ):
+            await self.reset_current(n_user.user_id, n_user.uid, "resin_notification")
+        elif (
+            notification_type == "pot_notification"
+            and notes.current_realm_currency < n_user.threshold
+        ):
+            await self.reset_current(n_user.user_id, n_user.uid, "pot_notification")
+
+    async def update_current(
+        self,
+        notification_type: str,
+        now: datetime,
+        n_user: custom_model.NotificationUser,
+        s_user: custom_model.ShenheAccount,
+    ):
+        await self.bot.pool.execute(
+            f"UPDATE {notification_type} SET current = current + 1, last_notif = $1 WHERE user_id = $2 AND uid = $3",
+            now,
+            n_user.user_id,
+            s_user.uid,
+        )
+
+    async def handle_notif_error(
+        self,
+        notification_type: str,
+        n_user: custom_model.NotificationUser,
+        locale: str,
+        error_message: str,
+    ):
+        discord_user = self.bot.get_user(n_user.user_id) or await self.bot.fetch_user(
+            n_user.user_id
+        )
+        if notification_type == "pot_notification":
+            map_hash = 584
+        elif notification_type == "pt_notification":
+            map_hash = 704
+        else:  # resin_notification
+            map_hash = 582
+
+        embed = utility_utils.ErrorEmbed(
+            description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
+        )
+        embed.set_author(
+            name=text_map.get(505, locale),
+            icon_url=discord_user.display_avatar.url,
+        )
+        embed.set_footer(text=text_map.get(16, locale))
+        try:
+            await discord_user.send(embed=embed)
+        except discord.Forbidden:
+            pass
 
     async def notify_resin(
         self,
@@ -454,7 +488,7 @@ class Schedule(commands.Cog):
                     custom_cookie=custom_cookie,
                     custom_uid=row["uid"],
                 )
-            except:
+            except Exception:
                 continue
             accounts.append(account)
 
@@ -488,22 +522,10 @@ class Schedule(commands.Cog):
         codes = await find_codes(self.bot.session)
         log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
 
-        users: List[custom_model.ShenheAccount] = []
-        rows = await self.bot.pool.fetch(
-            "SELECT user_id FROM user_settings WHERE auto_redeem = true"
-        )
-        for row in rows:
-            try:
-                acc = await genshin_utils.get_shenhe_account(row["user_id"], self.bot)
-            except:
-                pass
-            else:
-                users.append(acc)
-
+        users = await self.get_redeem_code_users()
         for index, user in enumerate(users):
             locale = user.user_locale or "en-US"
             embed = utility_utils.DefaultEmbed(text_map.get(126, locale))
-            value = ""
 
             for code in codes:
                 c = await self.bot.pool.fetchval(
@@ -513,56 +535,75 @@ class Schedule(commands.Cog):
                 )
                 if c:
                     continue
-
-                success = False
-
-                try:
-                    await user.client.redeem_code(code, user.uid)
-                except genshin.errors.InvalidCookies:
-                    value = text_map.get(36, locale)
-                except genshin.errors.RedemptionClaimed:
-                    value = text_map.get(106, locale)
-                except genshin.errors.RedemptionCooldown:
-                    await asyncio.sleep(10)
-                    try:
-                        await user.client.redeem_code(code, user.uid)
-                    except:
-                        value = text_map.get(127, locale)
-                except genshin.errors.RedemptionException as e:
-                    value = e.msg
-                except Exception as e:
-                    value = f"{type(e)} {e}"
-                else:
-                    log.info(
-                        f"[Schedule][Redeem Codes] Redeemed {code} for ({user.discord_user.id}, {user.uid})"
-                    )
-                    success = True
-                    value = text_map.get(109, locale)
-
-                await asyncio.sleep(5)
+                value, success = await self.redeem_code(user, locale, code)
 
                 embed.add_field(
                     name=f"{'✅' if success else '⛔'} {code}",
                     value=value,
                 )
-
                 await self.bot.pool.execute(
                     "INSERT INTO redeem_codes (code, uid) VALUES ($1, $2)",
                     code,
                     user.uid,
                 )
+                await asyncio.sleep(5)
 
             if embed.fields:
-                try:
-                    await user.discord_user.send(embed=embed)  # type: ignore
-                except discord.Forbidden:
-                    pass
-
+                await self.send_embed(user.discord_user, embed)  # type: ignore
             await asyncio.sleep(10)
             if index % 100 == 0:
                 await asyncio.sleep(30)
 
         log.info("[Schedule][Redeem Codes] Done")
+
+    async def send_embed(
+        self, user: Union[discord.User, discord.Member], embed: discord.Embed
+    ):
+        try:
+            await user.send(embed=embed)
+        except discord.Forbidden:
+            pass
+
+    async def get_redeem_code_users(self):
+        users: List[custom_model.ShenheAccount] = []
+        rows = await self.bot.pool.fetch(
+            "SELECT user_id FROM user_settings WHERE auto_redeem = true"
+        )
+        for row in rows:
+            try:
+                acc = await genshin_utils.get_shenhe_account(row["user_id"], self.bot)
+            except Exception:
+                pass
+            else:
+                users.append(acc)
+        return users
+
+    async def redeem_code(self, user, locale, code):
+        success = False
+        value = "default_value"
+        try:
+            await user.client.redeem_code(code, user.uid)
+        except genshin.errors.InvalidCookies:
+            value = text_map.get(36, locale)
+        except genshin.errors.RedemptionClaimed:
+            value = text_map.get(106, locale)
+        except genshin.errors.RedemptionCooldown:
+            await asyncio.sleep(10)
+            try:
+                await user.client.redeem_code(code, user.uid)
+            except Exception:
+                value = text_map.get(127, locale)
+        except genshin.errors.RedemptionException as e:
+            value = e.msg
+        except Exception as e:
+            value = f"{type(e)} {e}"
+        else:
+            log.info(
+                f"[Schedule][Redeem Codes] Redeemed {code} for ({user.discord_user.id}, {user.uid})"
+            )
+            success = True
+            value = text_map.get(109, locale)
+        return value, success
 
     @schedule_error_handler
     async def claim_reward(self):
@@ -578,69 +619,12 @@ class Schedule(commands.Cog):
                 continue
 
             user_count += 1
-            error = False
-            error_message = ""
-
-            client = user.client
-            try:
-                reward = await client.claim_daily_reward()
-            except genshin.errors.AlreadyClaimed:
-                success_count += 1
-            except genshin.errors.InvalidCookies:
-                error = True
-                error_message = text_map.get(36, "en-US", user.user_locale)
-                log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-                success_count += 1
-            except genshin.errors.GenshinException as e:
-                error = True
-                error_message = f"```{type(e)}: {e.msg}```"
-                capture_exception(e)
-            except Exception as e:
-                error = True
-                error_message = f"```{type(e)} {e}```"
-                capture_exception(e)
-            else:
-                log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
-                if await utility_utils.get_user_notification(
-                    user.discord_user.id, self.bot.pool
-                ):
-                    embed = utility_utils.DefaultEmbed(
-                        text_map.get(87, "en-US", user.user_locale),
-                        f"{reward.name} x{reward.amount}",
-                    )
-                    embed.set_thumbnail(url=reward.icon)
-                    embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
-
-                    try:
-                        await user.discord_user.send(embed=embed)  # type: ignore
-                    except discord.Forbidden:
-                        pass
-
-                success_count += 1
+            success_count, error, error_message = await self.claim_daily_reward(
+                success_count, user, user.client
+            )
 
             if error:
-                await self.bot.pool.execute(
-                    """
-                    UPDATE user_accounts
-                    SET daily_checkin = false
-                    WHERE user_id = $1 AND uid = $2
-                    """,
-                    user.discord_user.id,
-                    user.uid,
-                )
-
-                embed = utility_utils.ErrorEmbed(
-                    description=f"{error_message}\n\n{text_map.get(630, 'en-US', user.user_locale)}"
-                )
-                embed.set_author(
-                    name=text_map.get(500, "en-US", user.user_locale),
-                    icon_url=user.discord_user.display_avatar.url,
-                )
-                embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
-                try:
-                    await user.discord_user.send(embed=embed)  # type: ignore
-                except discord.Forbidden:
-                    pass
+                await self.handle_daily_reward_error(user, error_message)
 
             if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
                 await asyncio.sleep(40)
@@ -659,6 +643,85 @@ class Schedule(commands.Cog):
                 f"Claimed {success_count}/{user_count}",
             )
         )
+
+    async def claim_daily_reward(
+        self,
+        success_count: int,
+        user: custom_model.ShenheAccount,
+        client: genshin.Client,
+    ):
+        error = False
+        error_message = ""
+        try:
+            reward = await client.claim_daily_reward()
+        except genshin.errors.AlreadyClaimed:
+            success_count += 1
+        except genshin.errors.InvalidCookies:
+            error = True
+            error_message = text_map.get(36, "en-US", user.user_locale)
+            log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
+            success_count += 1
+        except genshin.errors.GenshinException as e:
+            error = True
+            error_message = f"```{type(e)}: {e.msg}```"
+            capture_exception(e)
+        except Exception as e:
+            error = True
+            error_message = f"```{type(e)} {e}```"
+            capture_exception(e)
+        else:
+            success_count = await self.daily_reward_success(success_count, user, reward)
+
+        return success_count, error, error_message
+
+    async def daily_reward_success(
+        self,
+        success_count: int,
+        user: custom_model.ShenheAccount,
+        reward: genshin.models.DailyReward,
+    ) -> int:
+        log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
+        if await utility_utils.get_user_notification(
+            user.discord_user.id, self.bot.pool
+        ):
+            embed = utility_utils.DefaultEmbed(
+                text_map.get(87, "en-US", user.user_locale),
+                f"{reward.name} x{reward.amount}",
+            )
+            embed.set_thumbnail(url=reward.icon)
+            embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
+
+            await self.send_embed(user.discord_user, embed)  # type: ignore
+
+        success_count += 1
+        return success_count
+
+    async def handle_daily_reward_error(
+        self, user: custom_model.ShenheAccount, error_message: str
+    ):
+        await self.bot.pool.execute(
+            """
+            UPDATE user_accounts
+            SET daily_checkin = false
+            WHERE user_id = $1 AND uid = $2
+            """,
+            user.discord_user.id,
+            user.uid,
+        )
+
+        embed = utility_utils.ErrorEmbed(
+            description=f"""
+            {error_message}
+            
+            {text_map.get(630, 'en-US', user.user_locale)}
+            """
+        )
+        embed.set_author(
+            name=text_map.get(500, "en-US", user.user_locale),
+            icon_url=user.discord_user.display_avatar.url,
+        )
+        embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
+        await self.send_embed(user.discord_user, embed)  # type: ignore
 
     @schedule_error_handler
     async def weapon_talent_base_notification(
@@ -756,7 +819,7 @@ class Schedule(commands.Cog):
                     draw_title=False,
                 )
                 fp.seek(0)
-                file = discord.File(fp, "reminder_card.jpeg")
+                _file = discord.File(fp, "reminder_card.jpeg")
 
                 domain: models.Domain = item_info["domain"]
 
@@ -773,7 +836,7 @@ class Schedule(commands.Cog):
                 embed.set_image(url="attachment://reminder_card.jpeg")
 
                 try:
-                    await user.send(embed=embed, files=[file])
+                    await user.send(embed=embed, files=[_file])
                 except discord.Forbidden:
                     await self.bot.pool.execute(
                         f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1",
@@ -792,7 +855,7 @@ class Schedule(commands.Cog):
         client = AmbrTopAPI(self.bot.session, "cht")
         eng_client = AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
-        with open(f"data/game/character_map.json", "r", encoding="utf-8") as f:
+        with open("data/game/character_map.json", "r", encoding="utf-8") as f:
             character_map = json.load(f)
         character_map["10000005"] = {
             "name": "旅行者",
@@ -806,7 +869,7 @@ class Schedule(commands.Cog):
         character_map["10000007"]["emoji"] = str(
             utils.find(lambda e: e.name == "10000007", self.bot.emojis)
         )
-        with open(f"data/game/character_map.json", "w+", encoding="utf-8") as f:
+        with open("data/game/character_map.json", "w+", encoding="utf-8") as f:
             json.dump(character_map, f, ensure_ascii=False, indent=4)
 
         for thing in things_to_update:
@@ -867,7 +930,7 @@ class Schedule(commands.Cog):
                 object_id = str(object.id)
                 if "-" in object_id:
                     object_id = (object_id.split("-"))[0]
-                emoji = utils.find(lambda e: e.name == object_id, self.bot.emojis)
+                emoji = utils.get(self.bot.emojis, name=object_id)
                 if emoji is None:
                     emoji_server = None
                     for guild in self.bot.guilds:
@@ -903,7 +966,7 @@ class Schedule(commands.Cog):
     async def update_text_map(self):
         """Updates genshin text map"""
         log.info("[Schedule][Update Text Map] Start")
-        # character, weapon, material, artifact text map
+
         things_to_update = (
             "avatar",
             "weapon",
@@ -916,47 +979,45 @@ class Schedule(commands.Cog):
             "namecard",
         )
         for thing in things_to_update:
-            dict: Dict[str, Dict[str, str]] = {}
-            for discord_lang, lang in AMBR_LANGS.items():
-                async with self.bot.session.get(
-                    f"https://api.ambr.top/v2/{lang}/{thing}"
-                ) as r:
-                    data = await r.json()
-                for item_id, item_data in data["data"]["items"].items():
-                    if item_id not in dict:
-                        dict[item_id] = {}
-
-                    if thing == "avatar" and (
-                        "10000007" in item_id or "10000005" in item_id
-                    ):
-                        dict[item_id][lang] = (
-                            item_data["name"]
-                            + f" ({get_element_name(convert_element(item_data['element']), discord_lang)})"
-                            + f" ({'♂️' if '10000005' in item_id else '♀️'})"
-                        )
-                    else:
-                        dict[item_id][lang] = item_data["name"]
-            if thing == "avatar":
-                dict["10000007"] = {
-                    "chs": "旅行者",
-                    "cht": "旅行者",
-                    "de": "Reisende",
-                    "en": "Traveler",
-                    "es": "Viajera",
-                    "fr": "Voyageuse",
-                    "jp": "旅人",
-                    "kr": "여행자",
-                    "th": "นักเดินทาง",
-                    "pt": "Viajante",
-                    "ru": "Путешественница",
-                    "vi": "Nhà Lữ Hành",
-                }
-                dict["10000005"] = dict["10000007"]
-            with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
-                json.dump(dict, f, indent=4, ensure_ascii=False)
+            await self.update_thing_text_map(thing)
 
         # daily dungeon text map
-        dict = {}
+        await self.update_dungeon_text_map()
+
+        # item name text map
+        self.update_item_text_map(things_to_update)
+
+        log.info("[Schedule][Update Text Map] Ended")
+
+    async def update_thing_text_map(self, thing):
+        update_dict: Dict[str, Dict[str, str]] = {}
+        for discord_lang, lang in AMBR_LANGS.items():
+            async with self.bot.session.get(
+                f"https://api.ambr.top/v2/{lang}/{thing}"
+            ) as r:
+                data = await r.json()
+            for item_id, item_data in data["data"]["items"].items():
+                if item_id not in update_dict:
+                    update_dict[item_id] = {}
+
+                if thing == "avatar" and (
+                    "10000007" in item_id or "10000005" in item_id
+                ):
+                    update_dict[item_id][lang] = (
+                        item_data["name"]
+                        + f" ({get_element_name(convert_element(item_data['element']), discord_lang)})"
+                        + f" ({'♂️' if '10000005' in item_id else '♀️'})"
+                    )
+                else:
+                    update_dict[item_id][lang] = item_data["name"]
+        if thing == "avatar":
+            update_dict["10000007"] = asset.traveler_name_dict
+            update_dict["10000005"] = update_dict["10000007"]
+        with open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
+            json.dump(update_dict, f, indent=4, ensure_ascii=False)
+
+    async def update_dungeon_text_map(self):
+        update_dict = {}
         for lang in list(AMBR_LANGS.values()):
             async with self.bot.session.get(
                 f"https://api.ambr.top/v2/{lang}/dailyDungeon"
@@ -964,13 +1025,13 @@ class Schedule(commands.Cog):
                 data = await r.json()
             for _, domains in data["data"].items():
                 for _, domain_info in domains.items():
-                    if str(domain_info["id"]) not in dict:
-                        dict[str(domain_info["id"])] = {}
-                    dict[str(domain_info["id"])][lang] = domain_info["name"]
-        with open(f"text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
-            json.dump(dict, f, indent=4, ensure_ascii=False)
+                    if str(domain_info["id"]) not in update_dict:
+                        update_dict[str(domain_info["id"])] = {}
+                    update_dict[str(domain_info["id"])][lang] = domain_info["name"]
+        with open("text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
+            json.dump(update_dict, f, indent=4, ensure_ascii=False)
 
-        # item name text map
+    def update_item_text_map(self, things_to_update):
         huge_text_map = {}
         for thing in things_to_update:
             with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
@@ -983,9 +1044,8 @@ class Schedule(commands.Cog):
                         huge_text_map[name] = "10000007"
                     else:
                         huge_text_map[name] = item_id
-        with open(f"text_maps/item_name.json", "w+", encoding="utf-8") as f:
+        with open("text_maps/item_name.json", "w+", encoding="utf-8") as f:
             json.dump(huge_text_map, f, indent=4, ensure_ascii=False)
-        log.info("[Schedule][Update Text Map] Ended")
 
     @schedule_error_handler
     async def update_card_data(self):
