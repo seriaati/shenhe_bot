@@ -399,7 +399,7 @@
   9. Kembali ke Aplikasi Streaming > Stop Sniffing
   10. Klik Sniff History > Pilih permintaan yang diakhiri dengan .json (tautan dimulai dengan https://hk4e-api-os.mihoyo.com/)
   11. Klik tab Request, lalu salin tautannya
-  12. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
+  12. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
 '363': Tautan yang kamu berikan tidak valid
 '364': Video Tutorial
 '365': Pilih platformmu
