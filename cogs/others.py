@@ -6,6 +6,7 @@ import os
 from typing import Dict, List, Optional, Union
 
 import discord
+from exceptions import AutocompleteError
 import psutil
 import pygit2
 from aioimgur import ImgurClient
@@ -227,25 +228,28 @@ class OthersCog(commands.Cog, name="others"):
         character_id: str,
     ):
         await i.response.defer()
+
+        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+        character = await ambr.get_character(character_id)
+        if not isinstance(character, Character):
+            raise AutocompleteError
+
         imgur = ImgurClient(
             os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET")
         )
-        something = await imgur.upload(await image_file.read())
+        image = await imgur.upload(await image_file.read())
         converted_character_id = int(character_id.split("-")[0])
         await CustomImage.add_user_custom_image(
             i.user.id,
             converted_character_id,
-            something["link"],
+            image["link"],
             image_name,
             i.client.pool,
         )
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         view = CustomImage.View(locale)
         view.author = i.user
-        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
-        character = await ambr.get_character(character_id)
 
-        assert isinstance(character, Character)
         await CustomImage.return_custom_image_interaction(
             view, i, converted_character_id, character.element
         )
@@ -257,7 +261,9 @@ class OthersCog(commands.Cog, name="others"):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
-            if character_id in ("10000005", "10000007"):
+            if any(
+                [character_id in str(traveler_id) for traveler_id in asset.traveler_ids]
+            ):
                 continue
 
             if current.lower() in character_names[to_ambr_top(locale)].lower():
