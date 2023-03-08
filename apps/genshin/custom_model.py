@@ -21,8 +21,8 @@ import ambr.models as ambr
 class ShenheAccount(BaseModel):
     client: genshin.Client
     uid: int
-    discord_user: discord.User | discord.Member | discord.ClientUser
-    user_locale: str | None
+    discord_user: Union[discord.User, discord.Member]
+    user_locale: Optional[str] = None
     china: bool
     daily_checkin: bool
 
@@ -369,10 +369,12 @@ class DiaryLogsResult(BaseModel):
     primo_per_day: Dict[int, int]
     before_adding: Dict[int, int]
 
+
 class FarmData(BaseModel):
     domain: ambr.Domain
     characters: List[ambr.Character] = []
     weapons: List[ambr.Weapon] = []
+
 
 class ConditionalResult(BaseModel):
     cond: Dict[str, Any]
