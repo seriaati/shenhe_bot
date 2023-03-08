@@ -20,7 +20,7 @@
 '19': Semua Karakter
 '20': Ekspedisi
 '21': </stuck:1006486283725590536> tidak ada informasi
-'22': Data tidak publik
+'22': Data tidak muncul
 '23': Kesalahan
 '24': Catatan waktu
 '25': Sen.
@@ -147,7 +147,7 @@
   Matikan pesan langsung yang dikirim oleh Shenhe selain yang </remind:1044926380242120753>.
 '139': Lineup Karakter
 '140': Pilih skenario lineup
-'141': Tidak ada karakter yang ditemukan di etalase dalam game kamu!
+'141': Tidak ada karakter yang ditemukan di "Tampilan Rincian" di dalam game kamu!
 '142': Pilih elemen
 '143': kamu bukan penerbit perintah ini
 '144': Profil Overview
@@ -155,7 +155,7 @@
 '146': Lantai {a}
 '147': Waktu aktif
 '148': Pilih lantai abyss
-'149': Data tidak publik?
+'149': Data tidak muncul?
 '150': |-
   Silakan buka https://www.hoyolab.com/home dan login
   Ikuti langkah-langkah pada gambar di bawah ini
@@ -215,13 +215,13 @@
   {cookie} dengan Cookie
   {china} China users
 '195': Jenis file tidak valid
-'196': Ringkasan karakter Genshin
+'196': Ringkasan Karakter Genshin
 '197': Tidak perlu bahan
 '198': player
 '199': single strike
 '200': Level Senjata
 '201': lantai
-'202': Daftar tugas
+'202': Daftar Tugas
 '203': Tambahkan item
 '204': |-
   Daftar tugas kamu kosong, gunakan </calc character:1020188057628065862> atau </calc weapon:1020188057628065862> untuk menghitung material untuk karakter dan senjata, atau gunakan tombol hijau di bawah untuk menambahkan item khusus.
@@ -306,7 +306,7 @@
   • Otomatis tukarkan kode Genshin Impact yang ada di [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
   • Kamu juga dapat menukarkan kode secara manual menggunakan </redeem:1044926380456017924>
 '286': UID tidak valid atau tidak ditemukan di enka.network
-'287': Silakan aktifkan Tampilkan Rincian Karakter di dalam game
+'287': Silakan aktifkan "Tampilkan Rincian" karakter di dalam game kamu
 '288': Level player
 '289': Level dunia
 '290': Achievement
@@ -446,9 +446,9 @@
   Kamu tidak farm banyak singkapan ley line, itu hanya membuat angka lebih mudah dipahami.
 '399': |-
   Karakter di-cache secara otomatis saat kamu menggunakan command ini.
-  Bahkan jika kamu menonaktifkan karakter dari etalase dalam game, mereka akan tetap muncul di sini.
-  Untuk memperbarui etalase, tempatkan karakter kembali dan gunakan perintah ini lagi.
-  Secara teoritis, kamu dapat memiliki semua karaktermu di /profile kamu dan gunakan di kalkulator damage.
+  Bahkan jika kamu menonaktifkan karakter di "Tampilan Rincian" karakter di dalam game, mereka akan tetap muncul di sini.
+  Untuk memperbarui Karakter Showcase di bot shenhe, tempatkan kembali karakter di "Tampilan Rincian" di dalam game dan gunakan perintah /profile lagi.
+  Secara teoritis, kamu dapat memiliki semua karaktermu di /profile kamu dan dapat digunakan di Kalkulator Damage.
 '400': Tautan dihasilkan, klik tombol di bawah untuk masuk
 '401': Hasilkan tautan masuk
 '402': Membuat tautan masuk...
@@ -504,9 +504,9 @@
 '444': Kamu dapat menggunakan command /search untuk mendapat informasi lebih lanjut tentang item beta
 '445': Saat ini tidak ada item beta, periksa lagi nanti
 '446': Lihat item farmable hari ini
-'447': 'Lihat build karakter: Senjata, artefak, level talenta, statistik'
+'447': 'Lihat build karakter: Senjata, Artefak, Level Talenta, Statistik'
 '448': Cari UID pengguna
-'449': Lihat artefak, statistik, senjata, dan talenta karakter, serta hitung damage
+'449': Lihat Artefak, Statistik, Senjata, dan Talenta Karakter, serta hitung damage
 '450': Redeem kode gift (perlu /register)
 '451': kode
 '452': Lihat event yang sedang berlangsung di genshin
@@ -515,7 +515,7 @@
 '455': Server
 '456': Load
 '457': Saat ini kamu tidak ada di leaderboard
-'458': karakter
+'458': Karakter
 '459': Lihat stat evet genshin sebelumnya
 '460': Hitung bahan yang dibutuhkan untuk meningkatkan karakter
 '461': sinkronisasi
@@ -530,7 +530,7 @@
 '470': claymore
 '471': bow
 '472': polearm
-'473': Lihat daftar tugas
+'473': Lihat Daftar Tugas
 '474': Impor riwayat wish
 '475': Terima kasih banyak untuk orang-orang ini!
 '476': Tutorial impor riwayat wish
@@ -545,14 +545,14 @@
 '485': Ubah bahasa yang shenhe gunakan untuk meresponmu
 '486': Lihat daftar semua command
 '487': Genshin
-'488': Genshin wish
+'488': Genshin Wish
 '489': Memerlukan impor riwayat wish menggunakan /wish import
-'490': Kalkulator peningkatan kemajuan
-'491': Hitung bahan peningkatan
+'490': Kalkulator Enhancement Material
+'491': Hitung bahan material untuk upgrade
 '492': Video tutorial
 '493': Waifu
 '494': Lainnya
-'495': Pilih kategorimu
+'495': Pilih Kategori Bantuan
 '496': Author
 '497': |-
   Terima kasih telah menggunakan Shenhe, terutama yang memberi saran dan melaporkan bug.
@@ -562,7 +562,7 @@
 '499': Lihat semua karakter
 '500': Terjadi kesalahan saat mencoba melakukan check-in harian
 '501': Pilih satu bab buku
-'502': Jalankan kalkulator
+'502': Jalankan Kalkulator
 '503': Jumlah guild
 '504': 'Dibuat oleh seria#5334, DM saya jika ada pertanyaan'
 '505': Terjadi kesalahan saat mencoba mengirimkan notfikasi kepadamu
@@ -675,7 +675,7 @@
 '588': Lihat di Enka.network
 '589': merefresh {in_x_seconds}
 '590': |-
-  • Memberitahum saat domain talenta karakter dapat difarming
+  • Memberitahumu saat domain talenta karakter dapat difarming
   • Memilih karakter yang telah mengaktifkan notifikasi akan menonaktifkannya
 '591': Pengaturan saat ini
 '592': |-
@@ -709,7 +709,7 @@
 '613': Karakter yang sering digunakan
 '614': "Peingkatmu saat ini **#{rank}**"
 '615': "**{num}** orang telah berpartisipasi dalam leaderboard ini"
-'616': Pilih kategori leaderboard
+'616': Pilih Kategori Leaderboard
 '617': Tingkat penggunaan karakter di abyss
 '618': Karakter yang sering digunakan **{name}** dengan penggunaan **{num}** ({percent}%)
 '619': Untuk memperbarui atau menambahkan datamu di leaderboard, gunakan {command}
