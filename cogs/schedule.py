@@ -268,7 +268,7 @@ class Schedule(commands.Cog):
                         notification_type, n_user, locale, error_message
                     )
                 else:
-                    if n_user.current == n_user.max:
+                    if n_user.current >= n_user.max:
                         continue
 
                     # send notification
