@@ -71,7 +71,7 @@ class Schedule(commands.Cog):
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
             asyncio.create_task(self.update_shenhe_cache_and_data())
-            if now.day in (10, 25):
+            if now.day in (3, 10, 18, 25):
                 asyncio.create_task(self.generate_abyss_json())
 
         if now.hour in (4, 15, 21) and now.minute < self.loop_interval:  # 4am, 3pm, 9pm
