@@ -6,7 +6,7 @@ from discord.ui import Select
 from apps.genshin.utils import get_wish_history_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from utility.wish_paginator import _view
+from utility.wish_paginator import WishPaginatorView
 
 
 class SelectBanner(Select):
@@ -14,7 +14,7 @@ class SelectBanner(Select):
         super().__init__(placeholder=placeholder, options=options, row=3)
 
     async def callback(self, i: Interaction):
-        self.view: _view
+        self.view: WishPaginatorView
         await filter_callback(self, i, self.view.banner_filters)
 
 
@@ -27,7 +27,7 @@ class SelectRarity(Select):
         self.select_banner = select_banner
 
     async def callback(self, i: Interaction):
-        self.view: _view
+        self.view: WishPaginatorView
         await filter_callback(self, i, self.view.rarity_filters)
 
 

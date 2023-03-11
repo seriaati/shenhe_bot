@@ -12,7 +12,7 @@ from UI_base_models import BaseView
 import config
 import asset
 from dateutil import parser
-from utility.paginator import GeneralPaginator, _view
+from utility.paginator import GeneralPaginator, GeneralPaginatorView
 from utility.utils import DefaultEmbed, parse_HTML
 
 
@@ -158,7 +158,7 @@ class EventTypeSelect(ui.Select):
         self.embeds = embeds
 
     async def callback(self, i: discord.Interaction) -> Any:
-        self.view: _view
+        self.view: GeneralPaginatorView
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await self.view.update_children(i)
