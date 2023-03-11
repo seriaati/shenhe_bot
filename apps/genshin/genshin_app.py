@@ -353,7 +353,12 @@ class GenshinApp:
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
             return custom_model.GenshinAppResult(result=embed, success=False)
-        result = {"abyss": abyss, "user": user, "discord_user": shenhe_user.discord_user, "characters": list(characters)}
+        result = {
+            "abyss": abyss,
+            "user": user,
+            "discord_user": shenhe_user.discord_user,
+            "characters": list(characters),
+        }
         overview = utils.DefaultEmbed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(
