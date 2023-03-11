@@ -31,8 +31,7 @@ async def check_account_predicate(
         if user.id == i.user.id:
             raise NoUID(True)
         raise NoUID(False)
-    else:
-        return True
+    return True
 
 
 def check_cookie():
@@ -83,9 +82,8 @@ async def check_cookie_predicate(
             if user.id == i.user.id:
                 raise NoCookie(True, True)
             raise NoCookie(False, True)
-        else:
-            if user.id == i.user.id:
-                raise NoCookie(True, False)
-            raise NoCookie(False, False)
+        if user.id == i.user.id:
+            raise NoCookie(True, False)
+        raise NoCookie(False, False)
     else:
         return True
