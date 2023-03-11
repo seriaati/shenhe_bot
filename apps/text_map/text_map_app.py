@@ -1,5 +1,4 @@
 import json
-import re
 from typing import Dict, Optional
 
 import discord
