@@ -294,7 +294,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             _file = discord.File(fp, "stat_card.jpeg")
             await i.followup.send(
                 embed=stats_result.embed,
-                ephemeral=not not context_command,
+                ephemeral=context_command,
                 files=[_file],
             )
 
