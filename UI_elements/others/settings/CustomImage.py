@@ -348,10 +348,7 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
         return False
     try:
         async with session.get(url) as response:
-            if response.status == 200:
-                return True
-            else:
-                return False
+            return response.status == 200
     except aiohttp.InvalidURL:
         return False
 
