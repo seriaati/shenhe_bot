@@ -34,7 +34,7 @@ class _view(BaseView):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
         self.last.disabled = self.current_page + 1 == len(self.embeds)
-        
+
         text = text_map.get(176, self.locale)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
@@ -77,7 +77,7 @@ class _view(BaseView):
         self.current_page -= 1
 
         await self.update_children(i)
-    
+
     @button(
         label="page 1/1",
         custom_id="paginator_page",
@@ -120,8 +120,10 @@ class TodoPaginator:
         dark_mode: bool,
         first_fp: io.BytesIO,
         todo_items: List[TodoItem],
-        custom_children: List[Union[Button, Select]] = [],
+        custom_children: List[Union[Button, Select]] = None,
     ):
+        if custom_children is None:
+            custom_children = []
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children
@@ -145,7 +147,9 @@ class TodoPaginator:
         view.last.disabled = view.next.disabled = (
             True if len(self.embeds) == 1 else False
         )
-        view.page.label = text_map.get(176, self.locale).format(num=f"1/{len(self.embeds)}")
+        view.page.label = text_map.get(176, self.locale).format(
+            num=f"1/{len(self.embeds)}"
+        )
 
         if len(self.custom_children) > 0:
             for child in self.custom_children:
