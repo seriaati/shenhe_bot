@@ -87,10 +87,12 @@ class ShenheCommandTree(app_commands.CommandTree):
 
         if i.user.id == 410036441129943050:
             return True
-        if i.client.maintenance:  # type: ignore
+        if i.client.maintenance:
             embed = ErrorEmbed(
                 "申鶴正在維護中\nShenhe is under maintenance",
-                f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",  # type: ignore
+                f"""預計將在 {i.client.maintenance_time} 恢復服務
+                Estimated to be back online {i.client.maintenance_time}
+                """,
             )
             await i.response.send_message(
                 embed=embed,
