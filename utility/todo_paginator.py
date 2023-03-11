@@ -144,9 +144,7 @@ class TodoPaginator:
         )
         view.author = self.i.user
         view.first.disabled = view.previous.disabled = True
-        view.last.disabled = view.next.disabled = (
-            True if len(self.embeds) == 1 else False
-        )
+        view.last.disabled = view.next.disabled = len(self.embeds) == 1
         view.page.label = text_map.get(176, self.locale).format(
             num=f"1/{len(self.embeds)}"
         )

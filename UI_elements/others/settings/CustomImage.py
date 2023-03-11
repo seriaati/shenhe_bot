@@ -268,10 +268,10 @@ async def return_custom_image_interaction(
     options = await get_user_custom_image_options(
         character_id, i.client.pool, i.user.id
     )
-    disabled = True if len(options) == 25 else False
+    disabled = len(options) == 25
     view.add_item(AddImage(view.locale, character_id, element, disabled))
 
-    disabled = True if not options else False
+    disabled = bool(not options)
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
     view.add_item(ImageSelect(view.locale, options, False, character_id, element))
 

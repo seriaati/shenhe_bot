@@ -187,7 +187,7 @@ async def parse_weapon_wiki(
 
         level_one_curve = await client.get_weapon_curve(stat.grow_type, 1)
         level_max_curve = await client.get_weapon_curve(stat.grow_type, max_level)
-        percentage = True if stat.prop_id in percentage_fight_props else False
+        percentage = stat.prop_id in percentage_fight_props
         multiplier = 100 if percentage else 1
 
         embed.add_field(

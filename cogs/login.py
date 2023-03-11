@@ -112,7 +112,7 @@ async def register_user(
             "cookie_token": data.cookie_token,
         }
 
-    china = True if data.server is ServerId.CHINA else False
+    china = data.server is ServerId.CHINA
     await pool.execute(
         """
         UPDATE user_accounts

@@ -114,9 +114,7 @@ class WishPaginator:
 
         view.author = self.i.user
         view.first.disabled = view.previous.disabled = True
-        view.last.disabled = view.next.disabled = (
-            True if len(self.embeds) == 1 else False
-        )
+        view.last.disabled = view.next.disabled = len(self.embeds) == 1
 
         view.page.label = text_map.get(176, locale).format(
             num=f"{view.current_page + 1}/{len(self.embeds)}"
