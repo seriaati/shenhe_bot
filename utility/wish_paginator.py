@@ -94,8 +94,10 @@ class WishPaginator:
         self,
         i: Interaction,
         embeds: List[Embed],
-        custom_children: List[Union[Button, Select]] = [],
+        custom_children: List[Union[Button, Select]] = None,
     ):
+        if custom_children is None:
+            custom_children = []
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children

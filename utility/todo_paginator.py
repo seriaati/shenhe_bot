@@ -120,8 +120,10 @@ class TodoPaginator:
         dark_mode: bool,
         first_fp: io.BytesIO,
         todo_items: List[TodoItem],
-        custom_children: List[Union[Button, Select]] = [],
+        custom_children: List[Union[Button, Select]] = None,
     ):
+        if custom_children is None:
+            custom_children = []
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children

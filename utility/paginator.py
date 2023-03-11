@@ -92,8 +92,10 @@ class GeneralPaginator:
         self,
         i: discord.Interaction,
         embeds: List[discord.Embed],
-        custom_children: List[Union[ui.Button, ui.Select]] = [],
+        custom_children: List[Union[ui.Button, ui.Select]] = None,
     ):
+        if custom_children is None:
+            custom_children = []
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children
