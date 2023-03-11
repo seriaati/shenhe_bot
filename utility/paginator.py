@@ -1,13 +1,13 @@
 from typing import Any, Dict, List, Optional, Union
 
 from apps.genshin.custom_model import CustomInteraction
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 
 import discord
 from discord import ui
 
 import config
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 
 
@@ -73,7 +73,6 @@ class GeneralPaginatorView(BaseView):
     )
     async def page(self, _: discord.Interaction, __: ui.Button):
         """This button is just a label"""
-        pass
 
     @ui.button(
         emoji="<:right:982588993122238524>",
