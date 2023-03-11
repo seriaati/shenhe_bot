@@ -96,8 +96,7 @@ class Material(BaseModel):
     def get_icon_url(cls, v, values):
         if "type" in values and values["type"] == "custom":
             return v
-        else:
-            icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
+        icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
         return icon_url
 
 
@@ -287,9 +286,8 @@ class WeaponDetail(BaseModel):
     def parse_effect(cls, v):
         if v is None:
             return None
-        else:
-            v = list(v.values())[0]
-            return WeaponEffect(**v)
+        v = list(v.values())[0]
+        return WeaponEffect(**v)
 
     @validator("upgrade", pre=True, allow_reuse=True)
     def get_upgrade(cls, v):

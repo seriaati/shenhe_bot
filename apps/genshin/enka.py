@@ -55,8 +55,7 @@ async def get_enka_cache(
     )
     if cache:
         return pickle.loads(cache)
-    else:
-        return None
+    return None
 
 
 async def save_enka_cache(

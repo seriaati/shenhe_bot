@@ -11,5 +11,4 @@ async def get_character_skill_order(character_id: str) -> List[int]:
     character: Optional[Dict[str, Any]] = characters.get(character_id)
     if character and "SkillOrder" in character:
         return character.get("SkillOrder")
-    else:
-        return []
+    return []

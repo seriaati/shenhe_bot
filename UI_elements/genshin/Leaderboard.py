@@ -432,5 +432,4 @@ def get_al_title(season: int, locale: discord.Locale | str):
         return text_map.get(88, locale).format(
             phase=text_map.get(430, locale) + " ", num=season
         )
-    else:
-        return text_map.get(88, locale).format(phase="", num=text_map.get(154, locale))
+    return text_map.get(88, locale).format(phase="", num=text_map.get(154, locale))

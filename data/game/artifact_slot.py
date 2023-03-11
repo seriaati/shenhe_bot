@@ -19,11 +19,11 @@ def get_artifact_slot_emoji(slot: enum.EquipType) -> str:
 def get_artifact_slot_name(slot: enum.EquipType, locale: Locale | str):
     if slot is enum.EquipType.Flower:
         return text_map.get(734, locale)
-    elif slot is enum.EquipType.Feather:
+    if slot is enum.EquipType.Feather:
         return text_map.get(735, locale)
-    elif slot is enum.EquipType.Sands:
+    if slot is enum.EquipType.Sands:
         return text_map.get(736, locale)
-    elif slot is enum.EquipType.Goblet:
+    if slot is enum.EquipType.Goblet:
         return text_map.get(737, locale)
-    elif slot is enum.EquipType.Circlet:
+    if slot is enum.EquipType.Circlet:
         return text_map.get(738, locale)

@@ -87,20 +87,18 @@ class ShenheCommandTree(app_commands.CommandTree):
 
         if i.user.id == 410036441129943050:
             return True
-        else:
-            if i.client.maintenance:  # type: ignore
-                await i.response.send_message(
-                    embed=ErrorEmbed(
-                        "申鶴正在維護中\nShenhe is under maintenance",
-                        f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",  # type: ignore
-                    ).set_thumbnail(
-                        url=i.client.user.avatar.url  # type: ignore
-                    ),
-                    ephemeral=True,
-                )
-                return False
-            else:
-                return True
+        if i.client.maintenance:  # type: ignore
+            await i.response.send_message(
+                embed=ErrorEmbed(
+                    "申鶴正在維護中\nShenhe is under maintenance",
+                    f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",  # type: ignore
+                ).set_thumbnail(
+                    url=i.client.user.avatar.url  # type: ignore
+                ),
+                ephemeral=True,
+            )
+            return False
+        return True
 
     async def on_error(
         self, i: discord.Interaction, e: app_commands.AppCommandError, /
@@ -185,8 +183,7 @@ class Shenhe(commands.AutoShardedBot):
         error = getattr(error, "original", error)
         if isinstance(error, ignored):
             return
-        else:
-            log.warning(f"[{ctx.author.id}]on_command_error: {error}", exc_info=error)
+        log.warning(f"[{ctx.author.id}]on_command_error: {error}", exc_info=error)
 
     async def close(self) -> None:
         await self.session.close()
