@@ -177,9 +177,7 @@ class Schedule(commands.Cog):
 
         floors = [f for f in abyss.floors if f.floor >= 11]
         for floor in floors:
-            floor_dict = {}
-            floor_dict["floor"] = floor.floor
-            floor_dict["chambers"] = []
+            floor_dict = {"floor": floor.floor, "chambers": []}
 
             for chamber in floor.chambers:
                 chamber_list = []
