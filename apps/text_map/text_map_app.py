@@ -51,20 +51,18 @@ class TextMap:
 
     def get(
         self,
-        textMapHash: int,
+        hash: int,
         locale: discord.Locale | str = "en-US",
         user_locale: Optional[str] = None,
     ) -> str:
         locale = user_locale or locale
         path = to_paths(locale)
-        text_map: Dict = self.text_maps[path]
-        text = text_map.get(str(textMapHash), "")
-        if text == "":
-            log.warning(f"[Text Map][{locale}][Hash not found]: [Hash]{textMapHash}")
-            text_map = self.text_maps["en-US"]
-            text = text_map.get(str(textMapHash), "")
-        if textMapHash != 139:
-            text = re.sub(r"<[^\/][^>]*>", "", text)
+        lang_text_map: Dict[str, str] = self.text_maps[path]
+        text = lang_text_map.get(str(hash), "")
+        if not text:
+            log.warning(f"[Text Map][{locale}][Hash not found]: [Hash]{hash}")
+            lang_text_map = self.text_maps["en-US"]
+            text = lang_text_map.get(str(hash), "")
         return text
 
     def get_id_from_name(self, name: str) -> Optional[int]:
