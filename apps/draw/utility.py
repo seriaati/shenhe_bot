@@ -244,7 +244,4 @@ def global_write(
 
 
 def has_glyph(font: TTFont, glyph: str):
-    for table in font["cmap"].tables:
-        if ord(glyph) in table.cmap.keys():
-            return True
-    return False
+    return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)
