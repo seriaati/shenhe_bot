@@ -52,7 +52,7 @@ def card(
         draw.text((offset[0], offset[1] + 61), text, font=font, fill=fill)
 
         # small text
-        if num == 3 or num == 4:
+        if num in (3, 4):
             font = get_font(locale, 30)
             fill = asset.secondary_text if not dark_mode else asset.white
             draw.text(
