@@ -379,7 +379,7 @@ class Modal(BaseModal):
                 view=None,
             )
             return await wish_import_command(i, True)
-        else:
+
         client: genshin.Client = i.client.genshin_client
         client.lang = to_genshin_py(locale)
         uid = await get_uid(i.user.id, i.client.pool)
