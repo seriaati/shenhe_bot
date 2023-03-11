@@ -76,9 +76,7 @@ def get_error_handle_embed(
     elif isinstance(e, enkanetwork.VaildateUIDError):
         embed.description = text_map.get(286, locale)
         embed.set_author(name=text_map.get(523, locale))
-    elif isinstance(e, enkanetwork.EnkaServerError) or isinstance(
-        e, enkanetwork.HTTPException
-    ):
+    elif isinstance(e, (enkanetwork.EnkaServerError, enkanetwork.HTTPException)):
         embed.set_author(name=text_map.get(523, locale))
     elif isinstance(e, exceptions.NoCharacterFound):
         embed.description = text_map.get(287, locale)
