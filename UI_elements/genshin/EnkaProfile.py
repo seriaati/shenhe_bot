@@ -312,7 +312,8 @@ class ArtifactSlot(ui.Button):
         await i.response.defer()
 
         art = utils.get(self.character.equipments, detail__artifact_type=self.slot)
-        assert art
+        if not art:
+            raise AssertionError
 
         fp = await draw_artifact_card(
             DrawInput(

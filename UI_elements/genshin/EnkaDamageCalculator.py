@@ -167,7 +167,8 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         raise NoCharacterFound
 
     character = utils.get(enka_view.data.characters, id=int(enka_view.character_id))
-    assert character
+    if not character:
+        raise AssertionError
 
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
     try:

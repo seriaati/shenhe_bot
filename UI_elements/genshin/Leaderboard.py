@@ -265,7 +265,8 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                 if key in asset.traveler_ids:
                     key = f"{key}-anemo"
                 character = await client.get_character(str(key))
-                assert isinstance(character, Character)
+                if not isinstance(character, Character):
+                    raise AssertionError
                 uc_list.append(UsageCharacter(character=character, usage_num=value))
 
             result = await main_funcs.abyss_character_usage_card(
