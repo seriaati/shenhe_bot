@@ -214,9 +214,8 @@ async def get_shenhe_account(
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
 
-    if custom_cookie:
-        if not custom_uid:
-            raise AssertionError
+    if custom_cookie and not custom_uid:
+        raise AssertionError
 
     if not custom_cookie:
         user_data = await bot.pool.fetchrow(
