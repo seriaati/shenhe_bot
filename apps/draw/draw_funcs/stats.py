@@ -80,8 +80,7 @@ def area(explorations: List[genshin.models.Exploration], dark_mode: bool):
         if not exploration:
             pos = pos[0], pos[1] + 350
             continue
-        else:
-            exploration = exploration[0]
+        exploration = exploration[0]
         percentage = exploration.explored
         file_name = f"light_{exploration.id}"
         try:
