@@ -53,7 +53,7 @@ def card(
         elif col == 3:
             key = human_format(key)
         else:
-            key = key
+            pass
         font = get_font(locale, 36)
         fill = asset.primary_text if not dark_mode else asset.white
         draw.text(offset, str(key), font=font, fill=fill)
