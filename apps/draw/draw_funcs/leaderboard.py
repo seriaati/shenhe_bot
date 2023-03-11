@@ -92,7 +92,7 @@ def board(
     return im
 
 
-def user_card(dark_mode: bool, rank: int, current: bool) -> Image.Image:
+def default_user_card(dark_mode: bool, rank: int, current: bool) -> Image.Image:
     """Draw default leaderboard user card."""
     im = Image.open(
         f"yelan/templates/leaderboard/[{'light' if not dark_mode else 'dark'}] elevation_{2 if current else 1}.png"
@@ -130,7 +130,7 @@ def run_user_card(
     current: bool,
 ) -> Image.Image:
     """Draw runs taken leaderboard user card."""
-    im = user_card(dark_mode, user_data.rank, current)
+    im = default_user_card(dark_mode, user_data.rank, current)
     draw = ImageDraw.Draw(im)
 
     # write rank text
@@ -182,7 +182,7 @@ def ss_user_card(
     dark_mode: bool, user_data: SingleStrikeLeaderboardUser, current: bool
 ) -> Image.Image:
     """Draw single strike leaderboard user card."""
-    im = user_card(dark_mode, user_data.rank, current)
+    im = default_user_card(dark_mode, user_data.rank, current)
     draw = ImageDraw.Draw(im)
 
     # write rank text
