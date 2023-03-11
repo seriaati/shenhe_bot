@@ -90,5 +90,7 @@ def get_month_name(
 
 
 async def get_user_locale(user_id: int, pool: asyncpg.Pool) -> Optional[str]:
-    user_locale = await pool.fetchval("SELECT lang FROM user_settings WHERE user_id = $1", user_id)
+    user_locale = await pool.fetchval(
+        "SELECT lang FROM user_settings WHERE user_id = $1", user_id
+    )
     return user_locale

@@ -36,7 +36,7 @@ class ElementSelect(Select):
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
-        
+
         await i.response.edit_message(
             embed=DefaultEmbed().set_author(
                 name=text_map.get(644, self.view.locale), icon_url=asset.loader
@@ -55,5 +55,7 @@ class ElementSelect(Select):
         )
         fp.seek(0)
         file = File(fp, filename="characters.jpeg")
-    
-        await i.edit_original_response(embed=self.view.embeds[self.values[0]], attachments=[file])
+
+        await i.edit_original_response(
+            embed=self.view.embeds[self.values[0]], attachments=[file]
+        )

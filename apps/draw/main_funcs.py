@@ -8,13 +8,30 @@ import genshin
 import matplotlib.pyplot as plt
 
 from ambr.models import Material
-from apps.draw.draw_funcs import (abyss, artifact, banners, characters, check, diary,
-                                  farm, lineup, profile, stats, todo, wish)
+from apps.draw.draw_funcs import (
+    abyss,
+    artifact,
+    banners,
+    characters,
+    check,
+    diary,
+    farm,
+    lineup,
+    profile,
+    stats,
+    todo,
+    wish,
+)
 from apps.draw.utility import calculate_time, download_images, extract_urls
-from apps.genshin.custom_model import (CharacterUsageResult, DrawInput, FarmData,
-                                       RunLeaderboardUser,
-                                       SingleStrikeLeaderboardUser,
-                                       UsageCharacter, WishData)
+from apps.genshin.custom_model import (
+    CharacterUsageResult,
+    DrawInput,
+    FarmData,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardUser,
+    UsageCharacter,
+    WishData,
+)
 
 
 @calculate_time
@@ -75,13 +92,15 @@ async def draw_farm_domain_card(
     domains = [data.domain for data in farm_data]
     rewards = [reward for domain in domains for reward in domain.rewards]
     urls.extend(extract_urls(rewards))
-    
+
     items = [f.characters for f in farm_data] + [f.weapons for f in farm_data]
     items = [item for sublist in items for item in sublist]
     urls.extend(extract_urls(items))
     await download_images(urls, input.session)
-    
-    func = functools.partial(farm.draw_domain_card, farm_data, input.locale, input.dark_mode)
+
+    func = functools.partial(
+        farm.draw_domain_card, farm_data, input.locale, input.dark_mode
+    )
     return await input.loop.run_in_executor(None, func)
 
 
@@ -354,6 +373,7 @@ async def draw_artifact_card(
         artifact.draw_artifact, art, character, input.locale, input.dark_mode
     )
     return await input.loop.run_in_executor(None, func)
+
 
 @calculate_time
 async def draw_banner_card(input: DrawInput, banner_urls: List[str]) -> io.BytesIO:

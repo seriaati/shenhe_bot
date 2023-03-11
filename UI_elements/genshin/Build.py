@@ -133,14 +133,17 @@ class TeamButton(Button):
         lineup_dict = {}
         select_options = []
         lineup = None
-        
+
         for index, scenario in enumerate(scenarios_to_search):
             select_options.append(
                 SelectOption(label=scenario.name, value=scenario.name)
             )
             lineup_dict[scenario.name] = (
-                line_up:=await client.get_lineups(
-                    characters=[self.character_id], limit=1, scenario=scenario, page_size=1
+                line_up := await client.get_lineups(
+                    characters=[self.character_id],
+                    limit=1,
+                    scenario=scenario,
+                    page_size=1,
                 )
             )[0]
             if index == 0:
@@ -152,7 +155,7 @@ class TeamButton(Button):
 
         for item in self.view.children:
             item.disabled = False
-        
+
         children_copy = self.view.children.copy()
 
         self.view.clear_items()
@@ -205,7 +208,9 @@ class TeamSelect(Select):
         for item in self.view.children:
             item.disabled = False
 
-        await i.edit_original_response(embeds=embeds, attachments=attachments, view=self.view)
+        await i.edit_original_response(
+            embeds=embeds, attachments=attachments, view=self.view
+        )
 
 
 async def get_embeds_for_lineup(

@@ -15,8 +15,7 @@ from data.game.artifact_slot import get_artifact_slot_emoji
 from UI_base_models import BaseView, GoBackButton
 from UI_elements.genshin import EnkaDamageCalculator
 from UI_elements.others.settings import CustomImage
-from utility.utils import (DefaultEmbed, divide_chunks,
-                           get_user_appearance_mode)
+from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
 from yelan.damage_calculator import return_current_status
 
 
@@ -57,7 +56,9 @@ class View(BaseView):
 
 class InfoButton(ui.Button):
     def __init__(self):
-        super().__init__(style=discord.ButtonStyle.secondary, emoji=asset.info_emoji, row=1)
+        super().__init__(
+            style=discord.ButtonStyle.secondary, emoji=asset.info_emoji, row=1
+        )
 
     async def callback(self, i: discord.Interaction):
         self.view: View
@@ -107,7 +108,10 @@ class OverviewButton(ui.Button):
 
 class CustomImageView(BaseView):
     def __init__(
-        self, options: List[discord.SelectOption], locale: discord.Locale | str, original_view: EnkaView
+        self,
+        options: List[discord.SelectOption],
+        locale: discord.Locale | str,
+        original_view: EnkaView,
     ):
         super().__init__(timeout=config.long_timeout)
 
@@ -131,7 +135,9 @@ class SetCustomImage(ui.Button):
 
     async def callback(self, i: discord.Interaction) -> Any:
         self.view: View
-        options = await CustomImage.get_user_custom_image_options(int(self.view.character_id), i.client.pool, i.user.id)
+        options = await CustomImage.get_user_custom_image_options(
+            int(self.view.character_id), i.client.pool, i.user.id
+        )
         custom_image = await CustomImage.get_user_custom_image(
             i.user.id, int(self.view.character_id), i.client.pool
         )
@@ -155,7 +161,9 @@ class GoBackToProfile(ui.Button):
 
 class Reload(ui.Button):
     def __init__(self, original_view: EnkaView):
-        super().__init__(emoji=asset.reload_emoji, row=1, style=discord.ButtonStyle.blurple)
+        super().__init__(
+            emoji=asset.reload_emoji, row=1, style=discord.ButtonStyle.blurple
+        )
         self.original_view = original_view
 
     async def callback(self, i: discord.Interaction):
@@ -166,7 +174,9 @@ class Reload(ui.Button):
         embed = await CustomImage.get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
-        options = await CustomImage.get_user_custom_image_options(int(self.view.character_id), i.client.pool, i.user.id)
+        options = await CustomImage.get_user_custom_image_options(
+            int(self.view.character_id), i.client.pool, i.user.id
+        )
         self.view.clear_items()
         self.view.add_item(SelectImage(options, self.view.locale))
         self.view.add_item(GoBackToProfile(self.original_view))
@@ -175,7 +185,9 @@ class Reload(ui.Button):
 
 
 class SelectImage(ui.Select):
-    def __init__(self, options: List[discord.SelectOption], locale: discord.Locale | str):
+    def __init__(
+        self, options: List[discord.SelectOption], locale: discord.Locale | str
+    ):
         disabled = True if not options else False
         super().__init__(
             placeholder=text_map.get(279 if disabled else 404, locale),
@@ -188,9 +200,9 @@ class SelectImage(ui.Select):
 
     async def callback(self, i: discord.Interaction):
         self.view: CustomImageView
-        await CustomImage.change_user_custom_image(i.user.id, int(self.view.character_id), self.values[0], i.client.pool) # type: ignore
+        await CustomImage.change_user_custom_image(i.user.id, int(self.view.character_id), self.values[0], i.client.pool)  # type: ignore
         custom_image = await CustomImage.get_user_custom_image(
-            i.user.id, int(self.view.character_id), i.client.pool # type: ignore
+            i.user.id, int(self.view.character_id), i.client.pool  # type: ignore
         )
         embed = await CustomImage.get_user_custom_image_embed(
             i, self.view.locale, str(self.view.character_id), custom_image, False
@@ -280,9 +292,7 @@ class ShowArtifacts(ui.Button):
                 art_type = equipment.detail.artifact_type
                 e = get_artifact_slot_emoji(art_type)
                 if e:
-                    self.view.add_item(
-                        ArtifactSlot(e, art_type, character)
-                    )
+                    self.view.add_item(ArtifactSlot(e, art_type, character))
 
             self.view.add_item(GoBackButton(original_info))
             await i.response.edit_message(view=self.view)
@@ -300,7 +310,7 @@ class ArtifactSlot(ui.Button):
         self.view: EnkaView
 
         await i.response.defer()
-        
+
         art = utils.get(self.character.equipments, detail__artifact_type=self.slot)
         assert art
 

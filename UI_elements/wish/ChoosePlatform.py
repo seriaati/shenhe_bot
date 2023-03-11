@@ -99,7 +99,7 @@ class View(BaseView):
         self.add_item(ChooseMethod(options, self.locale))
         self.add_item(GOBack())
         self.add_item(SubmitLink(self.locale))
-        await i.response.edit_message(view=self,embed=embed)
+        await i.response.edit_message(view=self, embed=embed)
 
 
 class ChooseMethod(Select):

@@ -20,7 +20,11 @@ def card(banner_image_urls: List[str], locale: Locale | str) -> io.BytesIO:
     )
     if len(banner_image_urls) > 3:
         draw.text(
-            (1620, 81), text_map.get(745, locale), fill=asset.white, anchor="mm", font=font
+            (1620, 81),
+            text_map.get(745, locale),
+            fill=asset.white,
+            anchor="mm",
+            font=font,
         )
 
     # draw banners

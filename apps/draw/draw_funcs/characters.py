@@ -7,9 +7,14 @@ import genshin
 from PIL import Image, ImageDraw
 
 import asset
-from apps.draw.utility import (circular_crop, draw_dynamic_background,
-                               dynamic_font_size, get_cache, get_font,
-                               shorten_text)
+from apps.draw.utility import (
+    circular_crop,
+    draw_dynamic_background,
+    dynamic_font_size,
+    get_cache,
+    get_font,
+    shorten_text,
+)
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 from apps.text_map.text_map_app import text_map
 from data.game.elements import get_element_color, get_element_emoji
@@ -22,7 +27,6 @@ def card(
     element: str,
     custom_title: Optional[str] = None,
 ) -> io.BytesIO:
-
     if element == "All":
         characters = all_characters
         element_name = text_map.get(701, locale)

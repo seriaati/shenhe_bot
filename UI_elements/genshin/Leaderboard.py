@@ -11,12 +11,18 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
-from apps.genshin.custom_model import (DrawInput, RunLeaderboardUser,
-                                       SingleStrikeLeaderboardCharacter,
-                                       SingleStrikeLeaderboardUser,
-                                       UsageCharacter)
-from apps.genshin.utils import (get_abyss_season_date_range,
-                                get_character_emoji, get_current_abyss_season)
+from apps.genshin.custom_model import (
+    DrawInput,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardCharacter,
+    SingleStrikeLeaderboardUser,
+    UsageCharacter,
+)
+from apps.genshin.utils import (
+    get_abyss_season_date_range,
+    get_character_emoji,
+    get_current_abyss_season,
+)
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from UI_base_models import BaseView
@@ -296,7 +302,7 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
         elif leaderboard == "full_clear":
             run_users: List[RunLeaderboardUser] = []
             uids: List[int] = []
-            
+
             if query_str:
                 query_str += " AND stars_collected = 36"
             else:
@@ -319,7 +325,7 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                     continue
                 if row["uid"] in uids:
                     continue
-                
+
                 if row["runs"] == 0:
                     win_percentage = 0
                 else:

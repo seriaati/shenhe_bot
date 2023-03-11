@@ -360,7 +360,9 @@ class AmbrTopAPI:
             return result
 
     @get_decorator
-    async def get_book(self, id: Optional[int] = None) -> Optional[List[models.Book] | models.Book]:
+    async def get_book(
+        self, id: Optional[int] = None
+    ) -> Optional[List[models.Book] | models.Book]:
         """Get a list of all books or a specific book by id.
 
         Args:
@@ -380,7 +382,9 @@ class AmbrTopAPI:
             return result
 
     @get_decorator
-    async def get_food(self, id: Optional[int] = None) -> Optional[List[models.Food] | models.Food]:
+    async def get_food(
+        self, id: Optional[int] = None
+    ) -> Optional[List[models.Food] | models.Food]:
         """Get a list of all foods or a specific food by id.
 
         Args:
@@ -633,7 +637,7 @@ class AmbrTopAPI:
         ) as resp:
             story = await resp.json()
         return story["data"]
-    
+
     async def get_weapon_curve(self, curve_type: str, level: int) -> float:
         """Get the percentage number of weapon curve given a weapon level."""
         data = self.get_cache("weapon_curve", static=True)

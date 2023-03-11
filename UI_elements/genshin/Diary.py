@@ -91,7 +91,7 @@ class Primo(Button):
     async def callback(self, i: Interaction):
         self.view: View
         assert self.label
-        
+
         await primo_mora_button_callback(i, self.view, True, self.label)
 
 
@@ -102,20 +102,23 @@ class Mora(Button):
     async def callback(self, i: Interaction):
         self.view: View
         assert self.label
-        
+
         await primo_mora_button_callback(i, self.view, False, self.label)
 
-async def primo_mora_button_callback(i: Interaction, view: View, is_primo: bool, label: str):
+
+async def primo_mora_button_callback(
+    i: Interaction, view: View, is_primo: bool, label: str
+):
     await i.response.defer(ephemeral=True)
     result = await view.genshin_app.get_diary_logs(
         view.member.id, i.user.id, is_primo, i.locale
     )
-    log_result : DiaryLogsResult = result.result
-    
+    log_result: DiaryLogsResult = result.result
+
     embed = DefaultEmbed()
     embed.title = label
     embed.set_image(url="attachment://diary.png")
-    
+
     now = utils.utcnow()
     values: List[str] = []
     for day, amount in log_result.before_adding.items():
@@ -123,12 +126,16 @@ async def primo_mora_button_callback(i: Interaction, view: View, is_primo: bool,
     divided_values: List[List[str]] = list(divide_chunks(values, 15))
     for d_v in divided_values:
         embed.add_field(name="** **", value="".join(d_v), inline=True)
-    
-    plt.plot(log_result.primo_per_day.keys(), log_result.primo_per_day.values(), color="#617d9d")
+
+    plt.plot(
+        log_result.primo_per_day.keys(),
+        log_result.primo_per_day.values(),
+        color="#617d9d",
+    )
     plot = io.BytesIO()
     plt.savefig(plot, bbox_inches=None, format="png")
     plt.clf()
-    
+
     plot.seek(0)
     file_ = File(plot, "diary.png")
     await i.followup.send(embed=embed, ephemeral=True, file=file_)

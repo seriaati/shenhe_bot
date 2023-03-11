@@ -53,7 +53,7 @@ class Dropdown(Select):
 
         for command in cog.walk_app_commands():
             assert command._locale_description
-            
+
             if cog.__cog_is_app_commands_group__:
                 mention = f"</{self.values[0]} {command.name}:{command_map.get(self.values[0])}>"
             else:

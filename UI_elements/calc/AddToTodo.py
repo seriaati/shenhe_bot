@@ -25,7 +25,7 @@ class AddToTodo(Button):
                 str(item_id),
                 item_count,
             )
-            
+
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(178, self.locale)).set_author(
                 name=text_map.get(179, self.locale), icon_url=i.user.display_avatar.url

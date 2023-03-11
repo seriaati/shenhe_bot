@@ -42,7 +42,10 @@ else:
 
 class Translator(app_commands.Translator):
     async def translate(
-        self, string: app_commands.locale_str, locale: discord.Locale, _: app_commands.TranslationContext
+        self,
+        string: app_commands.locale_str,
+        locale: discord.Locale,
+        _: app_commands.TranslationContext,
     ) -> Optional[str]:
         try:
             text = text_map.get(string.extras["hash"], locale)
@@ -50,20 +53,23 @@ class Translator(app_commands.Translator):
                 return text.lower()
             if text == "":
                 return None
-            
+
             # hard code stuff
             if str(locale) == "vi" and string.extras["hash"] == 105:
                 return "nhân-vật"
-            
+
             return text
         except KeyError:
             return None
 
+
 class ShenheCommandTree(app_commands.CommandTree):
     def __init__(self, bot: commands.AutoShardedBot):
         super().__init__(bot)
-    
-    async def sync(self, *, guild: Optional[discord.abc.Snowflake] = None) -> List[app_commands.AppCommand]:
+
+    async def sync(
+        self, *, guild: Optional[discord.abc.Snowflake] = None
+    ) -> List[app_commands.AppCommand]:
         synced = await super().sync(guild=guild)
         log.info(f"[System]sync: Synced {len(synced)} commands")
         if synced:
@@ -72,41 +78,44 @@ class ShenheCommandTree(app_commands.CommandTree):
                 command_map[command.name] = command.id
             async with aiofiles.open("command_map.json", "w") as f:
                 await f.write(json.dumps(command_map))
-                
+
         return synced
 
     async def interaction_check(self, i: discord.Interaction, /) -> bool:
         if i.guild is not None and not i.guild.chunked:
             await i.guild.chunk()
-        
+
         if i.user.id == 410036441129943050:
             return True
         else:
-            if i.client.maintenance: # type: ignore
+            if i.client.maintenance:  # type: ignore
                 await i.response.send_message(
                     embed=ErrorEmbed(
                         "申鶴正在維護中\nShenhe is under maintenance",
-                        f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}", # type: ignore
+                        f"預計將在 {i.client.maintenance_time} 恢復服務\nEstimated to be back online {i.client.maintenance_time}",  # type: ignore
                     ).set_thumbnail(
-                        url=i.client.user.avatar.url # type: ignore
+                        url=i.client.user.avatar.url  # type: ignore
                     ),
                     ephemeral=True,
                 )
                 return False
             else:
                 return True
-    
-    async def on_error(self, i: discord.Interaction, e: app_commands.AppCommandError, /) -> None:
+
+    async def on_error(
+        self, i: discord.Interaction, e: app_commands.AppCommandError, /
+    ) -> None:
         return await global_error_handler(i, e)
+
 
 class Shenhe(commands.AutoShardedBot):
     def __init__(self, session: aiohttp.ClientSession, pool: asyncpg.Pool):
         intents = discord.Intents.default()
         intents.members = True
-        
+
         self.session = session
         self.pool = pool
-        
+
         super().__init__(
             command_prefix=commands.when_mentioned,
             intents=intents,
@@ -142,7 +151,9 @@ class Shenhe(commands.AutoShardedBot):
             try:
                 await self.load_extension(f"cogs.{cog_name}")
             except Exception as e:
-                log.warning(f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}", exc_info=e)
+                log.warning(
+                    f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}", exc_info=e
+                )
 
     async def on_ready(self):
         tree = self.tree
@@ -155,9 +166,7 @@ class Shenhe(commands.AutoShardedBot):
             except Exception as e:
                 log.warning("[System]on_ready: Launch browsers failed", exc_info=e)
         if self.debug and self.launch_browser_in_debug:
-            self.browsers = {
-                "en-US": await launch_debug_browser()
-            }
+            self.browsers = {"en-US": await launch_debug_browser()}
 
     async def on_message(self, message: discord.Message):
         if self.user is None:
@@ -178,7 +187,7 @@ class Shenhe(commands.AutoShardedBot):
             return
         else:
             log.warning(f"[{ctx.author.id}]on_command_error: {error}", exc_info=error)
-    
+
     async def close(self) -> None:
         await self.session.close()
         if hasattr(self, "browsers"):
@@ -192,11 +201,13 @@ sentry_sdk.init(
 
 if platform.system() == "Linux":
     import uvloop  # type: ignore
+
     uvloop.install()
+
 
 async def main() -> None:
     assert token
-    
+
     try:
         pool = await asyncpg.create_pool(databse_url)
     except Exception as e:
@@ -206,12 +217,11 @@ async def main() -> None:
 
     session = aiohttp.ClientSession()
     bot = Shenhe(session=session, pool=pool)
-    
+
     @bot.before_invoke
     async def before_invoke(ctx: commands.Context):
         if ctx.guild is not None and not ctx.guild.chunked:
             await ctx.guild.chunk()
-
 
     @bot.listen()
     async def on_message_edit(before: discord.Message, after: discord.Message):
@@ -220,7 +230,6 @@ async def main() -> None:
         if before.author.id != bot.owner_id:
             return
         return await bot.process_commands(after)
-
 
     @bot.listen()
     async def on_interaction(i: discord.Interaction):
@@ -239,7 +248,7 @@ async def main() -> None:
                 )
         else:
             log.info(f"[Context Menu Command][{i.user.id}][{i.command.name}]")
-    
+
     async with (session, bot, pool):
         try:
             await bot.start(token)
@@ -248,5 +257,6 @@ async def main() -> None:
         except Exception as e:
             log.error("Failed to start bot", exc_info=e)
             return
+
 
 asyncio.run(main())

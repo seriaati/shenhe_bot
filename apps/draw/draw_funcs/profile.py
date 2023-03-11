@@ -158,7 +158,6 @@ def character_card(
     for artifact in filter(
         lambda x: x.type == enkanetwork.EquipmentsType.ARTIFACT, character.equipments
     ):
-
         # draw artifact icons
         icon = get_cache(artifact.detail.icon.url)
         icon.thumbnail((180, 180))

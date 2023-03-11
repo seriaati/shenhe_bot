@@ -48,7 +48,11 @@ class ClaimRewardToggle(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        await i.client.pool.execute("UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2", i.user.id, self.view.uid)
+        await i.client.pool.execute(
+            "UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2",
+            i.user.id,
+            self.view.uid,
+        )
 
         for item in self.view.children:
             item.disabled = True  # type: ignore
@@ -77,7 +81,11 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         )
         return await i.followup.send(embed=embed)
 
-    daily_checkin: bool = await i.client.pool.fetchval("SELECT daily_checkin FROM user_accounts WHERE user_id = $1 AND uid = $2", i.user.id, shenhe_user.uid)
+    daily_checkin: bool = await i.client.pool.fetchval(
+        "SELECT daily_checkin FROM user_accounts WHERE user_id = $1 AND uid = $2",
+        i.user.id,
+        shenhe_user.uid,
+    )
 
     embed = DefaultEmbed(
         description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"

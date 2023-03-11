@@ -24,7 +24,9 @@ async def check_account_predicate(
     user = member or i.namespace.member or i.user
 
     pool: asyncpg.Pool = i.client.pool  # type: ignore
-    uid = await pool.fetchval("SELECT uid FROM user_accounts WHERE user_id = $1", user.id)
+    uid = await pool.fetchval(
+        "SELECT uid FROM user_accounts WHERE user_id = $1", user.id
+    )
     if uid is None:
         if user.id == i.user.id:
             raise NoUID(True)
@@ -50,7 +52,11 @@ def check_wish_history():
         user = i.namespace.member or i.user
 
         pool: asyncpg.Pool = i.client.pool  # type: ignore
-        data = await pool.fetchval("SELECT wish_id FROM wish_history WHERE user_id = $1 AND uid = $2", user.id, await get_uid(i.user.id, pool))
+        data = await pool.fetchval(
+            "SELECT wish_id FROM wish_history WHERE user_id = $1 AND uid = $2",
+            user.id,
+            await get_uid(i.user.id, pool),
+        )
 
         if data is None:
             raise NoWishHistory
@@ -72,7 +78,8 @@ async def check_cookie_predicate(
     )
     if ltuid is None:
         ltuid = await pool.fetchval(
-            "SELECT ltuid FROM user_accounts WHERE user_id = $1 AND current = false", user.id
+            "SELECT ltuid FROM user_accounts WHERE user_id = $1 AND current = false",
+            user.id,
         )
         if ltuid is None:
             if user.id == i.user.id:

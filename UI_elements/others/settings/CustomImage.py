@@ -151,7 +151,9 @@ class AddImageModal(BaseModal):
                 ephemeral=True,
             )
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-        await add_user_custom_image(i.user.id, self.character_id, self.url.value, self.nickname.value, pool)
+        await add_user_custom_image(
+            i.user.id, self.character_id, self.url.value, self.nickname.value, pool
+        )
 
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
@@ -226,7 +228,9 @@ class ImageSelect(discord.ui.Select):
                 self.values[0],
             )
         else:
-            await change_user_custom_image(i.user.id, self.character_id, self.values[0], pool)
+            await change_user_custom_image(
+                i.user.id, self.character_id, self.values[0], pool
+            )
 
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
@@ -351,6 +355,7 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
     except aiohttp.InvalidURL:
         return False
 
+
 async def change_user_custom_image(
     user_id: int, character_id: int, image_url: str, pool: asyncpg.Pool
 ) -> None:
@@ -380,6 +385,7 @@ async def change_user_custom_image(
         image_url,
     )
 
+
 async def get_user_custom_image(
     user_id: int, character_id: int, pool: asyncpg.Pool
 ) -> Optional[UserCustomImage]:
@@ -404,6 +410,7 @@ async def get_user_custom_image(
         nickname=image["nickname"],
     )
 
+
 async def add_user_custom_image(
     user_id: int,
     character_id: int,
@@ -412,7 +419,7 @@ async def add_user_custom_image(
     pool: asyncpg.Pool,
 ) -> None:
     await pool.execute(
-            """
+        """
             UPDATE
                 custom_image
             SET
@@ -420,9 +427,9 @@ async def add_user_custom_image(
             WHERE
                 user_id = $1 AND character_id = $2
             """,
-            user_id,
-            character_id,
-        )
+        user_id,
+        character_id,
+    )
     await pool.execute(
         """
         INSERT INTO

@@ -69,7 +69,7 @@ class WeaponTypeButton(Button):
     async def callback(self, i: Interaction):
         self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
-        
+
         weapon_list: List[str] = await pool.fetchval(
             "SELECT item_list FROM weapon_notification WHERE user_id = $1", i.user.id
         )

@@ -83,7 +83,9 @@ class ElementButton(Button):
                 )
 
         self.view.add_item(
-            CharacterSelector(text_map.get(714, self.view.locale), options, self.view.characters)
+            CharacterSelector(
+                text_map.get(714, self.view.locale), options, self.view.characters
+            )
         )
         await i.edit_original_response(view=self.view)
 
@@ -146,7 +148,7 @@ class ClearCharacter(Button):
     async def callback(self, i: Interaction):
         self.view: View
         self.view.characters = []
-        
+
         self.view.remove_item(self)
         self.view.add_item(CharacterSelectButton(text_map.get(714, self.view.locale)))
 

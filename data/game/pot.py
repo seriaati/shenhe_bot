@@ -11,6 +11,7 @@ ACCUMULATION_RATE = {
     20000: 30,
 }
 
+
 def get_pot_accumulation_rate(comfort: int) -> int:
     for index, value in enumerate(ACCUMULATION_RATE):
         if comfort < value:

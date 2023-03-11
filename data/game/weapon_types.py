@@ -6,5 +6,6 @@ weapon_emoji_map = {
     "WEAPON_SWORD_ONE_HAND": "<:UI_GachaTypeIcon_Sword:1030825790998319154>",
 }
 
+
 def get_weapon_type_emoji(weapon_type: str) -> str:
     return weapon_emoji_map.get(weapon_type, "")

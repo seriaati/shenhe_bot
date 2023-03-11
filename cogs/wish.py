@@ -48,7 +48,9 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_file_import(self, i: discord.Interaction, file: discord.Attachment):
         locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
         try:
-            wish_history: List[Dict[str, Any]] = ast.literal_eval((await file.read()).decode("utf-8"))
+            wish_history: List[Dict[str, Any]] = ast.literal_eval(
+                (await file.read()).decode("utf-8")
+            )
             character_banner = 0
             weapon_banner = 0
             permanent_banner = 0

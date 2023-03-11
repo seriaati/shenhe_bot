@@ -13,8 +13,14 @@ from discord.utils import format_dt
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Domain, Material, Weapon
-from apps.genshin.custom_model import (CharacterBuild, FarmData, FightProp,
-                                       ShenheAccount, ShenheBot, WishInfo)
+from apps.genshin.custom_model import (
+    CharacterBuild,
+    FarmData,
+    FightProp,
+    ShenheAccount,
+    ShenheBot,
+    WishInfo,
+)
 from apps.text_map.cond_text import cond_text
 from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
 from apps.text_map.text_map_app import text_map
@@ -207,10 +213,10 @@ async def get_shenhe_account(
     custom_uid: Optional[int] = None,
 ) -> ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-    
+
     if custom_cookie:
         assert custom_uid
-    
+
     if not custom_cookie:
         user_data = await bot.pool.fetchrow(
             """
@@ -565,14 +571,14 @@ def get_current_abyss_season() -> int:
     """Get the current abyss season number based on the current datetime."""
     ref_season_num = 59
     ref_season_time = datetime(2022, 12, 1, 4, 0, 0)
-    
+
     current_season_num = ref_season_num
     current_season_time = ref_season_time
     while current_season_time < get_dt_now():
         current_season_time += timedelta(days=1)
         if current_season_time.day in (1, 16):
             current_season_num += 1
-    
+
     return current_season_num
 
 
@@ -581,19 +587,21 @@ def get_abyss_season_date_range(season: int) -> str:
 
     ref_season_num = 59
     ref_season_time = datetime(2022, 12, 1, 4, 0, 0)
-    
+
     current_season_num = ref_season_num
     current_season_time = ref_season_time
     while current_season_num != season:
         current_season_time += timedelta(days=1)
         if current_season_time.day in (1, 16):
             current_season_num += 1
-    
+
     season_start = current_season_time
     if current_season_time.day == 1:
         season_end = current_season_time.replace(day=15)
     else:
-        season_end = current_season_time.replace(day=monthrange(current_season_time.year, current_season_time.month)[1])
+        season_end = current_season_time.replace(
+            day=monthrange(current_season_time.year, current_season_time.month)[1]
+        )
 
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
 
