@@ -343,7 +343,7 @@ class OthersCog(commands.Cog, name="others"):
     ) -> List[app_commands.Choice]:
         options: List[app_commands.Choice] = []
         command_map = self.get_command_map(self.bot.tree)
-        for command_name in command_map.keys():
+        for command_name in command_map:
             if current.lower() in command_name.lower():
                 options.append(
                     app_commands.Choice(name=command_name, value=command_name)
