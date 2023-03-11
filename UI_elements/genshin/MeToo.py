@@ -1,7 +1,7 @@
 from UI_base_models import BaseView
 from apps.genshin.checks import check_cookie_predicate
 import config
-from discord import Locale, Locale, ui
+from discord import Locale, ui
 from discord import ButtonStyle, Interaction
 from apps.text_map.text_map_app import text_map
 
