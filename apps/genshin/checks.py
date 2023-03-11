@@ -8,7 +8,9 @@ from exceptions import NoCookie, NoUID, NoWishHistory
 
 
 def check_account():
-    """Checks if the user has an account. If the user has an account, they will have a UID, but they might not have a Cookie."""
+    """Checks if the user has an account.
+    If the user has an account, they will have a UID,
+    but they might not have a Cookie."""
 
     async def predicate(i: Interaction) -> bool:
         return await check_account_predicate(i)
