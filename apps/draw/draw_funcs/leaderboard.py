@@ -12,11 +12,9 @@ import discord
 import asset
 from apps.genshin.custom_model import (
     RunLeaderboardUser,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
     SingleStrikeLeaderboardUser,
 )
-from apps.text_map.text_map_app import text_map, text_map
+from apps.text_map.text_map_app import text_map
 
 
 def board(
