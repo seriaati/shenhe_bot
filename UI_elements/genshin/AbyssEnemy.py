@@ -124,7 +124,7 @@ async def select_callback(i: Interaction, view: View, value: str):
             embed = view.embeds[value]
         else:
             embed = DefaultEmbed(text_map.get(708, view.locale))
-            embed.set_image(url=f"attachment://enemies2.jpeg")
+            embed.set_image(url="attachment://enemies2.jpeg")
         embeds.append(embed)
 
     for item in view.children:

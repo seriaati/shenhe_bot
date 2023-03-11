@@ -34,7 +34,7 @@ class OthersCog(commands.Cog, name="others"):
     def __init__(self, bot):
         self.bot: ShenheBot = bot
         try:
-            with open(f"text_maps/avatar.json", "r", encoding="utf-8") as f:
+            with open("text_maps/avatar.json", "r", encoding="utf-8") as f:
                 self.avatar: Dict[str, Dict[str, str]] = json.load(f)
         except FileNotFoundError:
             self.avatar = {}
@@ -70,7 +70,7 @@ class OthersCog(commands.Cog, name="others"):
 
         embed.add_field(
             name=text_map.get(298, locale),
-            value=f"""
+            value="""
             [kakaka#7100](https://discord.com/users/425140480334888980) - 🇯🇵
             [Tedd#0660](https://discord.com/users/425140480334888980) - 🇯🇵
             [Ginn#4204](https://discord.com/users/274853284764975104) - 🇺🇸
@@ -83,7 +83,7 @@ class OthersCog(commands.Cog, name="others"):
         )
         embed.add_field(
             name=text_map.get(466, locale),
-            value=f"""
+            value="""
             [GauravM#6722](https://discord.com/users/327390030689730561)
             [KT#7777](https://discord.com/users/153087013447401472)
             [M-307#8132](https://discord.com/users/301178730196238339)
