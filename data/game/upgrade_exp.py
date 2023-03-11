@@ -91,5 +91,6 @@ UPGRADE_EXP = {
     90: {"next_level": None, "total_exp": 8362650},
 }
 
+
 def get_exp_table():
     return UPGRADE_EXP

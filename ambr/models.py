@@ -24,7 +24,7 @@ class Event(BaseModel):
     description: Dict[str, str]
     banner: Dict[str, str]
     end_time: datetime.datetime = Field(alias="endAt")
-    
+
     @validator("end_time", allow_reuse=True, pre=True)
     def parse_end_time(cls, v):
         # convert string to datetime object
@@ -71,7 +71,7 @@ class Character(BaseModel):
     weapon_type: str = Field(alias="weaponType")
     icon: str
     beta: bool = False
-    
+
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
         icon_url = f"https://api.ambr.top/assets/UI/{v}.png?a"
@@ -107,6 +107,7 @@ class Domain(BaseModel):
     rewards: List[Material] = Field(alias="reward")
     city: City
     weekday: int
+
 
 class CharacterUpgrade(BaseModel):
     character_id: str
@@ -570,7 +571,7 @@ class Food(BaseModel):
 
 class FoodEffect(BaseModel):
     effect: str
-    
+
     @validator("effect", allow_reuse=True)
     def parse_effect(cls, v):
         return parse_HTML(v)

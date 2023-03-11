@@ -35,7 +35,7 @@ def card(
             icon_y += 220
         elif count == 4:
             icon_y += 220
-            
+
         reminder_card.paste(icon, (icon_x, icon_y), icon)
         count += 1
 

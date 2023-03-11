@@ -89,22 +89,22 @@ class CharacterSelect(Select):
         else:
             character_id = int(self.values[0].split("-")[0])
             shenhe_user = await get_shenhe_account(i.user.id, i.client)
-            
+
             calculator_characters = await shenhe_user.client.get_calculator_characters(
                 sync=True
             )
             calculator_character = utils.get(calculator_characters, id=character_id)
-            
+
             if calculator_character:
                 init_levels.level = calculator_character.level
-                
+
             try:
                 character = await shenhe_user.client.get_character_details(character_id)
             except Exception:
                 pass
             else:
                 skill_order = await get_character_skill_order(str(character_id))
-                
+
                 if skill_order:
                     skill_a = utils.get(character.talents, id=skill_order[0])
                     init_levels.a_level = skill_a.level if skill_a else None
@@ -533,6 +533,7 @@ class TargetLevelModal(BaseModal):
         )
         view.message = await i.original_response()
 
+
 async def validate_level_input(
     level: str,
     a: str,
@@ -566,7 +567,7 @@ async def validate_level_input(
             ephemeral=True,
         )
         raise InvalidWeaponCalcInput
-    
+
     if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
         embed.description = text_map.get(172, locale).format(a=1, b=15)
         await i.followup.send(
@@ -574,9 +575,12 @@ async def validate_level_input(
             ephemeral=True,
         )
         raise InvalidWeaponCalcInput
-    
+
     theoretical_ascension = level_to_ascension_phase(int_level)
-    if int_ascension != theoretical_ascension and int_ascension != theoretical_ascension - 1:
+    if (
+        int_ascension != theoretical_ascension
+        and int_ascension != theoretical_ascension - 1
+    ):
         embed.description = text_map.get(730, locale)
         await i.followup.send(
             embed=embed,

@@ -21,10 +21,12 @@ log = logging
 
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
 
+
 class DefaultEmbed(discord.Embed):
     def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
         super().__init__(title=title, description=description, color=0xA68BD3)
-    
+
+
 class ErrorEmbed(discord.Embed):
     def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
         super().__init__(title=title, description=description, color=0xFC5165)
@@ -51,7 +53,7 @@ def parse_HTML(HTML_string: str):
     HTML_string = HTML_string.replace("</strong>", "**")
 
     # remove all HTML tags
-    CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});') 
+    CLEANR = re.compile("<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
     HTML_string = re.sub(CLEANR, "", HTML_string)
 
     # remove time tags from mihoyo
@@ -67,9 +69,11 @@ def divide_dict(d: Dict, size: int):
     for _ in range(0, len(d), size):
         yield {k: d[k] for k in islice(it, size)}
 
+
 def format_number(text: str) -> str:
     """Format numbers into bolded texts."""
-    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text) # type: ignore
+    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)  # type: ignore
+
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
     weekday_name_dict = {
@@ -85,26 +89,36 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
 
 
 async def get_user_appearance_mode(user_id: int, pool: asyncpg.Pool) -> bool:
-    dark_mode: Optional[bool] = await pool.fetchval("SELECT dark_mode FROM user_settings WHERE user_id = $1", user_id)
+    dark_mode: Optional[bool] = await pool.fetchval(
+        "SELECT dark_mode FROM user_settings WHERE user_id = $1", user_id
+    )
     if dark_mode is None:
         return False
     return dark_mode
 
+
 async def get_user_notification(user_id: int, pool: asyncpg.Pool) -> bool:
-    notification: Optional[bool] = await pool.fetchval("SELECT notification FROM user_settings WHERE user_id = $1", user_id)
+    notification: Optional[bool] = await pool.fetchval(
+        "SELECT notification FROM user_settings WHERE user_id = $1", user_id
+    )
     if notification is None:
         return True
     return notification
 
+
 async def get_user_auto_redeem(user_id: int, pool: asyncpg.Pool) -> bool:
-    auto_redeem: Optional[bool] = await pool.fetchval("SELECT auto_redeem FROM user_settings WHERE user_id = $1", user_id)
+    auto_redeem: Optional[bool] = await pool.fetchval(
+        "SELECT auto_redeem FROM user_settings WHERE user_id = $1", user_id
+    )
     if auto_redeem is None:
         return False
     return auto_redeem
 
+
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8"""
     return datetime.now()
+
 
 def add_bullet_points(texts: List[str]) -> str:
     """Add bullet points to a list of texts."""

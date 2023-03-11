@@ -11,6 +11,7 @@ ARTIFACT_SLOT_EMOJIS = {
     enum.EquipType.Circlet: "<:Circlet_of_Logos:982167959692787802>",
 }
 
+
 def get_artifact_slot_emoji(slot: enum.EquipType) -> str:
     return ARTIFACT_SLOT_EMOJIS.get(slot, "")
 

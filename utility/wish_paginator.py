@@ -11,15 +11,11 @@ from apps.text_map.text_map_app import text_map
 
 
 class _view(BaseView):
-    def __init__(
-        self,
-        embeds: List[Embed],
-        locale: str
-    ):
+    def __init__(self, embeds: List[Embed], locale: str):
         super().__init__(timeout=config.mid_timeout)
         self.embeds = embeds
         self.locale = locale
-        
+
         self.current_page = 0
         self.rarity_filters = []
         self.banner_filters = []
@@ -29,7 +25,7 @@ class _view(BaseView):
         self.next.disabled = self.current_page + 1 == len(self.embeds)
         self.previous.disabled = self.current_page <= 0
         self.last.disabled = self.current_page + 1 == len(self.embeds)
-        
+
         text = text_map.get(176, self.locale)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
@@ -56,7 +52,7 @@ class _view(BaseView):
         self.current_page -= 1
 
         await self.update_children(i)
-    
+
     @button(
         label="page 1/1",
         custom_id="paginator_page",
@@ -108,8 +104,10 @@ class WishPaginator:
     ) -> None:
         if not (self.embeds):
             raise ValueError("Missing embeds")
-        
-        locale = await get_user_locale(self.i.user.id, self.i.client.pool) or self.i.locale
+
+        locale = (
+            await get_user_locale(self.i.user.id, self.i.client.pool) or self.i.locale
+        )
         view = _view(self.embeds, str(locale))
 
         view.author = self.i.user
@@ -117,8 +115,10 @@ class WishPaginator:
         view.last.disabled = view.next.disabled = (
             True if len(self.embeds) == 1 else False
         )
-        
-        view.page.label = text_map.get(176, locale).format(num=f"{view.current_page + 1}/{len(self.embeds)}")
+
+        view.page.label = text_map.get(176, locale).format(
+            num=f"{view.current_page + 1}/{len(self.embeds)}"
+        )
 
         if len(self.custom_children) > 0:
             for child in self.custom_children:

@@ -15,6 +15,7 @@ from utility.paginator import GeneralPaginator, _view
 from utility.utils import DefaultEmbed, parse_HTML
 from apps.hoyolab_rss_feeds.create_feed import create_feed
 
+
 class View(BaseView):
     def __init__(self, locale: discord.Locale | str):
         super().__init__(timeout=config.short_timeout)
@@ -30,16 +31,18 @@ class Hoyolab(ui.Button):
     async def callback(self, i: discord.Interaction):
         self.view: View
         await i.response.defer()
-        
+
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
-        
+
         await create_feed(genshin_locale)
-        
-        async with aiofiles.open(f"apps/hoyolab_rss_feeds/feeds/{genshin_locale}.json") as f:
+
+        async with aiofiles.open(
+            f"apps/hoyolab_rss_feeds/feeds/{genshin_locale}.json"
+        ) as f:
             events = json.loads(await f.read())
-        
+
         select_options = []
         tags = []
         embeds = {}
@@ -101,7 +104,9 @@ class Genshin(ui.Button):
         type_list = overview["data"]["type_list"]
         options = []
         for type in type_list:
-            options.append(discord.SelectOption(label=type["mi18n_name"], value=type["id"]))
+            options.append(
+                discord.SelectOption(label=type["mi18n_name"], value=type["id"])
+            )
         # get a dict of details
         detail_dict = {}
         for event in details["data"]["list"]:
@@ -147,11 +152,9 @@ class EventTypeSelect(ui.Select):
         self,
         options: List[discord.SelectOption],
         embeds: Dict[str, List[discord.Embed]],
-        locale: discord.Locale | str
+        locale: discord.Locale | str,
     ) -> None:
-        super().__init__(
-            options=options, placeholder=text_map.get(409, locale)
-        )
+        super().__init__(options=options, placeholder=text_map.get(409, locale))
         self.embeds = embeds
 
     async def callback(self, i: discord.Interaction) -> Any:

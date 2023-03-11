@@ -223,7 +223,7 @@ class Confirm(ui.Button):
 
     async def callback(self, i: discord.Interaction):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-        
+
         uid = await get_uid(i.user.id, pool)
         await pool.execute(
             "DELETE FROM wish_history WHERE uid = $1 AND user_id = $2",
@@ -261,7 +261,7 @@ class ConfirmWishImport(ui.Button):
     async def callback(self, i: discord.Interaction):
         self.view: View
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-        
+
         uid = await get_uid(i.user.id, pool)
         embed = DefaultEmbed().set_author(
             name=text_map.get(355, self.view.locale), icon_url=asset.loader
@@ -303,8 +303,7 @@ class ConfirmWishImport(ui.Button):
                     wish.banner_type,
                     text_map.get_id_from_name(wish.name),
                 )
-                    
-        
+
         banners = (100, 200, 301, 302, 400)
         for banner in banners:
             wishes = await pool.fetch(
@@ -313,7 +312,7 @@ class ConfirmWishImport(ui.Button):
                 banner,
                 uid,
             )
-            
+
             if not wishes:
                 count = 1
             else:
@@ -412,7 +411,7 @@ class Modal(BaseModal):
                     icon_url=i.user.display_avatar.url,
                 )
             )
-        
+
         character_banner = 0
         weapon_banner = 0
         permanent_banner = 0
@@ -458,10 +457,10 @@ async def get_wish_import_embed(
     i: discord.Interaction,
 ) -> Tuple[discord.Embed, bool, bool]:
     linked = True
-    pool: asyncpg.pool.Pool = i.client.pool # type: ignore
+    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
     locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
     uid = await get_uid(i.user.id, i.client.pool)
-    
+
     wish_data = await pool.fetch(
         """
         SELECT wish_time, wish_rarity, item_id, wish_banner_type, uid

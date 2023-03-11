@@ -11,8 +11,7 @@ from apps.text_map.utils import get_user_locale
 from data.others.language_options import lang_options
 from UI_base_models import BaseView, GoBackButton
 from UI_elements.others.settings import CustomImage, Notif
-from utility.utils import (DefaultEmbed, get_user_appearance_mode,
-                           get_user_auto_redeem)
+from utility.utils import DefaultEmbed, get_user_appearance_mode, get_user_auto_redeem
 
 
 class View(BaseView):
@@ -63,8 +62,10 @@ class ModeButton(ui.Button):
             i.user.id,
         )
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
-        embed = get_appearance_embed(i.user.display_avatar.url, self.view.locale, dark_mode)
-        
+        embed = get_appearance_embed(
+            i.user.display_avatar.url, self.view.locale, dark_mode
+        )
+
         view = get_appearance_view(self.view, dark_mode, self.view.locale)
         await i.response.edit_message(embed=embed, view=view)
 
@@ -108,7 +109,7 @@ class LangSelect(ui.Select):
 
     async def callback(self, i: discord.Interaction) -> Any:
         self.view: View
-        
+
         converted_locale = self.values[0] if self.values[0] != "none" else None
         await i.client.pool.execute(
             "UPDATE user_settings SET lang = $1 WHERE user_id = $2",
@@ -116,7 +117,7 @@ class LangSelect(ui.Select):
             i.user.id,
         )
         locale = converted_locale or i.locale
-        
+
         embed = get_language_embed(i.user.display_avatar.url, locale)
         view = get_language_view(self.view, locale)
         await i.response.edit_message(embed=embed, view=view)
@@ -188,7 +189,7 @@ class RedeemButton(ui.Button):
 
     async def callback(self, i: discord.Interaction) -> Any:
         self.view: View
-        
+
         await i.client.pool.execute(
             "UPDATE user_settings SET auto_redeem = $1 WHERE user_id = $2",
             self.toggle,
@@ -234,13 +235,15 @@ def get_appearance_embed(icon_url: str, locale: discord.Locale | str, dark_mode:
 
     return embed
 
+
 def get_appearance_view(view: View, dark_mode: bool, locale: str | discord.Locale):
     view.clear_items()
     view.add_item(GoBackButton(view.original_info))
     view.add_item(ModeButton(False, dark_mode, locale))
     view.add_item(ModeButton(True, dark_mode, locale))
-    
+
     return view
+
 
 def get_language_embed(icon_url: str, locale: discord.Locale | str):
     embed = DefaultEmbed(description=text_map.get(125, locale))
@@ -253,25 +256,26 @@ def get_language_embed(icon_url: str, locale: discord.Locale | str):
 
     return embed
 
+
 def get_language_view(view: View, locale: str | discord.Locale):
     view.clear_items()
     view.add_item(LanguageGoBack())
     view.add_item(LangSelect(locale))
-        
+
     return view
+
 
 def get_redeem_embed(icon_url: str, locale: discord.Locale | str, auto_redeem: bool):
     embed = DefaultEmbed(description=text_map.get(285, locale))
-    embed.set_author(
-        name=text_map.get(126, locale), icon_url=icon_url
-    )
+    embed.set_author(name=text_map.get(126, locale), icon_url=icon_url)
 
     return embed
+
 
 def get_redeem_view(view: View, auto_redeem: bool, locale: str | discord.Locale):
     view.clear_items()
     view.add_item(GoBackButton(view.original_info))
     view.add_item(RedeemButton(True, auto_redeem, locale))
     view.add_item(RedeemButton(False, auto_redeem, locale))
-        
+
     return view

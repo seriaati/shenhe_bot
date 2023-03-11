@@ -60,7 +60,7 @@ def material_card(
 
         # draw the card
         card = small_card(material[0], material[1], dark_mode, locale)
-        
+
         # paste the card
         x = 95 + (644 + 60) * (index // max_card_num)
         padding = 190 if draw_title else 90

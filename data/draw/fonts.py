@@ -18,7 +18,10 @@ FONTS = {
 
 
 def get_font(
-    locale, variation: Literal["Bold", "Light", "Thin", "Black", "Medium", "Regular"] = "Regular"
+    locale,
+    variation: Literal[
+        "Bold", "Light", "Thin", "Black", "Medium", "Regular"
+    ] = "Regular",
 ) -> str:
     path = "resources/fonts/"
     return (

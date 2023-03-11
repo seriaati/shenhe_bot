@@ -103,7 +103,7 @@ class GenerateLink(ui.Button):
             "interaction": i,
             "author": i.user,
         }
-        
+
         await i.client.reload_extension("cogs.login")  # type: ignore
 
 
@@ -115,8 +115,8 @@ class ResendToken(ui.Button):
 
     async def callback(self, i: discord.Interaction):
         self.view: View
-        bot: ShenheBot = i.client # type: ignore
-        
+        bot: ShenheBot = i.client  # type: ignore
+
         await i.response.defer()
         api = bot.gateway.api
 
@@ -134,9 +134,7 @@ class ResendToken(ui.Button):
             bot.tokenStore.pop(self.token, "")
         else:
             assert result
-            await register_user(
-                result, int(result.uid), int(result.user_id), bot.pool
-            )
+            await register_user(result, int(result.uid), int(result.user_id), bot.pool)
 
             try:
                 await i.edit_original_response(
@@ -249,7 +247,7 @@ class SwitchAccount(ui.Select):
     async def callback(self, i: discord.Interaction):
         self.view: View
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-        
+
         if self.remove_account:
             for uid in self.values:
                 await pool.execute(

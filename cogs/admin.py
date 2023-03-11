@@ -28,7 +28,7 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="reload")
     async def reload(self, ctx: commands.Context, custom_module: Optional[str] = None):
-        message = await ctx.send("reloading Shenhe...")    
+        message = await ctx.send("reloading Shenhe...")
         if custom_module:
             try:
                 importlib.reload(importlib.import_module(custom_module))
@@ -79,7 +79,9 @@ class AdminCog(commands.Cog, name="admin"):
                     return await message.edit(
                         embed=ErrorEmbed(cog_name, f"```{e}```"),
                     )
-            await message.edit(content="Shenhe reloaded (cogs skipped : `login`, `grafana`, `schedule`)")
+            await message.edit(
+                content="Shenhe reloaded (cogs skipped : `login`, `grafana`, `schedule`)"
+            )
 
     @commands.is_owner()
     @commands.command(name="sync")

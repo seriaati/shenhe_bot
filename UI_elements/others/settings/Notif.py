@@ -9,7 +9,9 @@ from utility.utils import DefaultEmbed, get_user_notification
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str, current: bool, original_info: OriginalInfo):
+    def __init__(
+        self, locale: Locale | str, current: bool, original_info: OriginalInfo
+    ):
         super().__init__(timeout=config.mid_timeout)
         self.add_item(NotificationButton(locale, True, current))
         self.add_item(NotificationButton(locale, False, current))

@@ -5,8 +5,14 @@ from discord import HTTPException
 from discord.ext import commands
 from dotenv import load_dotenv
 from logingateway import HuTaoLoginAPI
-from logingateway.model import (AccountToken, Genshin, LoginMethod, Player,
-                                Ready, ServerId)
+from logingateway.model import (
+    AccountToken,
+    Genshin,
+    LoginMethod,
+    Player,
+    Ready,
+    ServerId,
+)
 
 from apps.genshin.custom_model import ShenheBot
 from apps.text_map.text_map_app import text_map

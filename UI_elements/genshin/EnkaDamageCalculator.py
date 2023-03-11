@@ -15,10 +15,17 @@ from apps.text_map.text_map_app import text_map
 from exceptions import NoCharacterFound
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
-from utility.utils import (DefaultEmbed, divide_chunks, ErrorEmbed,
-                           get_user_appearance_mode)
-from yelan.damage_calculator import (DamageCalculator, return_current_status,
-                                     return_damage)
+from utility.utils import (
+    DefaultEmbed,
+    divide_chunks,
+    ErrorEmbed,
+    get_user_appearance_mode,
+)
+from yelan.damage_calculator import (
+    DamageCalculator,
+    return_current_status,
+    return_damage,
+)
 from yelan.data.GO_modes import hit_mode_texts
 
 
@@ -136,10 +143,10 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     enka_view.clear_items()
     for child in enka_view.original_children:
         enka_view.add_item(child)
-    
+
     for child in enka_view.children:
-        child.disabled = True # type: ignore
-    
+        child.disabled = True  # type: ignore
+
     # await i.response.edit_message(
     #     # embed=DefaultEmbed()
     #     # .set_author(
@@ -152,16 +159,16 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
     #     view=enka_view,
     # )
     await i.response.defer()
-    
+
     for child in enka_view.children:
-        child.disabled = False # type: ignore
+        child.disabled = False  # type: ignore
 
     if enka_view.data.characters is None:
         raise NoCharacterFound
-    
+
     character = utils.get(enka_view.data.characters, id=int(enka_view.character_id))
     assert character
-    
+
     dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(
