@@ -380,3 +380,7 @@ class ConditionalResult(BaseModel):
     cond: Dict[str, Any]
     desc: str
     effect: str
+
+
+class CustomInteraction(discord.Interaction):
+    client: ShenheBot
