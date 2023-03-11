@@ -65,9 +65,8 @@ def genshin_error_handler(func):
             if e.retcode == -400005:
                 embed = utils.ErrorEmbed().set_author(name=text_map.get(14, locale))
                 return custom_model.GenshinAppResult(result=embed, success=False)
-            else:
-                embed = get_error_handle_embed(user, e, locale)
-                return custom_model.GenshinAppResult(result=embed, success=False)
+            embed = get_error_handle_embed(user, e, locale)
+            return custom_model.GenshinAppResult(result=embed, success=False)
         except Exception as e:
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}", exc_info=e)
             embed = get_error_handle_embed(user, e, locale)

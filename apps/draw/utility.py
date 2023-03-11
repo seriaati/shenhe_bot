@@ -115,8 +115,7 @@ def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont) -> st
     """Shorten text to a maximum length."""
     if font.getlength(text) <= max_length:
         return text
-    else:
-        return text[: int(max_length // font.getlength("..."))] + "..."
+    return text[: int(max_length // font.getlength("..."))] + "..."
 
 
 def get_font_name(

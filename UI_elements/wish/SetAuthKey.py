@@ -379,15 +379,14 @@ class Modal(BaseModal):
                 view=None,
             )
             return await wish_import_command(i, True)
-        else:
-            client: genshin.Client = i.client.genshin_client
-            client.lang = to_genshin_py(locale)
-            uid = await get_uid(i.user.id, i.client.pool)
-            if str(uid)[0] in ["1", "2", "5"]:
-                client.region = genshin.Region.CHINESE
-            else:
-                client.region = genshin.Region.OVERSEAS
-            client.authkey = authkey
+
+        client: genshin.Client = i.client.genshin_client
+        client.lang = to_genshin_py(locale)
+        uid = await get_uid(i.user.id, i.client.pool)
+        if str(uid)[0] in ["1", "2", "5"]:
+            client.region = genshin.Region.CHINESE
+            client.region = genshin.Region.OVERSEAS
+        client.authkey = authkey
 
         await i.response.edit_message(
             embed=DefaultEmbed().set_author(

@@ -1,5 +1,4 @@
 import json
-import re
 from typing import Dict, Optional
 
 import discord
@@ -51,28 +50,27 @@ class TextMap:
 
     def get(
         self,
-        textMapHash: int,
+        map_hash: int,
         locale: discord.Locale | str = "en-US",
         user_locale: Optional[str] = None,
     ) -> str:
         locale = user_locale or locale
         path = to_paths(locale)
-        text_map: Dict = self.text_maps[path]
-        text = text_map.get(str(textMapHash), "")
-        if text == "":
-            log.warning(f"[Text Map][{locale}][Hash not found]: [Hash]{textMapHash}")
-            text_map = self.text_maps["en-US"]
-            text = text_map.get(str(textMapHash), "")
-        if textMapHash != 139:
-            text = re.sub(r"<[^\/][^>]*>", "", text)
+        lang_text_map: Dict[str, str] = self.text_maps[path]
+        text = lang_text_map.get(str(map_hash), "")
+        if not text:
+            log.warning(
+                f"[Text Map][{locale}][map_hash not found]: [map_hash]{map_hash}"
+            )
+            lang_text_map = self.text_maps["en-US"]
+            text = lang_text_map.get(str(map_hash), "")
         return text
 
     def get_id_from_name(self, name: str) -> Optional[int]:
         result = self.item_name_text_map.get(name)
         if result is None:
             return None
-        else:
-            return int(result)
+        return int(result)
 
     def get_character_name(
         self,
@@ -83,10 +81,9 @@ class TextMap:
         avatar_text = self.avatar.get(str(character_id))
         if avatar_text is None:
             return None
-        else:
-            locale = user_locale or locale
-            ambr_locale = to_ambr_top(str(locale))
-            return avatar_text[str(ambr_locale)]
+        locale = user_locale or locale
+        ambr_locale = to_ambr_top(str(locale))
+        return avatar_text[str(ambr_locale)]
 
     def get_material_name(
         self,
@@ -101,10 +98,9 @@ class TextMap:
                     f"[Exception][get_material_name][material_id not found]: [material_id]{material_id}"
                 )
             return material_id
-        else:
-            locale = user_locale or locale
-            ambr_locale = to_ambr_top(str(locale))
-            return material_text[str(ambr_locale)]
+        locale = user_locale or locale
+        ambr_locale = to_ambr_top(str(locale))
+        return material_text[str(ambr_locale)]
 
     def get_material_id_with_name(self, material_name: str) -> str | int:
         for material_id, material_name_dict in self.material.items():
@@ -125,10 +121,9 @@ class TextMap:
         avatarText = self.weapon.get(str(weapon_id))
         if avatarText is None:
             return None
-        else:
-            locale = user_locale or locale
-            ambr_locale = to_ambr_top(str(locale))
-            return avatarText[str(ambr_locale)]
+        locale = user_locale or locale
+        ambr_locale = to_ambr_top(str(locale))
+        return avatarText[str(ambr_locale)]
 
     def get_domain_name(
         self,
@@ -155,10 +150,9 @@ class TextMap:
                 f"[Exception][get_artifact_name][artifact_id not found]: [artifact_id]{artifact_id}"
             )
             return artifact_id
-        else:
-            locale = user_locale or locale
-            ambr_locale = to_ambr_top(str(locale))
-            return artifact_text[str(ambr_locale)]
+        locale = user_locale or locale
+        ambr_locale = to_ambr_top(str(locale))
+        return artifact_text[str(ambr_locale)]
 
 
 # initialize the class first to load the text maps

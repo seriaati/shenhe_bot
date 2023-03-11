@@ -345,46 +345,43 @@ async def get_farm_data(
 def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
         return f"{domain.city.name} - {text_map.get(91, locale)}"
-    else:
-        return f"{domain.city.name} - {text_map.get(105, locale).title()}"
+    return f"{domain.city.name} - {text_map.get(105, locale).title()}"
 
 
 def convert_ar_to_wl(ar: int) -> int:
     if 1 <= ar <= 19:
         return 0
-    elif 20 <= ar < 25:
+    if 20 <= ar < 25:
         return 1
-    elif 25 <= ar < 29:
+    if 25 <= ar < 29:
         return 2
-    elif 30 <= ar < 35:
+    if 30 <= ar < 35:
         return 3
-    elif 35 <= ar < 39:
+    if 35 <= ar < 39:
         return 4
-    elif 40 <= ar < 45:
+    if 40 <= ar < 45:
         return 5
-    elif 45 <= ar < 50:
+    if 45 <= ar < 50:
         return 6
-    elif 50 <= ar < 54:
+    if 50 <= ar < 54:
         return 7
-    else:
-        return 8
+    return 8
 
 
 def convert_wl_to_mora(wl: int) -> int:
     if wl == 0:
         return 12000
-    elif wl == 1:
+    if wl == 1:
         return 20000
-    elif wl == 2:
+    if wl == 2:
         return 28000
-    elif wl == 3:
+    if wl == 3:
         return 36000
-    elif wl == 4:
+    if wl == 4:
         return 44000
-    elif wl == 5:
+    if wl == 5:
         return 52000
-    else:
-        return 60000
+    return 60000
 
 
 async def get_wish_history_embed(
@@ -415,34 +412,33 @@ async def get_wish_history_embed(
             icon_url=member.display_avatar.url,
         )
         return [embed]
-    else:
-        user_wish: List[str] = []
-        for wish in wish_history:
-            user_wish.append(
-                format_wish_str(
-                    {
-                        "item_rarity": wish["wish_rarity"],
-                        "time": wish["wish_time"],
-                        "item_id": wish["item_id"],
-                        "pity_pull": wish["pity_pull"],
-                    },
-                    user_locale or i.locale,
-                )
+    user_wish: List[str] = []
+    for wish in wish_history:
+        user_wish.append(
+            format_wish_str(
+                {
+                    "item_rarity": wish["wish_rarity"],
+                    "time": wish["wish_time"],
+                    "item_id": wish["item_id"],
+                    "pity_pull": wish["pity_pull"],
+                },
+                user_locale or i.locale,
             )
+        )
 
-        split_user_wish: List[List[str]] = list(divide_chunks(user_wish, 20))
+    split_user_wish: List[List[str]] = list(divide_chunks(user_wish, 20))
 
-        embeds: List[discord.Embed] = []
-        for small_segment in split_user_wish:
-            description = "\n".join(small_segment)
-            embed = DefaultEmbed(description=description)
-            embed.set_author(
-                name=text_map.get(369, i.locale, user_locale),
-                icon_url=member.display_avatar.url,
-            )
-            embeds.append(embed)
+    embeds: List[discord.Embed] = []
+    for small_segment in split_user_wish:
+        description = "\n".join(small_segment)
+        embed = DefaultEmbed(description=description)
+        embed.set_author(
+            name=text_map.get(369, i.locale, user_locale),
+            icon_url=member.display_avatar.url,
+        )
+        embeds.append(embed)
 
-        return embeds
+    return embeds
 
 
 async def get_wish_info_embed(
@@ -533,20 +529,19 @@ def format_wish_str(wish_data: Dict[str, Any], locale: discord.Locale | str):
 def level_to_ascension_phase(level: int) -> int:
     if level < 20:
         return 0
-    elif level < 40:
+    if level < 40:
         return 1
-    elif level < 50:
+    if level < 50:
         return 2
-    elif level < 60:
+    if level < 60:
         return 3
-    elif level < 70:
+    if level < 70:
         return 4
-    elif level < 80:
+    if level < 80:
         return 5
-    elif level <= 90:
+    if level <= 90:
         return 6
-    else:
-        raise ValueError("Level is too high")
+    raise ValueError("Level is too high")
 
 
 async def get_character_suggested_talent_levels(

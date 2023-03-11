@@ -34,8 +34,7 @@ def get_browser(browsers: Dict[str, Browser], locale: str) -> Browser:
     result = browsers.get(locale)
     if result is None:
         return browsers.get("en-US")
-    else:
-        return result
+    return result
 
 
 async def launch_debug_browser() -> Browser:

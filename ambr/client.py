@@ -60,8 +60,7 @@ class AmbrTopAPI:
         """
         if static:
             return self.cache[endpoint]
-        else:
-            return self.cache[self.lang][endpoint]
+        return self.cache[self.lang][endpoint]
 
     async def request_from_endpoint(
         self,
@@ -309,11 +308,10 @@ class AmbrTopAPI:
         data = self.get_cache("material")
         if id is not None:
             return models.Material(**data["data"]["items"][str(id)])
-        else:
-            for material in data["data"]["items"].values():
-                result.append(models.Material(**material))
+        for material in data["data"]["items"].values():
+            result.append(models.Material(**material))
 
-            return result
+        return result
 
     @get_decorator
     async def get_name_card(
@@ -331,11 +329,10 @@ class AmbrTopAPI:
         data = self.get_cache("namecard")
         if id is not None:
             return models.NameCard(**data["data"]["items"][str(id)])
-        else:
-            for name_card in data["data"]["items"].values():
-                result.append(models.NameCard(**name_card))
+        for name_card in data["data"]["items"].values():
+            result.append(models.NameCard(**name_card))
 
-            return result
+        return result
 
     @get_decorator
     async def get_artifact(
@@ -353,11 +350,10 @@ class AmbrTopAPI:
         data = self.get_cache("artifact")
         if id is not None:
             return models.Artifact(**data["data"]["items"][str(id)])
-        else:
-            for material in data["data"]["items"].values():
-                result.append(models.Artifact(**material))
+        for material in data["data"]["items"].values():
+            result.append(models.Artifact(**material))
 
-            return result
+        return result
 
     @get_decorator
     async def get_book(
@@ -375,11 +371,10 @@ class AmbrTopAPI:
         data = self.get_cache("book")
         if id is not None:
             return models.Book(**data["data"]["items"][str(id)])
-        else:
-            for material in data["data"]["items"].values():
-                result.append(models.Book(**material))
+        for material in data["data"]["items"].values():
+            result.append(models.Book(**material))
 
-            return result
+        return result
 
     @get_decorator
     async def get_food(
@@ -397,11 +392,10 @@ class AmbrTopAPI:
         data = self.get_cache("food")
         if id is not None:
             return models.Food(**data["data"]["items"][str(id)])
-        else:
-            for material in data["data"]["items"].values():
-                result.append(models.Food(**material))
+        for material in data["data"]["items"].values():
+            result.append(models.Food(**material))
 
-            return result
+        return result
 
     @get_decorator
     async def get_funiture(
@@ -419,11 +413,10 @@ class AmbrTopAPI:
         data = self.get_cache("furniture")
         if id is not None:
             return models.Furniture(**data["data"]["items"][str(id)])
-        else:
-            for material in data["data"]["items"].values():
-                result.append(models.Furniture(**material))
+        for material in data["data"]["items"].values():
+            result.append(models.Furniture(**material))
 
-            return result
+        return result
 
     @get_decorator
     async def get_character(
@@ -446,17 +439,16 @@ class AmbrTopAPI:
         data = self.get_cache("character")
         if id is not None:
             return models.Character(**data["data"]["items"][str(id)])
-        else:
-            for character_id, character_info in data["data"]["items"].items():
-                if "beta" in character_info and not include_beta:
-                    continue
-                if (
-                    "10000005" in character_id or "10000007" in character_id
-                ) and not include_traveler:
-                    continue
-                result.append(models.Character(**character_info))
+        for character_id, character_info in data["data"]["items"].items():
+            if "beta" in character_info and not include_beta:
+                continue
+            if (
+                "10000005" in character_id or "10000007" in character_id
+            ) and not include_traveler:
+                continue
+            result.append(models.Character(**character_info))
 
-            return result
+        return result
 
     @get_decorator
     async def get_weapon(
@@ -474,9 +466,8 @@ class AmbrTopAPI:
         data = self.get_cache("weapon")
         if id is not None:
             return models.Weapon(**data["data"]["items"][str(id)])
-        else:
-            for weapon in data["data"]["items"].values():
-                result.append(models.Weapon(**weapon))
+        for weapon in data["data"]["items"].values():
+            result.append(models.Weapon(**weapon))
         return result
 
     @get_decorator
@@ -495,9 +486,8 @@ class AmbrTopAPI:
         data = self.get_cache("monster")
         if id is not None:
             return models.Monster(**data["data"]["items"][str(id)])
-        else:
-            for monster in data["data"]["items"].values():
-                result.append(models.Monster(**monster))
+        for monster in data["data"]["items"].values():
+            result.append(models.Monster(**monster))
         return result
 
     async def get_weapon_types(self) -> Dict[str, str]:
@@ -531,16 +521,15 @@ class AmbrTopAPI:
                 for material_id in upgrade_info["items"]
             ]
             return models.CharacterUpgrade(**upgrade_info)
-        else:
-            for upgrade_id, upgrade_info in data["data"]["avatar"].items():
-                upgrade_info["item_list"] = [
-                    (await self.get_material(id=int(material_id)))
-                    for material_id in upgrade_info["items"]
-                ]
-                upgrade_info["character_id"] = upgrade_id
-                result.append(models.CharacterUpgrade(**upgrade_info))
+        for upgrade_id, upgrade_info in data["data"]["avatar"].items():
+            upgrade_info["item_list"] = [
+                (await self.get_material(id=int(material_id)))
+                for material_id in upgrade_info["items"]
+            ]
+            upgrade_info["character_id"] = upgrade_id
+            result.append(models.CharacterUpgrade(**upgrade_info))
 
-            return result
+        return result
 
     @get_decorator
     async def get_weapon_upgrade(
@@ -563,17 +552,16 @@ class AmbrTopAPI:
                 for material_id in upgrade_info["items"]
             ]
             return models.WeaponUpgrade(**upgrade_info)
-        else:
-            result = []
-            for upgrade_id, upgrade_info in data["data"]["weapon"].items():
-                upgrade_info["weapon_id"] = upgrade_id
-                upgrade_info["item_list"] = [
-                    (await self.get_material(id=int(material_id)))
-                    for material_id in upgrade_info["items"]
-                ]
-                result.append(models.WeaponUpgrade(**upgrade_info))
+        result = []
+        for upgrade_id, upgrade_info in data["data"]["weapon"].items():
+            upgrade_info["weapon_id"] = upgrade_id
+            upgrade_info["item_list"] = [
+                (await self.get_material(id=int(material_id)))
+                for material_id in upgrade_info["items"]
+            ]
+            result.append(models.WeaponUpgrade(**upgrade_info))
 
-            return result
+        return result
 
     async def get_domain(self) -> List[models.Domain]:
         """Get a list of all domains.
