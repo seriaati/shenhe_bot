@@ -313,11 +313,9 @@ async def get_farm_data(
                     (await client.get_material(item.id)) for item in w_upgrade.items
                 ]
                 if any(
-                    [
-                        item in domain.rewards
-                        for item in upgrade_items
-                        if isinstance(item, Material)
-                    ]
+                    item in domain.rewards
+                    for item in upgrade_items
+                    if isinstance(item, Material)
                 ):
                     weapon = await client.get_weapon(w_upgrade.weapon_id)
                     assert isinstance(weapon, Weapon)
@@ -328,11 +326,9 @@ async def get_farm_data(
                     (await client.get_material(item.id)) for item in c_upgrade.items
                 ]
                 if any(
-                    [
-                        item in domain.rewards
-                        for item in upgrade_items
-                        if isinstance(item, Material)
-                    ]
+                    item in domain.rewards
+                    for item in upgrade_items
+                    if isinstance(item, Material)
                 ):
                     character = await client.get_character(c_upgrade.character_id)
                     assert isinstance(character, Character)

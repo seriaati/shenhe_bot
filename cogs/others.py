@@ -262,7 +262,7 @@ class OthersCog(commands.Cog, name="others"):
         options = []
         for character_id, character_names in self.avatar.items():
             if any(
-                [character_id in str(traveler_id) for traveler_id in asset.traveler_ids]
+                character_id in str(traveler_id) for traveler_id in asset.traveler_ids
             ):
                 continue
 
