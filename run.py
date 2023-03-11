@@ -206,14 +206,16 @@ if platform.system() == "Linux":
 
 
 async def main() -> None:
-    assert token
+    if not token:
+        raise AssertionError
 
     try:
         pool = await asyncpg.create_pool(databse_url)
     except Exception as e:
         log.error("Failed to connect to database", exc_info=e)
         return
-    assert pool
+    if not pool:
+        raise AssertionError
 
     session = aiohttp.ClientSession()
     bot = Shenhe(session=session, pool=pool)

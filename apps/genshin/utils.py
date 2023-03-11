@@ -215,7 +215,8 @@ async def get_shenhe_account(
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
 
     if custom_cookie:
-        assert custom_uid
+        if not custom_uid:
+            raise AssertionError
 
     if not custom_cookie:
         user_data = await bot.pool.fetchrow(
@@ -301,8 +302,10 @@ async def get_farm_data(
     domains = await client.get_domain()
     c_upgrades = await client.get_character_upgrade()
     w_upgrades = await client.get_weapon_upgrade()
-    assert isinstance(c_upgrades, list)
-    assert isinstance(w_upgrades, list)
+    if not isinstance(c_upgrades, list):
+        raise AssertionError
+    if not isinstance(w_upgrades, list):
+        raise AssertionError
 
     domains = [d for d in domains if d.weekday == weekday]
     for domain in domains:
@@ -318,7 +321,8 @@ async def get_farm_data(
                     if isinstance(item, Material)
                 ):
                     weapon = await client.get_weapon(w_upgrade.weapon_id)
-                    assert isinstance(weapon, Weapon)
+                    if not isinstance(weapon, Weapon):
+                        raise AssertionError
                     farm_data.weapons.append(weapon)
         else:
             for c_upgrade in c_upgrades:
@@ -331,7 +335,8 @@ async def get_farm_data(
                     if isinstance(item, Material)
                 ):
                     character = await client.get_character(c_upgrade.character_id)
-                    assert isinstance(character, Character)
+                    if not isinstance(character, Character):
+                        raise AssertionError
                     farm_data.characters.append(character)
         result.append(farm_data)
 
