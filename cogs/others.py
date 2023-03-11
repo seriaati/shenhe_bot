@@ -309,9 +309,10 @@ class OthersCog(commands.Cog, name="others"):
                 )
             )
 
-        assert isinstance(
+        if not isinstance(
             obj, (app_commands.commands.Command, app_commands.commands.ContextMenu)
-        )
+        ):
+            raise AssertionError
 
         src = obj.callback.__code__
         module = obj.callback.__module__

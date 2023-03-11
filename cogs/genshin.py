@@ -658,7 +658,8 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         view = EnkaProfile.View([], [], options, data, en_data, member, locale)
         for child in view.children:
-            assert isinstance(child, (discord.ui.Select, discord.ui.Button))
+            if not isinstance(child, (discord.ui.Select, discord.ui.Button)):
+                raise AssertionError
             child.disabled = True
 
         await i.edit_original_response(

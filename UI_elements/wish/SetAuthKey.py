@@ -270,7 +270,8 @@ class ConfirmWishImport(ui.Button):
 
         if self.from_text_file:
             for wish in self.wish_history:
-                assert isinstance(wish, dict)
+                if not isinstance(wish, dict):
+                    raise AssertionError
                 await pool.execute(
                     "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
                     i.user.id,
@@ -284,7 +285,8 @@ class ConfirmWishImport(ui.Button):
                 )
         else:
             for wish in self.wish_history:
-                assert isinstance(wish, genshin.models.Wish)
+                if not isinstance(wish, genshin.models.Wish):
+                    raise AssertionError
                 await pool.execute(
                     """
                     INSERT INTO wish_history

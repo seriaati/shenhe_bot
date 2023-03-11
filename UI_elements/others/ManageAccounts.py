@@ -133,7 +133,8 @@ class ResendToken(ui.Button):
             )
             bot.tokenStore.pop(self.token, "")
         else:
-            assert result
+            if not result:
+                raise AssertionError
             await register_user(result, int(result.uid), int(result.user_id), bot.pool)
 
             try:

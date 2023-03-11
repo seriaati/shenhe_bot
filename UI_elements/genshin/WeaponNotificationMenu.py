@@ -76,7 +76,8 @@ class WeaponTypeButton(Button):
 
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
         weapons = await ambr.get_weapon()
-        assert isinstance(weapons, list)
+        if not isinstance(weapons, list):
+            raise AssertionError
 
         select_options = []
         for weapon in weapons:

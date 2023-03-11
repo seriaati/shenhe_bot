@@ -42,17 +42,20 @@ class Dropdown(Select):
 
         bot: commands.Bot = i.client  # type: ignore
         cog = bot.get_cog(self.values[0])
-        assert cog
+        if not cog:
+            raise AssertionError
 
         selected_option = utils.get(self.options, value=self.values[0])
-        assert selected_option
+        if not selected_option:
+            raise AssertionError
         embed = DefaultEmbed(f"{selected_option.emoji} {selected_option.label}")
 
         async with aiofiles.open("command_map.json", "r") as f:
             command_map: Dict[str, int] = json.loads(await f.read())
 
         for command in cog.walk_app_commands():
-            assert command._locale_description
+            if not command._locale_description:
+                raise AssertionError
 
             if cog.__cog_is_app_commands_group__:
                 mention = f"</{self.values[0]} {command.name}:{command_map.get(self.values[0])}>"
