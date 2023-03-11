@@ -30,10 +30,8 @@ async def check_account_predicate(
     if uid is None:
         if user.id == i.user.id:
             raise NoUID(True)
-        else:
-            raise NoUID(False)
-    else:
-        return True
+        raise NoUID(False)
+    return True
 
 
 def check_cookie():
@@ -60,8 +58,7 @@ def check_wish_history():
 
         if data is None:
             raise NoWishHistory
-        else:
-            return True
+        return True
 
     return app_commands.check(predicate)
 
@@ -84,12 +81,8 @@ async def check_cookie_predicate(
         if ltuid is None:
             if user.id == i.user.id:
                 raise NoCookie(True, True)
-            else:
-                raise NoCookie(False, True)
-        else:
-            if user.id == i.user.id:
-                raise NoCookie(True, False)
-            else:
-                raise NoCookie(False, False)
-    else:
-        return True
+            raise NoCookie(False, True)
+        if user.id == i.user.id:
+            raise NoCookie(True, False)
+        raise NoCookie(False, False)
+    return True

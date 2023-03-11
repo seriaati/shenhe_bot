@@ -545,8 +545,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                             uid = await c.fetchone()
                         if uid is None:
                             raise UIDNotFound
-                        else:
-                            uid = uid[0]
+                        uid = uid[0]
                 else:
                     raise UIDNotFound
         except UIDNotFound:

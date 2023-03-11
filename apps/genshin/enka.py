@@ -27,8 +27,7 @@ async def get_enka_data(
             en_cache = await get_enka_cache(uid, pool, en=True)
             if not cache or not en_cache:
                 raise e
-            else:
-                return cache, en_cache, None
+            return cache, en_cache, None
         else:
             await update_enka_cache(uid, data, en_data, pool)
 
