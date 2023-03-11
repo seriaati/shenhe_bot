@@ -50,18 +50,20 @@ class TextMap:
 
     def get(
         self,
-        hash: int,
+        map_hash: int,
         locale: discord.Locale | str = "en-US",
         user_locale: Optional[str] = None,
     ) -> str:
         locale = user_locale or locale
         path = to_paths(locale)
         lang_text_map: Dict[str, str] = self.text_maps[path]
-        text = lang_text_map.get(str(hash), "")
+        text = lang_text_map.get(str(map_hash), "")
         if not text:
-            log.warning(f"[Text Map][{locale}][Hash not found]: [Hash]{hash}")
+            log.warning(
+                f"[Text Map][{locale}][map_hash not found]: [map_hash]{map_hash}"
+            )
             lang_text_map = self.text_maps["en-US"]
-            text = lang_text_map.get(str(hash), "")
+            text = lang_text_map.get(str(map_hash), "")
         return text
 
     def get_id_from_name(self, name: str) -> Optional[int]:
