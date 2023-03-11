@@ -85,5 +85,4 @@ async def check_cookie_predicate(
         if user.id == i.user.id:
             raise NoCookie(True, False)
         raise NoCookie(False, False)
-    else:
-        return True
+    return True
