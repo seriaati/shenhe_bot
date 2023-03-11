@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Tuple
 import asyncpg
 import discord
 import genshin
-import sentry_sdk
 from discord import ui
 
 import asset

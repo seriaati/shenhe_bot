@@ -6,7 +6,6 @@ import asyncpg
 import discord
 from discord import ui
 from logingateway import HuTaoLoginAPI
-from logingateway.api import HuTaoLoginRESTAPI
 from logingateway.exception import UserTokenNotFound
 
 import asset

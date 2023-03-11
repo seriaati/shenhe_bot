@@ -17,7 +17,7 @@ from apps.draw.utility import (
 )
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 from apps.text_map.text_map_app import text_map
-from data.game.elements import get_element_color, get_element_emoji
+from data.game.elements import get_element_color
 
 
 def card(

@@ -4,7 +4,6 @@ from apps.genshin.custom_model import DrawInput
 import genshin
 from discord import File, Interaction, Locale, SelectOption, Member, User, Embed
 from discord.ui import Select
-from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
 import asset
 import config
