@@ -17,7 +17,6 @@ from apps.genshin.utils import (
     get_character_emoji,
     get_character_suggested_talent_levels,
     get_shenhe_account,
-    get_uid,
     level_to_ascension_phase,
 )
 from apps.text_map.convert_locale import to_ambr_top

@@ -4,7 +4,6 @@ from UI_base_models import capture_exception
 
 import discord
 import GGanalysis.games.genshin_impact as GI
-import sentry_sdk
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
