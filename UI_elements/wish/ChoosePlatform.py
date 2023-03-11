@@ -67,23 +67,6 @@ class View(BaseView):
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(embed=embed, view=self)
 
-    # @button(emoji="<:android_logo:1024250973222350919>")
-    # async def android(self, i: Interaction, button: Button):
-    #     self.clear_items()
-    #     options = []
-    #     for option in list(import_options.keys()):
-    #         if "ANDROID" in option:
-    #             options.append(
-    #                 SelectOption(label=option, value=option, emoji=button.emoji)
-    #             )
-    #     embed = DefaultEmbed().set_author(
-    #         name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
-    #     )
-    #     self.add_item(ChooseMethod(options, self.locale))
-    #     self.add_item(GOBack())
-    #     self.add_item(SubmitLink(self.locale))
-    #     await i.response.edit_message(view=self, embed=embed)
-
     @button(emoji="<:apple_logo:1024250975390814269> ")
     async def ios(self, i: Interaction, button: Button):
         self.clear_items()
