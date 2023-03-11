@@ -1,7 +1,14 @@
 import io
 from typing import List, Optional
 from apps.text_map.utils import get_element_name
-from apps.draw.utility import circular_crop, draw_dynamic_background, dynamic_font_size, get_cache, get_font, shorten_text
+from apps.draw.utility import (
+    circular_crop,
+    draw_dynamic_background,
+    dynamic_font_size,
+    get_cache,
+    get_font,
+    shorten_text,
+)
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 from apps.text_map.text_map_app import text_map
 
