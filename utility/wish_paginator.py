@@ -126,9 +126,7 @@ class WishPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
-        kwargs = {}
-        kwargs["embed"] = self.embeds[0]
-        kwargs["view"] = view
+        kwargs = {"embed": self.embeds[0], "view": view}
         if ephemeral:
             kwargs["ephemeral"] = ephemeral
 
