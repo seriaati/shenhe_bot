@@ -1,6 +1,12 @@
 from typing import Any, Dict, List
 from apps.draw.utility import image_gen_transition
+from apps.draw import main_funcs
+from apps.genshin.custom_model import DrawInput, TodoList
+from apps.genshin.utils import get_weapon_emoji, level_to_ascension_phase
+from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.text_map_app import text_map
 from data.game.weapon_exp import get_weapon_exp_table
+from data.game.weapon_types import get_weapon_type_emoji
 
 from discord import File, Interaction, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
@@ -9,11 +15,6 @@ import asset
 import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Material, WeaponDetail
-from apps.genshin.custom_model import DrawInput, TodoList
-from apps.genshin.utils import get_weapon_emoji, level_to_ascension_phase
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
-from data.game.weapon_types import get_weapon_type_emoji
 from UI_base_models import BaseModal, BaseView
 from UI_elements.calc import AddToTodo
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
@@ -23,7 +24,6 @@ from utility.utils import (
     ErrorEmbed,
     get_user_appearance_mode,
 )
-from apps.draw import main_funcs
 
 
 class View(BaseView):

@@ -1,12 +1,6 @@
 import io
 from typing import List, Optional
 from apps.text_map.utils import get_element_name
-
-import discord
-import genshin
-from PIL import Image, ImageDraw
-
-import asset
 from apps.draw.utility import (
     circular_crop,
     draw_dynamic_background,
@@ -17,6 +11,12 @@ from apps.draw.utility import (
 )
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
 from apps.text_map.text_map_app import text_map
+
+import discord
+import genshin
+from PIL import Image, ImageDraw
+
+import asset
 from data.game.elements import get_element_color
 
 

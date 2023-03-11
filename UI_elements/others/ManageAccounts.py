@@ -1,6 +1,10 @@
 import asyncio
 from typing import List
 from apps.genshin.custom_model import ShenheBot
+from apps.genshin.utils import get_account_select_options, get_uid_region_hash
+from apps.text_map.convert_locale import to_hutao_login_lang
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 
 import asyncpg
 import discord
@@ -10,10 +14,6 @@ from logingateway.exception import UserTokenNotFound
 
 import asset
 import config
-from apps.genshin.utils import get_account_select_options, get_uid_region_hash
-from apps.text_map.convert_locale import to_hutao_login_lang
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from cogs.login import register_user
 from UI_base_models import BaseModal, BaseView
 from utility.utils import DefaultEmbed, log

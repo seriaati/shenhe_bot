@@ -2,18 +2,18 @@ from typing import Dict, List, Optional, Tuple
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import DrawInput
 from apps.text_map.convert_locale import to_genshin_py
-from utility.utils import DefaultEmbed, get_user_appearance_mode
 from apps.draw import main_funcs
+from apps.genshin.utils import get_character_builds, get_character_emoji
+from apps.text_map.cond_text import cond_text
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
+from utility.utils import DefaultEmbed, get_user_appearance_mode
 import yaml
 import genshin
 from discord import Embed, Interaction, SelectOption, File, Locale
 from discord.ui import Button, Select
 import asset
 import config
-from apps.genshin.utils import get_character_builds, get_character_emoji
-from apps.text_map.cond_text import cond_text
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from data.game.elements import get_element_emoji, get_element_list
 from UI_base_models import BaseView
 

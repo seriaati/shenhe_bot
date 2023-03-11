@@ -3,12 +3,12 @@ import time
 import asset
 from typing import Any, Dict, List, Literal, Optional, Tuple
 from apps.text_map.text_map_app import text_map
+from apps.genshin.custom_model import DynamicBackgroundInput
 import aiofiles
 import aiohttp
 import discord
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
-from apps.genshin.custom_model import DynamicBackgroundInput
 from data.draw.fonts import FONTS
 from utility.utils import DefaultEmbed, log
 

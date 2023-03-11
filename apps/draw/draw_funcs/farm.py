@@ -2,11 +2,10 @@ import io
 from typing import List
 from apps.genshin.custom_model import FarmData
 from apps.genshin.utils import get_domain_title
+from apps.draw.utility import get_cache, get_font
 
 from discord import Locale
 from PIL import Image, ImageDraw
-
-from apps.draw.utility import get_cache, get_font
 
 
 def draw_domain_card(

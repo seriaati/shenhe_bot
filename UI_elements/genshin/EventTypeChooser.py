@@ -2,18 +2,18 @@ import json
 import aiofiles
 import discord
 from discord import ui
+from discord.utils import format_dt
 from typing import Any, Dict, List
 from apps.text_map.convert_locale import to_genshin_py
 from apps.text_map.text_map_app import text_map
-from UI_base_models import BaseView
+from apps.hoyolab_rss_feeds.create_feed import create_feed
 from apps.text_map.utils import get_user_locale
+from UI_base_models import BaseView
 import config
 import asset
 from dateutil import parser
-from discord.utils import format_dt
-from utility.paginator import GeneralPaginator, _view
+from utility.paginator import GeneralPaginator, GeneralPaginatorView
 from utility.utils import DefaultEmbed, parse_HTML
-from apps.hoyolab_rss_feeds.create_feed import create_feed
 
 
 class View(BaseView):
@@ -158,7 +158,7 @@ class EventTypeSelect(ui.Select):
         self.embeds = embeds
 
     async def callback(self, i: discord.Interaction) -> Any:
-        self.view: _view
+        self.view: GeneralPaginatorView
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await self.view.update_children(i)
