@@ -1,10 +1,10 @@
 from apps.genshin.custom_model import DrawInput
+from apps.draw import main_funcs
+from apps.text_map.utils import get_user_locale
 import discord
 from UI_base_models import BaseView
-from apps.text_map.utils import get_user_locale
 import config
 from typing import List
-from apps.draw import main_funcs
 from utility.utils import DefaultEmbed, get_user_appearance_mode
 
 

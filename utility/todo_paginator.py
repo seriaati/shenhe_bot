@@ -8,8 +8,8 @@ import config
 from ambr.models import Material
 from apps.draw import main_funcs
 from apps.genshin.custom_model import DrawInput, TodoItem
-from UI_base_models import BaseView
 from apps.text_map.text_map_app import text_map
+from UI_base_models import BaseView
 
 
 class _view(BaseView):

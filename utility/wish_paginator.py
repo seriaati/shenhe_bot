@@ -1,13 +1,12 @@
 from typing import List, Union
 from apps.text_map.utils import get_user_locale
+from apps.text_map.text_map_app import text_map
 
 from discord import ButtonStyle, Embed, Interaction
 from discord.ui import Button, Select, button
 
 import config
 from UI_base_models import BaseView
-
-from apps.text_map.text_map_app import text_map
 
 
 class _view(BaseView):

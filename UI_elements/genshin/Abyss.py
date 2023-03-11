@@ -8,9 +8,9 @@ from apps.draw.main_funcs import draw_abyss_one_page
 from apps.genshin.custom_model import AbyssResult, DrawInput
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from apps.draw import main_funcs
 from UI_base_models import BaseView
 from utility.utils import DefaultEmbed, get_user_appearance_mode
-from apps.draw import main_funcs
 
 
 class View(BaseView):

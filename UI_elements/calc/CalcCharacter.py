@@ -1,28 +1,23 @@
 from typing import List
 from apps.draw.utility import image_gen_transition
 from apps.enka_api_docs.get_data import get_character_skill_order
+from apps.draw import main_funcs
+from apps.genshin.checks import check_cookie_predicate
+from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
+from apps.genshin.utils import get_character_emoji, get_character_suggested_talent_levels, get_shenhe_account, level_to_ascension_phase
+from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 from data.game.upgrade_exp import get_exp_table
+from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from exceptions import InvalidWeaponCalcInput
 
 from discord import ButtonStyle, File, Interaction, Locale, SelectOption, utils
 from discord.ui import Button, Select, TextInput
-from apps.draw import main_funcs
 import asset
 import config
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, CharacterDetail, CharacterTalentType, Material
-from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.custom_model import DrawInput, InitLevels, TodoList
-from apps.genshin.utils import (
-    get_character_emoji,
-    get_character_suggested_talent_levels,
-    get_shenhe_account,
-    level_to_ascension_phase,
-)
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
-from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from UI_base_models import BaseModal, BaseView
 from UI_elements.calc import AddToTodo
 from utility.utils import DefaultEmbed, get_user_appearance_mode
