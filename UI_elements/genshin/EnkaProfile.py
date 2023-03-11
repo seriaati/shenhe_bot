@@ -188,7 +188,7 @@ class SelectImage(ui.Select):
     def __init__(
         self, options: List[discord.SelectOption], locale: discord.Locale | str
     ):
-        disabled = True if not options else False
+        disabled = bool(not options)
         super().__init__(
             placeholder=text_map.get(279 if disabled else 404, locale),
             options=options

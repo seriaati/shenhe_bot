@@ -106,7 +106,7 @@ def small_card(
     num_length = num_font.getlength(str(item_num))
     num_left = 620 - num_length
     material_name = material.name
-    long_name = True if 156 + font.getlength(material_name) >= num_left - 80 else False
+    long_name = 156 + font.getlength(material_name) >= num_left - 80
     while 156 + font.getlength(material_name) >= num_left - 80:
         material_name = material_name[:-1]
 

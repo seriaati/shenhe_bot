@@ -28,7 +28,7 @@ class View(BaseView):
         self.locale = locale
         self.select_options = select_options
         self.add_item(AddAccount(locale))
-        self.add_item(RemoveAccount(locale, True if not select_options else False))
+        self.add_item(RemoveAccount(locale, bool(not select_options)))
         self.add_item(ChangeNickname(locale, select_options))
         self.add_item(SwitchAccount(locale, select_options))
 
@@ -159,7 +159,7 @@ class ChangeNickname(ui.Button):
     def __init__(
         self, locale: discord.Locale | str, select_options: List[discord.SelectOption]
     ):
-        disabled = True if not select_options else False
+        disabled = bool(not select_options)
         super().__init__(
             emoji=asset.edit_emoji,
             label=text_map.get(600, locale),

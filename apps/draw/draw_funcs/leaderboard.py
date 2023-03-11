@@ -47,7 +47,7 @@ def board(
         if u.rank == 11 and l_type == 1:
             break
 
-        current = True if u == current_user else False
+        current = u == current_user
         if isinstance(u, SingleStrikeLeaderboardUser):
             user_card = ss_user_card(dark_mode, u, current)
         else:
@@ -60,7 +60,7 @@ def board(
         users_to_draw = [user_above, current_user, user_below]
         for u in users_to_draw:
             if u is not None:
-                current = True if u == current_user else False
+                current = u == current_user
                 if isinstance(u, SingleStrikeLeaderboardUser):
                     user_card = ss_user_card(dark_mode, u, current)
                 else:

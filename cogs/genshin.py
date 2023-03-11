@@ -294,7 +294,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             _file = discord.File(fp, "stat_card.jpeg")
             await i.followup.send(
                 embed=stats_result.embed,
-                ephemeral=False if not context_command else True,
+                ephemeral=not not context_command,
                 files=[_file],
             )
 
@@ -459,7 +459,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.defer()
         user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
         result = await self.genshin_app.get_abyss(
-            member.id, i.user.id, True if previous == 1 else False, i.locale
+            member.id, i.user.id, previous == 1, i.locale
         )
         if not result.success:
             return await i.followup.send(embed=result.result)
