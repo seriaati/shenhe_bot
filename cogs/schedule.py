@@ -1000,7 +1000,7 @@ class Schedule(commands.Cog):
                     update_dict[item_id] = {}
 
                 if thing == "avatar" and any(
-                    [str(t_id) in str(item_id) for t_id in asset.traveler_ids]
+                    str(t_id) in str(item_id) for t_id in asset.traveler_ids
                 ):
                     update_dict[item_id][lang] = (
                         item_data["name"]
