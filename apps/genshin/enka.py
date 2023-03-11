@@ -35,7 +35,8 @@ async def get_enka_data(
             cache = await get_enka_cache(uid, pool)
             en_cache = await get_enka_cache(uid, pool, en=True)
 
-            assert cache and en_cache
+            if not (cache and en_cache):
+                raise AssertionError
             return cache, en_cache, data
 
 

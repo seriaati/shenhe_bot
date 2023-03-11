@@ -771,9 +771,10 @@ class Schedule(commands.Cog):
                                 )
                             else:
                                 upgrade = await client.get_weapon_upgrade(int(item_id))
-                            assert isinstance(
+                            if not isinstance(
                                 upgrade, (models.CharacterUpgrade, models.WeaponUpgrade)
-                            )
+                            ):
+                                raise AssertionError
                             upgrade_cache[str(item_id)] = upgrade
 
                         if reward in upgrade.items:

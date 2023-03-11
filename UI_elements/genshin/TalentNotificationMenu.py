@@ -53,7 +53,8 @@ class ElementButton(Button):
         ambr_locale = to_ambr_top(locale)
         client = AmbrTopAPI(i.client.session, ambr_locale)  # type: ignore
         characters = await client.get_character()
-        assert isinstance(characters, list)
+        if not isinstance(characters, list):
+            raise AssertionError
 
         options: List[SelectOption] = []
         for character in characters:

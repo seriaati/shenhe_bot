@@ -19,7 +19,8 @@ async def update_user_abyss_leaderboard(
 ) -> None:
     character = abyss_data.ranks.strongest_strike[0]
     g_c = utils.get(characters, id=character.id)
-    assert g_c
+    if not g_c:
+        raise AssertionError
 
     current_season = get_current_abyss_season() - previous
 

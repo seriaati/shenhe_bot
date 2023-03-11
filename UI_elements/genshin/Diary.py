@@ -90,7 +90,8 @@ class Primo(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        assert self.label
+        if not self.label:
+            raise AssertionError
 
         await primo_mora_button_callback(i, self.view, True, self.label)
 
@@ -101,7 +102,8 @@ class Mora(Button):
 
     async def callback(self, i: Interaction):
         self.view: View
-        assert self.label
+        if not self.label:
+            raise AssertionError
 
         await primo_mora_button_callback(i, self.view, False, self.label)
 
