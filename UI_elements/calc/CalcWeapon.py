@@ -163,14 +163,11 @@ class LevelModal(BaseModal):
                     raise InvalidWeaponCalcInput
 
             t_ascension = level_to_ascension_phase(current)
-            if (
-                current_ascension != t_ascension
-                and current_ascension != t_ascension - 1
-            ):
+            if current_ascension not in (t_ascension, t_ascension - 1):
                 raise InvalidAscensionInput
 
             t_ascension = level_to_ascension_phase(target)
-            if target_ascension != t_ascension and target_ascension != t_ascension - 1:
+            if target_ascension not in (t_ascension, t_ascension - 1):
                 raise InvalidAscensionInput
 
             if current_ascension > target_ascension:

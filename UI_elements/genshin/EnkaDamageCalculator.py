@@ -86,7 +86,7 @@ class View(BaseView):
             reactionMode_options.append(
                 SelectOption(label=text_map.get(525, locale), value="spread")
             )
-        elif element == "Electro" or element == "Anemo":
+        elif element in ("Electro", "Anemo"):
             reactionMode_options.append(
                 SelectOption(label=text_map.get(526, locale), value="aggravate")
             )

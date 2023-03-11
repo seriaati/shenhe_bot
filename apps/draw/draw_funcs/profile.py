@@ -27,7 +27,7 @@ def character_card(
 ) -> Optional[io.BytesIO]:
     # traveler
     character_id = character.id
-    if character.id == 10000005 or character.id == 10000007:
+    if character.id in (10000005, 10000007):
         character_id = f"{character.id}-{character.element.name.lower()}"
 
     # get the template
