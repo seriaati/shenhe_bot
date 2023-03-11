@@ -72,7 +72,7 @@ def divide_dict(d: Dict, size: int):
 
 def format_number(text: str) -> str:
     """Format numbers into bolded texts."""
-    return re.sub("(\(?\d+.?\d+%?\)?)", r" **\1** ", text)  # type: ignore
+    return re.sub(r"(\(?\d+.?\d+%?\)?)", r" **\1** ", text)  # type: ignore
 
 
 def get_weekday_int_with_name(weekday_name: str) -> int:
