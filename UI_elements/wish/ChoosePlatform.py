@@ -67,7 +67,6 @@ class View(BaseView):
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(embed=embed, view=self)
 
-
     @button(emoji="<:apple_logo:1024250975390814269> ")
     async def ios(self, i: Interaction, button: Button):
         self.clear_items()
