@@ -3,6 +3,7 @@ import pickle
 import sys
 from pathlib import Path
 from typing import Optional
+from apps.genshin.enka import pickle_to_yaml
 
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
@@ -123,9 +124,11 @@ class AdminCog(commands.Cog, name="admin"):
         await ctx.send("done")
 
     @commands.is_owner()
-    @commands.command(name="trigger-error")
-    async def trigger_error(self, ctx: commands.Context):
-        raise Exception("test")
+    @commands.command(name="pickle-to-yaml")
+    async def pickle_to_yaml(self, ctx: commands.Context):
+        await ctx.send("transferring...")
+        await pickle_to_yaml(self.bot.pool)
+        await ctx.send("done")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
