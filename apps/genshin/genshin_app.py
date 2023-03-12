@@ -125,8 +125,8 @@ class GenshinApp:
             ),
         )
 
+    @staticmethod
     async def parse_resin_embed(
-        self,
         notes: genshin.models.Notes,
         locale: discord.Locale,
         user_locale: Optional[str] = None,
@@ -553,8 +553,8 @@ class GenshinApp:
         )
         return custom_model.GenshinAppResult(result=result, success=True)
 
+    @staticmethod
     async def parse_summer_embed(
-        self,
         summer: genshin.models.Summer,
         user: discord.User | discord.Member | discord.ClientUser,
         locale: discord.Locale | str,

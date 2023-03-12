@@ -46,7 +46,8 @@ class LoginGatewayCog(commands.Cog):
             log.info("[System][LoginGateway] Closing gateway...")
             await self.gateway.close()
 
-    async def gateway_connect(self, _: Ready):
+    @staticmethod
+    async def gateway_connect(_: Ready):
         log.info("[System][LoginGateway] Gateway connected")
 
     async def gateway_player_update(self, data: Player):

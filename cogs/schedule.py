@@ -155,8 +155,8 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule] Sent abyss.json")
 
+    @staticmethod
     def add_abyss_entry(
-        self,
         result: Dict[str, Any],
         account: custom_model.ShenheAccount,
         abyss: genshin.models.SpiralAbyss,
@@ -554,8 +554,9 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule][Redeem Codes] Done")
 
+    @staticmethod
     async def send_embed(
-        self, user: Union[discord.User, discord.Member], embed: discord.Embed
+        user: Union[discord.User, discord.Member], embed: discord.Embed
     ):
         try:
             await user.send(embed=embed)
@@ -576,7 +577,8 @@ class Schedule(commands.Cog):
                 users.append(acc)
         return users
 
-    async def redeem_code(self, user, locale, code):
+    @staticmethod
+    async def redeem_code(user, locale, code):
         success = False
         value = "default_value"
         try:
@@ -1030,7 +1032,8 @@ class Schedule(commands.Cog):
         with open("text_maps/dailyDungeon.json", "w+", encoding="utf-8") as f:
             json.dump(update_dict, f, indent=4, ensure_ascii=False)
 
-    def update_item_text_map(self, things_to_update):
+    @staticmethod
+    def update_item_text_map(things_to_update):
         huge_text_map = {}
         for thing in things_to_update:
             with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:

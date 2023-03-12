@@ -915,8 +915,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed.set_footer(text=text_map.get(444, i.locale, user_locale))
         await i.response.send_message(embed=embed)
 
+    @staticmethod
     def get_beta_items(
-        self,
         result: str,
         items: List[Character | Weapon | Material],
         first_icon_url: str,
