@@ -10,6 +10,7 @@ import aiofiles
 import json
 
 import aiohttp
+from apps.genshin.custom_model import CustomInteraction
 import asyncpg
 import sentry_sdk
 from cachetools import TTLCache
@@ -81,16 +82,20 @@ class ShenheCommandTree(app_commands.CommandTree):
 
         return synced
 
-    async def interaction_check(self, i: discord.Interaction, /) -> bool:
+    async def interaction_check(self, i: CustomInteraction, /) -> bool:
         if i.guild is not None and not i.guild.chunked:
             await i.guild.chunk()
 
-        if i.user.id == 410036441129943050:
+        if i.user.id in (410036441129943050,):
             return True
+        if i.user.id in (188109365671100416, 738362958253522976, 753937213032628327):
+            return False
+
         if i.client.maintenance:
             embed = ErrorEmbed(
                 "申鶴正在維護中\nShenhe is under maintenance",
-                f"""預計將在 {i.client.maintenance_time} 恢復服務
+                f"""
+                預計將在 {i.client.maintenance_time} 恢復服務
                 Estimated to be back online {i.client.maintenance_time}
                 """,
             )
