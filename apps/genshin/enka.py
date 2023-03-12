@@ -1,10 +1,8 @@
-import pickle
 import yaml
 from typing import Dict, List, Optional, Tuple
 
 import asyncpg
 import enkanetwork
-from utility.utils import log
 
 from exceptions import NoCharacterFound
 
@@ -140,33 +138,3 @@ async def update_enka_cache(
         d_c["cache"].player = d_c["data"].player
 
         await save_enka_cache(uid, d_c["cache"], pool, index == 1)
-
-
-async def pickle_to_yaml(pool: asyncpg.Pool) -> None:
-    await pool.execute("ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_data TEXT")
-    await pool.execute(
-        "ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_en_data TEXT"
-    )
-    rows = await pool.fetch("SELECT * FROM enka_cache")
-    for row in rows:
-        data = pickle.loads(row["data"])
-        en_data = pickle.loads(row["en_data"])
-        await pool.execute(
-            """
-            UPDATE
-                enka_cache
-            SET
-                new_data = $1,
-                new_en_data = $2
-            WHERE
-                uid = $3
-            """,
-            yaml.dump(data),
-            yaml.dump(en_data),
-            row["uid"],
-        )
-        log.info(f"Updated {row['uid']}")
-    await pool.execute("ALTER TABLE enka_cache DROP COLUMN data")
-    await pool.execute("ALTER TABLE enka_cache DROP COLUMN en_data")
-    await pool.execute("ALTER TABLE enka_cache RENAME COLUMN new_data TO data")
-    await pool.execute("ALTER TABLE enka_cache RENAME COLUMN new_en_data TO en_data")

@@ -1,9 +1,8 @@
 import importlib
-import pickle
+import yaml
 import sys
 from pathlib import Path
 from typing import Optional
-from apps.genshin.enka import pickle_to_yaml
 
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
@@ -118,16 +117,9 @@ class AdminCog(commands.Cog, name="admin"):
         await self.bot.pool.execute(
             "INSERT OR REPLACE INTO enka_cache (uid, en_data, data) VALUES ($1, $2, $3)",
             uid,
-            pickle.dumps(en_cache_data),
-            pickle.dumps(cache_data),
+            yaml.dump(en_cache_data),
+            yaml.dump(cache_data),
         )
-        await ctx.send("done")
-
-    @commands.is_owner()
-    @commands.command(name="pickle-to-yaml")
-    async def pickle_to_yaml(self, ctx: commands.Context):
-        await ctx.send("transferring...")
-        await pickle_to_yaml(self.bot.pool)
         await ctx.send("done")
 
 
