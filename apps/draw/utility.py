@@ -1,7 +1,7 @@
 import os
 import time
 import asset
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 from apps.text_map.text_map_app import text_map
 from apps.genshin.custom_model import DynamicBackgroundInput
 import aiofiles
@@ -33,11 +33,12 @@ async def download_images(urls: List[str], session: aiohttp.ClientSession) -> No
     """Download images from urls."""
     for url in urls:
         file_name = extract_file_name(url)
-        if os.path.exists("apps/draw/cache/" + file_name):
+        path = f"apps/draw/cache/{file_name}"
+        if os.path.exists(path):
             continue
         async with session.get(url) as resp:
             if resp.status == 200:
-                async with aiofiles.open("apps/draw/cache/" + file_name, "wb") as f:
+                async with aiofiles.open(path, "wb") as f:
                     await f.write(await resp.read())
 
 
@@ -59,17 +60,20 @@ def calculate_time(func):
     return inner_func
 
 
-def human_format(num: int | float):
+def human_format(num: Union[int, float]):
     """Format number to human readable format."""
     magnitude = 0
     while abs(num) >= 1000:
         magnitude += 1
         num /= 1000.0
 
-    if int("{:.2f}".format(num).split(".")[1]) == 0:
-        return "%d%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
+    two_sf = f"{num:.2f}"
+    letters = ("", "K", "M", "G", "T", "P")
 
-    return "%.2f%s" % (num, ["", "K", "M", "G", "T", "P"][magnitude])
+    if two_sf.split(".")[-1] == "00":
+        return f"{round(num)}{letters[magnitude]}"
+
+    return f"{two_sf}{letters[magnitude]}"
 
 
 def dynamic_font_size(
@@ -98,8 +102,13 @@ def circular_crop(
     empty = Image.new("RGBA", image.size, 0)
     draw = ImageDraw.Draw(mask)
     x, y = image.size
-    eX, eY = image.size
-    bbox = (x / 2 - eX / 2, y / 2 - eY / 2, x / 2 + eX / 2, y / 2 + eY / 2)
+    circle_x, circle_y = image.size
+    bbox = (
+        x / 2 - circle_x / 2,
+        y / 2 - circle_y / 2,
+        x / 2 + circle_x / 2,
+        y / 2 + circle_y / 2,
+    )
     draw.ellipse(bbox, fill=255)
     image = Image.composite(image, empty, mask)
     if background_color is not None:
