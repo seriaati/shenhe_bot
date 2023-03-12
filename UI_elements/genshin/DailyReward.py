@@ -1,6 +1,9 @@
 import asyncio
 import calendar
 from apps.genshin.custom_model import CustomInteraction
+from apps.genshin.genshin_app import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 
 import genshin
 from discord import ButtonStyle, Locale
@@ -8,9 +11,6 @@ from discord.errors import InteractionResponded
 from discord.ui import Button
 
 import config
-from apps.genshin.genshin_app import GenshinApp
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
 
