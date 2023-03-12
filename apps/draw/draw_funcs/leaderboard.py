@@ -10,7 +10,12 @@ from apps.draw.utility import (
 )
 import discord
 import asset
-from apps.genshin.custom_model import RunLeaderboardUser, RunLeaderboardUser, SingleStrikeLeaderboardUser, SingleStrikeLeaderboardUser
+from apps.genshin.custom_model import (
+    RunLeaderboardUser,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardUser,
+    SingleStrikeLeaderboardUser,
+)
 from apps.text_map.text_map_app import text_map, text_map
 
 
