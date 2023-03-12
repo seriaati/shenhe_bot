@@ -1,15 +1,16 @@
 import asyncio
 import calendar
+from apps.genshin.custom_model import CustomInteraction
+from apps.genshin.genshin_app import GenshinApp
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 
 import genshin
-from discord import ButtonStyle, Interaction, Locale
+from discord import ButtonStyle, Locale
 from discord.errors import InteractionResponded
 from discord.ui import Button
 
 import config
-from apps.genshin.genshin_app import GenshinApp
-from apps.text_map.text_map_app import text_map
-from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
 
@@ -28,7 +29,7 @@ class ClaimReward(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(style=ButtonStyle.blurple, label=text_map.get(603, locale))
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.defer()
         self.view: View
         result, _ = await self.view.genshin_app.claim_daily_reward(
@@ -46,7 +47,7 @@ class ClaimRewardToggle(Button):
         super().__init__(label=text_map.get(627, locale), style=ButtonStyle.green)
         self.locale = locale
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await i.client.pool.execute(
             "UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2",
@@ -60,7 +61,7 @@ class ClaimRewardToggle(Button):
         await return_claim_reward(i, self.view.genshin_app)
 
 
-async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
+async def return_claim_reward(i: CustomInteraction, genshin_app: GenshinApp):
     try:
         await i.response.defer()
     except InteractionResponded:
@@ -103,9 +104,7 @@ async def return_claim_reward(i: Interaction, genshin_app: GenshinApp):
         )
     divided_value = list(divide_chunks(values, 10))
     for index, val in enumerate(divided_value):
-        r = ""
-        for v in val:
-            r += v
+        r = "".join(val)
         embed.add_field(name=f"{text_map.get(605, locale)} ({index+1})", value=r)
 
     view = View(locale, genshin_app, shenhe_user.uid)
