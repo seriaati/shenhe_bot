@@ -2,10 +2,10 @@ from typing import Dict, List
 from apps.genshin.custom_model import DrawInput
 
 import discord
-from apps.draw import main_funcs, main_funcs
-from apps.genshin.utils import get_fight_prop, get_fight_prop
-from apps.text_map.text_map_app import text_map, text_map
-from apps.text_map.utils import get_weekday_name, get_weekday_name
+from apps.draw import main_funcs
+from apps.genshin.utils import get_fight_prop
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_weekday_name
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import (
