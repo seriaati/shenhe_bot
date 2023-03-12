@@ -116,7 +116,7 @@ class GeneralPaginator:
         followup: bool = False,
         ephemeral: bool = False,
     ) -> None:
-        if not (self.embeds):
+        if not self.embeds:
             raise ValueError("Missing embeds")
 
         locale = (
