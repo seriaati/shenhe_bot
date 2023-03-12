@@ -579,7 +579,6 @@ def get_current_abyss_season() -> int:
 
 def get_abyss_season_date_range(season: int) -> str:
     """Get the date range of a given season"""
-
     ref_season_num = 59
     ref_season_time = datetime(2022, 12, 1, 4, 0, 0)
 
