@@ -49,7 +49,7 @@ class Schedule(commands.Cog):
         if not self.debug:
             self.run_tasks.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         if not self.debug:
             self.run_tasks.cancel()
 
@@ -1036,7 +1036,7 @@ class Schedule(commands.Cog):
             with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
                 text_map = json.load(f)
             for item_id, item_info in text_map.items():
-                for lang, name in item_info.items():
+                for name in item_info.values():
                     if "10000005" in item_id:
                         huge_text_map[name] = "10000005"
                     elif "10000007" in item_id:

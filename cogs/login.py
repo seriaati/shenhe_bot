@@ -70,7 +70,7 @@ class LoginGatewayCog(commands.Cog):
         )
 
     async def gateway_player(self, data: Player):
-        if not data.token in self.bot.tokenStore:
+        if data.token not in self.bot.tokenStore:
             return
 
         log.info(f"[System][LoginGateway][Player] Recieved data: {data}")

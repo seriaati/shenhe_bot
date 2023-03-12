@@ -153,23 +153,23 @@ class AmbrTopAPI:
             endpoints = [endpoint]
 
         if static:
-            for endpoint in endpoints:
-                data = await self.request_from_endpoint(endpoint, static=True)
+            for e in endpoints:
+                data = await self.request_from_endpoint(e, static=True)
                 with open(
-                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(endpoint)}.json",
+                    f"ambr/cache/static/{STATIC_ENDPOINTS.get(e)}.json",
                     "w+",
                     encoding="utf-8",
                 ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
         else:
             for lang in langs:
-                for endpoint in endpoints:
-                    data = await self.request_from_endpoint(endpoint, lang)
+                for e in endpoints:
+                    data = await self.request_from_endpoint(e, lang)
                     path = f"ambr/cache/{lang}"
                     if not os.path.exists(path):
                         os.makedirs(path)
                     with open(
-                        f"ambr/cache/{lang}/{ENDPOINTS.get(endpoint)}.json",
+                        f"ambr/cache/{lang}/{ENDPOINTS.get(e)}.json",
                         "w+",
                         encoding="utf-8",
                     ) as f:

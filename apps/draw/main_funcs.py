@@ -351,8 +351,8 @@ async def draw_lineup_card(
 ) -> io.BytesIO:
     # download images
     urls = []
-    for characters in lineup_preview.characters:
-        for character in characters:
+    for characters_ in lineup_preview.characters:
+        for character in characters_:
             urls.append(character.pc_icon)
             urls.append(character.weapon.icon)
             urls += [a.icon for a in character.artifacts]
