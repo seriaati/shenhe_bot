@@ -1,7 +1,5 @@
 from typing import Dict, List
 
-import aiohttp
-import asyncpg
 import discord
 from discord import ui, utils
 
@@ -12,6 +10,7 @@ from ambr.models import Character
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import (
+    CustomInteraction,
     DrawInput,
     RunLeaderboardUser,
     SingleStrikeLeaderboardCharacter,
@@ -61,7 +60,7 @@ class LeaderboardSelect(ui.Select):
         ]
         super().__init__(placeholder=placeholder, options=options)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.type = self.values[0]
         await select_callback(self.view, i, self.values[0])
@@ -89,16 +88,17 @@ class AbyssSeasonSelect(ui.Select):
             custom_id="abyss_season_select",
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.season = int(self.values[0])
         await select_callback(self.view, i, self.view.type)
 
 
-async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
+async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
     view.type = leaderboard
-    pool: asyncpg.Pool = i.client.pool  # type: ignore
-    session: aiohttp.ClientSession = i.client.session  # type: ignore
+    pool = i.client.pool
+    session = i.client.session
+    abyss_command = "/abyss"
 
     query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
@@ -107,16 +107,8 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
     await image_gen_transition(i, view, locale)
 
     # change color of button based on current region selection
-    glob = [
-        item
-        for item in view.children
-        if isinstance(item, ui.Button) and item.custom_id == "global"
-    ][0]
-    server = [
-        item
-        for item in view.children
-        if isinstance(item, ui.Button) and item.custom_id == "server"
-    ][0]
+    glob: Global = utils.get(view.children, custom_id="global")
+    server: Server = utils.get(view.children, custom_id="server")
     if view.area == "global":
         server.style = discord.ButtonStyle.secondary
         glob.style = discord.ButtonStyle.primary
@@ -232,7 +224,9 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                 name=get_al_title(view.season, locale),
                 icon_url=i.user.display_avatar.url,
             )
-            embed.set_footer(text=text_map.get(619, locale).format(command="/abyss"))
+            embed.set_footer(
+                text=text_map.get(619, locale).format(command=abyss_command)
+            )
             embed.set_image(url="attachment://leaderboard.jpeg")
 
             await i.edit_original_response(
@@ -291,7 +285,9 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                 name=get_al_title(view.season, locale),
                 icon_url=i.user.display_avatar.url,
             )
-            embed.set_footer(text=text_map.get(619, locale).format(command="/abyss"))
+            embed.set_footer(
+                text=text_map.get(619, locale).format(command=abyss_command)
+            )
             embed.set_image(url="attachment://character_usage.jpeg")
 
             await i.edit_original_response(
@@ -375,7 +371,9 @@ async def select_callback(view: View, i: discord.Interaction, leaderboard: str):
                 name=get_al_title(view.season, locale),
                 icon_url=i.user.display_avatar.url,
             )
-            embed.set_footer(text=text_map.get(619, locale).format(command="/abyss"))
+            embed.set_footer(
+                text=text_map.get(619, locale).format(command=abyss_command)
+            )
             embed.set_image(url="attachment://leaderboard.jpeg")
 
             await i.edit_original_response(
@@ -410,7 +408,7 @@ class Global(ui.Button):
             row=4,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.area = "global"
         await select_callback(self.view, i, self.view.type)
@@ -420,7 +418,7 @@ class Server(ui.Button):
     def __init__(self, label: str):
         super().__init__(label=label, emoji="🏠", custom_id="server", row=4)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.area = "server"
         await select_callback(self.view, i, self.view.type)
