@@ -97,7 +97,8 @@ class OthersCog(commands.Cog, name="others"):
         )
         await i.response.send_message(embed=embed)
 
-    def format_commit(self, commit: pygit2.Commit) -> str:
+    @staticmethod
+    def format_commit(commit: pygit2.Commit) -> str:
         short, _, _ = commit.message.partition("\n")
         short_sha2 = commit.hex[0:6]
         commit_tz = datetime.timezone(
@@ -351,8 +352,9 @@ class OthersCog(commands.Cog, name="others"):
 
         return options[:25]
 
+    @staticmethod
     def get_command_map(
-        self, tree: app_commands.CommandTree
+        tree: app_commands.CommandTree,
     ) -> Dict[str, Union[app_commands.Command, app_commands.ContextMenu]]:
         command_map: Dict[
             str, Union[app_commands.commands.Command, app_commands.ContextMenu]
