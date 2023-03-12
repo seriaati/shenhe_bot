@@ -406,7 +406,7 @@ def character_usage(
     dark_mode: bool,
     locale: discord.Locale | str,
 ) -> CharacterUsageResult:
-    total = sum([x.usage_num for x in uc_list])
+    total = sum(x.usage_num for x in uc_list)
     uc_list = sorted(uc_list, key=lambda x: x.usage_num, reverse=True)
     im, max_card_num = draw_dynamic_background(
         DynamicBackgroundInput(
