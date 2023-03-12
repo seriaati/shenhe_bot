@@ -354,7 +354,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @staticmethod
     def get_command_map(
-        tree: app_commands.CommandTree
+        tree: app_commands.CommandTree,
     ) -> Dict[str, Union[app_commands.Command, app_commands.ContextMenu]]:
         command_map: Dict[
             str, Union[app_commands.commands.Command, app_commands.ContextMenu]
