@@ -177,9 +177,8 @@ class WishCog(commands.GroupCog, name="wish"):
         for row in rows:
             name = row["wish_name"]
             rarity = row["wish_rarity"]
-            if rarity == 5:
-                if name not in std:
-                    up_num += 1
+            if rarity == 5 and name not in std:
+                up_num += 1
             data_length += 1
         dist_c = GI.up_5star_character(item_num=up_num)
         player_luck = round(100 * sum((dist_c)[: data_length + 1]), 2)
