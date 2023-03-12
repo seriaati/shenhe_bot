@@ -49,7 +49,7 @@ class Schedule(commands.Cog):
         if not self.debug:
             self.run_tasks.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         if not self.debug:
             self.run_tasks.cancel()
 
