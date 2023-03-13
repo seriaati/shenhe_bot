@@ -143,9 +143,9 @@ async def update_enka_cache(
 
 
 async def yaml_to_pickle(pool: asyncpg.Pool) -> None:
-    await pool.execute("ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_data TEXT")
+    await pool.execute("ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_data BYTEA")
     await pool.execute(
-        "ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_en_data TEXT"
+        "ALTER TABLE enka_cache ADD COLUMN IF NOT EXISTS new_en_data BYTEA"
     )
     rows = await pool.fetch("SELECT * FROM enka_cache")
     for row in rows:
