@@ -1,16 +1,15 @@
 import importlib
+import pickle
 import sys
 from pathlib import Path
 from typing import Optional
 
-import srsly
 from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
 from discord.ext import commands
 from diskcache import FanoutCache
 
 from apps.genshin.custom_model import ShenheBot
-from apps.genshin.enka import yaml_to_pickle
 from utility.utils import DefaultEmbed, ErrorEmbed
 
 
@@ -118,16 +117,9 @@ class AdminCog(commands.Cog, name="admin"):
         await self.bot.pool.execute(
             "INSERT OR REPLACE INTO enka_cache (uid, en_data, data) VALUES ($1, $2, $3)",
             uid,
-            srsly.pickle_dumps(en_cache_data),
-            srsly.pickle_dumps(cache_data),
+            pickle.dumps(en_cache_data),
+            pickle.dumps(cache_data),
         )
-        await ctx.send("done")
-
-    @commands.is_owner()
-    @commands.command(name="yaml-to-pickle")
-    async def yaml_to_pickle(self, ctx: commands.Context):
-        await ctx.send("transfering...")
-        await yaml_to_pickle(self.bot.pool)
         await ctx.send("done")
 
 
