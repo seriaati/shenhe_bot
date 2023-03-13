@@ -766,7 +766,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, inter: discord.Interaction, query: str):
-        i: custom_model.CustomInteraction = inter # type: ignore
+        i: custom_model.CustomInteraction = inter  # type: ignore
 
         if not query.isdigit():
             raise AutocompleteError
