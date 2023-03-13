@@ -1,12 +1,11 @@
 from typing import List
 from apps.genshin.custom_model import CustomInteraction
-
-from discord import SelectOption
-from discord.ui import Select
-
 from apps.genshin.utils import get_wish_history_embed
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+
+from discord import SelectOption
+from discord.ui import Select
 from utility.wish_paginator import WishPaginatorView
 
 
