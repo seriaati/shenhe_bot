@@ -1,42 +1,24 @@
 from typing import Dict, List
-from apps.genshin.custom_model import DrawInput
 
 import discord
+
+import ambr.models as ambr_models
+import asset
+from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
+from apps.genshin.custom_model import CustomInteraction, DrawInput
 from apps.genshin.utils import get_fight_prop
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_weekday_name
-import asset
-from ambr.client import AmbrTopAPI
-from ambr.models import (
-    ArtifactDetail,
-    BookDetail,
-    Character,
-    CharacterDetail,
-    CharacterTalentType,
-    CharacterUpgrade,
-    FoodDetail,
-    FurnitureDetail,
-    Material,
-    MaterialDetail,
-    MonsterDetail,
-    NameCardDetail,
-    Weapon,
-    WeaponDetail,
-    WeaponUpgrade,
-)
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
 from UI_elements.genshin import Search
-from utility.utils import (
-    DefaultEmbed,
-    get_weekday_int_with_name,
-)
+from utility.utils import DefaultEmbed, get_weekday_int_with_name
 
 
 async def parse_character_wiki(
-    character: CharacterDetail,
-    i: discord.Interaction,
+    character: ambr_models.CharacterDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -74,7 +56,7 @@ async def parse_character_wiki(
     all_materials = []
     for material in character.ascension_materials:
         full_material = await client.get_material(int(material.id))
-        if not isinstance(full_material, Material):
+        if not isinstance(full_material, ambr_models.Material):
             continue
         all_materials.append((full_material, ""))
     embeds.append(embed)
@@ -83,17 +65,17 @@ async def parse_character_wiki(
     count = 0
     passive_count = 0
     for talent in character.talents:
-        if talent.type is CharacterTalentType.PASSIVE:
+        if talent.type is ambr_models.CharacterTalentType.PASSIVE:
             passive_count += 1
         else:
             count += 1
         embed = DefaultEmbed(talent.name, talent.description)
         embed.set_author(
             name=text_map.get(
-                323 if talent.type is CharacterTalentType.PASSIVE else 94,
+                323 if talent.type is ambr_models.CharacterTalentType.PASSIVE else 94,
                 locale,
             )
-            + f" {passive_count if talent.type is CharacterTalentType.PASSIVE else count}",
+            + f" {passive_count if talent.type is ambr_models.CharacterTalentType.PASSIVE else count}",
             icon_url=character.icon,
         )
         embed.set_thumbnail(url=talent.icon)
@@ -151,8 +133,8 @@ async def parse_character_wiki(
 
 
 async def parse_weapon_wiki(
-    weapon: WeaponDetail,
-    i: discord.Interaction,
+    weapon: ambr_models.WeaponDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -206,7 +188,7 @@ async def parse_weapon_wiki(
     all_materials = []
     for material in weapon.ascension_materials:
         full_material = await client.get_material(int(material.id))
-        if not isinstance(full_material, Material):
+        if not isinstance(full_material, ambr_models.Material):
             continue
         all_materials.append((full_material, ""))
     fp = await main_funcs.draw_material_card(
@@ -232,8 +214,8 @@ async def parse_weapon_wiki(
 
 
 async def parse_material_wiki(
-    material: MaterialDetail,
-    i: discord.Interaction,
+    material: ambr_models.MaterialDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -271,7 +253,7 @@ async def parse_material_wiki(
         await client.get_character_upgrade(),
         await client.get_weapon_upgrade(),
     ]
-    matches: List[CharacterUpgrade | WeaponUpgrade] = []
+    matches: List[ambr_models.CharacterUpgrade | ambr_models.WeaponUpgrade] = []
     for upgrade in upgrades:
         for u in upgrade:
             material_ids = [m.name for m in u.items]
@@ -280,14 +262,14 @@ async def parse_material_wiki(
     if matches:
         objects = []
         for match in matches:
-            if isinstance(match, CharacterUpgrade):
+            if isinstance(match, ambr_models.CharacterUpgrade):
                 character = await client.get_character(match.character_id)
-                if not isinstance(character, Character):
+                if not isinstance(character, ambr_models.Character):
                     continue
                 objects.append((character, ""))
             else:
                 weapon = await client.get_weapon(match.weapon_id)
-                if not isinstance(weapon, Weapon):
+                if not isinstance(weapon, ambr_models.Weapon):
                     continue
                 objects.append((weapon, ""))
         fp = await main_funcs.draw_material_card(
@@ -308,8 +290,8 @@ async def parse_material_wiki(
 
 
 async def parse_artifact_wiki(
-    artifact: ArtifactDetail,
-    i: discord.Interaction,
+    artifact: ambr_models.ArtifactDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
 ):
     rarity_str = ""
@@ -331,8 +313,8 @@ async def parse_artifact_wiki(
 
 
 async def parse_monster_wiki(
-    monster: MonsterDetail,
-    i: discord.Interaction,
+    monster: ambr_models.MonsterDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -345,7 +327,7 @@ async def parse_monster_wiki(
         materials = []
         for ingredient in monster.data.drops:
             mat = await client.get_material(int(ingredient.id))
-            if not isinstance(mat, Material):
+            if not isinstance(mat, ambr_models.Material):
                 continue
             materials.append((mat, ingredient.count or ""))
         fp = await main_funcs.draw_material_card(
@@ -359,15 +341,15 @@ async def parse_monster_wiki(
             text_map.get(622, locale),
         )
         fp.seek(0)
-        discord_file = discord.File(fp, "furniture_recipe.jpeg")
-        embed.set_image(url="attachment://furniture_recipe.jpeg")
+        discord_file = discord.File(fp, "monster_drop.jpeg")
+        embed.set_image(url="attachment://monster_drop.jpeg")
         files.append(discord_file)
     await i.followup.send(embed=embed, files=files)
 
 
 async def parse_food_wiki(
-    food: FoodDetail,
-    i: discord.Interaction,
+    food: ambr_models.FoodDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -387,7 +369,7 @@ async def parse_food_wiki(
             materials = []
             for ingredient in food.recipe.input:
                 mat = await client.get_material(int(ingredient.id))
-                if not isinstance(mat, Material):
+                if not isinstance(mat, ambr_models.Material):
                     continue
                 materials.append((mat, ingredient.count))
             fp = await main_funcs.draw_material_card(
@@ -413,8 +395,8 @@ async def parse_food_wiki(
 
 
 async def parse_furniture_wiki(
-    furniture: FurnitureDetail,
-    i: discord.Interaction,
+    furniture: ambr_models.FurnitureDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -423,8 +405,8 @@ async def parse_furniture_wiki(
     embed.description = f"""
         {furniture.description}
         
-        {asset.comfort_emoji} {text_map.get(255, locale)}: {furniture.comfort}
-        {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost}
+        {asset.comfort_emoji} {text_map.get(255, locale)}: {furniture.comfort or 0}
+        {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost or 0}
     """
     embed.set_thumbnail(url=furniture.icon)
     embed.set_author(name=f"{furniture.categories[0]} - {furniture.types[0]}")
@@ -433,7 +415,7 @@ async def parse_furniture_wiki(
         materials = []
         for ingredient in furniture.recipe.input:
             mat = await client.get_material(int(ingredient.id))
-            if not isinstance(mat, Material):
+            if not isinstance(mat, ambr_models.Material):
                 continue
             materials.append((mat, ingredient.count))
         fp = await main_funcs.draw_material_card(
@@ -454,7 +436,9 @@ async def parse_furniture_wiki(
 
 
 async def parse_namecard_wiki(
-    namecard: NameCardDetail, i: discord.Interaction, locale: discord.Locale | str
+    namecard: ambr_models.NameCardDetail,
+    i: CustomInteraction,
+    locale: discord.Locale | str,
 ):
     rarity_str = ""
     for _ in range(namecard.rarity):
@@ -467,8 +451,8 @@ async def parse_namecard_wiki(
 
 
 async def parse_book_wiki(
-    book: BookDetail,
-    i: discord.Interaction,
+    book: ambr_models.BookDetail,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
 ):

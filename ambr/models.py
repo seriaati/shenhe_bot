@@ -652,7 +652,7 @@ class Furniture(BaseModel):
     id: int
     name: str
     cost: Optional[int] = None
-    comfort: int
+    comfort: Optional[int] = None
     rarity: int = Field(alias="rank")
     icon: str
     categories = List[str]
@@ -698,7 +698,7 @@ class FurnitureDetail(BaseModel):
     id: int
     name: str
     cost: Optional[int] = None
-    comfort: int
+    comfort: Optional[int] = None
     rarity: int = Field(alias="rank")
     categories: List[str]
     types: List[str]
