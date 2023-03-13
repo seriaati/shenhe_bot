@@ -890,45 +890,45 @@ class Schedule(commands.Cog):
             except FileNotFoundError:
                 object_map = {}
 
-            for object in objects:
+            for obj in objects:
                 english_name = ""
-                if isinstance(object, models.Character):
-                    object_map[str(object.id)] = {
-                        "name": object.name,
-                        "element": object.element,
-                        "rarity": object.rairty,
-                        "icon": object.icon,
+                if isinstance(obj, models.Character):
+                    object_map[str(obj.id)] = {
+                        "name": obj.name,
+                        "element": obj.element,
+                        "rarity": obj.rairty,
+                        "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_character(object.id)
+                    eng_object = await eng_client.get_character(obj.id)
                     if (
                         isinstance(eng_object, models.Character)
                         and eng_object is not None
                     ):
                         english_name = eng_object.name
-                elif isinstance(object, models.Weapon):
-                    object_map[str(object.id)] = {
-                        "name": object.name,
-                        "rarity": object.rarity,
-                        "icon": object.icon,
+                elif isinstance(obj, models.Weapon):
+                    object_map[str(obj.id)] = {
+                        "name": obj.name,
+                        "rarity": obj.rarity,
+                        "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_weapon(object.id)
+                    eng_object = await eng_client.get_weapon(obj.id)
                     if isinstance(eng_object, models.Weapon) and eng_object is not None:
                         english_name = eng_object.name
-                elif isinstance(object, models.Artifact):
-                    object_map[str(object.id)] = {
-                        "name": object.name,
-                        "rarity": object.rarity_list,
-                        "icon": object.icon,
+                elif isinstance(obj, models.Artifact):
+                    object_map[str(obj.id)] = {
+                        "name": obj.name,
+                        "rarity": obj.rarity_list,
+                        "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_artifact(object.id)
+                    eng_object = await eng_client.get_artifact(obj.id)
                     if (
                         isinstance(eng_object, models.Artifact)
                         and eng_object is not None
                     ):
                         english_name = eng_object.name
 
-                object_map[str(object.id)]["eng"] = english_name
-                object_id = str(object.id)
+                object_map[str(obj.id)]["eng"] = english_name
+                object_id = str(obj.id)
                 if "-" in object_id:
                     object_id = (object_id.split("-"))[0]
                 emoji = utils.get(self.bot.emojis, name=object_id)
@@ -944,7 +944,7 @@ class Schedule(commands.Cog):
                             break
                     if emoji_server is not None:
                         try:
-                            async with self.bot.session.get(object.icon) as r:
+                            async with self.bot.session.get(obj.icon) as r:
                                 bytes_obj = await r.read()
                             emoji = await emoji_server.create_custom_emoji(
                                 name=object_id,
@@ -952,13 +952,13 @@ class Schedule(commands.Cog):
                             )
                         except (discord.Forbidden, discord.HTTPException) as e:
                             log.warning(
-                                f"[Schedule] Emoji creation failed [Object]{object}"
+                                f"[Schedule] Emoji creation failed [Object]{obj}"
                             )
                             capture_exception(e)
                         else:
-                            object_map[str(object.id)]["emoji"] = str(emoji)
+                            object_map[str(obj.id)]["emoji"] = str(emoji)
                 else:
-                    object_map[str(object.id)]["emoji"] = str(emoji)
+                    object_map[str(obj.id)]["emoji"] = str(emoji)
             with open(f"data/game/{thing}_map.json", "w+", encoding="utf-8") as f:
                 json.dump(object_map, f, ensure_ascii=False, indent=4)
         log.info("[Schedule][Update Game Data] Ended")

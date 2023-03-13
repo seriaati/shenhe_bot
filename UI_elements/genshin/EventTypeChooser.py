@@ -1,13 +1,14 @@
 import json
 import aiofiles
+from apps.genshin.custom_model import CustomInteraction
+from apps.hoyolab_rss_feeds.create_feed import create_feed
+from apps.text_map.convert_locale import to_genshin_py
+from apps.text_map.text_map_app import text_map
+from apps.text_map.utils import get_user_locale
 import discord
 from discord import ui
 from discord.utils import format_dt
 from typing import Any, Dict, List
-from apps.text_map.convert_locale import to_genshin_py
-from apps.text_map.text_map_app import text_map
-from apps.hoyolab_rss_feeds.create_feed import create_feed
-from apps.text_map.utils import get_user_locale
 from UI_base_models import BaseView
 import config
 import asset
@@ -28,7 +29,7 @@ class Hoyolab(ui.Button):
     def __init__(self):
         super().__init__(label="HoYoLAB", emoji=asset.hoyolab_emoji)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await i.response.defer()
 
@@ -91,21 +92,21 @@ class Genshin(ui.Button):
             label=text_map.get(313, locale), emoji="<:genshin_icon:1025630733068423169>"
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await i.response.defer()
         genshin_py_locale = to_genshin_py(self.view.locale)
-        event_overview_API = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
-        event_details_API = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
-        async with i.client.session.get(event_overview_API) as r:
+        event_overview_api = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
+        event_details_api = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
+        async with i.client.session.get(event_overview_api) as r:
             overview: Dict = await r.json()
-        async with i.client.session.get(event_details_API) as r:
+        async with i.client.session.get(event_details_api) as r:
             details: Dict = await r.json()
         type_list = overview["data"]["type_list"]
         options = []
-        for type in type_list:
+        for type_ in type_list:
             options.append(
-                discord.SelectOption(label=type["mi18n_name"], value=type["id"])
+                discord.SelectOption(label=type_["mi18n_name"], value=type_["id"])
             )
         # get a dict of details
         detail_dict = {}
@@ -157,7 +158,7 @@ class EventTypeSelect(ui.Select):
         super().__init__(options=options, placeholder=text_map.get(409, locale))
         self.embeds = embeds
 
-    async def callback(self, i: discord.Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: GeneralPaginatorView
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
@@ -170,11 +171,11 @@ class GOBack(ui.Button):
             label=text_map.get(282, locale), style=discord.ButtonStyle.green, row=3
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await return_events(i)
 
 
-async def return_events(i: discord.Interaction):
+async def return_events(i: CustomInteraction):
     await i.response.defer()
     user_locale = await get_user_locale(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)

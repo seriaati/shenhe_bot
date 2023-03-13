@@ -100,8 +100,8 @@ class View(BaseView):
             )
 
         # adding items
-        for hit_mode, hash in hit_mode_texts.items():
-            self.add_item(HitModeButton(hit_mode, text_map.get(hash, locale)))
+        for hit_mode, text_hash in hit_mode_texts.items():
+            self.add_item(HitModeButton(hit_mode, text_map.get(text_hash, locale)))
         self.add_item(
             ReactionModeSelect(reactionMode_options, text_map.get(337, locale))
         )

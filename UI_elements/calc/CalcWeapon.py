@@ -79,8 +79,10 @@ class WeaponTypeButton(Button):
 
 
 class WeaponSelect(Select):
-    def __init__(self, locale: Locale | str, options: List[SelectOption], range: str):
-        super().__init__(placeholder=text_map.get(180, locale) + range, options=options)
+    def __init__(self, locale: Locale | str, options: List[SelectOption], range_: str):
+        super().__init__(
+            placeholder=text_map.get(180, locale) + range_, options=options
+        )
 
     async def callback(self, i: Interaction) -> Any:
         self.view: View
