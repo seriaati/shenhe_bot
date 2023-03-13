@@ -1,7 +1,7 @@
 import json
 import random
 from datetime import timedelta, timezone
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import aiofiles
 import asqlite
@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 
 import apps.genshin.utils as genshin_utils
 import asset
+import utility.utils as utils
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
 from apps.draw import main_funcs
@@ -49,7 +50,6 @@ from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
-import utility.utils as utils
 from utility.utils import log
 
 load_dotenv()
@@ -145,10 +145,10 @@ class GenshinCog(commands.Cog, name="genshin"):
             "book",
         )
         self.text_map_files: List[Dict[str, Any]] = []
-        for map in maps_to_open:
+        for map_ in maps_to_open:
             try:
                 async with aiofiles.open(
-                    f"text_maps/{map}.json", "r", encoding="utf-8"
+                    f"text_maps/{map_}.json", "r", encoding="utf-8"
                 ) as f:
                     data = json.loads(await f.read())
             except FileNotFoundError:

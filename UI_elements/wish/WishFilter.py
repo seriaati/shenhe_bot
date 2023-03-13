@@ -1,6 +1,7 @@
 from typing import List
+from apps.genshin.custom_model import CustomInteraction
 
-from discord import Interaction, SelectOption
+from discord import SelectOption
 from discord.ui import Select
 
 from apps.genshin.utils import get_wish_history_embed
@@ -13,7 +14,7 @@ class SelectBanner(Select):
     def __init__(self, placeholder: str, options: List[SelectOption]):
         super().__init__(placeholder=placeholder, options=options, row=3)
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: WishPaginatorView
         await filter_callback(self, i, self.view.banner_filters)
 
@@ -26,13 +27,13 @@ class SelectRarity(Select):
         self.add_option(label="3 ✦", value="3")
         self.select_banner = select_banner
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: WishPaginatorView
         await filter_callback(self, i, self.view.rarity_filters)
 
 
 async def filter_callback(
-    self_var: SelectBanner | SelectRarity, i: Interaction, filter_list: List
+    self_var: SelectBanner | SelectRarity, i: CustomInteraction, filter_list: List
 ):
     user_locale = await get_user_locale(i.user.id, i.client.pool)
     if self_var.values[0] not in filter_list:
@@ -47,17 +48,17 @@ async def filter_callback(
             option.description = None
 
     query = ""
-    for index, filter in enumerate(self_var.view.banner_filters):
+    for index, filter_ in enumerate(self_var.view.banner_filters):
         if index == 0:
             query += "("
-        query += f"wish_banner_type = {filter} OR "
+        query += f"wish_banner_type = {filter_} OR "
         if index == len(self_var.view.banner_filters) - 1:
             query = query[:-4] + ") AND "
 
-    for index, filter in enumerate(self_var.view.rarity_filters):
+    for index, filter_ in enumerate(self_var.view.rarity_filters):
         if index == 0:
             query += "("
-        query += f"wish_rarity = {filter} OR "
+        query += f"wish_rarity = {filter_} OR "
         if index == len(self_var.view.rarity_filters) - 1:
             query = query[:-4] + ") AND "
 
