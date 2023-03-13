@@ -92,17 +92,17 @@ class ShenheCommandTree(app_commands.CommandTree):
             return False
 
         if i.client.maintenance:
-            embed = ErrorEmbed(
-                "申鶴正在維護中\nShenhe is under maintenance",
-                f"""
-                預計將在 {i.client.maintenance_time} 恢復服務
-                Estimated to be back online {i.client.maintenance_time}
-                """,
-            )
-            await i.response.send_message(
-                embed=embed,
-                ephemeral=True,
-            )
+            if i.type is discord.InteractionType.application_command:
+                await i.response.send_message(
+                    embed=ErrorEmbed(
+                        "申鶴正在維護中\nShenhe is under maintenance",
+                        f"""
+                        預計將在 {i.client.maintenance_time} 恢復服務
+                        Estimated to be back online {i.client.maintenance_time}
+                        """,
+                    ),
+                    ephemeral=True,
+                )
             return False
         return True
 
