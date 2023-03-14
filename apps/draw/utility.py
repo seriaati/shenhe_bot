@@ -120,11 +120,14 @@ def circular_crop(
     return image
 
 
-def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont) -> str:
-    """Shorten text to a maximum length."""
+def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont):
     if font.getlength(text) <= max_length:
         return text
-    return text[: int(max_length // font.getlength("..."))] + "..."
+    else:
+        shortened = text[: max_length - 3] + "..."
+        while font.getlength(shortened) > max_length and len(shortened) > 3:
+            shortened = shortened[:-4] + "..."
+        return shortened
 
 
 def get_font_name(
@@ -252,3 +255,30 @@ def global_write(
 
 def has_glyph(font: TTFont, glyph: str):
     return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)
+
+
+def crop_custom_character_image(
+    image_url: str, version: int = 1
+) -> Optional[Image.Image]:
+    try:
+        im = get_cache(image_url)
+    except FileNotFoundError:
+        return None
+
+    # resize the image
+    target_width = 1663 if version == 1 else 472
+    ratio = target_width / im.width
+    im = im.resize((target_width, int(im.height * ratio)))
+
+    # crop the image
+    target_height = 629 if version == 1 else 839
+    im = im.crop((0, 0, target_width, target_height))
+
+    # make rounded corners
+    radius = 20 if version == 1 else 25
+    mask = Image.new("L", im.size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.rounded_rectangle((0, 0, im.width, im.height), radius=radius, fill=255)
+    im.putalpha(mask)
+
+    return im

@@ -8,6 +8,7 @@ from PIL import Image, ImageChops, ImageDraw
 import asset
 from apps.draw.utility import (
     circular_crop,
+    crop_custom_character_image,
     draw_dynamic_background,
     dynamic_font_size,
     get_cache,
@@ -224,30 +225,6 @@ def character_card(
     fp = io.BytesIO()
     card.save(fp, "JPEG", optimize=True)
     return fp
-
-
-def crop_custom_character_image(image_url: str) -> Optional[Image.Image]:
-    try:
-        im = get_cache(image_url)
-    except FileNotFoundError:
-        return None
-
-    # resize the image
-    target_width = 1663
-    ratio = target_width / im.width
-    im = im.resize((target_width, int(im.height * ratio)))
-
-    # crop the image
-    target_height = 629
-    im = im.crop((0, 0, target_width, target_height))
-
-    # make rounded corners
-    mask = Image.new("L", im.size, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle((0, 0, target_width, target_height), radius=20, fill=255)
-    im.putalpha(mask)
-
-    return im
 
 
 def overview_and_characters(
