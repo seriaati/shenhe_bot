@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Optional
 
 import aiohttp
@@ -7,7 +8,7 @@ import discord
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import UserCustomImage
+from apps.genshin.custom_model import CustomInteraction, UserCustomImage
 from apps.genshin.utils import get_character_emoji
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
@@ -32,7 +33,7 @@ class ElementButton(discord.ui.Button):
         super().__init__(emoji=emoji, row=row)
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await element_button_callback(i, self.view, self.element)
 
@@ -41,7 +42,7 @@ class GoBack(discord.ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.clear_items()
         elements = get_element_list()
@@ -57,12 +58,12 @@ class GoBackCharacter(discord.ui.Button):
         super().__init__(emoji=asset.back_emoji)
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await element_button_callback(i, self.view, self.element)
 
 
-async def element_button_callback(i: discord.Interaction, view: View, element: str):
+async def element_button_callback(i: CustomInteraction, view: View, element: str):
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))
     characters = await ambr.get_character()
     if not isinstance(characters, List):
@@ -110,7 +111,7 @@ class AddImage(discord.ui.Button):
         self.character_id = character_id
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await i.response.send_modal(
             AddImageModal(self.view.locale, self.character_id, self.view, self.element)
@@ -138,7 +139,7 @@ class AddImageModal(BaseModal):
         self.view = view
         self.element = element
 
-    async def on_submit(self, i: discord.Interaction) -> None:
+    async def on_submit(self, i: CustomInteraction) -> None:
         check = await validate_image_url(self.url.value, i.client.session)
         if not check:
             return await i.response.send_message(
@@ -176,7 +177,7 @@ class RemoveImage(discord.ui.Button):
         self.character_id = character_id
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         self.view.clear_items()
         options = await get_user_custom_image_options(
@@ -211,7 +212,7 @@ class ImageSelect(discord.ui.Select):
         self.character_id = character_id
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
@@ -247,7 +248,7 @@ class CharacterSelect(discord.ui.Select):
         super().__init__(placeholder=text_map.get(157, locale), options=options)
         self.element = element
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await return_custom_image_interaction(
             self.view, i, int(self.values[0].split("-")[0]), self.element
@@ -255,7 +256,7 @@ class CharacterSelect(discord.ui.Select):
 
 
 async def return_custom_image_interaction(
-    view: View, i: discord.Interaction, character_id: int, element: str
+    view: View, i: CustomInteraction, character_id: int, element: str
 ):
     try:
         await i.response.defer()
@@ -314,7 +315,7 @@ async def get_user_custom_image_options(
 
 
 async def get_user_custom_image_embed(
-    i: discord.Interaction,
+    i: CustomInteraction,
     locale: discord.Locale | str,
     character_id: str,
     custom_image: Optional[UserCustomImage] = None,
@@ -350,6 +351,8 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
         async with session.get(url) as response:
             return response.status == 200
     except aiohttp.InvalidURL:
+        return False
+    except asyncio.TimeoutError:
         return False
 
 
