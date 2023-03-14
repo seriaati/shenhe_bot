@@ -95,7 +95,7 @@ class WishCog(commands.GroupCog, name="wish"):
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
-        except UnicodeEncodeError:
+        except (UnicodeEncodeError, UnicodeDecodeError):
             await i.response.send_message(
                 embed=ErrorEmbed(description=text_map.get(567, locale)).set_author(
                     name=text_map.get(195, locale), icon_url=i.user.display_avatar.url
