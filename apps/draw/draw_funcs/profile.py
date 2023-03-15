@@ -271,8 +271,8 @@ def overview_and_characters(
     offset = (46, 48)
     for index, character in enumerate(data.characters):
         index += 1
-        character_card = user_character_card(dark_mode, character, locale)
-        character_bg.paste(character_card, offset, character_card)
+        u_c_card = user_character_card(dark_mode, character, locale)
+        character_bg.paste(u_c_card, offset, u_c_card)
         if index % 2 == 0:
             offset = (offset[0] + 378, 48)
         else:
@@ -289,7 +289,7 @@ def overview_and_characters(
 def user_profile_card(
     player: enkanetwork.model.PlayerInfo,
     dark_mode: bool,
-):
+) -> Image.Image:
     im = Image.open(
         f"yelan/templates/profile/[{'dark' if dark_mode else 'light'}] Profile Card.png"
     )
@@ -364,7 +364,7 @@ def user_character_card(
     dark_mode: bool,
     character: enkanetwork.model.CharacterInfo,
     locale: discord.Locale | str,
-):
+) -> Image.Image:
     im = Image.open(
         f"yelan/templates/profile/[{'dark' if dark_mode else 'light'}] Character Card.png"
     )
