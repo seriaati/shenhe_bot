@@ -407,3 +407,29 @@ async def draw_banner_card(draw_input: DrawInput, banner_urls: List[str]) -> io.
     await download_images(banner_urls, draw_input.session)
     func = functools.partial(banners.card, banner_urls, draw_input.locale)
     return await draw_input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_profile_card_v2(
+    draw_input: DrawInput, character: enkanetwork.model.CharacterInfo, image_url: str
+) -> io.BytesIO:
+    weapon = character.equipments[-1]
+    artifacts = [
+        c for c in character.equipments if c.type is enkanetwork.EquipmentsType.ARTIFACT
+    ]
+    talents = character.skills
+    consts = character.constellations
+
+    # download images
+    urls: List[str] = []
+    urls.append(weapon.detail.icon.url)
+    urls.extend([a.detail.icon.url for a in artifacts])
+    urls.extend([t.icon.url for t in talents])
+    urls.extend([c.icon.url for c in consts])
+    urls.append(image_url)
+    await download_images(urls, draw_input.session)
+
+    func = functools.partial(
+        profile.card_v2, draw_input.locale, draw_input.dark_mode, character, image_url
+    )
+    return await draw_input.loop.run_in_executor(None, func)
