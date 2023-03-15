@@ -260,12 +260,17 @@ def has_glyph(font: TTFont, glyph: str):
 
 
 def crop_custom_character_image(
-    image_url: str, version: int = 1
+    image_url: str, version: int = 1, dark_mode: bool = False
 ) -> typing.Optional[Image.Image]:
     try:
         im = get_cache(image_url)
     except FileNotFoundError:
         return None
+
+    if dark_mode:
+        # add transparency to the image
+        im = im.convert("RGBA")
+        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
 
     # resize the image
     target_width = 1663 if version == 1 else 472
