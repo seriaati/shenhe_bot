@@ -209,9 +209,6 @@ class Schedule(commands.Cog):
         now = utility_utils.get_dt_now()
         sent_num = 0
         for n_user in n_users:
-            if n_user.last_notif and now - n_user.last_notif < timedelta(hours=2):
-                continue
-
             try:
                 s_user = await genshin_utils.get_shenhe_account(
                     n_user.user_id, self.bot
@@ -234,25 +231,28 @@ class Schedule(commands.Cog):
                 await self.disable_notification(
                     n_user.user_id, n_user.uid, notification_type
                 )
-            except (genshin.errors.InternalDatabaseError, OSError):
+            except (
+                genshin.errors.InternalDatabaseError,
+                OSError,
+                genshin.errors.AccountNotFound,
+            ):
                 pass
             except genshin.errors.GenshinException as e:
-                if e.retcode != 1009:
-                    error = True
-                    error_message = f"```{e}```"
-                    if e.msg:
-                        error_message += f"\n```{e.msg}```"
-                    log.warning(
-                        f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
-                    )
-                    await self.disable_notification(
-                        n_user.user_id, n_user.uid, notification_type
-                    )
+                error = True
+                error_message = f"```{type(e)}: {e}```"
+                if e.msg:
+                    error_message += f"\n```{e.msg}```"
+                log.warning(
+                    f"[Schedule][{notification_type}][{n_user.user_id}] Error: {type(e)}:{e}"
+                )
+                await self.disable_notification(
+                    n_user.user_id, n_user.uid, notification_type
+                )
             except Exception as e:
                 error = True
-                error_message = f"```{e}```"
+                error_message = f"```{type(e)}: {e}```"
                 log.warning(
-                    f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
+                    f"[Schedule][{notification_type}][{n_user.user_id}] Error: {type(e)}:{e}"
                 )
                 await self.disable_notification(
                     n_user.user_id, n_user.uid, notification_type
@@ -267,6 +267,10 @@ class Schedule(commands.Cog):
                     )
                 else:
                     if n_user.current >= n_user.max:
+                        continue
+                    if n_user.last_notif and now - n_user.last_notif < timedelta(
+                        hours=2
+                    ):
                         continue
 
                     # send notification
@@ -325,6 +329,12 @@ class Schedule(commands.Cog):
             and notes.current_realm_currency < n_user.threshold
         ):
             await self.reset_current(n_user.user_id, n_user.uid, "pot_notification")
+        elif (
+            notification_type == "pt_notification"
+            and notes.remaining_transformer_recovery_time is not None
+            and notes.remaining_transformer_recovery_time.total_seconds() != 0
+        ):
+            await self.reset_current(n_user.user_id, n_user.uid, "pt_notification")
 
     async def update_current(
         self,
@@ -381,7 +391,7 @@ class Schedule(commands.Cog):
         )
         embed = utility_utils.DefaultEmbed(
             description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, 'R')}\n"
+            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, style='R')}\n"
             f"UID: {user.uid}\n",
         )
         embed.set_author(
@@ -612,26 +622,24 @@ class Schedule(commands.Cog):
         users = await self.get_schedule_users()
 
         success_count = 0
-        user_count = 0
-
-        for user in users:
-            if not user.daily_checkin:
+        index = 0
+        for index, user in enumerate(users):
+            if not user.daily_checkin or user.china:
                 continue
 
-            user_count += 1
-            success_count, error, error_message = await self.claim_daily_reward(
-                success_count, user, user.client
-            )
+            error, error_message = await self.claim_daily_reward(user)
 
             if error:
                 await self.handle_daily_reward_error(user, error_message)
+            else:
+                success_count += 1
 
-            if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
-                await asyncio.sleep(40)
+            if index % 100 == 0 and index != 0:
+                await asyncio.sleep(60)
 
-            await asyncio.sleep(3.5)
+            await asyncio.sleep(4.0)
 
-        log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
+        log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{index} users)")
 
         # send a notification to Seria
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
@@ -640,27 +648,25 @@ class Schedule(commands.Cog):
         await seria.send(
             embed=utility_utils.DefaultEmbed(
                 "Automatic daily check-in report",
-                f"Claimed {success_count}/{user_count}",
+                f"Claimed {success_count}/{index}",
             )
         )
 
     async def claim_daily_reward(
         self,
-        success_count: int,
         user: custom_model.ShenheAccount,
-        client: genshin.Client,
     ):
         error = False
         error_message = ""
+        client = user.client
         try:
             reward = await client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
-            success_count += 1
+            pass
         except genshin.errors.InvalidCookies:
             error = True
             error_message = text_map.get(36, "en-US", user.user_locale)
             log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-            success_count += 1
         except genshin.errors.GenshinException as e:
             error = True
             error_message = f"```{type(e)}: {e.msg}```"
@@ -670,17 +676,17 @@ class Schedule(commands.Cog):
             error_message = f"```{type(e)} {e}```"
             capture_exception(e)
         else:
-            success_count = await self.daily_reward_success(success_count, user, reward)
+            await self.daily_reward_success(user, reward)
 
-        return success_count, error, error_message
+        return error, error_message
 
     async def daily_reward_success(
         self,
-        success_count: int,
         user: custom_model.ShenheAccount,
         reward: genshin.models.DailyReward,
-    ) -> int:
+    ) -> None:
         log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
+
         if await utility_utils.get_user_notification(
             user.discord_user.id, self.bot.pool
         ):
@@ -691,10 +697,7 @@ class Schedule(commands.Cog):
             embed.set_thumbnail(url=reward.icon)
             embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
 
-            await self.send_embed(user.discord_user, embed)  # type: ignore
-
-        success_count += 1
-        return success_count
+            await self.send_embed(user.discord_user, embed)
 
     async def handle_daily_reward_error(
         self, user: custom_model.ShenheAccount, error_message: str
