@@ -123,11 +123,10 @@ def circular_crop(
 def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont):
     if font.getlength(text) <= max_length:
         return text
-    else:
-        shortened = text[: max_length - 3] + "..."
-        while font.getlength(shortened) > max_length and len(shortened) > 3:
-            shortened = shortened[:-4] + "..."
-        return shortened
+    shortened = text[: max_length - 3] + "..."
+    while font.getlength(shortened) > max_length and len(shortened) > 3:
+        shortened = shortened[:-4] + "..."
+    return shortened
 
 
 def get_font_name(
