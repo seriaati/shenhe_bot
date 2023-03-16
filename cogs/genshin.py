@@ -663,7 +663,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
-        in_x_seconds = format_dt(utils.get_dt_now()+timedelta(seconds=data.ttl), "R")
+        in_x_seconds = format_dt(utils.get_dt_now() + timedelta(seconds=data.ttl), "R")
         embed = utils.DefaultEmbed(
             text_map.get(144, locale),
             f"""
