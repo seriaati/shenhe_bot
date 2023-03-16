@@ -33,8 +33,8 @@
 '32': Оберіть мову
 '33': Зброя
 '34': Поточна мова
-'35': /register для отримання додаткової інформації
-'36': Ваш Cookie недійсний. Будь ласка, зареєструйтесь знову за допомогою /register
+'35': Use </register:1044926380242120744> for more information
+'36': Invalid Cookie
 '37': Набір артефакту
 '38': Пошук версій Genshin за допомогою симулятора Hoyolab's
 '39': Обліковий запис додано
@@ -180,9 +180,7 @@
 '162': Збірка
 '163': Обрати збірку
 '164': збірки
-'165': |-
-  Користувач ще не зареєстрував свій обліковий запис в Shenhe використайте:
-  /register для реєстрації
+'165': This user hasn't registered their account yet
 '166': Користувача не знайдено в базі
 '167': "{name} UID"
 '168': поточний рівень
@@ -771,7 +769,7 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
-'672': UID not found (link it with /register !)
+'672': UID not found
 '673': You currently have **{a}** wishes stored in Shenhe's database
 '674': Please link a UID before importing new wishes
 '675': Newest wish
