@@ -64,6 +64,7 @@ def get_error_handle_embed(
         embed.description = text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
     elif isinstance(e, exceptions.UIDNotFound):
+        embed.description = text_map.get(35, locale)
         embed.set_author(name=text_map.get(672, locale))
     elif isinstance(e, exceptions.ShenheAccountNotFound):
         embed.description = text_map.get(35, locale)
@@ -73,7 +74,7 @@ def get_error_handle_embed(
     elif isinstance(e, enkanetwork.EnkaServerMaintanance):
         embed.description = text_map.get(519, locale)
         embed.set_author(name=text_map.get(523, locale))
-    elif isinstance(e, enkanetwork.VaildateUIDError):
+    elif isinstance(e, (enkanetwork.VaildateUIDError, enkanetwork.EnkaPlayerNotFound)):
         embed.description = text_map.get(286, locale)
         embed.set_author(name=text_map.get(523, locale))
     elif isinstance(e, (enkanetwork.EnkaServerError, enkanetwork.HTTPException)):
@@ -89,7 +90,8 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(571 if e.current_user else 579, locale))
     elif isinstance(e, exceptions.NoCookie):
         if e.current_account:
-            embed.description = text_map.get(572, locale)
+            embed.description = f"{text_map.get(572, locale)}\n"
+            embed.description += text_map.get(563, locale)
             embed.set_author(name=text_map.get(573 if e.current_user else 580, locale))
         else:
             embed.description = text_map.get(575, locale)
