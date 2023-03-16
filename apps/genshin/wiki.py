@@ -22,7 +22,7 @@ async def parse_character_wiki(
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
-):
+) -> None:
     embeds: List[discord.Embed] = []
 
     # basic info
@@ -106,18 +106,13 @@ async def parse_character_wiki(
     # select options
     options = []
     for index, embed in enumerate(embeds):
-        if index == 0:
-            options.append(
-                discord.SelectOption(label=text_map.get(315, locale), value="0")
+        suffix = f" | {embed.title}" if embed.title else ""
+        options.append(
+            discord.SelectOption(
+                label=f"{embed.author.name}{suffix}",
+                value=str(index),
             )
-        else:
-            suffix = f" | {embed.title}" if embed.title != "" else ""
-            options.append(
-                discord.SelectOption(
-                    label=f"{embed.author.name}{suffix}",
-                    value=str(index),
-                )
-            )
+        )
     view = Search.View(
         embeds,
         options,
