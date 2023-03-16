@@ -50,7 +50,7 @@ from UI_elements.genshin.DailyReward import return_claim_reward
 from UI_elements.genshin.ReminderMenu import return_notification_menu
 from UI_elements.others import ManageAccounts
 from utility.paginator import GeneralPaginator
-from utility.utils import log
+from utility.utils import disable_view_items, log
 
 load_dotenv()
 
@@ -608,10 +608,11 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+
         uid = custom_uid or await genshin_utils.get_uid(member.id, self.bot.pool)
         if uid is None:
             raise UIDNotFound
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
 
         data, en_data, card_data = await enka.get_enka_data(
             uid, convert_locale.to_enka(locale), self.bot.pool
@@ -634,31 +635,27 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         options: List[discord.SelectOption] = []
         if card_data and card_data.characters:
-            non_cache_ids = [str(c.id) for c in card_data.characters]
+            non_cache_ids = [c.id for c in card_data.characters]
         else:
             non_cache_ids = []
 
-        if data.characters is not None:
-            for character in data.characters:
-                description = (
-                    text_map.get(543, locale)
-                    if str(character.id) not in non_cache_ids
-                    else ""
+        for c in data.characters:
+            if c.id not in non_cache_ids:
+                description = text_map.get(543, locale)
+            else:
+                description = None
+            label = f"{c.name} | Lv.{c.level} | C{c.constellations_unlocked}R{c.equipments[-1].refinement}"
+            options.append(
+                discord.SelectOption(
+                    label=label,
+                    description=description,
+                    value=str(c.id),
+                    emoji=genshin_utils.get_character_emoji(str(c.id)),
                 )
-                options.append(
-                    discord.SelectOption(
-                        label=f"{character.name} | Lv. {character.level} | C{character.constellations_unlocked}R{character.equipments[-1].refinement}",
-                        description=description,
-                        value=str(character.id),
-                        emoji=genshin_utils.get_character_emoji(str(character.id)),
-                    )
-                )
+            )
 
         view = EnkaProfile.View([], [], options, data, en_data, member, locale)
-        for child in view.children:
-            if not isinstance(child, (discord.ui.Select, discord.ui.Button)):
-                raise AssertionError
-            child.disabled = True
+        disable_view_items(view)
 
         await i.edit_original_response(
             embeds=embeds,
@@ -666,11 +663,12 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
+        in_x_seconds = format_dt(utils.get_dt_now()+timedelta(seconds=data.ttl), "R")
         embed = utils.DefaultEmbed(
             text_map.get(144, locale),
             f"""
-            {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.network/u/{uid})
-            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=format_dt(utils.get_dt_now()+timedelta(seconds=data.ttl), "R"))}
+            {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.cc/u/{uid})
+            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=in_x_seconds)}
             """,
         )
         embed.set_image(url="attachment://profile.jpeg")

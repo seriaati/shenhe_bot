@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import aiohttp
 import PIL
-from discord import ButtonStyle, File, Interaction, Locale, SelectOption, utils
+from discord import ButtonStyle, File, Locale, SelectOption, utils
 from discord.ui import Button, Select
 from pyppeteer import browser
 
@@ -10,15 +10,15 @@ import asset
 import config
 from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
-from apps.genshin.custom_model import DrawInput, EnkaView
+from apps.genshin.custom_model import CustomInteraction, DrawInput, EnkaView
 from apps.text_map.text_map_app import text_map
 from exceptions import NoCharacterFound
 from UI_base_models import BaseView
 from UI_elements.others.settings.CustomImage import get_user_custom_image
 from utility.utils import (
     DefaultEmbed,
-    divide_chunks,
     ErrorEmbed,
+    divide_chunks,
     get_user_appearance_mode,
 )
 from yelan.damage_calculator import (
@@ -59,12 +59,12 @@ class View(BaseView):
         )
 
         # producing select options
-        reactionMode_options = [
+        reaction_mode_options = [
             SelectOption(label=text_map.get(331, locale), value="none")
         ]
         element = str(self.calculator.current_character.element.name)
         if element == "Cryo" or self.calculator.infusion_aura == "cryo":
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(332, locale), value="melt")
             )
         elif (
@@ -72,22 +72,22 @@ class View(BaseView):
             or self.calculator.infusion_aura == "pyro"
             or element == "Anemo"
         ):
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(333, locale), value="vaporize")
             )
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(332, locale), value="melt")
             )
         elif element == "Hydro":
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(333, locale), value="vaporize")
             )
         elif element == "Dendro":
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(525, locale), value="spread")
             )
         elif element in ("Electro", "Anemo"):
-            reactionMode_options.append(
+            reaction_mode_options.append(
                 SelectOption(label=text_map.get(526, locale), value="aggravate")
             )
 
@@ -103,7 +103,7 @@ class View(BaseView):
         for hit_mode, text_hash in hit_mode_texts.items():
             self.add_item(HitModeButton(hit_mode, text_map.get(text_hash, locale)))
         self.add_item(
-            ReactionModeSelect(reactionMode_options, text_map.get(337, locale))
+            ReactionModeSelect(reaction_mode_options, text_map.get(337, locale))
         )
         options = [
             SelectOption(label=text_map.get(338, locale), value="none"),
@@ -134,12 +134,12 @@ class GoBack(Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await go_back_callback(i, self.view.enka_view)
 
 
-async def go_back_callback(i: Interaction, enka_view: EnkaView):
+async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
     enka_view.clear_items()
     for child in enka_view.original_children:
         enka_view.add_item(child)
@@ -205,8 +205,8 @@ async def go_back_callback(i: Interaction, enka_view: EnkaView):
         )
 
     card.seek(0)
-    file = File(card, "card.jpeg")
-    await i.edit_original_response(embed=None, attachments=[file], view=enka_view)
+    file_ = File(card, "card.jpeg")
+    await i.edit_original_response(embed=None, attachments=[file_], view=enka_view)
 
 
 class HitModeButton(Button):
@@ -214,7 +214,7 @@ class HitModeButton(Button):
         super().__init__(style=ButtonStyle.blurple, label=label)
         self.hit_mode = hit_mode
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
         self.view.calculator.hit_mode = self.hit_mode
         await return_current_status(i, self.view)
@@ -226,7 +226,7 @@ class ReactionModeSelect(Select):
             placeholder=placeholder, options=options, custom_id="reaction_mode"
         )
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
         self.view.calculator.reaction_mode = (
             "" if self.values[0] == "none" else self.values[0]
@@ -240,7 +240,7 @@ class InfusionAuraSelect(Select):
             placeholder=placeholder, options=options, custom_id="infusion_aura"
         )
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
         self.view.calculator.infusion_aura = (
             "" if self.values[0] == "none" else self.values[0]
@@ -258,7 +258,7 @@ class GoBackToCalc(Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: TeamSelectView
         view = self.view.prev_view
         view.author = i.user
@@ -278,12 +278,11 @@ class TeamSelectButton(Button):
         self.options = options
         self.placeholder = placeholder
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         view = TeamSelectView(self.view)
         view.add_item(GoBackToCalc())
-        divided = list(divide_chunks(self.options, 25))
-        divided: List[List[SelectOption]]
+        divided: List[List[SelectOption]] = list(divide_chunks(self.options, 25))
         count = 1
         for chunk in divided:
             view.add_item(
@@ -306,7 +305,7 @@ class TeamSelect(Select):
             max_values=3 if len(options) >= 3 else len(options),
         )
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: TeamSelectView
         self.view.prev_view.calculator.team = self.values
         await return_current_status(i, self.view.prev_view)
@@ -322,6 +321,6 @@ class RunCalc(Button):
             emoji=asset.play_emoji,
         )
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
         await return_damage(i, self.view)

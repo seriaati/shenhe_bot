@@ -277,9 +277,9 @@ def crop_custom_character_image(
     ratio = target_width / im.width
     im = im.resize((target_width, int(im.height * ratio)))
 
-    # crop the image
+    # crop the image from middle
     target_height = 629 if version == 1 else 839
-    im = im.crop((0, 0, target_width, target_height))
+    im = im.crop((0, (im.height - target_height) // 2, target_width, target_height))
 
     # make rounded corners
     radius = 20 if version == 1 else 25
