@@ -33,8 +33,8 @@
 '32': Pilih Bahasa
 '33': Senjata
 '34': Bahasa saat ini
-'35': Use </register:1044926380242120744> for more information
-'36': Invalid Cookie
+'35': Gunakan </register:1044926380242120744> untuk informasi lebih lanjut
+'36': Cookie Tidak Valid
 '37': Set Artefak
 '38': Cari lineup Genshin dengan simulator lineup Hoyolab
 '39': Akun Ditambahkan
@@ -179,7 +179,7 @@
 '162': Build
 '163': Pilih Build
 '164': Build
-'165': This user hasn't registered their account yet
+'165': Pengguna ini belum mendaftarkan akunnya
 '166': Pengguna tidak ditemukan
 '167': "{name} UID"
 '168': Level Saat Ini
@@ -767,7 +767,7 @@
 '669': Mora
 '670': Pergi ke halaman login
 '671': Riwayat Wish
-'672': UID not found
+'672': UID tidak ditemukan
 '673': Saat ini kamu memiliki **{a}** wish yang disimpan di database Shenhe
 '674': Harap tautkan UID sebelum mengimpor wish baru
 '675': Wish terbaru
