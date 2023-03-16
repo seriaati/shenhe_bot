@@ -127,6 +127,13 @@ async def parse_character_wiki(
     view.message = await i.original_response()
 
 
+def format_stat(curve: float, initial_value: float, percentage: bool = False) -> str:
+    multiplier = 100 if percentage else 1
+    rounded_value = round(curve * initial_value * multiplier, 1 if percentage else None)
+    percent_symbol = "%" if percentage else ""
+    return f"{rounded_value}{percent_symbol}"
+
+
 async def parse_weapon_wiki(
     weapon: ambr_models.WeaponDetail,
     i: CustomInteraction,
@@ -165,13 +172,12 @@ async def parse_weapon_wiki(
         level_one_curve = await client.get_weapon_curve(stat.grow_type, 1)
         level_max_curve = await client.get_weapon_curve(stat.grow_type, max_level)
         percentage = stat.prop_id in percentage_fight_props
-        multiplier = 100 if percentage else 1
 
         embed.add_field(
             name=text_map.get(get_fight_prop(id=stat.prop_id).text_map_hash, locale),
             value=f"""
-            Lv.1: {round(level_one_curve*stat.initial_value*multiplier, 1 if percentage else None)}{"%" if percentage else ""}
-            Lv.{max_level}: {round(level_max_curve*stat.initial_value*multiplier, 1 if percentage else None)}{"%" if percentage else ""}
+            Lv.1: {format_stat(level_one_curve, stat.initial_value, percentage)}
+            Lv.{max_level}: {format_stat(level_max_curve, stat.initial_value, percentage)}
             """,
             inline=False,
         )
