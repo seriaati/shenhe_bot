@@ -415,8 +415,8 @@ def card_v2(
     )
 
     # character image
-    c_image = draw_utility.crop_custom_character_image(
-        image_url, version=2, dark_mode=dark_mode
+    c_image = draw_utility.resize_and_crop_image(
+        draw_utility.get_cache(image_url), version=2, dark_mode=dark_mode
     )
     if not c_image:
         raise AssertionError("Character image not found")
@@ -621,7 +621,7 @@ def card_v2(
             sub_stat_icon = Image.open(
                 f"yelan/templates/profile_v2/{mode}_{sub_stat.prop_id}.png"
             )
-            icon_color = (255, 255, 255, 200) if dark_mode else (67, 67, 67, 100)
+            icon_color = (255, 255, 255, 200) if dark_mode else (67, 67, 67, 150)
             sub_stat_icon = sub_stat_icon.resize((27, 27))
             sub_stat_icon = sub_stat_icon.convert("RGBA")
             sub_stat_icon = draw_utility.mask_image_with_color(
@@ -635,6 +635,7 @@ def card_v2(
                 font=font,
             )
 
+    im = im.convert("RGB")
     fp = io.BytesIO()
     im.save(fp, format="JPEG", quality=95, optimize=True)
     return fp

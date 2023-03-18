@@ -259,6 +259,51 @@ def has_glyph(font: TTFont, glyph: str):
     return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)
 
 
+def resize_and_crop_image(
+    im: Image.Image, version: int = 1, dark_mode: bool = False
+) -> Image.Image:
+    """Resize and crop an image to fit the card template"""
+    im = im.convert("RGBA")
+
+    # Define the target width and height
+    target_width = 1663 if version == 1 else 472
+    target_height = 629 if version == 1 else 839
+
+    # Get the original width and height
+    width, height = im.size
+
+    # Calculate the ratio of the original image
+    ratio = min(width / target_width, height / target_height)
+
+    # Calculate the new size and left/top coordinates for cropping
+    new_width = int(width / ratio)
+    new_height = int(height / ratio)
+    left = (new_width - target_width) / 2
+    top = (new_height - target_height) / 2
+    right = left + target_width
+    bottom = top + target_height
+
+    # Resize the image
+    im = im.resize((new_width, new_height), resample=Image.LANCZOS)
+
+    # Crop the image
+    im = im.crop((left, top, right, bottom))
+
+    if dark_mode:
+        # add dark transparency to the image
+        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
+
+    # make rounded corners
+    radius = 20 if version == 1 else 25
+    mask = Image.new("L", im.size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.rounded_rectangle((0, 0, im.width, im.height), radius=radius, fill=255)
+    im.putalpha(mask)
+
+    # Return the resized and cropped image
+    return im
+
+
 def crop_custom_character_image(
     image_url: str, version: int = 1, dark_mode: bool = False
 ) -> typing.Optional[Image.Image]:
@@ -267,19 +312,16 @@ def crop_custom_character_image(
     except FileNotFoundError:
         return None
 
+    target_width = 1663 if version == 1 else 472
+    target_height = 629 if version == 1 else 839
+
+    # resize and crop the image to fit the target width and height while keeping the ratio of the image
+    im = im.resize((target_width, target_height), Image.ANTIALIAS)
+
     if dark_mode:
-        # add transparency to the image
+        # add dark transparency to the image
         im = im.convert("RGBA")
         im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
-
-    # resize the image
-    target_width = 1663 if version == 1 else 472
-    ratio = target_width / im.width
-    im = im.resize((target_width, int(im.height * ratio)))
-
-    # crop the image from middle
-    target_height = 629 if version == 1 else 839
-    im = im.crop((0, (im.height - target_height) // 2, target_width, target_height))
 
     # make rounded corners
     radius = 20 if version == 1 else 25
