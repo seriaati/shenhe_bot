@@ -304,35 +304,6 @@ def resize_and_crop_image(
     return im
 
 
-def crop_custom_character_image(
-    image_url: str, version: int = 1, dark_mode: bool = False
-) -> typing.Optional[Image.Image]:
-    try:
-        im = get_cache(image_url)
-    except FileNotFoundError:
-        return None
-
-    target_width = 1663 if version == 1 else 472
-    target_height = 629 if version == 1 else 839
-
-    # resize and crop the image to fit the target width and height while keeping the ratio of the image
-    im = im.resize((target_width, target_height), Image.ANTIALIAS)
-
-    if dark_mode:
-        # add dark transparency to the image
-        im = im.convert("RGBA")
-        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
-
-    # make rounded corners
-    radius = 20 if version == 1 else 25
-    mask = Image.new("L", im.size, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle((0, 0, im.width, im.height), radius=radius, fill=255)
-    im.putalpha(mask)
-
-    return im
-
-
 def format_stat(stat: enka.EquipmentsStats) -> str:
     value = str(round(stat.value, 1))
     if stat.type is enka.DigitType.PERCENT:
