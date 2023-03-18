@@ -157,7 +157,7 @@ class EnkaView(discord.ui.View):
 class UserCustomImage(BaseModel):
     url: str
     nickname: str
-    character_id: str
+    character_id: int
     user_id: int
 
 
