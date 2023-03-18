@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import aiohttp
 import asyncpg
@@ -74,7 +74,7 @@ async def element_button_callback(i: CustomInteraction, view: View, element: str
         if character.element == element:
             character_id = character.id.split("-")[0]
             image_options = await get_user_custom_image_options(
-                int(character_id), i.client.pool, i.user.id
+                int(character_id), i.client.pool, i.user.id, view.locale
             )
             options.append(
                 discord.SelectOption(
@@ -256,7 +256,7 @@ async def return_custom_image_interaction(
     view.add_item(GoBackCharacter(element))
 
     options = await get_user_custom_image_options(
-        character_id, i.client.pool, i.user.id
+        character_id, i.client.pool, i.user.id, view.locale
     )
     disabled = len(options) == 25
     view.add_item(AddImage(view.locale, character_id, element, disabled))
@@ -277,8 +277,11 @@ async def get_user_custom_image_options(
     character_id: int,
     pool: asyncpg.Pool,
     user_id: int,
+    locale: Union[discord.Locale, str],
 ) -> List[discord.SelectOption]:
-    options: List[discord.SelectOption] = []
+    options: List[discord.SelectOption] = [
+        discord.SelectOption(label=text_map.get(124, locale), value="default")
+    ]
     rows = await pool.fetch(
         """
         SELECT

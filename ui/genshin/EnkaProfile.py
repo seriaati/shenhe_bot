@@ -119,7 +119,7 @@ class SetCustomImage(ui.Button):
         self.view: custom_model.EnkaView
 
         options = await CustomImage.get_user_custom_image_options(
-            int(self.view.character_id), i.client.pool, i.user.id
+            int(self.view.character_id), i.client.pool, i.user.id, self.view.locale
         )
         custom_image = await CustomImage.get_user_custom_image(
             i.user.id, int(self.view.character_id), i.client.pool

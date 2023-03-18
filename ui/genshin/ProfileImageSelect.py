@@ -54,7 +54,7 @@ class Reload(ui.Button):
             i, self.view.locale, str(self.view.character_id), custom_image, False
         )
         options = await CustomImage.get_user_custom_image_options(
-            int(self.view.character_id), i.client.pool, i.user.id
+            int(self.view.character_id), i.client.pool, i.user.id, self.view.locale
         )
         self.view.clear_items()
         self.view.add_item(SelectImage(options, self.view.locale))
