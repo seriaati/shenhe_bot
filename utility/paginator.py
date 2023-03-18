@@ -8,7 +8,7 @@ import discord
 from discord import ui
 
 import config
-from UI_base_models import BaseView
+from base_ui import BaseView
 
 
 class GeneralPaginatorView(BaseView):

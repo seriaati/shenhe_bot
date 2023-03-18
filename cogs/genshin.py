@@ -32,7 +32,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
 from exceptions import AutocompleteError, CardNotFound, ItemNotFound, UIDNotFound
-from UI_elements.genshin import (
+from ui.genshin import (
     Abyss,
     AbyssEnemy,
     Build,
@@ -46,9 +46,9 @@ from UI_elements.genshin import (
     ShowAllCharacters,
     UIDCommand,
 )
-from UI_elements.genshin.DailyReward import return_claim_reward
-from UI_elements.genshin.ReminderMenu import return_notification_menu
-from UI_elements.others import ManageAccounts
+from ui.genshin.DailyReward import return_claim_reward
+from ui.genshin.ReminderMenu import return_notification_menu
+from ui.others import ManageAccounts
 from utility.paginator import GeneralPaginator
 from utility.utils import disable_view_items, log
 

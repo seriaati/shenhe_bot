@@ -23,8 +23,8 @@ from apps.genshin.custom_model import ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_elements.others import Feedback, ManageAccounts, SettingsMenu
-from UI_elements.others.settings import CustomImage
+from ui.others import Feedback, ManageAccounts, SettingsMenu
+from ui.others.settings import CustomImage
 from utility.utils import DefaultEmbed, ErrorEmbed
 
 load_dotenv()

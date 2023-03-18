@@ -21,7 +21,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from data.game.elements import element_emojis
 from exceptions import UIDNotFound
-from UI_base_models import get_error_handle_embed
+from base_ui import get_error_handle_embed
 from utility.utils import log
 import utility.utils as utils
 

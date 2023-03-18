@@ -1,6 +1,6 @@
 import ast
 from typing import Any, Dict, List, Optional
-from UI_base_models import capture_exception
+from base_ui import capture_exception
 
 import discord
 import GGanalysis.games.genshin_impact as GI
@@ -18,8 +18,8 @@ from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
-from UI_elements.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
-from UI_elements.wish.SetAuthKey import wish_import_command
+from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
+from ui.wish.SetAuthKey import wish_import_command
 from utility.utils import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
 from utility.wish_paginator import WishPaginator
 
