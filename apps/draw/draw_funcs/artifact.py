@@ -1,7 +1,8 @@
 import io
+from typing import List
 
+import enkanetwork as enka
 from discord import Locale
-from enkanetwork import CharacterInfo, DigitType, Equipments
 from PIL import Image, ImageDraw
 
 import asset
@@ -11,12 +12,42 @@ from data.game.artifact_slot import get_artifact_slot_name
 from data.game.calc_substat_roll import calculate_substat_roll
 
 
+def combine_artifact_images(images: List[Image.Image], dark_mode: bool) -> io.BytesIO:
+    # Get the size of each image
+    size = images[0].size
+
+    # Calculate the number of rows and columns
+    num_rows = len(images) // 3 + 1 if len(images) % 3 != 0 else len(images) // 3
+    num_cols = 3 if len(images) >= 3 else len(images)
+
+    # Create a new image with the required size
+    background_color = (
+        asset.dark_theme_background if dark_mode else asset.light_theme_background
+    )
+    im = Image.new("RGB", (num_cols * size[0], num_rows * size[1]), background_color)
+
+    # Paste each image onto the new image
+    for i in range(len(images)):
+        row = i // 3
+        col = i % 3
+        x = col * size[0]
+        y = row * size[1]
+        if row == 1:
+            x += size[0] // 2
+        im.paste(images[i], (x, y))
+
+    fp = io.BytesIO()
+    im = im.convert("RGB")
+    im.save(fp, format="JPEG", quality=100, optimize=True)
+    return fp
+
+
 def draw_artifact(
-    artifact: Equipments,
-    character: CharacterInfo,
+    artifact: enka.Equipments,
+    character: enka.CharacterInfo,
     locale: Locale | str,
     dark_mode: bool,
-) -> io.BytesIO:
+) -> Image.Image:
     im: Image.Image = Image.open(
         f"yelan/templates/artifact/[{'dark' if dark_mode else 'light'}] {artifact.detail.rarity}.png"
     )
@@ -60,7 +91,7 @@ def draw_artifact(
     color = asset.white if dark_mode else asset.primary_text
     draw.text(
         (42, 206),
-        f"{main_stat.value} {'%' if main_stat.type is DigitType.PERCENT else ''}",
+        f"{main_stat.value} {'%' if main_stat.type is enka.DigitType.PERCENT else ''}",
         font=font,
         fill=color,
     )
@@ -72,12 +103,14 @@ def draw_artifact(
         color = asset.white if dark_mode else asset.primary_text
         draw.text(
             (42, 341 + index * 29),
-            f"{substat.name} +{substat.value}{'%' if substat.type is DigitType.PERCENT else ''}",
+            f"{substat.name} +{substat.value}{'%' if substat.type is enka.DigitType.PERCENT else ''}",
             font=font,
             fill=color,
         )
 
-        roll = calculate_substat_roll(substat.prop_id, substat.value)
+        roll = calculate_substat_roll(
+            substat.prop_id, substat.value, artifact.detail.rarity
+        )
         for i in range(1, roll + 1):
             roll_icon = Image.open(
                 f"yelan/templates/artifact/[{'dark' if dark_mode else 'light'}] _{i}.png"
@@ -150,7 +183,17 @@ def draw_artifact(
         fill=color,
     )
 
-    fp = io.BytesIO()
-    im = im.convert("RGB")
-    im.save(fp, format="JPEG", quality=100, optimize=True)
-    return fp
+    return im
+
+
+def draw_artifact_image(
+    character: enka.CharacterInfo,
+    artifacts: List[enka.Equipments],
+    locale: Locale | str,
+    dark_mode: bool,
+) -> io.BytesIO:
+    images = []
+    for artifact in artifacts:
+        images.append(draw_artifact(artifact, character, locale, dark_mode))
+
+    return combine_artifact_images(images, dark_mode)

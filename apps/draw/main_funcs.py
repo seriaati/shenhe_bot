@@ -3,7 +3,7 @@ import io
 from typing import List, Optional, Tuple
 
 import discord
-import enkanetwork
+import enkanetwork as enka
 import genshin
 import matplotlib.pyplot as plt
 
@@ -115,7 +115,7 @@ async def draw_farm_domain_card(
 @calculate_time
 async def draw_character_card(
     draw_input: DrawInput,
-    character: enkanetwork.model.CharacterInfo,
+    character: enka.model.CharacterInfo,
     custom_image_url: Optional[str] = None,
 ) -> Optional[io.BytesIO]:
     urls: List[str] = []
@@ -139,7 +139,7 @@ async def draw_character_card(
 @calculate_time
 async def draw_stats_card(
     draw_input: DrawInput,
-    namecard: enkanetwork.Namecard,
+    namecard: enka.Namecard,
     user_stats: genshin.models.Stats,
     pfp: discord.Asset,
     character_num: int,
@@ -157,7 +157,7 @@ async def draw_stats_card(
 @calculate_time
 async def draw_profile_card(
     draw_input: DrawInput,
-    data: enkanetwork.model.base.EnkaNetworkResponse,
+    data: enka.model.base.EnkaNetworkResponse,
 ) -> Tuple[io.BytesIO, io.BytesIO]:
     if data.characters is None:
         raise ValueError("No characters found")
@@ -391,13 +391,18 @@ async def draw_lineup_card(
 @calculate_time
 async def draw_artifact_card(
     draw_input: DrawInput,
-    art: enkanetwork.Equipments,
-    character: enkanetwork.CharacterInfo,
+    arts: List[enka.Equipments],
+    character: enka.CharacterInfo,
 ) -> io.BytesIO:
-    urls = [art.detail.icon.url, character.image.icon.url]
+    urls = [art.detail.icon.url for art in arts]
+    urls.append(character.image.icon.url)
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        artifact.draw_artifact, art, character, draw_input.locale, draw_input.dark_mode
+        artifact.draw_artifact_image,
+        character,
+        arts,
+        draw_input.locale,
+        draw_input.dark_mode,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -411,11 +416,11 @@ async def draw_banner_card(draw_input: DrawInput, banner_urls: List[str]) -> io.
 
 @calculate_time
 async def draw_profile_card_v2(
-    draw_input: DrawInput, character: enkanetwork.model.CharacterInfo, image_url: str
+    draw_input: DrawInput, character: enka.model.CharacterInfo, image_url: str
 ) -> io.BytesIO:
     weapon = character.equipments[-1]
     artifacts = [
-        c for c in character.equipments if c.type is enkanetwork.EquipmentsType.ARTIFACT
+        c for c in character.equipments if c.type is enka.EquipmentsType.ARTIFACT
     ]
     talents = character.skills
     consts = character.constellations
