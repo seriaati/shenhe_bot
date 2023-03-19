@@ -224,3 +224,8 @@ class ShowArtifacts(ui.Button):
 
         file_ = discord.File(fp, filename="artifact.png")
         await i.edit_original_response(attachments=[file_])
+
+
+class CardSettings(ui.Button):
+    def __init__(self):
+        super().__init__(emoji=asset.settings_emoji, row=1)

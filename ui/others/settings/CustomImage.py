@@ -1,4 +1,7 @@
-from typing import List, Optional, Union
+import json
+from typing import Dict, List, Optional, Union
+
+import aiofiles
 
 import aiohttp
 import asyncpg
@@ -282,6 +285,10 @@ async def get_user_custom_image_options(
     options: List[discord.SelectOption] = [
         discord.SelectOption(label=text_map.get(124, locale), value="default")
     ]
+    async with aiofiles.open("data/draw/genshin_fanart.json", "r") as f:
+        fanarts: Dict[str, List[str]] = json.loads(await f.read())
+    c_fanarts = fanarts.get(str(character_id), [])
+
     rows = await pool.fetch(
         """
         SELECT
@@ -295,6 +302,8 @@ async def get_user_custom_image_options(
         character_id,
     )
     for row in rows:
+        if row["image_url"] in c_fanarts:
+            continue
         options.append(
             discord.SelectOption(
                 label=row["nickname"][:100],
@@ -302,6 +311,14 @@ async def get_user_custom_image_options(
                 value=row["image_url"],
             )
         )
+
+    index = 1
+    for url in c_fanarts:
+        if any(option.value == url for option in options):
+            continue
+        label = f"{text_map.get(748, locale)} ({index})"
+        options.append(discord.SelectOption(label=label, description=url, value=url))
+        index += 1
 
     return options
 
@@ -361,7 +378,7 @@ async def change_user_custom_image(
         user_id,
         character_id,
     )
-    await pool.execute(
+    result = await pool.execute(
         """
         UPDATE
             custom_image
@@ -374,6 +391,19 @@ async def change_user_custom_image(
         character_id,
         image_url,
     )
+    if result == "UPDATE 0" and image_url != "default":
+        await pool.execute(
+            """
+            INSERT INTO
+                custom_image (user_id, character_id, image_url, nickname)
+            VALUES
+                ($1, $2, $3, $4)
+            """,
+            user_id,
+            character_id,
+            image_url,
+            image_url.split("/")[-1],
+        )
 
 
 async def get_user_custom_image(
