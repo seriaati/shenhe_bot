@@ -428,7 +428,7 @@ def card_v2(
     stats_list = [
         stats.FIGHT_PROP_MAX_HP.to_rounded(),
         stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(),
-        stats.FIGHT_PROP_ATTACK.to_rounded(),
+        stats.FIGHT_PROP_CUR_ATTACK.to_rounded(),
         stats.FIGHT_PROP_CRITICAL.to_percentage_symbol(),
         stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol(),
         stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
