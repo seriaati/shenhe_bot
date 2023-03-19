@@ -616,10 +616,11 @@ class Schedule(commands.Cog):
         users = await self.get_schedule_users()
 
         success_count = 0
-        index = 0
-        for index, user in enumerate(users):
+        user_count = 0
+        for user in users:
             if not user.daily_checkin or user.china:
                 continue
+            user_count += 1
 
             error, error_message = await self.claim_daily_reward(user)
 
@@ -628,12 +629,12 @@ class Schedule(commands.Cog):
             else:
                 success_count += 1
 
-            if index % 100 == 0 and index != 0:
+            if user_count % 100 == 0 and user_count != 0:
                 await asyncio.sleep(60)
 
             await asyncio.sleep(4.0)
 
-        log.info(f"[Claim Reward] Ended ({success_count}/{index} users)")
+        log.info(f"[Claim Reward] Ended ({success_count}/{user_count} users)")
 
         # send a notification to Seria
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
@@ -642,7 +643,7 @@ class Schedule(commands.Cog):
         await seria.send(
             embed=utility_utils.DefaultEmbed(
                 "Automatic daily check-in report",
-                f"Claimed {success_count}/{index}",
+                f"Claimed {success_count}/{user_count}",
             )
         )
 
