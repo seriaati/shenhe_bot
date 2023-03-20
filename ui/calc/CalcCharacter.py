@@ -83,7 +83,7 @@ class CharacterSelect(Select):
         # get genshin calculator levels or enka talent levels
         try:
             await check_cookie_predicate(i)
-        except Exception:
+        except Exception:  # skipcq: PYL-W0703
             pass
         else:
             character_id = int(self.values[0].split("-")[0])
@@ -99,7 +99,7 @@ class CharacterSelect(Select):
 
             try:
                 character = await shenhe_user.client.get_character_details(character_id)
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 pass
             else:
                 skill_order = await get_character_skill_order(str(character_id))

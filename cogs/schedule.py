@@ -134,7 +134,7 @@ class Schedule(commands.Cog):
             try:
                 abyss = await client.get_genshin_spiral_abyss(account.uid)
                 characters = await client.get_genshin_characters(account.uid)
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 pass
             else:
                 if abyss.total_stars != 36:
@@ -216,7 +216,7 @@ class Schedule(commands.Cog):
                 s_user = await genshin_utils.get_shenhe_account(
                     n_user.user_id, self.bot
                 )
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 continue
 
             locale = s_user.user_locale or "en-US"
@@ -486,7 +486,7 @@ class Schedule(commands.Cog):
                     custom_cookie=custom_cookie,
                     custom_uid=row["uid"],
                 )
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 continue
             accounts.append(account)
 
@@ -571,7 +571,7 @@ class Schedule(commands.Cog):
         for row in rows:
             try:
                 acc = await genshin_utils.get_shenhe_account(row["user_id"], self.bot)
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 pass
             else:
                 users.append(acc)
@@ -591,7 +591,7 @@ class Schedule(commands.Cog):
             await asyncio.sleep(10)
             try:
                 await user.client.redeem_code(code, user.uid)
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 value = text_map.get(127, locale)
         except genshin.errors.RedemptionException as e:
             value = e.msg

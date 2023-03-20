@@ -7,10 +7,10 @@ import genshin
 import sentry_sdk
 
 import asset
+import exceptions
 from apps.genshin.custom_model import OriginalInfo
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-import exceptions
 from utility.utils import ErrorEmbed, log
 
 
@@ -162,7 +162,7 @@ class BaseView(discord.ui.View):
         if self.message is not None:
             try:
                 await self.message.edit(view=self)
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 pass
 
 

@@ -48,7 +48,7 @@ class AdminCog(commands.Cog, name="admin"):
             if any(module_name.startswith(name) for name in modules_to_reload):
                 try:
                     importlib.reload(module)
-                except Exception:
+                except Exception:  # skipcq: PYL-W0703
                     await ctx.send(
                         f"""
                         Error reloading module: {module_name}
@@ -65,7 +65,7 @@ class AdminCog(commands.Cog, name="admin"):
 
             try:
                 await self.bot.reload_extension(f"cogs.{cog.stem}")
-            except Exception:
+            except Exception:  # skipcq: PYL-W0703
                 await ctx.send(
                     f"""
                     Error reloading cog: {cog.stem}
