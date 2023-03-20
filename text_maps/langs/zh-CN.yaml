@@ -849,13 +849,13 @@
 '745': 未来祈愿
 '746': 当前祈愿
 '747': 双暴评分
-'748': Provided by Shenhe
-'749': Select a profile card version
-'750': Version {version}
-'751': Current version
-'752': Card version
-'753': Manage cache
-'754': Select characters that you want to remove from the cache
-'755': Profile settings
-'756': Cache modified, please re-run the /profile command
-'757': You have no characters in the cache
+'748': 由申鹤机器人提供
+'749': 选择角色卡片样式
+'750': 样式{version}
+'751': 目前版本
+'752': 卡片版本
+'753': 管理角色缓存
+'754': 选择你要清除的角色缓存
+'755': 角色面板设置
+'756': 缓存已修改，请重新运行/profile指令。
+'757': 你还没有角色缓存呢。
