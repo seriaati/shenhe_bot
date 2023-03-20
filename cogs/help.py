@@ -10,7 +10,7 @@ from discord.ui import Select
 import config
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
-from UI_base_models import BaseView
+from base_ui import BaseView
 from utility.utils import DefaultEmbed
 
 

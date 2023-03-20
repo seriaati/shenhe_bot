@@ -1,6 +1,7 @@
 import importlib
 import pickle
 import sys
+import traceback
 from pathlib import Path
 from typing import Optional
 
@@ -10,7 +11,7 @@ from discord.ext import commands
 from diskcache import FanoutCache
 
 from apps.genshin.custom_model import ShenheBot
-from utility.utils import DefaultEmbed, ErrorEmbed
+from utility.utils import DefaultEmbed
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -27,61 +28,55 @@ class AdminCog(commands.Cog, name="admin"):
 
     @commands.is_owner()
     @commands.command(name="reload")
-    async def reload(self, ctx: commands.Context, custom_module: Optional[str] = None):
-        message = await ctx.send("reloading Shenhe...")
-        if custom_module:
-            try:
-                importlib.reload(importlib.import_module(custom_module))
-            except Exception as e:
-                return await ctx.send(
-                    embed=ErrorEmbed(custom_module, f"```{e}```"),
-                    ephemeral=True,
-                )
-            await message.edit(content=f"reloaded {custom_module}")
-        else:
-            # reload all modules
-            await message.edit(content="reloading modules...")
-            modules = list(sys.modules.keys())
-            for module in modules:
-                if not module.startswith(
-                    (
-                        "asset",
-                        "config",
-                        "UI_base_models",
-                        "exceptions",
-                        "ambr.",
-                        "apps.",
-                        "cogs.",
-                        "data.",
-                        "text_maps.",
-                        "UI_elements.",
-                        "utility.",
-                        "yelan.",
-                    )
-                ):
-                    continue
-                try:
-                    importlib.reload(importlib.import_module(module))
-                except Exception as e:
-                    return await message.edit(
-                        embed=ErrorEmbed(module, f"```{e}```"),
-                    )
+    async def reload(self, ctx: commands.Context):
+        message = await ctx.send("Reloading...")
 
-            # reload all cogs
-            await message.edit(content="reloading cogs...")
-            for filepath in Path("./cogs").glob("**/*.py"):
-                cog_name = Path(filepath).stem
-                if cog_name in ("login", "grafana", "schedule"):
-                    continue
+        modules_to_reload = (
+            "ambr",
+            "apps",
+            "data",
+            "ui",
+            "utility",
+            "yelan",
+            "asset",
+            "config",
+            "base_ui",
+        )
+        copy_ = sys.modules.copy()
+
+        for module_name, module in copy_.items():
+            if any(module_name.startswith(name) for name in modules_to_reload):
                 try:
-                    await self.bot.reload_extension(f"cogs.{cog_name}")
-                except Exception as e:
-                    return await message.edit(
-                        embed=ErrorEmbed(cog_name, f"```{e}```"),
+                    importlib.reload(module)
+                except Exception:  # skipcq: PYL-W0703
+                    await ctx.send(
+                        f"""
+                        Error reloading module: {module_name}
+                        ```py
+                        {traceback.format_exc()}
+                        ```
+                        """
                     )
-            await message.edit(
-                content="Shenhe reloaded (cogs skipped : `login`, `grafana`, `schedule`)"
-            )
+                    return
+
+        for cog in Path("cogs").glob("*.py"):
+            if cog.stem in ("login", "grafana", "schedule"):
+                continue
+
+            try:
+                await self.bot.reload_extension(f"cogs.{cog.stem}")
+            except Exception:  # skipcq: PYL-W0703
+                await ctx.send(
+                    f"""
+                    Error reloading cog: {cog.stem}
+                    ```py
+                    {traceback.format_exc()}
+                    ```
+                    """
+                )
+                return
+
+        await message.edit(content="Reloaded")
 
     @commands.is_owner()
     @commands.command(name="sync")

@@ -5,7 +5,7 @@ from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.utils import get_user_locale
-from UI_elements.calc import CalcCharacter, CalcWeapon
+from ui.calc import CalcCharacter, CalcWeapon
 
 
 class CalcCog(commands.GroupCog, name="calc"):

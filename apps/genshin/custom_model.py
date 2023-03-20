@@ -141,14 +141,19 @@ class TodoList:
 
 
 class EnkaView(discord.ui.View):
-    overview_embed: discord.Embed
-    character_options: List[discord.SelectOption]
-    character_id: str
+    overview_embeds: List[discord.Embed]
+    overview_fps: List[io.BytesIO]
     data: EnkaNetworkResponse
-    eng_data: EnkaNetworkResponse
-    member: discord.User | discord.Member
-    locale: discord.Locale | str
-    custom_image_url: Optional[str] = None
+    en_data: EnkaNetworkResponse
+    member: Union[discord.User, discord.Member]
+    author: Union[discord.User, discord.Member]
+    message: discord.Message
+    character_options: List[discord.SelectOption]
+
+    original_children: List[discord.ui.Item] = []
+    character_id: str = "0"
+    locale: Union[discord.Locale, str] = "en-US"
+    card_data: Optional[EnkaNetworkResponse] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -157,7 +162,7 @@ class EnkaView(discord.ui.View):
 class UserCustomImage(BaseModel):
     url: str
     nickname: str
-    character_id: str
+    character_id: int
     user_id: int
 
 

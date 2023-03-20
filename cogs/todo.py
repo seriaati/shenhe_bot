@@ -3,7 +3,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 from apps.genshin.custom_model import ShenheBot
-from UI_elements.todo import TodoList
+from ui.todo import TodoList
 
 
 class Todo(commands.Cog, name="todo"):

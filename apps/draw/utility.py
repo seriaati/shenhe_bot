@@ -1,16 +1,17 @@
 import os
 import time
 import asset
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+import typing
 from apps.text_map.text_map_app import text_map
 from apps.genshin.custom_model import DynamicBackgroundInput
 import aiofiles
 import aiohttp
 import discord
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageChops
 from fontTools.ttLib import TTFont
 from data.draw.fonts import FONTS
 from utility.utils import DefaultEmbed, log
+import enkanetwork as enka
 
 
 def extract_file_name(url: str):
@@ -18,7 +19,7 @@ def extract_file_name(url: str):
     return url.split("/")[-1].split("?")[0]
 
 
-def extract_urls(objects: List[Any]) -> List[str]:
+def extract_urls(objects: typing.List[typing.Any]) -> typing.List[str]:
     """Extract urls from a list of objects."""
     urls = []
     for obj in objects:
@@ -29,7 +30,9 @@ def extract_urls(objects: List[Any]) -> List[str]:
     return urls
 
 
-async def download_images(urls: List[str], session: aiohttp.ClientSession) -> None:
+async def download_images(
+    urls: typing.List[str], session: aiohttp.ClientSession
+) -> None:
     """Download images from urls."""
     for url in urls:
         file_name = extract_file_name(url)
@@ -60,7 +63,7 @@ def calculate_time(func):
     return inner_func
 
 
-def human_format(num: Union[int, float]):
+def human_format(num: typing.Union[int, float]):
     """Format number to human readable format."""
     magnitude = 0
     while abs(num) >= 1000:
@@ -95,7 +98,7 @@ def dynamic_font_size(
 
 
 def circular_crop(
-    image: Image.Image, background_color: Optional[str] = None
+    image: Image.Image, background_color: typing.Optional[str] = None
 ) -> Image.Image:
     """Crop an image into a circle."""
     mask = Image.new("L", image.size, 0)
@@ -120,16 +123,18 @@ def circular_crop(
     return image
 
 
-def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont) -> str:
-    """Shorten text to a maximum length."""
+def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont):
     if font.getlength(text) <= max_length:
         return text
-    return text[: int(max_length // font.getlength("..."))] + "..."
+    shortened = text[: max_length - 3] + "..."
+    while font.getlength(shortened) > max_length and len(shortened) > 3:
+        shortened = shortened[:-4] + "..."
+    return shortened
 
 
 def get_font_name(
     locale: discord.Locale | str,
-    variation: Literal[
+    variation: typing.Literal[
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
 ) -> str:
@@ -149,7 +154,7 @@ def get_font_name(
 def get_font(
     locale: discord.Locale | str,
     size: int,
-    variation: Literal[
+    variation: typing.Literal[
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
 ) -> ImageFont.FreeTypeFont:
@@ -160,7 +165,7 @@ def get_font(
 
 def draw_dynamic_background(
     input: DynamicBackgroundInput,
-) -> Tuple[Image.Image, int]:
+) -> typing.Tuple[Image.Image, int]:
     max_card_num = None
     for index in range(2, input.card_num):
         if input.card_num % index == 0:
@@ -208,16 +213,16 @@ async def image_gen_transition(
 
 def global_write(
     draw: ImageDraw.ImageDraw,
-    pos: Tuple[int, int],
+    pos: typing.Tuple[int, int],
     text: str,
     size: int,
     fill: str,
     variation: str = "Regular",
-    anchor: Optional[str] = None,
+    anchor: typing.Optional[str] = None,
 ):
     """Write a piece of text with the proper fonts"""
     # load fonts
-    fonts: Dict[str, TTFont] = {}
+    fonts: typing.Dict[str, TTFont] = {}
     for val in FONTS.values():
         path = f"resources/fonts/{val['name']}-{variation}.{val['extension']}"
         fonts[path] = TTFont(path)
@@ -252,3 +257,62 @@ def global_write(
 
 def has_glyph(font: TTFont, glyph: str):
     return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)
+
+
+def resize_and_crop_image(
+    im: Image.Image, version: int = 1, dark_mode: bool = False
+) -> Image.Image:
+    """Resize and crop an image to fit the card template"""
+    im = im.convert("RGBA")
+
+    # Define the target width and height
+    target_width = 1663 if version == 1 else 472
+    target_height = 629 if version == 1 else 839
+
+    # Get the original width and height
+    width, height = im.size
+
+    # Calculate the ratio of the original image
+    ratio = min(width / target_width, height / target_height)
+
+    # Calculate the new size and left/top coordinates for cropping
+    new_width = int(width / ratio)
+    new_height = int(height / ratio)
+    left = (new_width - target_width) / 2
+    top = (new_height - target_height) / 2
+    right = left + target_width
+    bottom = top + target_height
+
+    # Resize the image
+    im = im.resize((new_width, new_height), resample=Image.LANCZOS)
+
+    # Crop the image
+    im = im.crop((left, top, right, bottom))
+
+    if dark_mode:
+        # add dark transparency to the image
+        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
+
+    # make rounded corners
+    radius = 20 if version == 1 else 25
+    mask = Image.new("L", im.size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.rounded_rectangle((0, 0, im.width, im.height), radius=radius, fill=255)
+    im.putalpha(mask)
+
+    # Return the resized and cropped image
+    return im
+
+
+def format_stat(stat: enka.EquipmentsStats) -> str:
+    value = str(round(stat.value, 1))
+    if stat.type is enka.DigitType.PERCENT:
+        value += "%"
+    return value
+
+
+def mask_image_with_color(image: Image.Image, color) -> Image.Image:
+    """Apply a color mask to an image"""
+    image = image.convert("RGBA")
+    mask = Image.new("RGBA", image.size, color)
+    return ImageChops.multiply(image, mask)

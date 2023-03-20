@@ -122,3 +122,14 @@ def get_dt_now() -> datetime:
 def add_bullet_points(texts: List[str]) -> str:
     """Add bullet points to a list of texts."""
     return "\n".join([f"• {text}" for text in texts])
+
+
+def disable_view_items(view: discord.ui.View) -> None:
+    """Disable all items in a view.
+
+    Args:
+        view (discord.ui.View): The view to disable items in.
+    """
+    for child in view.children:
+        if isinstance(child, (discord.ui.Select, discord.ui.Button)):
+            child.disabled = True

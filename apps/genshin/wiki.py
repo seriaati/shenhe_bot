@@ -12,7 +12,7 @@ from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_weekday_name
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
-from UI_elements.genshin import Search
+from ui.genshin import Search
 from utility.utils import DefaultEmbed, get_weekday_int_with_name
 
 
@@ -405,7 +405,7 @@ async def parse_furniture_wiki(
     embed = DefaultEmbed(furniture.name)
     embed.description = f"""
         {furniture.description}
-        
+
         {asset.comfort_emoji} {text_map.get(255, locale)}: {furniture.comfort or 0}
         {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost or 0}
     """
