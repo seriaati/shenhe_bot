@@ -1,6 +1,9 @@
 from calendar import monthrange
 from datetime import datetime, timedelta
+import json
 from typing import Any, Dict, List, Optional, Tuple
+
+import aiofiles
 
 import aiohttp
 import asyncpg
@@ -617,3 +620,11 @@ def get_account_select_options(
             )
         )
     return options
+
+
+async def get_character_fanarts(character_id: str) -> List[str]:
+    """Get the fanart URLs of a character."""
+    async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
+        fanart: Dict[str, List[str]] = json.loads(await f.read())
+
+    return fanart.get(character_id, [])

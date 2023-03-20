@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime
 from itertools import islice
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import asyncpg
 import discord
@@ -31,6 +31,18 @@ class ErrorEmbed(discord.Embed):
     def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
         super().__init__(title=title, description=description, color=0xFC5165)
 
+    def set_title(
+        self,
+        text_map,
+        map_hash: int,
+        locale: Union[discord.Locale, str],
+        user: Union[discord.Member, discord.User],
+    ):
+        self.set_author(
+            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+        )
+        return self
+
 
 def time_in_range(start, end, x):
     """Return true if x is in the range [start, end]"""
@@ -39,7 +51,7 @@ def time_in_range(start, end, x):
     return start <= x or x <= end
 
 
-def divide_chunks(l: List, n: int):
+def divide_chunks(l: List[Any], n: int):
     for i in range(0, len(l), n):
         yield l[i : i + n]
 

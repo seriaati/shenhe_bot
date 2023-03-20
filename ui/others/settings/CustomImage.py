@@ -1,8 +1,4 @@
-import json
 from typing import Dict, List, Optional, Union
-
-import aiofiles
-
 import aiohttp
 import asyncpg
 import discord
@@ -11,13 +7,13 @@ from discord import ui
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import UserCustomImage, CustomInteraction
-from apps.genshin.utils import get_character_emoji
+from apps.genshin.custom_model import CustomInteraction, UserCustomImage
+from apps.genshin.utils import get_character_emoji, get_character_fanarts
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
-from data.game.elements import get_element_emoji, get_element_list
 from base_ui import BaseModal, BaseView
-from utility.utils import DefaultEmbed, ErrorEmbed
+from data.game.elements import get_element_emoji, get_element_list
+from utility.utils import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
 class View(BaseView):
@@ -183,15 +179,17 @@ class RemoveImage(ui.Button):
         )
         self.character_id = character_id
         self.element = element
-
-    async def callback(self, i: CustomInteraction):
+        self.locale = locale
         self.view: View
 
+    async def callback(self, i: CustomInteraction):
         custom_image = await get_user_custom_image(
             i.user.id, self.character_id, i.client.pool
         )
         if custom_image is None:
-            raise AssertionError
+            return await i.response.send_message(
+                embed=ErrorEmbed().set_title(text_map, 404, self.locale, i.user)
+            )
 
         await remove_user_custom_image(
             i.user.id, custom_image.url, custom_image.character_id, i.client.pool
@@ -260,12 +258,14 @@ async def return_custom_image_interaction(
     options = await get_user_custom_image_options(
         character_id, i.client.pool, i.user.id, view.locale
     )
-    disabled = len(options) == 25
+    disabled = len(options) == 125
     view.add_item(AddImage(view.locale, character_id, element, disabled))
 
     disabled = bool(not options)
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
-    view.add_item(ImageSelect(view.locale, options, character_id, element))
+    div_options: List[List[discord.SelectOption]] = list(divide_chunks(options, 25))
+    for d_options in div_options:
+        view.add_item(ImageSelect(view.locale, d_options, character_id, element))
 
     custom_image = await get_user_custom_image(i.user.id, character_id, i.client.pool)
     embed = await get_user_custom_image_embed(
@@ -284,9 +284,7 @@ async def get_user_custom_image_options(
     options: List[discord.SelectOption] = [
         discord.SelectOption(label=text_map.get(124, locale), value="default")
     ]
-    async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
-        fanarts: Dict[str, List[str]] = json.loads(await f.read())
-    c_fanarts = fanarts.get(str(character_id), [])
+    c_fanarts = await get_character_fanarts(str(character_id))
 
     rows = await pool.fetch(
         """
@@ -477,12 +475,12 @@ async def remove_user_custom_image(
         image_url,
         character_id,
     )
-    await pool.execute(
+    image: Optional[asyncpg.Record] = await pool.fetchrow(
         """
-        UPDATE
+        SELECT
+            user_id, character_id, image_url, nickname
+        FROM
             custom_image
-        SET
-            current = true
         WHERE
             user_id = $1 AND character_id = $2
         LIMIT 1
@@ -490,3 +488,17 @@ async def remove_user_custom_image(
         user_id,
         character_id,
     )
+    if image is not None:
+        await pool.execute(
+            """
+            UPDATE
+                custom_image
+            SET
+                current = true
+            WHERE
+                user_id = $1 AND character_id = $2 AND image_url = $3
+            """,
+            user_id,
+            character_id,
+            image["image_url"],
+        )

@@ -71,3 +71,7 @@ class NumbersOnly(Exception):
 
 class AutocompleteError(Exception):
     pass
+
+
+class CardNotReady(Exception):
+    pass
