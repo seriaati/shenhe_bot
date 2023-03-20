@@ -653,7 +653,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             )
 
-        view = EnkaProfile.View([])
+        view = EnkaProfile.View([], locale)
         disable_view_items(view)
 
         await i.edit_original_response(
@@ -688,7 +688,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         fp_two.seek(0)
 
-        view = EnkaProfile.View(options)
+        view = EnkaProfile.View(options, locale)
         view.overview_embeds = [embed, embed_two]
         view.overview_fps = [fp, fp_two]
         view.data = data
@@ -1066,7 +1066,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             scenario_dict[str(scenario.id)] = scenario
 
-        ambr = AmbrTopAPI(i.client.session, convert_locale.to_ambr_top(locale))
+        ambr = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(locale))
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):

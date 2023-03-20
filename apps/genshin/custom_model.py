@@ -149,10 +149,10 @@ class EnkaView(discord.ui.View):
     author: Union[discord.User, discord.Member]
     message: discord.Message
     character_options: List[discord.SelectOption]
+    locale: Union[discord.Locale, str]
 
     original_children: List[discord.ui.Item] = []
     character_id: str = "0"
-    locale: Union[discord.Locale, str] = "en-US"
     card_data: Optional[EnkaNetworkResponse] = None
 
     class Config:

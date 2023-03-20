@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Union
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map.text_map_app import text_map
 
@@ -16,18 +16,22 @@ from yelan.damage_calculator import return_current_status
 
 
 class View(custom_model.EnkaView):
-    def __init__(self, character_options: List[discord.SelectOption]):
+    def __init__(
+        self,
+        character_options: List[discord.SelectOption],
+        locale: Union[discord.Locale, str],
+    ):
         super().__init__(timeout=config.mid_timeout)
 
         options: List[List[discord.SelectOption]] = list(
             divide_chunks(character_options, 25)
         )
 
-        self.add_item(OverviewButton(text_map.get(43, self.locale)))
-        self.add_item(BoxButton(options, text_map.get(105, self.locale)))
-        self.add_item(CalculateDamageButton(text_map.get(348, self.locale)))
-        self.add_item(SetCustomImage(self.locale))
-        self.add_item(ShowArtifacts(text_map.get(92, self.locale)))
+        self.add_item(OverviewButton(text_map.get(43, locale)))
+        self.add_item(BoxButton(options, text_map.get(105, locale)))
+        self.add_item(CalculateDamageButton(text_map.get(348, locale)))
+        self.add_item(SetCustomImage(locale))
+        self.add_item(ShowArtifacts(text_map.get(92, locale)))
         self.add_item(InfoButton())
         self.add_item(CardSettings())
 
