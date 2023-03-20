@@ -454,7 +454,7 @@ def card_v2(
         45: "Geo",
         30: "ATK",
     }
-    if sum([h.value for h in add_hurt_dict.values()]) == 0:
+    if sum(h.value for h in add_hurt_dict.values()) == 0:
         final_add_hurt = add_hurt_dict[character.element.name]
     else:
         final_add_hurt = max(list(add_hurt_dict.values()), key=lambda x: x.value)
