@@ -224,27 +224,27 @@
 '203': Додати елемент
 '204': |-
   Ваш список TODO порожній, використовуйте </calc character:1020188057628065862> або </calc weapon:1020188057628065862> для обчислення матеріалів для ієрогліфів і зброї, або використайте зелену кнопку нижче, щоб додати користувацькі елементи.
-'205': Remove item
-'206': Clear items
-'207': Select an item
-'208': Item name
-'209': 'For example: mora'
-'210': Amount of {item}
+'205': Видалити елемент
+'206': Очистити список
+'207': Виберіть елемент
+'208': Назва товару
+'209': 'Наприклад: Мора'
+'210': Кількість {item}
 '211': |-
-  Don't want to see this message again? Use /settings
-  Don't want auto check-in anymore? Use /claim
-'212': You can't remove more items than you have in your dodo list
-'213': Cryo
-'214': Geo
-'215': Pyro
-'216': Anemo
-'217': Hydro
-'218': Dendro
-'219': Electro
-'220': Developer of Shenhe
-'221': January
-'222': February
-'223': March
+  Не хочете побачити це повідомлення знову? Використовуйте /settings
+  Більше не хочете автоматично отримувати? Використайте /claim
+'212': Не можна видалити більше об'єктів, ніж у вашому списку Dodo
+'213': Кріо
+'214': Гео
+'215': Піро
+'216': Анемо
+'217': Гідро
+'218': Дендро
+'219': Електро
+'220': Розробник Шеньхея
+'221': Січень
+'222': Лютий
+'223': Березень
 '224': Квітень
 '225': Травень
 '226': Червень
@@ -277,14 +277,14 @@
 '263': Захист.%
 '264': Оцінка кріта
 '265': Критичне пошкодження
-'266': Elem. Mastery
-'267': Energy Recharge
+'266': Майстерство Елементів
+'267': Відновлення Енергії 
 '268': Базове HP
 '269': Базова Атака.
 '270': Базовий захист.
 '271': Бонус Лікування
-'272': Physic DMG Bonus
-'273': Elem. DMG Bonus
+'272': Бонус фізичного пошкодження
+'273': Бонус елементарного пошкодження
 '274': Некоректний URL зображення
 '275': Своє зображення
 '276': |-
@@ -300,55 +300,55 @@
 '281': Швидкість%
 '282': Повернутися назад
 '283': Або введіть свій UID у налаштуваннях
-'284': Invalid account
+'284': Неприпустимий обліковий запис
 '285': |-
-  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  • You can also redeem codes manually using </redeem:1044926380456017924>
-'286': UID is invalid or not found in enka.network
-'287': Please turn on the character showcase toggle in-game
-'288': Player level
-'289': World level
-'290': Achievement
-'291': Spiral abyss
-'292': Max HP
-'293': win %
-'294': View the list of enemies in the current abyss phase
-'295': Enemy level
-'296': Latest Changes
-'297': Meet the awesome people that helped me!
-'298': Translators
-'299': Friendship Level
-'300': Registered Users
-'301': Stats
+  • Автоматично обміняти Genshin mpact кодів знайдених на [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  • Ви також можете обміняти коди вручну використовуючи </redeem:1044926380456017924>
+'286': UID недійсний або не знайдений в enka.network
+'287': Будь ласка, увімкніть вітрину персонажів в режимі перемикання
+'288': Рівень гравця
+'289': Рівень світу
+'290': Досягнення
+'291': Спіральна безодня
+'292': Макс. HP
+'293': перемог %
+'294': Переглянути список ворогів у фазі поточної безодні
+'295': Рівень ворога
+'296': Останні зміни
+'297': Познайомтеся з крутими людьми, які допомогли мені!
+'298': Перекладачі
+'299': Рівень Дружби
+'300': Зареєстровані користувачі
+'301': Статистика
 '302': Threshold
-'303': Current resin
-'304': Current max. notification number
-'305': Use /remind to change the settings
-'306': Resin is almost full!!
-'307': Talent notification is now turned OFF
+'303': Поточна смола
+'304': Поточний макс. номер сповіщення
+'305': Використовуйте /remind , щоб змінити налаштування
+'306': Смола майже заповнена!
+'307': Сповіщення про талант вимкнено
 '308': Item amount
 '309': Everything is farmable on Sunday! ヾ(≧▽≦*)o
 '310': Please select an option from the autocomplete instead of typing your own
 '311': How to unblock DM from servers
 '312': Time to farm materials for {name}!
 '313': Genshin Impact
-'314': Select an abyss chamber
-'315': Basic information
-'316': Birthday
-'317': Affiliation
-'318': Constellation
-'319': Name card
-'320': Ascension materials
-'321': Ascension to
-'322': Talent level-up materials
-'323': Passive Talents
-'324': Level-up to
-'325': Quick Navigation
-'326': Normal Atk.
-'327': Charged Atk.
+'314': Виберіть поверх абревіатури
+'315': Основна інформація
+'316': День народження
+'317': Приналежність
+'318': Сузір'я
+'319': Ім'я картки
+'320': Матеріали вознесіння
+'321': Вознесіння до
+'322': Матеріали для підвищення талантів
+'323': Пасивні таланти
+'324': Підвищення рівня до
+'325': Швидка навігація
+'326': Нормальна Атака
+'327': Заряджена Атака
 '328': Plunging Atk.
-'329': Calculating damage...
-'330': This requires around 5 to 10 seconds
+'329': Калькулятор пошкодження... 
+'330': Це потребує від 5 до 10 секунд
 '331': Немає реакції
 '332': Melt
 '333': Vaporize
@@ -361,16 +361,16 @@
 '340': Інфузія Кріо
 '341': Беннетт С6
 '342': Chongyun Skill
-'343': Select team melee infusion
-'344': Select teammates
+'343': Вибрати командну ситуацію для ближнього бою
+'344': Оберіть макет
 '345': Команда
 '346': Умови
 '347': Ефекти
-'348': Calculate Damage
-'349': Resources Used
+'348': Калькулятор пошкодження
+'349': Використання ресурсів
 '350': melt
-'351': vaporize
-'352': Authkey URL
+'351': Випарування
+'352': Ключ-посилання
 '353': Імпорт історії побажань
 '354': Будь ласка, вставте посилання тут
 '355': Будь ласка, зачекайте поки Shenhe обробляє ваші побажання...
@@ -402,7 +402,7 @@
 '363': Надане посилання недійсне
 '364': Відеоуроки
 '365': Виберіть платформу
-'366': Your P.T. is ready to use!
+'366': Ваш П.П готовий до використання. 
 '367': Цей UID не має даних гравця в ньому
 '368': Використовуйте </wish import:1000187021635104890>, щоб імпортувати вашу історію побажань
 '369': Історія бажань
@@ -416,19 +416,19 @@
 '378': Спосіб 1
 '379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
 '380': Your current number of five-star pity is **{a}**
-'381': "Changes {time}"
+'381': "Змінити {time} "
 '382': Wishing to pull
 '383': UP 5-star characters
 '384': It is estimated that you will pull a five-star banner character in **{a}** pulls
 '385': It is estimated that you will pull a five-star banner weapon in **{a}** pulls
 '386': Event wish number prediction
-'387': Standard
-'388': 'Yes'
-'389': 'No'
-'390': Is this the weapon you wanted?
+'387': Стандартний
+'388': 'Так'
+'389': 'Ні'
+'390': Це зброя, яку ви хотіли?
 '391': The last 5-star weapon you pulled was
 '392': Is this a standard or limited time UP weapon?
-'393': Weapon wish number prediction
+'393': Бажаний прогноз молитви зброї
 '394': |-
   1. Press START on your keyboard, then search for Powershell
   2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
@@ -449,9 +449,9 @@
   they will still appear here. To update the showcase, place the characters back
   and use this command again. Theoretically, you can have all of your characters
   in your /profile and use them in the damage calculator.
-'400': Link generated, click on the button below to login
-'401': Generate login link
-'402': Generating login link...
+'400': Згенероване посилання, натисніть на кнопку нижче, щоб увійти
+'401': Згенерувати посилання для входу
+'402': Створення посилання для входу...
 '403': |-
   1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
   2. Then open the wish history in the game and wait it to load
@@ -461,10 +461,10 @@
   6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
-'404': Select a custom image
+'404': Виберіть власне зображення
 '405': You haven't pulled in the weapon banner yet
-'406': Start time
-'407': End time
+'406': Час початку
+'407': Час закінчення
 '408': Details
 '409': Choose event type
 '410': Register your genshin account to use commands that require one
@@ -485,24 +485,24 @@
 '425': Цього місяця
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
-'428': View abyss data (need /register)
+'428': Перегляд даних Безодні (потрібен /register)
 '429': тип
 '430': фаза
 '431': Тип даних, які ви бажаєте переглянути
-'432': Which abyss phase?
+'432': Яка  фаза безодні?
 '433': Докладно
-'434': View the list of current beta items in Genshin
+'434': Переглянути список поточних бета-елементів в Genshin
 '435': Ця фаза
 '436': Остання фаза
-'437': Beta Items
-'438': Set notification features
+'437': Бета елементи
+'438': Встановити особливості сповіщень
 '439': функція
 '440': перемикнути
 '441': Повторне сповіщення (вимагає /register)
-'442': Talent notification
+'442': Сповіщення про талант
 '443': Перевірити налаштування конфіденційності
-'444': You can use this command with /search to get more information about a beta item
-'445': There are currently no beta items, check back later
+'444': Цю команду можна використовувати у /search для отримання додаткової інформації про бета предмет
+'445': Наразі немає бета-записів, поверніться пізніше
 '446': View farmable items today
 '447': 'Перегляд персонажів: зброя, артефакти, рівні талантів, статистика'
 '448': Пошук UID користувача
@@ -516,17 +516,17 @@
 '456': Загрузити
 '457': Наразі ви не в таблиці лідерів
 '458': персонаж
-'459': View past genshin event stats
+'459': Перегляд статистики події останніх відвідувань
 '460': Розрахунок матеріалів, необхідних для прокачування персонажу
 '461': синхронізувати
 '462': синхронізація з ігровими даними (автозаповнення рівнів)
 '463': Основна статистика
 '464': Sub stat
 '465': Calculate materials needed for upgrading a weapon
-'466': Developers that helped me
-'467': rarity
-'468': sword
-'469': catalyst
+'466': Розробники, які допомогли мені
+'467': рідкість
+'468': меч
+'469': каталізатор
 '470': claymore
 '471': bow
 '472': polearm
@@ -855,13 +855,13 @@
 '745': Future Banners
 '746': Current Wish Banners
 '747': CV
-'748': Provided by Shenhe
-'749': Select a profile card version
-'750': Version {version}
-'751': Current version
-'752': Card version
-'753': Manage cache
-'754': Select characters that you want to remove from the cache
-'755': Profile settings
-'756': Cache modified, please re-run the /profile command
-'757': You have no characters in the cache
+'748': За умови, Шенхе
+'749': Виберіть версію карти профілю
+'750': Версія {version} 
+'751': Поточна версія
+'752': Версія картки
+'753': Керування кешем
+'754': Виберіть персонажів, які Ви хочете видалити з кешу
+'755': Налаштування профілю
+'756': Кеш змінено, будь ласка, перезапустіть команду /profile
+'757': У вас немає персонажів в кеші
