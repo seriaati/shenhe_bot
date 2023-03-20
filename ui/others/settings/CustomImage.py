@@ -16,7 +16,7 @@ from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_emoji, get_element_list
-from utility.utils import DefaultEmbed, ErrorEmbed
+from utility.utils import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
 class View(BaseView):
@@ -259,12 +259,14 @@ async def return_custom_image_interaction(
     options = await get_user_custom_image_options(
         character_id, i.client.pool, i.user.id, view.locale
     )
-    disabled = len(options) == 25
+    disabled = len(options) == 125
     view.add_item(AddImage(view.locale, character_id, element, disabled))
 
     disabled = bool(not options)
     view.add_item(RemoveImage(view.locale, character_id, disabled, element))
-    view.add_item(ImageSelect(view.locale, options, character_id, element))
+    div_options: List[List[discord.SelectOption]] = list(divide_chunks(options, 25))
+    for d_options in div_options:
+        view.add_item(ImageSelect(view.locale, d_options, character_id, element))
 
     custom_image = await get_user_custom_image(i.user.id, character_id, i.client.pool)
     embed = await get_user_custom_image_embed(
