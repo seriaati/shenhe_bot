@@ -1,5 +1,6 @@
 import io
 from typing import Any, List
+from apps.db.utility import get_profile_ver
 
 import discord
 import enkanetwork as enka
@@ -10,46 +11,30 @@ import asset
 import config
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map.text_map_app import text_map
-from base_ui import BaseView
-from ui.genshin import EnkaDamageCalc, ProfileImageSelect
+from ui.genshin import EnkaDamageCalc, ProfileImageSelect, ProfileSettings
 from ui.others.settings import CustomImage
 from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
 from yelan.damage_calculator import return_current_status
 
 
-class View(BaseView):
-    def __init__(
-        self,
-        overview_embed: List[discord.Embed],
-        overview_fp: List[io.BytesIO],
-        character_options: List[discord.SelectOption],
-        data: enka.model.base.EnkaNetworkResponse,
-        eng_data: enka.model.base.EnkaNetworkResponse,
-        member: discord.User | discord.Member,
-        locale: discord.Locale | str,
-    ):
+class View(custom_model.EnkaView):
+    def __init__(self, character_options: List[discord.SelectOption]):
         super().__init__(timeout=config.mid_timeout)
-        self.overview_embed = overview_embed
-        self.overview_fp = overview_fp
-        self.character_options = character_options
-        self.character_id = "0"
-        self.data = data
-        self.eng_data = eng_data
-        self.member = member
-        self.locale = locale
 
         options: List[List[discord.SelectOption]] = list(
-            divide_chunks(self.character_options, 25)
+            divide_chunks(character_options, 25)
         )
 
-        self.add_item(OverviewButton(text_map.get(43, locale)))
-        self.add_item(BoxButton(options, text_map.get(105, locale)))
-        self.add_item(CalculateDamageButton(text_map.get(348, locale)))
-        self.add_item(SetCustomImage(locale))
-        self.add_item(ShowArtifacts(text_map.get(92, locale)))
+        self.add_item(OverviewButton(text_map.get(43, self.locale)))
+        self.add_item(BoxButton(options, text_map.get(105, self.locale)))
+        self.add_item(CalculateDamageButton(text_map.get(348, self.locale)))
+        self.add_item(SetCustomImage(self.locale))
+        self.add_item(ShowArtifacts(text_map.get(92, self.locale)))
         self.add_item(InfoButton())
+        self.add_item(CardSettings())
 
         self.original_children = self.children.copy()
+        self.character_options = character_options
 
 
 class InfoButton(ui.Button):
@@ -80,17 +65,16 @@ class OverviewButton(ui.Button):
     async def callback(self, i: custom_model.CustomInteraction):
         self.view: View
 
-        overview = utils.get(self.view.children, custom_id="overview")
         set_custom_image = utils.get(self.view.children, custom_id="set_custom_image")
         calculate = utils.get(self.view.children, custom_id="calculate")
         show_artifacts = utils.get(self.view.children, custom_id="show_artifacts")
 
-        overview.disabled = True  # type: ignore
+        self.disabled = True
         set_custom_image.disabled = True  # type: ignore
         calculate.disabled = True  # type: ignore
         show_artifacts.disabled = True  # type: ignore
 
-        [fp, fp_two] = self.view.overview_fp
+        [fp, fp_two] = self.view.overview_fps
         fp.seek(0)
         fp_two.seek(0)
         attachments = [
@@ -98,7 +82,7 @@ class OverviewButton(ui.Button):
             discord.File(fp_two, filename="character.jpeg"),
         ]
         await i.response.edit_message(
-            embeds=self.view.overview_embed,
+            embeds=self.view.overview_embeds,
             attachments=attachments,
             view=self.view,
         )
@@ -228,4 +212,13 @@ class ShowArtifacts(ui.Button):
 
 class CardSettings(ui.Button):
     def __init__(self):
-        super().__init__(emoji=asset.settings_emoji, row=1)
+        super().__init__(emoji=asset.settings_emoji, row=1, disabled=True)
+
+    async def callback(self, i: custom_model.CustomInteraction) -> Any:
+        self.view: custom_model.EnkaView
+        view = ProfileSettings.View(self.view.locale, self.view)
+        view.author = i.user
+        await i.response.edit_message(
+            embed=view.gen_settings_embed(), view=view, attachments=[]
+        )
+        view.message = await i.original_response()

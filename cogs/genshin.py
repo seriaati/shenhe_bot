@@ -634,10 +634,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         ]
 
         options: List[discord.SelectOption] = []
+        non_cache_ids: List[int] = []
         if card_data and card_data.characters:
             non_cache_ids = [c.id for c in card_data.characters]
-        else:
-            non_cache_ids = []
 
         for c in data.characters:
             if c.id not in non_cache_ids:
@@ -654,7 +653,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             )
 
-        view = EnkaProfile.View([], [], options, data, en_data, member, locale)
+        view = EnkaProfile.View([])
         disable_view_items(view)
 
         await i.edit_original_response(
@@ -677,7 +676,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed_two.set_footer(text=text_map.get(511, locale))
 
         dark_mode = await utils.get_user_appearance_mode(i.user.id, self.bot.pool)
-        fp, fp_two = await main_funcs.draw_profile_card(
+        fp, fp_two = await main_funcs.draw_profile_overview_card(
             custom_model.DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
@@ -689,18 +688,23 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         fp_two.seek(0)
 
-        discord_file = discord.File(fp, filename="profile.jpeg")
-        discord_file_two = discord.File(fp_two, filename="character.jpeg")
+        view = EnkaProfile.View(options)
+        view.overview_embeds = [embed, embed_two]
+        view.overview_fps = [fp, fp_two]
+        view.data = data
+        view.en_data = en_data
+        view.card_data = card_data
+        view.member = member
+        view.author = i.user
+        view.locale = locale
 
-        view = EnkaProfile.View(
-            [embed, embed_two], [fp, fp_two], options, data, en_data, member, locale
-        )
+        file_one = discord.File(fp, filename="profile.jpeg")
+        file_two = discord.File(fp_two, filename="character.jpeg")
         await i.edit_original_response(
             embeds=[embed, embed_two],
             view=view,
-            attachments=[discord_file, discord_file_two],
+            attachments=[file_one, file_two],
         )
-        view.author = i.user
         view.message = await i.original_response()
 
     @check_cookie()
