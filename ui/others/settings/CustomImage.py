@@ -12,7 +12,7 @@ import asset
 import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import UserCustomImage, CustomInteraction
-from apps.genshin.utils import get_character_emoji
+from apps.genshin.utils import get_character_emoji, get_character_fanarts
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from data.game.elements import get_element_emoji, get_element_list
@@ -284,9 +284,7 @@ async def get_user_custom_image_options(
     options: List[discord.SelectOption] = [
         discord.SelectOption(label=text_map.get(124, locale), value="default")
     ]
-    async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
-        fanarts: Dict[str, List[str]] = json.loads(await f.read())
-    c_fanarts = fanarts.get(str(character_id), [])
+    c_fanarts = await get_character_fanarts(str(character_id))
 
     rows = await pool.fetch(
         """

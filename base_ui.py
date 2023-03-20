@@ -113,6 +113,8 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.AutocompleteError):
         embed.set_author(name=text_map.get(310, locale))
         embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
+    elif isinstance(e, exceptions.CardNotReady):
+        embed.set_author(name=text_map.get(189, locale))
     else:
         capture_exception(e)
 

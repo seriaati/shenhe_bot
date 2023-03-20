@@ -17,9 +17,10 @@ from apps.db.utility import get_profile_ver
 from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import CustomInteraction, DrawInput, EnkaView
+from apps.genshin.utils import get_character_fanarts
 from apps.text_map.text_map_app import text_map
 from base_ui import BaseView
-from exceptions import NoCharacterFound
+from exceptions import CardNotReady, NoCharacterFound
 from ui.others.settings.CustomImage import get_user_custom_image
 from yelan.data.GO_modes import hit_mode_texts
 
@@ -158,9 +159,10 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
         )
         if version == 2:
             if custom_image is None:
-                async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
-                    fanart: Dict[str, List[str]] = json.loads(await f.read())
-                url = random.choice(fanart[str(enka_view.character_id)])
+                urls = await get_character_fanarts(str(enka_view.character_id))
+                if not urls:
+                    raise CardNotReady
+                url = random.choice(urls)
             else:
                 url = custom_image.url
 
@@ -185,6 +187,8 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
                 character,
                 custom_image.url if custom_image else None,
             )
+            if card is None:
+                raise CardNotReady
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
             embed=utility_utils.ErrorEmbed().set_author(
@@ -193,14 +197,6 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
             ),
             attachments=[],
             view=enka_view,
-        )
-    if card is None:
-        embed = utility_utils.DefaultEmbed().set_author(
-            name=text_map.get(189, enka_view.locale),
-            icon_url=i.user.display_avatar.url,
-        )
-        return await i.edit_original_response(
-            embed=embed, attachments=[], view=enka_view
         )
 
     card.seek(0)
