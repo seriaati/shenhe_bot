@@ -9,7 +9,7 @@ discord-ext-prometheus @ git+https://github.com/Apollo-Roboto/discord.py-ext-pro
 discord.py==2.2.2
 diskcache==5.4.0
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
-fontTools==4.39.0
+fontTools==4.39.2
 genshin @ git+https://github.com/thesadru/genshin.py
 hoyolab_rss_feeds==2.1.1
 hutao-login-gateway @ git+https://github.com/Hu-tao-bot/login-service-library-python
