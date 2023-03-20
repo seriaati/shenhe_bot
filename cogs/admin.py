@@ -32,6 +32,7 @@ class AdminCog(commands.Cog, name="admin"):
         message = await ctx.send("Reloading...")
 
         modules_to_reload = (
+            "base_ui",
             "ambr",
             "apps",
             "data",
@@ -40,7 +41,6 @@ class AdminCog(commands.Cog, name="admin"):
             "yelan",
             "asset",
             "config",
-            "base_ui",
         )
         copy_ = sys.modules.copy()
 
