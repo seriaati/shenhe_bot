@@ -522,61 +522,61 @@
 '462': синхронізація з ігровими даними (автозаповнення рівнів)
 '463': Основна статистика
 '464': Sub stat
-'465': Calculate materials needed for upgrading a weapon
+'465': Розрахунок матеріалів, необхідних для покращення зброї
 '466': Розробники, які допомогли мені
 '467': рідкість
 '468': меч
 '469': каталізатор
-'470': claymore
-'471': bow
-'472': polearm
+'470': Дворучне
+'471': Лук
+'472': Спис
 '473': View the todo list
-'474': Import wish history
-'475': Huge thank you to these people!
-'476': Wish history import tutorial
-'477': Submit link
-'478': View wish history
+'474': Імпорт історії побажань
+'475': Велике спасибі цим людям!
+'476': Підручник про імпорт історії бажань
+'477': Запропонувати посилання
+'478': Переглянути історію побажань
 '479': And you!
 '480': Predict the chance of pulling a 5-star banner character
 '481': number
 '482': How many 5-star banner characters do you wish to pull?
 '483': Predict the chance of pulling a 5-star banner weapon
 '484': View wish overview
-'485': Change the language shenhe responds to you with
-'486': View a list of all commands
+'485': Змініть мову shenhe реагує на вас
+'486': Переглянути перелік всіх команд
 '487': Genshin
-'488': Genshin wish
-'489': Requires wish history import using /wish import
-'490': Enhancement progress calculator
-'491': Calculate upgrade materials
-'492': Video tutorial
-'493': Waifus
-'494': Others
-'495': Choose your category
-'496': Author
+'488': Genshin бажання
+'489': Потребує бажаного імпорту історії використовуючи /wish import
+'490': Калькулятор підвищення прогресу
+'491': Калькулятор матеріалів оновлення
+'492': Відеоурок
+'493': Вайфу
+'494': Інше
+'495': Виберіть вашу категорію
+'496': Автор
 '497': |-
-  Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
-  I really appreciate all of you and I hope you enjoy using Shenhe.
-  DM me for any feature requests, imporvements, and bug reports!
+  Дуже дякую за використання Шені, особливо тих, хто давав поради і повідомив про помилки.
+  Я щиро ціную всіх вас і сподіваюся, що вам сподобається Shenhe.
+  СДМ для будь-яких функціональних запитів, імпортування та звіти про помилки!
 '498': Переглянути профіль
 '499': Переглянути всіх персонажів
 '500': Сталася помилка при спробі виконати щоденний вхід
 '501': Виберіть розділ книги
 '502': Запустити калькулятор
-'503': Number of guilds
-'504': 'Made by seria#5334, DM me if you have any questions'
+'503': Кількість гільдій
+'504': 'Зроблено seria#5334, повідомте мене, якщо у вас виникли питання'
 '505': Сталася помилка при спробі відправки вам сповіщення
 '506': За минулий місяць
 '507': How many 5-star banner weapons do you wish to pull?
 '508': Search anything genshin related
-'509': query
+'509': запит
 '510': Сумеру
-'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
+'511': 'Кеш були очищені через зміни в кеші, якщо вам дійсно потрібні дані, будь ласка, повідомте seria#5334'
 '512': |-
-  • Notify you when your parametric transformer is ready
-  • 1 notification per day
-'513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
-'514': Realm currency reminder
+  • Сповістити вас, коли параметрична трансформатор буде готова
+  • 1 сповіщення на добу
+'513': 'Мені дуже шкода, що про це повідомлялося автоматично [seria#5334](http://discord.com/users/410036441129943050), будь ласка, з терпінням чекайте на виправлення'
+'514': Нагадування про накопичення смоли
 '515': Налаштування сповіщень
 '516': Realm currency threshold
 '517': Realm currency reminder disabled
