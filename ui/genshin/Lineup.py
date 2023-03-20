@@ -46,9 +46,9 @@ class View(BaseView):
 class CharacterSelectButton(Button):
     def __init__(self, label: str):
         super().__init__(style=ButtonStyle.primary, label=label, emoji=asset.user_emoji)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
 
         elements = get_element_list()
@@ -64,11 +64,10 @@ class ElementButton(Button):
     def __init__(self, element: str, emoji: str, row: int):
         super().__init__(emoji=emoji, row=row)
         self.element = element
+        self.view: View
 
     async def callback(self, i: Interaction):
         await i.response.defer()
-
-        self.view: View
         self.view.clear_items()
 
         options = []
@@ -102,9 +101,9 @@ class CharacterSelector(Select):
             options=options,
             max_values=4 - len(current_characters),
         )
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
         self.view.characters += [int(o.split("-")[0]) for o in self.values]
 
@@ -144,9 +143,9 @@ class ClearCharacter(Button):
         super().__init__(style=ButtonStyle.danger, label=label, emoji=asset.clear_emoji)
 
         self.items = items
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.characters = []
 
         self.view.remove_item(self)
@@ -166,9 +165,9 @@ class ScenarioSelector(Select):
     ):
         super().__init__(placeholder=placeholder, options=options)
         self.scenario_dict = scenario_dict
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.scenario = self.scenario_dict[self.values[0]]
 
         if i.message is not None:
@@ -185,9 +184,9 @@ class ScenarioSelector(Select):
 class SearchLineup(Button):
     def __init__(self, label: str):
         super().__init__(style=ButtonStyle.green, label=label, emoji=asset.search_emoji)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await search_lineup(i, self.view)
 
 
@@ -204,10 +203,9 @@ class LineupSelector(Select):
         self.lineup_dict = lineup_dict
         self.character_id = character_id
         self.embed = embed
-
-    async def callback(self, i: Interaction):
         self.view: View
 
+    async def callback(self, i: Interaction):
         await image_gen_transition(i, self.view, self.view.locale)
 
         lineup = self.lineup_dict[self.values[0]]
@@ -251,10 +249,9 @@ class GoBack(Button):
         super().__init__(emoji=asset.back_emoji)
         self.embed = embed
         self.items = items
-
-    async def callback(self, i: Interaction):
         self.view: View
 
+    async def callback(self, i: Interaction):
         self.view.clear_items()
         for item in self.items:
             self.view.add_item(item)

@@ -70,9 +70,9 @@ class EditOrRemove(Button):
         )
 
         self.action = action
+        self.view: TodoPaginatorView
 
     async def callback(self, i: custom_model.CustomInteraction):
-        self.view: TodoPaginatorView
         self.view.clear_items()
         self.view.add_item(
             ItemSelect(
@@ -126,9 +126,9 @@ class ItemSelect(Select):
         self.locale = locale
         self.action = action
         self.item_dict = item_dict
+        self.view: TodoPaginatorView
 
     async def callback(self, i: custom_model.CustomInteraction):
-        self.view: TodoPaginatorView
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         row = await pool.fetchrow(

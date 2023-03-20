@@ -36,18 +36,18 @@ class ElementButton(ui.Button):
     def __init__(self, emoji: str, element: str, row: int):
         super().__init__(emoji=emoji, row=row)
         self.element = element
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await element_button_callback(i, self.view, self.element)
 
 
 class GoBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         self.view.clear_items()
         elements = get_element_list()
         for index, element in enumerate(elements):
@@ -61,9 +61,9 @@ class GoBackCharacter(ui.Button):
     def __init__(self, element: str):
         super().__init__(emoji=asset.back_emoji)
         self.element = element
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await element_button_callback(i, self.view, self.element)
 
 
@@ -114,9 +114,9 @@ class AddImage(ui.Button):
         )
         self.character_id = character_id
         self.element = element
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.response.send_modal(
             AddImageModal(self.view.locale, self.character_id, self.view, self.element)
         )
@@ -218,10 +218,9 @@ class ImageSelect(ui.Select):
         )
         self.character_id = character_id
         self.element = element
-
-    async def callback(self, i: CustomInteraction):
         self.view: View
 
+    async def callback(self, i: CustomInteraction):
         await change_user_custom_image(
             i.user.id, self.character_id, self.values[0], i.client.pool
         )
@@ -239,9 +238,9 @@ class CharacterSelect(ui.Select):
     ):
         super().__init__(placeholder=text_map.get(157, locale), options=options)
         self.element = element
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await return_custom_image_interaction(
             self.view, i, int(self.values[0].split("-")[0]), self.element
         )

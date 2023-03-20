@@ -82,9 +82,9 @@ class ElementButton(Button):
 class GoBack(Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=2)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
 
         element_names = list(convert_elements.values())
@@ -102,14 +102,14 @@ class CharacterSelect(Select):
         super().__init__(
             options=options, placeholder=placeholder, max_values=len(options)
         )
-
-    async def callback(self, i: Interaction) -> Any:
         self.view: View
 
+    async def callback(self, i: Interaction) -> Any:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
-        character_list: List[str] = await pool.fetchval(
+        data_list = await pool.fetchval(
             "SELECT item_list FROM talent_notification WHERE user_id = $1", i.user.id
         )
+        character_list: List[str] = data_list
         for character_id in self.values:
             if character_id in character_list:
                 character_list.remove(character_id)

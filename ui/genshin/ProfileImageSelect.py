@@ -43,10 +43,9 @@ class Reload(ui.Button):
             emoji=asset.reload_emoji, row=1, style=discord.ButtonStyle.blurple
         )
         self.original_view = original_view
-
-    async def callback(self, i: custom_model.CustomInteraction):
         self.view: CustomImageView
 
+    async def callback(self, i: custom_model.CustomInteraction):
         custom_image = await CustomImage.get_user_custom_image(
             i.user.id, int(self.view.character_id), i.client.pool
         )
@@ -76,9 +75,9 @@ class SelectImage(ui.Select):
             disabled=disabled,
             row=0,
         )
+        self.view: CustomImageView
 
     async def callback(self, i: custom_model.CustomInteraction):
-        self.view: CustomImageView
         await CustomImage.change_user_custom_image(i.user.id, int(self.view.character_id), self.values[0], i.client.pool)  # type: ignore
         custom_image = await CustomImage.get_user_custom_image(
             i.user.id, int(self.view.character_id), i.client.pool  # type: ignore

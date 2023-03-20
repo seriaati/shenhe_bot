@@ -25,9 +25,9 @@ class View(BaseView):
 class Select(discord.ui.Select):
     def __init__(self, placeholder: str, options: List[discord.SelectOption]):
         super().__init__(placeholder=placeholder, options=options)
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         embed = DefaultEmbed()
         embed.set_image(url="attachment://overview.jpeg")
         fp = await main_funcs.draw_wish_overview_card(

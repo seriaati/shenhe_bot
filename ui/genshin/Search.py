@@ -34,9 +34,9 @@ class View(BaseView):
 class QuickNavigation(Select):
     def __init__(self, options: List[SelectOption], placeholder: str):
         super().__init__(placeholder=placeholder, options=options)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.response.defer()
         if self.values[0] == "1":
             fp = await main_funcs.draw_material_card(
@@ -76,7 +76,7 @@ class BookVolView(BaseView):
 class BookVolumeNav(Select):
     def __init__(self, options: List[SelectOption], placeholder: str):
         super().__init__(placeholder=placeholder, options=options)
+        self.view: BookVolView
 
     async def callback(self, i: Interaction):
-        self.view: BookVolView
         await i.response.edit_message(embed=self.view.embeds[self.values[0]])

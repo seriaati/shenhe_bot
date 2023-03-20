@@ -30,9 +30,9 @@ class View(BaseView):
 class Appearance(ui.Button):
     def __init__(self, label: str):
         super().__init__(emoji=asset.monitor_emoji, label=label)
+        self.view: View
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: View
         locale = self.view.locale
 
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
@@ -52,10 +52,9 @@ class ModeButton(ui.Button):
             label=text_map.get(537 if not toggle else 536, locale),
         )
         self.toggle = toggle
-
-    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
 
+    async def callback(self, i: CustomInteraction) -> Any:
         await i.client.pool.execute(
             "UPDATE user_settings SET dark_mode = $1 WHERE user_id = $2",
             self.toggle,
@@ -73,9 +72,9 @@ class ModeButton(ui.Button):
 class Langauge(ui.Button):
     def __init__(self, label: str):
         super().__init__(emoji=asset.earth_emoji, label=label)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
 
         embed = get_language_embed(i.user.display_avatar.url, locale)
@@ -129,10 +128,9 @@ class CustomProfileImage(ui.Button):
             emoji=asset.image_emoji, label=text_map.get(275, locale), row=2
         )
         self.locale = locale
-
-    async def callback(self, i: CustomInteraction):
         self.view: View
 
+    async def callback(self, i: CustomInteraction):
         embed = DefaultEmbed(description=text_map.get(276, self.locale))
         embed.set_author(
             name=text_map.get(62, self.locale), icon_url=i.user.display_avatar.url
@@ -152,9 +150,9 @@ class Notification(ui.Button):
             emoji=asset.bell_badge_outline, label=text_map.get(137, locale), row=2
         )
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await Notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
 
 
@@ -164,10 +162,9 @@ class AutoRedeem(ui.Button):
             emoji=asset.gift_outline, label=text_map.get(126, locale), row=3
         )
         self.locale = locale
-
-    async def callback(self, i: CustomInteraction):
         self.view: View
 
+    async def callback(self, i: CustomInteraction):
         auto_redeem = await get_user_auto_redeem(i.user.id, i.client.pool)  # type: ignore
 
         embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
@@ -186,10 +183,9 @@ class RedeemButton(ui.Button):
         )
         self.toggle = toggle
         self.locale = locale
-
-    async def callback(self, i: CustomInteraction) -> Any:
         self.view: View
 
+    async def callback(self, i: CustomInteraction) -> Any:
         await i.client.pool.execute(
             "UPDATE user_settings SET auto_redeem = $1 WHERE user_id = $2",
             self.toggle,

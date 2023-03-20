@@ -59,9 +59,9 @@ class LeaderboardSelect(ui.Select):
             discord.SelectOption(label=text_map.get(160, locale), value="full_clear"),
         ]
         super().__init__(placeholder=placeholder, options=options)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         self.view.type = self.values[0]
         await select_callback(self.view, i, self.values[0])
 
@@ -87,9 +87,9 @@ class AbyssSeasonSelect(ui.Select):
             options=options,
             custom_id="abyss_season_select",
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         self.view.season = int(self.values[0])
         await select_callback(self.view, i, self.view.type)
 
@@ -407,9 +407,9 @@ class Global(ui.Button):
             style=discord.ButtonStyle.primary,
             row=4,
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         self.view.area = "global"
         await select_callback(self.view, i, self.view.type)
 
@@ -417,9 +417,9 @@ class Global(ui.Button):
 class Server(ui.Button):
     def __init__(self, label: str):
         super().__init__(label=label, emoji="🏠", custom_id="server", row=4)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         self.view.area = "server"
         await select_callback(self.view, i, self.view.type)
 

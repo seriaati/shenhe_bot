@@ -60,9 +60,9 @@ class VersionButton(ui.Button):
             custom_id="card_version",
         )
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         ver = await get_profile_ver(i.user.id, i.client.pool)
         embed = self.view.gen_version_embed(ver)
         self.view.clear_items()
@@ -90,9 +90,9 @@ class VersionSelect(ui.Select):
             row=0,
         )
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.client.pool.execute(
             "UPDATE user_settings SET profile_ver = $1 WHERE user_id = $2",
             int(self.values[0]),
@@ -113,9 +113,9 @@ class CacheButton(ui.Button):
             custom_id="manage_cache",
         )
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         embed = self.view.gen_cache_embed()
         self.view.clear_items()
 

@@ -30,9 +30,9 @@ class View(BaseView):
 class ResinNotification(ui.Button):
     def __init__(self, locale: discord.Locale | str):
         super().__init__(emoji=asset.resin_emoji, label=text_map.get(582, locale))
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await check_cookie_predicate(i)
         await return_resin_notification(i, self.view)
 
@@ -42,9 +42,9 @@ class PotNotification(ui.Button):
         super().__init__(
             emoji=asset.realm_currency_emoji, label=text_map.get(584, locale)
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await check_cookie_predicate(i)
         await return_pot_notification(i, self.view)
 
@@ -54,9 +54,9 @@ class TalentNotification(ui.Button):
         super().__init__(
             emoji=asset.talent_book_emoji, label=text_map.get(442, locale), row=2
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await return_talent_notification(i, self.view)
 
 
@@ -65,18 +65,18 @@ class WeaponNotification(ui.Button):
         super().__init__(
             emoji=asset.weapon_emoji, label=text_map.get(632, locale), row=2
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await return_weapon_notification(i, self.view)
 
 
 class PTNotification(ui.Button):
     def __init__(self, label: str):
         super().__init__(emoji=asset.pt_emoji, label=label)
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await check_cookie_predicate(i)
         await return_pt_notification(i, self.view)
 
@@ -107,9 +107,9 @@ class RemoveAllWeapon(ui.Button):
             row=1,
             style=discord.ButtonStyle.red,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
         await pool.execute(
             "UPDATE weapon_notification SET item_list = $1 WHERE user_id = $2",
@@ -144,9 +144,9 @@ class RemoveAllCharacter(ui.Button):
             row=1,
             style=discord.ButtonStyle.red,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
         await pool.execute(
             "UPDATE talent_notification SET item_list = $1 WHERE user_id = $2",
@@ -160,9 +160,9 @@ class PrivacySettings(ui.Button):
     def __init__(self, locale: discord.Locale | str):
         super().__init__(emoji="✉️", label=text_map.get(585, locale), row=2)
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         embed = DefaultEmbed(description=text_map.get(595, self.locale))
         embed.set_author(
             name=text_map.get(311, self.locale),
@@ -201,9 +201,9 @@ class NotificationON(ui.Button):
             style=discord.ButtonStyle.blurple if current else discord.ButtonStyle.gray,
         )
         self.table_name = table_name
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await on_off_function(self.view, self.table_name, i, True)
 
 
@@ -217,9 +217,9 @@ class NotificationOFF(ui.Button):
             else discord.ButtonStyle.gray,
         )
         self.table_name = table_name
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await on_off_function(self.view, self.table_name, i, False)
 
 
@@ -242,9 +242,9 @@ class ChangeSettings(ui.Button):
 class GOBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=2)
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await return_notification_menu(i, self.view.locale)
 
 

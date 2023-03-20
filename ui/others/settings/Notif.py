@@ -28,9 +28,9 @@ class NotificationButton(ui.Button):
         )
         self.toggle = toggle
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.client.pool.execute(
             "UPDATE user_settings SET notification = $1 WHERE user_id = $2",
             self.toggle,

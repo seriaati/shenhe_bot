@@ -28,10 +28,10 @@ class View(BaseView):
 class ClaimReward(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(style=ButtonStyle.blurple, label=text_map.get(603, locale))
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
         await i.response.defer()
-        self.view: View
         result, _ = await self.view.genshin_app.claim_daily_reward(
             i.user.id, i.user.id, i.locale
         )
@@ -46,9 +46,9 @@ class ClaimRewardToggle(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(label=text_map.get(627, locale), style=ButtonStyle.green)
         self.locale = locale
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.client.pool.execute(
             "UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2",
             i.user.id,

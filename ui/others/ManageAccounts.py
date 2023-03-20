@@ -39,9 +39,9 @@ class AddAccount(ui.Button):
             label=text_map.get(556, locale),
             style=discord.ButtonStyle.blurple,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         await add_account_callback(self.view, i)
 
 
@@ -64,9 +64,9 @@ class GenerateLink(ui.Button):
             label=text_map.get(401, locale),
             style=discord.ButtonStyle.blurple,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         locale = self.view.locale
 
         embed = DefaultEmbed().set_author(
@@ -111,9 +111,9 @@ class ResendToken(ui.Button):
         super().__init__(emoji=asset.reload_emoji, style=discord.ButtonStyle.green)
         self.user_id = user_id
         self.token = token
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         bot: ShenheBot = i.client  # type: ignore
 
         await i.response.defer()
@@ -164,9 +164,9 @@ class ChangeNickname(ui.Button):
             label=text_map.get(600, locale),
             disabled=disabled,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         self.view.clear_items()
         self.view.add_item(
             SwitchAccount(
@@ -208,9 +208,9 @@ class RemoveAccount(ui.Button):
             disabled=disabled,
             style=discord.ButtonStyle.red,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         locale = self.view.locale
         self.view.clear_items()
         account_select = SwitchAccount(locale, self.view.select_options, True)
@@ -243,9 +243,9 @@ class SwitchAccount(ui.Select):
             disabled=disabled,
             max_values=len(select_options) if self.remove_account else 1,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         if self.remove_account:
@@ -288,9 +288,9 @@ class GOBack(ui.Button):
             style=discord.ButtonStyle.blurple if blurple else discord.ButtonStyle.gray,
         )
         self.layer = layer
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         if self.layer == 2:
             await add_account_callback(self.view, i)
         else:

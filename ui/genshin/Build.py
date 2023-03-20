@@ -33,9 +33,9 @@ class ElementButton(Button):
     def __init__(self, element: str, element_emoji: str, row: int):
         super().__init__(emoji=element_emoji, row=row)
         self.element = element
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await element_button_callback(i, self.element, self.view)
 
 
@@ -55,9 +55,9 @@ class CharacterSelect(Select):
         super().__init__(options=options, placeholder=placeholder)
         self.builds = builds
         self.element = element
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         builds = get_character_builds(self.values[0], self.builds, locale)
         embeds = []
@@ -111,10 +111,9 @@ class TeamButton(Button):
     def __init__(self, character_id: int):
         super().__init__(emoji=asset.team_emoji)
         self.character_id = character_id
-
-    async def callback(self, i: Interaction):
         self.view: View
 
+    async def callback(self, i: Interaction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
 
@@ -191,9 +190,9 @@ class TeamSelect(Select):
         self.locale = locale
         self.dark_mode = dark_mode
         self.character_id = character_id
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await image_gen_transition(i, self.view, self.locale)
 
         embeds, attachments = await get_embeds_for_lineup(
@@ -253,9 +252,9 @@ class GoBackOriginal(Button):
         super().__init__(emoji=asset.back_emoji, row=2)
         self.items = items
         self.embed = embed
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
         for item in self.items:
             self.view.add_item(item)
@@ -267,9 +266,9 @@ class GoBack(Button):
         super().__init__(emoji=asset.back_emoji, row=2)
         self.place_to_go_back = place_to_go_back
         self.element = element
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
         if self.place_to_go_back == "element":
             elements = get_element_list()

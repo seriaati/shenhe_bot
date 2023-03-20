@@ -41,9 +41,9 @@ class GOBackReminder(Button):
 class GOBack(Button):
     def __init__(self):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         self.view.clear_items()
 
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))  # type: ignore
@@ -65,9 +65,9 @@ class WeaponTypeButton(Button):
     def __init__(self, emoji: str, label: str, weapon_type: str):
         super().__init__(emoji=emoji, label=label)
         self.weapon_type = weapon_type
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         weapon_list: List[str] = await pool.fetchval(
@@ -117,14 +117,15 @@ class WeaponSelect(Select):
         super().__init__(
             options=options, placeholder=placeholder, max_values=len(options)
         )
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
-        weapon_list: List[str] = await pool.fetchval(
+        data_list = await pool.fetchval(
             "SELECT item_list FROM weapon_notification WHERE user_id = $1", i.user.id
         )
+        weapon_list: List[str] = data_list
         for weapon_id in self.values:
             if weapon_id in weapon_list:
                 weapon_list.remove(weapon_id)

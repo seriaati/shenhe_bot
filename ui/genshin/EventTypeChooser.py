@@ -28,9 +28,9 @@ class View(BaseView):
 class Hoyolab(ui.Button):
     def __init__(self):
         super().__init__(label="HoYoLAB", emoji=asset.hoyolab_emoji)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.response.defer()
 
         user_locale = await get_user_locale(i.user.id, i.client.pool)
@@ -91,9 +91,9 @@ class Genshin(ui.Button):
         super().__init__(
             label=text_map.get(313, locale), emoji="<:genshin_icon:1025630733068423169>"
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.response.defer()
         genshin_py_locale = to_genshin_py(self.view.locale)
         event_overview_api = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
@@ -157,9 +157,9 @@ class EventTypeSelect(ui.Select):
     ) -> None:
         super().__init__(options=options, placeholder=text_map.get(409, locale))
         self.embeds = embeds
+        self.view: GeneralPaginatorView
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: GeneralPaginatorView
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await self.view.update_children(i)

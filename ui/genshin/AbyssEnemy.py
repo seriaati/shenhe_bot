@@ -49,18 +49,18 @@ class ChamberSelect(Select):
             options=options,
             row=index,
         )
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await select_callback(i, self.view, self.values[0])
 
 
 class InstantButton(Button):
     def __init__(self, label: str):
         super().__init__(label=label, style=ButtonStyle.primary, row=2)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await select_callback(i, self.view, self.label)
 
 

@@ -23,9 +23,9 @@ class View(BaseView):
 class IsUP(Button):
     def __init__(self):
         super().__init__(label="UP", style=ButtonStyle.blurple)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.response.defer()
         self.view.up = True
         self.view.stop()
@@ -34,9 +34,9 @@ class IsUP(Button):
 class IsStandard(Button):
     def __init__(self, locale: Locale | str):
         super().__init__(label=text_map.get(387, locale))
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.response.defer()
         self.view.up = False
         self.view.stop()

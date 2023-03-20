@@ -36,9 +36,9 @@ class View(BaseView):
 class InfoButton(Button):
     def __init__(self):
         super().__init__(emoji=asset.info_emoji)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
             ephemeral=True,
@@ -52,8 +52,9 @@ class MonthSelect(Select):
         self.add_option(label=text_map.get(506, locale), value="-1")
         self.add_option(label=text_map.get(427, locale), value="-2")
 
-    async def callback(self, i: Interaction):
         self.view: View
+
+    async def callback(self, i: Interaction):
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         embed = DefaultEmbed()
         embed.set_author(
@@ -87,9 +88,9 @@ class MonthSelect(Select):
 class Primo(Button):
     def __init__(self, label: str):
         super().__init__(label=label, emoji=asset.primo_emoji)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         if not self.label:
             raise AssertionError
 
@@ -99,9 +100,9 @@ class Primo(Button):
 class Mora(Button):
     def __init__(self, label: str):
         super().__init__(label=label, emoji=asset.mora_emoji)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         if not self.label:
             raise AssertionError
 

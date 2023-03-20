@@ -18,7 +18,7 @@ class View(BaseView):
 class CopyUID(Button):
     def __init__(self, label: str):
         super().__init__(label=label, style=ButtonStyle.green)
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         await i.response.send_message(content=str(self.view.uid), ephemeral=True)

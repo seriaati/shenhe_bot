@@ -40,9 +40,9 @@ class InfoButton(ui.Button):
         super().__init__(
             style=discord.ButtonStyle.secondary, emoji=asset.info_emoji, row=1
         )
+        self.view: View
 
     async def callback(self, i: custom_model.CustomInteraction):
-        self.view: View
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(399, self.view.locale)),
             ephemeral=True,
@@ -59,10 +59,9 @@ class OverviewButton(ui.Button):
             row=0,
             emoji=asset.overview_emoji,
         )
-
-    async def callback(self, i: custom_model.CustomInteraction):
         self.view: View
 
+    async def callback(self, i: custom_model.CustomInteraction):
         set_custom_image = utils.get(self.view.children, custom_id="set_custom_image")
         calculate = utils.get(self.view.children, custom_id="calculate")
         show_artifacts = utils.get(self.view.children, custom_id="show_artifacts")
@@ -96,10 +95,9 @@ class SetCustomImage(ui.Button):
             row=1,
             emoji=asset.image_emoji,
         )
-
-    async def callback(self, i: custom_model.CustomInteraction) -> Any:
         self.view: custom_model.EnkaView
 
+    async def callback(self, i: custom_model.CustomInteraction) -> Any:
         options = await CustomImage.get_user_custom_image_options(
             int(self.view.character_id), i.client.pool, i.user.id, self.view.locale
         )
@@ -125,9 +123,9 @@ class BoxButton(ui.Button):
             custom_id="box",
         )
         self.options = options
+        self.view: custom_model.EnkaView
 
     async def callback(self, i: custom_model.CustomInteraction):
-        self.view: custom_model.EnkaView
         self.view.clear_items()
         count = 1
         for option in self.options:
@@ -147,9 +145,9 @@ class BoxButton(ui.Button):
 class PageSelect(ui.Select):
     def __init__(self, character_options: list[discord.SelectOption], plceholder: str):
         super().__init__(placeholder=plceholder, options=character_options)
+        self.view: custom_model.EnkaView
 
     async def callback(self, i: custom_model.CustomInteraction) -> Any:
-        self.view: custom_model.EnkaView
         self.view.character_id = self.values[0]
         await EnkaDamageCalc.go_back_callback(i, self.view)
 
@@ -164,9 +162,9 @@ class CalculateDamageButton(ui.Button):
             row=0,
             emoji=asset.calculator_emoji,
         )
+        self.view: custom_model.EnkaView
 
     async def callback(self, i: custom_model.CustomInteraction) -> Any:
-        self.view: custom_model.EnkaView
         view = EnkaDamageCalc.View(self.view, self.view.locale, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
@@ -183,10 +181,9 @@ class ShowArtifacts(ui.Button):
             emoji=asset.artifact_emoji,
             row=1,
         )
-
-    async def callback(self, i: custom_model.CustomInteraction) -> Any:
         self.view: custom_model.EnkaView
 
+    async def callback(self, i: custom_model.CustomInteraction) -> Any:
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
         if not character:
             raise AssertionError
@@ -211,9 +208,9 @@ class ShowArtifacts(ui.Button):
 class CardSettings(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.settings_emoji, row=1, disabled=True)
+        self.view: custom_model.EnkaView
 
     async def callback(self, i: custom_model.CustomInteraction) -> Any:
-        self.view: custom_model.EnkaView
         view = ProfileSettings.View(self.view.locale, self.view)
         view.author = i.user
         await i.response.edit_message(

@@ -32,10 +32,9 @@ class View(BaseView):
 class ElementSelect(Select):
     def __init__(self, options: List[SelectOption], placeholder: str):
         super().__init__(placeholder=placeholder, options=options)
-
-    async def callback(self, i: Interaction) -> Any:
         self.view: View
 
+    async def callback(self, i: Interaction) -> Any:
         await i.response.edit_message(
             embed=DefaultEmbed().set_author(
                 name=text_map.get(644, self.view.locale), icon_url=asset.loader

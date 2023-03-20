@@ -56,9 +56,9 @@ class LinkUID(ui.Button):
             disabled=disabled,
             row=0,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         locale = self.view.locale
         embed = DefaultEmbed(description=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
@@ -99,9 +99,9 @@ class ImportWishHistory(ui.Button):
             row=0,
             disabled=disabled,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         locale = self.view.locale
         embed = DefaultEmbed().set_author(
             name=text_map.get(685, locale), icon_url=i.user.display_avatar.url
@@ -200,9 +200,9 @@ class ClearWishHistory(ui.Button):
             row=1,
             disabled=disabled,
         )
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         locale = self.view.locale
         embed = DefaultEmbed(description=text_map.get(689, locale)).set_author(
             name=text_map.get(688, locale), icon_url=i.user.display_avatar.url
@@ -256,9 +256,9 @@ class ConfirmWishImport(ui.Button):
         )
         self.wish_history = wish_history
         self.from_text_file = from_text_file
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view: View
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         uid = await get_uid(i.user.id, pool)

@@ -48,9 +48,9 @@ class WeaponTypeButton(Button):
     def __init__(self, emoji: str, label: str, weapon_type: str, row: int):
         super().__init__(emoji=emoji, label=label, row=row)
         self.weapon_type = weapon_type
+        self.view: View
 
     async def callback(self, i: Interaction):
-        self.view: View
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, List):
@@ -83,9 +83,9 @@ class WeaponSelect(Select):
         super().__init__(
             placeholder=text_map.get(180, locale) + range_, options=options
         )
+        self.view: View
 
     async def callback(self, i: Interaction) -> Any:
-        self.view: View
         await i.response.send_modal(LevelModal(self.values[0], self.view.locale))
 
 

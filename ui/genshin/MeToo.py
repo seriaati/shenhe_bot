@@ -19,10 +19,9 @@ class View(BaseView):
 class MeToo(ui.Button):
     def __init__(self, label: str):
         super().__init__(style=ButtonStyle.green, label=label)
-
-    async def callback(self, i: Interaction):
         self.view: View
 
+    async def callback(self, i: Interaction):
         await i.response.defer()
         await check_cookie_predicate(i)
 

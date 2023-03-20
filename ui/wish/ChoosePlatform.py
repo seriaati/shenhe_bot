@@ -133,9 +133,9 @@ class SubmitLink(ui.Button):
 class GOBack(ui.Button):
     def __init__(self):
         super().__init__(emoji="<:left:982588994778972171>")
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id, i.client.pool)
         view = View(self.view.locale)

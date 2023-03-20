@@ -130,9 +130,9 @@ class View(BaseView):
 class GoBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         await go_back_callback(i, self.view.enka_view)
 
 
@@ -212,9 +212,9 @@ class HitModeButton(ui.Button):
     def __init__(self, hit_mode: str, label: str):
         super().__init__(style=discord.ButtonStyle.blurple, label=label)
         self.hit_mode = hit_mode
+        self.view: View
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: View
         self.view.calculator.hit_mode = self.hit_mode
         await damage_calc.return_current_status(i, self.view)
 
@@ -224,9 +224,9 @@ class ReactionModeSelect(ui.Select):
         super().__init__(
             placeholder=placeholder, options=options, custom_id="reaction_mode"
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: View
         self.view.calculator.reaction_mode = (
             "" if self.values[0] == "none" else self.values[0]
         )
@@ -238,9 +238,9 @@ class InfusionAuraSelect(ui.Select):
         super().__init__(
             placeholder=placeholder, options=options, custom_id="infusion_aura"
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: View
         self.view.calculator.infusion_aura = (
             "" if self.values[0] == "none" else self.values[0]
         )
@@ -256,9 +256,9 @@ class TeamSelectView(BaseView):
 class GoBackToCalc(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
+        self.view: TeamSelectView
 
     async def callback(self, i: CustomInteraction):
-        self.view: TeamSelectView
         view = self.view.prev_view
         view.author = i.user
         await i.response.edit_message(view=view)
@@ -276,9 +276,9 @@ class TeamSelectButton(ui.Button):
         )
         self.options = options
         self.placeholder = placeholder
+        self.view: View
 
     async def callback(self, i: CustomInteraction):
-        self.view: View
         view = TeamSelectView(self.view)
         view.add_item(GoBackToCalc())
         divided: List[List[discord.SelectOption]] = list(
@@ -305,9 +305,9 @@ class TeamSelect(ui.Select):
             options=options,
             max_values=3 if len(options) >= 3 else len(options),
         )
+        self.view: TeamSelectView
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: TeamSelectView
         self.view.prev_view.calculator.team = self.values
         await damage_calc.return_current_status(i, self.view.prev_view)
 
@@ -321,7 +321,7 @@ class RunCalc(ui.Button):
             custom_id="calculate",
             emoji=asset.play_emoji,
         )
+        self.view: View
 
     async def callback(self, i: CustomInteraction) -> Any:
-        self.view: View
         await damage_calc.return_damage(i, self.view)

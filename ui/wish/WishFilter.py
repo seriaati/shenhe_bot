@@ -12,9 +12,9 @@ from utility.wish_paginator import WishPaginatorView
 class SelectBanner(Select):
     def __init__(self, placeholder: str, options: List[SelectOption]):
         super().__init__(placeholder=placeholder, options=options, row=3)
+        self.view: WishPaginatorView
 
     async def callback(self, i: CustomInteraction):
-        self.view: WishPaginatorView
         await filter_callback(self, i, self.view.banner_filters)
 
 
@@ -25,9 +25,9 @@ class SelectRarity(Select):
         self.add_option(label="4 ✦", value="4")
         self.add_option(label="3 ✦", value="3")
         self.select_banner = select_banner
+        self.view: WishPaginatorView
 
     async def callback(self, i: CustomInteraction):
-        self.view: WishPaginatorView
         await filter_callback(self, i, self.view.rarity_filters)
 
 
