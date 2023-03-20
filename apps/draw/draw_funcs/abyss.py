@@ -422,6 +422,7 @@ def character_usage(
             card_width=645,
             card_x_padding=60,
             card_y_padding=45,
+            max_card_num=11,
         )
     )
     draw = ImageDraw.Draw(im)
