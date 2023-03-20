@@ -1,6 +1,6 @@
-import io
 from typing import Any, List
-from apps.db.utility import get_profile_ver
+from apps.draw.main_funcs import draw_artifact_card
+from apps.text_map.text_map_app import text_map
 
 import discord
 import enkanetwork as enka
@@ -9,8 +9,6 @@ from discord import ui, utils
 import apps.genshin.custom_model as custom_model
 import asset
 import config
-from apps.draw.main_funcs import draw_artifact_card
-from apps.text_map.text_map_app import text_map
 from ui.genshin import EnkaDamageCalc, ProfileImageSelect, ProfileSettings
 from ui.others.settings import CustomImage
 from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode

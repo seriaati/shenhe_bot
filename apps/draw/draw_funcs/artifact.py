@@ -27,14 +27,14 @@ def combine_artifact_images(images: List[Image.Image], dark_mode: bool) -> io.By
     im = Image.new("RGB", (num_cols * size[0], num_rows * size[1]), background_color)
 
     # Paste each image onto the new image
-    for i in range(len(images)):
+    for i, item in enumerate(images):
         row = i // 3
         col = i % 3
         x = col * size[0]
         y = row * size[1]
         if row == 1:
             x += size[0] // 2
-        im.paste(images[i], (x, y))
+        im.paste(item, (x, y))
 
     fp = io.BytesIO()
     im = im.convert("RGB")
