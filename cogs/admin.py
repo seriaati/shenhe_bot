@@ -41,6 +41,7 @@ class AdminCog(commands.Cog, name="admin"):
             "yelan",
             "asset",
             "config",
+            "exceptions",
         )
         copy_ = sys.modules.copy()
 
