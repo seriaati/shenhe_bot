@@ -2,7 +2,8 @@ import logging
 import re
 from datetime import datetime
 from itertools import islice
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
+from apps.text_map.text_map_app import text_map
 
 import asyncpg
 import discord
@@ -30,6 +31,17 @@ class DefaultEmbed(discord.Embed):
 class ErrorEmbed(discord.Embed):
     def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
         super().__init__(title=title, description=description, color=0xFC5165)
+
+    def set_title(
+        self,
+        map_hash: int,
+        locale: Union[discord.Locale, str],
+        user: Union[discord.Member, discord.User],
+    ):
+        self.set_author(
+            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+        )
+        return self
 
 
 def time_in_range(start, end, x):

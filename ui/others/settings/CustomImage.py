@@ -182,15 +182,17 @@ class RemoveImage(ui.Button):
         )
         self.character_id = character_id
         self.element = element
-
-    async def callback(self, i: CustomInteraction):
+        self.locale = locale
         self.view: View
 
+    async def callback(self, i: CustomInteraction):
         custom_image = await get_user_custom_image(
             i.user.id, self.character_id, i.client.pool
         )
         if custom_image is None:
-            raise AssertionError
+            return await i.response.send_message(
+                embed=ErrorEmbed().set_title(404, self.locale, i.user)
+            )
 
         await remove_user_custom_image(
             i.user.id, custom_image.url, custom_image.character_id, i.client.pool
