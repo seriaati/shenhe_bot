@@ -952,6 +952,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
         ]
         event_wishes = [a for a in annoucements if a.id in event_wish_ids]
+        event_wishes.sort(key=lambda x: x.end_time)
         if not event_wishes:
             return await i.followup.send(
                 embed=utils.DefaultEmbed(
