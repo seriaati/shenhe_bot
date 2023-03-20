@@ -712,7 +712,7 @@ class Schedule(commands.Cog):
         embed = utility_utils.ErrorEmbed(
             description=f"""
             {error_message}
-            
+
             {text_map.get(630, 'en-US', user.user_locale)}
             """
         )

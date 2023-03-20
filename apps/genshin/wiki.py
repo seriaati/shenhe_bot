@@ -404,7 +404,7 @@ async def parse_furniture_wiki(
     embed = DefaultEmbed(furniture.name)
     embed.description = f"""
         {furniture.description}
-        
+
         {asset.comfort_emoji} {text_map.get(255, locale)}: {furniture.comfort or 0}
         {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost or 0}
     """
