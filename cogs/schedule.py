@@ -950,7 +950,7 @@ class Schedule(commands.Cog):
                                 name=object_id,
                                 image=bytes_obj,
                             )
-                        except (discord.Forbidden, discord.HTTPException) as e:
+                        except discord.HTTPException as e:
                             log.warning(
                                 f"[Schedule] Emoji creation failed [Object]{obj}"
                             )
