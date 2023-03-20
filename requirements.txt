@@ -3,7 +3,7 @@ aiohttp==3.8.4
 aioimgur==0.1.1
 asqlite @ git+https://github.com/Rapptz/asqlite
 asyncpg==0.27.0
-beautifulsoup4==4.11.2
+beautifulsoup4==4.12.0
 cachetools==5.3.0
 discord-ext-prometheus @ git+https://github.com/Apollo-Roboto/discord.py-ext-prometheus
 discord.py==2.2.2
