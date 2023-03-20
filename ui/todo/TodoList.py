@@ -49,7 +49,8 @@ class AddItem(Button):
             label=label, style=ButtonStyle.green, row=2, emoji=asset.add_emoji
         )
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    @staticmethod
+    async def callback(i: custom_model.CustomInteraction):
         locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
         await i.response.send_modal(AddItemModal(locale))
 
@@ -89,7 +90,8 @@ class ClearItems(Button):
     def __init__(self, disabled: bool, label: str):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    @staticmethod
+    async def callback(i: custom_model.CustomInteraction):
         pool: asyncpg.Pool = i.client.pool  # type: ignore
         await pool.execute("DELETE FROM todo WHERE user_id = $1", i.user.id)
         await return_todo(i)
