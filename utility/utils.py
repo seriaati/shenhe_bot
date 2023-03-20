@@ -3,7 +3,6 @@ import re
 from datetime import datetime
 from itertools import islice
 from typing import Any, Dict, List, Optional, Union
-from apps.text_map.text_map_app import text_map
 
 import asyncpg
 import discord
@@ -34,6 +33,7 @@ class ErrorEmbed(discord.Embed):
 
     def set_title(
         self,
+        text_map,
         map_hash: int,
         locale: Union[discord.Locale, str],
         user: Union[discord.Member, discord.User],

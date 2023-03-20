@@ -191,7 +191,7 @@ class RemoveImage(ui.Button):
         )
         if custom_image is None:
             return await i.response.send_message(
-                embed=ErrorEmbed().set_title(404, self.locale, i.user)
+                embed=ErrorEmbed().set_title(text_map, 404, self.locale, i.user)
             )
 
         await remove_user_custom_image(
