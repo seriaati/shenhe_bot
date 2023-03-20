@@ -1,9 +1,10 @@
 from typing import List
 
-from discord import ButtonStyle, Interaction, Locale, SelectOption
-from discord.ui import Button, Select, button
+import discord
+from discord import ui
 
 import config
+from apps.genshin.custom_model import CustomInteraction
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
@@ -19,7 +20,7 @@ import_options = {
     "PC - #2": {
         "hash": 394,
         "link": "https://www.youtube.com/watch?v=ojZzl3dmppI",
-        "code": 'iex(\'Write-Host "Copy the wish history table!";while(1) { $c = Get-Clipboard -TextFormatType Html; if ($c -match "^SourceURL:https:/.+log") { break; }; for($i=5; $i -gt 0; $i--) { Write-Host "`rChecking in $i" -NoNewline; Sleep 1; }; }; Write-Host " OK"; $m=(((Get-Clipboard -TextFormatType Html) | Select-String "(https:/.+log)").Matches[0].Value);$m; Set-Clipboard -Value $m;\')',
+        "code": 'iex(\'Write-Host "Copy the wish history table!";while(1) { $c = Get-Clipboard -TextFormatType Html; if ($c -match "^SourceURL:https:/.+log") { break; }; for($i=5; $i -gt 0; $i--) { Write-Host "`rChecking in $i" -NoNewline; Sleep 1; }; }; Write-Host " OK"; $m=(((Get-Clipboard -TextFormatType Html) | ui.Select-String "(https:/.+log)").Matches[0].Value);$m; Set-Clipboard -Value $m;\')',
     },
     "PC - #3": {"hash": 403, "link": "", "code": ""},
     "ANDROID - Wifi": {
@@ -46,18 +47,20 @@ import_options = {
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
 
-    @button(emoji="<:windows_logo:1024250977731223552>")
-    async def pc(self, i: Interaction, button: Button):
+    @ui.button(emoji="<:windows_logo:1024250977731223552>")
+    async def pc(self, i: discord.Interaction, _: ui.Button):
         self.clear_items()
         options = []
         for option in list(import_options.keys()):
             if "PC" in option:
                 options.append(
-                    SelectOption(label=option, value=option, emoji=button.emoji)
+                    discord.SelectOption(
+                        label=option, value=option, emoji=ui.button.emoji
+                    )
                 )
         embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
@@ -67,14 +70,16 @@ class View(BaseView):
         self.add_item(SubmitLink(self.locale))
         await i.response.edit_message(embed=embed, view=self)
 
-    @button(emoji="<:apple_logo:1024250975390814269> ")
-    async def ios(self, i: Interaction, button: Button):
+    @ui.button(emoji="<:apple_logo:1024250975390814269>")
+    async def ios(self, i: discord.Interaction, _: ui.Button):
         self.clear_items()
         options = []
         for option in list(import_options.keys()):
             if "IOS" in option:
                 options.append(
-                    SelectOption(label=option, value=option, emoji=button.emoji)
+                    discord.SelectOption(
+                        label=option, value=option, emoji=ui.button.emoji
+                    )
                 )
         embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
@@ -85,12 +90,14 @@ class View(BaseView):
         await i.response.edit_message(view=self, embed=embed)
 
 
-class ChooseMethod(Select):
-    def __init__(self, options: List[SelectOption], locale: Locale | str):
+class ChooseMethod(ui.Select):
+    def __init__(
+        self, options: List[discord.SelectOption], locale: discord.Locale | str
+    ):
         super().__init__(placeholder=text_map.get(3, locale), options=options)
         self.locale = locale
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         embeds = []
         option = import_options.get(self.values[0], {})
@@ -110,24 +117,24 @@ class ChooseMethod(Select):
             await i.followup.send(content=f"```{option['code']}```", ephemeral=True)
 
 
-class SubmitLink(Button):
-    def __init__(self, locale: Locale | str):
+class SubmitLink(ui.Button):
+    def __init__(self, locale: discord.Locale | str):
         super().__init__(
             emoji="<:submit_cookie:1019068169882718258>",
             label=text_map.get(477, locale),
-            style=ButtonStyle.primary,
+            style=discord.ButtonStyle.primary,
         )
         self.locale = locale
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.send_modal(SetAuthKey.Modal(self.locale))
 
 
-class GOBack(Button):
+class GOBack(ui.Button):
     def __init__(self):
         super().__init__(emoji="<:left:982588994778972171>")
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view: View
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_locale(i.user.id, i.client.pool)
