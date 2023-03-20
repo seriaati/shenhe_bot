@@ -1,8 +1,5 @@
-import json
 import random
 from typing import Any, Dict, List
-
-import aiofiles
 import aiohttp
 import discord
 import PIL

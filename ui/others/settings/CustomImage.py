@@ -1,7 +1,4 @@
-import json
 from typing import Dict, List, Optional, Union
-
-import aiofiles
 import aiohttp
 import asyncpg
 import discord
