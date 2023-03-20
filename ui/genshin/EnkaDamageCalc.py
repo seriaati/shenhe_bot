@@ -1,16 +1,19 @@
-from typing import Any, Dict, List
-import aiofiles
 import json
 import random
+from typing import Any, Dict, List
 
+import aiofiles
 import aiohttp
+import discord
 import PIL
-from discord import ButtonStyle, File, Locale, SelectOption, utils
-from discord.ui import Button, Select
+from discord import ui, utils
 from pyppeteer import browser
 
 import asset
 import config
+import utility.utils as utility_utils
+import yelan.damage_calculator as damage_calc
+from apps.db.utility import get_profile_ver
 from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import CustomInteraction, DrawInput, EnkaView
@@ -18,8 +21,6 @@ from apps.text_map.text_map_app import text_map
 from base_ui import BaseView
 from exceptions import NoCharacterFound
 from ui.others.settings.CustomImage import get_user_custom_image
-import utility.utils as utility_utils
-import yelan.damage_calculator as damage_calc
 from yelan.data.GO_modes import hit_mode_texts
 
 
@@ -27,7 +28,7 @@ class View(BaseView):
     def __init__(
         self,
         enka_view: EnkaView,
-        locale: Locale | str,
+        locale: discord.Locale | str,
         browsers: Dict[str, browser.Browser],
     ):
         super().__init__(timeout=config.long_timeout)
@@ -44,7 +45,7 @@ class View(BaseView):
 
         self.calculator = damage_calc.DamageCalculator(
             character_name,
-            enka_view.eng_data,
+            enka_view.en_data,
             enka_view.character_id,
             locale,
             "critHit",
@@ -54,12 +55,12 @@ class View(BaseView):
 
         # producing select options
         reaction_mode_options = [
-            SelectOption(label=text_map.get(331, locale), value="none")
+            discord.SelectOption(label=text_map.get(331, locale), value="none")
         ]
         element = str(self.calculator.current_character.element.name)
         if element == "Cryo" or self.calculator.infusion_aura == "cryo":
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(332, locale), value="melt")
+                discord.SelectOption(label=text_map.get(332, locale), value="melt")
             )
         elif (
             element == "Pyro"
@@ -67,30 +68,32 @@ class View(BaseView):
             or element == "Anemo"
         ):
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(333, locale), value="vaporize")
+                discord.SelectOption(label=text_map.get(333, locale), value="vaporize")
             )
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(332, locale), value="melt")
+                discord.SelectOption(label=text_map.get(332, locale), value="melt")
             )
         elif element == "Hydro":
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(333, locale), value="vaporize")
+                discord.SelectOption(label=text_map.get(333, locale), value="vaporize")
             )
         elif element == "Dendro":
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(525, locale), value="spread")
+                discord.SelectOption(label=text_map.get(525, locale), value="spread")
             )
         elif element in ("Electro", "Anemo"):
             reaction_mode_options.append(
-                SelectOption(label=text_map.get(526, locale), value="aggravate")
+                discord.SelectOption(label=text_map.get(526, locale), value="aggravate")
             )
 
-        teammate_options: List[SelectOption] = []
+        teammate_options: List[discord.SelectOption] = []
         for option in self.enka_view.character_options:
             if option.value == str(self.enka_view.character_id):
                 continue
             teammate_options.append(
-                SelectOption(label=option.label, value=option.value, emoji=option.emoji)
+                discord.SelectOption(
+                    label=option.label, value=option.value, emoji=option.emoji
+                )
             )
 
         # adding items
@@ -100,18 +103,18 @@ class View(BaseView):
             ReactionModeSelect(reaction_mode_options, text_map.get(337, locale))
         )
         options = [
-            SelectOption(label=text_map.get(338, locale), value="none"),
-            SelectOption(
+            discord.SelectOption(label=text_map.get(338, locale), value="none"),
+            discord.SelectOption(
                 label=text_map.get(339, locale),
                 description=text_map.get(341, locale),
                 value="pyro",
             ),
-            SelectOption(
+            discord.SelectOption(
                 label=text_map.get(340, locale),
                 description=text_map.get(342, locale),
                 value="cryo",
             ),
-            SelectOption(
+            discord.SelectOption(
                 label=text_map.get(360, locale),
                 description=text_map.get(357, locale),
                 value="hydro",
@@ -124,7 +127,7 @@ class View(BaseView):
         self.add_item(RunCalc(text_map.get(502, locale)))
 
 
-class GoBack(Button):
+class GoBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
 
@@ -134,58 +137,54 @@ class GoBack(Button):
 
 
 async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
+    await i.response.defer()
+
     enka_view.clear_items()
     for child in enka_view.original_children:
         enka_view.add_item(child)
-
     for child in enka_view.children:
-        child.disabled = True  # type: ignore
-
-    # await i.response.edit_message(
-    #     # embed=utility_utils.DefaultEmbed()
-    #     # .set_author(
-    #     #     name=text_map.get(644, enka_view.locale),
-    #     #     icon_url=asset.loader,
-    #     # )
-    #     # .set_image(url="https://i.imgur.com/AsxZdAu.gif"),
-    #     embed=None,
-    #     attachments=[],
-    #     view=enka_view,
-    # )
-    await i.response.defer()
-
-    for child in enka_view.children:
-        child.disabled = False  # type: ignore
-
-    if enka_view.data.characters is None:
-        raise NoCharacterFound
+        if isinstance(child, ui.Button):
+            child.disabled = False
 
     character = utils.get(enka_view.data.characters, id=int(enka_view.character_id))
     if not character:
         raise AssertionError
 
     dark_mode = await utility_utils.get_user_appearance_mode(i.user.id, i.client.pool)
+    version = await get_profile_ver(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(
             i.user.id, int(enka_view.character_id), i.client.pool
         )
-        if custom_image is None:
-            async with aiofiles.open("data/draw/genshin_fanart.json", "r") as f:
-                fanart: Dict[str, List[str]] = json.loads(await f.read())
-            url = random.choice(fanart[str(enka_view.character_id)])
-        else:
-            url = custom_image.url
+        if version == 2:
+            if custom_image is None:
+                async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
+                    fanart: Dict[str, List[str]] = json.loads(await f.read())
+                url = random.choice(fanart[str(enka_view.character_id)])
+            else:
+                url = custom_image.url
 
-        card = await main_funcs.draw_profile_card_v2(
-            DrawInput(
-                loop=i.client.loop,
-                session=i.client.session,
-                locale=enka_view.locale,
-                dark_mode=dark_mode,
-            ),
-            character,
-            url,
-        )
+            card = await main_funcs.draw_profile_card_v2(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=enka_view.locale,
+                    dark_mode=dark_mode,
+                ),
+                character,
+                url,
+            )
+        else:
+            card = await main_funcs.draw_profile_card_v1(
+                DrawInput(
+                    loop=i.client.loop,
+                    session=i.client.session,
+                    locale=enka_view.locale,
+                    dark_mode=dark_mode,
+                ),
+                character,
+                custom_image.url if custom_image else None,
+            )
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
             embed=utility_utils.ErrorEmbed().set_author(
@@ -205,13 +204,13 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
         )
 
     card.seek(0)
-    file_ = File(card, "card.jpeg")
+    file_ = discord.File(card, "card.jpeg")
     await i.edit_original_response(embed=None, attachments=[file_], view=enka_view)
 
 
-class HitModeButton(Button):
+class HitModeButton(ui.Button):
     def __init__(self, hit_mode: str, label: str):
-        super().__init__(style=ButtonStyle.blurple, label=label)
+        super().__init__(style=discord.ButtonStyle.blurple, label=label)
         self.hit_mode = hit_mode
 
     async def callback(self, i: CustomInteraction) -> Any:
@@ -220,8 +219,8 @@ class HitModeButton(Button):
         await damage_calc.return_current_status(i, self.view)
 
 
-class ReactionModeSelect(Select):
-    def __init__(self, options: list[SelectOption], placeholder: str):
+class ReactionModeSelect(ui.Select):
+    def __init__(self, options: list[discord.SelectOption], placeholder: str):
         super().__init__(
             placeholder=placeholder, options=options, custom_id="reaction_mode"
         )
@@ -234,8 +233,8 @@ class ReactionModeSelect(Select):
         await damage_calc.return_current_status(i, self.view)
 
 
-class InfusionAuraSelect(Select):
-    def __init__(self, options: List[SelectOption], placeholder: str):
+class InfusionAuraSelect(ui.Select):
+    def __init__(self, options: List[discord.SelectOption], placeholder: str):
         super().__init__(
             placeholder=placeholder, options=options, custom_id="infusion_aura"
         )
@@ -254,7 +253,7 @@ class TeamSelectView(BaseView):
         self.prev_view = prev_view
 
 
-class GoBackToCalc(Button):
+class GoBackToCalc(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=4)
 
@@ -267,10 +266,10 @@ class GoBackToCalc(Button):
         view.message = await i.original_response()
 
 
-class TeamSelectButton(Button):
-    def __init__(self, options: List[SelectOption], placeholder: str):
+class TeamSelectButton(ui.Button):
+    def __init__(self, options: List[discord.SelectOption], placeholder: str):
         super().__init__(
-            style=ButtonStyle.blurple,
+            style=discord.ButtonStyle.blurple,
             label=placeholder,
             custom_id="team_select",
             emoji=asset.team_emoji,
@@ -282,7 +281,7 @@ class TeamSelectButton(Button):
         self.view: View
         view = TeamSelectView(self.view)
         view.add_item(GoBackToCalc())
-        divided: List[List[SelectOption]] = list(
+        divided: List[List[discord.SelectOption]] = list(
             utility_utils.divide_chunks(self.options, 25)
         )
         count = 1
@@ -299,8 +298,8 @@ class TeamSelectButton(Button):
         view.message = await i.original_response()
 
 
-class TeamSelect(Select):
-    def __init__(self, options: list[SelectOption], placeholder: str):
+class TeamSelect(ui.Select):
+    def __init__(self, options: list[discord.SelectOption], placeholder: str):
         super().__init__(
             placeholder=placeholder,
             options=options,
@@ -313,10 +312,10 @@ class TeamSelect(Select):
         await damage_calc.return_current_status(i, self.view.prev_view)
 
 
-class RunCalc(Button):
+class RunCalc(ui.Button):
     def __init__(self, label: str):
         super().__init__(
-            style=ButtonStyle.green,
+            style=discord.ButtonStyle.green,
             label=label,
             row=4,
             custom_id="calculate",

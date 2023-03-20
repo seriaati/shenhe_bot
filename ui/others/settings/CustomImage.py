@@ -285,7 +285,7 @@ async def get_user_custom_image_options(
     options: List[discord.SelectOption] = [
         discord.SelectOption(label=text_map.get(124, locale), value="default")
     ]
-    async with aiofiles.open("data/draw/genshin_fanart.json", "r") as f:
+    async with aiofiles.open("yelan/data/genshin_fanart.json", "r") as f:
         fanarts: Dict[str, List[str]] = json.loads(await f.read())
     c_fanarts = fanarts.get(str(character_id), [])
 
