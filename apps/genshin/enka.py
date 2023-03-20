@@ -138,3 +138,23 @@ async def update_enka_cache(
         d_c["cache"].player = d_c["data"].player
 
         await save_enka_cache(uid, d_c["cache"], pool, index == 1)
+
+
+async def edit_enka_cache(
+    uid: int,
+    character_id: List[int],
+    pool: asyncpg.Pool,
+    en: bool = False,
+) -> None:
+    """Edit enka cache
+
+    Args:
+        uid (int): UID of the player
+        character_id (List[int]): List of character ID to be removed
+        pool (asyncpg.Pool): database pool
+        en (bool, optional): english?. Defaults to False.
+    """
+    cache = await get_enka_cache(uid, pool, en=en)
+    if cache and cache.characters:
+        cache.characters = [c for c in cache.characters if c.id not in character_id]
+        await save_enka_cache(uid, cache, pool, en=en)
