@@ -2,7 +2,6 @@ import json
 from typing import Dict, List, Optional, Union
 
 import aiofiles
-
 import aiohttp
 import asyncpg
 import discord
@@ -11,12 +10,12 @@ from discord import ui
 import asset
 import config
 from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import UserCustomImage, CustomInteraction
+from apps.genshin.custom_model import CustomInteraction, UserCustomImage
 from apps.genshin.utils import get_character_emoji, get_character_fanarts
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
-from data.game.elements import get_element_emoji, get_element_list
 from base_ui import BaseModal, BaseView
+from data.game.elements import get_element_emoji, get_element_list
 from utility.utils import DefaultEmbed, ErrorEmbed
 
 
@@ -475,12 +474,12 @@ async def remove_user_custom_image(
         image_url,
         character_id,
     )
-    await pool.execute(
+    image: Optional[asyncpg.Record] = await pool.fetchrow(
         """
-        UPDATE
+        SELECT
+            user_id, character_id, image_url, nickname
+        FROM
             custom_image
-        SET
-            current = true
         WHERE
             user_id = $1 AND character_id = $2
         LIMIT 1
@@ -488,3 +487,17 @@ async def remove_user_custom_image(
         user_id,
         character_id,
     )
+    if image is not None:
+        await pool.execute(
+            """
+            UPDATE
+                custom_image
+            SET
+                current = true
+            WHERE
+                user_id = $1 AND character_id = $2 AND image_url = $3
+            """,
+            user_id,
+            character_id,
+            image["image_url"],
+        )
