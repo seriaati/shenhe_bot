@@ -113,7 +113,7 @@ async def draw_farm_domain_card(
 
 
 @calculate_time
-async def draw_character_card(
+async def draw_profile_card_v1(
     draw_input: DrawInput,
     character: enka.model.CharacterInfo,
     custom_image_url: Optional[str] = None,
@@ -155,7 +155,7 @@ async def draw_stats_card(
 
 
 @calculate_time
-async def draw_profile_card(
+async def draw_profile_overview_card(
     draw_input: DrawInput,
     data: enka.model.base.EnkaNetworkResponse,
 ) -> Tuple[io.BytesIO, io.BytesIO]:
