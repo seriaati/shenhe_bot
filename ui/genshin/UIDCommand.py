@@ -1,8 +1,9 @@
-from base_ui import BaseView
-from discord import Locale, Interaction, ButtonStyle
+from discord import ButtonStyle, Interaction, Locale
+from discord.ui import Button
+
 import config
-from discord.ui import Button, Button
 from apps.text_map.text_map_app import text_map
+from base_ui import BaseView
 
 
 class View(BaseView):
