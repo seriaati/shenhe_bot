@@ -52,15 +52,13 @@ class View(BaseView):
         self.locale = locale
 
     @ui.button(emoji="<:windows_logo:1024250977731223552>")
-    async def pc(self, i: discord.Interaction, _: ui.Button):
+    async def pc(self, i: discord.Interaction, button: ui.Button):
         self.clear_items()
         options = []
         for option in list(import_options.keys()):
             if "PC" in option:
                 options.append(
-                    discord.SelectOption(
-                        label=option, value=option, emoji=ui.button.emoji
-                    )
+                    discord.SelectOption(label=option, value=option, emoji=button.emoji)
                 )
         embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
@@ -71,15 +69,13 @@ class View(BaseView):
         await i.response.edit_message(embed=embed, view=self)
 
     @ui.button(emoji="<:apple_logo:1024250975390814269>")
-    async def ios(self, i: discord.Interaction, _: ui.Button):
+    async def ios(self, i: discord.Interaction, button: ui.Button):
         self.clear_items()
         options = []
         for option in list(import_options.keys()):
             if "IOS" in option:
                 options.append(
-                    discord.SelectOption(
-                        label=option, value=option, emoji=ui.button.emoji
-                    )
+                    discord.SelectOption(label=option, value=option, emoji=button.emoji)
                 )
         embed = DefaultEmbed().set_author(
             name=text_map.get(3, self.locale), icon_url=i.user.display_avatar.url
