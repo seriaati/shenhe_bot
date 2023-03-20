@@ -853,13 +853,13 @@
 '745': Banner yang akan datang
 '746': Banner Wish Saat ini
 '747': CV
-'748': Provided by Shenhe
-'749': Select a profile card version
-'750': Version {version}
-'751': Current version
-'752': Card version
-'753': Manage cache
-'754': Select characters that you want to remove from the cache
-'755': Profile settings
-'756': Cache modified, please re-run the /profile command
-'757': You have no characters in the cache
+'748': Disediakan oleh Shenhe
+'749': Pilih Versi Kartu Profil
+'750': Versi {version}
+'751': Versi Saat Ini
+'752': Versi Kartu
+'753': Kelola Cache
+'754': Pilih karakter yang ingin kamu hapus dari cache
+'755': Setelan Profil
+'756': Cache dimodifikasi, jalankan kembali perintah /profile
+'757': Kamu tidak memiliki karakter di cache
