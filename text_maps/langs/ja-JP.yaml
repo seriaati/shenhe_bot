@@ -285,11 +285,11 @@
 '274': 無効な画像URL
 '275': カスタム画像
 '276': |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 125 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Alternatively, upload an image using </img-upload:1041966109533929522>
-  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  • </profile:1020580644419551336>で使用するビルドカード用のカスタム画像を設定することができます。
+  •  各キャラクターに125枚まで画像を設定することができます。
+  •  画像のURLを送信してください。おすすめのツールは[imgur](https://imgur.com/)です。
+  •  </img-upload:1041966109533929522>で画像をアップロードすることも出来ます。
+  •  バージョン１用の画像のトリミングには[これ](https://croppola.com/)を使用し、2.64:1の比率を選択してください。
 '277': 現在の画像
 '278': このキャラクターに設定できる画像の上限に達しました (25)
 '279': このキャラクターにはまだカスタム画像が設定されていません
