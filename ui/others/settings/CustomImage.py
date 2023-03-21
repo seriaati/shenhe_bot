@@ -285,7 +285,7 @@ async def return_custom_image_interaction(
         i.user.id, character_id, i.client.pool
     )
     if custom_image is None:
-        remove_image.disabled = True
+        remove_image.disabled = True  # skipcq: PYL-W0201
 
     embed = await image.get_user_custom_image_embed(
         i, view.locale, str(character_id), custom_image

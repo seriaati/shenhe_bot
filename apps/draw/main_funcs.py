@@ -342,7 +342,7 @@ async def character_summary_card(
     urls = extract_urls(character_list)
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.characters.card,
+        funcs.characters.character_card,
         character_list,
         draw_input.dark_mode,
         draw_input.locale,

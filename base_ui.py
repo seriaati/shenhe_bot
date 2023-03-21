@@ -9,8 +9,8 @@ import sentry_sdk
 import asset
 import exceptions
 from apps.db import get_user_lang
-from models import CustomInteraction, OriginalInfo
 from apps.text_map import text_map
+from models import CustomInteraction, OriginalInfo
 from utility import ErrorEmbed, log
 
 

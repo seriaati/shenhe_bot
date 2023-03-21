@@ -12,7 +12,7 @@ from data.game.elements import get_element_color
 from models import DynamicBackgroundInput, TopPadding
 
 
-def card(
+def character_card(
     all_characters: List[genshin.models.Character],
     dark_mode: bool,
     locale: str | discord.Locale,

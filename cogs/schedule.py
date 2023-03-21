@@ -1031,8 +1031,8 @@ class Schedule(commands.Cog):
         huge_text_map = {}
         for thing in things_to_update:
             with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
-                text_map = json.load(f)
-            for item_id, item_info in text_map.items():
+                text_map_ = json.load(f)
+            for item_id, item_info in text_map_.items():
                 for name in item_info.values():
                     if "10000005" in item_id:
                         huge_text_map[name] = "10000005"
