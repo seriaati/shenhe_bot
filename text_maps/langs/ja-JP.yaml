@@ -285,11 +285,11 @@
 '274': 無効な画像URL
 '275': カスタム画像
 '276': |-
-  • </profile:1020580644419551336>でキャラクターカードにカスタム画像を設定することができます。
-  • 各キャラクターに25枚まで画像を設定することができます。
-  • 画像のURLを送信してください。使用するのに適したツールは[imgur](https://imgur.com/)です。
-  • 画像のトリミングには[これ](https://croppola.com/)を使用し、2.64:1の比率を選択してください。
-  • または、</img-upload:1041966109533929522>を使用して画像をアップロードしてください。
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 125 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Alternatively, upload an image using </img-upload:1041966109533929522>
+  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': 現在の画像
 '278': このキャラクターに設定できる画像の上限に達しました (25)
 '279': このキャラクターにはまだカスタム画像が設定されていません
@@ -457,7 +457,7 @@
   7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。
   完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
   8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
-'404': カスタム画像を選択
+'404': ''
 '405': あなたはまだ武器祈願をしていないようです
 '406': 開始時間
 '407': 終了時間
