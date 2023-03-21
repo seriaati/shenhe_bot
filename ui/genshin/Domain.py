@@ -11,10 +11,10 @@ import config
 from apps.draw import main_funcs
 from apps.genshin.custom_model import DrawInput
 from apps.genshin.utils import get_farm_data, get_uid, get_uid_tz
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, get_dt_now, get_user_appearance_mode
+from utility import DefaultEmbed, get_dt_now, get_user_appearance_mode
 
 
 class View(BaseView):

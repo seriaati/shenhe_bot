@@ -1,6 +1,6 @@
 from typing import Any, List, Union
 from apps.draw.main_funcs import draw_artifact_card
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 import discord
 import enkanetwork as enka
@@ -11,7 +11,7 @@ import asset
 import config
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
-from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
+from utility import DefaultEmbed, divide_chunks, get_user_appearance_mode
 from yelan.damage_calculator import return_current_status
 
 

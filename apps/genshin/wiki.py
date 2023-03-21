@@ -8,12 +8,12 @@ from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin.custom_model import CustomInteraction, DrawInput
 from apps.genshin.utils import get_fight_prop
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_weekday_name
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
 from ui.genshin import Search
-from utility.utils import DefaultEmbed, get_weekday_int_with_name
+from utility import DefaultEmbed, get_weekday_int_with_name
 
 
 async def parse_character_wiki(

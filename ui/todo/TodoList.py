@@ -10,12 +10,12 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Material
 from apps.draw import main_funcs
 import apps.genshin.custom_model as custom_model
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseModal, BaseView
 from utility.todo_paginator import TodoPaginator, TodoPaginatorView
-from utility.utils import DefaultEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):

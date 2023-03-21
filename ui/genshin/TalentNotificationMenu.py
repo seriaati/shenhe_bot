@@ -8,8 +8,8 @@ import asset
 import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.utils import get_character_emoji
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from data.game.elements import convert_elements, elements
 from base_ui import BaseView
 from ui.genshin import ReminderMenu

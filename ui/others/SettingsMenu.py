@@ -6,12 +6,12 @@ from discord import ui
 import asset
 import config
 from apps.genshin.custom_model import CustomInteraction, OriginalInfo
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from data.others.language_options import lang_options
 from base_ui import BaseView, GoBackButton
 from ui.others.settings import CustomImage, Notif
-from utility.utils import DefaultEmbed, get_user_appearance_mode, get_user_auto_redeem
+from utility import DefaultEmbed, get_user_appearance_mode, get_user_auto_redeem
 
 
 class View(BaseView):

@@ -3,9 +3,9 @@ from discord import ButtonStyle, Interaction, Locale, ui
 import asset
 import config
 from apps.genshin.custom_model import OriginalInfo
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from base_ui import BaseView, GoBackButton
-from utility.utils import DefaultEmbed, get_user_notification
+from utility import DefaultEmbed, get_user_notification
 
 
 class View(BaseView):

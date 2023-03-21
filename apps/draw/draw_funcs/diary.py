@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 import asset
 from apps.draw.utility import get_font, human_format
 from apps.genshin.utils import convert_ar_to_wl, convert_wl_to_mora
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_month_name
 
 
@@ -52,8 +52,6 @@ def card(
             key = f"{key:,}"
         elif col == 3:
             key = human_format(key)
-        else:
-            pass
         font = get_font(locale, 36)
         fill = asset.primary_text if not dark_mode else asset.white
         draw.text(offset, str(key), font=font, fill=fill)

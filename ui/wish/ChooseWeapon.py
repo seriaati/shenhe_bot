@@ -3,7 +3,7 @@ from discord import ButtonStyle, Interaction, Locale
 from discord.ui import Button
 
 import config
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from base_ui import BaseView
 
 

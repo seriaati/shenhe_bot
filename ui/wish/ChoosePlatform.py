@@ -5,11 +5,11 @@ from discord import ui
 
 import config
 from apps.genshin.custom_model import CustomInteraction
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
 from ui.wish import SetAuthKey
-from utility.utils import DefaultEmbed
+from utility import DefaultEmbed
 
 import_options = {
     "PC - #1": {

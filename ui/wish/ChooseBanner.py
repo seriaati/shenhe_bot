@@ -5,7 +5,7 @@ import discord
 from base_ui import BaseView
 import config
 from typing import List
-from utility.utils import DefaultEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):

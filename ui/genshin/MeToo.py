@@ -1,6 +1,6 @@
 from base_ui import BaseView
 from apps.genshin.checks import check_cookie_predicate
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 import config
 from discord import Locale, ui
 from discord import ButtonStyle, Interaction
@@ -13,10 +13,10 @@ class View(BaseView):
 
         super().__init__(timeout=config.mid_timeout)
 
-        self.add_item(MeToo(text_map.get(132, locale)))
+        self.add_item(MeTooButton(text_map.get(132, locale)))
 
 
-class MeToo(ui.Button):
+class MeTooButton(ui.Button):
     def __init__(self, label: str):
         super().__init__(style=ButtonStyle.green, label=label)
         self.view: View

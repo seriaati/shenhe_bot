@@ -7,12 +7,12 @@ import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.checks import check_cookie_predicate
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from exceptions import NumbersOnly
 from base_ui import BaseModal, BaseView
 from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utility.utils import DefaultEmbed, divide_chunks
+from utility import DefaultEmbed, divide_chunks
 
 
 class View(BaseView):

@@ -4,7 +4,7 @@ from typing import Dict
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 
-from apps.text_map.convert_locale import GENSHIN_OPTIMIZER_LANGS
+from apps.text_map import GENSHIN_OPTIMIZER_LANGS
 
 
 async def launch_browsers() -> Dict[str, Browser]:

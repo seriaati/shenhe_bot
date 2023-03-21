@@ -21,7 +21,7 @@ from apps.genshin.custom_model import (
     TopPadding,
     UsageCharacter,
 )
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 
 def one_page(

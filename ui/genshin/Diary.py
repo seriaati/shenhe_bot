@@ -7,10 +7,10 @@ import asset
 import config
 from apps.genshin.custom_model import DiaryLogsResult, DiaryResult
 from apps.genshin.genshin_app import GenshinApp
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, divide_chunks
+from utility import DefaultEmbed, divide_chunks
 from matplotlib import pyplot as plt
 
 

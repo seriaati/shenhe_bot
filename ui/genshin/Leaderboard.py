@@ -22,10 +22,10 @@ from apps.genshin.utils import (
     get_character_emoji,
     get_current_abyss_season,
 )
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
 
 
 class EmptyLeaderboard(Exception):

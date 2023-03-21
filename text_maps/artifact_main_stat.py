@@ -1,4 +1,4 @@
-art_main_stat_map = {
+ARTIFACT_MAIN_STAT_TRANSLATION = {
     "精": "EM",
     "攻": "ATK",
     "防": "DEF",

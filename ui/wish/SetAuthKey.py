@@ -10,12 +10,12 @@ import asset
 import config
 from apps.genshin.custom_model import Wish, WishInfo
 from apps.genshin.utils import get_account_select_options, get_uid, get_wish_info_embed
-from apps.text_map.convert_locale import to_genshin_py
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_genshin_py
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseModal, BaseView
 from ui.wish import ChoosePlatform
-from utility.utils import DefaultEmbed, ErrorEmbed, log
+from utility import DefaultEmbed, ErrorEmbed, log
 
 
 class View(BaseView):

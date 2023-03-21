@@ -9,9 +9,9 @@ import sentry_sdk
 import asset
 import exceptions
 from apps.genshin.custom_model import OriginalInfo
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
-from utility.utils import ErrorEmbed, log
+from utility import ErrorEmbed, log
 
 
 async def global_error_handler(

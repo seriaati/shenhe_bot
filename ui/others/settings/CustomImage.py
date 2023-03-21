@@ -9,13 +9,13 @@ import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import CustomInteraction, EnkaView
 from apps.genshin.utils import get_character_emoji
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_emoji, get_element_list
 from ui.genshin import EnkaDamageCalc
 from ui.others.SettingsMenu import CustomProfileImage
-from utility.utils import DefaultEmbed, ErrorEmbed, divide_chunks
+from utility import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
 class View(BaseView):

@@ -9,10 +9,10 @@ from ambr.models import Material, Monster
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin.custom_model import AbyssHalf, DrawInput
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
+from utility import DefaultEmbed, divide_chunks, get_user_appearance_mode
 
 
 class View(BaseView):

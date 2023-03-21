@@ -8,7 +8,7 @@ from PIL import Image, ImageChops, ImageDraw
 import asset
 import apps.draw.utility as draw_utility
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 
 def character_card(

@@ -25,15 +25,15 @@ from apps.genshin.custom_model import (
     WishInfo,
 )
 from apps.text_map.cond_text import cond_text
-from apps.text_map.convert_locale import to_ambr_top, to_genshin_py
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top, to_genshin_py
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from exceptions import ShenheAccountNotFound
-from utility.utils import DefaultEmbed, ErrorEmbed, divide_chunks, get_dt_now
+from utility import DefaultEmbed, ErrorEmbed, divide_chunks, get_dt_now
 
 
 def calculate_artifact_score(substats: dict):

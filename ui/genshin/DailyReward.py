@@ -2,7 +2,7 @@ import asyncio
 import calendar
 from apps.genshin.custom_model import CustomInteraction
 from apps.genshin.genshin_app import GenshinApp
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 
 import genshin
@@ -12,7 +12,7 @@ from discord.ui import Button
 
 import config
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
+from utility import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
 
 
 class View(BaseView):

@@ -6,8 +6,8 @@ import discord
 
 from apps.genshin.custom_model import CustomInteraction, UserCustomImage
 from apps.genshin.utils import get_character_fanarts
-from apps.text_map.text_map_app import text_map
-from utility.utils import DefaultEmbed
+from apps.text_map import text_map
+from utility import DefaultEmbed
 
 
 async def get_user_custom_image_options(
