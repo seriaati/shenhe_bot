@@ -293,8 +293,8 @@
   • Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
   • Untuk versi 1, Gunakan [this](https://croppola.com/) untuk memangkas gambar, pilih rasio 2.64:1
 '277': Gambar Saat Ini
-'278': Kamu telah mencapai batas gambar yang dapat kamu miliki untuk karakter ini (25)
-'279': Tidak ada kustom gambar yang ditetapkan untuk karakter ini
+'278': ''
+'279': ''
 '280': Base Speed
 '281': Speed%
 '282': Kambali
@@ -484,7 +484,7 @@
 '426': Tutorial teks akan segera hadir, untuk saat ini silahkan tonton video tutorialnya
 '427': Bulan sebelum bulan lalu
 '428': Lihat Data Abyss (perlu /register)
-'429': Jenis
+'429': ""
 '430': Fase
 '431': Jenis data yang ingin kamu lihat
 '432': Fase Abyss Yang Mana?
