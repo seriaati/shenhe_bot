@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 from apps.genshin.custom_model import DrawInput
 from apps.draw import main_funcs
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 import genshin
 from discord import File, Interaction, Locale, SelectOption, Member, User, Embed
@@ -9,7 +9,7 @@ from discord.ui import Select
 import asset
 import config
 from base_ui import BaseView
-from utility.utils import DefaultEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):

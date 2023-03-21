@@ -8,10 +8,10 @@ from discord.ext import commands
 from discord.ui import Select
 
 import config
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
-from utility.utils import DefaultEmbed
+from utility import DefaultEmbed
 
 
 class Dropdown(Select):

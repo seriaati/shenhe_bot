@@ -22,9 +22,9 @@ from dotenv import load_dotenv
 from apps.genshin.browser import launch_browsers, launch_debug_browser
 from apps.genshin.custom_model import CustomInteraction
 from apps.genshin_data.text_maps import load_text_maps
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from base_ui import global_error_handler
-from utility.utils import ErrorEmbed, log, sentry_logging
+from utility import ErrorEmbed, log, sentry_logging
 
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())

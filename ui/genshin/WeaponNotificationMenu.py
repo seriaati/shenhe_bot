@@ -7,12 +7,12 @@ from discord.ui import Button, Select
 import config
 from ambr.client import AmbrTopAPI
 from apps.genshin.utils import get_weapon_emoji
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from data.game.weapon_types import get_weapon_type_emoji
 from base_ui import BaseView
 from ui.genshin import ReminderMenu
-from utility.utils import divide_chunks
+from utility import divide_chunks
 
 
 class View(BaseView):

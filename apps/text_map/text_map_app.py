@@ -3,8 +3,8 @@ from typing import Dict, Optional
 
 import discord
 import yaml
-from apps.text_map.convert_locale import to_ambr_top, to_paths, CROWDIN_FILE_PATHS
-from utility.utils import log
+
+from .convert_locale import CROWDIN_FILE_PATHS, to_ambr_top, to_paths
 
 
 class TextMap:
@@ -59,9 +59,6 @@ class TextMap:
         lang_text_map: Dict[str, str] = self.text_maps[path]
         text = lang_text_map.get(str(map_hash), "")
         if not text:
-            log.warning(
-                f"[Text Map][{locale}][map_hash not found]: [map_hash]{map_hash}"
-            )
             lang_text_map = self.text_maps["en-US"]
             text = lang_text_map.get(str(map_hash), "")
         return text
@@ -93,24 +90,10 @@ class TextMap:
     ) -> str | int:
         material_text = self.material.get(str(material_id))
         if material_text is None:
-            if str(material_id).isdigit():
-                log.warning(
-                    f"[Exception][get_material_name][material_id not found]: [material_id]{material_id}"
-                )
             return material_id
         locale = user_locale or locale
         ambr_locale = to_ambr_top(str(locale))
         return material_text[str(ambr_locale)]
-
-    def get_material_id_with_name(self, material_name: str) -> str | int:
-        for material_id, material_name_dict in self.material.items():
-            for _, material_lang_name in material_name_dict.items():
-                if material_lang_name == material_name:
-                    return int(material_id)
-        log.warning(
-            f"[Exception][get_material_id_with_name][material_name not found]: [material_name]{material_name}"
-        )
-        return material_name
 
     def get_weapon_name(
         self,
@@ -118,12 +101,12 @@ class TextMap:
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
     ) -> Optional[str]:
-        avatarText = self.weapon.get(str(weapon_id))
-        if avatarText is None:
+        avatar_text = self.weapon.get(str(weapon_id))
+        if avatar_text is None:
             return None
         locale = user_locale or locale
         ambr_locale = to_ambr_top(str(locale))
-        return avatarText[str(ambr_locale)]
+        return avatar_text[str(ambr_locale)]
 
     def get_domain_name(
         self,
@@ -131,12 +114,12 @@ class TextMap:
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
     ) -> str:
-        dungeonText = self.dailyDungeon.get(str(dungeon_id))
-        if dungeonText is None:
+        dungeon_text = self.dailyDungeon.get(str(dungeon_id))
+        if dungeon_text is None:
             return str(dungeon_id)
         locale = user_locale or locale
         ambr_locale = to_ambr_top(str(locale))
-        return dungeonText.get(str(ambr_locale), str(dungeon_id))
+        return dungeon_text.get(str(ambr_locale), str(dungeon_id))
 
     def get_artifact_name(
         self,
@@ -146,9 +129,6 @@ class TextMap:
     ):
         artifact_text = self.artifact.get(str(artifact_id))
         if artifact_text is None:
-            log.warning(
-                f"[Exception][get_artifact_name][artifact_id not found]: [artifact_id]{artifact_id}"
-            )
             return artifact_id
         locale = user_locale or locale
         ambr_locale = to_ambr_top(str(locale))

@@ -4,7 +4,7 @@ from discord.ui import Button, View
 
 from apps.genshin.custom_model import ShenheBot
 from apps.text_map.utils import get_user_locale
-from utility.utils import DefaultEmbed
+from utility import DefaultEmbed
 
 
 class WaifuCog(commands.Cog):

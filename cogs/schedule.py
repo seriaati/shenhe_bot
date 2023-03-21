@@ -19,13 +19,13 @@ import utility.utils as utility_utils
 from ambr.client import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin.find_codes import find_codes
-from apps.text_map.convert_locale import AMBR_LANGS, to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import AMBR_LANGS, to_ambr_top
+from apps.text_map import text_map
 from apps.text_map.utils import get_element_name, get_user_locale
 from data.game.elements import convert_element
 from base_ui import capture_exception
 from utility.fetch_card import fetch_cards
-from utility.utils import log
+from utility import log
 
 
 def schedule_error_handler(func):

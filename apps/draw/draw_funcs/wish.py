@@ -12,7 +12,7 @@ from apps.draw.utility import (
     global_write,
 )
 from apps.genshin.custom_model import WishData
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 
 def overview(

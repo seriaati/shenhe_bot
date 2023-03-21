@@ -1,14 +1,14 @@
 from typing import Dict, List
 from apps.genshin.custom_model import DrawInput
 from apps.draw import main_funcs
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 from discord import Embed, File, Interaction, Locale, SelectOption
 from discord.ui import Select
 
 import config
 from base_ui import BaseView
-from utility.utils import divide_chunks
+from utility import divide_chunks
 
 
 class View(BaseView):

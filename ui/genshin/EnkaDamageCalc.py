@@ -15,7 +15,7 @@ from apps.draw import main_funcs
 from apps.genshin.browser import get_browser
 from apps.genshin.custom_model import CustomInteraction, DrawInput, EnkaView
 from apps.genshin.utils import get_character_fanarts
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from base_ui import BaseView
 from exceptions import CardNotReady, NoCharacterFound
 from apps.db.custom_image import get_user_custom_image

@@ -14,13 +14,13 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character, Weapon
 from apps.draw import main_funcs
 from apps.genshin.checks import check_account, check_wish_history
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from data.game.standard_characters import get_standard_characters
 from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
-from utility.utils import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
 from utility.wish_paginator import WishPaginator
 
 

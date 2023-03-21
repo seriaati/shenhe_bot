@@ -3,8 +3,8 @@ from typing import Optional
 import asyncpg
 from discord import Locale
 
-from apps.text_map.text_map_app import text_map
-from text_maps.artifact_main_stat import art_main_stat_map
+from apps.text_map import text_map
+from text_maps.artifact_main_stat import ARTIFACT_MAIN_STAT_TRANSLATION
 
 
 def get_weekday_name(
@@ -41,7 +41,7 @@ def translate_main_stat(main_stat: str, locale: Locale | str) -> str:
         return main_stat
     result = ""
     for index, stat in enumerate(main_stat):
-        result += art_main_stat_map.get(stat, stat)
+        result += ARTIFACT_MAIN_STAT_TRANSLATION.get(stat, stat)
         if index != len(main_stat) - 1:
             result += " | "
     return result

@@ -20,13 +20,13 @@ from ambr.client import AmbrTopAPI
 from ambr.models import Character
 from apps.db import custom_image
 from apps.genshin.custom_model import CustomInteraction, ShenheBot
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 from exceptions import AutocompleteError
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
-from utility.utils import DefaultEmbed, ErrorEmbed
+from utility import DefaultEmbed, ErrorEmbed
 
 load_dotenv()
 

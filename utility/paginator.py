@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Union
 
 from apps.genshin.custom_model import CustomInteraction
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 
 import discord

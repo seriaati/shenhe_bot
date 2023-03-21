@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 import asset
 from apps.draw.utility import circular_crop, get_cache, get_font
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 from data.game.artifact_slot import get_artifact_slot_name
 from data.game.calc_substat_roll import calculate_substat_roll
 

@@ -10,7 +10,7 @@ from apps.draw.utility import (
     shorten_text,
 )
 from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 import discord
 import genshin

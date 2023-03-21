@@ -1,7 +1,7 @@
 from discord import Locale
 import yaml
 
-from apps.text_map.convert_locale import to_paths
+from .convert_locale import to_paths
 
 
 class CondText:

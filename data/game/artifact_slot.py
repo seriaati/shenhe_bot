@@ -1,7 +1,7 @@
 from discord import Locale
 from enkanetwork import enum
 
-from apps.text_map.text_map_app import text_map
+from apps.text_map import text_map
 
 ARTIFACT_SLOT_EMOJIS = {
     enum.EquipType.Flower: "<:Flower_of_Life:982167959717945374>",

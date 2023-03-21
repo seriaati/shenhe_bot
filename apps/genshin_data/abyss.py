@@ -7,7 +7,7 @@ from discord import Locale
 
 from apps.genshin.custom_model import AbyssChamber, AbyssFloor, AbyssHalf
 from apps.genshin_data.utility import get_text
-from utility.utils import get_dt_now, parse_HTML, time_in_range
+from utility import get_dt_now, parse_HTML, time_in_range
 
 
 async def get_abyss_blessing(

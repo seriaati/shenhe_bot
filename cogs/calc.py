@@ -3,7 +3,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 from ambr.client import AmbrTopAPI
 from apps.genshin.custom_model import ShenheBot
-from apps.text_map.convert_locale import to_ambr_top
+from apps.text_map import to_ambr_top
 from apps.text_map.utils import get_user_locale
 from ui.calc import CalcCharacter, CalcWeapon
 

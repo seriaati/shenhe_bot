@@ -3,8 +3,8 @@ from apps.draw.utility import image_gen_transition
 from apps.draw import main_funcs
 from apps.genshin.custom_model import DrawInput, TodoList
 from apps.genshin.utils import get_weapon_emoji, level_to_ascension_phase
-from apps.text_map.convert_locale import to_ambr_top
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_ambr_top
+from apps.text_map import text_map
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 
@@ -18,7 +18,7 @@ from ambr.models import Material, WeaponDetail
 from base_ui import BaseModal, BaseView
 from ui.calc import AddToTodo
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
-from utility.utils import (
+from utility import (
     DefaultEmbed,
     divide_chunks,
     ErrorEmbed,

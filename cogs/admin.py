@@ -11,7 +11,7 @@ from discord.ext import commands
 from diskcache import FanoutCache
 
 from apps.genshin.custom_model import ShenheBot
-from utility.utils import DefaultEmbed
+from utility import DefaultEmbed
 
 
 class AdminCog(commands.Cog, name="admin"):

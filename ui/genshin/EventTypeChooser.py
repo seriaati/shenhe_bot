@@ -2,8 +2,8 @@ import json
 import aiofiles
 from apps.genshin.custom_model import CustomInteraction
 from apps.hoyolab_rss_feeds.create_feed import create_feed
-from apps.text_map.convert_locale import to_genshin_py
-from apps.text_map.text_map_app import text_map
+from apps.text_map import to_genshin_py
+from apps.text_map import text_map
 from apps.text_map.utils import get_user_locale
 import discord
 from discord import ui
@@ -14,7 +14,7 @@ import config
 import asset
 from dateutil import parser
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
-from utility.utils import DefaultEmbed, parse_HTML
+from utility import DefaultEmbed, parse_HTML
 
 
 class View(BaseView):

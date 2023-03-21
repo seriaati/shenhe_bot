@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from apps.text_map.convert_locale import to_enka
+from apps.text_map import to_enka
 from discord import Locale
 
 

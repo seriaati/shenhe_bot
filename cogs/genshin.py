@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 
 import apps.genshin.utils as genshin_utils
 import asset
+import ui.genshin
+from ui.others import ManageAccounts
 import utility.utils as utils
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
@@ -27,30 +29,12 @@ from apps.genshin.checks import (
     check_cookie_predicate,
 )
 from apps.genshin_data import abyss
-from apps.text_map import convert_locale
-from apps.text_map.text_map_app import text_map
+from apps.text_map import convert_locale, text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
 from exceptions import AutocompleteError, CardNotFound, ItemNotFound, UIDNotFound
-from ui.genshin import (
-    Abyss,
-    AbyssEnemy,
-    Build,
-    Diary,
-    Domain,
-    EnkaProfile,
-    EventTypeChooser,
-    Leaderboard,
-    Lineup,
-    MeToo,
-    ShowAllCharacters,
-    UIDCommand,
-)
-from ui.genshin.DailyReward import return_claim_reward
-from ui.genshin.ReminderMenu import return_notification_menu
-from ui.others import ManageAccounts
+from utility import disable_view_items, log
 from utility.paginator import GeneralPaginator
-from utility.utils import disable_view_items, log
 
 load_dotenv()
 
@@ -332,8 +316,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             hash=420,
         ),
     )
-    async def claim(self, i: discord.Interaction):
-        await return_claim_reward(i, self.genshin_app)
+    async def claim(self, inter: discord.Interaction):
+        i: custom_model.CustomInteraction = inter  # type: ignore
+        await ui.genshin.DailyReward.return_claim_reward(i, self.genshin_app)
 
     @check_cookie()
     @app_commands.command(
@@ -380,7 +365,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp = character_result.file
         fp.seek(0)
         _file = discord.File(fp, "characters.jpeg")
-        view = ShowAllCharacters.View(
+        view = ui.genshin.ShowAllCharacters.View(
             locale,
             character_result.characters,
             character_result.options,
@@ -420,7 +405,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             await i.followup.send(embed=result.result)
         else:
             diary_result: custom_model.DiaryResult = result.result
-            view = Diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
+            view = ui.genshin.Diary.View(
+                i.user, member, self.genshin_app, user_locale or i.locale
+            )
             fp = diary_result.file
             fp.seek(0)
             await i.followup.send(
@@ -464,7 +451,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if not result.success:
             return await i.followup.send(embed=result.result)
         abyss_result: custom_model.AbyssResult = result.result
-        view = Abyss.View(i.user, abyss_result, user_locale or i.locale)
+        view = ui.genshin.Abyss.View(i.user, abyss_result, user_locale or i.locale)
         fp = abyss_result.overview_file
         fp.seek(0)
         image = discord.File(fp, "overview_card.jpeg")
@@ -496,13 +483,15 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.pool)
-        await return_notification_menu(i, user_locale or i.locale, True)
+        await ui.genshin.ReminderMenu.ReminderMenu.return_notification_menu(
+            i, user_locale or i.locale, True
+        )
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: discord.Interaction):
-        await Domain.return_farm_interaction(i)
+        await ui.genshin.Domain.return_farm_interaction(i)
 
     @app_commands.command(
         name="build",
@@ -511,7 +500,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def build(self, i: discord.Interaction):
-        view = Build.View()
+        view = ui.genshin.Build.View()
         view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()
@@ -572,7 +561,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         embed.set_thumbnail(url=player.display_avatar.url)
 
-        view = UIDCommand.View(locale, uid)
+        view = ui.genshin.UIDCommand.View(locale, uid)
         await i.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
         view.message = await i.original_response()
 
@@ -653,7 +642,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             )
 
-        view = EnkaProfile.View([], locale)
+        view = ui.genshin.EnkaProfile.View([], locale)
         disable_view_items(view)
 
         await i.edit_original_response(
@@ -688,7 +677,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         fp_two.seek(0)
 
-        view = EnkaProfile.View(options, locale)
+        view = ui.genshin.EnkaProfile.View(options, locale)
         view.overview_embeds = [embed, embed_two]
         view.overview_fps = [fp, fp_two]
         view.data = data
@@ -715,7 +704,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
         )
-        view = MeToo.View(
+        view = ui.genshin.MeToo.View(
             code,
             self.genshin_app,
             await get_user_locale(i.user.id, self.bot.pool) or i.locale,
@@ -744,8 +733,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
     )
-    async def events(self, i: discord.Interaction):
-        await EventTypeChooser.return_events(i)
+    async def events(self, inter: discord.Interaction):
+        i: custom_model.CustomInteraction = inter  # type: ignore
+        await ui.genshin.EventTypeChooser.return_events(i)
 
     @check_account()
     @app_commands.command(
@@ -758,7 +748,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             raise UIDNotFound
         embed = utils.DefaultEmbed(description=text_map.get(253, locale))
         embed.set_author(name=f"👑 {text_map.get(252, locale)}")
-        view = Leaderboard.View(locale, uid)
+        view = ui.genshin.Leaderboard.View(locale, uid)
         view.author = i.user
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
@@ -884,9 +874,10 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def activity(
         self,
-        i: discord.Interaction,
+        inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
     ):
+        i: custom_model.CustomInteraction = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
         result = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
@@ -1033,7 +1024,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             value=buff_desc,
         )
 
-        view = AbyssEnemy.View(locale, enemies, embeds, buff_embed)
+        view = ui.genshin.AbyssEnemy.View(locale, enemies, embeds, buff_embed)
         view.author = i.user
         await i.followup.send(embed=embed, view=view)
         view.message = await i.original_response()
@@ -1070,9 +1061,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):
-            view = Lineup.View(locale, options, scenario_dict, characters)
+            view = ui.genshin.Lineup.View(locale, options, scenario_dict, characters)
             view.author = i.user
-            await Lineup.search_lineup(i, view)
+            await ui.genshin.Lineup.search_lineup(i, view)
             view.message = await i.original_response()
 
     @app_commands.command(
