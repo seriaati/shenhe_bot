@@ -287,11 +287,11 @@
 '274': Invalid image URL
 '275': Kustom Gambar
 '276': |-
-  • Kamu dapat mengatur gambar kustom untuk kartu karakter di </profile:1020580644419551336>
-  • Kamu dapat memiliki hingga 25 gambar untuk setiap karakter
-  • Berikan URL gambar, alat yang bagus untuk digunakan adalah [imgur](https://imgur.com/)
-  • Gunakan [this](https://croppola.com/) untuk memotong gambar, pilih rasio 2,64:1
-  • Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 125 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Alternatively, upload an image using </img-upload:1041966109533929522>
+  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': Gambar Saat Ini
 '278': Kamu telah mencapai batas gambar yang dapat kamu miliki untuk karakter ini (25)
 '279': Tidak ada kustom gambar yang ditetapkan untuk karakter ini
@@ -459,7 +459,7 @@
   6. Tekan CTRL+F lalu centang "Wrap around" dan pilih arah "Up" lalu pada input box cari "e20190909gacha-v2" (tanpa tanda petik) lalu klik Find Next
   7. Salin semua tautan dari https://webstatic hingga game_biz=hk4e_global urlnya terlihat seperti ini: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.... ...&game_biz=hk4e_global
   8. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
-'404': Pilih Gambar Kustom
+'404': ''
 '405': Kamu belum pull banner senjata
 '406': Mulai Waktu
 '407': Akhir Waktu
