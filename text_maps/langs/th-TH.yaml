@@ -288,10 +288,10 @@
 '275': Custom Image
 '276': |-
   • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 25 images for each character
+  • You can have up to 125 images for each character
   • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
   • Alternatively, upload an image using </img-upload:1041966109533929522>
+  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': Current Image
 '278': You have reached the limit of images you can have for this character (25)
 '279': No custom image set for this character
@@ -460,7 +460,7 @@
   6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
-'404': Select a custom image
+'404': ''
 '405': You haven't pulled in the weapon banner yet
 '406': Start time
 '407': End time

@@ -288,11 +288,11 @@
 '274': Некоректний URL зображення
 '275': Своє зображення
 '276': |-
-  • Ви можете встановити власні зображення для карток персонажів у </profile:1020580644419551336>
-  • Ви можете мати до 25 зображень для кожного персонажа
-  • Надайте URL-адресу зображення, гарний інструмент для використання [imgur](https://imgur.com/)
-  • Використовуйте [This](https://croppola.com/), щоб обрізати зображення, виберіть співвідношення 2,64:1
-  • Або завантажте зображення за допомогою </img-upload:1041966109533929522>
+  • You can set custom images for the character cards in </profile:1020580644419551336>
+  • You can have up to 125 images for each character
+  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  • Alternatively, upload an image using </img-upload:1041966109533929522>
+  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': Поточне зображення
 '278': Ви досягли межі кількості зображень, які можете використати для цього персонажа (25)
 '279': Немає користувацької картинки для цього персонажу
@@ -461,7 +461,7 @@
   6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
-'404': Виберіть власне зображення
+'404': ''
 '405': You haven't pulled in the weapon banner yet
 '406': Час початку
 '407': Час закінчення
