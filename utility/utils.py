@@ -117,3 +117,10 @@ def disable_view_items(view: discord.ui.View) -> None:
     for child in view.children:
         if isinstance(child, (discord.ui.Select, discord.ui.Button)):
             child.disabled = True
+
+
+async def send_embed(user: Union[discord.User, discord.Member], embed: discord.Embed):
+    try:
+        await user.send(embed=embed)
+    except discord.Forbidden:
+        pass
