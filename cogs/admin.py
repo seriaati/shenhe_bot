@@ -5,7 +5,6 @@ import traceback
 from pathlib import Path
 from typing import Optional
 
-from discord.app_commands import locale_str as _
 from discord.errors import Forbidden
 from discord.ext import commands
 from diskcache import FanoutCache
