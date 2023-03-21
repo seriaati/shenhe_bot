@@ -1,5 +1,5 @@
-from discord import Locale
 import yaml
+from discord import Locale
 
 from .convert_locale import to_paths
 

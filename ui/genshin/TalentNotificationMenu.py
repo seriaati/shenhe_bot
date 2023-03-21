@@ -6,12 +6,11 @@ from discord.ui import Button, Select
 
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from apps.genshin.utils import get_character_emoji
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from data.game.elements import convert_elements, elements
+from ambr import AmbrTopAPI
+from apps.genshin import get_character_emoji
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseView
+from data.game.elements import convert_elements, elements
 from ui.genshin import ReminderMenu
 
 

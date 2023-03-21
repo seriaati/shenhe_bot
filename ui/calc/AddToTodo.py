@@ -1,7 +1,9 @@
 from typing import Any, Dict
-from apps.text_map import text_map
+
 from discord import ButtonStyle, Interaction, Locale
 from discord.ui import Button
+
+from apps.text_map import text_map
 from utility import DefaultEmbed
 
 

@@ -7,9 +7,8 @@ from PIL import Image, ImageDraw
 
 import asset
 from apps.draw.utility import get_font, human_format
-from apps.genshin.utils import convert_ar_to_wl, convert_wl_to_mora
-from apps.text_map import text_map
-from apps.text_map.utils import get_month_name
+from apps.genshin.utility import convert_ar_to_wl, convert_wl_to_mora
+from apps.text_map import get_month_name, text_map
 
 
 def card(

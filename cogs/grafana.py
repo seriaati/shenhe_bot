@@ -1,5 +1,5 @@
-from discord.ext.prometheus import PrometheusCog
 from discord.ext import commands
+from discord.ext.prometheus import PrometheusCog
 
 
 class GrafanaCog(commands.Cog):

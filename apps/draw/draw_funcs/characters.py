@@ -1,23 +1,15 @@
 import io
 from typing import List, Optional
-from apps.text_map.utils import get_element_name
-from apps.draw.utility import (
-    circular_crop,
-    draw_dynamic_background,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-    shorten_text,
-)
-from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
-from apps.text_map import text_map
 
 import discord
 import genshin
 from PIL import Image, ImageDraw
 
+import apps.draw.utility as draw_utils
 import asset
+from apps.text_map import get_element_name, text_map
 from data.game.elements import get_element_color
+from models import DynamicBackgroundInput, TopPadding
 
 
 def card(
@@ -35,7 +27,7 @@ def card(
         element_name = get_element_name(element, locale)
 
     # create the background based on the number of characters
-    im, max_card_num = draw_dynamic_background(
+    im, max_card_num = draw_utils.draw_dynamic_background(
         DynamicBackgroundInput(
             top_padding=TopPadding(with_title=190, without_title=90),
             left_padding=95,
@@ -54,14 +46,14 @@ def card(
     draw = ImageDraw.Draw(im)
 
     # title
-    font = get_font(locale, 75, "Bold")
+    font = draw_utils.get_font(locale, 75, "Bold")
     fill = asset.white if dark_mode else asset.primary_text
     text = custom_title or (
         text_map.get(19, locale)
         if element == "All"
         else text_map.get(52, locale).format(element=element_name)
     )
-    font = dynamic_font_size(text, 1, 75, 645, font)
+    font = draw_utils.dynamic_font_size(text, 1, 75, 645, font)
     draw.text((95, 40), text, font=font, fill=fill)
 
     for index, character in enumerate(characters):
@@ -89,19 +81,19 @@ def s_card(
     draw = ImageDraw.Draw(im)
 
     # character icon
-    icon = get_cache(character.icon)
-    icon = circular_crop(icon)
+    icon = draw_utils.get_cache(character.icon)
+    icon = draw_utils.circular_crop(icon)
     icon = icon.resize((95, 95))
     im.paste(icon, (17, 23), icon)
 
     # character name
-    font = get_font(locale, 40, "Bold")
+    font = draw_utils.get_font(locale, 40, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    text = shorten_text(character.name, 321, font)
+    text = draw_utils.shorten_text(character.name, 321, font)
     draw.text((127, 23), text, font=font, fill=fill)
 
     # constellation and refinement
-    font = get_font(locale, 25)
+    font = draw_utils.get_font(locale, 25)
     fill = asset.secondary_text if not dark_mode else asset.white
     draw.text(
         (127, 77),
@@ -111,7 +103,7 @@ def s_card(
     )
 
     # level
-    font = get_font(locale, 36, "Medium")
+    font = draw_utils.get_font(locale, 36, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     text = f"Lv. {character.level}"
     draw.text((620 - font.getlength(text), 46), text, font=font, fill=fill)

@@ -1,8 +1,9 @@
-from base_ui import BaseModal
-from discord import Locale, TextStyle, Interaction
+from discord import Interaction, Locale, TextStyle
 from discord.ui import TextInput
-from apps.text_map import text_map
+
 import config
+from apps.text_map import text_map
+from base_ui import BaseModal
 from utility import DefaultEmbed
 
 

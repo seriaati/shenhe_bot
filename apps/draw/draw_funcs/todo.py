@@ -5,7 +5,7 @@ import discord
 from PIL import Image, ImageDraw
 
 import asset
-from ambr.models import Material
+from ambr import Material
 from apps.draw.utility import (
     circular_crop,
     draw_dynamic_background,
@@ -14,7 +14,7 @@ from apps.draw.utility import (
     get_font,
     human_format,
 )
-from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
+from models import DynamicBackgroundInput, TopPadding
 
 
 def material_card(

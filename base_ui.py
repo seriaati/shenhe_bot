@@ -8,16 +8,16 @@ import sentry_sdk
 
 import asset
 import exceptions
-from apps.genshin.custom_model import OriginalInfo
+from apps.db import get_user_lang
+from models import CustomInteraction, OriginalInfo
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 from utility import ErrorEmbed, log
 
 
 async def global_error_handler(
-    i: discord.Interaction, e: Union[Exception, discord.app_commands.AppCommandError]
+    i: CustomInteraction, e: Union[Exception, discord.app_commands.AppCommandError]
 ):
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
 
     view = discord.ui.View()
@@ -140,11 +140,11 @@ class BaseView(discord.ui.View):
         self.author: Optional[discord.Member | discord.User] = None
         self.original_info: Optional[OriginalInfo] = None
 
-    async def interaction_check(self, i: discord.Interaction) -> bool:
+    async def interaction_check(self, i: CustomInteraction) -> bool:
         if self.author is None:
             return True
 
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        user_locale = await get_user_lang(i.user.id, i.client.pool)
         if self.author.id != i.user.id:
             await i.response.send_message(
                 embed=ErrorEmbed().set_author(
@@ -155,7 +155,7 @@ class BaseView(discord.ui.View):
             )
         return self.author.id == i.user.id
 
-    async def on_error(self, i: discord.Interaction, e: Exception, item) -> None:
+    async def on_error(self, i: CustomInteraction, e: Exception, item) -> None:
         await global_error_handler(i, e)
 
     async def on_timeout(self) -> None:
@@ -171,7 +171,7 @@ class BaseView(discord.ui.View):
 
 
 class BaseModal(discord.ui.Modal):
-    async def on_error(self, i: discord.Interaction, e: Exception) -> None:
+    async def on_error(self, i: CustomInteraction, e: Exception) -> None:
         await global_error_handler(i, e)
 
 
@@ -183,7 +183,7 @@ class GoBackButton(discord.ui.Button):
         self.original_children = original_info.children
         self.original_attachments = original_info.attachments
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.defer()
 
         self.original_view.clear_items()

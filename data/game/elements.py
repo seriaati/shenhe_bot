@@ -1,6 +1,5 @@
 from typing import List
 
-
 elements = {
     "Wind": "<:WIND_ADD_HURT:982138235239137290>",
     "Ice": "<:ICE_ADD_HURT:982138229140635648>",

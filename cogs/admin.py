@@ -10,7 +10,7 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from diskcache import FanoutCache
 
-from apps.genshin.custom_model import ShenheBot
+from models import ShenheBot
 from utility import DefaultEmbed
 
 

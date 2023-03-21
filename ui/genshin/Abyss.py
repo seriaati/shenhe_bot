@@ -1,24 +1,24 @@
 from typing import Any
 
-from discord import File, Interaction, Locale, Member, SelectOption, User
-from discord.ui import Select
+import discord
+from discord import ui
 
 import config
-from apps.draw.main_funcs import draw_abyss_one_page
-from apps.genshin.custom_model import AbyssResult, DrawInput
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
+from apps.draw.main_funcs import draw_abyss_one_page
+from apps.text_map import text_map
 from base_ui import BaseView
-from utility import DefaultEmbed, get_user_appearance_mode
+from models import AbyssResult, CustomInteraction, DrawInput
+from utility import DefaultEmbed
 
 
 class View(BaseView):
     def __init__(
         self,
-        author: User | Member,
+        author: discord.User | discord.Member,
         result: AbyssResult,
-        locale: Locale | str,
+        locale: discord.Locale | str,
     ):
         self.author = author
         super().__init__(timeout=config.mid_timeout)
@@ -26,12 +26,14 @@ class View(BaseView):
         self.add_item(FloorSelect(result, locale))
 
 
-class FloorSelect(Select):
-    def __init__(self, result: AbyssResult, locale: Locale | str):
-        options = [SelectOption(label=text_map.get(43, locale), value="overview")]
+class FloorSelect(ui.Select):
+    def __init__(self, result: AbyssResult, locale: discord.Locale | str):
+        options = [
+            discord.SelectOption(label=text_map.get(43, locale), value="overview")
+        ]
         for index in range(len(result.abyss_floors)):
             options.append(
-                SelectOption(
+                discord.SelectOption(
                     label=text_map.get(146, locale).format(a=9 + index),
                     value=str(index),
                 )
@@ -40,14 +42,14 @@ class FloorSelect(Select):
         self.add_option(label=text_map.get(643, locale), value="one-page")
         self.abyss_result = result
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        dark_mode = await get_user_theme(i.user.id, i.client.pool)
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)
-            image = File(fp, filename="overview_card.jpeg")
+            image = discord.File(fp, filename="overview_card.jpeg")
             await i.edit_original_response(
                 embed=self.abyss_result.overview_embed,
                 attachments=[image],
@@ -76,7 +78,7 @@ class FloorSelect(Select):
                 )
                 cache[key] = fp
             fp.seek(0)
-            image = File(fp, filename="abyss_one_page.jpeg")
+            image = discord.File(fp, filename="abyss_one_page.jpeg")
             embed = DefaultEmbed()
             embed.set_image(url="attachment://abyss_one_page.jpeg")
             embed.set_author(
@@ -112,5 +114,5 @@ class FloorSelect(Select):
                 )
                 cache[key] = fp
             fp.seek(0)
-            image = File(fp, filename="floor.jpeg")
+            image = discord.File(fp, filename="floor.jpeg")
             await i.edit_original_response(embed=embed, attachments=[image])

@@ -6,22 +6,20 @@ from discord.ui import Button, Select, TextInput
 
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from ambr.models import Material
+import models
+from ambr import AmbrTopAPI, Material
+from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-import apps.genshin.custom_model as custom_model
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
+from utility import DefaultEmbed
 from utility.todo_paginator import TodoPaginator, TodoPaginatorView
-from utility import DefaultEmbed, get_user_appearance_mode
 
 
 class View(BaseView):
     def __init__(
         self,
-        todo_items: List[custom_model.TodoItem],
+        todo_items: List[models.TodoItem],
         locale: Locale | str,
     ):
         super().__init__(timeout=config.long_timeout)
@@ -30,14 +28,14 @@ class View(BaseView):
         self.add_item(AddItem(text_map.get(203, locale)))
         self.add_item(
             EditOrRemove(
-                not todo_items, text_map.get(729, locale), custom_model.TodoAction.EDIT
+                not todo_items, text_map.get(729, locale), models.TodoAction.EDIT
             )
         )
         self.add_item(
             EditOrRemove(
                 not todo_items,
                 text_map.get(205, locale),
-                custom_model.TodoAction.REMOVE,
+                models.TodoAction.REMOVE,
             )
         )
         self.add_item(ClearItems(not todo_items, text_map.get(206, locale)))
@@ -50,29 +48,29 @@ class AddItem(Button):
         )
 
     @staticmethod
-    async def callback(i: custom_model.CustomInteraction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    async def callback(i: models.CustomInteraction):
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         await i.response.send_modal(AddItemModal(locale))
 
 
 class EditOrRemove(Button):
-    def __init__(self, disabled: bool, label: str, action: custom_model.TodoAction):
+    def __init__(self, disabled: bool, label: str, action: models.TodoAction):
         super().__init__(
             label=label,
             style=ButtonStyle.primary
-            if action is custom_model.TodoAction.EDIT
+            if action is models.TodoAction.EDIT
             else ButtonStyle.red,
             disabled=disabled,
-            row=2 if action is custom_model.TodoAction.EDIT else 3,
+            row=2 if action is models.TodoAction.EDIT else 3,
             emoji=asset.edit_emoji
-            if action is custom_model.TodoAction.EDIT
+            if action is models.TodoAction.EDIT
             else asset.remove_emoji,
         )
 
         self.action = action
         self.view: TodoPaginatorView
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         self.view.clear_items()
         self.view.add_item(
             ItemSelect(
@@ -91,7 +89,7 @@ class ClearItems(Button):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
     @staticmethod
-    async def callback(i: custom_model.CustomInteraction):
+    async def callback(i: models.CustomInteraction):
         pool: asyncpg.Pool = i.client.pool  # type: ignore
         await pool.execute("DELETE FROM todo WHERE user_id = $1", i.user.id)
         await return_todo(i)
@@ -101,8 +99,8 @@ class ItemSelect(Select):
     def __init__(
         self,
         locale: Locale | str,
-        todo_items: List[custom_model.TodoItem],
-        action: custom_model.TodoAction,
+        todo_items: List[models.TodoItem],
+        action: models.TodoAction,
     ):
         options: List[SelectOption] = []
         item_dict: Dict[str, str] = {}
@@ -128,7 +126,7 @@ class ItemSelect(Select):
         self.item_dict = item_dict
         self.view: TodoPaginatorView
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         row = await pool.fetchrow(
@@ -162,7 +160,7 @@ class AddItemModal(BaseModal):
         self.count.label = text_map.get(308, locale)
         self.count.placeholder = text_map.get(170, locale).format(a=90)
 
-    async def on_submit(self, i: custom_model.CustomInteraction) -> None:
+    async def on_submit(self, i: models.CustomInteraction) -> None:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         if not self.count.value.isdigit():
@@ -193,14 +191,14 @@ class InputItemAmountModal(BaseModal):
         self,
         locale: Locale | str,
         item_name: str,
-        action: custom_model.TodoAction,
+        action: models.TodoAction,
         current_amount: int,
         max_amount: int,
         item_dict: Dict[str, str],
     ) -> None:
         super().__init__(
             title=text_map.get(
-                729 if action is custom_model.TodoAction.EDIT else 205, locale
+                729 if action is models.TodoAction.EDIT else 205, locale
             ),
             timeout=config.mid_timeout,
         )
@@ -210,25 +208,23 @@ class InputItemAmountModal(BaseModal):
 
         self.count.label = text_map.get(210, locale).format(item=item_dict[item_name])
         self.count.default = (
-            str(current_amount)
-            if action is custom_model.TodoAction.EDIT
-            else str(max_amount)
+            str(current_amount) if action is models.TodoAction.EDIT else str(max_amount)
         )
 
-    async def on_submit(self, i: custom_model.CustomInteraction) -> None:
+    async def on_submit(self, i: models.CustomInteraction) -> None:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         if not self.count.value.isdigit():
             return await return_todo(i)
 
-        if self.action is custom_model.TodoAction.EDIT:
+        if self.action is models.TodoAction.EDIT:
             await pool.execute(
                 "UPDATE todo SET count = $1 WHERE item = $2 AND user_id = $3",
                 int(self.count.value),
                 self.item_name,
                 i.user.id,
             )
-        elif self.action is custom_model.TodoAction.REMOVE:
+        elif self.action is models.TodoAction.REMOVE:
             await pool.execute(
                 "UPDATE todo SET max = max - $1 WHERE item = $2 AND user_id = $3",
                 int(self.count.value),
@@ -240,11 +236,11 @@ class InputItemAmountModal(BaseModal):
         await return_todo(i)
 
 
-async def return_todo(i: custom_model.CustomInteraction):
+async def return_todo(i: models.CustomInteraction):
     await i.response.defer()
 
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
-    todo_items: List[custom_model.TodoItem] = []
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+    todo_items: List[models.TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
 
     pool: asyncpg.Pool = i.client.pool  # type: ignore
@@ -254,9 +250,7 @@ async def return_todo(i: custom_model.CustomInteraction):
     )
     for row in rows:
         todo_items.append(
-            custom_model.TodoItem(
-                name=row["item"], current=row["count"], max=row["max"]
-            )
+            models.TodoItem(name=row["item"], current=row["count"], max=row["max"])
         )
 
     view = View(todo_items, locale)
@@ -271,7 +265,7 @@ async def return_todo(i: custom_model.CustomInteraction):
             embed=embed, view=view, attachments=[]
         )
     else:
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)
+        dark_mode = await get_user_theme(i.user.id, i.client.pool)
         client = AmbrTopAPI(i.client.session, to_ambr_top(locale))
 
         for item in todo_items:
@@ -296,7 +290,7 @@ async def return_todo(i: custom_model.CustomInteraction):
                 )
 
         fp = await main_funcs.draw_material_card(
-            custom_model.DrawInput(
+            models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=locale,
@@ -319,5 +313,5 @@ async def return_todo(i: custom_model.CustomInteraction):
             )
 
         await TodoPaginator(
-            i, embeds, materials, dark_mode, fp, todo_items, view.children
+            i, embeds, materials, dark_mode, fp, todo_items, view.children # type: ignore
         ).start(edit=True)

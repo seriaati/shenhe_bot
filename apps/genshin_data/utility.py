@@ -1,6 +1,8 @@
 from typing import Dict, Union
-from apps.text_map import to_enka
+
 from discord import Locale
+
+from apps.text_map import to_enka
 
 
 def get_text(

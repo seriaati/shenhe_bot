@@ -1,6 +1,5 @@
 import ast
 from typing import Any, Dict, List, Optional
-from base_ui import capture_exception
 
 import discord
 import GGanalysis.games.genshin_impact as GI
@@ -8,44 +7,52 @@ from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
-import apps.genshin.custom_model as custom_model
-import apps.genshin.utils as genshin_utils
-from ambr.client import AmbrTopAPI
-from ambr.models import Character, Weapon
+import ambr
+import models
+from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin.checks import check_account, check_wish_history
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from apps.genshin import (
+    check_account,
+    check_wish_history,
+    get_uid,
+    get_wish_history_embed,
+    get_wish_info_embed,
+)
+from apps.text_map import text_map, to_ambr_top
+from base_ui import capture_exception
 from data.game.standard_characters import get_standard_characters
 from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
-from utility import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, ErrorEmbed
 from utility.wish_paginator import WishPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
     def __init__(self, bot):
-        self.bot: custom_model.ShenheBot = bot
+        self.bot: models.ShenheBot = bot
         super().__init__()
 
     @check_account()
     @app_commands.command(
-        name="import", description=_("Import your genshin wish history", hash=474)
+        name="import", description=_("import your genshin wish history", hash=474)
     )
-    async def wish_import(self, i: discord.Interaction):
+    async def wish_import(self, inter: discord.Interaction):
+        i: models.CustomInteraction = inter  # type: ignore
         await wish_import_command(i)
 
     @check_account()
     @app_commands.command(
         name="file-import",
         description=_(
-            "Import your Genshin wish history from a txt file exported by Shenhe",
+            "import your Genshin wish history from a txt file exported by Shenhe",
             hash=692,
         ),
     )
-    async def wish_file_import(self, i: discord.Interaction, file: discord.Attachment):
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+    async def wish_file_import(
+        self, inter: discord.Interaction, file: discord.Attachment
+    ):
+        i: models.CustomInteraction = inter  # type: ignore
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         try:
             wish_history: List[Dict[str, Any]] = ast.literal_eval(
                 (await file.read()).decode("utf-8")
@@ -68,14 +75,14 @@ class WishCog(commands.GroupCog, name="wish"):
 
             newest_wish = wish_history[0]
             oldest_wish = wish_history[-1]
-            wish_info = custom_model.WishInfo(
+            wish_info = models.WishInfo(
                 total=len(wish_history),
-                newest_wish=custom_model.Wish(
+                newest_wish=models.Wish(
                     time=newest_wish["wish_time"],
                     name=newest_wish["wish_name"],
                     rarity=newest_wish["wish_rarity"],
                 ),
-                oldest_wish=custom_model.Wish(
+                oldest_wish=models.Wish(
                     time=oldest_wish["wish_time"],
                     name=oldest_wish["wish_name"],
                     rarity=oldest_wish["wish_rarity"],
@@ -85,13 +92,13 @@ class WishCog(commands.GroupCog, name="wish"):
                 permanent_banner_num=permanent_banner,
                 novice_banner_num=novice_banner,
             )
-            embed = await genshin_utils.get_wish_info_embed(i, str(locale), wish_info)
+            embed = await get_wish_info_embed(i, str(locale), wish_info)
             view = SetAuthKey.View(locale, True, True)
             view.clear_items()
             view.add_item(
-                SetAuthKey.ConfirmWishImport(locale, wish_history, from_text_file=True)
+                SetAuthKey.ConfirmWishimport(locale, wish_history, from_text_file=True)
             )
-            view.add_item(SetAuthKey.CancelWishImport(locale))
+            view.add_item(SetAuthKey.CancelWishimport(locale))
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
@@ -116,10 +123,11 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_history(
-        self, i: discord.Interaction, member: Optional[discord.User] = None
+        self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
-        user_locale = await get_user_locale(i.user.id, self.bot.pool)
-        embeds = await genshin_utils.get_wish_history_embed(i, "", member)
+        i: models.CustomInteraction = inter  # type: ignore
+        user_locale = await get_user_lang(i.user.id, self.bot.pool)
+        embeds = await get_wish_history_embed(i, "", member)
         options = [
             discord.SelectOption(
                 label=text_map.get(645, i.locale, user_locale) + " 1", value="301"
@@ -152,9 +160,7 @@ class WishCog(commands.GroupCog, name="wish"):
         ).start()
 
     @check_wish_history()
-    @app_commands.command(
-        name="luck", description=_("custom_model.Wish luck analysis", hash=372)
-    )
+    @app_commands.command(name="luck", description=_("Wish luck analysis", hash=372))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_analysis(
@@ -164,12 +170,12 @@ class WishCog(commands.GroupCog, name="wish"):
     ):
         await i.response.defer()
         member = member or i.user
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = $1 AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = $2 ORDER BY wish_id DESC",
             member.id,
-            await genshin_utils.get_uid(member.id, self.bot.pool),
+            await get_uid(member.id, self.bot.pool),
         )
         up_num = 0
         std = get_standard_characters()
@@ -208,7 +214,7 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     async def wish_char(self, i: discord.Interaction, item_num: int):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         if item_num > 10:
             return await i.followup.send(
@@ -222,7 +228,7 @@ class WishCog(commands.GroupCog, name="wish"):
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = $1 AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = $2 ORDER BY wish_id DESC",
             i.user.id,
-            await genshin_utils.get_uid(i.user.id, self.bot.pool),
+            await get_uid(i.user.id, self.bot.pool),
         )
         pull_state = 0
         up_guarantee = 0
@@ -268,7 +274,7 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     async def wish_weapon(self, i: discord.Interaction, item_num: int, fate_point: int):
         await i.response.defer()
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         if fate_point not in (0, 1, 2):
             return await i.followup.send(
@@ -290,7 +296,7 @@ class WishCog(commands.GroupCog, name="wish"):
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = $1 AND wish_banner_type = 302 AND uid = $2 ORDER BY wish_id DESC",
             i.user.id,
-            await genshin_utils.get_uid(i.user.id, self.bot.pool),
+            await get_uid(i.user.id, self.bot.pool),
         )
         pull_state = 0
         last_name = ""
@@ -353,18 +359,18 @@ class WishCog(commands.GroupCog, name="wish"):
     ):
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_locale(i.user.id, self.bot.pool)
-        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
+        user_locale = await get_user_lang(i.user.id, self.bot.pool)
+        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
 
-        wishes: List[custom_model.WishItem] = []
+        wishes: List[models.WishItem] = []
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
             member.id,
-            await genshin_utils.get_uid(member.id, self.bot.pool),
+            await get_uid(member.id, self.bot.pool),
         )
         for row in rows:
             wishes.append(
-                custom_model.WishItem(
+                models.WishItem(
                     name=row["wish_name"],
                     banner=row["wish_banner_type"],
                     rarity=row["wish_rarity"],
@@ -391,7 +397,7 @@ class WishCog(commands.GroupCog, name="wish"):
             200: permanent_banner,
         }
 
-        all_wish_data: Dict[str, custom_model.WishData] = {}
+        all_wish_data: Dict[str, models.WishData] = {}
         options = []
 
         for banner_id, banner_wishes in banners.items():
@@ -408,26 +414,24 @@ class WishCog(commands.GroupCog, name="wish"):
             reversed_banner.reverse()
             pull = 0
 
-            recents: List[custom_model.RecentWish] = []
+            recents: List[models.RecentWish] = []
             for wish in reversed_banner:
                 pull += 1
                 if wish.rarity == 5:
                     item_id = text_map.get_id_from_name(wish.name)
                     item = None
                     if item_id is not None:
-                        item = await ambr.get_character(str(item_id))
-                        if not isinstance(item, Character):
-                            item = await ambr.get_weapon(item_id)
-                    if isinstance(item, Character | Weapon):
+                        item = await client.get_character(str(item_id))
+                        if not isinstance(item, ambr.Character):
+                            item = await client.get_weapon(item_id)
+                    if isinstance(item, ambr.Character | ambr.Weapon):
                         recents.append(
-                            custom_model.RecentWish(
+                            models.RecentWish(
                                 name=item.name, pull_num=pull, icon=item.icon
                             )
                         )
                     else:
-                        recents.append(
-                            custom_model.RecentWish(name=wish.name, pull_num=pull)
-                        )
+                        recents.append(models.RecentWish(name=wish.name, pull_num=pull))
                     pull = 0
             recents.reverse()
 
@@ -443,7 +447,7 @@ class WishCog(commands.GroupCog, name="wish"):
             elif banner_id == 200:
                 title = text_map.get(655, i.locale, user_locale)
 
-            wish_data = custom_model.WishData(
+            wish_data = models.WishData(
                 title=title,
                 total_wishes=len(banner_wishes),
                 four_star=len(four_star),
@@ -473,11 +477,11 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data["400"].pity += temp
 
         fp = await main_funcs.draw_wish_overview_card(
-            custom_model.DrawInput(
+            models.DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
                 locale=user_locale or i.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, self.bot.pool),
+                dark_mode=await get_user_theme(i.user.id, self.bot.pool),
             ),
             list(all_wish_data.values())[0],
             member.display_avatar.url,

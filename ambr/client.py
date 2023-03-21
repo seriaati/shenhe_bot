@@ -4,9 +4,10 @@ from typing import Dict, List, Optional
 
 import aiohttp
 
-from ambr.constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS
-from ambr.endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 import ambr.models as models
+
+from .constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS
+from .endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 
 
 def get_decorator(func):

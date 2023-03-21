@@ -13,15 +13,15 @@ from apps.draw.utility import (
     get_cache,
     get_font,
 )
-from apps.genshin.custom_model import (
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
+from apps.text_map import text_map
+from models import (
     CharacterUsageResult,
     DynamicBackgroundInput,
+    RunLeaderboardUser,
+    SingleStrikeLeaderboardUser,
     TopPadding,
     UsageCharacter,
 )
-from apps.text_map import text_map
 
 
 def one_page(

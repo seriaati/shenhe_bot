@@ -16,14 +16,11 @@ from discord.ui import Button, View
 from dotenv import load_dotenv
 
 import asset
-from ambr.client import AmbrTopAPI
-from ambr.models import Character
-from apps.db import custom_image
-from apps.genshin.custom_model import CustomInteraction, ShenheBot
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from ambr import AmbrTopAPI, Character
+from apps.db import custom_image, get_user_lang
+from apps.text_map import text_map, to_ambr_top
 from exceptions import AutocompleteError
+from models import CustomInteraction, ShenheBot
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
 from utility import DefaultEmbed, ErrorEmbed
@@ -58,7 +55,8 @@ class OthersCog(commands.Cog, name="others"):
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
     )
-    async def accounts_command(self, i: discord.Interaction):
+    async def accounts_command(self, inter: discord.Interaction):
+        i: CustomInteraction = inter  # type: ignore
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
@@ -67,7 +65,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("Meet the awesome people that helped me!", hash=297),
     )
     async def view_credits(self, i: discord.Interaction):
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         embed = DefaultEmbed(text_map.get(475, locale) + " 🎉")
 
         embed.add_field(
@@ -125,7 +123,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: discord.Interaction):
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         revision = self.get_last_commits()
         embed = DefaultEmbed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
@@ -233,7 +231,7 @@ class OthersCog(commands.Cog, name="others"):
         i: CustomInteraction = inter  # type: ignore
         await i.response.defer()
 
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
         character = await ambr.get_character(character_id)
         if not isinstance(character, Character):
@@ -262,7 +260,7 @@ class OthersCog(commands.Cog, name="others"):
     async def custom_image_upload_autocomplete(
         self, i: discord.Interaction, current: str
     ):
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
             if any(
@@ -284,7 +282,7 @@ class OthersCog(commands.Cog, name="others"):
     async def feedback(self, i: discord.Interaction):
         await i.response.send_modal(
             Feedback.FeedbackModal(
-                await get_user_locale(i.user.id, self.bot.pool) or i.locale
+                await get_user_lang(i.user.id, self.bot.pool) or i.locale
             )
         )
 
@@ -302,7 +300,7 @@ class OthersCog(commands.Cog, name="others"):
         if not command:
             return await i.response.send_message(f"<{source_url}>")
 
-        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         command_map = self.get_command_map(self.bot.tree)
         obj = command_map.get(command)

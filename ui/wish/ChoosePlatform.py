@@ -4,10 +4,10 @@ import discord
 from discord import ui
 
 import config
-from apps.genshin.custom_model import CustomInteraction
+from apps.db import get_user_lang
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
+from models import CustomInteraction
 from ui.wish import SetAuthKey
 from utility import DefaultEmbed
 
@@ -133,7 +133,7 @@ class GOBack(ui.Button):
 
     async def callback(self, i: CustomInteraction):
         await i.response.defer(ephemeral=True)
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        user_locale = await get_user_lang(i.user.id, i.client.pool)
         view = View(self.view.locale)
         embed = DefaultEmbed()
         embed.set_author(

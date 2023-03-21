@@ -1,11 +1,12 @@
 import io
 from typing import List
-from apps.genshin.custom_model import FarmData
-from apps.genshin.utils import get_domain_title
-from apps.draw.utility import get_cache, get_font
 
 from discord import Locale
 from PIL import Image, ImageDraw
+
+from apps.draw.utility import get_cache, get_font
+from apps.genshin.utility import get_domain_title
+from models import FarmData
 
 
 def draw_domain_card(
@@ -94,7 +95,7 @@ def draw_domain_card(
         background_height += card.height + card_height_offset + y_padding_between_cards
 
     background = Image.new(
-        "RGB", (background_width, background_height), background_color
+        "RGB", (background_width, background_height), background_color # type: ignore
     )
 
     x = right_left_margin

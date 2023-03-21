@@ -11,8 +11,8 @@ from apps.draw.utility import (
     get_font,
     global_write,
 )
-from apps.genshin.custom_model import WishData
 from apps.text_map import text_map
+from models import WishData
 
 
 def overview(

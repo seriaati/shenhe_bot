@@ -1,6 +1,5 @@
 from typing import Dict
 
-
 WEAPON_EXP_TABLE = {
     1: {
         1: 125,

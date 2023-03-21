@@ -5,10 +5,10 @@ import discord
 import enkanetwork
 from PIL import Image, ImageChops, ImageDraw
 
-import asset
 import apps.draw.utility as draw_utility
-from apps.genshin.custom_model import DynamicBackgroundInput, TopPadding
+import asset
 from apps.text_map import text_map
+from models import DynamicBackgroundInput, TopPadding
 
 
 def character_card(
@@ -387,7 +387,7 @@ def user_character_card(
         mask = Image.new(
             "RGBA",
             talent_icon.size,
-            asset.primary_text if not dark_mode else asset.white,
+            asset.primary_text if not dark_mode else asset.white, # type: ignore
         )
         talent_icon = ImageChops.multiply(talent_icon, mask)
         im.paste(talent_icon, offset, talent_icon)

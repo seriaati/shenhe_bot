@@ -1,6 +1,5 @@
 from typing import Literal
 
-
 FONTS = {
     "de": {"extension": "ttf", "name": "NotoSans"},
     "en-US": {"extension": "ttf", "name": "NotoSans"},

@@ -8,14 +8,14 @@ import genshin
 import matplotlib.pyplot as plt
 
 import apps.draw.draw_funcs as funcs
-import apps.genshin.custom_model as custom_model
-from ambr.models import Material
+import models
+from ambr import Material
 from apps.draw.utility import calculate_time, download_images, extract_urls
 
 
 @calculate_time
 async def draw_abyss_one_page(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     user_stats: genshin.models.PartialGenshinUserStats,
     abyss_data: genshin.models.SpiralAbyss,
     user_characters: List[genshin.models.Character],
@@ -35,9 +35,9 @@ async def draw_abyss_one_page(
 
 @calculate_time
 async def draw_single_strike_leaderboard(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     current_uid: int,
-    users: List[custom_model.SingleStrikeLeaderboardUser],
+    users: List[models.SingleStrikeLeaderboardUser],
 ) -> io.BytesIO:
     characters = [u.character for u in users]
     urls = extract_urls(characters)
@@ -54,9 +54,9 @@ async def draw_single_strike_leaderboard(
 
 @calculate_time
 async def draw_run_leaderboard(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     current_uid: int,
-    users: List[custom_model.RunLeaderboardUser],
+    users: List[models.RunLeaderboardUser],
 ) -> io.BytesIO:
     urls = [u.icon_url for u in users]
     await download_images(urls, draw_input.session)
@@ -72,8 +72,8 @@ async def draw_run_leaderboard(
 
 @calculate_time
 async def draw_farm_domain_card(
-    draw_input: custom_model.DrawInput,
-    farm_data: List[custom_model.FarmData],
+    draw_input: models.DrawInput,
+    farm_data: List[models.FarmData],
 ) -> io.BytesIO:
     urls: List[str] = []
     domains = [data.domain for data in farm_data]
@@ -93,7 +93,7 @@ async def draw_farm_domain_card(
 
 @calculate_time
 async def draw_profile_card_v1(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     character: enka.model.CharacterInfo,
     custom_image_url: Optional[str] = None,
 ) -> Optional[io.BytesIO]:
@@ -117,7 +117,7 @@ async def draw_profile_card_v1(
 
 @calculate_time
 async def draw_stats_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     namecard: enka.Namecard,
     user_stats: genshin.models.Stats,
     pfp: discord.Asset,
@@ -135,7 +135,7 @@ async def draw_stats_card(
 
 @calculate_time
 async def draw_profile_overview_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     data: enka.model.base.EnkaNetworkResponse,
 ) -> Tuple[io.BytesIO, io.BytesIO]:
     if data.characters is None:
@@ -164,7 +164,7 @@ async def draw_profile_overview_card(
 
 @calculate_time
 async def draw_realtime_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     note: genshin.models.Notes,
 ) -> io.BytesIO:
     urls = [e.character.icon for e in note.expeditions]
@@ -177,8 +177,8 @@ async def draw_realtime_card(
 
 @calculate_time
 async def draw_wish_overview_card(
-    draw_input: custom_model.DrawInput,
-    wish_data: custom_model.WishData,
+    draw_input: models.DrawInput,
+    wish_data: models.WishData,
     pfp: str,
     user_name: str,
 ) -> io.BytesIO:
@@ -200,7 +200,7 @@ async def draw_wish_overview_card(
 
 @calculate_time
 async def draw_area_card(
-    draw_input: custom_model.DrawInput, explorations: List[genshin.models.Exploration]
+    draw_input: models.DrawInput, explorations: List[genshin.models.Exploration]
 ) -> io.BytesIO:
     func = functools.partial(funcs.stats.area, explorations, draw_input.dark_mode)
     return await draw_input.loop.run_in_executor(None, func)
@@ -208,7 +208,7 @@ async def draw_area_card(
 
 @calculate_time
 async def draw_abyss_overview_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     abyss_data: genshin.models.SpiralAbyss,
     user_data: genshin.models.PartialGenshinUserStats,
 ) -> io.BytesIO:
@@ -234,7 +234,7 @@ async def draw_abyss_overview_card(
 
 @calculate_time
 async def draw_abyss_floor_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     floor: genshin.models.Floor,
     characters: List[genshin.models.Character],
 ) -> io.BytesIO:
@@ -246,7 +246,7 @@ async def draw_abyss_floor_card(
 
 @calculate_time
 async def draw_diary_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     diary_data: genshin.models.Diary,
     user_data: genshin.models.PartialGenshinUserStats,
     month: int,
@@ -299,7 +299,7 @@ async def draw_diary_card(
 
 @calculate_time
 async def draw_material_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     materials: List[Tuple[Material, int | str]],
     title: str,
     draw_title: bool = True,
@@ -321,9 +321,9 @@ async def draw_material_card(
 
 @calculate_time
 async def abyss_character_usage_card(
-    draw_input: custom_model.DrawInput,
-    uc_list: List[custom_model.UsageCharacter],
-) -> custom_model.CharacterUsageResult:
+    draw_input: models.DrawInput,
+    uc_list: List[models.UsageCharacter],
+) -> models.CharacterUsageResult:
     urls = extract_urls([c.character for c in uc_list])
     await download_images(urls, draw_input.session)
     func = functools.partial(
@@ -334,7 +334,7 @@ async def abyss_character_usage_card(
 
 @calculate_time
 async def character_summary_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     character_list: List[genshin.models.Character],
     element: str,
     custom_title: Optional[str] = None,
@@ -354,7 +354,7 @@ async def character_summary_card(
 
 @calculate_time
 async def draw_lineup_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     lineup_preview: genshin.models.LineupPreview,
     character_id: int,
 ) -> io.BytesIO:
@@ -378,7 +378,7 @@ async def draw_lineup_card(
 
 @calculate_time
 async def draw_artifact_card(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     arts: List[enka.Equipments],
     character: enka.CharacterInfo,
 ) -> io.BytesIO:
@@ -397,7 +397,7 @@ async def draw_artifact_card(
 
 @calculate_time
 async def draw_banner_card(
-    draw_input: custom_model.DrawInput, banner_urls: List[str]
+    draw_input: models.DrawInput, banner_urls: List[str]
 ) -> io.BytesIO:
     await download_images(banner_urls, draw_input.session)
     func = functools.partial(funcs.banners.card, banner_urls, draw_input.locale)
@@ -406,7 +406,7 @@ async def draw_banner_card(
 
 @calculate_time
 async def draw_profile_card_v2(
-    draw_input: custom_model.DrawInput,
+    draw_input: models.DrawInput,
     character: enka.model.CharacterInfo,
     image_url: str,
 ) -> io.BytesIO:

@@ -19,11 +19,12 @@ from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
-from apps.genshin.browser import launch_browsers, launch_debug_browser
-from apps.genshin.custom_model import CustomInteraction
+import models
+from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
 from base_ui import global_error_handler
+from models import CustomInteraction
 from utility import ErrorEmbed, log, sentry_logging
 
 load_dotenv()
@@ -237,7 +238,7 @@ async def main() -> None:
         return await bot.process_commands(after)
 
     @bot.listen()
-    async def on_interaction(i: discord.Interaction):
+    async def on_interaction(i: models.CustomInteraction):
         if i.command is None:
             return
 

@@ -1,17 +1,19 @@
 import os
 import time
-import asset
 import typing
-from apps.text_map import text_map
-from apps.genshin.custom_model import DynamicBackgroundInput
+
 import aiofiles
 import aiohttp
 import discord
-from PIL import Image, ImageDraw, ImageFont, ImageChops
-from fontTools.ttLib import TTFont
-from data.draw.fonts import FONTS
-from utility import DefaultEmbed, log
 import enkanetwork as enka
+from fontTools.ttLib import TTFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
+
+import asset
+from apps.text_map import text_map
+from data.draw.fonts import FONTS
+from models import DynamicBackgroundInput
+from utility import DefaultEmbed, log
 
 
 def extract_file_name(url: str):
@@ -189,7 +191,7 @@ def draw_dynamic_background(
         max_card_num = num
     height += input.card_height * max_card_num  # height of the cards
     height += input.card_y_padding * (max_card_num - 1)  # padding between cards
-    im = Image.new("RGB", (width, height), input.background_color)
+    im = Image.new("RGB", (width, height), input.background_color)  # type: ignore
 
     return im, max_card_num
 
