@@ -5,27 +5,19 @@ from discord import ui, utils
 
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from ambr.models import Character
+import models
+from ambr import AmbrTopAPI, Character
+from apps.db import get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
-from apps.genshin.custom_model import (
-    CustomInteraction,
-    DrawInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardCharacter,
-    SingleStrikeLeaderboardUser,
-    UsageCharacter,
-)
-from apps.genshin.utils import (
+from apps.genshin import (
     get_abyss_season_date_range,
     get_character_emoji,
     get_current_abyss_season,
 )
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseView
-from utility import DefaultEmbed, ErrorEmbed, get_user_appearance_mode
+from utility import DefaultEmbed, ErrorEmbed
 
 
 class EmptyLeaderboard(Exception):
@@ -61,7 +53,7 @@ class LeaderboardSelect(ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         self.view.type = self.values[0]
         await select_callback(self.view, i, self.values[0])
 
@@ -89,12 +81,12 @@ class AbyssSeasonSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         self.view.season = int(self.values[0])
         await select_callback(self.view, i, self.view.type)
 
 
-async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
+async def select_callback(view: View, i: models.CustomInteraction, leaderboard: str):
     view.type = leaderboard
     pool = i.client.pool
     session = i.client.session
@@ -103,12 +95,14 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
     query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
     locale = view.locale
-    dark_mode = await get_user_appearance_mode(i.user.id, pool)
+    dark_mode = await get_user_theme(i.user.id, pool)
     await image_gen_transition(i, view, locale)
 
     # change color of button based on current region selection
-    glob: Global = utils.get(view.children, custom_id="global")
-    server: Server = utils.get(view.children, custom_id="server")
+    glob = utils.get(view.children, custom_id="global")
+    server = utils.get(view.children, custom_id="server")
+    if not isinstance(glob, ui.Button) or not isinstance(server, ui.Button):
+        raise AssertionError
     if view.area == "global":
         server.style = discord.ButtonStyle.secondary
         glob.style = discord.ButtonStyle.primary
@@ -152,7 +146,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
     # draw the leaderboard
     try:
         if leaderboard == "single_strike_damage":
-            single_strike_users: List[SingleStrikeLeaderboardUser] = []
+            single_strike_users: List[models.SingleStrikeLeaderboardUser] = []
             uids: List[int] = []
 
             rows = await pool.fetch(
@@ -177,11 +171,11 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
                     continue
 
                 single_strike_users.append(
-                    user := SingleStrikeLeaderboardUser(
+                    user := models.SingleStrikeLeaderboardUser(
                         uid=row["uid"],
                         user_name=row["user_name"],
                         rank=rank,
-                        character=SingleStrikeLeaderboardCharacter(
+                        character=models.SingleStrikeLeaderboardCharacter(
                             constellation=row["const"],
                             refinement=row["refine"],
                             level=row["c_level"],
@@ -202,7 +196,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
                 raise EmptyLeaderboard
 
             fp = await main_funcs.draw_single_strike_leaderboard(
-                DrawInput(
+                models.DrawInput(
                     loop=i.client.loop,
                     session=session,
                     locale=locale,
@@ -244,7 +238,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
             if not data:
                 raise EmptyLeaderboard
 
-            uc_list: List[UsageCharacter] = []
+            uc_list: List[models.UsageCharacter] = []
             temp_dict: Dict[int, int] = {}
             for d in data:
                 for c in d["characters"]:
@@ -261,10 +255,12 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
                 character = await client.get_character(str(key))
                 if not isinstance(character, Character):
                     raise AssertionError
-                uc_list.append(UsageCharacter(character=character, usage_num=value))
+                uc_list.append(
+                    models.UsageCharacter(character=character, usage_num=value)
+                )
 
             result = await main_funcs.abyss_character_usage_card(
-                DrawInput(
+                models.DrawInput(
                     loop=i.client.loop,
                     session=session,
                     locale=locale,
@@ -297,7 +293,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
             )
 
         elif leaderboard == "full_clear":
-            run_users: List[RunLeaderboardUser] = []
+            run_users: List[models.RunLeaderboardUser] = []
             uids: List[int] = []
 
             if query_str:
@@ -329,7 +325,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
                     win_percentage = round(row["wins"] / row["runs"] * 100, 1)
 
                 run_users.append(
-                    user := RunLeaderboardUser(
+                    user := models.RunLeaderboardUser(
                         icon_url=row["icon_url"],
                         user_name=row["user_name"],
                         level=row["level"],
@@ -349,7 +345,7 @@ async def select_callback(view: View, i: CustomInteraction, leaderboard: str):
                 raise EmptyLeaderboard
 
             fp = await main_funcs.draw_run_leaderboard(
-                DrawInput(
+                models.DrawInput(
                     loop=i.client.loop,
                     session=session,
                     locale=locale,
@@ -409,7 +405,7 @@ class Global(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         self.view.area = "global"
         await select_callback(self.view, i, self.view.type)
 
@@ -419,7 +415,7 @@ class Server(ui.Button):
         super().__init__(label=label, emoji="🏠", custom_id="server", row=4)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         self.view.area = "server"
         await select_callback(self.view, i, self.view.type)
 

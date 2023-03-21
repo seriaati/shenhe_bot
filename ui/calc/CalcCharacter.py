@@ -4,24 +4,28 @@ import discord
 from discord import ui, utils
 
 import ambr.models as ambr_models
-import apps.genshin.custom_model as custom_model
-import apps.genshin.utils as genshin_utils
 import asset
 import config
-from ambr.client import AmbrTopAPI
+import models
+from ambr import AmbrTopAPI
+from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.enka_api_docs.get_data import get_character_skill_order
-from apps.genshin.checks import check_cookie_predicate
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from apps.genshin import (
+    check_cookie_predicate,
+    get_character_emoji,
+    get_character_suggested_talent_levels,
+    get_shenhe_account,
+    level_to_ascension_phase,
+)
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
 from ui.calc import AddToTodo
-from utility import DefaultEmbed, get_user_appearance_mode
+from utility import DefaultEmbed
 
 
 class View(BaseView):
@@ -41,8 +45,8 @@ class ElementButton(ui.Button):
         self.view: View
         self.element = element
 
-    async def callback(self, i: custom_model.CustomInteraction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    async def callback(self, i: models.CustomInteraction):
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
         characters = await ambr.get_character()
         if not isinstance(characters, List):
@@ -54,7 +58,7 @@ class ElementButton(ui.Button):
                     discord.SelectOption(
                         label=character.name,
                         value=character.id,
-                        emoji=genshin_utils.get_character_emoji(character.id),
+                        emoji=get_character_emoji(character.id),
                     )
                 )
         self.view.clear_items()
@@ -67,15 +71,15 @@ class CharacterSelect(ui.Select):
         super().__init__(options=options, placeholder=placeholder)
         self.view: View
 
-    async def callback(self, i: custom_model.CustomInteraction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    async def callback(self, i: models.CustomInteraction):
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         embed = DefaultEmbed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
 
         # character level, a/q/e level, ascention level
-        init_levels = custom_model.InitLevels()
+        init_levels = models.InitLevels()
 
         # get genshin calculator levels or enka talent levels
         try:
@@ -84,7 +88,7 @@ class CharacterSelect(ui.Select):
             pass
         else:
             character_id = int(self.values[0].split("-")[0])
-            shenhe_user = await genshin_utils.get_shenhe_account(i.user.id, i.client)
+            shenhe_user = await get_shenhe_account(i.user.id, i.client)
 
             calculator_characters = await shenhe_user.client.get_calculator_characters(
                 sync=True
@@ -116,7 +120,7 @@ class CharacterSelect(ui.Select):
                     setattr(
                         init_levels,
                         key,
-                        genshin_utils.level_to_ascension_phase(init_levels.level or 1),
+                        level_to_ascension_phase(init_levels.level or 1),
                     )
                 else:
                     setattr(init_levels, key, 1)
@@ -143,7 +147,7 @@ class SpawnTargetLevelModal(ui.Button):
         self.init_levels = init_levels
         self.suggested_levels = suggested_levels
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         await i.response.send_modal(
             TargetLevelModal(
                 self.character_id, self.locale, self.init_levels, self.suggested_levels
@@ -190,7 +194,7 @@ class InitLevelModal(BaseModal):
         self,
         character_id: str,
         locale: discord.Locale | str,
-        init_levels: custom_model.InitLevels,
+        init_levels: models.InitLevels,
     ) -> None:
         super().__init__(
             title=text_map.get(181, locale),
@@ -229,7 +233,7 @@ class InitLevelModal(BaseModal):
         self.character_id = character_id
         self.locale = locale
 
-    async def on_submit(self, i: custom_model.CustomInteraction):
+    async def on_submit(self, i: models.CustomInteraction):
         await i.response.defer()
         # validate input
         try:
@@ -245,7 +249,7 @@ class InitLevelModal(BaseModal):
         except InvalidWeaponCalcInput:
             return
 
-        suggested_levlels = await genshin_utils.get_character_suggested_talent_levels(
+        suggested_levlels = await get_character_suggested_talent_levels(
             self.character_id, i.client.session
         )
         view = View()
@@ -280,7 +284,7 @@ class SpawnInitModal(ui.Button):
         )
         self.modal = modal
 
-    async def callback(self, i: custom_model.CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         await i.response.send_modal(self.modal)
 
 
@@ -364,7 +368,7 @@ class TargetLevelModal(BaseModal):
         self.init_levels = init_levels
         self.locale = locale
 
-    async def on_submit(self, i: custom_model.CustomInteraction) -> None:
+    async def on_submit(self, i: models.CustomInteraction) -> None:
         await i.response.defer()
         # validate input
         try:
@@ -410,7 +414,7 @@ class TargetLevelModal(BaseModal):
         if not isinstance(character, ambr_models.CharacterDetail):
             raise TypeError("character is not a ambr_models.Character")
 
-        todo_list = custom_model.TodoList()
+        todo_list = models.TodoList()
 
         # ascension items
         for asc in character.upgrade.ascensions:
@@ -504,11 +508,11 @@ class TargetLevelModal(BaseModal):
         if not isinstance(character, ambr_models.Character):
             raise TypeError("character is not a ambr_models.Character")
         fp = await main_funcs.draw_material_card(
-            custom_model.DrawInput(
+            models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
+                dark_mode=await get_user_theme(i.user.id, i.client.pool),
             ),
             all_materials,
             "",
@@ -529,7 +533,7 @@ class TargetLevelModal(BaseModal):
         embed.set_image(url="attachment://materials.jpeg")
         view = View()
         view.clear_items()
-        view.add_item(AddToTodo.AddToTodo(items, self.locale))
+        view.add_item(AddToTodo(items, self.locale))
         view.author = i.user
         await i.edit_original_response(
             embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view
@@ -543,7 +547,7 @@ async def validate_level_input(
     e: str,
     q: str,
     ascension: str,
-    i: custom_model.CustomInteraction,
+    i: models.CustomInteraction,
     locale: discord.Locale | str,
 ):
     embed = DefaultEmbed().set_author(
@@ -579,7 +583,7 @@ async def validate_level_input(
         )
         raise InvalidWeaponCalcInput
 
-    theoretical_ascension = genshin_utils.level_to_ascension_phase(int_level)
+    theoretical_ascension = level_to_ascension_phase(int_level)
     if int_ascension not in (theoretical_ascension, theoretical_ascension - 1):
         embed.description = text_map.get(730, locale)
         await i.followup.send(

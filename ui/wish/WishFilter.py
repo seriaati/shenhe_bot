@@ -1,11 +1,12 @@
 from typing import List
-from apps.genshin.custom_model import CustomInteraction
-from apps.genshin.utils import get_wish_history_embed
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 
 from discord import SelectOption
 from discord.ui import Select
+
+from apps.db import get_user_lang
+from apps.genshin import get_wish_history_embed
+from apps.text_map import text_map
+from models import CustomInteraction
 from utility.wish_paginator import WishPaginatorView
 
 
@@ -34,7 +35,7 @@ class SelectRarity(Select):
 async def filter_callback(
     self_var: SelectBanner | SelectRarity, i: CustomInteraction, filter_list: List
 ):
-    user_locale = await get_user_locale(i.user.id, i.client.pool)
+    user_locale = await get_user_lang(i.user.id, i.client.pool)
     if self_var.values[0] not in filter_list:
         filter_list.append(self_var.values[0])
     else:

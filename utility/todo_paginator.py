@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from discord import Embed, File, Locale
 from discord.ui import Button, Select
 
-from ambr.models import Material
+from ambr import Material
 from apps.draw import main_funcs
-from apps.genshin.custom_model import CustomInteraction, DrawInput, TodoItem
+from models import CustomInteraction, DrawInput, TodoItem
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
 
 

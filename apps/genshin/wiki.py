@@ -4,14 +4,13 @@ import discord
 
 import ambr.models as ambr_models
 import asset
-from ambr.client import AmbrTopAPI
+from ambr import AmbrTopAPI
 from apps.draw import main_funcs
-from apps.genshin.custom_model import CustomInteraction, DrawInput
-from apps.genshin.utils import get_fight_prop
-from apps.text_map import text_map
-from apps.text_map.utils import get_weekday_name
+from apps.genshin import get_fight_prop
+from apps.text_map import get_weekday_name, text_map
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
+from models import CustomInteraction, DrawInput
 from ui.genshin import Search
 from utility import DefaultEmbed, get_weekday_int_with_name
 

@@ -8,8 +8,8 @@ from discord.ext import commands
 from discord.ui import Select
 
 import config
+from apps.db import get_user_lang
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
 from utility import DefaultEmbed
 
@@ -84,7 +84,7 @@ class HelpCog(commands.Cog):
         name="help", description=_("View a list of all commands", hash=486)
     )
     async def help(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.pool)  # type: ignore
+        user_locale = await get_user_lang(i.user.id, i.client.pool)  # type: ignore
         view = DropdownView(user_locale or i.locale)
         await i.response.send_message(view=view)
         view.message = await i.original_response()

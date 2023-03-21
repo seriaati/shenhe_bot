@@ -4,13 +4,16 @@ from discord import ui
 
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from apps.genshin.checks import check_cookie_predicate
-from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from exceptions import NumbersOnly
+from ambr import AmbrTopAPI
+from apps.genshin import (
+    check_cookie_predicate,
+    get_character_emoji,
+    get_uid,
+    get_weapon_emoji,
+)
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
+from exceptions import NumbersOnly
 from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
 from utility import DefaultEmbed, divide_chunks
 
@@ -252,7 +255,9 @@ class ResinModal(BaseModal):
     threshold = ui.TextInput(
         label="樹脂閥值", placeholder="例如: 140 (不得大於 160)", max_length=3
     )
-    max_notif = ui.TextInput(label="最大提醒值", placeholder="例如: 5", max_length=3)
+    max_notif = ui.TextInput(
+        label="MAX_NOTIF", placeholder="FOR_EXAMPLE: 5", max_length=3
+    )
 
     def __init__(self, locale: discord.Locale | str):
         super().__init__(title=text_map.get(515, locale))

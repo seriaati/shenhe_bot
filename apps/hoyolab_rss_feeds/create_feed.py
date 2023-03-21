@@ -1,5 +1,6 @@
-from hoyolabrssfeeds import FeedConfigLoader, GameFeed, Game
 from pathlib import Path
+
+from hoyolabrssfeeds import FeedConfigLoader, Game, GameFeed
 
 
 async def create_feed(lang: str):

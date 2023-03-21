@@ -3,8 +3,9 @@ from typing import Optional
 import asyncpg
 from discord import Interaction, Member, User, app_commands
 
-from apps.genshin.utils import get_uid
 from exceptions import NoCookie, NoUID, NoWishHistory
+
+from .utility import get_uid
 
 
 def check_account():

@@ -1,10 +1,5 @@
 import asyncio
 from typing import List
-from apps.genshin.custom_model import ShenheBot
-from apps.genshin.utils import get_account_select_options, get_uid_region_hash
-from apps.text_map import to_hutao_login_lang
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 
 import asyncpg
 import discord
@@ -14,8 +9,12 @@ from logingateway.exception import UserTokenNotFound
 
 import asset
 import config
-from cogs.login import register_user
+from apps.db import get_user_lang
+from apps.genshin import get_account_select_options, get_uid_region_hash
+from apps.text_map import text_map, to_hutao_login_lang
 from base_ui import BaseModal, BaseView
+from cogs.login import register_user
+from models import CustomInteraction, ShenheBot
 from utility import DefaultEmbed, log
 
 
@@ -41,11 +40,11 @@ class AddAccount(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await add_account_callback(self.view, i)
 
 
-async def add_account_callback(view: View, i: discord.Interaction):
+async def add_account_callback(view: View, i: CustomInteraction):
     locale = view.locale
     await i.response.defer()
     view.clear_items()
@@ -66,7 +65,7 @@ class GenerateLink(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         locale = self.view.locale
 
         embed = DefaultEmbed().set_author(
@@ -113,7 +112,7 @@ class ResendToken(ui.Button):
         self.token = token
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         bot: ShenheBot = i.client  # type: ignore
 
         await i.response.defer()
@@ -166,7 +165,7 @@ class ChangeNickname(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         self.view.clear_items()
         self.view.add_item(
             SwitchAccount(
@@ -190,7 +189,7 @@ class NicknameModal(BaseModal):
         self.name.label = text_map.get(601, locale)
         self.name.placeholder = text_map.get(601, locale).lower()
 
-    async def on_submit(self, i: discord.Interaction):
+    async def on_submit(self, i: CustomInteraction):
         await i.client.pool.execute(
             "UPDATE user_accounts SET nickname = $1 WHERE uid = $2 AND user_id = $3",
             self.name.value,
@@ -210,7 +209,7 @@ class RemoveAccount(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         locale = self.view.locale
         self.view.clear_items()
         account_select = SwitchAccount(locale, self.view.select_options, True)
@@ -245,7 +244,7 @@ class SwitchAccount(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         if self.remove_account:
@@ -290,15 +289,15 @@ class GOBack(ui.Button):
         self.layer = layer
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         if self.layer == 2:
             await add_account_callback(self.view, i)
         else:
             await return_accounts(i)
 
 
-async def return_accounts(i: discord.Interaction):
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+async def return_accounts(i: CustomInteraction):
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     accounts: List[asyncpg.Record] = await i.client.pool.fetch(
         "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = $1",
         i.user.id,

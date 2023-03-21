@@ -2,8 +2,8 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.ui import Button, View
 
-from apps.genshin.custom_model import ShenheBot
-from apps.text_map.utils import get_user_locale
+from apps.db import get_user_lang
+from models import ShenheBot
 from utility import DefaultEmbed
 
 
@@ -13,7 +13,7 @@ class WaifuCog(commands.Cog):
 
     @app_commands.command(name="waifu", description="指令都去哪了？")
     async def waifu_command(self, i: Interaction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         locale = str(locale)
         view = View()
         view.add_item(

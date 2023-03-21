@@ -6,15 +6,13 @@ from discord import ui
 import apps.db.custom_image as image
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from apps.genshin.custom_model import CustomInteraction, EnkaView
-from apps.genshin.utils import get_character_emoji
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
+from ambr import AmbrTopAPI
+from apps.genshin import get_character_emoji
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_emoji, get_element_list
+from models import CustomInteraction, EnkaView
 from ui.genshin import EnkaDamageCalc
-from ui.others.SettingsMenu import CustomProfileImage
 from utility import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
@@ -28,6 +26,12 @@ class View(BaseView):
                 ElementButton(get_element_emoji(element), element, index // 4)
             )
         self.locale = locale
+
+    def gen_embed(self) -> discord.Embed:
+        embed = DefaultEmbed(
+            text_map.get(62, self.locale), text_map.get(276, self.locale)
+        )
+        return embed
 
 
 class ElementButton(ui.Button):
@@ -260,7 +264,8 @@ async def return_custom_image_interaction(
     if not isinstance(view, EnkaView):
         view.add_item(GoBackCharacter(element))
     else:
-        embeds.append(CustomProfileImage(view.locale).gen_embed())
+        v = View(view.locale)
+        embeds.append(v.gen_embed())
         view.add_item(EnkaDamageCalc.GoBack())
 
     options = await image.get_user_custom_image_options(
@@ -280,7 +285,7 @@ async def return_custom_image_interaction(
         i.user.id, character_id, i.client.pool
     )
     if custom_image is None:
-        remove_image.disabled = True
+        remove_image.disabled = True  # skipcq: PYL-W0201
 
     embed = await image.get_user_custom_image_embed(
         i, view.locale, str(character_id), custom_image

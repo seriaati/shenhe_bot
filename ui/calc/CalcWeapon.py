@@ -1,33 +1,29 @@
-from typing import Any, Dict, List
-from apps.draw.utility import image_gen_transition
-from apps.draw import main_funcs
-from apps.genshin.custom_model import DrawInput, TodoList
-from apps.genshin.utils import get_weapon_emoji, level_to_ascension_phase
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
-from data.game.weapon_exp import get_weapon_exp_table
-from data.game.weapon_types import get_weapon_type_emoji
+import typing
 
-from discord import File, Interaction, Locale, SelectOption
-from discord.ui import Button, Select, TextInput
+import discord
+from discord import ui
 
 import asset
 import config
-from ambr.client import AmbrTopAPI
-from ambr.models import Material, WeaponDetail
+from ambr import AmbrTopAPI, Material, WeaponDetail
+from apps.db import get_user_theme
+from apps.draw import main_funcs
+from apps.draw.utility import image_gen_transition
+from apps.genshin import get_weapon_emoji, level_to_ascension_phase
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
-from ui.calc import AddToTodo
+from data.game.weapon_exp import get_weapon_exp_table
+from data.game.weapon_types import get_weapon_type_emoji
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
-from utility import (
-    DefaultEmbed,
-    divide_chunks,
-    ErrorEmbed,
-    get_user_appearance_mode,
-)
+from models import CustomInteraction, DrawInput, TodoList
+from ui import calc
+from utility import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str, weapon_types: Dict[str, str]):
+    def __init__(
+        self, locale: discord.Locale | str, weapon_types: typing.Dict[str, str]
+    ):
         super().__init__(timeout=config.short_timeout)
         self.locale = locale
 
@@ -44,22 +40,22 @@ class View(BaseView):
             count += 1
 
 
-class WeaponTypeButton(Button):
+class WeaponTypeButton(ui.Button):
     def __init__(self, emoji: str, label: str, weapon_type: str, row: int):
         super().__init__(emoji=emoji, label=label, row=row)
         self.weapon_type = weapon_type
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapons = await ambr.get_weapon()
-        if not isinstance(weapons, List):
+        if not isinstance(weapons, typing.List):
             raise TypeError("weapons is not a list")
         options = []
         for weapon in weapons:
             if weapon.type == self.weapon_type:
                 options.append(
-                    SelectOption(
+                    discord.SelectOption(
                         label=weapon.name,
                         value=str(weapon.id),
                         emoji=get_weapon_emoji(weapon.id),
@@ -78,28 +74,37 @@ class WeaponTypeButton(Button):
         await i.response.edit_message(view=self.view)
 
 
-class WeaponSelect(Select):
-    def __init__(self, locale: Locale | str, options: List[SelectOption], range_: str):
+class WeaponSelect(ui.Select):
+    def __init__(
+        self,
+        locale: discord.Locale | str,
+        options: typing.List[discord.SelectOption],
+        range_: str,
+    ):
         super().__init__(
             placeholder=text_map.get(180, locale) + range_, options=options
         )
         self.view: View
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: CustomInteraction) -> typing.Any:
         await i.response.send_modal(LevelModal(self.values[0], self.view.locale))
 
 
 class LevelModal(BaseModal):
-    current = TextInput(label="current_level", default="1", min_length=1, max_length=2)
-    current_ascension = TextInput(
+    current = ui.TextInput(
+        label="current_level", default="1", min_length=1, max_length=2
+    )
+    current_ascension = ui.TextInput(
         label="current_ascension", default="0", min_length=1, max_length=1
     )
-    target = TextInput(label="target_level", default="90", min_length=1, max_length=2)
-    target_ascension = TextInput(
+    target = ui.TextInput(
+        label="target_level", default="90", min_length=1, max_length=2
+    )
+    target_ascension = ui.TextInput(
         label="target_ascension", min_length=1, max_length=1, default="6"
     )
 
-    def __init__(self, weapon_id: str, locale: Locale | str) -> None:
+    def __init__(self, weapon_id: str, locale: discord.Locale | str) -> None:
         super().__init__(
             title=text_map.get(181, locale),
             timeout=config.mid_timeout,
@@ -124,7 +129,7 @@ class LevelModal(BaseModal):
         self.weapon_id = weapon_id
         self.locale = locale
 
-    async def on_submit(self, i: Interaction) -> None:
+    async def on_submit(self, i: CustomInteraction) -> None:
         await i.response.defer()
         locale = self.locale
 
@@ -274,7 +279,7 @@ class LevelModal(BaseModal):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
+                dark_mode=await get_user_theme(i.user.id, i.client.pool),
             ),
             all_materials,
             "",
@@ -294,10 +299,10 @@ class LevelModal(BaseModal):
         embed.set_image(url="attachment://materials.jpeg")
 
         view = BaseView(timeout=config.mid_timeout)
-        view.add_item(AddToTodo.AddToTodo(items, self.locale))
+        view.add_item(calc.AddToTodo.AddToTodo(items, self.locale))
         view.author = i.user
 
         await i.edit_original_response(
-            embed=embed, attachments=[File(fp, "materials.jpeg")], view=view
+            embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view
         )
         view.message = await i.original_response()

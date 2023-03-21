@@ -4,9 +4,9 @@ import aiohttp
 import asyncpg
 import discord
 
-from apps.genshin.custom_model import CustomInteraction, UserCustomImage
-from apps.genshin.utils import get_character_fanarts
+from apps.genshin import get_character_fanarts
 from apps.text_map import text_map
+from models import CustomInteraction, UserCustomImage
 from utility import DefaultEmbed
 
 

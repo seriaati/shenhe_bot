@@ -14,8 +14,8 @@ from logingateway.model import (
     ServerId,
 )
 
-from apps.genshin.custom_model import ShenheBot
 from apps.text_map import text_map
+from models import ShenheBot
 from utility import DefaultEmbed, log
 
 load_dotenv()

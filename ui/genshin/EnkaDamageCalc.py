@@ -1,5 +1,6 @@
 import random
 from typing import Any, Dict, List
+
 import aiohttp
 import discord
 import PIL
@@ -10,16 +11,15 @@ import asset
 import config
 import utility.utils as utility_utils
 import yelan.damage_calculator as damage_calc
-from apps.db.utility import get_profile_ver
+from apps.db import get_profile_ver, get_user_theme
+from apps.db.custom_image import get_user_custom_image
 from apps.draw import main_funcs
-from apps.genshin.browser import get_browser
-from apps.genshin.custom_model import CustomInteraction, DrawInput, EnkaView
-from apps.genshin.utils import get_character_fanarts
+from apps.genshin import get_browser, get_character_fanarts
 from apps.text_map import text_map
 from base_ui import BaseView
 from exceptions import CardNotReady, NoCharacterFound
-from apps.db.custom_image import get_user_custom_image
-from yelan.data.GO_modes import hit_mode_texts
+from models import CustomInteraction, DrawInput, EnkaView
+from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
 class View(BaseView):
@@ -95,7 +95,7 @@ class View(BaseView):
             )
 
         # adding items
-        for hit_mode, text_hash in hit_mode_texts.items():
+        for hit_mode, text_hash in HIT_MODE_TEXTS.items():
             self.add_item(HitModeButton(hit_mode, text_map.get(text_hash, locale)))
         self.add_item(
             ReactionModeSelect(reaction_mode_options, text_map.get(337, locale))
@@ -152,7 +152,7 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
     if not character:
         raise AssertionError
 
-    dark_mode = await utility_utils.get_user_appearance_mode(i.user.id, i.client.pool)
+    dark_mode = await get_user_theme(i.user.id, i.client.pool)
     version = await get_profile_ver(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(

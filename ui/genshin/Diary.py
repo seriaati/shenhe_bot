@@ -1,17 +1,18 @@
 import io
 from typing import List
-from discord import File, Interaction, Locale, Member, User, utils
+
+from discord import File, Locale, Member, User, utils
 from discord.ui import Button, Select
+from matplotlib import pyplot as plt
 
 import asset
 import config
-from apps.genshin.custom_model import DiaryLogsResult, DiaryResult
-from apps.genshin.genshin_app import GenshinApp
+from apps.db import get_user_lang
+from apps.genshin import GenshinApp
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
+from models import CustomInteraction, DiaryLogsResult, DiaryResult
 from utility import DefaultEmbed, divide_chunks
-from matplotlib import pyplot as plt
 
 
 class View(BaseView):
@@ -38,7 +39,7 @@ class InfoButton(Button):
         super().__init__(emoji=asset.info_emoji)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
             ephemeral=True,
@@ -54,15 +55,15 @@ class MonthSelect(Select):
 
         self.view: View
 
-    async def callback(self, i: Interaction):
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
+    async def callback(self, i: CustomInteraction):
+        user_locale = await get_user_lang(i.user.id, i.client.pool)
         embed = DefaultEmbed()
         embed.set_author(
             name=text_map.get(644, i.locale, user_locale),
             icon_url="https://i.imgur.com/V76M9Wa.gif",
         )
         await i.response.edit_message(embed=embed, attachments=[])
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        user_locale = await get_user_lang(i.user.id, i.client.pool)
         result = await self.view.genshin_app.get_diary(
             self.view.member.id, i.user.id, i.locale, int(self.values[0])
         )
@@ -90,7 +91,7 @@ class Primo(Button):
         super().__init__(label=label, emoji=asset.primo_emoji)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         if not self.label:
             raise AssertionError
 
@@ -102,7 +103,7 @@ class Mora(Button):
         super().__init__(label=label, emoji=asset.mora_emoji)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         if not self.label:
             raise AssertionError
 
@@ -110,7 +111,7 @@ class Mora(Button):
 
 
 async def primo_mora_button_callback(
-    i: Interaction, view: View, is_primo: bool, label: str
+    i: CustomInteraction, view: View, is_primo: bool, label: str
 ):
     await i.response.defer(ephemeral=True)
     result = await view.genshin_app.get_diary_logs(

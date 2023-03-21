@@ -1,5 +1,6 @@
-import aiohttp
 from typing import List
+
+import aiohttp
 
 
 async def find_codes(session: aiohttp.ClientSession) -> List[str]:

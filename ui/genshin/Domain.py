@@ -8,13 +8,13 @@ from discord import ui
 
 import asset
 import config
+from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin.custom_model import DrawInput
-from apps.genshin.utils import get_farm_data, get_uid, get_uid_tz
+from apps.genshin import get_farm_data, get_uid, get_uid_tz
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 from base_ui import BaseView
-from utility import DefaultEmbed, get_dt_now, get_user_appearance_mode
+from models import DrawInput
+from utility import DefaultEmbed, get_dt_now
 
 
 class View(BaseView):
@@ -46,7 +46,7 @@ async def return_farm_interaction(
     pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
     session: aiohttp.ClientSession = i.client.session  # type: ignore
 
-    locale = await get_user_locale(i.user.id, pool) or i.locale
+    locale = await get_user_lang(i.user.id, pool) or i.locale
 
     if weekday is None:
         uid = await get_uid(i.user.id, pool)
@@ -75,7 +75,7 @@ async def return_farm_interaction(
             loop=i.client.loop,
             session=session,
             locale=locale,
-            dark_mode=await get_user_appearance_mode(i.user.id, pool),
+            dark_mode=await get_user_theme(i.user.id, pool),
         ),
         farm_data,
     )

@@ -1,9 +1,5 @@
 import asyncio
 import calendar
-from apps.genshin.custom_model import CustomInteraction
-from apps.genshin.genshin_app import GenshinApp
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 
 import genshin
 from discord import ButtonStyle, Locale
@@ -11,8 +7,12 @@ from discord.errors import InteractionResponded
 from discord.ui import Button
 
 import config
+from apps.db import get_user_lang
+from apps.genshin import GenshinApp
+from apps.text_map import text_map
 from base_ui import BaseView
-from utility import DefaultEmbed, divide_chunks, ErrorEmbed, get_dt_now
+from models import CustomInteraction
+from utility import DefaultEmbed, ErrorEmbed, divide_chunks, get_dt_now
 
 
 class View(BaseView):
@@ -67,7 +67,7 @@ async def return_claim_reward(i: CustomInteraction, genshin_app: GenshinApp):
     except InteractionResponded:
         pass
 
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale  # type: ignore
     now = get_dt_now()
     day_in_month = calendar.monthrange(now.year, now.month)[1]
     shenhe_user = await genshin_app.get_user_cookie(i.user.id, i.user.id, i.locale)

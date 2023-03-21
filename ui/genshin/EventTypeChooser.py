@@ -1,20 +1,21 @@
 import json
+from typing import Any, Dict, List
+
 import aiofiles
-from apps.genshin.custom_model import CustomInteraction
-from apps.hoyolab_rss_feeds.create_feed import create_feed
-from apps.text_map import to_genshin_py
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
 import discord
+from dateutil import parser
 from discord import ui
 from discord.utils import format_dt
-from typing import Any, Dict, List
-from base_ui import BaseView
-import config
+
 import asset
-from dateutil import parser
+import config
+from apps.db import get_user_lang
+from apps.hoyolab_rss_feeds.create_feed import create_feed
+from apps.text_map import text_map, to_genshin_py
+from base_ui import BaseView
+from models import CustomInteraction
+from utility import DefaultEmbed, parse_html
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
-from utility import DefaultEmbed, parse_HTML
 
 
 class View(BaseView):
@@ -33,7 +34,7 @@ class Hoyolab(ui.Button):
     async def callback(self, i: CustomInteraction):
         await i.response.defer()
 
-        user_locale = await get_user_locale(i.user.id, i.client.pool)
+        user_locale = await get_user_lang(i.user.id, i.client.pool)
         locale = user_locale or i.locale
         genshin_locale = to_genshin_py(locale)
 
@@ -58,7 +59,7 @@ class Hoyolab(ui.Button):
             )
             embed.add_field(
                 name=text_map.get(408, locale),
-                value=f"{parse_HTML(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
+                value=f"{parse_html(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
                 inline=False,
             )
             if "image" in event:
@@ -99,9 +100,9 @@ class Genshin(ui.Button):
         event_overview_api = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
         event_details_api = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
         async with i.client.session.get(event_overview_api) as r:
-            overview: Dict = await r.json()
+            overview: Dict[str, Any] = await r.json()
         async with i.client.session.get(event_details_api) as r:
-            details: Dict = await r.json()
+            details: Dict[str, Any] = await r.json()
         type_list = overview["data"]["type_list"]
         options = []
         for type_ in type_list:
@@ -134,7 +135,7 @@ class Genshin(ui.Button):
                 )
                 embed.add_field(
                     name=text_map.get(408, self.view.locale),
-                    value=parse_HTML(detail_dict[e["ann_id"]])[:500] + "...",
+                    value=parse_html(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
                 embeds[str(e["type"])].append(embed)
@@ -177,7 +178,7 @@ class GOBack(ui.Button):
 
 async def return_events(i: CustomInteraction):
     await i.response.defer()
-    user_locale = await get_user_locale(i.user.id, i.client.pool)
+    user_locale = await get_user_lang(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)
     embed = DefaultEmbed().set_author(
         name=text_map.get(361, i.locale, user_locale),

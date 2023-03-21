@@ -11,21 +11,24 @@ import genshin
 from discord import utils
 from discord.ext import commands, tasks
 
-import ambr.models as models
-import apps.genshin.custom_model as custom_model
-import apps.genshin.utils as genshin_utils
+import ambr
 import asset
+import models
 import utility.utils as utility_utils
-from ambr.client import AmbrTopAPI
+from apps.db import get_user_lang, get_user_notif, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin.find_codes import find_codes
-from apps.text_map import AMBR_LANGS, to_ambr_top
-from apps.text_map import text_map
-from apps.text_map.utils import get_element_name, get_user_locale
-from data.game.elements import convert_element
+from apps.genshin import (
+    find_codes,
+    get_current_abyss_season,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
+from apps.text_map import AMBR_LANGS, get_element_name, text_map, to_ambr_top
 from base_ui import capture_exception
-from utility.fetch_card import fetch_cards
+from data.game.elements import convert_element
 from utility import log
+from utility.fetch_card import fetch_cards
 
 
 def schedule_error_handler(func):
@@ -44,7 +47,7 @@ def schedule_error_handler(func):
 
 class Schedule(commands.Cog):
     def __init__(self, bot):
-        self.bot: custom_model.ShenheBot = bot
+        self.bot: models.ShenheBot = bot
         self.debug = self.bot.debug
         if not self.debug:
             self.run_tasks.start()
@@ -118,7 +121,7 @@ class Schedule(commands.Cog):
         log.info("[Schedule] Generating abyss.json...")
 
         result: Dict[str, Any] = {}
-        result["schedule_id"] = genshin_utils.get_current_abyss_season()
+        result["schedule_id"] = get_current_abyss_season()
         result["size"] = 0
         result["data"] = []
 
@@ -158,7 +161,7 @@ class Schedule(commands.Cog):
     @staticmethod
     def add_abyss_entry(
         result: Dict[str, Any],
-        account: custom_model.ShenheAccount,
+        account: models.ShenheAccount,
         abyss: genshin.models.SpiralAbyss,
         characters: List[genshin.models.Character],
     ):
@@ -213,9 +216,7 @@ class Schedule(commands.Cog):
                 continue
 
             try:
-                s_user = await genshin_utils.get_shenhe_account(
-                    n_user.user_id, self.bot
-                )
+                s_user = await get_shenhe_account(n_user.user_id, self.bot)
             except Exception:  # skipcq: PYL-W0703
                 continue
 
@@ -312,7 +313,7 @@ class Schedule(commands.Cog):
     async def reset_notif_current(
         self,
         notification_type: str,
-        n_user: custom_model.NotificationUser,
+        n_user: models.NotificationUser,
         notes: genshin.models.Notes,
     ):
         if (
@@ -330,8 +331,8 @@ class Schedule(commands.Cog):
         self,
         notification_type: str,
         now: datetime,
-        n_user: custom_model.NotificationUser,
-        s_user: custom_model.ShenheAccount,
+        n_user: models.NotificationUser,
+        s_user: models.ShenheAccount,
     ):
         await self.bot.pool.execute(
             f"UPDATE {notification_type} SET current = current + 1, last_notif = $1 WHERE user_id = $2 AND uid = $3",
@@ -343,7 +344,7 @@ class Schedule(commands.Cog):
     async def handle_notif_error(
         self,
         notification_type: str,
-        n_user: custom_model.NotificationUser,
+        n_user: models.NotificationUser,
         locale: str,
         error_message: str,
     ):
@@ -372,7 +373,7 @@ class Schedule(commands.Cog):
 
     async def notify_resin(
         self,
-        user: custom_model.NotificationUser,
+        user: models.NotificationUser,
         notes: genshin.models.Notes,
         locale: str,
     ) -> bool:
@@ -402,7 +403,7 @@ class Schedule(commands.Cog):
 
     async def notify_pot(
         self,
-        user: custom_model.NotificationUser,
+        user: models.NotificationUser,
         notes: genshin.models.Notes,
         locale: str,
     ) -> bool:
@@ -428,7 +429,7 @@ class Schedule(commands.Cog):
         else:
             return True
 
-    async def notify_pt(self, user: custom_model.NotificationUser, locale: str):
+    async def notify_pt(self, user: models.NotificationUser, locale: str):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
@@ -463,13 +464,13 @@ class Schedule(commands.Cog):
             uid,
         )
 
-    async def get_schedule_users(self) -> List[custom_model.ShenheAccount]:
+    async def get_schedule_users(self) -> List[models.ShenheAccount]:
         """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
 
         Returns:
-            List[custom_model.ShenheAccount]: List of shenhe users
+            List[models.ShenheAccount]: List of shenhe users
         """
-        accounts: List[custom_model.ShenheAccount] = []
+        accounts: List[models.ShenheAccount] = []
         rows = await self.bot.pool.fetch(
             "SELECT user_id, ltuid, ltoken, cookie_token, uid FROM user_accounts WHERE ltuid IS NOT NULL"
         )
@@ -480,7 +481,7 @@ class Schedule(commands.Cog):
                 "cookie_token": row["cookie_token"],
             }
             try:
-                account = await genshin_utils.get_shenhe_account(
+                account = await get_shenhe_account(
                     row["user_id"],
                     self.bot,
                     custom_cookie=custom_cookie,
@@ -494,14 +495,14 @@ class Schedule(commands.Cog):
 
     async def get_notification_users(
         self, table_name: str
-    ) -> List[custom_model.NotificationUser]:
+    ) -> List[models.NotificationUser]:
         """Gets a list of notification users that has the reminder feature enabled
 
         Args:
             table_name (str): the table name in the database
 
         Returns:
-            List[custom_model.NotificationUser]: a list of notification users
+            List[models.NotificationUser]: a list of notification users
         """
         select_query = "SELECT user_id, uid, max, last_notif, current"
         if table_name in ("resin_notification", "pot_notification"):
@@ -510,7 +511,7 @@ class Schedule(commands.Cog):
             f"{select_query} FROM {table_name} WHERE toggle = true"
         )
 
-        return [custom_model.NotificationUser(**row) for row in rows]
+        return [models.NotificationUser(**row) for row in rows]
 
     @schedule_error_handler
     async def redeem_codes(self):
@@ -564,13 +565,13 @@ class Schedule(commands.Cog):
             pass
 
     async def get_redeem_code_users(self):
-        users: List[custom_model.ShenheAccount] = []
+        users: List[models.ShenheAccount] = []
         rows = await self.bot.pool.fetch(
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for row in rows:
             try:
-                acc = await genshin_utils.get_shenhe_account(row["user_id"], self.bot)
+                acc = await get_shenhe_account(row["user_id"], self.bot)
             except Exception:  # skipcq: PYL-W0703
                 pass
             else:
@@ -647,7 +648,7 @@ class Schedule(commands.Cog):
     async def claim_daily_reward(
         self,
         success_count: int,
-        user: custom_model.ShenheAccount,
+        user: models.ShenheAccount,
         client: genshin.Client,
     ):
         error = False
@@ -677,13 +678,11 @@ class Schedule(commands.Cog):
     async def daily_reward_success(
         self,
         success_count: int,
-        user: custom_model.ShenheAccount,
+        user: models.ShenheAccount,
         reward: genshin.models.DailyReward,
     ) -> int:
         log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
-        if await utility_utils.get_user_notification(
-            user.discord_user.id, self.bot.pool
-        ):
+        if await get_user_notif(user.discord_user.id, self.bot.pool):
             embed = utility_utils.DefaultEmbed(
                 text_map.get(87, "en-US", user.user_locale),
                 f"{reward.name} x{reward.amount}",
@@ -697,7 +696,7 @@ class Schedule(commands.Cog):
         return success_count
 
     async def handle_daily_reward_error(
-        self, user: custom_model.ShenheAccount, error_message: str
+        self, user: models.ShenheAccount, error_message: str
     ):
         await self.bot.pool.execute(
             """
@@ -729,8 +728,8 @@ class Schedule(commands.Cog):
     ):
         time_offset = int(time_offset)
         log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
-        upgrade_cache: Dict[str, models.CharacterUpgrade | models.WeaponUpgrade] = {}
-        item_cache: Dict[str, models.Weapon | models.Character] = {}
+        upgrade_cache: Dict[str, ambr.CharacterUpgrade | ambr.WeaponUpgrade] = {}
+        item_cache: Dict[str, ambr.Weapon | ambr.Character] = {}
 
         rows = await self.bot.pool.fetch(
             f"SELECT user_id, item_list FROM {notification_type} WHERE toggle = true"
@@ -740,8 +739,8 @@ class Schedule(commands.Cog):
             user_id: int = row["user_id"]
             item_list: List[str] = row["item_list"]
 
-            uid = await genshin_utils.get_uid(user_id, self.bot.pool)
-            uid_tz = genshin_utils.get_uid_tz(uid)
+            uid = await get_uid(user_id, self.bot.pool)
+            uid_tz = get_uid_tz(uid)
             if uid_tz != time_offset:
                 continue
 
@@ -750,9 +749,9 @@ class Schedule(commands.Cog):
             )
 
             now = utility_utils.get_dt_now() + timedelta(hours=time_offset)
-            locale = await get_user_locale(user_id, self.bot.pool) or "en-US"
+            locale = await get_user_lang(user_id, self.bot.pool) or "en-US"
 
-            client = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+            client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
             domains = await client.get_domain()
             today_domains = [d for d in domains if d.weekday == now.weekday()]
 
@@ -772,7 +771,7 @@ class Schedule(commands.Cog):
                             else:
                                 upgrade = await client.get_weapon_upgrade(int(item_id))
                             if not isinstance(
-                                upgrade, (models.CharacterUpgrade, models.WeaponUpgrade)
+                                upgrade, (ambr.CharacterUpgrade, ambr.WeaponUpgrade)
                             ):
                                 raise AssertionError
                             upgrade_cache[str(item_id)] = upgrade
@@ -794,22 +793,20 @@ class Schedule(commands.Cog):
                         item = await client.get_character(str(item_id))
                     else:
                         item = await client.get_weapon(int(item_id))
-                    if not isinstance(item, (models.Character, models.Weapon)):
+                    if not isinstance(item, (ambr.Character, ambr.Weapon)):
                         continue
                     item_cache[str(item_id)] = item
 
-                materials: List[Tuple[models.Material, str]] = []
+                materials: List[Tuple[ambr.Material, str]] = []
                 for material_id in item_info["materials"]:
                     material = await client.get_material(material_id)
-                    if not isinstance(material, models.Material):
+                    if not isinstance(material, ambr.Material):
                         continue
                     materials.append((material, ""))
 
-                dark_mode = await utility_utils.get_user_appearance_mode(
-                    user_id, self.bot.pool
-                )
+                dark_mode = await get_user_theme(user_id, self.bot.pool)
                 fp = await main_funcs.draw_material_card(
-                    custom_model.DrawInput(
+                    models.DrawInput(
                         loop=self.bot.loop,
                         session=self.bot.session,
                         locale=locale,
@@ -822,7 +819,7 @@ class Schedule(commands.Cog):
                 fp.seek(0)
                 _file = discord.File(fp, "reminder_card.jpeg")
 
-                domain: models.Domain = item_info["domain"]
+                domain: ambr.Domain = item_info["domain"]
 
                 embed = utility_utils.DefaultEmbed()
                 embed.add_field(
@@ -853,8 +850,8 @@ class Schedule(commands.Cog):
         """Updates genshin game data and adds emojis"""
         log.info("[Schedule][Update Game Data] Start")
         await genshin.utility.update_characters_ambr()
-        client = AmbrTopAPI(self.bot.session, "cht")
-        eng_client = AmbrTopAPI(self.bot.session, "en")
+        client = ambr.AmbrTopAPI(self.bot.session, "cht")
+        eng_client = ambr.AmbrTopAPI(self.bot.session, "en")
         things_to_update = ["character", "weapon", "artifact"]
         with open("data/game/character_map.json", "r", encoding="utf-8") as f:
             character_map = json.load(f)
@@ -892,7 +889,7 @@ class Schedule(commands.Cog):
 
             for obj in objects:
                 english_name = ""
-                if isinstance(obj, models.Character):
+                if isinstance(obj, ambr.Character):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "element": obj.element,
@@ -901,30 +898,27 @@ class Schedule(commands.Cog):
                     }
                     eng_object = await eng_client.get_character(obj.id)
                     if (
-                        isinstance(eng_object, models.Character)
+                        isinstance(eng_object, ambr.Character)
                         and eng_object is not None
                     ):
                         english_name = eng_object.name
-                elif isinstance(obj, models.Weapon):
+                elif isinstance(obj, ambr.Weapon):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "rarity": obj.rarity,
                         "icon": obj.icon,
                     }
                     eng_object = await eng_client.get_weapon(obj.id)
-                    if isinstance(eng_object, models.Weapon) and eng_object is not None:
+                    if isinstance(eng_object, ambr.Weapon) and eng_object is not None:
                         english_name = eng_object.name
-                elif isinstance(obj, models.Artifact):
+                elif isinstance(obj, ambr.Artifact):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "rarity": obj.rarity_list,
                         "icon": obj.icon,
                     }
                     eng_object = await eng_client.get_artifact(obj.id)
-                    if (
-                        isinstance(eng_object, models.Artifact)
-                        and eng_object is not None
-                    ):
+                    if isinstance(eng_object, ambr.Artifact) and eng_object is not None:
                         english_name = eng_object.name
 
                 object_map[str(obj.id)]["eng"] = english_name
@@ -1037,8 +1031,8 @@ class Schedule(commands.Cog):
         huge_text_map = {}
         for thing in things_to_update:
             with open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
-                text_map = json.load(f)
-            for item_id, item_info in text_map.items():
+                text_map_ = json.load(f)
+            for item_id, item_info in text_map_.items():
                 for name in item_info.values():
                     if "10000005" in item_id:
                         huge_text_map[name] = "10000005"
@@ -1066,7 +1060,7 @@ class Schedule(commands.Cog):
     async def update_ambr_cache(self):
         """Updates data from ambr.top"""
         log.info("[Schedule][Update Ambr Cache] Start")
-        client = AmbrTopAPI(self.bot.session)
+        client = ambr.AmbrTopAPI(self.bot.session)
         await client.update_cache(all_lang=True)
         await client.update_cache(static=True)
         log.info("[Schedule][Update Ambr Cache] Ended")

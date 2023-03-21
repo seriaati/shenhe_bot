@@ -1,27 +1,26 @@
 from typing import Dict, List
 
-from discord import ButtonStyle, Embed, File, Interaction, Locale, SelectOption
-from discord.ui import Button, Select
+import discord
+from discord import ui
 
 import config
-from ambr.client import AmbrTopAPI
-from ambr.models import Material, Monster
+from ambr import AmbrTopAPI, Material, Monster
+from apps.db import get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
-from apps.genshin.custom_model import AbyssHalf, DrawInput
-from apps.text_map import to_ambr_top
-from apps.text_map import text_map
+from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseView
-from utility import DefaultEmbed, divide_chunks, get_user_appearance_mode
+from models import AbyssHalf, CustomInteraction, DrawInput
+from utility import DefaultEmbed, divide_chunks
 
 
 class View(BaseView):
     def __init__(
         self,
-        locale: Locale | str,
+        locale: discord.Locale | str,
         halfs: Dict[str, List[AbyssHalf]],
-        embeds: Dict[str, Embed],
-        buff_embed: Embed,
+        embeds: Dict[str, discord.Embed],
+        buff_embed: discord.Embed,
     ):
         super().__init__(timeout=config.long_timeout)
         self.locale = locale
@@ -31,7 +30,7 @@ class View(BaseView):
 
         options = []
         for key in halfs.keys():
-            options.append(SelectOption(label=key, value=key))
+            options.append(discord.SelectOption(label=key, value=key))
             if "12" in key:
                 self.add_item(InstantButton(key))
 
@@ -42,8 +41,13 @@ class View(BaseView):
         self.add_item(BuffButton(text_map.get(732, locale), buff_embed))
 
 
-class ChamberSelect(Select):
-    def __init__(self, locale: Locale | str, options: List[SelectOption], index: int):
+class ChamberSelect(ui.Select):
+    def __init__(
+        self,
+        locale: discord.Locale | str,
+        options: List[discord.SelectOption],
+        index: int,
+    ):
         super().__init__(
             placeholder=text_map.get(314, locale) + f" ({index+1})",
             options=options,
@@ -51,29 +55,31 @@ class ChamberSelect(Select):
         )
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await select_callback(i, self.view, self.values[0])
 
 
-class InstantButton(Button):
+class InstantButton(ui.Button):
     def __init__(self, label: str):
-        super().__init__(label=label, style=ButtonStyle.primary, row=2)
+        super().__init__(label=label, style=discord.ButtonStyle.primary, row=2)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
+        if self.label is None:
+            raise AssertionError
         await select_callback(i, self.view, self.label)
 
 
-class BuffButton(Button):
-    def __init__(self, label: str, embed: Embed):
-        super().__init__(label=label, style=ButtonStyle.green, row=2)
+class BuffButton(ui.Button):
+    def __init__(self, label: str, embed: discord.Embed):
+        super().__init__(label=label, style=discord.ButtonStyle.green, row=2)
         self.embed = embed
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.edit_message(embed=self.embed, attachments=[])
 
 
-async def select_callback(i: Interaction, view: View, value: str):
+async def select_callback(i: CustomInteraction, view: View, value: str):
     await image_gen_transition(i, view, view.locale)
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))  # type: ignore
     halfs = view.halfs[value]
@@ -108,16 +114,16 @@ async def select_callback(i: Interaction, view: View, value: str):
         fp = await main_funcs.draw_material_card(
             DrawInput(
                 loop=i.client.loop,
-                session=i.client.session,  # type: ignore
+                session=i.client.session,
                 locale=view.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
+                dark_mode=await get_user_theme(i.user.id, i.client.pool),
             ),
             materials,
             "",
             draw_title=False,
         )
         fp.seek(0)
-        attachment = File(fp, f"enemies{'' if index == 0 else '2'}.jpeg")
+        attachment = discord.File(fp, f"enemies{'' if index == 0 else '2'}.jpeg")
         attachments.append(attachment)
 
         if index == 0:
@@ -128,7 +134,8 @@ async def select_callback(i: Interaction, view: View, value: str):
         embeds.append(embed)
 
     for item in view.children:
-        item.disabled = False
+        if isinstance(item, (ui.Button, ui.Select)):
+            item.disabled = False
 
     if len(embeds) == 2:
         embeds[0].set_footer(text=text_map.get(707, view.locale))

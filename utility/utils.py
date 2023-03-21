@@ -4,7 +4,6 @@ from datetime import datetime
 from itertools import islice
 from typing import Any, Dict, List, Optional, Union
 
-import asyncpg
 import discord
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -56,23 +55,23 @@ def divide_chunks(l: List[Any], n: int):
         yield l[i : i + n]
 
 
-def parse_HTML(HTML_string: str):
-    HTML_string = HTML_string.replace("\\n", "\n")
+def parse_html(html_string: str):
+    html_string = html_string.replace("\\n", "\n")
     # replace tags with style attributes
-    HTML_string = HTML_string.replace("</p>", "\n")
-    HTML_string = HTML_string.replace("<strong>", "**")
-    HTML_string = HTML_string.replace("</strong>", "**")
+    html_string = html_string.replace("</p>", "\n")
+    html_string = html_string.replace("<strong>", "**")
+    html_string = html_string.replace("</strong>", "**")
 
     # remove all HTML tags
-    CLEANR = re.compile("<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
-    HTML_string = re.sub(CLEANR, "", HTML_string)
+    CLEANR = re.compile(r"<[^>]*>|&([a-z0-9]+|#\d{1,6}|#x[0-9a-f]{1,6});")
+    html_string = re.sub(CLEANR, "", html_string)
 
     # remove time tags from mihoyo
-    HTML_string = HTML_string.replace('t class="t_gl"', "")
-    HTML_string = HTML_string.replace('t class="t_lc"', "")
-    HTML_string = HTML_string.replace("/t", "")
+    html_string = html_string.replace('t class="t_gl"', "")
+    html_string = html_string.replace('t class="t_lc"', "")
+    html_string = html_string.replace("/t", "")
 
-    return HTML_string
+    return html_string
 
 
 def divide_dict(d: Dict, size: int):
@@ -97,33 +96,6 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
         "sunday": 6,
     }
     return weekday_name_dict.get(weekday_name, 0)
-
-
-async def get_user_appearance_mode(user_id: int, pool: asyncpg.Pool) -> bool:
-    dark_mode: Optional[bool] = await pool.fetchval(
-        "SELECT dark_mode FROM user_settings WHERE user_id = $1", user_id
-    )
-    if dark_mode is None:
-        return False
-    return dark_mode
-
-
-async def get_user_notification(user_id: int, pool: asyncpg.Pool) -> bool:
-    notification: Optional[bool] = await pool.fetchval(
-        "SELECT notification FROM user_settings WHERE user_id = $1", user_id
-    )
-    if notification is None:
-        return True
-    return notification
-
-
-async def get_user_auto_redeem(user_id: int, pool: asyncpg.Pool) -> bool:
-    auto_redeem: Optional[bool] = await pool.fetchval(
-        "SELECT auto_redeem FROM user_settings WHERE user_id = $1", user_id
-    )
-    if auto_redeem is None:
-        return False
-    return auto_redeem
 
 
 def get_dt_now() -> datetime:

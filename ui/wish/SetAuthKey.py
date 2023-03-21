@@ -8,12 +8,11 @@ from discord import ui
 
 import asset
 import config
-from apps.genshin.custom_model import Wish, WishInfo
-from apps.genshin.utils import get_account_select_options, get_uid, get_wish_info_embed
-from apps.text_map import to_genshin_py
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
+from apps.db import get_user_lang
+from apps.genshin import get_account_select_options, get_uid, get_wish_info_embed
+from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseModal, BaseView
+from models import CustomInteraction, Wish, WishInfo
 from ui.wish import ChoosePlatform
 from utility import DefaultEmbed, ErrorEmbed, log
 
@@ -28,12 +27,12 @@ class View(BaseView):
         self.add_item(ClearWishHistory(locale, empty))
 
 
-async def wish_import_command(i: discord.Interaction, responded: bool = False):
+async def wish_import_command(i: CustomInteraction, responded: bool = False):
     if not responded:
         await i.response.defer()
     embed, linked, empty = await get_wish_import_embed(i)
     view = View(
-        await get_user_locale(i.user.id, i.client.pool) or i.locale, linked, empty
+        await get_user_lang(i.user.id, i.client.pool) or i.locale, linked, empty
     )
     view.message = await i.edit_original_response(embed=embed, view=view)
     view.author = i.user
@@ -43,7 +42,7 @@ class GOBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, style=discord.ButtonStyle.grey, row=4)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await wish_import_command(i)
 
 
@@ -58,7 +57,7 @@ class LinkUID(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         locale = self.view.locale
         embed = DefaultEmbed(description=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
@@ -80,7 +79,7 @@ class UIDSelect(ui.Select):
     ):
         super().__init__(placeholder=text_map.get(682, locale), options=options)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
         await pool.execute(
             "UPDATE wish_history SET uid = $1 WHERE user_id = $2",
@@ -101,19 +100,19 @@ class ImportWishHistory(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         locale = self.view.locale
         embed = DefaultEmbed().set_author(
             name=text_map.get(685, locale), icon_url=i.user.display_avatar.url
         )
         self.view.clear_items()
         self.view.add_item(GOBack())
-        self.view.add_item(ImportGenshinImpact(locale))
+        self.view.add_item(ImportGenshin(locale))
         self.view.add_item(ImportShenhe(locale))
         await i.response.edit_message(embed=embed, view=self.view)
 
 
-class ImportGenshinImpact(ui.Button):
+class ImportGenshin(ui.Button):
     def __init__(self, locale: discord.Locale | str):
         self.locale = locale
 
@@ -123,7 +122,7 @@ class ImportGenshinImpact(ui.Button):
             row=0,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         embed = DefaultEmbed().set_author(
             name=text_map.get(365, self.locale), icon_url=i.user.display_avatar.url
         )
@@ -144,7 +143,7 @@ class ImportShenhe(ui.Button):
             row=0,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         embed = DefaultEmbed(description=(text_map.get(687, self.locale))).set_author(
             name=(text_map.get(686, self.locale)),
             icon_url=i.user.display_avatar.url,
@@ -162,7 +161,7 @@ class ExportWishHistory(ui.Button):
             disabled=disabled,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
 
@@ -188,7 +187,7 @@ class ExportWishHistory(ui.Button):
         s.write(str(wishes))
         s.seek(0)
         await i.followup.send(
-            file=discord.File(s, "shenhe_wish_export.txt"), ephemeral=True
+            file=discord.File(s, "shenhe_wish_export.txt"), ephemeral=True  # type: ignore
         )
 
 
@@ -202,7 +201,7 @@ class ClearWishHistory(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         locale = self.view.locale
         embed = DefaultEmbed(description=text_map.get(689, locale)).set_author(
             name=text_map.get(688, locale), icon_url=i.user.display_avatar.url
@@ -220,7 +219,7 @@ class Confirm(ui.Button):
             style=discord.ButtonStyle.red,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         uid = await get_uid(i.user.id, pool)
@@ -239,11 +238,11 @@ class Cancel(ui.Button):
             style=discord.ButtonStyle.gray,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await wish_import_command(i)
 
 
-class ConfirmWishImport(ui.Button):
+class ConfirmWishimport(ui.Button):
     def __init__(
         self,
         locale: discord.Locale | str,
@@ -258,7 +257,7 @@ class ConfirmWishImport(ui.Button):
         self.from_text_file = from_text_file
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         uid = await get_uid(i.user.id, pool)
@@ -338,14 +337,14 @@ class ConfirmWishImport(ui.Button):
         await wish_import_command(i, True)
 
 
-class CancelWishImport(ui.Button):
+class CancelWishimport(ui.Button):
     def __init__(self, locale: discord.Locale | str):
         super().__init__(
             label=text_map.get(389, locale),
             style=discord.ButtonStyle.gray,
         )
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: CustomInteraction):
         await wish_import_command(i)
 
 
@@ -366,10 +365,10 @@ class Modal(BaseModal):
         self.url.label = text_map.get(352, locale)
         self.url.placeholder = text_map.get(354, locale)
 
-    async def on_submit(self, i: discord.Interaction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    async def on_submit(self, i: CustomInteraction):
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         authkey = genshin.utility.extract_authkey(self.url.value)
-        log.info(f"[Wish Import][{i.user.id}]: [Authkey]{authkey}")
+        log.info(f"[Wish import][{i.user.id}]: [Authkey]{authkey}")
         if authkey is None:
             await i.response.edit_message(
                 embed=ErrorEmbed().set_author(
@@ -448,17 +447,17 @@ class Modal(BaseModal):
         view = View(locale, True, True)
         view.author = i.user
         view.clear_items()
-        view.add_item(ConfirmWishImport(locale, list(wish_history)))
-        view.add_item(CancelWishImport(locale))
+        view.add_item(ConfirmWishimport(locale, list(wish_history)))
+        view.add_item(CancelWishimport(locale))
         view.message = await i.edit_original_response(embed=embed, view=view)
 
 
 async def get_wish_import_embed(
-    i: discord.Interaction,
+    i: CustomInteraction,
 ) -> Tuple[discord.Embed, bool, bool]:
     linked = True
     pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     uid = await get_uid(i.user.id, i.client.pool)
 
     wish_data = await pool.fetch(

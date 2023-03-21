@@ -5,13 +5,13 @@ from discord import ui
 
 import asset
 import config
-from apps.genshin.custom_model import CustomInteraction, OriginalInfo
+from apps.db import get_user_auto_redeem, get_user_lang, get_user_theme
 from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
-from data.others.language_options import lang_options
 from base_ui import BaseView, GoBackButton
+from data.others.language_options import lang_options
+from models import CustomInteraction, OriginalInfo
 from ui.others.settings import CustomImage, Notif
-from utility import DefaultEmbed, get_user_appearance_mode, get_user_auto_redeem
+from utility import DefaultEmbed
 
 
 class View(BaseView):
@@ -35,7 +35,7 @@ class Appearance(ui.Button):
     async def callback(self, i: CustomInteraction) -> Any:
         locale = self.view.locale
 
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
+        dark_mode = await get_user_theme(i.user.id, i.client.pool)  # type: ignore
         embed = get_appearance_embed(i.user.display_avatar.url, locale, dark_mode)
 
         view = get_appearance_view(self.view, dark_mode, locale)
@@ -60,7 +60,7 @@ class ModeButton(ui.Button):
             self.toggle,
             i.user.id,
         )
-        dark_mode = await get_user_appearance_mode(i.user.id, i.client.pool)  # type: ignore
+        dark_mode = await get_user_theme(i.user.id, i.client.pool)  # type: ignore
         embed = get_appearance_embed(
             i.user.display_avatar.url, self.view.locale, dark_mode
         )
@@ -75,7 +75,7 @@ class Langauge(ui.Button):
         self.view: View
 
     async def callback(self, i: CustomInteraction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale  # type: ignore
+        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale  # type: ignore
 
         embed = get_language_embed(i.user.display_avatar.url, locale)
         view = get_language_view(self.view, locale)
@@ -130,18 +130,11 @@ class CustomProfileImage(ui.Button):
         self.locale = locale
         self.view: View
 
-    def gen_embed(self) -> discord.Embed:
-        embed = DefaultEmbed(
-            text_map.get(62, self.locale), text_map.get(276, self.locale)
-        )
-        return embed
-
     async def callback(self, i: CustomInteraction):
-        embed = self.gen_embed()
         view = CustomImage.View(self.locale)
         view.add_item(GoBackButton(self.view.original_info))
 
-        await i.response.edit_message(embed=embed, view=view)
+        await i.response.edit_message(embed=view.gen_embed(), view=view)
         view.message = await i.original_response()
         view.author = i.user
 
@@ -200,7 +193,7 @@ class RedeemButton(ui.Button):
 
 
 async def return_settings(i: CustomInteraction, edit: bool = False):
-    locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
 
     embed = DefaultEmbed(
         description=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"

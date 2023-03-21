@@ -1,11 +1,11 @@
+import datetime
 from enum import IntEnum
 from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field, validator
 
 from data.game.elements import convert_element, convert_elements
-from utility import format_number, parse_HTML
-import datetime
+from utility import format_number, parse_html
 
 
 class City(BaseModel):
@@ -145,7 +145,7 @@ class MaterialDetail(BaseModel):
             return None
         sources = []
         for source in v:
-            source["name"] = parse_HTML(source["name"])
+            source["name"] = parse_html(source["name"])
             sources.append(MaterialSource(**source))
         return sources
 
@@ -163,7 +163,7 @@ class WeaponEffect(BaseModel):
     def parse_description(cls, v):
         result = []
         for _ in list(v.values()):
-            result.append(format_number(parse_HTML(_)))
+            result.append(format_number(parse_html(_)))
         return result
 
 
@@ -391,7 +391,7 @@ class CharacterTalent(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
@@ -415,7 +415,7 @@ class CharacterConstellation(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
@@ -547,7 +547,7 @@ class MonsterDetail(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
     @validator("data", pre=True, allow_reuse=True)
     def parse_data(cls, v):
@@ -572,7 +572,7 @@ class FoodEffect(BaseModel):
 
     @validator("effect", allow_reuse=True)
     def parse_effect(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
 
 class FoodInputMaterial(BaseModel):
@@ -630,7 +630,7 @@ class FoodDetail(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
     @validator("recipe", pre=True, allow_reuse=True)
     def parse_recipe(cls, v):
@@ -708,7 +708,7 @@ class FurnitureDetail(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
     @validator("recipe", pre=True, allow_reuse=True)
     def parse_recipe(cls, v):
@@ -751,7 +751,7 @@ class NameCardDetail(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
 
 class Book(BaseModel):
@@ -774,7 +774,7 @@ class BookVolume(BaseModel):
 
     @validator("description", allow_reuse=True)
     def parse_description(cls, v):
-        return parse_HTML(v)
+        return parse_html(v)
 
 
 class BookDetail(BaseModel):

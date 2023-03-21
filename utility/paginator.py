@@ -1,14 +1,13 @@
 from typing import Any, Dict, List, Optional, Union
 
-from apps.genshin.custom_model import CustomInteraction
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale
-
 import discord
 from discord import ui
 
 import config
+from apps.db import get_user_lang
+from apps.text_map import text_map
 from base_ui import BaseView
+from models import CustomInteraction
 
 
 class GeneralPaginatorView(BaseView):
@@ -120,7 +119,7 @@ class GeneralPaginator:
             raise ValueError("Missing embeds")
 
         locale = (
-            await get_user_locale(self.i.user.id, self.i.client.pool) or self.i.locale
+            await get_user_lang(self.i.user.id, self.i.client.pool) or self.i.locale
         )
         view = self.setup_view(locale)
         view.author = self.i.user

@@ -1,6 +1,5 @@
 from discord import Locale
 
-
 ENKA_LANGS = {
     "zh-CN": "chs",
     "zh-TW": "cht",

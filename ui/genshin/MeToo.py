@@ -1,9 +1,9 @@
-from base_ui import BaseView
-from apps.genshin.checks import check_cookie_predicate
-from apps.text_map import text_map
+from discord import ButtonStyle, Interaction, Locale, ui
+
 import config
-from discord import Locale, ui
-from discord import ButtonStyle, Interaction
+from apps.genshin import check_cookie_predicate
+from apps.text_map import text_map
+from base_ui import BaseView
 
 
 class View(BaseView):

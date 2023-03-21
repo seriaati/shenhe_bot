@@ -5,17 +5,17 @@ import aiofiles
 from dateutil import parser
 from discord import Locale
 
-from apps.genshin.custom_model import AbyssChamber, AbyssFloor, AbyssHalf
 from apps.genshin_data.utility import get_text
-from utility import get_dt_now, parse_HTML, time_in_range
+from models import AbyssChamber, AbyssFloor, AbyssHalf
+from utility import get_dt_now, parse_html, time_in_range
+
+TOWER_SCHEDULE = "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
 
 
 async def get_abyss_blessing(
     text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
 ) -> Tuple[str, str]:
-    async with aiofiles.open(
-        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
-    ) as f:
+    async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
     async with aiofiles.open(
         "GenshinData/ExcelBinOutput/DungeonLevelEntityConfigData.json"
@@ -30,7 +30,7 @@ async def get_abyss_blessing(
     buff_desc = "Unknown"
     dungeon_configs = find_dungeon_configs(dungeon, buff_id)
     if dungeon_configs:
-        buff_desc = parse_HTML(
+        buff_desc = parse_html(
             get_text(text_map, locale, dungeon_configs[0]["descTextMapHash"])
         )
 
@@ -40,9 +40,7 @@ async def get_abyss_blessing(
 async def get_ley_line_disorders(
     text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
 ) -> Dict[int, List[str]]:
-    async with aiofiles.open(
-        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
-    ) as f:
+    async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
     async with aiofiles.open(
         "GenshinData/ExcelBinOutput/TowerFloorExcelConfigData.json"
@@ -68,7 +66,7 @@ async def get_ley_line_disorders(
             config_id = floor_excel["floorLevelConfigId"]
             dungeon_configs = find_dungeon_configs(dungeon, config_id)
             for dungeon_config in dungeon_configs:
-                disorder_desc = parse_HTML(
+                disorder_desc = parse_html(
                     get_text(text_map, locale, dungeon_config["descTextMapHash"])
                 )
                 if disorder_desc != "Unknown":
@@ -83,9 +81,7 @@ async def get_abyss_enemies(
 ) -> List[AbyssFloor]:
     result: List[AbyssFloor] = []
 
-    async with aiofiles.open(
-        "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
-    ) as f:
+    async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower_schedule: List[Dict[str, Any]] = json.loads(await f.read())
     async with aiofiles.open(
         "GenshinData/ExcelBinOutput/TowerFloorExcelConfigData.json"

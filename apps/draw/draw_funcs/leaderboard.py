@@ -1,6 +1,10 @@
 from typing import List, Union
+
+import discord
 from PIL import Image, ImageDraw
-from ambr.models import Character
+
+import asset
+from ambr import Character
 from apps.draw.utility import (
     circular_crop,
     get_cache,
@@ -8,13 +12,8 @@ from apps.draw.utility import (
     global_write,
     shorten_text,
 )
-import discord
-import asset
-from apps.genshin.custom_model import (
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-)
 from apps.text_map import text_map
+from models import RunLeaderboardUser, SingleStrikeLeaderboardUser
 
 
 def board(

@@ -1,6 +1,5 @@
 from typing import Optional
 
-import asyncpg
 from discord import Locale
 
 from apps.text_map import text_map
@@ -87,10 +86,3 @@ def get_month_name(
         12: text_map.get(232, locale, user_locale),
     }
     return month_dict.get(month, str(month))
-
-
-async def get_user_locale(user_id: int, pool: asyncpg.Pool) -> Optional[str]:
-    user_locale = await pool.fetchval(
-        "SELECT lang FROM user_settings WHERE user_id = $1", user_id
-    )
-    return user_locale

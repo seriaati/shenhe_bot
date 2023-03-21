@@ -1,11 +1,14 @@
-from apps.genshin.custom_model import DrawInput
-from apps.draw import main_funcs
-from apps.text_map.utils import get_user_locale
-import discord
-from base_ui import BaseView
-import config
 from typing import List
-from utility import DefaultEmbed, get_user_appearance_mode
+
+import discord
+
+import config
+import models
+from apps.db import get_user_lang, get_user_theme
+from apps.draw import main_funcs
+from base_ui import BaseView
+from models import DrawInput
+from utility import DefaultEmbed
 
 
 class View(BaseView):
@@ -27,15 +30,15 @@ class Select(discord.ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: models.CustomInteraction):
         embed = DefaultEmbed()
         embed.set_image(url="attachment://overview.jpeg")
         fp = await main_funcs.draw_wish_overview_card(
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=await get_user_locale(i.user.id, i.client.pool) or i.locale,
-                dark_mode=await get_user_appearance_mode(i.user.id, i.client.pool),
+                locale=await get_user_lang(i.user.id, i.client.pool) or i.locale,
+                dark_mode=await get_user_theme(i.user.id, i.client.pool),
             ),
             self.view.all_wish_data[self.values[0]],
             self.view.user.display_avatar.url,

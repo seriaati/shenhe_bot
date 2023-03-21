@@ -1,24 +1,24 @@
 from typing import Dict, List
-from apps.genshin.custom_model import DrawInput
-from apps.draw import main_funcs
-from apps.text_map import text_map
 
-from discord import Embed, File, Interaction, Locale, SelectOption
-from discord.ui import Select
+import discord
+from discord import ui
 
 import config
+from apps.draw import main_funcs
+from apps.text_map import text_map
 from base_ui import BaseView
+from models import CustomInteraction, DrawInput
 from utility import divide_chunks
 
 
 class View(BaseView):
     def __init__(
         self,
-        embeds: List[Embed],
-        options: List[SelectOption],
+        embeds: List[discord.Embed],
+        options: List[discord.SelectOption],
         placeholder: str,
         all_materials,
-        locale: Locale | str,
+        locale: discord.Locale | str,
         dark_mode: bool,
         character_element: str,
     ):
@@ -31,12 +31,12 @@ class View(BaseView):
         self.character_element = character_element
 
 
-class QuickNavigation(Select):
-    def __init__(self, options: List[SelectOption], placeholder: str):
+class QuickNavigation(ui.Select):
+    def __init__(self, options: List[discord.SelectOption], placeholder: str):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.defer()
         if self.values[0] == "1":
             fp = await main_funcs.draw_material_card(
@@ -50,9 +50,9 @@ class QuickNavigation(Select):
                 text_map.get(320, self.view.locale),
             )
             fp.seek(0)
-            file = File(fp, filename="ascension.jpeg")
+            file_ = discord.File(fp, filename="ascension.jpeg")
             await i.edit_original_response(
-                embed=self.view.embeds[1], attachments=[file]
+                embed=self.view.embeds[1], attachments=[file_]
             )
         else:
             await i.edit_original_response(
@@ -62,7 +62,10 @@ class QuickNavigation(Select):
 
 class BookVolView(BaseView):
     def __init__(
-        self, embeds: Dict[str, Embed], options: List[SelectOption], placeholder: str
+        self,
+        embeds: Dict[str, discord.Embed],
+        options: List[discord.SelectOption],
+        placeholder: str,
     ):
         super().__init__(timeout=config.long_timeout)
         divided_options = list(divide_chunks(options, 25))
@@ -73,10 +76,10 @@ class BookVolView(BaseView):
         self.embeds = embeds
 
 
-class BookVolumeNav(Select):
-    def __init__(self, options: List[SelectOption], placeholder: str):
+class BookVolumeNav(ui.Select):
+    def __init__(self, options: List[discord.SelectOption], placeholder: str):
         super().__init__(placeholder=placeholder, options=options)
         self.view: BookVolView
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.edit_message(embed=self.view.embeds[self.values[0]])

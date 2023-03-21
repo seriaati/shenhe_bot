@@ -1,10 +1,9 @@
+import json
 from calendar import monthrange
 from datetime import datetime, timedelta
-import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import aiofiles
-
 import aiohttp
 import asyncpg
 import discord
@@ -14,20 +13,16 @@ from discord import Locale
 from discord.utils import format_dt
 
 import asset
-from ambr.client import AmbrTopAPI
-from ambr.models import Character, Domain, Material, Weapon
-from apps.genshin.custom_model import (
-    CharacterBuild,
-    FarmData,
-    FightProp,
-    ShenheAccount,
-    ShenheBot,
-    WishInfo,
+import models
+from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
+from apps.db import get_user_lang
+from apps.text_map import (
+    cond_text,
+    text_map,
+    to_ambr_top,
+    to_genshin_py,
+    translate_main_stat,
 )
-from apps.text_map.cond_text import cond_text
-from apps.text_map import to_ambr_top, to_genshin_py
-from apps.text_map import text_map
-from apps.text_map.utils import get_user_locale, translate_main_stat
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
@@ -57,7 +52,7 @@ def calculate_artifact_score(substats: dict):
 
 def get_character_builds(
     character_id: str, element_builds_dict: dict, locale: discord.Locale | str
-) -> List[CharacterBuild]:
+) -> List[models.CharacterBuild]:
     """Gets a character's builds
 
     Args:
@@ -67,7 +62,7 @@ def get_character_builds(
         user_locale (str): the user locale
 
     Returns:
-        List[CharacterBuild]
+        List[models.CharacterBuild]
     """
     character_name = text_map.get_character_name(character_id, "zh-TW")
     translated_character_name = text_map.get_character_name(character_id, locale)
@@ -96,7 +91,7 @@ def get_character_builds(
         count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
         result.append(
-            CharacterBuild(
+            models.CharacterBuild(
                 embed=embed,
                 weapon=build["weapon"],
                 artifact=build["artifacts"],
@@ -117,7 +112,7 @@ def get_character_builds(
             )
             count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
-        result.append(CharacterBuild(embed=embed, is_thought=True))
+        result.append(models.CharacterBuild(embed=embed, is_thought=True))
 
     return result
 
@@ -145,7 +140,7 @@ def get_artifact(id: Optional[int] = 0, name: str = ""):
     raise ValueError(f"Unknwon artifact {id}{name}")
 
 
-def get_fight_prop(id: str) -> FightProp:
+def get_fight_prop(id: str) -> models.FightProp:
     fight_prop_dict = fight_prop.get(
         id,
         {
@@ -155,7 +150,7 @@ def get_fight_prop(id: str) -> FightProp:
             "text_map_hash": 700,
         },
     )
-    return FightProp(**fight_prop_dict)
+    return models.FightProp(**fight_prop_dict)  # type: ignore
 
 
 def get_area_emoji(exploration_id: int):
@@ -210,11 +205,11 @@ def get_uid_tz(uid: Optional[int]) -> int:
 
 async def get_shenhe_account(
     user_id: int,
-    bot: ShenheBot,
+    bot: models.ShenheBot,
     locale: Optional[discord.Locale | str] = None,
     custom_cookie: Optional[Dict[str, Any]] = None,
     custom_uid: Optional[int] = None,
-) -> ShenheAccount:
+) -> models.ShenheAccount:
     discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
 
     if custom_cookie and not custom_uid:
@@ -265,7 +260,7 @@ async def get_shenhe_account(
         else:
             client = bot.genshin_client
 
-    final_locale = locale or (await get_user_locale(user_id, bot.pool))
+    final_locale = locale or (await get_user_lang(user_id, bot.pool))
 
     client.lang = to_genshin_py(str(final_locale))
     client.default_game = genshin.Game.GENSHIN
@@ -277,7 +272,7 @@ async def get_shenhe_account(
     else:
         client.region = genshin.Region.OVERSEAS
 
-    user_obj = ShenheAccount(
+    user_obj = models.ShenheAccount(
         client=client,
         uid=client.uid,
         discord_user=discord_user,
@@ -297,8 +292,8 @@ async def get_uid(user_id: int, pool: asyncpg.Pool) -> Optional[int]:
 
 async def get_farm_data(
     locale: Locale | str, session: aiohttp.ClientSession, weekday: int
-) -> List[FarmData]:
-    result: List[FarmData] = []
+) -> List[models.FarmData]:
+    result: List[models.FarmData] = []
 
     client = AmbrTopAPI(session, to_ambr_top(locale))
     domains = await client.get_domain()
@@ -311,7 +306,7 @@ async def get_farm_data(
 
     domains = [d for d in domains if d.weekday == weekday]
     for domain in domains:
-        farm_data = FarmData(domain=domain)
+        farm_data = models.FarmData(domain=domain)
         if len([r for r in domain.rewards if len(str(r.id)) == 6]) == 4:
             for w_upgrade in w_upgrades:
                 upgrade_items = [
@@ -388,12 +383,12 @@ def convert_wl_to_mora(wl: int) -> int:
 
 
 async def get_wish_history_embed(
-    i: discord.Interaction,
+    i: models.CustomInteraction,
     query: str,
     member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
     member = member or i.user
-    user_locale = await get_user_locale(i.user.id, i.client.pool)
+    user_locale = await get_user_lang(i.user.id, i.client.pool)
 
     pool: asyncpg.Pool = i.client.pool  # type: ignore
     wish_history = await pool.fetch(
@@ -445,9 +440,9 @@ async def get_wish_history_embed(
 
 
 async def get_wish_info_embed(
-    i: discord.Interaction,
+    i: models.CustomInteraction,
     locale: str,
-    wish_info: WishInfo,
+    wish_info: models.WishInfo,
     import_command: bool = False,
     linked: bool = False,
 ) -> discord.Embed:

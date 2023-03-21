@@ -34,9 +34,9 @@ class TextMap:
             self.weapon = {}
         try:
             with open("text_maps/dailyDungeon.json", "r", encoding="utf-8") as f:
-                self.dailyDungeon = json.load(f)
+                self.daily_dungeon = json.load(f)
         except FileNotFoundError:
-            self.dailyDungeon = {}
+            self.daily_dungeon = {}
         try:
             with open("text_maps/item_name.json", "r", encoding="utf-8") as f:
                 self.item_name_text_map = json.load(f)
@@ -114,7 +114,7 @@ class TextMap:
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
     ) -> str:
-        dungeon_text = self.dailyDungeon.get(str(dungeon_id))
+        dungeon_text = self.daily_dungeon.get(str(dungeon_id))
         if dungeon_text is None:
             return str(dungeon_id)
         locale = user_locale or locale
