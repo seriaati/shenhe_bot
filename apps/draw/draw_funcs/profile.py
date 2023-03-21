@@ -387,7 +387,7 @@ def user_character_card(
         mask = Image.new(
             "RGBA",
             talent_icon.size,
-            asset.primary_text if not dark_mode else asset.white, # type: ignore
+            asset.primary_text if not dark_mode else asset.white,  # type: ignore
         )
         talent_icon = ImageChops.multiply(talent_icon, mask)
         im.paste(talent_icon, offset, talent_icon)
