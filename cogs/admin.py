@@ -45,20 +45,21 @@ class AdminCog(commands.Cog, name="admin"):
         )
         copy_ = sys.modules.copy()
 
-        for module_name, module in copy_.items():
-            if any(module_name.startswith(name) for name in modules_to_reload):
-                try:
-                    importlib.reload(module)
-                except Exception:  # skipcq: PYL-W0703
-                    await ctx.send(
-                        f"""
-                        Error reloading module: {module_name}
-                        ```py
-                        {traceback.format_exc()}
-                        ```
-                        """
-                    )
-                    return
+        for _ in range(2):
+            for module_name, module in copy_.items():
+                if any(module_name.startswith(name) for name in modules_to_reload):
+                    try:
+                        importlib.reload(module)
+                    except Exception:  # skipcq: PYL-W0703
+                        await ctx.send(
+                            f"""
+                            Error reloading module: {module_name}
+                            ```py
+                            {traceback.format_exc()}
+                            ```
+                            """
+                        )
+                        return
 
         for cog in Path("cogs").glob("*.py"):
             if cog.stem in ("login", "grafana", "schedule"):
