@@ -17,13 +17,8 @@ import models
 import utility.utils as utility_utils
 from apps.db import get_user_lang, get_user_notif, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    find_codes,
-    get_current_abyss_season,
-    get_shenhe_account,
-    get_uid,
-    get_uid_tz,
-)
+from apps.genshin import (find_codes, get_current_abyss_season,
+                          get_shenhe_account, get_uid, get_uid_tz)
 from apps.text_map import AMBR_LANGS, get_element_name, text_map, to_ambr_top
 from base_ui import capture_exception
 from data.game.elements import convert_element
@@ -64,8 +59,8 @@ class Schedule(commands.Cog):
         now = utility_utils.get_dt_now()
 
         if now.minute < self.loop_interval:  # every hour
-            tasks = ["resin_notification", "pot_notification", "pt_notification"]
-            for task in tasks:
+            check_tasks = ("resin_notification", "pot_notification", "pt_notification")
+            for task in check_tasks:
                 asyncio.create_task(self.check_notification(task))
             asyncio.create_task(self.save_codes())
 

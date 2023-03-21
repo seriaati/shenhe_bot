@@ -128,7 +128,12 @@ async def draw_stats_card(
     urls = [namecard.banner.url, pfp.url]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.stats.card, user_stats, namecard, pfp, character_num, draw_input.dark_mode
+        funcs.stats.stats_card,
+        user_stats,
+        namecard,
+        pfp,
+        character_num,
+        draw_input.dark_mode,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -202,7 +207,7 @@ async def draw_wish_overview_card(
 async def draw_area_card(
     draw_input: models.DrawInput, explorations: List[genshin.models.Exploration]
 ) -> io.BytesIO:
-    func = functools.partial(funcs.stats.area, explorations, draw_input.dark_mode)
+    func = functools.partial(funcs.stats.area_card, explorations, draw_input.dark_mode)
     return await draw_input.loop.run_in_executor(None, func)
 
 
@@ -240,7 +245,9 @@ async def draw_abyss_floor_card(
 ) -> io.BytesIO:
     urls = extract_urls(characters)
     await download_images(urls, draw_input.session)
-    func = functools.partial(funcs.abyss.floor, draw_input.dark_mode, floor, characters)
+    func = functools.partial(
+        funcs.abyss.floor_card, draw_input.dark_mode, floor, characters
+    )
     return await draw_input.loop.run_in_executor(None, func)
 
 

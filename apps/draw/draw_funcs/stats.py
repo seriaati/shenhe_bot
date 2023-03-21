@@ -10,7 +10,7 @@ import asset
 from apps.draw.utility import circular_crop, get_cache, get_font
 
 
-def card(
+def stats_card(
     user_stats: genshin.models.Stats,
     namecard: enkanetwork.Namecard,
     pfp: discord.Asset,
@@ -68,7 +68,7 @@ def card(
     return fp
 
 
-def area(explorations: List[genshin.models.Exploration], dark_mode: bool):
+def area_card(explorations: List[genshin.models.Exploration], dark_mode: bool):
     mode_txt = "dark" if dark_mode else "light"
     card = Image.open(f"yelan/templates/area/[{mode_txt}] Area Card Template.png")
     card_draw = ImageDraw.Draw(card)

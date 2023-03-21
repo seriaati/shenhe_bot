@@ -331,7 +331,7 @@ def overview(
     return fp
 
 
-def floor(
+def floor_card(
     dark_mode: bool,
     floor: genshin.models.Floor,
     characters: List[genshin.models.Character],
