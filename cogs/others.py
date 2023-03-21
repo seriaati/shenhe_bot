@@ -341,7 +341,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @source.autocomplete(name="command")
     async def source_autocomplete(
-        self, i: discord.Interaction, current: str
+        self, _: discord.Interaction, current: str
     ) -> List[app_commands.Choice]:
         options: List[app_commands.Choice] = []
         command_map = self.get_command_map(self.bot.tree)
