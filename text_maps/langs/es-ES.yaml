@@ -293,8 +293,8 @@
   • Alternatively, upload an image using </img-upload:1041966109533929522>
   • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 '277': Current Image
-'278': You have reached the limit of images you can have for this character (25)
-'279': No custom image set for this character
+'278': ''
+'279': ''
 '280': Base Speed
 '281': Speed%
 '282': Go back
@@ -485,7 +485,7 @@
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
-'429': type
+'429': ""
 '430': phase
 '431': The type of data you wish to view
 '432': Which abyss phase?
