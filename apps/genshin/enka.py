@@ -70,7 +70,7 @@ async def save_enka_cache(
             enka_cache (uid, {col})
         VALUES
             ($1, $2)
-        ON CONFLICT 
+        ON CONFLICT
             (uid)
         DO UPDATE SET
             {col} = $2
