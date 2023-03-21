@@ -109,7 +109,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 ),
                 ephemeral=True,
             )
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             capture_exception(e)
             await i.response.send_message(
                 embed=ErrorEmbed(description=text_map.get(693, locale)).set_author(

@@ -22,7 +22,7 @@ async def get_enka_data(
             en_data = await enka.fetch_user(uid)
         except enkanetwork.exception.VaildateUIDError as e:
             raise e
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             cache = await get_enka_cache(uid, pool)
             en_cache = await get_enka_cache(uid, pool, en=True)
             if not cache or not en_cache:

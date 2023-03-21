@@ -155,7 +155,7 @@ class Shenhe(commands.AutoShardedBot):
             cog_name = Path(filepath).stem
             try:
                 await self.load_extension(f"cogs.{cog_name}")
-            except Exception as e:
+            except Exception as e:  # skipcq: PYL-W0703
                 log.warning(
                     f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}", exc_info=e
                 )
@@ -168,7 +168,7 @@ class Shenhe(commands.AutoShardedBot):
         if not self.debug:
             try:
                 self.browsers = await launch_browsers()
-            except Exception as e:
+            except Exception as e:  # skipcq: PYL-W0703
                 log.warning("[System]on_ready: Launch browsers failed", exc_info=e)
         if self.debug and self.launch_browser_in_debug:
             self.browsers = {"en-US": await launch_debug_browser()}
@@ -215,7 +215,7 @@ async def main() -> None:
 
     try:
         pool = await asyncpg.create_pool(databse_url)
-    except Exception as e:
+    except Exception as e:  # skipcq: PYL-W0703
         log.error("Failed to connect to database", exc_info=e)
         return
     if not pool:
@@ -260,7 +260,7 @@ async def main() -> None:
             await bot.start(token)
         except KeyboardInterrupt:
             return
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             log.error("Failed to start bot", exc_info=e)
             return
 

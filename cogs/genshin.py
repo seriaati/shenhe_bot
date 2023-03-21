@@ -100,7 +100,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if cookie_list:
             try:
                 self.bot.genshin_client.set_cookies(cookie_list)
-            except Exception as e:
+            except Exception as e:  # skipcq: PYL-W0703
                 log.warning(f"[Genshin Client][Error]: {e}", exc_info=e)
             else:
                 log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")

@@ -17,8 +17,13 @@ import models
 import utility.utils as utility_utils
 from apps.db import get_user_lang, get_user_notif, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (find_codes, get_current_abyss_season,
-                          get_shenhe_account, get_uid, get_uid_tz)
+from apps.genshin import (
+    find_codes,
+    get_current_abyss_season,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map import AMBR_LANGS, get_element_name, text_map, to_ambr_top
 from base_ui import capture_exception
 from data.game.elements import convert_element
@@ -30,7 +35,7 @@ def schedule_error_handler(func):
     async def inner_function(*args, **kwargs):
         try:
             await func(*args, **kwargs)
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             bot = args[0].bot
             seria_id = 410036441129943050
             seria = bot.get_user(seria_id) or await bot.fetch_user(seria_id)
@@ -244,7 +249,7 @@ class Schedule(commands.Cog):
                     await self.disable_notification(
                         n_user.user_id, n_user.uid, notification_type
                     )
-            except Exception as e:
+            except Exception as e:  # skipcq: PYL-W0703
                 error = True
                 error_message = f"```{e}```"
                 log.warning(
@@ -591,7 +596,7 @@ class Schedule(commands.Cog):
                 value = text_map.get(127, locale)
         except genshin.errors.RedemptionException as e:
             value = e.msg
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             value = f"{type(e)} {e}"
         else:
             log.info(
@@ -661,7 +666,7 @@ class Schedule(commands.Cog):
             error = True
             error_message = f"```{type(e)}: {e.msg}```"
             capture_exception(e)
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             error = True
             error_message = f"```{type(e)} {e}```"
             capture_exception(e)

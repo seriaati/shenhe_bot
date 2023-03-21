@@ -58,7 +58,7 @@ def genshin_error_handler(func):
                 return models.GenshinAppResult(result=embed, success=False)
             embed = get_error_handle_embed(user, e, locale)
             return models.GenshinAppResult(result=embed, success=False)
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             log.warning(f"[Genshin App] Error in {func.__name__}: {e}", exc_info=e)
             embed = get_error_handle_embed(user, e, locale)
             return models.GenshinAppResult(result=embed, success=False)
