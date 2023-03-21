@@ -9,7 +9,6 @@ from .EnkaProfile import *
 from .EventTypeChooser import *
 from .Leaderboard import *
 from .Lineup import *
-from .Leaderboard import *
 from .MeToo import *
 from .ProfileSettings import *
 from .ReminderMenu import *

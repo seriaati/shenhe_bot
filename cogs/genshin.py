@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 import apps.genshin.utils as genshin_utils
 import asset
 import ui.genshin
-from ui.genshin.ReminderMenu import return_notification_menu
+from ui.others import ManageAccounts
 import utility.utils as utils
 from ambr.client import AmbrTopAPI
 from ambr.models import Character, Material, Weapon
@@ -33,7 +33,6 @@ from apps.text_map import convert_locale, text_map
 from apps.text_map.utils import get_user_locale
 from data.cards.dice_element import get_dice_emoji
 from exceptions import AutocompleteError, CardNotFound, ItemNotFound, UIDNotFound
-from ui.others import ManageAccounts
 from utility import disable_view_items, log
 from utility.paginator import GeneralPaginator
 
