@@ -18,7 +18,7 @@ from apps.genshin.utils import get_character_fanarts
 from apps.text_map.text_map_app import text_map
 from base_ui import BaseView
 from exceptions import CardNotReady, NoCharacterFound
-from ui.others.settings.CustomImage import get_user_custom_image
+from apps.db.custom_image import get_user_custom_image
 from yelan.data.GO_modes import hit_mode_texts
 
 
@@ -131,7 +131,11 @@ class GoBack(ui.Button):
         self.view: View
 
     async def callback(self, i: CustomInteraction):
-        await go_back_callback(i, self.view.enka_view)
+        if isinstance(self.view, EnkaView):
+            view = self.view
+        else:
+            view = self.view.enka_view
+        await go_back_callback(i, view)
 
 
 async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):

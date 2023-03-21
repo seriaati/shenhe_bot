@@ -9,7 +9,7 @@ from discord import ui, utils
 import apps.genshin.custom_model as custom_model
 import asset
 import config
-from ui.genshin import EnkaDamageCalc, ProfileImageSelect, ProfileSettings
+from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
 from utility.utils import DefaultEmbed, divide_chunks, get_user_appearance_mode
 from yelan.damage_calculator import return_current_status
@@ -102,19 +102,13 @@ class SetCustomImage(ui.Button):
         self.view: custom_model.EnkaView
 
     async def callback(self, i: custom_model.CustomInteraction) -> Any:
-        options = await CustomImage.get_user_custom_image_options(
-            int(self.view.character_id), i.client.pool, i.user.id, self.view.locale
+        character = utils.get(self.view.data.characters, id=int(self.view.character_id))
+        if character is None:
+            raise AssertionError
+
+        await CustomImage.return_custom_image_interaction(
+            self.view, i, int(self.view.character_id), character.element.name
         )
-        custom_image = await CustomImage.get_user_custom_image(
-            i.user.id, int(self.view.character_id), i.client.pool
-        )
-        embed = await CustomImage.get_user_custom_image_embed(
-            i, self.view.locale, str(self.view.character_id), custom_image, False
-        )
-        view = ProfileImageSelect.CustomImageView(options, self.view.locale, self.view)
-        view.author = i.user
-        await i.response.edit_message(embed=embed, view=view, attachments=[])
-        view.message = await i.original_response()
 
 
 class BoxButton(ui.Button):

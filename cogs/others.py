@@ -6,7 +6,6 @@ import os
 from typing import Dict, List, Optional, Union
 
 import discord
-from exceptions import AutocompleteError
 import psutil
 import pygit2
 from aioimgur import ImgurClient
@@ -19,10 +18,12 @@ from dotenv import load_dotenv
 import asset
 from ambr.client import AmbrTopAPI
 from ambr.models import Character
-from apps.genshin.custom_model import ShenheBot
+from apps.db import custom_image
+from apps.genshin.custom_model import CustomInteraction, ShenheBot
 from apps.text_map.convert_locale import to_ambr_top
 from apps.text_map.text_map_app import text_map
 from apps.text_map.utils import get_user_locale
+from exceptions import AutocompleteError
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
 from utility.utils import DefaultEmbed, ErrorEmbed
@@ -43,7 +44,8 @@ class OthersCog(commands.Cog, name="others"):
         name="settings",
         description=_("View and change your user settings in Shenhe", hash=534),
     )
-    async def settings(self, i: discord.Interaction):
+    async def settings(self, inter: discord.Interaction):
+        i: CustomInteraction = inter  # type: ignore
         await self.bot.pool.execute(
             """
             INSERT INTO user_settings (user_id) VALUES ($1)
@@ -123,7 +125,7 @@ class OthersCog(commands.Cog, name="others"):
 
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: discord.Interaction):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
 
         revision = self.get_last_commits()
         embed = DefaultEmbed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
@@ -223,14 +225,15 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def custom_image_upload(
         self,
-        i: discord.Interaction,
+        inter: discord.Interaction,
         image_file: discord.Attachment,
         image_name: str,
         character_id: str,
     ):
+        i: CustomInteraction = inter  # type: ignore
         await i.response.defer()
 
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
         ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
         character = await ambr.get_character(character_id)
         if not isinstance(character, Character):
@@ -241,12 +244,12 @@ class OthersCog(commands.Cog, name="others"):
         )
         image = await imgur.upload(await image_file.read())
         converted_character_id = int(character_id.split("-")[0])
-        await CustomImage.add_user_custom_image(
+        await custom_image.add_user_custom_image(
             i.user.id,
             converted_character_id,
             image["link"],
             image_name,
-            i.client.pool,
+            self.bot.pool,
         )
         view = CustomImage.View(locale)
         view.author = i.user
@@ -259,7 +262,7 @@ class OthersCog(commands.Cog, name="others"):
     async def custom_image_upload_autocomplete(
         self, i: discord.Interaction, current: str
     ):
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
         options = []
         for character_id, character_names in self.avatar.items():
             if any(
@@ -281,7 +284,7 @@ class OthersCog(commands.Cog, name="others"):
     async def feedback(self, i: discord.Interaction):
         await i.response.send_modal(
             Feedback.FeedbackModal(
-                await get_user_locale(i.user.id, i.client.pool) or i.locale
+                await get_user_locale(i.user.id, self.bot.pool) or i.locale
             )
         )
 
@@ -299,7 +302,7 @@ class OthersCog(commands.Cog, name="others"):
         if not command:
             return await i.response.send_message(f"<{source_url}>")
 
-        locale = await get_user_locale(i.user.id, i.client.pool) or i.locale
+        locale = await get_user_locale(i.user.id, self.bot.pool) or i.locale
 
         command_map = self.get_command_map(self.bot.tree)
         obj = command_map.get(command)

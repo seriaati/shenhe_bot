@@ -130,12 +130,14 @@ class CustomProfileImage(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
-        embed = DefaultEmbed(description=text_map.get(276, self.locale))
-        embed.set_author(
-            name=text_map.get(62, self.locale), icon_url=i.user.display_avatar.url
+    def gen_embed(self) -> discord.Embed:
+        embed = DefaultEmbed(
+            text_map.get(62, self.locale), text_map.get(276, self.locale)
         )
+        return embed
 
+    async def callback(self, i: CustomInteraction):
+        embed = self.gen_embed()
         view = CustomImage.View(self.locale)
         view.add_item(GoBackButton(self.view.original_info))
 
