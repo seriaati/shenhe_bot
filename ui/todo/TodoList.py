@@ -313,5 +313,5 @@ async def return_todo(i: models.CustomInteraction):
             )
 
         await TodoPaginator(
-            i, embeds, materials, dark_mode, fp, todo_items, view.children # type: ignore
+            i, embeds, materials, dark_mode, fp, todo_items, view.children  # type: ignore
         ).start(edit=True)

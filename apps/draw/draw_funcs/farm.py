@@ -95,7 +95,7 @@ def draw_domain_card(
         background_height += card.height + card_height_offset + y_padding_between_cards
 
     background = Image.new(
-        "RGB", (background_width, background_height), background_color # type: ignore
+        "RGB", (background_width, background_height), background_color  # type: ignore
     )
 
     x = right_left_margin
