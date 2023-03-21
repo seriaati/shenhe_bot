@@ -11,6 +11,7 @@ diskcache==5.4.0
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
 fontTools==4.39.2
 genshin @ git+https://github.com/thesadru/genshin.py
+GGanalysis @ git+https://github.com/OneBST/GGanalysis
 hoyolab_rss_feeds==2.1.1
 hutao-login-gateway @ git+https://github.com/Hu-tao-bot/login-service-library-python
 jishaku==2.5.1
