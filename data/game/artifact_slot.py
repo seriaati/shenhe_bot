@@ -16,7 +16,7 @@ def get_artifact_slot_emoji(slot: enum.EquipType) -> str:
     return ARTIFACT_SLOT_EMOJIS.get(slot, "")
 
 
-def get_artifact_slot_name(slot: enum.EquipType, locale: Locale | str):
+def get_artifact_slot_name(slot: enum.EquipType, locale: Locale | str) -> str:
     if slot is enum.EquipType.Flower:
         return text_map.get(734, locale)
     if slot is enum.EquipType.Feather:
@@ -27,3 +27,4 @@ def get_artifact_slot_name(slot: enum.EquipType, locale: Locale | str):
         return text_map.get(737, locale)
     if slot is enum.EquipType.Circlet:
         return text_map.get(738, locale)
+    return ""

@@ -51,16 +51,17 @@ class Weapon(BaseModel):
         return icon_url
 
     @validator("default_icon", pre=True, allow_reuse=True)
-    def check_default_icon(cls, v, values):
-        defaults = [
+    def check_default_icon(cls, _):
+        defaults = (
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Sword_Blunt.png?a",
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Claymore_Aniki.png?a",
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Pole_Gewalt.png?a",
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Catalyst_Apprentice.png?a",
             "https://api.ambr.top/assets/UI/UI_EquipIcon_Bow_Hunters.png?a",
-        ]
-        if values["icon"] in defaults:
+        )
+        if cls.icon in defaults:
             return True
+        return False
 
 
 class Character(BaseModel):
