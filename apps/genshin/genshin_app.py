@@ -12,11 +12,14 @@ import apps.genshin.custom_model as custom_model
 from ambr.client import AmbrTopAPI
 from apps.db import get_user_appearance_mode
 from apps.draw import main_funcs
-from apps.genshin.utils import (get_character_emoji, get_shenhe_account,
-                                get_uid, get_uid_tz)
+from apps.genshin.utils import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+)
 from apps.text_map import text_map
-from apps.text_map.utils import (get_element_name, get_month_name,
-                                 get_user_locale)
+from apps.text_map.utils import get_element_name, get_month_name, get_user_locale
 from base_ui import get_error_handle_embed
 from data.game.elements import element_emojis
 from exceptions import UIDNotFound

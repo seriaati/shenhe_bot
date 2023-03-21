@@ -484,7 +484,9 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: discord.Interaction):
         user_locale = await get_user_locale(i.user.id, self.bot.pool)
-        await ui.genshin.ReminderMenu.ReminderMenu.return_notification_menu(i, user_locale or i.locale, True)
+        await ui.genshin.ReminderMenu.ReminderMenu.return_notification_menu(
+            i, user_locale or i.locale, True
+        )
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
