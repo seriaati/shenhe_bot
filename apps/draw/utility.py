@@ -166,32 +166,32 @@ def get_font(
 
 
 def draw_dynamic_background(
-    input: DynamicBackgroundInput,
+    dynamic_input: DynamicBackgroundInput,
 ) -> typing.Tuple[Image.Image, int]:
     max_card_num = None
-    for index in range(2, input.card_num):
-        if input.card_num % index == 0:
+    for index in range(2, dynamic_input.card_num):
+        if dynamic_input.card_num % index == 0:
             max_card_num = index
-    max_card_num = input.max_card_num or max_card_num or 7
-    if not input.max_card_num:
+    max_card_num = dynamic_input.max_card_num or max_card_num or 7
+    if not dynamic_input.max_card_num:
         max_card_num = min(max_card_num, 7)
-    num = input.card_num
+    num = dynamic_input.card_num
     cols = num // max_card_num + 1 if num % max_card_num != 0 else num // max_card_num
-    width = input.left_padding
+    width = dynamic_input.left_padding
     height = (
-        input.top_padding.with_title
-        if input.draw_title
-        else input.top_padding.without_title
+        dynamic_input.top_padding.with_title
+        if dynamic_input.draw_title
+        else dynamic_input.top_padding.without_title
     )  # top padding
-    width += input.right_padding
-    height += input.bottom_padding
-    width += input.card_width * cols  # width of the cards
-    width += input.card_x_padding * (cols - 1)  # padding between cards
+    width += dynamic_input.right_padding
+    height += dynamic_input.bottom_padding
+    width += dynamic_input.card_width * cols  # width of the cards
+    width += dynamic_input.card_x_padding * (cols - 1)  # padding between cards
     if num < max_card_num:
         max_card_num = num
-    height += input.card_height * max_card_num  # height of the cards
-    height += input.card_y_padding * (max_card_num - 1)  # padding between cards
-    im = Image.new("RGB", (width, height), input.background_color)  # type: ignore
+    height += dynamic_input.card_height * max_card_num  # height of the cards
+    height += dynamic_input.card_y_padding * (max_card_num - 1)  # padding between cards
+    im = Image.new("RGB", (width, height), dynamic_input.background_color)  # type: ignore
 
     return im, max_card_num
 
