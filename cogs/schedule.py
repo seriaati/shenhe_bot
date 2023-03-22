@@ -557,8 +557,12 @@ class Schedule(commands.Cog):
                 continue
 
             user_count += 1
-            success_count, error, error_message = await self.claim_daily_reward(
-                success_count, user, user.client
+            (
+                success_count,
+                error,
+                error_message,
+            ) = await genshin_app.claim_daily_checkin_reward(
+                success_count, user, user.client, self.bot.pool
             )
 
             if error:
@@ -583,38 +587,6 @@ class Schedule(commands.Cog):
                 f"Claimed {success_count}/{user_count}",
             )
         )
-
-    async def claim_daily_reward(
-        self,
-        success_count: int,
-        user: models.ShenheAccount,
-        client: genshin.Client,
-    ):
-        error = False
-        error_message = ""
-        try:
-            reward = await client.claim_daily_reward()
-        except genshin.errors.AlreadyClaimed:
-            success_count += 1
-        except genshin.errors.InvalidCookies:
-            error = True
-            error_message = text_map.get(36, "en-US", user.user_locale)
-            log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-            success_count += 1
-        except genshin.errors.GenshinException as e:
-            error = True
-            error_message = f"```{type(e)}: {e.msg}```"
-            capture_exception(e)
-        except Exception as e:  # skipcq: PYL-W0703
-            error = True
-            error_message = f"```{type(e)} {e}```"
-            capture_exception(e)
-        else:
-            success_count = await genshin_app.daily_reward_success(
-                success_count, user, reward, self.bot.pool
-            )
-
-        return success_count, error, error_message
 
     @schedule_error_handler
     async def weapon_talent_base_notification(
@@ -874,7 +846,7 @@ class Schedule(commands.Cog):
         await genshin_app.update_dungeon_text_map(self.bot.session)
 
         # item name text map
-        genshin_app.update_item_text_map(things_to_update)
+        await genshin_app.update_item_text_map(things_to_update)
 
         log.info("[Schedule][Update Text Map] Ended")
 
