@@ -77,7 +77,7 @@ class ShenheCommandTree(app_commands.CommandTree):
             for command in synced:
                 command_map[command.name] = command.id
             async with aiofiles.open("command_map.json", "w") as f:
-                json.dump(command_map, f)
+                await f.write(json.dumps(command_map))
 
         return synced
 

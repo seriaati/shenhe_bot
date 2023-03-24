@@ -171,7 +171,7 @@ async def update_thing_text_map(thing: str, session: aiohttp.ClientSession) -> N
         update_dict["10000007"] = asset.lumine_name_dict
         update_dict["10000005"] = asset.aether_name_dict
     async with aiofiles.open(f"text_maps/{thing}.json", "w+", encoding="utf-8") as f:
-        json.dump(update_dict, f, indent=4, ensure_ascii=False)
+        await f.write(json.dumps(update_dict, indent=4, ensure_ascii=False))
 
 
 async def update_dungeon_text_map(session: aiohttp.ClientSession) -> None:
@@ -187,14 +187,16 @@ async def update_dungeon_text_map(session: aiohttp.ClientSession) -> None:
     async with aiofiles.open(
         "text_maps/dailyDungeon.json", "w+", encoding="utf-8"
     ) as f:
-        json.dump(update_dict, f, indent=4, ensure_ascii=False)
+        await f.write(json.dumps(update_dict, indent=4, ensure_ascii=False))
 
 
 async def update_item_text_map(things_to_update) -> None:
     huge_text_map: typing.Dict[str, str] = {}
     for thing in things_to_update:
         async with aiofiles.open(f"text_maps/{thing}.json", "r", encoding="utf-8") as f:
-            text_map_: typing.Dict[str, typing.Dict[str, str]] = json.load(f)
+            text_map_: typing.Dict[str, typing.Dict[str, str]] = json.loads(
+                await f.read()
+            )
         for item_id, item_info in text_map_.items():
             for name in item_info.values():
                 if "10000005" in item_id:
@@ -204,7 +206,7 @@ async def update_item_text_map(things_to_update) -> None:
                 else:
                     huge_text_map[name] = item_id
     async with aiofiles.open("text_maps/item_name.json", "w+", encoding="utf-8") as f:
-        json.dump(huge_text_map, f, indent=4, ensure_ascii=False)
+        await f.write(json.dumps(huge_text_map, indent=4, ensure_ascii=False))
 
 
 async def retry_task_five_times(task, *args, **kwargs) -> typing.Any:
