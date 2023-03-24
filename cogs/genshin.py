@@ -22,15 +22,8 @@ import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    enka,
-    genshin_app,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    leaderboard,
-    wiki,
-)
+from apps.genshin import (enka, genshin_app, get_character_emoji, get_uid,
+                          get_uid_region_hash, leaderboard)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -783,55 +776,55 @@ class GenshinCog(commands.Cog, name="genshin"):
             character = await client.get_character_detail(query)
             if character is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_character_wiki(character, i, locale, client, dark_mode)
+            await ui.Search.parse_character_wiki(character, i, locale, client, dark_mode)
 
         elif item_type == 1:  # weapon
             weapon = await client.get_weapon_detail(int(query))
             if weapon is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
+            await ui.Search.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
 
         elif item_type == 2:  # material
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_material_wiki(material, i, locale, client, dark_mode)
+            await ui.Search.parse_material_wiki(material, i, locale, client, dark_mode)
 
         elif item_type == 3:  # artifact
             artifact = await client.get_artifact_detail(int(query))
             if artifact is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_artifact_wiki(artifact, i, locale)
+            await ui.Search.parse_artifact_wiki(artifact, i, locale)
 
         elif item_type == 4:  # monster
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_monster_wiki(monster, i, locale, client, dark_mode)
+            await ui.Search.parse_monster_wiki(monster, i, locale, client, dark_mode)
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
             if food is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_food_wiki(food, i, locale, client, dark_mode)
+            await ui.Search.parse_food_wiki(food, i, locale, client, dark_mode)
 
         elif item_type == 6:  # furniture
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_furniture_wiki(furniture, i, locale, client, dark_mode)
+            await ui.Search.parse_furniture_wiki(furniture, i, locale, client, dark_mode)
 
         elif item_type == 7:  # namecard
             namecard = await client.get_name_card_detail(int(query))
             if namecard is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_namecard_wiki(namecard, i, locale)
+            await ui.Search.parse_namecard_wiki(namecard, i, locale)
 
         elif item_type == 8:  # book
             book = await client.get_book_detail(int(query))
             if book is None:
                 raise exceptions.ItemNotFound
-            await wiki.parse_book_wiki(book, i, locale, client)
+            await ui.Search.parse_book_wiki(book, i, locale, client)
 
     @search.autocomplete("query")
     async def query_autocomplete(
