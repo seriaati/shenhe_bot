@@ -21,6 +21,7 @@ from apps.genshin import (
 from apps.text_map import text_map, to_ambr_top
 from base_ui import capture_exception
 from data.game.standard_characters import get_standard_characters
+from exceptions import FeatureDisabled
 from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
 from utility import DefaultEmbed, ErrorEmbed
@@ -212,18 +213,11 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.describe(
         item_num=_("How many 5-star banner characters do you wish to pull?", hash=482)
     )
-    async def wish_char(self, i: discord.Interaction, item_num: int):
+    async def wish_char(
+        self, i: discord.Interaction, item_num: app_commands.Range[int, 1, 100]
+    ):
         await i.response.defer()
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-
-        if item_num > 10:
-            return await i.followup.send(
-                embed=ErrorEmbed(description="number <= 10").set_author(
-                    name=text_map.get(190, locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
 
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = $1 AND (wish_banner_type = 301 OR wish_banner_type = 400) AND uid = $2 ORDER BY wish_id DESC",
@@ -272,26 +266,15 @@ class WishCog(commands.GroupCog, name="wish"):
         item_num=_("How many 5-star banner weapons do you wish to pull?", hash=507),
         fate_point=_("A number that is either 0, 1, or 2", hash=658),
     )
-    async def wish_weapon(self, i: discord.Interaction, item_num: int, fate_point: int):
+    async def wish_weapon(
+        self,
+        i: discord.Interaction,
+        item_num: app_commands.Range[int, 1, 100],
+        fate_point: app_commands.Range[int, 0, 2],
+    ):
+        raise FeatureDisabled
         await i.response.defer()
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-
-        if fate_point not in (0, 1, 2):
-            return await i.followup.send(
-                embed=ErrorEmbed(description=text_map.get(659, locale)).set_author(
-                    name=text_map.get(23, locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-            )
-
-        if item_num > 1000:
-            return await i.followup.send(
-                embed=ErrorEmbed(description="number <= 1000").set_author(
-                    name=text_map.get(190, locale),
-                    icon_url=i.user.display_avatar.url,
-                ),
-                ephemeral=True,
-            )
 
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_rarity FROM wish_history WHERE user_id = $1 AND wish_banner_type = 302 AND uid = $2 ORDER BY wish_id DESC",
