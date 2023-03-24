@@ -752,9 +752,7 @@
 '656': Pilih Banner
 '657': poin-takdir
 '658': Angka bisa berupa 0, 1, atau 2
-'659': |-
-  Poin takdir harus berupa angka 0, 1, atau 2.
-  Kamu dapat melihat nomor poin takdirmu saat ini di banner senjata.
+'659': ''
 '660': Kamu belum melakukan pull banner senjata
 '661': Pilih filter rarity
 '662': Pilih filter banner
@@ -863,3 +861,6 @@
 '755': Setelan Profil
 '756': Cache dimodifikasi, jalankan kembali perintah /profile
 '757': Kamu tidak memiliki karakter di cache
+'758': This command/feature is currently disabled
+'759': If you have any questions, please join the support server
+'760': Shenhe is currently under maintenance, please try again later
