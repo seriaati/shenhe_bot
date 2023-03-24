@@ -16,15 +16,12 @@ async def get_user_custom_image_options(
     user_id: int,
     locale: typing.Union[discord.Locale, str],
 ) -> typing.List[discord.SelectOption]:
-    options: typing.List[discord.SelectOption] = [
-        discord.SelectOption(label=text_map.get(124, locale), value="default")
-    ]
     c_fanarts = await get_character_fanarts(str(character_id))
 
     rows = await pool.fetch(
         """
         SELECT
-            nickname, image_url
+            nickname, image_url, current
         FROM
             custom_image
         WHERE
@@ -33,7 +30,15 @@ async def get_user_custom_image_options(
         user_id,
         character_id,
     )
+    options: typing.List[discord.SelectOption] = [
+        discord.SelectOption(
+            label=text_map.get(124, locale), value="default", default=bool(not rows)
+        )
+    ]
+    current_image_url = None
     for row in rows:
+        if row["current"]:
+            current_image_url = row["image_url"]
         if row["image_url"] in c_fanarts:
             continue
         options.append(
@@ -41,6 +46,7 @@ async def get_user_custom_image_options(
                 label=row["nickname"][:100],
                 description=row["image_url"][:100],
                 value=row["image_url"],
+                default=row["current"],
             )
         )
 
@@ -49,7 +55,14 @@ async def get_user_custom_image_options(
         if any(option.value == url for option in options):
             continue
         label = f"{text_map.get(748, locale)} ({index})"
-        options.append(discord.SelectOption(label=label, description=url, value=url))
+        options.append(
+            discord.SelectOption(
+                label=label,
+                description=url,
+                value=url,
+                default=current_image_url == url,
+            )
+        )
         index += 1
 
     return options
@@ -89,7 +102,7 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
     if "jpg" not in url and "png" not in url and "jpeg" not in url:
         return False
     try:
-        async with session.get(url) as response:
+        async with session.get(url=url) as response:
             return response.status == 200
     except aiohttp.InvalidURL:
         return False
@@ -127,9 +140,9 @@ async def change_user_custom_image(
         await pool.execute(
             """
             INSERT INTO
-                custom_image (user_id, character_id, image_url, nickname)
+                custom_image (user_id, character_id, image_url, nickname, from_shenhe)
             VALUES
-                ($1, $2, $3, $4)
+                ($1, $2, $3, $4, true)
             """,
             user_id,
             character_id,
@@ -144,7 +157,7 @@ async def get_user_custom_image(
     image: typing.Optional[asyncpg.Record] = await pool.fetchrow(
         """
         SELECT
-            user_id, character_id, image_url, nickname
+            user_id, character_id, image_url, nickname, from_shenhe
         FROM
             custom_image
         WHERE
@@ -155,11 +168,34 @@ async def get_user_custom_image(
     )
     if image is None:
         return None
+
+    from_shenhe = image["from_shenhe"]
+    if from_shenhe is None:
+        fanarts = await get_character_fanarts(str(character_id))
+        if image["image_url"] in fanarts:
+            from_shenhe = True
+            await pool.execute(
+                """
+                UPDATE
+                    custom_image
+                SET
+                    from_shenhe = true
+                WHERE
+                    user_id = $1 AND character_id = $2 AND image_url = $3
+                """,
+                user_id,
+                character_id,
+                image["image_url"],
+            )
+        else:
+            from_shenhe = False
+
     return UserCustomImage(
         user_id=image["user_id"],
         character_id=image["character_id"],
         url=image["image_url"],
         nickname=image["nickname"],
+        from_shenhe=from_shenhe,
     )
 
 

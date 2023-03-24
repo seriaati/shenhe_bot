@@ -168,6 +168,7 @@ class UserCustomImage(BaseModel):
     nickname: str
     character_id: int
     user_id: int
+    from_shenhe: bool
 
 
 class GenshinAppResult(BaseModel):
