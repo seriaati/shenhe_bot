@@ -3,7 +3,6 @@ import pickle
 import sys
 import traceback
 from pathlib import Path
-from typing import Optional
 
 from discord.errors import Forbidden
 from discord.ext import commands
@@ -19,11 +18,9 @@ class AdminCog(commands.Cog, name="admin"):
 
     @commands.is_owner()
     @commands.command(name="maintenance")
-    async def maintenance(self, ctx: commands.Context, time: Optional[str] = ""):
+    async def maintenance(self, ctx: commands.Context):
         self.bot.maintenance = not self.bot.maintenance
-        if time != "":
-            self.bot.maintenance_time = time
-        await ctx.send("success")
+        await ctx.send(f"maintenance mode is now {self.bot.maintenance}")
 
     @commands.is_owner()
     @commands.command(name="reload")
@@ -117,6 +114,20 @@ class AdminCog(commands.Cog, name="admin"):
             pickle.dumps(cache_data),
         )
         await ctx.send("done")
+
+    @commands.is_owner()
+    @commands.command(name="disable")
+    async def disable_command(self, ctx: commands.Context, command: str):
+        if command not in self.bot.all_commands:
+            await ctx.send("command not found")
+            return
+
+        if command in self.bot.disabled_commands:
+            self.bot.disabled_commands.remove(command)
+            await ctx.send("command enabled")
+        else:
+            self.bot.disabled_commands.append(command)
+            await ctx.send("command disabled")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:

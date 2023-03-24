@@ -20,14 +20,7 @@ async def global_error_handler(
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
 
-    view = discord.ui.View()
-    view.add_item(
-        discord.ui.Button(
-            label=text_map.get(642, locale),
-            url="https://discord.gg/ryfamUykRw",
-            emoji="<:discord_icon:1032123254103621632>",
-        )
-    )
+    view = support_server_view(locale)
 
     try:
         await i.response.send_message(
@@ -43,6 +36,19 @@ async def global_error_handler(
         )
     except discord.errors.NotFound:
         pass
+
+
+def support_server_view(locale: Union[discord.Locale, str]):
+    view = discord.ui.View()
+    view.add_item(
+        discord.ui.Button(
+            label=text_map.get(642, locale),
+            url="https://discord.gg/ryfamUykRw",
+            emoji="<:discord_icon:1032123254103621632>",
+        )
+    )
+
+    return view
 
 
 def get_error_handle_embed(
@@ -115,6 +121,12 @@ def get_error_handle_embed(
         embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
     elif isinstance(e, exceptions.CardNotReady):
         embed.set_author(name=text_map.get(189, locale))
+    elif isinstance(e, exceptions.FeatureDisabled):
+        embed.set_author(name=text_map.get(758, locale))
+        embed.description = text_map.get(759, locale)
+    elif isinstance(e, exceptions.Maintenance):
+        embed.set_author(name=text_map.get(760, locale))
+        embed.description = text_map.get(759, locale)
     else:
         capture_exception(e)
 

@@ -75,3 +75,11 @@ class AutocompleteError(Exception):
 
 class CardNotReady(Exception):
     pass
+
+
+class FeatureDisabled(Exception):
+    pass
+
+
+class Maintenance(Exception):
+    pass

@@ -4,7 +4,6 @@ import asyncio
 import json
 import os
 import platform
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -13,7 +12,6 @@ import aiohttp
 import asyncpg
 import discord
 import sentry_sdk
-from cachetools import TTLCache
 from discord import app_commands
 from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
@@ -21,10 +19,10 @@ from dotenv import load_dotenv
 
 import models
 from apps.genshin import launch_browsers, launch_debug_browser
-from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from base_ui import global_error_handler
-from models import CustomInteraction
+from base_ui import get_error_handle_embed, global_error_handler, support_server_view
+from exceptions import FeatureDisabled, Maintenance
+from models import ShenheBot
 from utility import ErrorEmbed, log, sentry_logging
 
 load_dotenv()
@@ -83,7 +81,9 @@ class ShenheCommandTree(app_commands.CommandTree):
 
         return synced
 
-    async def interaction_check(self, i: CustomInteraction, /) -> bool:
+    async def interaction_check(self, i: discord.Interaction, /) -> bool:
+        client: ShenheBot = i.client  # type: ignore
+
         if i.guild is not None and not i.guild.chunked:
             await i.guild.chunk()
 
@@ -92,18 +92,29 @@ class ShenheCommandTree(app_commands.CommandTree):
         if i.user.id in (188109365671100416, 738362958253522976, 753937213032628327):
             return False
 
-        if i.client.maintenance:
-            if i.type is discord.InteractionType.application_command:
+        if isinstance(i.command, app_commands.Command):
+            if i.command.parent:
+                command_name = f"{i.command.parent.name} {i.command.name}"
+            else:
+                command_name = i.command.name
+            if command_name in client.disabled_commands:
+                embed = get_error_handle_embed(i.user, FeatureDisabled(), i.locale)
+                try:
+                    await i.response.send_message(
+                        embed=embed, ephemeral=True, view=support_server_view(i.locale)
+                    )
+                except Exception:  # skipcq: PYL-W0703
+                    pass
+                return False
+
+        if client.maintenance:
+            embed = get_error_handle_embed(i.user, Maintenance(), i.locale)
+            try:
                 await i.response.send_message(
-                    embed=ErrorEmbed(
-                        "申鶴正在維護中\nShenhe is under maintenance",
-                        f"""
-                        預計將在 {i.client.maintenance_time} 恢復服務
-                        Estimated to be back online {i.client.maintenance_time}
-                        """,
-                    ),
-                    ephemeral=True,
+                    embed=embed, ephemeral=True, view=support_server_view(i.locale)
                 )
+            except Exception:  # skipcq: PYL-W0703
+                pass
             return False
         return True
 
@@ -113,14 +124,10 @@ class ShenheCommandTree(app_commands.CommandTree):
         return await global_error_handler(i, e)
 
 
-class Shenhe(commands.AutoShardedBot):
+class Shenhe(ShenheBot):
     def __init__(self, session: aiohttp.ClientSession, pool: asyncpg.Pool):
         intents = discord.Intents.default()
         intents.members = True
-
-        self.session = session
-        self.pool = pool
-
         super().__init__(
             command_prefix=commands.when_mentioned,
             intents=intents,
@@ -130,23 +137,11 @@ class Shenhe(commands.AutoShardedBot):
             tree_cls=ShenheCommandTree,
         )
 
-    async def setup_hook(self) -> None:
-        # cache
-        self.stats_card_cache = TTLCache(maxsize=512, ttl=120)
-        self.area_card_cache = TTLCache(maxsize=512, ttl=120)
-        self.abyss_overview_card_cache = TTLCache(maxsize=512, ttl=120)
-        self.abyss_floor_card_cache = TTLCache(maxsize=512, ttl=120)
-        self.abyss_one_page_cache = TTLCache(maxsize=512, ttl=120)
-
-        # bot variables
-        self.maintenance = False
-        self.maintenance_time = ""
-        self.launch_time = datetime.utcnow()
+        self.session = session
+        self.pool = pool
         self.debug = debug
-        self.launch_browser_in_debug = False
-        self.gd_text_map = load_text_maps()
-        self.tokenStore = {}
 
+    async def setup_hook(self) -> None:
         # load jishaku
         await self.load_extension("jishaku")
 

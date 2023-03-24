@@ -753,9 +753,7 @@
 '656': Choose a banner
 '657': fate-point
 '658': A number that is either 0, 1, or 2
-'659': |- 
-  Fate point must be a number that is either 0, 1, or 2.
-  You can view your current fate point number in the weapon banner.
+'659': ''
 '660': You haven't pulled in the character banner yet
 '661': Choose a rarity filter
 '662': Choose a banner filter
@@ -864,3 +862,6 @@
 '755': Profile settings
 '756': Cache modified, please re-run the /profile command
 '757': You have no characters in the cache
+'758': This command/feature is currently disabled
+'759': If you have any questions, please join the support server
+'760': Shenhe is currently under maintenance, please try again later

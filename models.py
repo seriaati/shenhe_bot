@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
+from apps.genshin_data.text_maps import load_text_maps
 
 
 class ShenheAccount(BaseModel):
@@ -98,20 +99,23 @@ class WishInfo(BaseModel):
 class ShenheBot(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
-    gd_text_map: Dict[str, Dict[str, str]]
     browsers: Dict[str, Browser]
     gateway: HuTaoLoginAPI
-    debug: bool
-    maintenance: bool = False
-    maintenance_time: Optional[str] = ""
-    launch_time: datetime
-    stats_card_cache: cachetools.TTLCache
-    area_card_cache: cachetools.TTLCache
-    abyss_overview_card_cache: cachetools.TTLCache
-    abyss_floor_card_cache: cachetools.TTLCache
-    abyss_one_page_cache: cachetools.TTLCache
-    tokenStore: Dict[str, Any]
     pool: asyncpg.Pool
+    debug: bool
+
+    launch_browser_in_debug: bool = False
+    maintenance: bool = False
+    maintenance_time: str = ""
+    launch_time = datetime.utcnow()
+    gd_text_map: Dict[str, Dict[str, str]] = load_text_maps()
+    stats_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
+    area_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
+    abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
+    abyss_floor_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
+    abyss_one_page_cache = cachetools.TTLCache(maxsize=512, ttl=120)
+    tokenStore: Dict[str, Any] = {}
+    disabled_commands: List[str] = []
 
 
 class TodoList:
