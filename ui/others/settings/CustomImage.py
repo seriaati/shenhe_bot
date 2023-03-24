@@ -271,11 +271,11 @@ async def return_custom_image_interaction(
     options = await image.get_user_custom_image_options(
         character_id, i.client.pool, i.user.id, view.locale
     )
-    disabled = len(options) == 125
-    view.add_item(AddImage(view.locale, character_id, element, disabled))
-    disabled = bool(not options)
+    view.add_item(AddImage(view.locale, character_id, element, len(options) == 125))
     view.add_item(
-        remove_image := RemoveImage(view.locale, character_id, disabled, element)
+        remove_image := RemoveImage(
+            view.locale, character_id, bool(not options), element
+        )
     )
     div_options: List[List[discord.SelectOption]] = list(divide_chunks(options, 25))
     for d_options in div_options:
@@ -284,7 +284,7 @@ async def return_custom_image_interaction(
     custom_image = await image.get_user_custom_image(
         i.user.id, character_id, i.client.pool
     )
-    if custom_image is None:
+    if custom_image is None or (custom_image and custom_image.from_shenhe):
         remove_image.disabled = True  # skipcq: PYL-W0201
 
     embed = await image.get_user_custom_image_embed(
