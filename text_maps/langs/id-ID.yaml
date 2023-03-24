@@ -62,7 +62,7 @@
 '61': Hapus gambar
 '62': Terapkan Gambar Kustom
 '63': Lihat info bot
-'64': File gambar
+'64': file-gambar
 '65': File gambar untuk unggah
 '66': Nickname untuk gambar
 '67': Karakter untuk menggunakan gambar
@@ -750,7 +750,7 @@
 '654': Pull bintang 5 terbaru
 '655': Banner Permanen
 '656': Pilih Banner
-'657': Poin takdir
+'657': poin-takdir
 '658': Angka bisa berupa 0, 1, atau 2
 '659': |-
   Poin takdir harus berupa angka 0, 1, atau 2.
