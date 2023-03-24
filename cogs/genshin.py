@@ -22,8 +22,14 @@ import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (enka, genshin_app, get_character_emoji, get_uid,
-                          get_uid_region_hash, leaderboard)
+from apps.genshin import (
+    enka,
+    genshin_app,
+    get_character_emoji,
+    get_uid,
+    get_uid_region_hash,
+    leaderboard,
+)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -776,7 +782,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             character = await client.get_character_detail(query)
             if character is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_character_wiki(character, i, locale, client, dark_mode)
+            await ui.Search.parse_character_wiki(
+                character, i, locale, client, dark_mode
+            )
 
         elif item_type == 1:  # weapon
             weapon = await client.get_weapon_detail(int(query))
@@ -812,7 +820,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_furniture_wiki(furniture, i, locale, client, dark_mode)
+            await ui.Search.parse_furniture_wiki(
+                furniture, i, locale, client, dark_mode
+            )
 
         elif item_type == 7:  # namecard
             namecard = await client.get_name_card_detail(int(query))
