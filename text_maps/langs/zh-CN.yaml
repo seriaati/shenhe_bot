@@ -749,9 +749,7 @@
 '656': 选择一个祈愿池
 '657': 命定值
 '658': 一个为 0, 1, 或 2 的数字
-'659': |-
-  命定值必须为一个 0, 1, 或 2 的数字。
-  你可以在武器祈愿中找到你目前的命定值。
+'659': ''
 '660': 你没有在角色池中祈愿过
 '661': 选择一个稀有度搜索条件
 '662': 选择一个祈愿池搜索条件
@@ -859,3 +857,6 @@
 '755': 角色面板设置
 '756': 缓存已修改，请重新运行/profile指令。
 '757': 你还没有角色缓存呢。
+'758': This command/feature is currently disabled
+'759': If you have any questions, please join the support server
+'760': Shenhe is currently under maintenance, please try again later
