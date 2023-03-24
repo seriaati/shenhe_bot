@@ -24,7 +24,7 @@ from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
-from ui.calc import AddToTodo
+from ui.calc.AddToTodo import AddButton
 from utility import DefaultEmbed
 
 
@@ -533,7 +533,7 @@ class TargetLevelModal(BaseModal):
         embed.set_image(url="attachment://materials.jpeg")
         view = View()
         view.clear_items()
-        view.add_item(AddToTodo(items, self.locale))
+        view.add_item(AddButton(items, self.locale))
         view.author = i.user
         await i.edit_original_response(
             embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view

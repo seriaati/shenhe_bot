@@ -16,7 +16,7 @@ from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from models import CustomInteraction, DrawInput, TodoList
-from ui import calc
+from ui.calc.AddToTodo import AddButton
 from utility import DefaultEmbed, ErrorEmbed, divide_chunks
 
 
@@ -299,7 +299,7 @@ class LevelModal(BaseModal):
         embed.set_image(url="attachment://materials.jpeg")
 
         view = BaseView(timeout=config.mid_timeout)
-        view.add_item(calc.AddToTodo.AddToTodo(items, self.locale))
+        view.add_item(AddButton(items, self.locale))
         view.author = i.user
 
         await i.edit_original_response(
