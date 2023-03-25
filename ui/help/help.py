@@ -9,7 +9,6 @@ import config
 import models
 from apps.text_map import text_map
 from base_ui import BaseView
-from utility import DefaultEmbed
 from utility.paginator import GeneralPaginator
 from utility.utils import divide_chunks
 
@@ -44,6 +43,7 @@ class Dropdown(ui.Select):
         self.locale = locale
 
     async def callback(self, i: models.CustomInteraction):
+        await i.response.defer()
         locale = self.locale
 
         cog = i.client.get_cog(self.values[0])
@@ -80,12 +80,14 @@ class Dropdown(ui.Select):
 
         div_fields: List[List[models.EmbedField]] = list(divide_chunks(fields, 6))
         for div_field in div_fields:
-            embed = DefaultEmbed(f"{selected_option.emoji} {selected_option.label}")
+            embed = models.DefaultEmbed(
+                f"{selected_option.emoji} {selected_option.label}"
+            )
             for field in div_field:
                 embed.add_field(name=field.name, value=field.value, inline=False)
             embeds.append(embed)
 
-        await GeneralPaginator(i, embeds, [self]).start()
+        await GeneralPaginator(i, embeds, [self]).start(edit=True)
 
 
 class HelpView(BaseView):
