@@ -25,7 +25,6 @@ from data.game.elements import get_element_color, get_element_emoji, get_element
 from data.game.upgrade_exp import get_exp_table
 from exceptions import InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
-from utility import DefaultEmbed
 
 
 class View(BaseView):
@@ -73,7 +72,7 @@ class CharacterSelect(ui.Select):
 
     async def callback(self, i: models.CustomInteraction):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        embed = DefaultEmbed().set_author(
+        embed = models.DefaultEmbed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
@@ -269,7 +268,7 @@ class InitLevelModal(BaseModal):
                 suggested_levlels,
             )
         )
-        embed = DefaultEmbed()
+        embed = models.DefaultEmbed()
         embed.set_author(
             name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
         )
@@ -389,7 +388,7 @@ class TargetLevelModal(BaseModal):
             view = View.from_message(i.message)
         if view is None:
             await i.edit_original_response(
-                embed=DefaultEmbed().set_author(
+                embed=models.DefaultEmbed().set_author(
                     name=text_map.get(644, self.locale), icon_url=asset.loader
                 ),
                 view=None,
@@ -497,7 +496,7 @@ class TargetLevelModal(BaseModal):
 
         if not all_materials:
             await i.edit_original_response(
-                embed=DefaultEmbed().set_author(
+                embed=models.DefaultEmbed().set_author(
                     name=text_map.get(197, self.locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -520,7 +519,7 @@ class TargetLevelModal(BaseModal):
             draw_title=False,
         )
         fp.seek(0)
-        embed = DefaultEmbed()
+        embed = models.DefaultEmbed()
         embed.add_field(
             name=text_map.get(192, self.locale),
             value=f"{text_map.get(183, self.locale)}: {init} ▸ {target}\n"
@@ -550,7 +549,7 @@ async def validate_level_input(
     i: models.CustomInteraction,
     locale: discord.Locale | str,
 ):
-    embed = DefaultEmbed().set_author(
+    embed = models.DefaultEmbed().set_author(
         name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
     )
     try:

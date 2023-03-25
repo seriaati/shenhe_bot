@@ -14,13 +14,13 @@ import ambr
 import apps.genshin as genshin_app
 import asset
 import models
-import utility.utils as utility_utils
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from base_ui import capture_exception
 from utility import log, send_embed
 from utility.fetch_card import fetch_cards
+from utility.utils import get_dt_now
 
 
 def schedule_error_handler(func):
@@ -53,7 +53,7 @@ class Schedule(commands.Cog):
     @tasks.loop(minutes=loop_interval)
     async def run_tasks(self):
         """Run the tasks every loop_interval minutes"""
-        now = utility_utils.get_dt_now()
+        now = get_dt_now()
 
         if now.minute < self.loop_interval:  # every hour
             check_tasks = ("resin_notification", "pot_notification", "pt_notification")
@@ -155,7 +155,7 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule][{notification_type}] Checking...")
 
         n_users = await self.get_notification_users(notification_type)
-        now = utility_utils.get_dt_now()
+        now = get_dt_now()
         sent_num = 0
         for n_user in n_users:
             if n_user.last_notif and now - n_user.last_notif < timedelta(hours=2):
@@ -304,7 +304,7 @@ class Schedule(commands.Cog):
         else:  # resin_notification
             map_hash = 582
 
-        embed = utility_utils.ErrorEmbed(
+        embed = models.ErrorEmbed(
             description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
         )
         embed.set_author(
@@ -326,7 +326,7 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = utility_utils.DefaultEmbed(
+        embed = models.DefaultEmbed(
             description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
             f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
@@ -356,7 +356,7 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = utility_utils.DefaultEmbed(
+        embed = models.DefaultEmbed(
             description=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
             f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else utils.format_dt(notes.realm_currency_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
@@ -379,7 +379,7 @@ class Schedule(commands.Cog):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
             user.user_id
         )
-        embed = utility_utils.DefaultEmbed(description=f"UID: {user.uid}")
+        embed = models.DefaultEmbed(description=f"UID: {user.uid}")
         embed.set_author(
             name=text_map.get(366, locale),
             icon_url=discord_user.display_avatar.url,
@@ -470,7 +470,7 @@ class Schedule(commands.Cog):
         users = await self.get_redeem_code_users()
         for index, user in enumerate(users):
             locale = user.user_locale or "en-US"
-            embed = utility_utils.DefaultEmbed(text_map.get(126, locale))
+            embed = models.DefaultEmbed(text_map.get(126, locale))
 
             for code in codes:
                 c = await self.bot.pool.fetchval(
@@ -582,7 +582,7 @@ class Schedule(commands.Cog):
             410036441129943050
         )
         await seria.send(
-            embed=utility_utils.DefaultEmbed(
+            embed=models.DefaultEmbed(
                 "Automatic daily check-in report",
                 f"Claimed {success_count}/{user_count}",
             )
@@ -614,7 +614,7 @@ class Schedule(commands.Cog):
                 f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})"
             )
 
-            now = utility_utils.get_dt_now() + timedelta(hours=time_offset)
+            now = get_dt_now() + timedelta(hours=time_offset)
             locale = await get_user_lang(user_id, self.bot.pool) or "en-US"
 
             client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
@@ -687,7 +687,7 @@ class Schedule(commands.Cog):
 
                 domain: ambr.Domain = item_info["domain"]
 
-                embed = utility_utils.DefaultEmbed()
+                embed = models.DefaultEmbed()
                 embed.add_field(
                     name=text_map.get(609, locale),
                     value=f"{domain.name} ({domain.city.name})",

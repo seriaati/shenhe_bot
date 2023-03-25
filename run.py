@@ -23,7 +23,7 @@ from apps.text_map import text_map
 from base_ui import get_error_handle_embed, global_error_handler, support_server_view
 from exceptions import FeatureDisabled, Maintenance
 from models import ShenheBot
-from utility import ErrorEmbed, log, sentry_logging
+from utility import log, sentry_logging
 
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())

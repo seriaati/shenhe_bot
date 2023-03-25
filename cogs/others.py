@@ -20,10 +20,9 @@ from ambr import AmbrTopAPI, Character
 from apps.db import custom_image, get_user_lang
 from apps.text_map import text_map, to_ambr_top
 from exceptions import AutocompleteError
-from models import CustomInteraction, ShenheBot
+from models import CustomInteraction, DefaultEmbed, ErrorEmbed, ShenheBot
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
-from utility import DefaultEmbed, ErrorEmbed
 
 load_dotenv()
 

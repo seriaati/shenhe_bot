@@ -12,7 +12,6 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
-from utility import DefaultEmbed
 from utility.todo_paginator import TodoPaginator, TodoPaginatorView
 
 
@@ -256,8 +255,7 @@ async def return_todo(i: models.CustomInteraction):
     view = View(todo_items, locale)
     view.author = i.user
 
-    embed = DefaultEmbed()
-    embed.set_author(name=text_map.get(202, locale), icon_url=i.user.display_avatar.url)
+    embed = models.DefaultEmbed().set_title(202, locale, i.user)
 
     if not todo_items:
         embed.description = text_map.get(204, locale)
@@ -305,7 +303,7 @@ async def return_todo(i: models.CustomInteraction):
 
         for _ in range(14, len(todo_items), 14):
             embeds.append(
-                DefaultEmbed()
+                models.DefaultEmbed()
                 .set_author(
                     name=text_map.get(202, locale), icon_url=i.user.display_avatar.url
                 )

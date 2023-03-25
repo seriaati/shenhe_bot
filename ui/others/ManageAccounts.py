@@ -14,8 +14,8 @@ from apps.genshin import get_account_select_options, get_uid_region_hash
 from apps.text_map import text_map, to_hutao_login_lang
 from base_ui import BaseModal, BaseView
 from cogs.login import register_user
-from models import CustomInteraction, ShenheBot
-from utility import DefaultEmbed, log
+from models import CustomInteraction, DefaultEmbed, ShenheBot
+from utility import log
 
 
 class View(BaseView):

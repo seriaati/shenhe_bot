@@ -11,8 +11,8 @@ from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from base_ui import BaseView
-from models import CustomInteraction
-from utility import DefaultEmbed, ErrorEmbed, divide_chunks, get_dt_now
+from models import CustomInteraction, DefaultEmbed, ErrorEmbed
+from utility import divide_chunks, get_dt_now
 
 
 class View(BaseView):

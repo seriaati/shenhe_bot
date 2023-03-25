@@ -17,6 +17,7 @@ from pyppeteer.browser import Browser
 
 import ambr.models as ambr
 from apps.genshin_data.text_maps import load_text_maps
+from apps.text_map import text_map
 
 
 class ShenheAccount(BaseModel):
@@ -394,6 +395,41 @@ class ConditionalResult(BaseModel):
 
 class CustomInteraction(discord.Interaction):
     client: ShenheBot
+
+
+class ShenheEmbed(discord.Embed):
+    def __init__(
+        self,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        color: Optional[int] = 0xA68BD3,
+    ):
+        super().__init__(title=title, description=description, color=color)
+
+    def set_title(
+        self,
+        map_hash: int,
+        locale: Union[discord.Locale, str],
+        user: Union[discord.Member, discord.User],
+    ):
+        self.set_author(
+            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+        )
+        return self
+
+
+class DefaultEmbed(ShenheEmbed):
+    def __init__(
+        self,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+    ):
+        super().__init__(title=title, description=description, color=0xA68BD3)
+
+
+class ErrorEmbed(ShenheEmbed):
+    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
+        super().__init__(title=title, description=description, color=0xFC5165)
 
 
 class EmbedField(BaseModel):

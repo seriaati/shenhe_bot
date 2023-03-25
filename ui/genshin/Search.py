@@ -13,8 +13,8 @@ from apps.text_map import get_weekday_name, text_map
 from base_ui import BaseView
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
-from models import CustomInteraction, DrawInput
-from utility import DefaultEmbed, divide_chunks, get_weekday_int_with_name
+from models import CustomInteraction, DefaultEmbed, DrawInput
+from utility import divide_chunks, get_weekday_int_with_name
 
 
 class View(BaseView):

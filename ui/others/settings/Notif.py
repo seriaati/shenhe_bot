@@ -6,8 +6,7 @@ import config
 from apps.db import get_user_notif
 from apps.text_map import text_map
 from base_ui import BaseView, GoBackButton
-from models import CustomInteraction, OriginalInfo
-from utility import DefaultEmbed
+from models import CustomInteraction, DefaultEmbed, OriginalInfo
 
 
 class View(BaseView):

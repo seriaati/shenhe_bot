@@ -10,8 +10,8 @@ import asset
 import exceptions
 from apps.db import get_user_lang
 from apps.text_map import text_map
-from models import CustomInteraction, OriginalInfo
-from utility import ErrorEmbed, log
+from models import CustomInteraction, ErrorEmbed, OriginalInfo
+from utility import log
 
 
 async def global_error_handler(
