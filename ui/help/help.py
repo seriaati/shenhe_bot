@@ -46,8 +46,7 @@ class Dropdown(ui.Select):
     async def callback(self, i: models.CustomInteraction):
         locale = self.locale
 
-        bot: commands.Bot = i.client  # type: ignore
-        cog = bot.get_cog(self.values[0])
+        cog = i.client.get_cog(self.values[0])
         if not cog:
             raise AssertionError
 
