@@ -15,37 +15,37 @@ class TextMap:
             try:
                 with open(f"text_maps/langs/{lang}.yaml", "r", encoding="utf-8") as f:
                     self.text_maps[str(lang)] = yaml.full_load(f)
-            except FileNotFoundError:
+            except:
                 self.text_maps[str(lang)] = {}
         try:
             with open("text_maps/avatar.json", "r", encoding="utf-8") as f:
                 self.avatar = json.load(f)
-        except FileNotFoundError:
+        except:
             self.avatar = {}
         try:
             with open("text_maps/material.json", "r", encoding="utf-8") as f:
                 self.material = json.load(f)
-        except FileNotFoundError:
+        except:
             self.material = {}
         try:
             with open("text_maps/weapon.json", "r", encoding="utf-8") as f:
                 self.weapon = json.load(f)
-        except FileNotFoundError:
+        except:
             self.weapon = {}
         try:
             with open("text_maps/dailyDungeon.json", "r", encoding="utf-8") as f:
                 self.daily_dungeon = json.load(f)
-        except FileNotFoundError:
+        except:
             self.daily_dungeon = {}
         try:
             with open("text_maps/item_name.json", "r", encoding="utf-8") as f:
                 self.item_name_text_map = json.load(f)
-        except FileNotFoundError:
+        except:
             self.item_name_text_map = {}
         try:
             with open("text_maps/reliquary.json", "r", encoding="utf-8") as f:
                 self.artifact = json.load(f)
-        except FileNotFoundError:
+        except:
             self.artifact = {}
 
     def get(
