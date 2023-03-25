@@ -430,3 +430,8 @@ class DefaultEmbed(ShenheEmbed):
 class ErrorEmbed(ShenheEmbed):
     def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
         super().__init__(title=title, description=description, color=0xFC5165)
+
+
+class EmbedField(BaseModel):
+    name: str
+    value: str
