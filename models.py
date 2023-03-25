@@ -394,3 +394,8 @@ class ConditionalResult(BaseModel):
 
 class CustomInteraction(discord.Interaction):
     client: ShenheBot
+
+
+class EmbedField(BaseModel):
+    name: str
+    value: str
