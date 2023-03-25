@@ -61,7 +61,7 @@ class Dropdown(ui.Select):
             command_map: Dict[str, int] = json.loads(await f.read())
 
         for command in cog.walk_app_commands():
-            if not command._locale_description:
+            if not command._locale_description:  # skipcq: PYL-W0212
                 raise AssertionError
 
             if cog.__cog_is_app_commands_group__:
@@ -72,7 +72,8 @@ class Dropdown(ui.Select):
                 models.EmbedField(
                     name=mention,
                     value=text_map.get(
-                        command._locale_description.extras["hash"], locale
+                        command._locale_description.extras["hash"],  # skipcq: PYL-W0212
+                        locale,
                     ),
                 )
             )
