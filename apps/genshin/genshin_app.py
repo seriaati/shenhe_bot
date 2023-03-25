@@ -18,8 +18,7 @@ from data.game.elements import element_emojis
 from exceptions import UIDNotFound
 from utility import get_dt_now, log
 
-from .utility import (get_character_emoji, get_shenhe_account, get_uid,
-                      get_uid_tz)
+from .utility import get_character_emoji, get_shenhe_account, get_uid, get_uid_tz
 
 
 def genshin_error_handler(func):
@@ -37,14 +36,18 @@ def genshin_error_handler(func):
         try:
             return await func(*args, **kwargs)
         except genshin.errors.DataNotPublic:
-            embed = models.ErrorEmbed(description=f"{text_map.get(21, locale)}\nUID: {uid}")
+            embed = models.ErrorEmbed(
+                description=f"{text_map.get(21, locale)}\nUID: {uid}"
+            )
             embed.set_author(
                 name=text_map.get(22, locale),
                 icon_url=user.display_avatar.url,
             )
             return models.GenshinAppResult(result=embed, success=False)
         except genshin.errors.InvalidCookies:
-            embed = models.ErrorEmbed(description=f"{text_map.get(35, locale)}\nUID: {uid}")
+            embed = models.ErrorEmbed(
+                description=f"{text_map.get(35, locale)}\nUID: {uid}"
+            )
             embed.set_author(
                 name=text_map.get(36, locale),
                 icon_url=user.display_avatar.url,

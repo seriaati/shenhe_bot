@@ -9,8 +9,7 @@ from discord import ui
 import asset
 import config
 from apps.db import get_user_lang
-from apps.genshin import (get_account_select_options, get_uid,
-                          get_wish_info_embed)
+from apps.genshin import get_account_select_options, get_uid, get_wish_info_embed
 from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseModal, BaseView
 from models import CustomInteraction, DefaultEmbed, ErrorEmbed, Wish, WishInfo

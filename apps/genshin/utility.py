@@ -16,8 +16,13 @@ import asset
 import models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from apps.db import get_user_lang
-from apps.text_map import (cond_text, text_map, to_ambr_top, to_genshin_py,
-                           translate_main_stat)
+from apps.text_map import (
+    cond_text,
+    text_map,
+    to_ambr_top,
+    to_genshin_py,
+    translate_main_stat,
+)
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop

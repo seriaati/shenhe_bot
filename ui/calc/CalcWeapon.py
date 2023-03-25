@@ -141,7 +141,9 @@ class LevelModal(BaseModal):
             target_ascension = int(self.target_ascension.value)
         except ValueError:
             return await i.followup.send(
-                embed=models.ErrorEmbed(description=text_map.get(187, locale)).set_author(
+                embed=models.ErrorEmbed(
+                    description=text_map.get(187, locale)
+                ).set_author(
                     name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
@@ -186,7 +188,9 @@ class LevelModal(BaseModal):
                 raise InvalidWeaponCalcInput
 
         except InvalidWeaponCalcInput:
-            embed = models.ErrorEmbed(description=text_map.get(172, locale).format(a=a, b=b))
+            embed = models.ErrorEmbed(
+                description=text_map.get(172, locale).format(a=a, b=b)
+            )
             embed.set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             )
