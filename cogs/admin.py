@@ -8,8 +8,7 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from diskcache import FanoutCache
 
-from models import ShenheBot
-from utility import DefaultEmbed
+from models import DefaultEmbed, ShenheBot
 
 
 class AdminCog(commands.Cog, name="admin"):

@@ -7,8 +7,7 @@ import models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from base_ui import BaseView
-from models import DrawInput
-from utility import DefaultEmbed
+from models import DefaultEmbed, DrawInput
 
 
 class View(BaseView):

@@ -3,8 +3,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 from apps.db import get_user_lang
-from models import ShenheBot
-from utility import DefaultEmbed
+from models import DefaultEmbed, ShenheBot
 
 
 class WaifuCog(commands.Cog):
@@ -22,7 +21,7 @@ class WaifuCog(commands.Cog):
                 url="https://discord.com/oauth2/authorize?client_id=841806468722589774&permissions=0&scope=bot%20applications.commands",
             )
         )
-        if locale in ["zh-TW", "zh-CN"]:
+        if locale in ("zh-TW", "zh-CN"):
             embed = DefaultEmbed(
                 "指令都去哪了？",
                 "Discord 的新政策表示想要上架在 App Directory 的機器人不可以有任何色情內容。\n所以，我把所有的指令都移除了，並原封不動的將他們移植到另一個機器人：萊依菈 | Layla\n如果你想要繼續使用先前的 waifu 指令，請邀請萊依菈進入你的伺服器。\n造成不便，敬請見諒。",

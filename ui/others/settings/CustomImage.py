@@ -11,9 +11,9 @@ from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_emoji, get_element_list
-from models import CustomInteraction, EnkaView
+from models import CustomInteraction, DefaultEmbed, EnkaView, ErrorEmbed
 from ui.genshin import EnkaDamageCalc
-from utility import DefaultEmbed, ErrorEmbed, divide_chunks
+from utility import divide_chunks
 
 
 class View(BaseView):

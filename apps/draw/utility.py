@@ -12,8 +12,8 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 import asset
 from apps.text_map import text_map
 from data.draw.fonts import FONTS
-from models import DynamicBackgroundInput
-from utility import DefaultEmbed, log
+from models import DefaultEmbed, DynamicBackgroundInput
+from utility import log
 
 
 def extract_file_name(url: str):

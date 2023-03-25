@@ -5,6 +5,7 @@ from discord import ui
 
 import asset
 import config
+import models
 from ambr import AmbrTopAPI, Material, WeaponDetail
 from apps.db import get_user_theme
 from apps.draw import main_funcs
@@ -15,9 +16,8 @@ from base_ui import BaseModal, BaseView
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
-from models import CustomInteraction, DrawInput, TodoList
 from ui.calc.AddToTodo import AddButton
-from utility import DefaultEmbed, ErrorEmbed, divide_chunks
+from utility import divide_chunks
 
 
 class View(BaseView):
@@ -46,7 +46,7 @@ class WeaponTypeButton(ui.Button):
         self.weapon_type = weapon_type
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: models.CustomInteraction):
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, typing.List):
@@ -86,7 +86,7 @@ class WeaponSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> typing.Any:
+    async def callback(self, i: models.CustomInteraction) -> typing.Any:
         await i.response.send_modal(LevelModal(self.values[0], self.view.locale))
 
 
@@ -129,7 +129,7 @@ class LevelModal(BaseModal):
         self.weapon_id = weapon_id
         self.locale = locale
 
-    async def on_submit(self, i: CustomInteraction) -> None:
+    async def on_submit(self, i: models.CustomInteraction) -> None:
         await i.response.defer()
         locale = self.locale
 
@@ -141,7 +141,7 @@ class LevelModal(BaseModal):
             target_ascension = int(self.target_ascension.value)
         except ValueError:
             return await i.followup.send(
-                embed=ErrorEmbed(description=text_map.get(187, locale)).set_author(
+                embed=models.ErrorEmbed(description=text_map.get(187, locale)).set_author(
                     name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
@@ -186,7 +186,7 @@ class LevelModal(BaseModal):
                 raise InvalidWeaponCalcInput
 
         except InvalidWeaponCalcInput:
-            embed = ErrorEmbed(description=text_map.get(172, locale).format(a=a, b=b))
+            embed = models.ErrorEmbed(description=text_map.get(172, locale).format(a=a, b=b))
             embed.set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             )
@@ -195,7 +195,7 @@ class LevelModal(BaseModal):
                 ephemeral=True,
             )
         except InvalidAscensionInput:
-            embed = ErrorEmbed(description=text_map.get(730, locale))
+            embed = models.ErrorEmbed(description=text_map.get(730, locale))
             embed.set_author(
                 name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
             )
@@ -206,7 +206,7 @@ class LevelModal(BaseModal):
             view = View.from_message(i.message)
         if view is None:
             await i.edit_original_response(
-                embed=DefaultEmbed().set_author(
+                embed=models.DefaultEmbed().set_author(
                     name=text_map.get(644, self.locale), icon_url=asset.loader
                 ),
                 view=None,
@@ -214,7 +214,7 @@ class LevelModal(BaseModal):
         else:
             await image_gen_transition(i, view, self.locale)
 
-        todo_list = TodoList()
+        todo_list = models.TodoList()
 
         # ascension materials
         weapon_ascensions = weapon.upgrade.ascensions
@@ -267,7 +267,7 @@ class LevelModal(BaseModal):
 
         if not all_materials:
             await i.edit_original_response(
-                embed=DefaultEmbed().set_author(
+                embed=models.DefaultEmbed().set_author(
                     name=text_map.get(197, self.locale),
                     icon_url=i.user.display_avatar.url,
                 )
@@ -275,7 +275,7 @@ class LevelModal(BaseModal):
             return
 
         fp = await main_funcs.draw_material_card(
-            DrawInput(
+            models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
@@ -287,7 +287,7 @@ class LevelModal(BaseModal):
         )
         fp.seek(0)
 
-        embed = DefaultEmbed()
+        embed = models.DefaultEmbed()
         embed.add_field(
             name=text_map.get(192, self.locale),
             value=f"""

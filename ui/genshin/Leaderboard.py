@@ -17,7 +17,6 @@ from apps.genshin import (
 )
 from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseView
-from utility import DefaultEmbed, ErrorEmbed
 
 
 class EmptyLeaderboard(Exception):
@@ -207,7 +206,7 @@ async def select_callback(view: View, i: models.CustomInteraction, leaderboard: 
             )
             fp.seek(0)
 
-            embed = DefaultEmbed(
+            embed = models.DefaultEmbed(
                 title,
                 f"""
                 {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
@@ -272,7 +271,7 @@ async def select_callback(view: View, i: models.CustomInteraction, leaderboard: 
 
             character_emoji = get_character_emoji(result.first_character.id)
             character_name = f"{character_emoji} {result.first_character.name}"
-            embed = DefaultEmbed(
+            embed = models.DefaultEmbed(
                 title,
                 f"{text_map.get(618, locale).format(name=character_name, num=result.uses, percent=round(result.percentage, 1))}\n"
                 f"{text_map.get(615, locale).format(num=len(data))}",
@@ -356,7 +355,7 @@ async def select_callback(view: View, i: models.CustomInteraction, leaderboard: 
             )
             fp.seek(0)
 
-            embed = DefaultEmbed(
+            embed = models.DefaultEmbed(
                 title,
                 f"""
                 {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
@@ -386,7 +385,7 @@ async def select_callback(view: View, i: models.CustomInteraction, leaderboard: 
         server.disabled = True
 
         await i.edit_original_response(
-            embed=ErrorEmbed(title, text_map.get(620, locale)).set_author(
+            embed=models.ErrorEmbed(title, text_map.get(620, locale)).set_author(
                 name=get_al_title(view.season, locale), icon_url=asset.error_icon
             ),
             view=view,

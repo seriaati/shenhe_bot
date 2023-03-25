@@ -13,8 +13,8 @@ from apps.draw import main_funcs
 from apps.genshin import get_farm_data, get_uid, get_uid_tz
 from apps.text_map import text_map
 from base_ui import BaseView
-from models import DrawInput
-from utility import DefaultEmbed, get_dt_now
+from models import DefaultEmbed, DrawInput
+from utility import get_dt_now
 
 
 class View(BaseView):

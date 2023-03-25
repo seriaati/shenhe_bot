@@ -11,8 +11,8 @@ from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from base_ui import BaseView
-from models import CustomInteraction, DiaryLogsResult, DiaryResult
-from utility import DefaultEmbed, divide_chunks
+from models import CustomInteraction, DefaultEmbed, DiaryLogsResult, DiaryResult
+from utility import divide_chunks
 
 
 class View(BaseView):

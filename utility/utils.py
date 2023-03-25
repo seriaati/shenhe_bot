@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime
 from itertools import islice
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 import discord
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -19,28 +19,6 @@ logging.basicConfig(
 log = logging
 
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
-
-
-class DefaultEmbed(discord.Embed):
-    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
-        super().__init__(title=title, description=description, color=0xA68BD3)
-
-
-class ErrorEmbed(discord.Embed):
-    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
-        super().__init__(title=title, description=description, color=0xFC5165)
-
-    def set_title(
-        self,
-        text_map,
-        map_hash: int,
-        locale: Union[discord.Locale, str],
-        user: Union[discord.Member, discord.User],
-    ):
-        self.set_author(
-            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
-        )
-        return self
 
 
 def time_in_range(start, end, x):

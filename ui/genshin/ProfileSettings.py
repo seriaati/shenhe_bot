@@ -9,9 +9,8 @@ from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map
 from base_ui import BaseView
 from exceptions import UIDNotFound
-from models import CustomInteraction, EnkaView
+from models import CustomInteraction, DefaultEmbed, EnkaView, ErrorEmbed
 from ui.genshin.EnkaDamageCalc import GoBack
-from utility import DefaultEmbed, ErrorEmbed
 
 
 class View(BaseView):

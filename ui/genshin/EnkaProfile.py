@@ -12,7 +12,7 @@ from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
-from utility import DefaultEmbed, divide_chunks
+from utility import divide_chunks
 from yelan.damage_calculator import return_current_status
 
 
@@ -49,7 +49,7 @@ class InfoButton(ui.Button):
 
     async def callback(self, i: models.CustomInteraction):
         await i.response.send_message(
-            embed=DefaultEmbed(description=text_map.get(399, self.view.locale)),
+            embed=models.DefaultEmbed(description=text_map.get(399, self.view.locale)),
             ephemeral=True,
         )
 

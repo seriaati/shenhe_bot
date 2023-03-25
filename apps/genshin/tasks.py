@@ -14,7 +14,7 @@ from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map
 from base_ui import capture_exception
 from data.game.elements import convert_element
-from utility import DefaultEmbed, ErrorEmbed, log, send_embed
+from utility import log, send_embed
 
 # abyss.json
 
@@ -113,7 +113,7 @@ async def handle_daily_reward_error(
         user.uid,
     )
 
-    embed = ErrorEmbed(
+    embed = models.ErrorEmbed(
         description=f"""
             {error_message}
 
@@ -135,7 +135,7 @@ async def handle_daily_reward_success(
 ) -> None:
     log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
     if await get_user_notif(user.discord_user.id, pool):
-        embed = DefaultEmbed(
+        embed = models.DefaultEmbed(
             text_map.get(87, "en-US", user.user_locale),
             f"{reward.name} x{reward.amount}",
         )

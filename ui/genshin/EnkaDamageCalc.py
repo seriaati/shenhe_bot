@@ -9,7 +9,6 @@ from pyppeteer import browser
 
 import asset
 import config
-import utility.utils as utility_utils
 import yelan.damage_calculator as damage_calc
 from apps.db import get_profile_ver, get_user_theme
 from apps.db.custom_image import get_user_custom_image
@@ -18,7 +17,8 @@ from apps.genshin import get_browser, get_character_fanarts
 from apps.text_map import text_map
 from base_ui import BaseView
 from exceptions import CardNotReady, NoCharacterFound
-from models import CustomInteraction, DrawInput, EnkaView
+from models import CustomInteraction, DrawInput, EnkaView, ErrorEmbed
+from utility.utils import divide_chunks
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
@@ -192,7 +192,7 @@ async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
                 raise CardNotReady
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
-            embed=utility_utils.ErrorEmbed().set_author(
+            embed=ErrorEmbed().set_author(
                 name=text_map.get(274, enka_view.locale),
                 icon_url=i.user.display_avatar.url,
             ),
@@ -279,7 +279,7 @@ class TeamSelectButton(ui.Button):
         view = TeamSelectView(self.view)
         view.add_item(GoBackToCalc())
         divided: List[List[discord.SelectOption]] = list(
-            utility_utils.divide_chunks(self.options, 25)
+            divide_chunks(self.options, 25)
         )
         count = 1
         for chunk in divided:

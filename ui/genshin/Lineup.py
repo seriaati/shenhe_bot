@@ -15,8 +15,7 @@ from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseView
 from data.game.elements import get_element_emoji, get_element_list
-from models import CustomInteraction, DrawInput
-from utility import DefaultEmbed
+from models import CustomInteraction, DefaultEmbed, DrawInput
 from utility.utils import disable_view_items
 
 
