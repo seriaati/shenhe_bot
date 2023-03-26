@@ -296,7 +296,7 @@ async def get_farm_data(
     result: List[models.FarmData] = []
 
     client = AmbrTopAPI(session, to_ambr_top(locale))
-    domains = await client.get_domain()
+    domains = await client.get_domains()
     c_upgrades = await client.get_character_upgrade()
     w_upgrades = await client.get_weapon_upgrade()
     if not isinstance(c_upgrades, list):

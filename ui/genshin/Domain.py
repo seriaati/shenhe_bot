@@ -18,21 +18,25 @@ from utility import get_dt_now
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, locale: discord.Locale | str, weekday: int):
         super().__init__(timeout=config.mid_timeout)
 
-        self.add_item(WeekDaySelect(text_map.get(583, locale), locale))
+        self.add_item(WeekDaySelect(weekday, locale))
 
 
 class WeekDaySelect(ui.Select):
-    def __init__(self, placeholder: str, locale: discord.Locale | str):
+    def __init__(self, weekday: int, locale: discord.Locale | str):
         options = []
         for index in range(0, 7):
             weekday_text = text_map.get(234 + index, locale)
-            options.append(discord.SelectOption(label=weekday_text, value=str(index)))
+            options.append(
+                discord.SelectOption(
+                    label=weekday_text, value=str(index), default=(index == weekday)
+                )
+            )
 
         self.locale = locale
-        super().__init__(options=options, placeholder=placeholder, row=4)
+        super().__init__(options=options, placeholder=text_map.get(583, locale), row=4)
 
     async def callback(self, i: discord.Interaction):
         await return_farm_interaction(i, int(self.values[0]))
@@ -53,13 +57,12 @@ async def return_farm_interaction(
         now = get_dt_now() + timedelta(hours=get_uid_tz(uid))
         weekday = now.weekday()
     if weekday == 6:
-        view = View(locale)
+        view = View(locale, 6)
         view.author = i.user
         view.message = await i.edit_original_response(
-            embed=DefaultEmbed().set_author(
-                name=text_map.get(309, locale), icon_url=i.user.display_avatar.url
-            ),
+            embed=DefaultEmbed().set_title(309, locale, i.user),
             view=view,
+            attachments=[],
         )
         return
 
@@ -81,7 +84,7 @@ async def return_farm_interaction(
     )
     fp.seek(0)
 
-    view = View(locale)
+    view = View(locale, weekday)
     view.author = i.user
 
     await i.edit_original_response(

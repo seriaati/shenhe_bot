@@ -6,7 +6,7 @@ import aiohttp
 
 import ambr.models as models
 
-from .constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS
+from .constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS, get_city_name
 from .endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 
 
@@ -564,7 +564,7 @@ class AmbrTopAPI:
 
         return result
 
-    async def get_domain(self) -> List[models.Domain]:
+    async def get_domains(self) -> List[models.Domain]:
         """Get a list of all domains.
 
         Returns:
@@ -574,32 +574,19 @@ class AmbrTopAPI:
         data = self.get_cache("domain")
         for weekday, domain_dict in data["data"].items():
             weekday_int = WEEKDAYS.get(weekday, 0)
-            for _, domain_info in domain_dict.items():
+            for domain_info in domain_dict.values():
                 city_id = domain_info["city"]
-                city_lang_dict = CITIES.get(
-                    city_id,
-                    {
-                        "cht": "未知城市",
-                        "en": "Unknown models.City",
-                        "jp": "未知の都市",
-                        "chs": "未知城市",
-                        "fr": "Ville inconnue",
-                        "de": "Unbekannte Stadt",
-                        "es": "Ciudad desconocida",
-                        "pt": "Cidade desconhecida",
-                        "ru": "Неизвестный город",
-                        "kr": "알 수없는 도시",
-                        "vi": "Thành phố không xác định",
-                        "id": "Kota tidak diketahui",
-                        "th": "เมืองที่ไม่รู้จัก",
-                    },
+                city = models.City(
+                    id=city_id,
+                    name=get_city_name(city_id, self.lang),
                 )
-                city = models.City(id=city_id, name=city_lang_dict[self.lang])
-                rewards = []
+                rewards: List[models.Material] = []
                 for reward in domain_info["reward"]:
-                    if len(str(reward)) == 6:
-                        material = await self.get_material(id=reward)
-                        rewards.append(material)
+                    material = await self.get_material(id=reward)
+                    if not isinstance(material, models.Material):
+                        continue
+                    rewards.append(material)
+
                 domain_info["city"] = city
                 domain_info["weekday"] = weekday_int
                 domain_info["reward"] = rewards

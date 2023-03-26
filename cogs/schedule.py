@@ -618,7 +618,7 @@ class Schedule(commands.Cog):
             locale = await get_user_lang(user_id, self.bot.pool) or "en-US"
 
             client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
-            domains = await client.get_domain()
+            domains = await client.get_domains()
             today_domains = [d for d in domains if d.weekday == now.weekday()]
 
             user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)

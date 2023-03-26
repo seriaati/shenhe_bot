@@ -1,4 +1,19 @@
 CITIES = {
+    0: {
+        "cht": "未知城市",
+        "en": "Unknown models.City",
+        "jp": "未知の都市",
+        "chs": "未知城市",
+        "fr": "Ville inconnue",
+        "de": "Unbekannte Stadt",
+        "es": "Ciudad desconocida",
+        "pt": "Cidade desconhecida",
+        "ru": "Неизвестный город",
+        "kr": "알 수없는 도시",
+        "vi": "Thành phố không xác định",
+        "id": "Kota tidak diketahui",
+        "th": "เมืองที่ไม่รู้จัก",
+    },
     1: {
         "cht": "蒙德",
         "en": "Mondstat",
@@ -60,6 +75,14 @@ CITIES = {
         "th": "Sumeru",
     },
 }
+
+
+def get_city_name(city_id: int, lang: str) -> str:
+    try:
+        return CITIES[city_id][lang]
+    except KeyError:
+        return CITIES[0][lang]
+
 
 LANGS = {
     "chs": "zh-CN",
