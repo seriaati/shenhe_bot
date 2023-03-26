@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 import asset
 from ambr import AmbrTopAPI, Character
 from apps.db import custom_image, get_user_lang
+from apps.db.utility import create_user_settings
 from apps.text_map import text_map, to_ambr_top
 from exceptions import AutocompleteError
 from models import CustomInteraction, DefaultEmbed, ErrorEmbed, ShenheBot
@@ -42,13 +43,7 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def settings(self, inter: discord.Interaction):
         i: CustomInteraction = inter  # type: ignore
-        await self.bot.pool.execute(
-            """
-            INSERT INTO user_settings (user_id) VALUES ($1)
-            ON CONFLICT DO NOTHING
-            """,
-            i.user.id,
-        )
+        await create_user_settings(i.user.id, self.bot.pool)
         await SettingsMenu.return_settings(i)
 
     @app_commands.command(

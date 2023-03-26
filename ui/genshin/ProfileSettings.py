@@ -4,7 +4,7 @@ import discord
 from discord import ui
 
 import config
-from apps.db.utility import get_profile_ver
+from apps.db.utility import create_user_settings, get_profile_ver
 from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map
 from base_ui import BaseView
@@ -91,6 +91,7 @@ class VersionSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: CustomInteraction):
+        await create_user_settings(i.user.id, i.client.pool)
         await i.client.pool.execute(
             "UPDATE user_settings SET profile_ver = $1 WHERE user_id = $2",
             int(self.values[0]),
