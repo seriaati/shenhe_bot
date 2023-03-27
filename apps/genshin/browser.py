@@ -14,13 +14,10 @@ async def launch_browsers() -> Dict[str, Browser]:
         page = await browser.newPage()
         await page.setViewport({"width": 1440, "height": 900})
         await page.goto("https://frzyc.github.io/genshin-optimizer/#/setting")
-        await page.waitForSelector(
-            "div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(1) > div.MuiCardContent-root.css-nph2fg:nth-child(3) > button#dropdownbtn.MuiButtonBase-root.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.css-z7p9wm"
-        )
+        lang_dropdown = "button#dropdownbtn.MuiButtonBase-root.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.css-z7p9wm"
+        await page.waitForSelector(lang_dropdown)
         if key != "en-US":
-            await page.click(
-                "div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-1kbwkqu:nth-child(1) > div.MuiCardContent-root.css-nph2fg:nth-child(3) > button#dropdownbtn.MuiButtonBase-root.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButton-fullWidth.css-z7p9wm"
-            )
+            await page.click(lang_dropdown)
             await asyncio.sleep(0.5)
             await page.click(
                 f"div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.css-16nqea3 > div > ul.MuiList-root.MuiList-padding.css-1925rlh > li.MuiButtonBase-root.MuiMenuItem-root.MuiMenuItem-gutters.css-szd4wn:nth-child({value})"
