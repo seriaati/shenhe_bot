@@ -77,14 +77,16 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
     return weekday_name_dict.get(weekday_name, 0)
 
 
-def get_dt_now() -> datetime:
+def get_dt_now(with_tz: bool = False) -> datetime:
     """Get current datetime in UTC+8"""
     tz = pytz.timezone("Asia/Shanghai")  # UTC+8 timezone
     utc_now = datetime.utcnow()  # get current UTC time
     utc8_now = utc_now.replace(tzinfo=pytz.utc).astimezone(
         tz
     )  # convert to UTC+8 timezone
-    return utc8_now.replace(tzinfo=None)  # remove timezone info
+    if not with_tz:
+        return utc8_now.replace(tzinfo=None)
+    return utc8_now
 
 
 def add_bullet_points(texts: List[str]) -> str:

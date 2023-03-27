@@ -936,18 +936,17 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         lang = convert_locale.to_genshin_py(locale)
+        client = genshin.Client()
 
-        zh_tw_annoucements = await genshin.Client().get_genshin_announcements(
-            lang="zh-tw"
-        )
-        annoucements = await genshin.Client().get_genshin_announcements(lang=lang)
-        now = utils.get_dt_now()
-        event_wish_ids = [
+        zh_tw_annoucements = await client.get_genshin_announcements(lang="zh-tw")
+        annoucements = await client.get_genshin_announcements(lang=lang)
+        now = utils.get_dt_now(True)
+        banner_ids = [
             a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
         ]
-        event_wishes = [a for a in annoucements if a.id in event_wish_ids]
-        event_wishes.sort(key=lambda x: x.end_time)
-        if not event_wishes:
+        banners = [a for a in annoucements if a.id in banner_ids]
+        banners.sort(key=lambda x: x.end_time)
+        if not banners:
             return await i.followup.send(
                 embed=models.DefaultEmbed(
                     description=text_map.get(376, locale)
@@ -958,7 +957,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             models.DrawInput(
                 loop=self.bot.loop, session=self.bot.session, locale=locale
             ),
-            [w.banner for w in event_wishes],
+            [w.banner for w in banners],
         )
         fp.seek(0)
 
@@ -967,7 +966,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 text_map.get(746, locale),
                 text_map.get(381, locale).format(
                     time=format_dt(
-                        event_wishes[0].end_time,
+                        banners[0].end_time,
                         "R",
                     )
                 ),
