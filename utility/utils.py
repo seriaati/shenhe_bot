@@ -5,6 +5,7 @@ from itertools import islice
 from typing import Any, Dict, List, Union
 
 import discord
+import pytz
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 logging.basicConfig(
@@ -78,7 +79,12 @@ def get_weekday_int_with_name(weekday_name: str) -> int:
 
 def get_dt_now() -> datetime:
     """Get current datetime in UTC+8"""
-    return datetime.now()
+    tz = pytz.timezone("Asia/Shanghai")  # UTC+8 timezone
+    utc_now = datetime.utcnow()  # get current UTC time
+    utc8_now = utc_now.replace(tzinfo=pytz.utc).astimezone(
+        tz
+    )  # convert to UTC+8 timezone
+    return utc8_now.replace(tzinfo=None)  # remove timezone info
 
 
 def add_bullet_points(texts: List[str]) -> str:
@@ -97,8 +103,29 @@ def disable_view_items(view: discord.ui.View) -> None:
             child.disabled = True
 
 
-async def send_embed(user: Union[discord.User, discord.Member], embed: discord.Embed):
+async def dm_embed(
+    user: Union[discord.User, discord.Member], embed: discord.Embed
+) -> bool:
+    """
+    Send a Discord embed message to a user via direct message.
+
+    Args:
+        user (Union[discord.User, discord.Member]): The user to send the message to.
+        embed (discord.Embed): The embed to send.
+
+    Returns:
+        bool: True if the message was sent successfully, False otherwise.
+
+    Raises:
+        Nothing.
+
+    This function attempts to send a Discord embed to the specified user via direct message. If the send is
+    successful, the function returns True. If the send fails due to a Discord.Forbidden or DiscordServerError error,
+    the function returns False.
+    """
     try:
         await user.send(embed=embed)
-    except discord.Forbidden:
-        pass
+    except (discord.Forbidden, discord.DiscordServerError):
+        return False
+    else:
+        return True

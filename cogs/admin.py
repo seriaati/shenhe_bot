@@ -4,11 +4,11 @@ import sys
 import traceback
 from pathlib import Path
 
-from discord.errors import Forbidden
 from discord.ext import commands
 from diskcache import FanoutCache
 
 from models import DefaultEmbed, ShenheBot
+from utility.utils import dm_embed
 
 
 class AdminCog(commands.Cog, name="admin"):
@@ -86,15 +86,14 @@ class AdminCog(commands.Cog, name="admin"):
     async def direct_message(
         self, ctx: commands.Context, user: commands.UserConverter, *, message: str
     ):
-        embed = DefaultEmbed(description=message)
+        embed = DefaultEmbed(message)
         embed.set_author(
             name=ctx.author.name + "#" + ctx.author.discriminator,
             icon_url=ctx.author.display_avatar.url,
         )
-        try:
-            await user.send(embed=embed)
-        except Forbidden:
-            await ctx.send("user has DMs disabled")
+        success = await dm_embed(user, embed)
+        if not success:
+            await ctx.send("failed to send message")
         else:
             await ctx.send("message sent")
 

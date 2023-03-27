@@ -18,7 +18,7 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from base_ui import capture_exception
-from utility import log, send_embed
+from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
 from utility.utils import get_dt_now
 
@@ -312,10 +312,7 @@ class Schedule(commands.Cog):
             icon_url=discord_user.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(16, locale))
-        try:
-            await discord_user.send(embed=embed)
-        except discord.Forbidden:
-            pass
+        await dm_embed(discord_user, embed)
 
     async def notify_resin(
         self,
@@ -330,22 +327,16 @@ class Schedule(commands.Cog):
             description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
             f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, 'R')}\n"
             f"UID: {user.uid}\n",
-        )
-        embed.set_author(
-            name=text_map.get(306, locale),
-            icon_url=discord_user.display_avatar.url,
-        )
+        ).set_title(306, locale, discord_user)
         embed.set_thumbnail(url=asset.resin_icon)
         embed.set_footer(text=text_map.get(305, locale))
-        try:
-            await discord_user.send(embed=embed)
-        except discord.Forbidden:
+
+        success = await dm_embed(discord_user, embed)
+        if not success:
             await self.disable_notification(
                 user.user_id, user.uid, "resin_notification"
             )
-            return False
-        else:
-            return True
+        return success
 
     async def notify_pot(
         self,
@@ -367,13 +358,11 @@ class Schedule(commands.Cog):
         )
         embed.set_thumbnail(url=asset.realm_currency_icon)
         embed.set_footer(text=text_map.get(305, locale))
-        try:
-            await discord_user.send(embed=embed)
-        except discord.Forbidden:
+
+        success = await dm_embed(discord_user, embed)
+        if not success:
             await self.disable_notification(user.user_id, user.uid, "pot_notification")
-            return False
-        else:
-            return True
+        return success
 
     async def notify_pt(self, user: models.NotificationUser, locale: str):
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
@@ -386,13 +375,11 @@ class Schedule(commands.Cog):
         )
         embed.set_thumbnail(url=asset.pt_icon)
         embed.set_footer(text=text_map.get(305, locale))
-        try:
-            await discord_user.send(embed=embed)
-        except discord.Forbidden:
+
+        success = await dm_embed(discord_user, embed)
+        if not success:
             await self.disable_notification(user.user_id, user.uid, "pt_notification")
-            return False
-        else:
-            return True
+        return success
 
     async def disable_notification(
         self, user_id: int, uid: int, notification_type: str
@@ -494,7 +481,7 @@ class Schedule(commands.Cog):
                 await asyncio.sleep(5)
 
             if embed.fields:
-                await send_embed(user.discord_user, embed)
+                await dm_embed(user.discord_user, embed)
             await asyncio.sleep(10)
             if index % 100 == 0:
                 await asyncio.sleep(30)

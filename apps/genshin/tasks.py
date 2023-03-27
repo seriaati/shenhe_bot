@@ -14,7 +14,7 @@ from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map
 from base_ui import capture_exception
 from data.game.elements import convert_element
-from utility import log, send_embed
+from utility import dm_embed, log
 
 # abyss.json
 
@@ -125,7 +125,7 @@ async def handle_daily_reward_error(
         icon_url=user.discord_user.display_avatar.url,
     )
     embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
-    await send_embed(user.discord_user, embed)
+    await dm_embed(user.discord_user, embed)
 
 
 async def handle_daily_reward_success(
@@ -142,7 +142,7 @@ async def handle_daily_reward_success(
         embed.set_thumbnail(url=reward.icon)
         embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
 
-        await send_embed(user.discord_user, embed)
+        await dm_embed(user.discord_user, embed)
 
 
 # text maps
