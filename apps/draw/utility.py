@@ -178,11 +178,14 @@ def draw_dynamic_background(
     num = dynamic_input.card_num
     cols = num // max_card_num + 1 if num % max_card_num != 0 else num // max_card_num
     width = dynamic_input.left_padding
-    height = (
-        dynamic_input.top_padding.with_title
-        if dynamic_input.draw_title
-        else dynamic_input.top_padding.without_title
-    )  # top padding
+    if isinstance(dynamic_input.top_padding, int):
+        height = dynamic_input.top_padding
+    else:
+        height = (
+            dynamic_input.top_padding.with_title
+            if dynamic_input.draw_title
+            else dynamic_input.top_padding.without_title
+        )  # top padding
     width += dynamic_input.right_padding
     height += dynamic_input.bottom_padding
     width += dynamic_input.card_width * cols  # width of the cards

@@ -265,7 +265,7 @@ class TopPadding(BaseModel):
 
 
 class DynamicBackgroundInput(BaseModel):
-    top_padding: TopPadding
+    top_padding: Union[TopPadding, int]
     left_padding: int
     right_padding: int
     bottom_padding: int
