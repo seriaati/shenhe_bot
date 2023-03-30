@@ -21,7 +21,6 @@ import models
 import ui
 import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
-from ambr.models import NameCard
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import (
