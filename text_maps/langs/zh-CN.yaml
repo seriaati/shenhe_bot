@@ -293,8 +293,8 @@
   • 或者，使用 </img-upload:1041966109533929522> 上传图片
   • 对于卡片样式 1 ，请使用 [这个工具](https://croppola.com/) 裁剪图片并选择 2.64:1 的比例
 '277': 当前图片
-'278': ''
-'279': ''
+'278': Sort by...
+'279': Filter by...
 '280': 基础移速
 '281': 移速%
 '282': 返回副词条选择
@@ -459,7 +459,7 @@
   6. 按 Ctrl+F，在选项中点选「环绕」，搜索方向选择「向上」，然后在输入的地方填入「e20190909gacha-v2」（注意不要复制引号），按「找下一个」
   7. 复制完整的链接，https://webstatic 开头，game_biz=hk4e_global 结尾（中国服是以game_biz=hk4e_cn结尾）。完整链接类似于这样：https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?……&game_biz=hk4e_global（中国服为https://webstatic.mihoyo.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_cn）
   8. 点击下方的按钮来将复制的链接粘贴到文本框中
-'404': ''
+'404': Update talent levels
 '405': 你没有在武器池祈愿过
 '406': 活动开始时间
 '407': 活动结束时间
@@ -749,7 +749,7 @@
 '656': 选择一个祈愿池
 '657': 命定值
 '658': 一个为 0, 1, 或 2 的数字
-'659': ''
+'659': You can only perform this action once every {hour} hour
 '660': 你没有在角色池中祈愿过
 '661': 选择一个稀有度搜索条件
 '662': 选择一个祈愿池搜索条件
@@ -860,3 +860,10 @@
 '758': 此功能/指令目前已停用
 '759': 如果你有任何疑问，请加入支援群
 '760': 申鹤正在进行维护，请稍后再试
+'761': Talent levels updated
+'762': Upading talent levels...
+'763': Please re-use the command to see the changes
+'764': Default
+'765': |-
+  If this is your first time using this command,
+  this process will take a while, please be patient.
