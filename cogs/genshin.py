@@ -12,6 +12,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
 from dotenv import load_dotenv
+from enkanetwork import Assets
 
 import apps.genshin.checks as checks
 import asset
@@ -20,10 +21,17 @@ import models
 import ui
 import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
+from ambr.models import NameCard
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (enka, genshin_app, get_character_emoji, get_uid,
-                          get_uid_region_hash, leaderboard)
+from apps.genshin import (
+    enka,
+    genshin_app,
+    get_character_emoji,
+    get_uid,
+    get_uid_region_hash,
+    leaderboard,
+)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -251,16 +259,18 @@ class GenshinCog(commands.Cog, name="genshin"):
     ) -> None:
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
 
         uid = await get_uid(member.id, self.bot.pool)
         if uid is None:
             raise exceptions.UIDNotFound
 
-        enka_data, _, _ = await enka.get_enka_data(
-            uid, convert_locale.to_enka(user_locale or i.locale), self.bot.pool
-        )
-        namecard = enka_data.player.namecard
+        enka_info = await enka.get_enka_info(uid, self.bot.session)
+        namecard_id = enka_info.player_info.name_card_id
+        assets = Assets()
+        namecard = assets.namecards(namecard_id)
+        if namecard is None:
+            raise AssertionError("Namecard not found")
+
         result = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )

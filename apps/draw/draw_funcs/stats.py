@@ -12,7 +12,7 @@ from apps.draw.utility import circular_crop, get_cache, get_font
 
 def stats_card(
     user_stats: genshin.models.Stats,
-    namecard: enkanetwork.Namecard,
+    namecard: enkanetwork.model.assets.NamecardAsset,
     pfp: discord.Asset,
     character_num: int,
     dark_mode: bool,

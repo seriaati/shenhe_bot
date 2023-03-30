@@ -180,7 +180,7 @@ class GenshinApp:
         self,
         user_id: int,
         author_id: int,
-        namecard: enkanetwork.Namecard,
+        namecard: enkanetwork.model.assets.NamecardAsset,
         avatar_asset: discord.Asset,
         locale: discord.Locale,
     ) -> models.GenshinAppResult:

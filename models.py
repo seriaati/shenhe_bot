@@ -12,7 +12,7 @@ import genshin
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
@@ -433,3 +433,28 @@ class EmbedField(BaseModel):
 class TalentBoost(Enum):
     BOOST_E = "boost_e"
     BOOST_Q = "boost_q"
+
+
+class EnkaPlayerInfo(BaseModel):
+    nickname: str
+    level: int
+    signature: str
+    world_level: int = Field(alias="worldLevel")
+    name_card_id: int = Field(alias="nameCardId")
+    achievement_num: int = Field(alias="finishAchievementNum")
+    abyss_floor: int = Field(alias="towerFloorIndex")
+    abyss_chamber: int = Field(alias="towerLevelIndex")
+
+
+class EnkaInfoResponse(BaseModel):
+    player_info: EnkaPlayerInfo = Field(alias="playerInfo")
+    uid: int
+    ttl: int
+
+    @validator("player_info", pre=True, always=True, allow_reuse=True)
+    def parse_player_info(cls, v):
+        return EnkaPlayerInfo(**v)
+
+    @validator("uid", pre=True, always=True, allow_reuse=True)
+    def parse_uid(cls, v):
+        return int(v)
