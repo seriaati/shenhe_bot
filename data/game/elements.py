@@ -40,6 +40,16 @@ colors = {
     "Dendro": "#C5E1A5",
 }
 
+texts = {
+    "Cryo": 213,
+    "Geo": 214,
+    "Pyro": 215,
+    "Anemo": 216,
+    "Hydro": 217,
+    "Dendro": 218,
+    "Electro": 219,
+}
+
 
 def get_element_emoji(element: str) -> str:
     return element_emojis.get(element, "")
@@ -55,3 +65,7 @@ def get_element_color(element: str) -> str:
 
 def get_element_list() -> List[str]:
     return list(convert_elements.values())
+
+
+def get_element_text(element: str) -> int:
+    return texts.get(element, 0)
