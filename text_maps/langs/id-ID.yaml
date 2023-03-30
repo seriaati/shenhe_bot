@@ -293,8 +293,8 @@
   • Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
   • Untuk versi 1, Gunakan [this](https://croppola.com/) untuk memangkas gambar, pilih rasio 2.64:1
 '277': Gambar Saat Ini
-'278': Sort by...
-'279': Filter by...
+'278': Urut berdasarkan...
+'279': Filter berdasarkan...
 '280': Base Speed
 '281': Speed%
 '282': Kambali
@@ -459,7 +459,7 @@
   6. Tekan CTRL+F lalu centang "Wrap around" dan pilih arah "Up" lalu pada input box cari "e20190909gacha-v2" (tanpa tanda petik) lalu klik Find Next
   7. Salin semua tautan dari https://webstatic hingga game_biz=hk4e_global urlnya terlihat seperti ini: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.... ...&game_biz=hk4e_global
   8. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
-'404': Update talent levels
+'404': Pebarui level talenta
 '405': Kamu belum pull banner senjata
 '406': Mulai Waktu
 '407': Akhir Waktu
@@ -752,7 +752,7 @@
 '656': Pilih Banner
 '657': poin-takdir
 '658': Angka bisa berupa 0, 1, atau 2
-'659': You can only perform this action once every {hour} hour
+'659': Kamu hanya dapat melakukan tindakan ini sekali setiap {hour} jam
 '660': Kamu belum melakukan pull banner senjata
 '661': Pilih filter rarity
 '662': Pilih filter banner
@@ -864,10 +864,10 @@
 '758': Perintah/fitur ini saat ini dinonaktifkan
 '759': Jika kamu memiliki pertanyaan, silakan bergabung dengan server dukungan
 '760': Shenhe sedang dalam maintenance, silakan coba lagi nanti
-'761': Talent levels updated
-'762': Upading talent levels...
-'763': Please re-use the command to see the changes
+'761': Level talenta diperbarui
+'762': Pebarui level talenta...
+'763': Silakan gunakan-kembali perintah untuk melihat perubahan
 '764': Default
 '765': |-
-  If this is your first time using this command,
-  this process will take a while, please be patient.
+  Jika ini adalah pertama kalinya kamu menggunakan perintah ini,
+  proses ini akan memakan waktu cukup lama, harap bersabar.
