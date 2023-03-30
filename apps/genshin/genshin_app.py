@@ -11,14 +11,20 @@ from discord.utils import format_dt
 import models
 from ambr import AmbrTopAPI
 from apps.db import get_user_lang, get_user_theme
+from apps.db.json import read_json, write_json
 from apps.draw import main_funcs
-from apps.text_map import get_element_name, get_month_name, text_map
+from apps.text_map import get_month_name, text_map
 from base_ui import get_error_handle_embed
-from data.game.elements import element_emojis
 from exceptions import UIDNotFound
 from utility import get_dt_now, log
 
-from .utility import get_character_emoji, get_shenhe_account, get_uid, get_uid_tz
+from .utility import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+    update_talents_json,
+)
 
 
 def genshin_error_handler(func):
@@ -387,86 +393,17 @@ class GenshinApp:
         self, user_id: int, author_id: int, locale: discord.Locale
     ) -> models.GenshinAppResult:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
-        if shenhe_user.uid is None:
-            raise UIDNotFound
+        client = shenhe_user.client
+        characters = await client.get_genshin_characters(shenhe_user.uid)
+        characters = list(characters)
 
-        characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
-        ambr = AmbrTopAPI(self.bot.session)
-        all_characters = await ambr.get_character(include_beta=False)
-        if not isinstance(all_characters, List):
-            raise TypeError("all_characters is not a list")
-
-        author_locale = await get_user_lang(author_id, self.bot.pool)
-        new_locale = author_locale or shenhe_user.user_locale or str(locale)
-
-        embed = models.DefaultEmbed(
-            description=f"{text_map.get(576, new_locale).format(current=len(characters), total=len(all_characters)-1)}\n"
-            f"{text_map.get(577, new_locale).format(current=len([c for c in characters if c.friendship == 10]), total=len(all_characters)-1)}"
-        )
-        embed.set_author(
-            name=text_map.get(196, new_locale),
-            icon_url=shenhe_user.discord_user.display_avatar.url,
-        )
-        embed.set_image(url="attachment://characters.jpeg")
-
-        result = {
-            "embeds": {"All": embed},
-            "options": [
-                discord.SelectOption(
-                    label=f"{text_map.get(701, new_locale)} ({len(characters)})",
-                    value="All",
-                )
-            ],
-        }
-
-        elements = {}
-        for character in characters:
-            if character.element not in elements:
-                elements[character.element] = []
-            elements[character.element].append(character)
-
-        for element, chars in elements.items():
-            total = len(
-                [
-                    c
-                    for c in all_characters
-                    if "10000007" not in c.id and c.element == element
-                ]
+        talents = await read_json(self.bot.pool, f"talents/{shenhe_user.uid}.json")
+        if talents is None:
+            await update_talents_json(
+                characters, client, self.bot.pool, shenhe_user.uid, self.bot.session
             )
-            embed = models.DefaultEmbed(
-                description=f"{text_map.get(576, new_locale).format(current=len(chars), total=total)}\n"
-                f"{text_map.get(577, new_locale).format(current=len([c for c in chars if c.friendship == 10]), total=total)}"
-            )
-            embed.set_author(
-                name=text_map.get(196, new_locale),
-                icon_url=shenhe_user.discord_user.display_avatar.url,
-            )
-            embed.set_image(url="attachment://characters.jpeg")
-            result["embeds"][element] = embed
-
-            result["options"].append(
-                discord.SelectOption(
-                    emoji=element_emojis.get(element),
-                    label=f"{text_map.get(52, new_locale).format(element=get_element_name(element, new_locale))} ({len(chars)})",
-                    value=element,
-                )
-            )
-
-        fp = await main_funcs.character_summary_card(
-            models.DrawInput(
-                loop=self.bot.loop,
-                session=self.bot.session,
-                locale=new_locale,
-                dark_mode=await get_user_theme(author_id, self.bot.pool),
-            ),
-            list(characters),
-            "All",
-        )
-        result["file"] = fp
-        result["characters"] = list(characters)
-
         return models.GenshinAppResult(
-            result=models.CharacterResult(**result), success=True
+            success=True, result=models.CharacterResult(characters=characters)
         )
 
     @genshin_error_handler
