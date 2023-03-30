@@ -19,15 +19,6 @@ def character_card(
         draw_small_chara_card(talents, dark_mode, c_cards, character)
 
     first_card = list(c_cards.values())[0]
-    card_num = len(c_cards)
-    if card_num % 2 == 0:
-        max_card_num = max(i for i in range(1, card_num) if card_num % i == 0)
-    else:
-        max_card_num = max(
-            i for i in range(1, card_num) if (card_num - (i - 1)) % i == 0
-        )
-    max_card_num = min(max_card_num, 8)
-
     db_input = DynamicBackgroundInput(
         top_padding=35,
         bottom_padding=5,
@@ -37,12 +28,11 @@ def character_card(
         card_height=first_card.height,
         card_x_padding=5,
         card_y_padding=35,
-        card_num=card_num,
+        card_num=len(c_cards),
         background_color="#F2F2F2",
         draw_title=False,
-        max_card_num=max_card_num,
     )
-    background, _ = draw_dynamic_background(db_input)
+    background, max_card_num = draw_dynamic_background(db_input)
     for index, card in enumerate(c_cards.values()):
         x = (index // max_card_num) * (
             db_input.card_width + db_input.card_x_padding

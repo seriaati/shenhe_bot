@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import io
 from typing import Dict, List, Optional, Tuple
@@ -12,7 +13,12 @@ import apps.draw.draw_funcs as funcs
 import models
 from ambr import Material
 from apps.db.json import read_json, write_json
-from apps.draw.utility import calculate_time, download_images, extract_urls
+from apps.draw.utility import (
+    calculate_time,
+    compress_image_util,
+    download_images,
+    extract_urls,
+)
 
 
 @calculate_time
@@ -120,13 +126,11 @@ async def draw_profile_card_v1(
 @calculate_time
 async def draw_stats_card(
     draw_input: models.DrawInput,
-    namecard: enka.Namecard,
+    namecard: enka.model.assets.NamecardAsset,
     user_stats: genshin.models.Stats,
     pfp: discord.Asset,
     character_num: int,
 ) -> io.BytesIO:
-    if namecard.banner is None:
-        raise ValueError("No namecard banner found")
     urls = [namecard.banner.url, pfp.url]
     await download_images(urls, draw_input.session)
     func = functools.partial(
@@ -453,3 +457,9 @@ async def draw_profile_card_v2(
         image_url,
     )
     return await draw_input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def compress_image(loop: asyncio.AbstractEventLoop, fp: bytes) -> bytes:
+    func = functools.partial(compress_image_util, fp)
+    return await loop.run_in_executor(None, func)

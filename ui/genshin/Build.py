@@ -128,7 +128,7 @@ class TeamButton(ui.Button):
 
         await image_gen_transition(i, self.view, locale)
 
-        client: genshin.Client = i.client.genshin_client
+        client = genshin.Client()
         client.lang = to_genshin_py(locale)
 
         scenarios = await client.get_lineup_scenarios()

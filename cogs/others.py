@@ -19,6 +19,7 @@ import asset
 from ambr import AmbrTopAPI, Character
 from apps.db import custom_image, get_user_lang
 from apps.db.utility import create_user_settings
+from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from exceptions import AutocompleteError
 from models import CustomInteraction, DefaultEmbed, ErrorEmbed, ShenheBot
@@ -234,7 +235,9 @@ class OthersCog(commands.Cog, name="others"):
         imgur = ImgurClient(
             os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET")
         )
-        image = await imgur.upload(await image_file.read())
+        byte_obj = await image_file.read()
+        compressed = await compress_image(self.bot.loop, byte_obj)
+        image = await imgur.upload(compressed)
         converted_character_id = int(character_id.split("-")[0])
         await custom_image.add_user_custom_image(
             i.user.id,

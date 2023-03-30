@@ -10,6 +10,7 @@ import asset
 import config
 from apps.db import get_user_lang
 from apps.genshin import get_account_select_options, get_uid, get_wish_info_embed
+from apps.genshin.utility import get_shenhe_account
 from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseModal, BaseView
 from models import CustomInteraction, DefaultEmbed, ErrorEmbed, Wish, WishInfo
@@ -379,7 +380,8 @@ class Modal(BaseModal):
             )
             return await wish_import_command(i, True)
 
-        client: genshin.Client = i.client.genshin_client
+        acc = await get_shenhe_account(i.user.id, i.client)
+        client = acc.client
         client.lang = to_genshin_py(locale)
         uid = await get_uid(i.user.id, i.client.pool)
         if str(uid)[0] in ["1", "2", "5"]:

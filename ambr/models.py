@@ -732,7 +732,7 @@ class NameCard(BaseModel):
 
     @validator("icon", allow_reuse=True)
     def get_icon_url(cls, v):
-        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}.png?a"
+        icon_url = f"https://api.ambr.top/assets/UI/namecard/{v}_P.png"
         return icon_url
 
 

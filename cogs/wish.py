@@ -18,6 +18,7 @@ from apps.genshin import (
     get_wish_history_embed,
     get_wish_info_embed,
 )
+from apps.genshin.checks import check_cookie
 from apps.text_map import text_map, to_ambr_top
 from base_ui import capture_exception
 from data.game.standard_characters import get_standard_characters
@@ -32,7 +33,7 @@ class WishCog(commands.GroupCog, name="wish"):
         self.bot: models.ShenheBot = bot
         super().__init__()
 
-    @check_account()
+    @check_cookie()
     @app_commands.command(
         name="import", description=_("import your genshin wish history", hash=474)
     )

@@ -1,10 +1,20 @@
 import pickle
 from typing import Dict, List, Optional, Tuple
 
+import aiohttp
 import asyncpg
 import enkanetwork
 
 from exceptions import NoCharacterFound
+from models import EnkaInfoResponse
+
+
+async def get_enka_info(uid: int, session: aiohttp.ClientSession) -> EnkaInfoResponse:
+    url = f"https://enka.network/api/uid/{uid}?info"
+    async with session.get(url) as response:
+        if response.status != 200:
+            raise enkanetwork.EnkaServerMaintanance
+        return EnkaInfoResponse.parse_obj(await response.json())
 
 
 async def get_enka_data(
@@ -86,12 +96,12 @@ async def update_enka_cache(
     current_en_data: enkanetwork.model.EnkaNetworkResponse,
     pool: asyncpg.Pool,
 ) -> None:
-    """Update enka cache
+    """Update enkanetwork cache
 
     Args:
         uid (int): UID of the player
-        current_data (enkanetwork.model.EnkaNetworkResponse): current enka data
-        current_en_data (enkanetwork.model.EnkaNetworkResponse): current English enka data
+        current_data (enkanetwork.model.EnkaNetworkResponse): current enkanetwork data
+        current_en_data (enkanetwork.model.EnkaNetworkResponse): current English enkanetwork data
         pool (asyncpg.Pool): database pool
 
     Raises:
@@ -146,7 +156,7 @@ async def edit_enka_cache(
     pool: asyncpg.Pool,
     en: bool = False,
 ) -> None:
-    """Edit enka cache
+    """Edit enkanetwork cache
 
     Args:
         uid (int): UID of the player

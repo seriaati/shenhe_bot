@@ -12,7 +12,7 @@ from apps.draw.utility import circular_crop, get_cache, get_font
 
 def stats_card(
     user_stats: genshin.models.Stats,
-    namecard: enkanetwork.Namecard,
+    namecard: enkanetwork.model.assets.NamecardAsset,
     pfp: discord.Asset,
     character_num: int,
     dark_mode: bool,
@@ -25,7 +25,7 @@ def stats_card(
         "anemo": f"{user_stats.anemoculi}/66",
         "geo": f"{user_stats.geoculi}/131",
         "electro": f"{user_stats.electroculi}/181",
-        "dendro": f"{user_stats.dendroculi}/180",
+        "dendro": f"{user_stats.dendroculi}/235",
         "normal": user_stats.common_chests,
         "rare": user_stats.exquisite_chests,
         "gold": user_stats.precious_chests,
