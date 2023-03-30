@@ -652,9 +652,13 @@ async def update_talents_json(
     talents_: Dict[str, str] = {}
     boost_dict = await read_json(pool, "genshin/talent_boost.json")
     if boost_dict is None:
-        boost_dict: Dict[str, str] = {}
-    for character in characters:
+        boost_dict = {}
+    try:
         await client._enable_calculator_sync()
+    except genshin.GenshinException:
+        pass
+
+    for character in characters:
         try:
             details = await client.get_character_details(character.id)
         except genshin.GenshinException:
