@@ -10,12 +10,15 @@ import discord
 import genshin
 import yaml
 from discord import Locale
-from discord.utils import format_dt
+from discord.utils import format_dt, get
 
 import asset
 import models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
+from ambr.models import CharacterDetail
 from apps.db import get_user_lang
+from apps.db.json import read_json, write_json
+from apps.enka_api_docs.get_data import get_character_skill_order
 from apps.text_map import (
     cond_text,
     text_map,
@@ -623,3 +626,75 @@ async def get_character_fanarts(character_id: str) -> List[str]:
         fanart: Dict[str, List[str]] = json.loads(await f.read())
 
     return fanart.get(character_id, [])
+
+
+async def calc_e_q_boost(
+    session: aiohttp.ClientSession, character_id: str
+) -> models.TalentBoost:
+    client = AmbrTopAPI(session)
+    detail = await client.get_character_detail(character_id)
+    if not isinstance(detail, CharacterDetail):
+        raise ValueError("Invalid character ID")
+    c3 = detail.constellations[2]
+    e_skill = detail.talents[1]
+    if e_skill.name in c3.description:
+        return models.TalentBoost.BOOST_E
+    return models.TalentBoost.BOOST_Q
+
+
+async def update_talents_json(
+    characters: List[genshin.models.Character],
+    client: genshin.Client,
+    pool: asyncpg.Pool,
+    uid: int,
+    session: aiohttp.ClientSession,
+):
+    talents_: Dict[str, str] = {}
+    boost_dict = await read_json(pool, "genshin/talent_boost.json")
+    if boost_dict is None:
+        boost_dict: Dict[str, str] = {}
+    for character in characters:
+        await client._enable_calculator_sync()
+        try:
+            details = await client.get_character_details(character.id)
+        except genshin.GenshinException:
+            break
+        character_id = str(character.id)
+        if character.id in asset.traveler_ids:
+            character_id = f"{character.id}-{character.element.lower()}"
+
+        if boost_dict is None or character_id not in boost_dict:
+            boost = await calc_e_q_boost(session, character_id)
+            if boost_dict is None:
+                boost_dict = {}
+            boost_dict[str(character_id)] = boost.value
+            await write_json(pool, "genshin/talent_boost.json", boost_dict)
+        boost = models.TalentBoost(boost_dict[character_id])
+
+        skill_order = await get_character_skill_order(str(character.id))
+        a_skill = details.talents[0]
+        e_skill = details.talents[1]
+        q_skill = details.talents[-1]
+        if skill_order:
+            a_skill = get(details.talents, id=skill_order[0])
+            e_skill = get(details.talents, id=skill_order[1])
+            q_skill = get(details.talents, id=skill_order[2])
+        if not a_skill or not e_skill or not q_skill:
+            a_skill = details.talents[0]
+            e_skill = details.talents[1]
+            q_skill = details.talents[-1]
+
+        if a_skill and e_skill and q_skill:
+            a_skill = a_skill.level
+            e_skill = e_skill.level
+            q_skill = q_skill.level
+            c3 = character.constellations[2]
+            c5 = character.constellations[4]
+            if boost is models.TalentBoost.BOOST_E and c3.activated:
+                e_skill += 3
+            elif boost is models.TalentBoost.BOOST_Q and c5.activated:
+                q_skill += 3
+            talents_[str(character.id)] = f"{a_skill}/{e_skill}/{q_skill}"
+
+    talents_["last_updated"] = get_dt_now().strftime("%Y-%m-%d %H:%M:%S")
+    await write_json(pool, f"talents/{uid}.json", talents_)

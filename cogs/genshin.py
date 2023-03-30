@@ -1,6 +1,6 @@
 import json
 import random
-from datetime import timedelta, timezone
+from datetime import timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import aiofiles
@@ -344,42 +344,34 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     async def characters_comamnd(
         self,
-        i: discord.Interaction,
+        inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
     ):
+        i: models.CustomInteraction = inter  # type: ignore
         member = member or i.user
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         locale = user_locale or i.locale
         await i.response.send_message(
             embed=models.DefaultEmbed().set_author(
-                name=text_map.get(644, locale), icon_url=asset.loader
+                name=text_map.get(765, locale), icon_url=asset.loader
             ),
             ephemeral=ephemeral,
         )
-        result = await self.genshin_app.get_all_characters(
-            member.id, i.user.id, i.locale
+
+        r = await self.genshin_app.get_all_characters(member.id, i.user.id, i.locale)
+        if not r.success:
+            return await i.followup.send(embed=r.result, ephemeral=ephemeral)
+
+        result: models.CharacterResult = r.result
+        client = AmbrTopAPI(self.bot.session)
+        characters = await client.get_character(
+            include_beta=False, include_traveler=False
         )
-        if not result.success:
-            return await i.followup.send(embed=result.result)
-        character_result: models.CharacterResult = result.result
-        fp = character_result.file
-        fp.seek(0)
-        _file = discord.File(fp, "characters.jpeg")
-        view = ui.ShowAllCharacters.View(
-            locale,
-            character_result.characters,
-            character_result.options,
-            member,
-            character_result.embeds,
-        )
-        view.author = i.user
-        await i.edit_original_response(
-            embed=character_result.embeds["All"],
-            attachments=[_file],
-            view=view,
-        )
-        view.message = await i.original_response()
+        if not isinstance(characters, list):
+            raise TypeError("Characters is not a list")
+        view = ui.ShowAllCharacters.View(locale, result.characters, member, characters)
+        await view.start(i)
 
     @checks.check_cookie()
     @app_commands.command(

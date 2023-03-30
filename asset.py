@@ -87,3 +87,5 @@ aether_name_dict = {
     "ru": "Путешественница (♂️)",
     "vi": "Nhà Lữ Hành (♂️)",
 }
+friendship_emoji = "<:friendship:1090512792563494932>"
+friendship_no_box_emoji = "<:friendship_no_box:1090512813073637496>"
