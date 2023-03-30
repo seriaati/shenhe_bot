@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 
 import models
 from apps.genshin import launch_browsers, launch_debug_browser
+from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
 from base_ui import get_error_handle_embed, global_error_handler, support_server_view
 from exceptions import FeatureDisabled, Maintenance
@@ -154,6 +155,8 @@ class Shenhe(ShenheBot):
                 log.warning(
                     f"[Cog Load Error]: [Cog name]{cog_name} [Exception]{e}", exc_info=e
                 )
+
+        self.gd_text_map = load_text_maps()
 
     async def on_ready(self):
         tree = self.tree

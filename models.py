@@ -16,7 +16,6 @@ from pydantic import BaseModel, Field
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
-from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
 
 
@@ -109,7 +108,7 @@ class ShenheBot(commands.AutoShardedBot):
     maintenance: bool = False
     maintenance_time: str = ""
     launch_time = datetime.utcnow()
-    gd_text_map: Dict[str, Dict[str, str]] = load_text_maps()
+    gd_text_map: Dict[str, Dict[str, str]]
     stats_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     area_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
@@ -226,13 +225,7 @@ class DiaryResult(BaseModel):
 
 
 class CharacterResult(BaseModel):
-    embeds: Dict[str, discord.Embed]
-    options: List[discord.SelectOption]
-    file: io.BytesIO
     characters: List[genshin.models.Character]
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 class CharacterBuild(BaseModel):
@@ -435,3 +428,8 @@ class ErrorEmbed(ShenheEmbed):
 class EmbedField(BaseModel):
     name: str
     value: str
+
+
+class TalentBoost(Enum):
+    BOOST_E = "boost_e"
+    BOOST_Q = "boost_q"
