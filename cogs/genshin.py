@@ -22,14 +22,8 @@ import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    enka,
-    genshin_app,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    leaderboard,
-)
+from apps.genshin import (enka, genshin_app, get_character_emoji, get_uid,
+                          get_uid_region_hash, leaderboard)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -283,7 +277,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 files=[_file],
             )
 
-    @checks.check_account()
+    @checks.check_cookie()
     @app_commands.command(
         name="area",
         description=_("View exploration rates of different areas in genshin", hash=419),
