@@ -1,111 +1,101 @@
 import io
-from typing import List, Optional
+from typing import Dict, List
 
-import discord
 import genshin
 from PIL import Image, ImageDraw
 
-import apps.draw.utility as draw_utils
-import asset
-from apps.text_map import get_element_name, text_map
-from data.game.elements import get_element_color
-from models import DynamicBackgroundInput, TopPadding
+from apps.draw.utility import draw_dynamic_background, get_cache, get_font
+from models import DynamicBackgroundInput
 
 
 def character_card(
-    all_characters: List[genshin.models.Character],
+    characters: List[genshin.models.Character],
+    talents: Dict[str, str],
+    pc_icon: Dict[str, str],
     dark_mode: bool,
-    locale: str | discord.Locale,
-    element: str,
-    custom_title: Optional[str] = None,
 ) -> io.BytesIO:
-    if element == "All":
-        characters = all_characters
-        element_name = text_map.get(701, locale)
+    c_cards: Dict[str, Image.Image] = {}
+    for character in characters:
+        draw_small_chara_card(talents, dark_mode, c_cards, character)
+
+    first_card = list(c_cards.values())[0]
+    card_num = len(c_cards)
+    if card_num % 2 == 0:
+        max_card_num = max(i for i in range(1, card_num) if card_num % i == 0)
     else:
-        characters = [c for c in all_characters if c.element == element]
-        element_name = get_element_name(element, locale)
-
-    # create the background based on the number of characters
-    im, max_card_num = draw_utils.draw_dynamic_background(
-        DynamicBackgroundInput(
-            top_padding=TopPadding(with_title=190, without_title=90),
-            left_padding=95,
-            right_padding=95,
-            bottom_padding=90,
-            card_num=len(characters),
-            background_color=get_element_color(element)
-            if not dark_mode
-            else asset.dark_theme_background,
-            card_height=140,
-            card_width=645,
-            card_x_padding=60,
-            card_y_padding=45,
+        max_card_num = max(
+            i for i in range(1, card_num) if (card_num - (i - 1)) % i == 0
         )
-    )
-    draw = ImageDraw.Draw(im)
+    max_card_num = min(max_card_num, 8)
 
-    # title
-    font = draw_utils.get_font(locale, 75, "Bold")
-    fill = asset.white if dark_mode else asset.primary_text
-    text = custom_title or (
-        text_map.get(19, locale)
-        if element == "All"
-        else text_map.get(52, locale).format(element=element_name)
+    db_input = DynamicBackgroundInput(
+        top_padding=35,
+        bottom_padding=5,
+        left_padding=5,
+        right_padding=5,
+        card_width=first_card.width,
+        card_height=first_card.height,
+        card_x_padding=5,
+        card_y_padding=35,
+        card_num=card_num,
+        background_color="#F2F2F2",
+        draw_title=False,
+        max_card_num=max_card_num,
     )
-    font = draw_utils.dynamic_font_size(text, 1, 75, 645, font)
-    draw.text((95, 40), text, font=font, fill=fill)
-
-    for index, character in enumerate(characters):
-        # draw the card
-        card = s_card(character, dark_mode, locale)
-        # paste the card
-        x = 95 + (644 + 60) * (index // max_card_num)
-        y = 190 + (140 + 45) * (index % max_card_num)
-        im.paste(card, (x, y), card)
+    background, _ = draw_dynamic_background(db_input)
+    for index, card in enumerate(c_cards.values()):
+        x = (index // max_card_num) * (
+            db_input.card_width + db_input.card_x_padding
+        ) + db_input.left_padding
+        y = 0
+        if isinstance(db_input.top_padding, int):
+            y = (index % max_card_num) * (
+                db_input.card_height + db_input.card_y_padding
+            ) + db_input.top_padding
+        background.paste(card, (x, y), card)
+        character_id = list(c_cards.keys())[index]
+        icon = get_cache(
+            pc_icon.get(
+                character_id,
+                "https://i.imgur.com/MWbYrHk.png",
+            )
+        )
+        icon = icon.resize((214, 214))
+        background.paste(icon, (x, y - 29), icon)
 
     fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    background = background.convert("RGB")
+    background.save(fp, format="JPEG", quality=95, optimize=True)
     return fp
 
 
-def s_card(
-    character: genshin.models.Character,
-    dark_mode: bool,
-    locale: str | discord.Locale,
-) -> Image.Image:
-    # card
-    im = Image.open(
-        f"yelan/templates/character/[{'light' if not dark_mode else 'dark'}] card.png"
+def draw_small_chara_card(talents, dark_mode, c_cards, character):
+    im: Image.Image = Image.open(
+        f"yelan/templates/character/{'dark' if dark_mode else 'light'}_{character.element}.png"
     )
     draw = ImageDraw.Draw(im)
+    font = get_font("en-US", 31)
+    color = (255, 255, 255, 204) if dark_mode else (0, 0, 0, 204)
+    text = f"C{character.constellation}R{character.weapon.refinement}"
+    draw.text((227, 32), text, font=font, fill=color)
+    text = f"Lv.{character.level}"
+    draw.text((227, 72), text, font=font, fill=color)
 
-    # character icon
-    icon = draw_utils.get_cache(character.icon)
-    icon = draw_utils.circular_crop(icon)
-    icon = icon.resize((95, 95))
-    im.paste(icon, (17, 23), icon)
+    font = get_font("en-US", 18)
+    friend = str(character.friendship)
+    draw.text((287, 154), friend, font=font, fill=color, anchor="mm")
+    text = talents.get(str(character.id), "?/?/?")
+    draw.text((368, 154), text, font=font, fill=color, anchor="mm")
 
-    # character name
-    font = draw_utils.get_font(locale, 40, "Bold")
-    fill = asset.primary_text if not dark_mode else asset.white
-    text = draw_utils.shorten_text(character.name, 321, font)
-    draw.text((127, 23), text, font=font, fill=fill)
+    size = 4
+    x_start = 287 + font.getlength(friend) // 2
+    x_end = 360 - font.getlength(text) // 2
+    x_avg = (x_start + x_end) // 2
+    y_start = 156 - size
+    draw.ellipse((x_avg, y_start, x_avg + size, y_start + size), fill=color)
 
-    # constellation and refinement
-    font = draw_utils.get_font(locale, 25)
-    fill = asset.secondary_text if not dark_mode else asset.white
-    draw.text(
-        (127, 77),
-        f"C{character.constellation}R{character.weapon.refinement} {text_map.get(578, locale)} {character.friendship}",
-        font=font,
-        fill=fill,
-    )
+    weapon_icon = get_cache(character.weapon.icon)
+    weapon_icon = weapon_icon.resize((84, 84))
+    im.paste(weapon_icon, (332, 30), weapon_icon)
 
-    # level
-    font = draw_utils.get_font(locale, 36, "Medium")
-    fill = asset.primary_text if not dark_mode else asset.white
-    text = f"Lv. {character.level}"
-    draw.text((620 - font.getlength(text), 46), text, font=font, fill=fill)
-
-    return im
+    c_cards[str(character.id)] = im

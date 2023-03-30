@@ -1,7 +1,8 @@
 import functools
 import io
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
+import asyncpg
 import discord
 import enkanetwork as enka
 import genshin
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 import apps.draw.draw_funcs as funcs
 import models
 from ambr import Material
+from apps.db.json import read_json, write_json
 from apps.draw.utility import calculate_time, download_images, extract_urls
 
 
@@ -343,18 +345,28 @@ async def abyss_character_usage_card(
 async def character_summary_card(
     draw_input: models.DrawInput,
     character_list: List[genshin.models.Character],
-    element: str,
-    custom_title: Optional[str] = None,
+    talents: Dict[str, str],
+    pool: asyncpg.Pool,
 ) -> io.BytesIO:
-    urls = extract_urls(character_list)
+    urls = [c.weapon.icon for c in character_list]
+    pc_icons = await read_json(pool, "genshin/pc_icons.json")
+
+    if not pc_icons or any(str(c.id) not in pc_icons for c in character_list):
+        client = genshin.Client()
+        fields = await client.get_lineup_fields()
+        pc_icons = {
+            str(character.id): character.pc_icon for character in fields.characters
+        }
+        await write_json(pool, "genshin/pc_icons.json", pc_icons)
+    urls.extend([pc_icons[str(c.id)] for c in character_list])
+
     await download_images(urls, draw_input.session)
     func = functools.partial(
         funcs.characters.character_card,
         character_list,
+        talents,
+        pc_icons,
         draw_input.dark_mode,
-        draw_input.locale,
-        element,
-        custom_title,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
