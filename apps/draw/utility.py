@@ -168,15 +168,16 @@ def get_font(
 def draw_dynamic_background(
     dynamic_input: DynamicBackgroundInput,
 ) -> typing.Tuple[Image.Image, int]:
-    max_card_num = None
-    for index in range(2, dynamic_input.card_num):
-        if dynamic_input.card_num % index == 0:
-            max_card_num = index
-    max_card_num = dynamic_input.max_card_num or max_card_num or 7
-    if not dynamic_input.max_card_num:
-        max_card_num = min(max_card_num, 7)
-    num = dynamic_input.card_num
-    cols = num // max_card_num + 1 if num % max_card_num != 0 else num // max_card_num
+    card_num = dynamic_input.card_num
+    if card_num % 2 == 0:
+        max_card_num = max(i for i in range(1, card_num) if card_num % i == 0)
+    else:
+        max_card_num = max(
+            i for i in range(1, card_num) if (card_num - (i - 1)) % i == 0
+        )
+    max_card_num = min(max_card_num, 7)
+    
+    cols = card_num // max_card_num + 1 if card_num % max_card_num != 0 else card_num // max_card_num
     width = dynamic_input.left_padding
     if isinstance(dynamic_input.top_padding, int):
         height = dynamic_input.top_padding
@@ -190,8 +191,8 @@ def draw_dynamic_background(
     height += dynamic_input.bottom_padding
     width += dynamic_input.card_width * cols  # width of the cards
     width += dynamic_input.card_x_padding * (cols - 1)  # padding between cards
-    if num < max_card_num:
-        max_card_num = num
+    if card_num < max_card_num:
+        max_card_num = card_num
     height += dynamic_input.card_height * max_card_num  # height of the cards
     height += dynamic_input.card_y_padding * (max_card_num - 1)  # padding between cards
     im = Image.new("RGB", (width, height), dynamic_input.background_color)  # type: ignore
