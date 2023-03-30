@@ -4,6 +4,7 @@ from typing import Dict, List
 import genshin
 from PIL import Image, ImageDraw
 
+import asset
 from apps.draw.utility import draw_dynamic_background, get_cache, get_font
 from models import DynamicBackgroundInput
 
@@ -29,7 +30,7 @@ def character_card(
         card_x_padding=5,
         card_y_padding=35,
         card_num=len(c_cards),
-        background_color="#414141" if dark_mode else "#F2F2F2",
+        background_color="#212121" if dark_mode else asset.light_theme_background,
         draw_title=False,
     )
     background, max_card_num = draw_dynamic_background(db_input)
