@@ -1,3 +1,4 @@
+import io
 import os
 import time
 import typing
@@ -330,3 +331,12 @@ def mask_image_with_color(image: Image.Image, color) -> Image.Image:
     image = image.convert("RGBA")
     mask = Image.new("RGBA", image.size, color)
     return ImageChops.multiply(image, mask)
+
+
+def compress_image_util(fp_input: bytes) -> bytes:
+    """Compress an image to a byte array"""
+    im = Image.open(io.BytesIO(fp_input))
+    fp = io.BytesIO()
+    im.save(fp, format="JPEG", optimize=True, quality=50)
+    fp.seek(0)
+    return fp.read()
