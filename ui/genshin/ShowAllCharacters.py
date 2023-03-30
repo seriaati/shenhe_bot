@@ -57,10 +57,7 @@ class View(BaseView):
                 for option in child.options:
                     if "default" in option.value:
                         option.default = False
-                    elif (
-                        option.value == self.sort_current
-                        or option.value == self.filter_current
-                    ):
+                    elif option.value in (self.sort_current, self.filter_current):
                         option.default = True
                     else:
                         option.default = False
