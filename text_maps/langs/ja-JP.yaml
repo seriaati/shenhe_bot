@@ -291,8 +291,8 @@
   •  </img-upload:1041966109533929522>で画像をアップロードすることも出来ます。
   •  バージョン１用の画像のトリミングには[これ](https://croppola.com/)を使用し、2.64:1の比率を選択してください。
 '277': 現在の画像
-'278': Sort by...
-'279': Filter by...
+'278': 並び順
+'279': フィルター
 '280': 基本速度
 '281': 速度%
 '282': 戻る
@@ -457,7 +457,7 @@
   7. 完全なリンクをコピーしてください　https://webstatic で始まり、game_biz=hk4e_global で終わるようなリンクです。
   完全なリンクはこのようなものです： https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?......&game_biz=hk4e_ global
   8.下のボタンをクリックして、コピーしたリンクをテキストボックスに貼り付けます。
-'404': Update talent levels
+'404': 天賦レベルを変更
 '405': あなたはまだ武器祈願をしていないようです
 '406': 開始時間
 '407': 終了時間
@@ -748,7 +748,7 @@
 '656': 祈願を選択
 '657': 命定値
 '658': 0、1、2のいずれかの数値
-'659': You can only perform this action once every {hour} hour
+'659': このコマンドは {hour} 時間に 1 回のみ実行できます
 '660': あなたはまだキャラクター祈願をしていないようです
 '661': レアリティを選択してください
 '662': 祈願の種類を選択してください
@@ -859,10 +859,9 @@
 '758': このコマンド・機能は現在無効です
 '759': 質問がある場合はサポートサーバーに参加して下さい
 '760': 申鶴は現在メンテナンス中です。後でもう一度お試しください。
-'761': Talent levels updated
-'762': Upading talent levels...
-'763': Please re-use the command to see the changes
-'764': Default
+'761': 天賦レベルが変更されました
+'762': 天賦レベルを変更中...
+'763': 変更を確認するためにコマンドを再度使用してください
+'764': デフォルト
 '765': |-
-  If this is your first time using this command,
-  this process will take a while, please be patient.
+  初めてこのコマンドを実行する際は時間がかかります。しばらくお待ちください。
