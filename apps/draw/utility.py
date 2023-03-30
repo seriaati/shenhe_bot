@@ -169,18 +169,22 @@ def draw_dynamic_background(
     dynamic_input: DynamicBackgroundInput,
 ) -> typing.Tuple[Image.Image, int]:
     card_num = dynamic_input.card_num
-    max_card_num = None
-    for index in range(2, dynamic_input.card_num):
-        if dynamic_input.card_num % index == 0:
-            max_card_num = index
-    max_card_num = dynamic_input.max_card_num or max_card_num or 7
-    if not dynamic_input.max_card_num:
-        max_card_num = min(max_card_num, 7)
+    if card_num == 1:
+        max_card_num = 1
+    elif card_num % 2 == 0:
+        max_card_num = max(i for i in range(1, card_num) if card_num % i == 0)
+    else:
+        max_card_num = max(
+            i for i in range(1, card_num) if (card_num - (i - 1)) % i == 0
+        )
+    max_card_num = dynamic_input.max_card_num or min(max_card_num, 8)
+
     cols = (
         card_num // max_card_num + 1
         if card_num % max_card_num != 0
         else card_num // max_card_num
     )
+
     width = dynamic_input.left_padding
     if isinstance(dynamic_input.top_padding, int):
         height = dynamic_input.top_padding
