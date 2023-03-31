@@ -28,10 +28,11 @@ class AritfactMainStat(Enum):
     CRYO_DMG_BONUS = "Cryo DMG Bonus"
     DENDRO_DMG_BONUS = "Dendro DMG Bonus"
     PHYSICAL_DMG_BONUS = "Physical DMG Bonus"
+    HEALING_BONUS = "Healing Bonus"
 
     ELEMENTAL_MASTERY = "Elemental Mastery"
     ENERGY_RECHARGE = "Energy Recharge"
-    CRIT_RATE = "Crit Rate"
+    CRIT_RATE = "Crit RATE"
     CRIT_DMG = "Crit DMG"
 
 
@@ -67,7 +68,11 @@ class TalentType(Enum):
     ELEMENTAL_BUSRT = "elementalBurst"
 
 
-class FilterType(Enum):
+class OptionType(Enum):
+    """Option type enum."""
+
+
+class FilterType(OptionType):
     """Filter type enum."""
 
     REGION = "region"
@@ -85,3 +90,8 @@ class FilterType(Enum):
     SANDS_MAIN_STAT = "artifactObjects.EQUIP_SHOES.mainStatKey"
     GOBLET_MAIN_STAT = "artifactObjects.EQUIP_RING.mainStatKey"
     CIRCLET_MAIN_STAT = "artifactObjects.EQUIP_DRESS.mainStatKey"
+
+
+class PageType(OptionType):
+    LESS_THAN = "lt"
+    GREATER_THAN = "gt"
