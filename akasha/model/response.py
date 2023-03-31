@@ -1,6 +1,6 @@
 import typing
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 V = typing.TypeVar("V")
 
