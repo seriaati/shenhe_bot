@@ -219,15 +219,26 @@ async def get_shenhe_account(
         raise AssertionError
 
     if not custom_cookie:
-        user_data = await bot.pool.fetchrow(
-            """
-            SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-            FROM user_accounts
-            WHERE user_id = $1
-            AND current = true
-            """,
-            user_id,
-        )
+        if custom_uid:
+            user_data = await bot.pool.fetchrow(
+                """
+                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
+                FROM user_accounts
+                WHERE user_id = $1 AND uid = $2
+                """,
+                user_id,
+                custom_uid,
+            )
+        else:
+            user_data = await bot.pool.fetchrow(
+                """
+                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
+                FROM user_accounts
+                WHERE user_id = $1
+                AND current = true
+                """,
+                user_id,
+            )
     else:
         user_data = await bot.pool.fetchrow(
             """
