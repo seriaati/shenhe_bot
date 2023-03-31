@@ -10,7 +10,7 @@ class WeaponInfo(BaseModel):
 
     @validator("refinement", pre=True, always=True, allow_reuse=True)
     def _validate_refinement(cls, v):
-        return v["val"]
+        return v["value"]
 
 
 class Weapon(BaseModel):
