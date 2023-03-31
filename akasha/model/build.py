@@ -23,18 +23,17 @@ class Build(BaseModel):
     artifact_objects: typing.List[AritfactObject] = Field(..., alias="artifactObjects")
     artifact_sets: typing.List[AritfactSet] = Field(..., alias="artifactSets")
     constellation: int
-    prop_map: PropMap
-    talent_extra_level: typing.List[TalentExtraLevel] = Field(
-        ..., alias="proudSkillExtraLevelMap"
+    prop_map: PropMap = Field(..., alias="propMap")
+    talent_extra_level: typing.Optional[typing.List[TalentExtraLevel]] = Field(
+        None, alias="proudSkillExtraLevelMap"
     )
     stats: typing.List[Stat]
-    talents: typing.List[Talent]
+    talents: typing.List[Talent] = Field(..., alias="talentsLevelMap")
     weapon: Weapon
     costume_id: str = Field(..., alias="costumeId")
-    crit_value: int = Field(..., alias="critValue")
+    crit_value: float = Field(..., alias="critValue")
 
     index: int
-    md5: str
     type: str
 
     @validator("owner", pre=True, always=True, allow_reuse=True)
