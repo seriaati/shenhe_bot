@@ -14,6 +14,11 @@ class PropMap(BaseModel):
         return int(v["val"])
 
 
+class TalentExtraLevel(BaseModel):
+    talent_id: str
+    extra_level: int
+
+
 class Stat(BaseModel):
     """Stat model."""
 

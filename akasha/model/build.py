@@ -3,7 +3,7 @@ import typing
 from pydantic import BaseModel, Field, validator
 
 from .artifact import AritfactObject, AritfactSet
-from .character import PropMap, Stat, Talent
+from .character import PropMap, Stat, Talent, TalentExtraLevel
 from .player import Player
 from .weapon import Weapon
 
@@ -24,6 +24,9 @@ class Build(BaseModel):
     artifact_sets: typing.List[AritfactSet] = Field(..., alias="artifactSets")
     constellation: int
     prop_map: PropMap
+    talent_extra_level: typing.List[TalentExtraLevel] = Field(
+        ..., alias="proudSkillExtraLevelMap"
+    )
     stats: typing.List[Stat]
     talents: typing.List[Talent]
     weapon: Weapon
@@ -49,6 +52,10 @@ class Build(BaseModel):
     @validator("prop_map", pre=True, always=True, allow_reuse=True)
     def _validate_prop_map(cls, v):
         return PropMap(ascension=v["ascension"], level=v["level"])
+
+    @validator("talent_extra_level", pre=True, always=True, allow_reuse=True)
+    def _validate_talent_extra_level(cls, v):
+        return [TalentExtraLevel(talent_id=key, extra_level=i) for key, i in v.items()]
 
     @validator("stats", pre=True, always=True, allow_reuse=True)
     def _validate_stats(cls, v):
