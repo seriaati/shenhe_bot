@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class ArtifactType(Enum):
+    """Artifact type enum."""
+
     SANDS = "EQUIP_SHOES"
     GOBLET = "EQUIP_RING"
     CIRCLET = "EQUIP_DRESS"
@@ -34,6 +36,8 @@ class AritfactMainStat(Enum):
 
 
 class CharacterStat(Enum):
+    """Character stat enum."""
+
     CRIT_RATE = "critRate"
     CRIT_DMG = "critDamage"
     ENERGY_RECHARGE = "energyRecharge"
@@ -56,6 +60,28 @@ class CharacterStat(Enum):
 
 
 class TalentType(Enum):
+    """Talent type enum."""
+
     NORMAL_ATTACK = "normalAttacks"
     ELEMENTAL_SKILL = "elementalSkill"
     ELEMENTAL_BUSRT = "elementalBurst"
+
+
+class FilterType(Enum):
+    """Filter type enum."""
+
+    REGION = "region"
+
+    WEAPON = "weapon.name"
+    REFINEMENT = "weapon.weaponInfo.refinementLevel.evel.value"
+
+    NAME = "name"
+    CONSTELLATION = "constellation"
+
+    ONE_PIECE = "artifactSets.$1"
+    TWO_PIECE = "artifactSets.$2"
+    FOUR_PIECE = "artifactSets.$4"
+
+    SANDS_MAIN_STAT = "artifactObjects.EQUIP_SHOES.mainStatKey"
+    GOBLET_MAIN_STAT = "artifactObjects.EQUIP_RING.mainStatKey"
+    CIRCLET_MAIN_STAT = "artifactObjects.EQUIP_DRESS.mainStatKey"

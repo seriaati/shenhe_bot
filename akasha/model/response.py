@@ -10,4 +10,3 @@ class AkashaResponse(typing.Generic[V], BaseModel):
 
     ttl: int
     data: typing.List[V]
-    total_row_hash: str = Field(..., alias="totalRowHash")
