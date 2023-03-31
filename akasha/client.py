@@ -5,7 +5,7 @@ import aiohttp
 
 from .endpoints import BASE_URL, Endpoint
 from .model.build import Build
-from .model.filter import Filter
+from .model.option import Filter, Option, Page
 from .model.response import AkashaResponse
 
 
@@ -20,23 +20,32 @@ class AkashaAPI:
         self,
         endpoint: Endpoint,
         *,
-        filters: typing.Optional[typing.List[Filter]] = None,
+        options: typing.Optional[typing.List[Option]] = None,
     ) -> typing.Dict[str, typing.Any]:
-        logging.debug(f"Getting from {endpoint.value}, filters: {filters}")
+        logging.debug(f"Getting from {endpoint.value}, options: {options}")
         url = f"{BASE_URL}/{endpoint.value}"
 
-        # format : [filter_name]filter_value
-        if filters:
-            url += "?filter="
-            for filter in filters:
-                url += f"[{filter.type.value}]{filter.value}"
+        # format : ?filter=[name]Zhongli&p=lt|268.20999791693447
+        if options:
+            url += "?"
+            for option in options:
+                if f"{option.option_name}=" not in url and option.value is not None:
+                    if isinstance(option, Filter):
+                        url += f"{option.option_name}="
+                    elif isinstance(option, Page):
+                        url += f"&{option.option_name}="
+                if isinstance(option, Filter):
+                    url += f"[{option.type.value}]{option.value}"
+                elif isinstance(option, Page) and option.value is not None:
+                    url += f"{option.type.value}|{option.value}"
 
+        logging.debug(f"URL: {url}")
         async with self.session.get(url) as r:
             return await r.json()
 
     async def get_builds(
-        self, *, filters: typing.Optional[typing.List[Filter]] = None
+        self, *, options: typing.Optional[typing.List[Option]] = None
     ) -> AkashaResponse[Build]:
         logging.debug("Getting builds")
-        response = await self.get_from_endpoint(Endpoint.BUILDS, filters=filters)
+        response = await self.get_from_endpoint(Endpoint.BUILDS, options=options)
         return AkashaResponse(**response)
