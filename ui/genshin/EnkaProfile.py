@@ -10,6 +10,7 @@ import models
 from apps.db import get_user_theme
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
+from exceptions import FeatureDisabled
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
 from utility import divide_chunks
@@ -164,6 +165,7 @@ class CalculateDamageButton(ui.Button):
         self.view: models.EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
+        raise FeatureDisabled
         view = EnkaDamageCalc.View(self.view, self.view.locale, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
