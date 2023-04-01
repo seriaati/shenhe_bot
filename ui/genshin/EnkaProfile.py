@@ -15,6 +15,7 @@ from exceptions import FeatureDisabled
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
 from utility import divide_chunks
+from utility.utils import get_dt_now
 from yelan.damage_calculator import return_current_status
 
 
@@ -166,7 +167,10 @@ class CalculateDamageButton(ui.Button):
         self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
-        raise FeatureDisabled
+        now = get_dt_now()
+        if now.month == 4 and now.day == 1:
+            raise FeatureDisabled
+
         view = EnkaDamageCalc.View(self.view, self.view.locale, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
