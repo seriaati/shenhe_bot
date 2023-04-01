@@ -144,25 +144,6 @@ class TodoList:
         return self.dict
 
 
-class EnkaView(discord.ui.View):
-    overview_embeds: List[discord.Embed]
-    overview_fps: List[io.BytesIO]
-    data: EnkaNetworkResponse
-    en_data: EnkaNetworkResponse
-    member: Union[discord.User, discord.Member]
-    author: Union[discord.User, discord.Member]
-    message: discord.Message
-    character_options: List[discord.SelectOption]
-    locale: Union[discord.Locale, str]
-
-    original_children: List[discord.ui.Item] = []
-    character_id: str = "0"
-    card_data: Optional[EnkaNetworkResponse] = None
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
 class UserCustomImage(BaseModel):
     url: str
     nickname: str

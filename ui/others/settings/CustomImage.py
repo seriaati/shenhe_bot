@@ -9,9 +9,9 @@ import config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
+from base_ui import BaseModal, BaseView, EnkaView
 from data.game.elements import get_element_emoji, get_element_list
-from models import CustomInteraction, DefaultEmbed, EnkaView, ErrorEmbed
+from models import CustomInteraction, DefaultEmbed, ErrorEmbed
 from ui.genshin import EnkaDamageCalc
 from utility import divide_chunks
 

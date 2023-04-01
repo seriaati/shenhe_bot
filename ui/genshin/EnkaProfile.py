@@ -10,6 +10,7 @@ import models
 from apps.db import get_user_theme
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
+from base_ui import EnkaView
 from exceptions import FeatureDisabled
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
@@ -17,7 +18,7 @@ from utility import divide_chunks
 from yelan.damage_calculator import return_current_status
 
 
-class View(models.EnkaView):
+class View(EnkaView):
     def __init__(
         self,
         character_options: List[discord.SelectOption],
@@ -101,7 +102,7 @@ class SetCustomImage(ui.Button):
             row=1,
             emoji=asset.image_emoji,
         )
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
@@ -123,7 +124,7 @@ class BoxButton(ui.Button):
             custom_id="box",
         )
         self.options = options
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction):
         self.view.clear_items()
@@ -145,7 +146,7 @@ class BoxButton(ui.Button):
 class PageSelect(ui.Select):
     def __init__(self, character_options: list[discord.SelectOption], plceholder: str):
         super().__init__(placeholder=plceholder, options=character_options)
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
         self.view.character_id = self.values[0]
@@ -162,7 +163,7 @@ class CalculateDamageButton(ui.Button):
             row=0,
             emoji=asset.calculator_emoji,
         )
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
         raise FeatureDisabled
@@ -182,7 +183,7 @@ class ShowArtifacts(ui.Button):
             emoji=asset.artifact_emoji,
             row=1,
         )
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
@@ -209,7 +210,7 @@ class ShowArtifacts(ui.Button):
 class CardSettings(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.settings_emoji, row=1, disabled=True)
-        self.view: models.EnkaView
+        self.view: EnkaView
 
     async def callback(self, i: models.CustomInteraction) -> Any:
         view = ProfileSettings.View(self.view.locale, self.view)

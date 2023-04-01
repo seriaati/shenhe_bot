@@ -1,5 +1,5 @@
 import io
-from typing import Any, Dict, Optional, Union
+import typing
 
 import discord
 import enkanetwork
@@ -15,7 +15,8 @@ from utility import log
 
 
 async def global_error_handler(
-    i: CustomInteraction, e: Union[Exception, discord.app_commands.AppCommandError]
+    i: CustomInteraction,
+    e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
@@ -38,7 +39,7 @@ async def global_error_handler(
         pass
 
 
-def support_server_view(locale: Union[discord.Locale, str]):
+def support_server_view(locale: typing.Union[discord.Locale, str]):
     view = discord.ui.View()
     view.add_item(
         discord.ui.Button(
@@ -52,9 +53,9 @@ def support_server_view(locale: Union[discord.Locale, str]):
 
 
 def get_error_handle_embed(
-    user: Optional[Union[discord.User, discord.Member]],
+    user: typing.Optional[typing.Union[discord.User, discord.Member]],
     e: Exception,
-    locale: Union[discord.Locale, str],
+    locale: typing.Union[discord.Locale, str],
 ):
     """Returns an error embed based on the givern error type."""
     embed = ErrorEmbed()
@@ -146,11 +147,13 @@ def capture_exception(e: Exception):
 
 
 class BaseView(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
+    def __init__(self, timeout: typing.Optional[float] = 60.0):
         super().__init__(timeout=timeout)
-        self.message: Optional[discord.Message | discord.InteractionMessage] = None
-        self.author: Optional[discord.Member | discord.User] = None
-        self.original_info: Optional[OriginalInfo] = None
+        self.message: typing.Optional[
+            discord.Message | discord.InteractionMessage
+        ] = None
+        self.author: typing.Optional[discord.Member | discord.User] = None
+        self.original_info: typing.Optional[OriginalInfo] = None
 
     async def interaction_check(self, i: CustomInteraction) -> bool:
         if self.author is None:
@@ -202,7 +205,7 @@ class GoBackButton(discord.ui.Button):
         for item in self.original_children:
             self.original_view.add_item(item)
 
-        kwargs: Dict[str, Any] = {
+        kwargs: typing.Dict[str, typing.Any] = {
             "embed": self.original_embed,
             "view": self.original_view,
         }
@@ -216,3 +219,22 @@ class GoBackButton(discord.ui.Button):
                 kwargs["attachments"] = [file_]
 
         await i.edit_original_response(**kwargs)
+
+
+class EnkaView(BaseView):
+    overview_embeds: typing.List[discord.Embed]
+    overview_fps: typing.List[io.BytesIO]
+    data: enkanetwork.EnkaNetworkResponse
+    en_data: enkanetwork.EnkaNetworkResponse
+    member: typing.Union[discord.User, discord.Member]
+    author: typing.Union[discord.User, discord.Member]
+    message: discord.Message
+    character_options: typing.List[discord.SelectOption]
+    locale: typing.Union[discord.Locale, str]
+
+    original_children: typing.List[discord.ui.Item] = []
+    character_id: str = "0"
+    card_data: typing.Optional[enkanetwork.EnkaNetworkResponse] = None
+
+    class Config:
+        arbitrary_types_allowed = True
