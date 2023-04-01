@@ -162,7 +162,9 @@ class Schedule(commands.Cog):
                 continue
 
             try:
-                s_user = await genshin_app.get_shenhe_account(n_user.user_id, self.bot)
+                s_user = await genshin_app.get_shenhe_account(
+                    n_user.user_id, self.bot, custom_uid=n_user.uid
+                )
             except Exception:  # skipcq: PYL-W0703
                 continue
 
