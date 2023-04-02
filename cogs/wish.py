@@ -33,7 +33,7 @@ class WishCog(commands.GroupCog, name="wish"):
         self.bot: models.ShenheBot = bot
         super().__init__()
 
-    @check_cookie()
+    @check_account()
     @app_commands.command(
         name="import", description=_("import your genshin wish history", hash=474)
     )
