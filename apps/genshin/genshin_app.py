@@ -52,12 +52,13 @@ def genshin_error_handler(func):
             return models.GenshinAppResult(result=embed, success=False)
         except genshin.errors.InvalidCookies:
             embed = models.ErrorEmbed(
-                description=f"{text_map.get(35, locale)}\nUID: {uid}"
+                description=text_map.get(767, locale)
             )
             embed.set_author(
                 name=text_map.get(36, locale),
                 icon_url=user.display_avatar.url,
             )
+            embed.set_footer(text=f"UID: {uid}")
             return models.GenshinAppResult(result=embed, success=False)
         except genshin.errors.GenshinException as e:
             log.warning(
