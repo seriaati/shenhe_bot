@@ -9,7 +9,7 @@ discord-ext-prometheus @ git+https://github.com/Apollo-Roboto/discord.py-ext-pro
 discord.py==2.2.2
 diskcache==5.4.0
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
-fontTools==4.39.2
+fontTools==4.39.3
 genshin @ git+https://github.com/thesadru/genshin.py
 GGanalysis @ git+https://github.com/OneBST/GGanalysis
 hoyolab_rss_feeds==2.1.1
