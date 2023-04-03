@@ -9,7 +9,7 @@ import asyncpg
 import genshin
 
 import asset
-import models
+import dev.models as models
 from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map
 from base_ui import capture_exception

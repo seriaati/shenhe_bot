@@ -13,7 +13,7 @@ from apps.draw.utility import (
     shorten_text,
 )
 from apps.text_map import text_map
-from models import RunLeaderboardUser, SingleStrikeLeaderboardUser
+from dev.models import RunLeaderboardUser, SingleStrikeLeaderboardUser
 
 
 def board(

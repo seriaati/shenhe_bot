@@ -8,7 +8,7 @@ import genshin
 from dateutil.relativedelta import relativedelta
 from discord.utils import format_dt
 
-import models
+import dev.models as models
 from ambr import AmbrTopAPI
 from apps.db import get_user_lang, get_user_theme
 from apps.db.json import read_json

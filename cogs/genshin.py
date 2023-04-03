@@ -17,7 +17,7 @@ from enkanetwork import Assets
 import apps.genshin.checks as checks
 import asset
 import exceptions
-import models
+import dev.models as models
 import ui
 import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon

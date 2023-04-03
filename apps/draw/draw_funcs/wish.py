@@ -12,7 +12,7 @@ from apps.draw.utility import (
     global_write,
 )
 from apps.text_map import text_map
-from models import WishData
+from dev.models import WishData
 
 
 def overview(

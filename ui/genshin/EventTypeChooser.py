@@ -13,7 +13,7 @@ from apps.db import get_user_lang
 from apps.hoyolab_rss_feeds.create_feed import create_feed
 from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseView
-from models import CustomInteraction, DefaultEmbed
+from dev.models import CustomInteraction, DefaultEmbed
 from utility import parse_html
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
 

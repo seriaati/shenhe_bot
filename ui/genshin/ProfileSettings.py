@@ -9,7 +9,7 @@ from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map
 from base_ui import BaseView, EnkaView
 from exceptions import UIDNotFound
-from models import CustomInteraction, DefaultEmbed, ErrorEmbed
+from dev.models import CustomInteraction, DefaultEmbed, ErrorEmbed
 from ui.genshin.EnkaDamageCalc import GoBack
 
 

@@ -13,7 +13,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 import asset
 from apps.text_map import text_map
 from data.draw.fonts import FONTS
-from models import DefaultEmbed, DynamicBackgroundInput
+from dev.models import DefaultEmbed, DynamicBackgroundInput
 from utility import log
 
 

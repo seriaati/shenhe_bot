@@ -17,7 +17,7 @@ from apps.genshin import get_browser, get_character_fanarts
 from apps.text_map import text_map
 from base_ui import BaseView, EnkaView
 from exceptions import CardNotReady, NoCharacterFound
-from models import CustomInteraction, DrawInput, ErrorEmbed
+from dev.models import CustomInteraction, DrawInput, ErrorEmbed
 from utility.utils import divide_chunks
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 

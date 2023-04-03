@@ -4,7 +4,7 @@ from discord import ButtonStyle, Locale
 from discord.ui import Button
 
 from apps.text_map import text_map
-from models import CustomInteraction, DefaultEmbed
+from dev.models import CustomInteraction, DefaultEmbed
 
 
 class AddButton(Button):

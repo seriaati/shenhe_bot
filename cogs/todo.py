@@ -2,7 +2,7 @@ from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
-from models import CustomInteraction, ShenheBot
+from dev.models import CustomInteraction, ShenheBot
 from ui.todo import TodoList
 
 

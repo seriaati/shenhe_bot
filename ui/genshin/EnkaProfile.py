@@ -6,7 +6,7 @@ from discord import ui, utils
 
 import asset
 import config
-import models
+import dev.models as models
 from apps.db import get_user_theme
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map

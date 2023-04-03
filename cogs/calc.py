@@ -5,7 +5,7 @@ from discord.ext import commands
 from ambr import AmbrTopAPI
 from apps.db import get_user_lang
 from apps.text_map import to_ambr_top
-from models import ShenheBot
+from dev.models import ShenheBot
 from ui.calc import CalcCharacter, CalcWeapon
 
 

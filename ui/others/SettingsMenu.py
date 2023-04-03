@@ -9,7 +9,7 @@ from apps.db import get_user_auto_redeem, get_user_lang, get_user_theme
 from apps.text_map import text_map
 from base_ui import BaseView, GoBackButton
 from data.others.language_options import lang_options
-from models import CustomInteraction, DefaultEmbed, OriginalInfo
+from dev.models import CustomInteraction, DefaultEmbed, OriginalInfo
 from ui.others.settings import CustomImage, Notif
 
 

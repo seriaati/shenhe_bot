@@ -6,7 +6,7 @@ from discord import ui, utils
 import ambr.models as ambr_models
 import asset
 import config
-import models
+import dev.models as models
 from ambr import AmbrTopAPI
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs

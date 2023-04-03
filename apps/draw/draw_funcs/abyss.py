@@ -14,7 +14,7 @@ from apps.draw.utility import (
     get_font,
 )
 from apps.text_map import text_map
-from models import (
+from dev.models import (
     CharacterUsageResult,
     DynamicBackgroundInput,
     RunLeaderboardUser,

@@ -7,7 +7,7 @@ from pathlib import Path
 from discord.ext import commands
 from diskcache import FanoutCache
 
-from models import DefaultEmbed, ShenheBot
+from dev.models import DefaultEmbed, ShenheBot
 from utility.utils import dm_embed
 
 

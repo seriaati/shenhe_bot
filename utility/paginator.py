@@ -7,7 +7,7 @@ import config
 from apps.db import get_user_lang
 from apps.text_map import text_map
 from base_ui import BaseView
-from models import CustomInteraction
+from dev.models import CustomInteraction
 
 
 class GeneralPaginatorView(BaseView):

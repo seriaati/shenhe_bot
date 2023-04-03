@@ -6,7 +6,7 @@ from discord.ui import Select
 from apps.db import get_user_lang
 from apps.genshin import get_wish_history_embed
 from apps.text_map import text_map
-from models import CustomInteraction
+from dev.models import CustomInteraction
 from utility.wish_paginator import WishPaginatorView
 
 

@@ -8,7 +8,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 import ambr
-import models
+import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import (

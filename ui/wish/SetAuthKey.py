@@ -13,7 +13,7 @@ from apps.genshin import get_account_select_options, get_uid, get_wish_info_embe
 from apps.genshin.utility import get_shenhe_account
 from apps.text_map import text_map, to_genshin_py
 from base_ui import BaseModal, BaseView
-from models import CustomInteraction, DefaultEmbed, ErrorEmbed, Wish, WishInfo
+from dev.models import CustomInteraction, DefaultEmbed, ErrorEmbed, Wish, WishInfo
 from ui.wish import ChoosePlatform
 from utility import log
 

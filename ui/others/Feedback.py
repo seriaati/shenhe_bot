@@ -4,7 +4,7 @@ from discord.ui import TextInput
 import config
 from apps.text_map import text_map
 from base_ui import BaseModal
-from models import DefaultEmbed
+from dev.models import DefaultEmbed
 
 
 class FeedbackModal(BaseModal):

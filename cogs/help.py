@@ -5,7 +5,7 @@ from discord.ext import commands
 
 import ui
 from apps.db import get_user_lang
-from models import CustomInteraction
+from dev.models import CustomInteraction
 
 
 class HelpCog(commands.Cog):

@@ -10,7 +10,7 @@ import genshin
 import matplotlib.pyplot as plt
 
 import apps.draw.draw_funcs as funcs
-import models
+import dev.models as models
 from ambr import Material
 from apps.db.json import read_json, write_json
 from apps.draw.utility import (

@@ -10,7 +10,7 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseView
-from models import AbyssHalf, CustomInteraction, DefaultEmbed, DrawInput
+from dev.models import AbyssHalf, CustomInteraction, DefaultEmbed, DrawInput
 from utility import divide_chunks
 
 

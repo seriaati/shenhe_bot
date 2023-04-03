@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 import asset
 from apps.draw.utility import draw_dynamic_background, get_cache, get_font
-from models import DynamicBackgroundInput
+from dev.models import DynamicBackgroundInput
 
 
 def character_card(

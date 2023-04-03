@@ -17,13 +17,13 @@ from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
-import models
+import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
 from base_ui import get_error_handle_embed, global_error_handler, support_server_view
 from exceptions import FeatureDisabled, Maintenance
-from models import ShenheBot
+from dev.models import ShenheBot
 from utility import log, sentry_logging
 
 load_dotenv()

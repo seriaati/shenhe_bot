@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 from apps.db import get_user_lang
-from models import DefaultEmbed, ShenheBot
+from dev.models import DefaultEmbed, ShenheBot
 
 
 class WaifuCog(commands.Cog):

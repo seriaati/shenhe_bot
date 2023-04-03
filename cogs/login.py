@@ -15,7 +15,7 @@ from logingateway.model import (
 )
 
 from apps.text_map import text_map
-from models import DefaultEmbed, ShenheBot
+from dev.models import DefaultEmbed, ShenheBot
 from utility import log
 
 load_dotenv()

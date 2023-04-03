@@ -6,7 +6,7 @@ import discord
 from discord import ui, utils
 
 import config
-import models
+import dev.models as models
 from apps.text_map import text_map
 from base_ui import BaseView
 from utility.paginator import GeneralPaginator

@@ -14,7 +14,7 @@ from apps.draw.utility import (
     get_font,
     human_format,
 )
-from models import DynamicBackgroundInput, TopPadding
+from dev.models import DynamicBackgroundInput, TopPadding
 
 
 def material_card(
